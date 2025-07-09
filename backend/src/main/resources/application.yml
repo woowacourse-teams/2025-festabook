@@ -1,3 +1,8 @@
 spring:
   application:
     name: festabook
+
+# Swagger
+springdoc:
+  swagger-ui:
+    path: /api-docs
