@@ -31,7 +31,7 @@ class AnnouncementServiceTest {
     class 공지_생성 {
 
         @Test
-        void 공지_정상_생성() {
+        void 공지를_정상적으로_생성한다() {
             // given
             AnnouncementRequest request = new AnnouncementRequest(
                     "곧 재학생 스탬프 배부 시간입니다.",
@@ -74,7 +74,7 @@ class AnnouncementServiceTest {
     class 공지_전체_조회 {
 
         @Test
-        void 공지_정상_전체_조회() {
+        void 공지를_정상적으로_전체_조회한다() {
             // given
             String title = "공지 제목";
             LocalDate date = LocalDate.of(2025, 7, 9);
