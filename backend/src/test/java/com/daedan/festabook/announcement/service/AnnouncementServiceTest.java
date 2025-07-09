@@ -55,6 +55,7 @@ class AnnouncementServiceTest {
                     .willReturn(time);
 
             AnnouncementResponse expected = new AnnouncementResponse(
+                    1L,
                     request.title(),
                     date,
                     time,

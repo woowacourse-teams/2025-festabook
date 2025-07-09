@@ -6,6 +6,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 public record AnnouncementResponse(
+        Long id,
         String title,
         LocalDate date,
         @JsonFormat(pattern = "HH:mm") LocalTime time,
@@ -14,6 +15,7 @@ public record AnnouncementResponse(
 
     public static AnnouncementResponse from(Announcement announcement) {
         return new AnnouncementResponse(
+                announcement.getId(),
                 announcement.getTitle(),
                 announcement.getDate(),
                 announcement.getTime(),
