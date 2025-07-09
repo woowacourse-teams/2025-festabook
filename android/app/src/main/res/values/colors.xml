@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
+    <!--grayscale-->
+    <color name="gray900">#FF000000</color>
+    <color name="gray800">#FF1F1F1F</color>
+    <color name="gray700">#FF333333</color>
+    <color name="gray600">#FF474747</color>
+    <color name="gray500">#FF5C5C5C</color>
+    <color name="gray400">#FFADADAD</color>
+    <color name="gray300">#FFD6D6D6</color>
+    <color name="gray200">#FFEDEDED</color>
+    <color name="gray100">#FFF7F7F7</color>
+    <color name="gray050">#FFFFFFFF</color>
+
+    <!--black-->
+    <color name="black400">#FF1B1B1B</color>
+
+    <!--red-->
+    <color name="red400">#FFFF4B3E</color>
 </resources>
