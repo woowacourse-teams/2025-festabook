@@ -1,7 +1,6 @@
 package com.daedan.festabook.announcement.service;
 
 import com.daedan.festabook.announcement.domain.Announcement;
-import com.daedan.festabook.announcement.domain.DateTimeGenerator;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
@@ -14,13 +13,10 @@ import org.springframework.stereotype.Service;
 public class AnnouncementService {
 
     private final AnnouncementJpaRepository announcementJpaRepository;
-    private final DateTimeGenerator dateTimeGenerator;
 
     public AnnouncementResponse createAnnouncement(AnnouncementRequest request) {
         Announcement notSavedAnnouncement = Announcement.builder()
                 .title(request.title())
-                .date(dateTimeGenerator.generateDate())
-                .time(dateTimeGenerator.generateTime())
                 .content(request.content())
                 .build();
         Announcement savedAnnouncement = announcementJpaRepository.save(notSavedAnnouncement);
