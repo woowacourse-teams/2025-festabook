@@ -12,7 +12,7 @@ public record AnnouncementResponse(
         String content
 ) {
 
-    public static AnnouncementResponse from(final Announcement announcement) {
+    public static AnnouncementResponse from(Announcement announcement) {
         return new AnnouncementResponse(
                 announcement.getTitle(),
                 announcement.getDate(),

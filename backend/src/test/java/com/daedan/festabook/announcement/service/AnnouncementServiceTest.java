@@ -90,8 +90,7 @@ class AnnouncementServiceTest {
             List<AnnouncementResponse> actual = announcementService.findAllAnnouncement();
 
             // then
-            assertThat(actual)
-                    .hasSize(3);
+            assertThat(actual).hasSize(3);
         }
     }
 }
