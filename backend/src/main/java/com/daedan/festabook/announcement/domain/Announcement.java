@@ -37,6 +37,4 @@ public class Announcement {
 
     @Column(nullable = false)
     private String content;
-
 }
-

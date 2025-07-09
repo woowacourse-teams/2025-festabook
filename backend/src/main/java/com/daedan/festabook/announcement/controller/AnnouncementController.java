@@ -22,15 +22,15 @@ public class AnnouncementController {
 
     @PostMapping
     public ResponseEntity<AnnouncementResponse> createAnnouncement(
-            @RequestBody final AnnouncementRequest request
+            @RequestBody AnnouncementRequest request
     ) {
-        final AnnouncementResponse response = announcementService.createAnnouncement(request);
+        AnnouncementResponse response = announcementService.createAnnouncement(request);
         return ResponseEntity.created(URI.create("/announcement")).body(response);
     }
 
     @GetMapping
     public ResponseEntity<List<AnnouncementResponse>> findAllAnnouncement() {
-        final List<AnnouncementResponse> response = announcementService.findAllAnnouncement();
+        List<AnnouncementResponse> response = announcementService.findAllAnnouncement();
         return ResponseEntity.ok(response);
     }
 }

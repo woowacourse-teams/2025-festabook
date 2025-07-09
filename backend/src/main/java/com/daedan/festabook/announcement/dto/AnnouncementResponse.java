@@ -12,7 +12,6 @@ public record AnnouncementResponse(
         String content
 ) {
 
-
     public static AnnouncementResponse from(final Announcement announcement) {
         return new AnnouncementResponse(
                 announcement.getTitle(),

@@ -16,15 +16,14 @@ public class AnnouncementService {
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final DateTimeGenerator dateTimeGenerator;
 
-    public AnnouncementResponse createAnnouncement(final AnnouncementRequest request) {
-
-        final Announcement notSavedAnnouncement = Announcement.builder()
+    public AnnouncementResponse createAnnouncement(AnnouncementRequest request) {
+        Announcement notSavedAnnouncement = Announcement.builder()
                 .title(request.title())
                 .date(dateTimeGenerator.generateDate())
                 .time(dateTimeGenerator.generateTime())
                 .content(request.content())
                 .build();
-        final Announcement savedAnnouncement = announcementJpaRepository.save(notSavedAnnouncement);
+        Announcement savedAnnouncement = announcementJpaRepository.save(notSavedAnnouncement);
         return AnnouncementResponse.from(savedAnnouncement);
     }
 
@@ -33,5 +32,4 @@ public class AnnouncementService {
                 .map(AnnouncementResponse::from)
                 .toList();
     }
-
 }
