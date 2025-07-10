@@ -30,14 +30,14 @@ public class EventDay implements Comparable<EventDay> {
     @JoinColumn(name = "event_id")
     private List<Event> events = new ArrayList<>();
 
-    @Override
-    public int compareTo(EventDay otherEventDay) {
-        return this.date.compareTo(otherEventDay.date);
-    }
-
     public EventDay(LocalDate date, List<Event> events) {
         this.id = null;
         this.date = date;
         this.events = events;
+    }
+
+    @Override
+    public int compareTo(EventDay otherEventDay) {
+        return this.date.compareTo(otherEventDay.date);
     }
 }
