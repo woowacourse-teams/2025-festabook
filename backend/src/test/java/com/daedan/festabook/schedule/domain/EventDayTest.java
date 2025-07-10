@@ -3,6 +3,7 @@ package com.daedan.festabook.schedule.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -31,8 +32,9 @@ class EventDayTest {
     }
 
     private EventDay createTestEventDay(LocalDate date) {
-        return EventDay.builder()
-                .date(date)
-                .build();
+        return new EventDay(
+                date,
+                new ArrayList<>()
+        );
     }
 }

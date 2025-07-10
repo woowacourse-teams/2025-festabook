@@ -12,6 +12,7 @@ import com.daedan.festabook.schedule.dto.EventDayResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.repository.EventDayJpaRepository;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -113,16 +114,19 @@ class ScheduleServiceTest {
     }
 
     private Event createTestEvent(String title, EventStatus status) {
-        return Event.builder()
-                .title(title)
-                .status(status)
-                .build();
+        return new Event(
+                status,
+                LocalTime.of(12, 0, 0),
+                LocalTime.of(13, 0, 0),
+                title,
+                "장소"
+        );
     }
 
     private EventDay createTestEventDay(int dayOfMonth) {
-        return EventDay.builder()
-                .date(LocalDate.of(2025, 10, dayOfMonth))
-                .events(new ArrayList<>())
-                .build();
+        return new EventDay(
+                LocalDate.of(2025, 10, dayOfMonth),
+                new ArrayList<>()
+        );
     }
 }
