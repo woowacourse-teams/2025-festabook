@@ -2,7 +2,6 @@ package com.daedan.festabook.schedule.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 import com.daedan.festabook.schedule.domain.Event;
 import com.daedan.festabook.schedule.domain.EventDay;
@@ -21,17 +20,20 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScheduleServiceTest {
 
-    private final EventDayJpaRepository eventDayJpaRepository;
-    private final ScheduleService scheduleService;
+    @Mock
+    private EventDayJpaRepository eventDayJpaRepository;
 
-    public ScheduleServiceTest() {
-        this.eventDayJpaRepository = mock(EventDayJpaRepository.class);
-        this.scheduleService = new ScheduleService(eventDayJpaRepository);
-    }
+    @InjectMocks
+    private ScheduleService scheduleService;
 
     @Nested
     class getEventDays {
