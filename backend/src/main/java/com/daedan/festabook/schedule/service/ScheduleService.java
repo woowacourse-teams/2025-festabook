@@ -21,7 +21,7 @@ public class ScheduleService {
         return EventDayResponses.from(eventDays);
     }
 
-    public EventResponses getEvents(Long eventDayId) {
+    public EventResponses getEventsByEventDayId(Long eventDayId) {
         EventDay eventDay = getEventDayById(eventDayId);
         return EventResponses.from(eventDay.getEvents());
     }

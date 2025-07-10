@@ -101,7 +101,7 @@ class ScheduleServiceTest {
                     .willReturn(Optional.of(eventDay));
 
             // when
-            EventResponses result = scheduleService.getEvents(eventDayId);
+            EventResponses result = scheduleService.getEventsByEventDayId(eventDayId);
 
             // then
             assertThat(result.events())

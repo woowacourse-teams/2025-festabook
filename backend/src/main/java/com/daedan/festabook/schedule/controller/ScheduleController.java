@@ -25,6 +25,6 @@ public class ScheduleController {
     public EventResponses getEvents(
             @PathVariable Long eventDayId
     ) {
-        return scheduleService.getEvents(eventDayId);
+        return scheduleService.getEventsByEventDayId(eventDayId);
     }
 }
