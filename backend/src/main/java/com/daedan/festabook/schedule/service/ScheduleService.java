@@ -4,7 +4,6 @@ import com.daedan.festabook.schedule.domain.EventDay;
 import com.daedan.festabook.schedule.dto.EventDayResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.repository.EventDayJpaRepository;
-import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -16,8 +15,9 @@ public class ScheduleService {
     private final EventDayJpaRepository eventDayJpaRepository;
 
     public EventDayResponses getEventDays() {
-        List<EventDay> eventDays = eventDayJpaRepository.findAll();
-        Collections.sort(eventDays);
+        List<EventDay> eventDays = eventDayJpaRepository.findAll().stream()
+                .sorted()
+                .toList();
         return EventDayResponses.from(eventDays);
     }
 
