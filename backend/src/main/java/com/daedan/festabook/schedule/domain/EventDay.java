@@ -34,4 +34,10 @@ public class EventDay implements Comparable<EventDay> {
     public int compareTo(EventDay otherEventDay) {
         return this.date.compareTo(otherEventDay.date);
     }
+
+    public EventDay(LocalDate date, List<Event> events) {
+        this.id = null;
+        this.date = date;
+        this.events = events;
+    }
 }

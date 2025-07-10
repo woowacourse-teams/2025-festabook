@@ -35,4 +35,13 @@ public class Event {
 
     @Column(nullable = false)
     private String location;
+
+    public Event(EventStatus status, LocalTime startTime, LocalTime endTime, String title, String location) {
+        this.id = null;
+        this.status = status;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.title = title;
+        this.location = location;
+    }
 }
