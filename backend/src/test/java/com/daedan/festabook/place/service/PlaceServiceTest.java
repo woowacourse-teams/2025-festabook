@@ -29,10 +29,10 @@ class PlaceServiceTest {
     private PlaceService placeService;
 
     @Nested
-    class 플레이스_조회 {
+    class findAllPlace {
 
         @Test
-        void 플레이스를_정상적으로_전체_조회한다() {
+        void 성공() {
             // given
             String title = "코딩하며 한잔";
             String content = "시원한 맥주와 맛있는 치킨!";

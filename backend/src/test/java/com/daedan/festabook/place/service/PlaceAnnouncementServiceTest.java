@@ -31,10 +31,10 @@ class PlaceAnnouncementServiceTest {
     private PlaceAnnouncementService placeAnnouncementService;
 
     @Nested
-    class 플레이스_공지_조회 {
+    class findAllPlaceAnnouncementByPlaceId {
 
         @Test
-        void 플레이스_공지를_정상적으로_전체_조회한다() {
+        void 성공() {
             // given
             Long id = 1L;
             Place place = new Place(
