@@ -36,6 +36,6 @@ public class Event {
     private String location;
 
     @ManyToOne
-    @JoinColumn(name = "event_day_id")
+    @JoinColumn(nullable = false)
     private EventDay eventDay;
 }
