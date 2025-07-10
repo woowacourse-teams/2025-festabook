@@ -9,8 +9,9 @@ public record EventResponses(
 ) {
 
     public static EventResponses from(List<Event> events) {
-        return new EventResponses(events.stream()
-                .map(EventResponse::from)
-                .toList());
+        return new EventResponses(
+                events.stream()
+                        .map(EventResponse::from)
+                        .toList());
     }
 }
