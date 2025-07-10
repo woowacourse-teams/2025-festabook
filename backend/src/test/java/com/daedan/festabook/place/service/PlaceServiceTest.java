@@ -34,11 +34,11 @@ class PlaceServiceTest {
         @Test
         void 플레이스를_정상적으로_전체_조회한다() {
             // given
-            String title = "제목";
-            String content = "설명";
-            PlaceCategory category = PlaceCategory.BOOTH;
-            String location = "장소";
-            String host = "주최";
+            String title = "코딩하며 한잔";
+            String content = "시원한 맥주와 맛있는 치킨!";
+            PlaceCategory category = PlaceCategory.BAR;
+            String location = "공학관 앞";
+            String host = "C블C블";
             LocalTime startTime = LocalTime.of(9, 0);
             LocalTime endTime = LocalTime.of(18, 0);
 
