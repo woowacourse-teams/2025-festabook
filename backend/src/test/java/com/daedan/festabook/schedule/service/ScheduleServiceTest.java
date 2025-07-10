@@ -34,10 +34,10 @@ class ScheduleServiceTest {
     }
 
     @Nested
-    class 날짜_목록_조회_테스트 {
+    class getEventDays {
 
         @Test
-        void 이벤트_날짜_목록을_조회한다() {
+        void 성공() {
             // given
             EventDay eventDay1 = createTestEventDay(26);
             EventDay eventDay2 = createTestEventDay(27);
@@ -58,7 +58,7 @@ class ScheduleServiceTest {
         }
 
         @Test
-        void 이벤트_날짜_목록_조회는_날짜_기준으로_정렬된다() {
+        void 성공_날짜_오름차순_정렬() {
             // given
             EventDay eventDay1 = createTestEventDay(27);
             EventDay eventDay2 = createTestEventDay(26);
@@ -84,10 +84,10 @@ class ScheduleServiceTest {
     }
 
     @Nested
-    class 이벤트_목록_조회_테스트 {
+    class getEventsByEventDayId {
 
         @Test
-        void 특정_날짜의_이벤트_목록을_조회한다() {
+        void 성공() {
             // given
             Long eventDayId = 1L;
             EventDay eventDay = createTestEventDay(26);
