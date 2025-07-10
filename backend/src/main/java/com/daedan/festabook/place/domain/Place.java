@@ -9,15 +9,11 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import java.time.LocalTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Place {
 
@@ -45,4 +41,16 @@ public class Place {
 
     @Column(nullable = false)
     private LocalTime endTime;
+
+    public Place(String title, String description, PlaceCategory category, String location, String host,
+                 LocalTime startTime, LocalTime endTime) {
+        this.id = null;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.location = location;
+        this.host = host;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
 }

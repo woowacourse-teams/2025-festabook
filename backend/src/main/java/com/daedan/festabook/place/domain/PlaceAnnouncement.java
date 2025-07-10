@@ -11,15 +11,11 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
-@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaceAnnouncement {
 
@@ -42,4 +38,13 @@ public class PlaceAnnouncement {
 
     @Column(nullable = false)
     private String content;
+
+    public PlaceAnnouncement(Place place, String title, LocalDate date, LocalTime time, String content) {
+        this.id = null;
+        this.place = place;
+        this.title = title;
+        this.date = date;
+        this.time = time;
+        this.content = content;
+    }
 }
