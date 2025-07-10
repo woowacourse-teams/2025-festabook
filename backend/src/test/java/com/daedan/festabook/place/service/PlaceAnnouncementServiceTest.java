@@ -62,12 +62,11 @@ class PlaceAnnouncementServiceTest {
 
             // then
             assertSoftly(s -> {
-                        s.assertThat(result.responses()).hasSize(3);
-                        s.assertThat(result.responses().get(0).id()).isEqualTo(placeAnnouncement1.getId());
-                        s.assertThat(result.responses().get(0).id()).isEqualTo(placeAnnouncement1.getId());
-                        s.assertThat(result.responses().get(0).id()).isEqualTo(placeAnnouncement1.getId());
-                    }
-            );
+                s.assertThat(result.responses()).hasSize(3);
+                s.assertThat(result.responses().get(0).id()).isEqualTo(placeAnnouncement1.getId());
+                s.assertThat(result.responses().get(0).id()).isEqualTo(placeAnnouncement1.getId());
+                s.assertThat(result.responses().get(0).id()).isEqualTo(placeAnnouncement1.getId());
+            });
         }
     }
 }
