@@ -31,20 +31,20 @@ public class PlaceAnnouncement {
     private String title;
 
     @Column(nullable = false)
+    private String content;
+
+    @Column(nullable = false)
     private LocalDate date;
 
     @Column(nullable = false)
     private LocalTime time;
 
-    @Column(nullable = false)
-    private String content;
-
-    public PlaceAnnouncement(Place place, String title, LocalDate date, LocalTime time, String content) {
+    public PlaceAnnouncement(Place place, String title, String content, LocalDate date, LocalTime time) {
         this.id = null;
         this.place = place;
         this.title = title;
+        this.content = content;
         this.date = date;
         this.time = time;
-        this.content = content;
     }
 }
