@@ -51,4 +51,9 @@
         <item name="android:textSize">10sp</item>
     </style>
 
+    <style name="NoActiveIndicator">
+        <item name="android:color">@android:color/transparent</item>
+        <item name="android:background">@android:color/transparent</item>
+    </style>
+
 </resources>
