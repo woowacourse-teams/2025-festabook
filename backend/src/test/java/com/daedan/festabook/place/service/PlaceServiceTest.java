@@ -2,7 +2,6 @@ package com.daedan.festabook.place.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
 
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
@@ -12,16 +11,19 @@ import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
+@ExtendWith(MockitoExtension.class)
 class PlaceServiceTest {
 
-    private final PlaceJpaRepository placeJpaRepository;
-    private final PlaceService placeService;
+    @Mock
+    private PlaceJpaRepository placeJpaRepository;
 
-    public PlaceServiceTest() {
-        this.placeJpaRepository = mock(PlaceJpaRepository.class);
-        this.placeService = new PlaceService(placeJpaRepository);
-    }
+    @InjectMocks
+    private PlaceService placeService;
 
     @Nested
     class 플레이스_조회 {
@@ -44,13 +46,13 @@ class PlaceServiceTest {
                     .willReturn(List.of(place1, place2, place3));
 
             // when
-            PlaceResponses actual = placeService.findAllPlace();
+            PlaceResponses result = placeService.findAllPlace();
 
             // then
-            assertThat(actual.responses()).hasSize(3);
-            assertThat(actual.responses().get(0).id()).isEqualTo(place1.getId());
-            assertThat(actual.responses().get(1).id()).isEqualTo(place2.getId());
-            assertThat(actual.responses().get(2).id()).isEqualTo(place3.getId());
+            assertThat(result.responses()).hasSize(3);
+            assertThat(result.responses().get(0).id()).isEqualTo(place1.getId());
+            assertThat(result.responses().get(1).id()).isEqualTo(place2.getId());
+            assertThat(result.responses().get(2).id()).isEqualTo(place3.getId());
         }
     }
 }
