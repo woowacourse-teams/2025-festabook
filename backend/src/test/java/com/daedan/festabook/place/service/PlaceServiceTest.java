@@ -9,6 +9,8 @@ import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -17,6 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceServiceTest {
 
     @Mock
@@ -39,9 +42,9 @@ class PlaceServiceTest {
             LocalTime startTime = LocalTime.of(9, 0);
             LocalTime endTime = LocalTime.of(18, 0);
 
-            Place place1 = new Place(1L, title, description, category, location, host, startTime, endTime);
-            Place place2 = new Place(2L, title, description, category, location, host, startTime, endTime);
-            Place place3 = new Place(3L, title, description, category, location, host, startTime, endTime);
+            Place place1 = new Place(title, description, category, location, host, startTime, endTime);
+            Place place2 = new Place(title, description, category, location, host, startTime, endTime);
+            Place place3 = new Place(title, description, category, location, host, startTime, endTime);
             given(placeJpaRepository.findAll())
                     .willReturn(List.of(place1, place2, place3));
 
