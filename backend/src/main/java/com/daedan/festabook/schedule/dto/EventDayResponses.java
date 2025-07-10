@@ -10,7 +10,7 @@ public record EventDayResponses(
 
     public static EventDayResponses from(List<EventDay> eventDays) {
         return new EventDayResponses(eventDays.stream()
-                .map(EventDayResponse::new)
+                .map(EventDayResponse::from)
                 .toList());
     }
 }

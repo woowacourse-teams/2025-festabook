@@ -8,8 +8,8 @@ public record EventDayResponse(
         LocalDate date
 ) {
 
-    public EventDayResponse(EventDay eventDay) {
-        this(
+    public static EventDayResponse from(EventDay eventDay) {
+        return new EventDayResponse(
                 eventDay.getId(),
                 eventDay.getDate()
         );
