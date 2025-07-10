@@ -5,12 +5,12 @@ plugins {
 
 android {
     namespace = "com.daedan.festabook"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.daedan.festabook"
         minSdk = 28
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "1.0"
 
