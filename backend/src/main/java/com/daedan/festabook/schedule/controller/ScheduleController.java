@@ -22,7 +22,9 @@ public class ScheduleController {
     }
 
     @GetMapping("/{eventDayId}")
-    public EventResponses getEvents(@PathVariable Long eventDayId) {
+    public EventResponses getEvents(
+            @PathVariable Long eventDayId
+    ) {
         return scheduleService.getEvents(eventDayId);
     }
 }
