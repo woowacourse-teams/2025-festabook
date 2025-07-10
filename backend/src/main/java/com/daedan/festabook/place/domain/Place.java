@@ -44,7 +44,6 @@ public class Place {
 
     public Place(String title, String content, PlaceCategory category, String location, String host,
                  LocalTime startTime, LocalTime endTime) {
-        this.id = null;
         this.title = title;
         this.content = content;
         this.category = category;

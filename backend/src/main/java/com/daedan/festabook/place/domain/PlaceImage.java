@@ -29,7 +29,6 @@ public class PlaceImage {
     private String imageUrl;
 
     public PlaceImage(Place place, String imageUrl) {
-        this.id = null;
         this.place = place;
         this.imageUrl = imageUrl;
     }

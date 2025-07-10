@@ -40,7 +40,6 @@ public class PlaceAnnouncement {
     private LocalTime time;
 
     public PlaceAnnouncement(Place place, String title, String content, LocalDate date, LocalTime time) {
-        this.id = null;
         this.place = place;
         this.title = title;
         this.content = content;
