@@ -8,7 +8,7 @@ import java.time.LocalTime;
 public record PlaceResponse(
         Long id,
         String title,
-        String description,
+        String content,
         PlaceCategory category,
         String location,
         String host,
@@ -20,7 +20,7 @@ public record PlaceResponse(
         return new PlaceResponse(
                 place.getId(),
                 place.getTitle(),
-                place.getDescription(),
+                place.getContent(),
                 place.getCategory(),
                 place.getLocation(),
                 place.getHost(),

@@ -35,16 +35,16 @@ class PlaceServiceTest {
         void 플레이스를_정상적으로_전체_조회한다() {
             // given
             String title = "제목";
-            String description = "설명";
+            String content = "설명";
             PlaceCategory category = PlaceCategory.BOOTH;
             String location = "장소";
             String host = "주최";
             LocalTime startTime = LocalTime.of(9, 0);
             LocalTime endTime = LocalTime.of(18, 0);
 
-            Place place1 = new Place(title, description, category, location, host, startTime, endTime);
-            Place place2 = new Place(title, description, category, location, host, startTime, endTime);
-            Place place3 = new Place(title, description, category, location, host, startTime, endTime);
+            Place place1 = new Place(title, content, category, location, host, startTime, endTime);
+            Place place2 = new Place(title, content, category, location, host, startTime, endTime);
+            Place place3 = new Place(title, content, category, location, host, startTime, endTime);
             given(placeJpaRepository.findAll())
                     .willReturn(List.of(place1, place2, place3));
 

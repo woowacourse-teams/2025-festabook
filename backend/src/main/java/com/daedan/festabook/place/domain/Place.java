@@ -25,7 +25,7 @@ public class Place {
     private String title;
 
     @Column(nullable = false)
-    private String description;
+    private String content;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -42,11 +42,11 @@ public class Place {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    public Place(String title, String description, PlaceCategory category, String location, String host,
+    public Place(String title, String content, PlaceCategory category, String location, String host,
                  LocalTime startTime, LocalTime endTime) {
         this.id = null;
         this.title = title;
-        this.description = description;
+        this.content = content;
         this.category = category;
         this.location = location;
         this.host = host;
