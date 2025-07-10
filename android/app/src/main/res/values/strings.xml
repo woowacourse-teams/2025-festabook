@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Festabook</string>
+    <string name="menu_home_title">홈</string>
+    <string name="menu_schedule_title">일정</string>
+    <string name="menu_map_title">지도</string>
+    <string name="menu_news_title">소식</string>
+    <string name="menu_setting_title">설정</string>
 </resources>
