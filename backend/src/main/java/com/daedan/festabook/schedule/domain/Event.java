@@ -42,8 +42,14 @@ public class Event {
     @JoinColumn(nullable = false)
     private EventDay eventDay;
 
-    public Event(EventStatus status, LocalTime startTime, LocalTime endTime, String title, String location,
-                 EventDay eventDay) {
+    public Event(
+            EventStatus status,
+            LocalTime startTime,
+            LocalTime endTime,
+            String title,
+            String location,
+            EventDay eventDay
+    ) {
         this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;

@@ -22,8 +22,9 @@ public class EventDay implements Comparable<EventDay> {
     @Column(nullable = false)
     private LocalDate date;
 
-    public EventDay(LocalDate date) {
-        this.id = null;
+    public EventDay(
+            LocalDate date
+    ) {
         this.date = date;
     }
 

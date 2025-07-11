@@ -17,14 +17,14 @@ public class ScheduleService {
     private final EventDayJpaRepository eventDayJpaRepository;
     private final EventJpaRepository eventJpaRepository;
 
-    public EventDayResponses getEventDays() {
+    public EventDayResponses getAllEventDay() {
         List<EventDay> eventDays = eventDayJpaRepository.findAll().stream()
                 .sorted()
                 .toList();
         return EventDayResponses.from(eventDays);
     }
 
-    public EventResponses getEventsByEventDayId(Long eventDayId) {
+    public EventResponses getAllEventByEventDayId(Long eventDayId) {
         List<Event> events = eventJpaRepository.findAllByEventDayId((eventDayId));
         return EventResponses.from(events);
     }

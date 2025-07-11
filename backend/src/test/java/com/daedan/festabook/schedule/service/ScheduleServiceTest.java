@@ -40,7 +40,7 @@ class ScheduleServiceTest {
     private ScheduleService scheduleService;
 
     @Nested
-    class getEventDays {
+    class getAllEventDay {
 
         @Test
         void 성공() {
@@ -56,7 +56,7 @@ class ScheduleServiceTest {
             LocalDate expected = LocalDate.of(2025, 10, 26);
 
             // when
-            EventDayResponses result = scheduleService.getEventDays();
+            EventDayResponses result = scheduleService.getAllEventDay();
 
             // then
             assertSoftly(s -> {
@@ -78,7 +78,7 @@ class ScheduleServiceTest {
                     .willReturn(eventDays);
 
             // when
-            EventDayResponses result = scheduleService.getEventDays();
+            EventDayResponses result = scheduleService.getAllEventDay();
 
             // then
             assertThat(result.eventDays())
@@ -92,7 +92,7 @@ class ScheduleServiceTest {
     }
 
     @Nested
-    class getEventsByEventDayId {
+    class getAllEventByEventDayId {
 
         @Test
         void 성공() {
@@ -106,7 +106,7 @@ class ScheduleServiceTest {
                     .willReturn(List.of(event1, event2));
 
             // when
-            EventResponses result = scheduleService.getEventsByEventDayId(eventDayId);
+            EventResponses result = scheduleService.getAllEventByEventDayId(eventDayId);
 
             // then
             assertSoftly(s -> {

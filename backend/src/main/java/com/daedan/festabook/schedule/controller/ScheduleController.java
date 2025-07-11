@@ -21,7 +21,7 @@ public class ScheduleController {
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     public EventDayResponses getEventDays() {
-        return scheduleService.getEventDays();
+        return scheduleService.getAllEventDay();
     }
 
     @GetMapping("/{eventDayId}")
@@ -29,6 +29,6 @@ public class ScheduleController {
     public EventResponses getEvents(
             @PathVariable Long eventDayId
     ) {
-        return scheduleService.getEventsByEventDayId(eventDayId);
+        return scheduleService.getAllEventByEventDayId(eventDayId);
     }
 }
