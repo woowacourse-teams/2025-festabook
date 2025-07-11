@@ -37,7 +37,6 @@ public class Event {
     private String location;
 
     public Event(EventStatus status, LocalTime startTime, LocalTime endTime, String title, String location) {
-        this.id = null;
         this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;
