@@ -9,7 +9,7 @@ public record PlaceAnnouncementResponse(
         Long id,
         String title,
         String content,
-        @JsonFormat(pattern = "yyyy-MM-dd") LocalDate date,
+        LocalDate date,
         @JsonFormat(pattern = "HH:mm") LocalTime time
 ) {
 
