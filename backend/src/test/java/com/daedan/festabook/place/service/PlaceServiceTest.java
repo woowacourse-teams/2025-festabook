@@ -46,9 +46,9 @@ class PlaceServiceTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(result.responses()).hasSize(3);
-                s.assertThat(result.responses().get(0).id()).isEqualTo(place1.getId());
-                s.assertThat(result.responses().get(1).id()).isEqualTo(place2.getId());
-                s.assertThat(result.responses().get(2).id()).isEqualTo(place3.getId());
+                s.assertThat(result.responses().get(0).title()).isEqualTo(place1.getTitle());
+                s.assertThat(result.responses().get(1).title()).isEqualTo(place2.getTitle());
+                s.assertThat(result.responses().get(2).title()).isEqualTo(place3.getTitle());
             });
         }
     }

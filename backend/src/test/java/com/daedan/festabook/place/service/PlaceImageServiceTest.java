@@ -47,9 +47,9 @@ class PlaceImageServiceTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(result.responses()).hasSize(3);
-                s.assertThat(result.responses().get(0).id()).isEqualTo(placeImage1.getId());
-                s.assertThat(result.responses().get(1).id()).isEqualTo(placeImage2.getId());
-                s.assertThat(result.responses().get(2).id()).isEqualTo(placeImage3.getId());
+                s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
+                s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(placeImage2.getImageUrl());
+                s.assertThat(result.responses().get(2).imageUrl()).isEqualTo(placeImage3.getImageUrl());
             });
         }
     }
