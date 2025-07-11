@@ -32,4 +32,9 @@ public class Announcement {
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    public Announcement(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

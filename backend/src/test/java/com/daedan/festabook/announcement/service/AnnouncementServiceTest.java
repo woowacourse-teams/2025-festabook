@@ -3,6 +3,7 @@ package com.daedan.festabook.announcement.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import java.util.List;
@@ -26,7 +27,27 @@ class AnnouncementServiceTest {
     private AnnouncementService announcementService;
 
     @Nested
-    class findAllAnnouncement {
+    class getAllAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+
+            Announcement announcement1 = new Announcement("title", "content");
+            Announcement announcement2 = new Announcement("title", "content");
+            Announcement announcement3 = new Announcement("title", "content");
+            given(announcementJpaRepository.findAll())
+                    .willReturn(List.of(announcement1, announcement2, announcement3));
+
+            AnnouncementResponses expected = AnnouncementResponses.from(
+                    List.of(announcement1, announcement2, announcement3));
+
+            // when
+            AnnouncementResponses result = announcementService.getAllAnnouncement();
+
+            // then
+            assertThat(result).isEqualTo(expected);
+        }
 
         @Test
         void 성공_빈컬렉션() {
