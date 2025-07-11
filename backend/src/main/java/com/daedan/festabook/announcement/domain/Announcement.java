@@ -26,10 +26,10 @@ public class Announcement {
     @Column(nullable = false)
     private String title;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createAt;
-
     @Column(nullable = false)
     private String content;
+
+    @CreatedDate
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
 }

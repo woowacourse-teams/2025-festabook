@@ -6,16 +6,16 @@ import java.time.LocalDateTime;
 public record AnnouncementResponse(
         Long id,
         String title,
-        LocalDateTime createAt,
-        String content
+        String content,
+        LocalDateTime createdAt
 ) {
 
     public static AnnouncementResponse from(Announcement announcement) {
         return new AnnouncementResponse(
                 announcement.getId(),
                 announcement.getTitle(),
-                announcement.getCreateAt(),
-                announcement.getContent()
+                announcement.getContent(),
+                announcement.getCreatedAt()
         );
     }
 }
