@@ -16,7 +16,7 @@ public class PlaceService {
 
     // TODO: 학교 연결
     @Transactional(readOnly = true)
-    public PlaceResponses findAllPlace() {
+    public PlaceResponses getAllPlace() {
         List<Place> places = placeJpaRepository.findAll();
         return PlaceResponses.from(places);
     }

@@ -15,7 +15,7 @@ public class PlaceImageService {
     private final PlaceImageJpaRepository placeImageJpaRepository;
 
     @Transactional(readOnly = true)
-    public PlaceImageResponses findAllPlaceImageByPlaceId(Long placeId) {
+    public PlaceImageResponses getAllPlaceImageByPlaceId(Long placeId) {
         List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceId(placeId);
         return PlaceImageResponses.from(placeImages);
     }

@@ -34,8 +34,8 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponses findAllPlace() {
-        return placeService.findAllPlace();
+    public PlaceResponses getAllPlace() {
+        return placeService.getAllPlace();
     }
 
     @GetMapping("/{placeId}/announcements")
@@ -44,10 +44,10 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceAnnouncementResponses findAllPlaceAnnouncementByPlaceId(
+    public PlaceAnnouncementResponses getAllPlaceAnnouncementByPlaceId(
             @PathVariable Long placeId
     ) {
-        return placeAnnouncementService.findAllPlaceAnnouncementByPlaceId(placeId);
+        return placeAnnouncementService.getAllPlaceAnnouncementByPlaceId(placeId);
     }
 
     @GetMapping("/{placeId}/images")
@@ -56,9 +56,9 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceImageResponses findAllPlaceImageByPlaceId(
+    public PlaceImageResponses getAllPlaceImageByPlaceId(
             @PathVariable Long placeId
     ) {
-        return placeImageService.findAllPlaceImageByPlaceId(placeId);
+        return placeImageService.getAllPlaceImageByPlaceId(placeId);
     }
 }

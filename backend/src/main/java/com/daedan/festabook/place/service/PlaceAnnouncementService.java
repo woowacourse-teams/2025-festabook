@@ -15,7 +15,7 @@ public class PlaceAnnouncementService {
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     @Transactional(readOnly = true)
-    public PlaceAnnouncementResponses findAllPlaceAnnouncementByPlaceId(Long placeId) {
+    public PlaceAnnouncementResponses getAllPlaceAnnouncementByPlaceId(Long placeId) {
         List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
         return PlaceAnnouncementResponses.from(placeAnnouncements);
     }

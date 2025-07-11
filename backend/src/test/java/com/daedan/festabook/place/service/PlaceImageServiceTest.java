@@ -28,7 +28,7 @@ class PlaceImageServiceTest {
     private PlaceImageService placeImageService;
 
     @Nested
-    class findAllPlaceImageByPlaceId {
+    class getAllPlaceImageByPlaceId {
 
         @Test
         void 성공() {
@@ -42,7 +42,7 @@ class PlaceImageServiceTest {
                     .willReturn(List.of(placeImage1, placeImage2, placeImage3));
 
             // when
-            PlaceImageResponses result = placeImageService.findAllPlaceImageByPlaceId(id);
+            PlaceImageResponses result = placeImageService.getAllPlaceImageByPlaceId(id);
 
             // then
             assertSoftly(s -> {
