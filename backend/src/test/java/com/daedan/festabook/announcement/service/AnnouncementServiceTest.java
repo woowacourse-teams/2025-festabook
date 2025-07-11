@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.announcement.domain.Announcement;
+import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import java.util.List;
@@ -32,9 +33,9 @@ class AnnouncementServiceTest {
         @Test
         void 성공() {
             // given
-            Announcement announcement1 = new Announcement("title", "content");
-            Announcement announcement2 = new Announcement("title", "content");
-            Announcement announcement3 = new Announcement("title", "content");
+            Announcement announcement1 = AnnouncementFixture.create();
+            Announcement announcement2 = AnnouncementFixture.create();
+            Announcement announcement3 = AnnouncementFixture.create();
             given(announcementJpaRepository.findAll())
                     .willReturn(List.of(announcement1, announcement2, announcement3));
 
