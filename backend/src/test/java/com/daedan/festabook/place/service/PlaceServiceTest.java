@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.service;
 
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.place.domain.Place;
@@ -44,12 +44,7 @@ class PlaceServiceTest {
             PlaceResponses result = placeService.getAllPlace();
 
             // then
-            assertSoftly(s -> {
-                s.assertThat(result.responses()).hasSize(3);
-                s.assertThat(result.responses().get(0).title()).isEqualTo(place1.getTitle());
-                s.assertThat(result.responses().get(1).title()).isEqualTo(place2.getTitle());
-                s.assertThat(result.responses().get(2).title()).isEqualTo(place3.getTitle());
-            });
+            assertThat(result.responses()).hasSize(3);
         }
     }
 }

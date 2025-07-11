@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.service;
 
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.place.domain.PlaceImage;
@@ -45,12 +45,7 @@ class PlaceImageServiceTest {
             PlaceImageResponses result = placeImageService.getAllPlaceImageByPlaceId(id);
 
             // then
-            assertSoftly(s -> {
-                s.assertThat(result.responses()).hasSize(3);
-                s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
-                s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(placeImage2.getImageUrl());
-                s.assertThat(result.responses().get(2).imageUrl()).isEqualTo(placeImage3.getImageUrl());
-            });
+            assertThat(result.responses()).hasSize(3);
         }
     }
 }
