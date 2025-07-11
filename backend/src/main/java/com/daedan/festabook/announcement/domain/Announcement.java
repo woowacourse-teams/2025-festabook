@@ -33,7 +33,10 @@ public class Announcement {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Announcement(String title, String content) {
+    public Announcement(
+            String title,
+            String content
+    ) {
         this.title = title;
         this.content = content;
     }
