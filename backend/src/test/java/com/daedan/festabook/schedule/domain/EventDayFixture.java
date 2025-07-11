@@ -12,7 +12,9 @@ public class EventDayFixture {
         );
     }
 
-    public static EventDay create(LocalDate date) {
+    public static EventDay create(
+            LocalDate date
+    ) {
         return new EventDay(
                 date
         );
