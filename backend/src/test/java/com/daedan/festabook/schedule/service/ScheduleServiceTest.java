@@ -13,10 +13,10 @@ import com.daedan.festabook.schedule.dto.EventDayResponse;
 import com.daedan.festabook.schedule.dto.EventDayResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.repository.EventDayJpaRepository;
+import com.daedan.festabook.schedule.repository.EventJpaRepository;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -32,6 +32,9 @@ class ScheduleServiceTest {
 
     @Mock
     private EventDayJpaRepository eventDayJpaRepository;
+
+    @Mock
+    private EventJpaRepository eventJpaRepository;
 
     @InjectMocks
     private ScheduleService scheduleService;
@@ -95,15 +98,12 @@ class ScheduleServiceTest {
         void 성공() {
             // given
             Long eventDayId = 1L;
-            EventDay eventDay = EventDayFixture.create(LocalDate.of(2025, 10, 26));
 
             Event event1 = EventFixture.create("무대 공연", EventStatus.COMPLETED);
             Event event2 = EventFixture.create("부스 운영", EventStatus.UPCOMING);
 
-            eventDay.getEvents().addAll(Arrays.asList(event1, event2));
-
-            given(eventDayJpaRepository.findById(eventDayId))
-                    .willReturn(Optional.of(eventDay));
+            given(eventJpaRepository.findAllByEventDayId(eventDayId))
+                    .willReturn(List.of(event1, event2));
 
             // when
             EventResponses result = scheduleService.getEventsByEventDayId(eventDayId);

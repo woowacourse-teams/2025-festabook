@@ -5,11 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToMany;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,14 +22,9 @@ public class EventDay implements Comparable<EventDay> {
     @Column(nullable = false)
     private LocalDate date;
 
-    @OneToMany
-    @JoinColumn(name = "event_id")
-    private List<Event> events = new ArrayList<>();
-
-    public EventDay(LocalDate date, List<Event> events) {
+    public EventDay(LocalDate date) {
         this.id = null;
         this.date = date;
-        this.events = events;
     }
 
     @Override

@@ -7,6 +7,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -36,11 +38,17 @@ public class Event {
     @Column(nullable = false)
     private String location;
 
-    public Event(EventStatus status, LocalTime startTime, LocalTime endTime, String title, String location) {
+    @ManyToOne
+    @JoinColumn(nullable = false)
+    private EventDay eventDay;
+
+    public Event(EventStatus status, LocalTime startTime, LocalTime endTime, String title, String location,
+                 EventDay eventDay) {
         this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;
         this.title = title;
         this.location = location;
+        this.eventDay = eventDay;
     }
 }
