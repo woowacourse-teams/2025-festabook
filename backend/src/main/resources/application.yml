@@ -1,3 +1,5 @@
 spring:
   application:
     name: festabook
+  jpa:
+    open-in-view: false
