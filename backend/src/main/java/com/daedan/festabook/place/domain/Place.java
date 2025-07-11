@@ -42,8 +42,15 @@ public class Place {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    public Place(String title, String description, PlaceCategory category, String location, String host,
-                 LocalTime startTime, LocalTime endTime) {
+    public Place(
+            String title,
+            String description,
+            PlaceCategory category,
+            String location,
+            String host,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
         this.title = title;
         this.description = description;
         this.category = category;

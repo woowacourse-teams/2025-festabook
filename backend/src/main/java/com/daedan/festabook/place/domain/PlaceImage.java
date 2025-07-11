@@ -28,7 +28,10 @@ public class PlaceImage {
     @Column(nullable = false)
     private String imageUrl;
 
-    public PlaceImage(Place place, String imageUrl) {
+    public PlaceImage(
+            Place place,
+            String imageUrl
+    ) {
         this.place = place;
         this.imageUrl = imageUrl;
     }
