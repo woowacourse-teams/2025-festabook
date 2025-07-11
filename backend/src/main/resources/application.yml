@@ -3,3 +3,8 @@ spring:
     name: festabook
   jpa:
     open-in-view: false
+
+# Swagger
+springdoc:
+  swagger-ui:
+    path: /api-docs
