@@ -3,7 +3,6 @@ package com.daedan.festabook.schedule.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -24,22 +23,14 @@ class EventDayTest {
         })
         void 성공(LocalDate baseDate, LocalDate compareDate, int expected) {
             // given
-            EventDay baseEvent = createTestEventDay(baseDate);
-            EventDay compareEvent = createTestEventDay(compareDate);
+            EventDay baseEvent = EventDayFixture.create(baseDate);
+            EventDay compareEvent = EventDayFixture.create(compareDate);
 
             // when
             int result = baseEvent.compareTo(compareEvent);
 
             // then
-            assertThat(result)
-                    .isEqualTo(expected);
+            assertThat(result).isEqualTo(expected);
         }
-    }
-
-    private EventDay createTestEventDay(LocalDate date) {
-        return new EventDay(
-                date,
-                new ArrayList<>()
-        );
     }
 }
