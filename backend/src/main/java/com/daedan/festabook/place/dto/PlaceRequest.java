@@ -10,7 +10,7 @@ public record PlaceRequest(
         String title,
 
         @Schema(description = "설명", example = "시원한 맥주와 맛있는 치킨!")
-        String content,
+        String description,
 
         @Schema(description = "카테고리", example = "BAR")
         PlaceCategory category,
