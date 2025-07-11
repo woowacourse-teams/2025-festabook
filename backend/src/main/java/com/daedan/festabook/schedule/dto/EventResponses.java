@@ -12,6 +12,7 @@ public record EventResponses(
         return new EventResponses(
                 events.stream()
                         .map(EventResponse::from)
-                        .toList());
+                        .toList()
+        );
     }
 }

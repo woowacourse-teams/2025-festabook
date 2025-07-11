@@ -15,7 +15,6 @@ import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.repository.EventDayJpaRepository;
 import com.daedan.festabook.schedule.repository.EventJpaRepository;
 import java.time.LocalDate;
-import java.util.Arrays;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -48,7 +47,7 @@ class ScheduleServiceTest {
             EventDay eventDay1 = EventDayFixture.create(LocalDate.of(2025, 10, 26));
             EventDay eventDay2 = EventDayFixture.create(LocalDate.of(2025, 10, 27));
 
-            List<EventDay> eventDays = Arrays.asList(eventDay1, eventDay2);
+            List<EventDay> eventDays = List.of(eventDay1, eventDay2);
 
             given(eventDayJpaRepository.findAll())
                     .willReturn(eventDays);
@@ -72,7 +71,7 @@ class ScheduleServiceTest {
             EventDay eventDay2 = EventDayFixture.create(LocalDate.of(2025, 10, 26));
             EventDay eventDay3 = EventDayFixture.create(LocalDate.of(2025, 10, 25));
 
-            List<EventDay> eventDays = Arrays.asList(eventDay1, eventDay2, eventDay3);
+            List<EventDay> eventDays = List.of(eventDay1, eventDay2, eventDay3);
 
             given(eventDayJpaRepository.findAll())
                     .willReturn(eventDays);
