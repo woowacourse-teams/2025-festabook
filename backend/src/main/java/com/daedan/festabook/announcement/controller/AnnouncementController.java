@@ -18,7 +18,7 @@ public class AnnouncementController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public AnnouncementResponses findAllAnnouncement() {
-        return announcementService.findAllAnnouncement();
+    public AnnouncementResponses getAllAnnouncement() {
+        return announcementService.getAllAnnouncement();
     }
 }

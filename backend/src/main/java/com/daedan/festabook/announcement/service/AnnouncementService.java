@@ -11,7 +11,7 @@ public class AnnouncementService {
 
     private final AnnouncementJpaRepository announcementJpaRepository;
 
-    public AnnouncementResponses findAllAnnouncement() {
+    public AnnouncementResponses getAllAnnouncement() {
         return AnnouncementResponses.from(announcementJpaRepository.findAll());
     }
 }

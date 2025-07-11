@@ -36,7 +36,7 @@ class AnnouncementServiceTest {
             AnnouncementResponses expected = new AnnouncementResponses(List.of());
 
             // when
-            AnnouncementResponses result = announcementService.findAllAnnouncement();
+            AnnouncementResponses result = announcementService.getAllAnnouncement();
 
             // then
             assertThat(result).isEqualTo(expected);
