@@ -32,7 +32,7 @@ jobs:
 
     # 러너에서 gradlew 빌드
     - name: Build with Gradle
-      run: ./gradlew bootJar
+      run: ./gradlew clean build
       working-directory: ./backend # 우리 레포지토리 구조가 backend 디렉토리 안에 gradlew가 존재함.
 
     # 러너에서 빌드 완료된 jar 파일 이름과 경로를 변수로 저장하기
