@@ -32,7 +32,6 @@ class AnnouncementServiceTest {
         @Test
         void 성공() {
             // given
-
             Announcement announcement1 = new Announcement("title", "content");
             Announcement announcement2 = new Announcement("title", "content");
             Announcement announcement3 = new Announcement("title", "content");
@@ -52,7 +51,8 @@ class AnnouncementServiceTest {
         @Test
         void 성공_빈컬렉션() {
             // given
-            given(announcementJpaRepository.findAll()).willReturn(List.of());
+            given(announcementJpaRepository.findAll())
+                    .willReturn(List.of());
 
             AnnouncementResponses expected = new AnnouncementResponses(List.of());
 
