@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SwaggerConfig {
 
-    private static final List<String[]> API_GROUP = List.of(
+    private static final List<String[]> API_GROUPS = List.of(
             new String[]{"일정 API", "/schedules/**"},
             new String[]{"플레이스 API", "/places/**"},
             new String[]{"공지 API", "/announcements/**"}
@@ -28,8 +28,8 @@ public class SwaggerConfig {
     }
 
     @Bean
-    public List<GroupedOpenApi> apis() {
-        return API_GROUP.stream()
+    public List<GroupedOpenApi> setupApiGroups() {
+        return API_GROUPS.stream()
                 .map(group -> GroupedOpenApi.builder()
                         .group(group[0])
                         .pathsToMatch(group[1])
