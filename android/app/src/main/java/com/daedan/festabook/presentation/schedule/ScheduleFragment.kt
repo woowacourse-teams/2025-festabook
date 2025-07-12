@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.schedule
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -10,6 +11,7 @@ import com.google.android.material.tabs.TabLayoutMediator
 
 class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule) {
     private lateinit var adapter: SchedulePagerAdapter
+    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
     private val tabTitles =
         listOf(
             "5/20(화)",

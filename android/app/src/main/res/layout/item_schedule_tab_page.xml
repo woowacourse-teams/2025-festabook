@@ -19,6 +19,7 @@
             android:id="@+id/cl_schedule_info_card"
             android:layout_width="266dp"
             android:layout_height="112dp"
+            android:layout_marginVertical="10dp"
             android:background="@drawable/div_border_1dp"
             android:paddingHorizontal="16dp"
             android:paddingVertical="23dp"
@@ -115,11 +116,12 @@
 
         <View
             android:layout_width="1dp"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
             android:background="@color/gray300"
-            android:orientation="vertical"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/cl_schedule_info_card"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
