@@ -21,6 +21,18 @@ class ScheduleViewModel(
         loadSchedule()
     }
 
+    fun updateBookmark(scheduleEventId: Long) {
+        updateUiState { scheduleEvents ->
+            scheduleEvents.map { scheduleEvent ->
+                if (scheduleEvent.id == scheduleEventId) {
+                    scheduleEvent.copy(isBookmarked = !scheduleEvent.isBookmarked)
+                } else {
+                    scheduleEvent
+                }
+            }
+        }
+    }
+
     private fun loadSchedule() {
         val result = scheduleRepository.dummyScheduleEvents
         _scheduleUiState.value = ScheduleUiState.Success(result)

@@ -9,7 +9,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
 
 class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
-    private val adapter by lazy { ScheduleAdapter() }
+    private lateinit var adapter: ScheduleAdapter
     private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
 
     override fun onViewCreated(
@@ -17,6 +17,10 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        adapter =
+            ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
+                viewModel.updateBookmark(scheduleEventId)
+            })
         binding.rvScheduleEvent.adapter = adapter
         binding.lifecycleOwner = viewLifecycleOwner
         setupObservers()

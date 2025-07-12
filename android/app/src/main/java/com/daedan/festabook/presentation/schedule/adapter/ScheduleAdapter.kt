@@ -4,9 +4,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.domain.model.ScheduleEvent
+import com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener
 
-class ScheduleAdapter :
-    ListAdapter<ScheduleEvent, ScheduleItemViewHolder>(
+class ScheduleAdapter(
+    private val onBookmarkCheckedListener: OnBookmarkCheckedListener,
+) : ListAdapter<ScheduleEvent, ScheduleItemViewHolder>(
         object :
             DiffUtil.ItemCallback<ScheduleEvent>() {
             override fun areItemsTheSame(
@@ -23,7 +25,7 @@ class ScheduleAdapter :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): ScheduleItemViewHolder = ScheduleItemViewHolder.from(parent)
+    ): ScheduleItemViewHolder = ScheduleItemViewHolder.from(parent, onBookmarkCheckedListener)
 
     override fun onBindViewHolder(
         holder: ScheduleItemViewHolder,
