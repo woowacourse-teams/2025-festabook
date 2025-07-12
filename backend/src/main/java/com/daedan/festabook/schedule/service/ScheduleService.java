@@ -1,9 +1,9 @@
 package com.daedan.festabook.schedule.service;
 
-import com.daedan.festabook.schedule.domain.EventDay;
-import com.daedan.festabook.schedule.dto.EventDayResponses;
+import com.daedan.festabook.schedule.domain.EventDate;
+import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
-import com.daedan.festabook.schedule.infrastructure.EventDayJpaRepository;
+import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -13,17 +13,17 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ScheduleService {
 
-    private final EventDayJpaRepository eventDayJpaRepository;
+    private final EventDateJpaRepository eventDateJpaRepository;
     private final EventJpaRepository eventJpaRepository;
 
-    public EventDayResponses getAllEventDay() {
-        List<EventDay> eventDays = eventDayJpaRepository.findAll().stream()
+    public EventDateResponses getAllEventDate() {
+        List<EventDate> eventDates = eventDateJpaRepository.findAll().stream()
                 .sorted()
                 .toList();
-        return EventDayResponses.from(eventDays);
+        return EventDateResponses.from(eventDates);
     }
 
-    public EventResponses getAllEventByEventDayId(Long eventDayId) {
-        return EventResponses.from(eventJpaRepository.findAllByEventDayId(eventDayId));
+    public EventResponses getAllEventByEventDateId(Long eventDateId) {
+        return EventResponses.from(eventJpaRepository.findAllByEventDateId(eventDateId));
     }
 }

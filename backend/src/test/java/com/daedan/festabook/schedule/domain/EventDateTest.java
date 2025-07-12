@@ -10,7 +10,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class EventDayTest {
+class EventDateTest {
 
     @Nested
     class compareTo {
@@ -23,8 +23,8 @@ class EventDayTest {
         })
         void 성공(LocalDate baseDate, LocalDate compareDate, int expected) {
             // given
-            EventDay baseEvent = EventDayFixture.create(baseDate);
-            EventDay compareEvent = EventDayFixture.create(compareDate);
+            EventDate baseEvent = EventDateFixture.create(baseDate);
+            EventDate compareEvent = EventDateFixture.create(compareDate);
 
             // when
             int result = baseEvent.compareTo(compareEvent);

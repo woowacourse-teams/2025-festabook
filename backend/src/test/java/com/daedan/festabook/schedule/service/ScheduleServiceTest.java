@@ -5,14 +5,14 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.schedule.domain.Event;
-import com.daedan.festabook.schedule.domain.EventDay;
-import com.daedan.festabook.schedule.domain.EventDayFixture;
+import com.daedan.festabook.schedule.domain.EventDate;
+import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
-import com.daedan.festabook.schedule.dto.EventDayResponse;
-import com.daedan.festabook.schedule.dto.EventDayResponses;
+import com.daedan.festabook.schedule.dto.EventDateResponse;
+import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
-import com.daedan.festabook.schedule.infrastructure.EventDayJpaRepository;
+import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
 import java.time.LocalDate;
 import java.util.List;
@@ -30,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class ScheduleServiceTest {
 
     @Mock
-    private EventDayJpaRepository eventDayJpaRepository;
+    private EventDateJpaRepository eventDateJpaRepository;
 
     @Mock
     private EventJpaRepository eventJpaRepository;
@@ -39,73 +39,73 @@ class ScheduleServiceTest {
     private ScheduleService scheduleService;
 
     @Nested
-    class getAllEventDay {
+    class getAllEventDate {
 
         @Test
         void 성공() {
             // given
-            EventDay eventDay1 = EventDayFixture.create(LocalDate.of(2025, 10, 26));
-            EventDay eventDay2 = EventDayFixture.create(LocalDate.of(2025, 10, 27));
+            EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
+            EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
 
-            List<EventDay> eventDays = List.of(eventDay1, eventDay2);
+            List<EventDate> eventDates = List.of(eventDate1, eventDate2);
 
-            given(eventDayJpaRepository.findAll())
-                    .willReturn(eventDays);
+            given(eventDateJpaRepository.findAll())
+                    .willReturn(eventDates);
 
             LocalDate expected = LocalDate.of(2025, 10, 26);
 
             // when
-            EventDayResponses result = scheduleService.getAllEventDay();
+            EventDateResponses result = scheduleService.getAllEventDate();
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.eventDays()).hasSize(2);
-                s.assertThat(result.eventDays().getFirst().date()).isEqualTo(expected);
+                s.assertThat(result.eventDate()).hasSize(2);
+                s.assertThat(result.eventDate().getFirst().date()).isEqualTo(expected);
             });
         }
 
         @Test
         void 성공_날짜_오름차순_정렬() {
             // given
-            EventDay eventDay1 = EventDayFixture.create(LocalDate.of(2025, 10, 27));
-            EventDay eventDay2 = EventDayFixture.create(LocalDate.of(2025, 10, 26));
-            EventDay eventDay3 = EventDayFixture.create(LocalDate.of(2025, 10, 25));
+            EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
+            EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
+            EventDate eventDate3 = EventDateFixture.create(LocalDate.of(2025, 10, 25));
 
-            List<EventDay> eventDays = List.of(eventDay1, eventDay2, eventDay3);
+            List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3);
 
-            given(eventDayJpaRepository.findAll())
-                    .willReturn(eventDays);
+            given(eventDateJpaRepository.findAll())
+                    .willReturn(eventDates);
 
             // when
-            EventDayResponses result = scheduleService.getAllEventDay();
+            EventDateResponses result = scheduleService.getAllEventDate();
 
             // then
-            assertThat(result.eventDays())
-                    .extracting(EventDayResponse::date)
+            assertThat(result.eventDate())
+                    .extracting(EventDateResponse::date)
                     .containsExactly(
-                            eventDay3.getDate(),
-                            eventDay2.getDate(),
-                            eventDay1.getDate()
+                            eventDate3.getDate(),
+                            eventDate2.getDate(),
+                            eventDate1.getDate()
                     );
         }
     }
 
     @Nested
-    class getAllEventByEventDayId {
+    class getAllEventByEventDateId {
 
         @Test
         void 성공() {
             // given
-            Long eventDayId = 1L;
+            Long eventDateId = 1L;
 
             Event event1 = EventFixture.create("무대 공연", EventStatus.COMPLETED);
             Event event2 = EventFixture.create("부스 운영", EventStatus.UPCOMING);
 
-            given(eventJpaRepository.findAllByEventDayId(eventDayId))
+            given(eventJpaRepository.findAllByEventDateId(eventDateId))
                     .willReturn(List.of(event1, event2));
 
             // when
-            EventResponses result = scheduleService.getAllEventByEventDayId(eventDayId);
+            EventResponses result = scheduleService.getAllEventByEventDateId(eventDateId);
 
             // then
             assertSoftly(s -> {
