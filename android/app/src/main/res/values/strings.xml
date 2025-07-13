@@ -5,4 +5,6 @@
     <string name="menu_map_title">지도</string>
     <string name="menu_news_title">소식</string>
     <string name="menu_setting_title">설정</string>
+    <string name="content_description_booth_image">부스 이미지</string>
+    <string name="place_list_title">한 눈에 보기</string>
 </resources>
