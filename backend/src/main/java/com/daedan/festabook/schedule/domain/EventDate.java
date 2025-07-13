@@ -20,11 +20,16 @@ public class EventDate implements Comparable<EventDate> {
     private Long id;
 
     @Column(nullable = false)
+    private Long organizationId;
+
+    @Column(nullable = false)
     private LocalDate date;
 
     public EventDate(
+            Long organizationId,
             LocalDate date
     ) {
+        this.organizationId = organizationId;
         this.date = date;
     }
 
