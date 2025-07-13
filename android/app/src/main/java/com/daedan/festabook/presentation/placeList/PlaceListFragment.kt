@@ -6,12 +6,15 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
+import com.daedan.festabook.presentation.placeList.uimodel.PlaceListEvent
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
         R.layout.fragment_place_list,
-    ) {
+    ),
+    PlaceListHandler {
     private val viewModel by viewModels<PlaceListViewModel>()
 
     override fun onViewCreated(
@@ -20,7 +23,7 @@ class PlaceListFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvPlaces.adapter =
-            PlaceListAdapter().apply {
+            PlaceListAdapter(this).apply {
                 submitList(DummyPlace.placeList)
             }
 
@@ -32,8 +35,8 @@ class PlaceListFragment :
     }
 
     private fun setUpObservers() {
-        viewModel.event.observe(viewLifecycleOwner) {
-            when (it) {
+        viewModel.event.observe(this) { event ->
+            when (event) {
                 PlaceListEvent.PLACE_CLICKED -> startPlaceDetailFragment()
                 PlaceListEvent.RUNNING -> Unit
             }

@@ -21,6 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="232dp"
                 android:background="@color/gray300"
+                android:src="@{place.imageUrl}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -54,6 +55,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textColor="@color/gray900"
+                android:text="@{}"
                 app:layout_constraintStart_toStartOf="@id/cv_place_category"
                 app:layout_constraintTop_toBottomOf="@id/cv_place_category"
                 android:textAppearance="@style/PretendardBold20"
