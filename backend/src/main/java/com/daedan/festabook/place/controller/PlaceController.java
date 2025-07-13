@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.controller;
 
+import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponses;
 import com.daedan.festabook.place.dto.PlaceImageResponses;
 import com.daedan.festabook.place.dto.PlaceResponses;
@@ -7,6 +8,7 @@ import com.daedan.festabook.place.service.PlaceAnnouncementService;
 import com.daedan.festabook.place.service.PlaceImageService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -34,8 +36,10 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponses getAllPlace() {
-        return placeService.getAllPlace();
+    public PlaceResponses getAllPlaceByOrganizationId(
+            @Parameter(hidden = true) @OrganizationId Long organizationId
+    ) {
+        return placeService.getAllPlaceByOrganizationId(organizationId);
     }
 
     @GetMapping("/{placeId}/announcements")

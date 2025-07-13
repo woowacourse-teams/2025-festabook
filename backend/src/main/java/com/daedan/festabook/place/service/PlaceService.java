@@ -11,7 +11,7 @@ public class PlaceService {
 
     private final PlaceJpaRepository placeJpaRepository;
 
-    public PlaceResponses getAllPlace() {
-        return PlaceResponses.from(placeJpaRepository.findAll());
+    public PlaceResponses getAllPlaceByOrganizationId(Long organizationId) {
+        return PlaceResponses.from(placeJpaRepository.findAllByOrganizationId(organizationId));
     }
 }
