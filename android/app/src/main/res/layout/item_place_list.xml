@@ -5,7 +5,7 @@
 
         <variable
             name="place"
-            type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
+            type="com.daedan.festabook.presentation.placeList.Place" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -52,6 +52,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gray900"
+                android:contentDescription="@string/content_description_booth_image"
                 android:scaleType="centerCrop" />
 
             <TextView
