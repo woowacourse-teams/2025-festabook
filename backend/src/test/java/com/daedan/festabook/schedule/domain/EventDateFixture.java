@@ -2,20 +2,20 @@ package com.daedan.festabook.schedule.domain;
 
 import java.time.LocalDate;
 
-public class EventDayFixture {
+public class EventDateFixture {
 
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 5, 20);
 
-    public static EventDay create() {
-        return new EventDay(
+    public static EventDate create() {
+        return new EventDate(
                 DEFAULT_DATE
         );
     }
 
-    public static EventDay create(
+    public static EventDate create(
             LocalDate date
     ) {
-        return new EventDay(
+        return new EventDate(
                 date
         );
     }

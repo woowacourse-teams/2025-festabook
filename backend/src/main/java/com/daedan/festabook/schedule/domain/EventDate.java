@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EventDay implements Comparable<EventDay> {
+public class EventDate implements Comparable<EventDate> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,14 +22,14 @@ public class EventDay implements Comparable<EventDay> {
     @Column(nullable = false)
     private LocalDate date;
 
-    public EventDay(
+    public EventDate(
             LocalDate date
     ) {
         this.date = date;
     }
 
     @Override
-    public int compareTo(EventDay otherEventDay) {
-        return this.date.compareTo(otherEventDay.date);
+    public int compareTo(EventDate otherEventDate) {
+        return this.date.compareTo(otherEventDate.date);
     }
 }

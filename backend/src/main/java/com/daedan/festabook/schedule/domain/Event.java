@@ -41,7 +41,7 @@ public class Event {
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private EventDay eventDay;
+    private EventDate eventDate;
 
     public Event(
             EventStatus status,
@@ -49,13 +49,13 @@ public class Event {
             LocalTime endTime,
             String title,
             String location,
-            EventDay eventDay
+            EventDate eventDate
     ) {
         this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;
         this.title = title;
         this.location = location;
-        this.eventDay = eventDay;
+        this.eventDate = eventDate;
     }
 }

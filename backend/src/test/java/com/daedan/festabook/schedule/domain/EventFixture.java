@@ -18,7 +18,7 @@ public class EventFixture {
                 DEFAULT_END_TIME,
                 title,
                 DEFAULT_LOCATION,
-                EventDayFixture.create()
+                EventDateFixture.create()
         );
     }
 }
