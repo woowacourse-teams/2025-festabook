@@ -39,23 +39,24 @@ class ScheduleServiceTest {
     private ScheduleService scheduleService;
 
     @Nested
-    class getAllEventDate {
+    class getAllEventDateByOrganizationId {
 
         @Test
         void 성공() {
             // given
             EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
             EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
+            Long organizationId = 1L;
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2);
 
-            given(eventDateJpaRepository.findAll())
+            given(eventDateJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(eventDates);
 
             LocalDate expected = LocalDate.of(2025, 10, 26);
 
             // when
-            EventDateResponses result = scheduleService.getAllEventDate();
+            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(organizationId);
 
             // then
             assertSoftly(s -> {
@@ -70,14 +71,15 @@ class ScheduleServiceTest {
             EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
             EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
             EventDate eventDate3 = EventDateFixture.create(LocalDate.of(2025, 10, 25));
+            Long organizationId = 1L;
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3);
 
-            given(eventDateJpaRepository.findAll())
+            given(eventDateJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(eventDates);
 
             // when
-            EventDateResponses result = scheduleService.getAllEventDate();
+            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(organizationId);
 
             // then
             assertThat(result.eventDate())

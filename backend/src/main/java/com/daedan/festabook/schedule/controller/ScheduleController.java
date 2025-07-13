@@ -1,5 +1,6 @@
 package com.daedan.festabook.schedule.controller;
 
+import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.service.ScheduleService;
@@ -27,17 +28,19 @@ public class ScheduleController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "모든 일정 날짜 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
-    public EventDateResponses getAllEventDate() {
-        return scheduleService.getAllEventDate();
+    public EventDateResponses getAllEventDateByOrganizationId(
+            @OrganizationId Long organizationId
+    ) {
+        return scheduleService.getAllEventDateByOrganizationId(organizationId);
     }
 
     @GetMapping("/{eventDateId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 일정의 모든 이벤트 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
     public EventResponses getAllEventByEventDateId(
             @PathVariable Long eventDateId
