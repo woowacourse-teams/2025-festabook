@@ -2,7 +2,7 @@ package com.daedan.festabook.global.config;
 
 import static org.hamcrest.Matchers.equalTo;
 
-import com.daedan.festabook.organization.infrastructure.OrganizationId;
+import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.daedan.festabook.organization.infrastructure;
+package com.daedan.festabook.global.argumentresolver;
 
 import org.springframework.core.MethodParameter;
 import org.springframework.stereotype.Component;

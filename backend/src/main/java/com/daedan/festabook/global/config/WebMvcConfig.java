@@ -1,6 +1,6 @@
 package com.daedan.festabook.global.config;
 
-import com.daedan.festabook.organization.infrastructure.OrganizationIdArgumentResolver;
+import com.daedan.festabook.global.argumentresolver.OrganizationIdArgumentResolver;
 import java.util.List;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
