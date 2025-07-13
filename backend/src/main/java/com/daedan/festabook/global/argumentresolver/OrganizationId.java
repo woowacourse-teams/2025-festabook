@@ -1,4 +1,4 @@
-package com.daedan.festabook.organization.infrastructure;
+package com.daedan.festabook.global.argumentresolver;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
