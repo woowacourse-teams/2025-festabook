@@ -1,11 +1,15 @@
 package com.daedan.festabook.announcement.domain;
 
+import com.daedan.festabook.organization.domain.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,6 +27,10 @@ public class QuestionAnswer {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(nullable = false)
+    private Organization organization;
+
     @Column(nullable = false)
     private String title;
 
@@ -37,10 +45,12 @@ public class QuestionAnswer {
     private LocalDateTime createdAt;
 
     public QuestionAnswer(
+            Organization organization,
             String title,
             String question,
             String answer
     ) {
+        this.organization = organization;
         this.title = title;
         this.question = question;
         this.answer = answer;
