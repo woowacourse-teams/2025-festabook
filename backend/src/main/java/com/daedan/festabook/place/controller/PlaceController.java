@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,13 +30,12 @@ public class PlaceController {
     private final PlaceImageService placeImageService;
 
     @GetMapping
-    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "모든 플레이스 조회")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "200"),
     })
-    public PlaceResponses getAllPlace() {
-        return placeService.getAllPlace();
+    public ResponseEntity<PlaceResponses> getAllPlace() {
+        return ResponseEntity.ok(placeService.getAllPlace());
     }
 
     @GetMapping("/{placeId}/announcements")

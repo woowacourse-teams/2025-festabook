@@ -1,5 +1,7 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.orgnaization.domain.OrganizationFixture;
 import java.time.LocalTime;
 
 public class PlaceFixture {
@@ -14,6 +16,7 @@ public class PlaceFixture {
 
     public static Place create() {
         return new Place(
+                OrganizationFixture.create(),
                 DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION,
                 DEFAULT_CATEGORY,
@@ -25,6 +28,7 @@ public class PlaceFixture {
     }
 
     public static Place create(
+            Organization organization,
             String title,
             String description,
             PlaceCategory category,
@@ -33,6 +37,6 @@ public class PlaceFixture {
             LocalTime startTime,
             LocalTime endTime
     ) {
-        return new Place(title, description, category, location, host, startTime, endTime);
+        return new Place(organization, title, description, category, location, host, startTime, endTime);
     }
 }

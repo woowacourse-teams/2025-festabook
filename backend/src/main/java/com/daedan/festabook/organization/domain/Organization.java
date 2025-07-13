@@ -20,4 +20,10 @@ public class Organization {
 
     @Column(nullable = false)
     private String name;
+
+    public Organization(
+            String name
+    ) {
+        this.name = name;
+    }
 }
