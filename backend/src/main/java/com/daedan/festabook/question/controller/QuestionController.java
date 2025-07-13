@@ -24,7 +24,7 @@ public class QuestionController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "모든 공지 조회")
+    @Operation(summary = "모든 질문 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
