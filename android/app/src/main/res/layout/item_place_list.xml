@@ -45,11 +45,10 @@
             app:layout_constraintTop_toTopOf="@id/cv_place_image"
             app:strokeWidth="0dp">
 
-            <ImageView
+            <View
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:background="@color/gray900"
-                android:contentDescription="@string/content_description_booth_image"
                 android:scaleType="centerCrop" />
 
             <TextView
