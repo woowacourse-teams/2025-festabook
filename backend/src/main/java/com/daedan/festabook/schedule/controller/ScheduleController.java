@@ -1,6 +1,6 @@
 package com.daedan.festabook.schedule.controller;
 
-import com.daedan.festabook.schedule.dto.EventDayResponses;
+import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,19 +29,19 @@ public class ScheduleController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public EventDayResponses getEventDays() {
-        return scheduleService.getAllEventDay();
+    public EventDateResponses getAllEventDate() {
+        return scheduleService.getAllEventDate();
     }
 
-    @GetMapping("/{eventDayId}")
+    @GetMapping("/{eventDateId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 일정의 모든 이벤트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public EventResponses getEvents(
-            @PathVariable Long eventDayId
+    public EventResponses getAllEventByEventDateId(
+            @PathVariable Long eventDateId
     ) {
-        return scheduleService.getAllEventByEventDayId(eventDayId);
+        return scheduleService.getAllEventByEventDateId(eventDateId);
     }
 }
