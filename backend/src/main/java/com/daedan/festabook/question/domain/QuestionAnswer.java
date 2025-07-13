@@ -1,4 +1,4 @@
-package com.daedan.festabook.announcement.domain;
+package com.daedan.festabook.question.domain;
 
 import com.daedan.festabook.organization.domain.Organization;
 import jakarta.persistence.Column;
