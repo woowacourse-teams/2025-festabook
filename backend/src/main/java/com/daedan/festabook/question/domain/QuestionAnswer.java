@@ -44,15 +44,26 @@ public class QuestionAnswer {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    protected QuestionAnswer(
+            Organization organization,
+            String title,
+            String question,
+            String answer,
+            LocalDateTime createdAt
+    ) {
+        this.organization = organization;
+        this.title = title;
+        this.question = question;
+        this.answer = answer;
+        this.createdAt = createdAt;
+    }
+
     public QuestionAnswer(
             Organization organization,
             String title,
             String question,
             String answer
     ) {
-        this.organization = organization;
-        this.title = title;
-        this.question = question;
-        this.answer = answer;
+        this(organization, title, question, answer, null);
     }
 }

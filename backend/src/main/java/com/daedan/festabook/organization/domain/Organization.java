@@ -20,4 +20,16 @@ public class Organization {
 
     @Column(nullable = false)
     private String name;
+
+    protected Organization(
+            Long id,
+            String name
+    ) {
+        this.id = id;
+        this.name = name;
+    }
+
+    public Organization(String name) {
+        this(null, name);
+    }
 }
