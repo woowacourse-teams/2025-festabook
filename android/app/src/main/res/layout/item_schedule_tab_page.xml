@@ -20,123 +20,118 @@
         android:layout_height="wrap_content">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_schedule_info_card"
-            android:layout_width="266dp"
+            android:id="@+id/cl_schedule_event_card"
+            android:layout_width="278dp"
             android:layout_height="112dp"
             android:layout_marginTop="20dp"
-            android:background="@drawable/div_border_1dp"
             android:paddingHorizontal="16dp"
-            android:paddingVertical="23dp"
+            android:paddingVertical="20dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
-                android:id="@+id/tv_schedule_info_title"
+                android:id="@+id/tv_schedule_event_title"
                 style="@style/PretendardMedium18"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@{scheduleEvent.title}"
-                app:layout_constraintStart_toStartOf="@id/cl_schedule_info_card"
-                app:layout_constraintTop_toTopOf="@id/cl_schedule_info_card"
+                app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card"
+                app:layout_constraintTop_toTopOf="@id/cl_schedule_event_card"
                 tools:text="동아리 버스킹 공연" />
 
-            <TextView
-                android:id="@+id/tv_schedule_info_description"
-                style="@style/PretendardRegular12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{scheduleEvent.title}"
-                app:layout_constraintStart_toStartOf="@id/cl_schedule_info_card"
-                app:layout_constraintTop_toBottomOf="@id/tv_schedule_info_title"
-                tools:text="동아리 버스킹 공연" />
 
             <TextView
-                android:id="@+id/tv_schedule_info_status"
+                android:id="@+id/tv_schedule_event_status"
                 style="@style/PretendardRegular12"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="5dp"
-                android:text="@{scheduleEvent.status}"
-                android:textAlignment="center"
-                app:layout_constraintEnd_toEndOf="@id/cl_schedule_info_card"
-                app:layout_constraintTop_toTopOf="@id/cl_schedule_info_card"
-                tools:text="진행 중" />
+                android:layout_width="48dp"
+                android:layout_height="24dp"
+                android:layout_marginEnd="4dp"
+                android:gravity="center"
+                app:layout_constraintEnd_toEndOf="@id/cl_schedule_event_card"
+                app:layout_constraintTop_toTopOf="@id/cl_schedule_event_card"
+                tools:text="진행중" />
 
             <ImageView
-                android:id="@+id/iv_schedule_info_location"
+                android:id="@+id/iv_schedule_event_location"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:contentDescription="@string/schedule_location"
                 android:src="@drawable/ic_location"
-                app:layout_constraintBottom_toBottomOf="@+id/cl_schedule_info_card"
-                app:layout_constraintEnd_toStartOf="@id/tv_schedule_info_location"
-                app:layout_constraintStart_toStartOf="@id/cl_schedule_info_card" />
+                app:layout_constraintBottom_toBottomOf="@+id/cl_schedule_event_card"
+                app:layout_constraintEnd_toStartOf="@id/tv_schedule_event_location"
+                app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card" />
 
             <TextView
-                android:id="@+id/tv_schedule_info_location"
+                android:id="@+id/tv_schedule_event_location"
                 style="@style/PretendardRegular12"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="12dp"
                 android:text="@{scheduleEvent.location}"
-                app:layout_constraintBottom_toBottomOf="@id/iv_schedule_info_location"
-                app:layout_constraintStart_toEndOf="@id/iv_schedule_info_location"
+                app:layout_constraintBottom_toBottomOf="@id/iv_schedule_event_location"
+                app:layout_constraintStart_toEndOf="@id/iv_schedule_event_location"
                 tools:text="운동장" />
 
             <ImageView
-                android:id="@+id/iv_schedule_info_clock"
+                android:id="@+id/iv_schedule_event_clock"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
                 android:contentDescription="@string/schedule_time"
                 android:src="@drawable/ic_clock"
-                app:layout_constraintBottom_toBottomOf="@id/cl_schedule_info_card"
-                app:layout_constraintStart_toEndOf="@id/tv_schedule_info_location" />
+                app:layout_constraintBottom_toTopOf="@id/iv_schedule_event_location"
+                app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card"
+                app:layout_constraintTop_toBottomOf="@id/tv_schedule_event_title" />
 
             <TextView
-                android:id="@+id/schedule_info_time"
+                android:id="@+id/tv_schedule_event_time"
                 style="@style/PretendardRegular12"
                 endTime="@{scheduleEvent.endTime}"
                 startTime="@{scheduleEvent.startTime}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
-                app:layout_constraintBottom_toBottomOf="@id/cl_schedule_info_card"
-                app:layout_constraintStart_toEndOf="@id/iv_schedule_info_clock"
+                app:layout_constraintBottom_toTopOf="@id/iv_schedule_event_location"
+                app:layout_constraintStart_toEndOf="@id/iv_schedule_event_clock"
+                app:layout_constraintTop_toBottomOf="@id/tv_schedule_event_title"
                 tools:text="09:00 ~ 18:00" />
 
             <ImageView
-                android:id="@+id/schedule_info_book_mark"
+                android:id="@+id/iv_schedule_event_book_mark"
                 isBookmarked="@{scheduleEvent.isBookmarked}"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:contentDescription="@string/all_book_mark"
                 android:onClick="@{() -> onBookmarkCheckedListener.onBookmarkChecked(scheduleEvent.id)}"
                 android:src="@drawable/ic_bookmark"
-                app:layout_constraintBottom_toBottomOf="@id/cl_schedule_info_card"
-                app:layout_constraintEnd_toEndOf="@id/cl_schedule_info_card" />
+                app:layout_constraintBottom_toBottomOf="@id/cl_schedule_event_card"
+                app:layout_constraintEnd_toEndOf="@id/cl_schedule_event_card" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <View
+            android:id="@+id/view_schedule_event_time_line"
             android:layout_width="1dp"
             android:layout_height="0dp"
+            android:layout_marginEnd="12dp"
             android:background="@color/gray300"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@id/cl_schedule_info_card"
+            app:layout_constraintEnd_toStartOf="@id/cl_schedule_event_card"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <ImageView
+            android:id="@+id/iv_schedule_event_time_line_circle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
             android:contentDescription="@string/schedule_circle"
-            android:src="@drawable/ic_circle"
+            android:elevation="11dp"
+            android:src="@drawable/ic_circle_gray300"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/cl_schedule_info_card"
+            app:layout_constraintEnd_toStartOf="@+id/cl_schedule_event_card"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
