@@ -9,8 +9,8 @@ public class EventFixture {
     private static final String DEFAULT_LOCATION = "location";
 
     public static Event create(
-            String title,
-            EventStatus status
+            EventStatus status,
+            String title
     ) {
         return new Event(
                 status,

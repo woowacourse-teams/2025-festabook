@@ -100,8 +100,8 @@ class ScheduleServiceTest {
             // given
             Long eventDateId = 1L;
 
-            Event event1 = EventFixture.create("무대 공연", EventStatus.COMPLETED);
-            Event event2 = EventFixture.create("부스 운영", EventStatus.UPCOMING);
+            Event event1 = EventFixture.create(EventStatus.COMPLETED, "무대 공연");
+            Event event2 = EventFixture.create(EventStatus.UPCOMING, "부스 운영");
 
             given(eventJpaRepository.findAllByEventDateId(eventDateId))
                     .willReturn(List.of(event1, event2));
