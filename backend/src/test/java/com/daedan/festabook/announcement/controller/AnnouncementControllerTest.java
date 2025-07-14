@@ -1,7 +1,7 @@
 package com.daedan.festabook.announcement.controller;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.daedan.festabook.announcement.domain.Announcement;
@@ -87,9 +87,11 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
-                    .body("id", hasItem(announcements.get(0).getId().intValue()))
-                    .body("id", hasItem(announcements.get(1).getId().intValue()))
-                    .body("id", hasItem(announcements.get(2).getId().intValue()));
+                    .body("id", containsInAnyOrder(
+                            announcements.get(0).getId().intValue(),
+                            announcements.get(1).getId().intValue(),
+                            announcements.get(2).getId().intValue())
+                    );
         }
 
         @Test
