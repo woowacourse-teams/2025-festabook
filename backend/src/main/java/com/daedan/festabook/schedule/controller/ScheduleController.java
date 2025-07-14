@@ -32,7 +32,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
     public EventDateResponses getAllEventDateByOrganizationId(
-            @OrganizationId Long organizationId
+            @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return scheduleService.getAllEventDateByOrganizationId(organizationId);
     }
@@ -44,7 +44,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
     public EventResponses getAllEventByEventDateId(
-            @Parameter(hidden = true) @PathVariable Long eventDateId
+            @PathVariable Long eventDateId
     ) {
         return scheduleService.getAllEventByEventDateId(eventDateId);
     }
