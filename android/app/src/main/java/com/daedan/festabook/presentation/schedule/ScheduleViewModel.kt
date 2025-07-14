@@ -7,8 +7,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.CreationExtras
 import com.daedan.festabook.FestaBookApp
-import com.daedan.festabook.domain.model.ScheduleEvent
 import com.daedan.festabook.domain.repository.ScheduleRepository
+import com.daedan.festabook.presentation.schedule.mapper.toUiModel
+import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository,
@@ -34,11 +35,11 @@ class ScheduleViewModel(
     }
 
     private fun loadSchedule() {
-        val result = scheduleRepository.dummyScheduleEvents
+        val result = scheduleRepository.dummyScheduleEvents.map { it.toUiModel() }
         _scheduleUiState.value = ScheduleUiState.Success(result)
     }
 
-    private fun updateUiState(onUpdate: (List<ScheduleEvent>) -> List<ScheduleEvent>) {
+    private fun updateUiState(onUpdate: (List<ScheduleEventUiModel>) -> List<ScheduleEventUiModel>) {
         val currentState = _scheduleUiState.value ?: return
         _scheduleUiState.value =
             when (currentState) {

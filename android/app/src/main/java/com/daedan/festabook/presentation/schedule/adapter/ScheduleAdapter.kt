@@ -3,22 +3,22 @@ package com.daedan.festabook.presentation.schedule.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.daedan.festabook.domain.model.ScheduleEvent
 import com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener
+import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 
 class ScheduleAdapter(
     private val onBookmarkCheckedListener: OnBookmarkCheckedListener,
-) : ListAdapter<ScheduleEvent, ScheduleItemViewHolder>(
+) : ListAdapter<ScheduleEventUiModel, ScheduleItemViewHolder>(
         object :
-            DiffUtil.ItemCallback<ScheduleEvent>() {
+            DiffUtil.ItemCallback<ScheduleEventUiModel>() {
             override fun areItemsTheSame(
-                oldItem: ScheduleEvent,
-                newItem: ScheduleEvent,
+                oldItem: ScheduleEventUiModel,
+                newItem: ScheduleEventUiModel,
             ): Boolean = oldItem.id == newItem.id
 
             override fun areContentsTheSame(
-                oldItem: ScheduleEvent,
-                newItem: ScheduleEvent,
+                oldItem: ScheduleEventUiModel,
+                newItem: ScheduleEventUiModel,
             ): Boolean = oldItem == newItem
         },
     ) {

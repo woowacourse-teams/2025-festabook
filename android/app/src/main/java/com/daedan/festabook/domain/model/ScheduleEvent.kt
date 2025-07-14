@@ -7,7 +7,5 @@ data class ScheduleEvent(
     val startTime: String,
     val endTime: String,
     val title: String,
-    val description: String,
     val location: String,
-    val isBookmarked: Boolean = true,
 )

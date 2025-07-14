@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.schedule.adapter
 
+import android.content.Context
 import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -7,23 +8,23 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemScheduleTabPageBinding
-import com.daedan.festabook.domain.model.ScheduleEvent
-import com.daedan.festabook.domain.model.ScheduleEventStatus
 import com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener
-import com.daedan.festabook.presentation.schedule.toKoreanString
-import com.daedan.festabook.presentation.schedule.toPx
+import com.daedan.festabook.presentation.schedule.mapper.toKoreanString
+import com.daedan.festabook.presentation.schedule.mapper.toPx
+import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
+import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
 
 class ScheduleItemViewHolder(
     private val binding: ItemScheduleTabPageBinding,
     private val onBookmarkCheckedListener: OnBookmarkCheckedListener,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: ScheduleEvent) {
+    fun bind(item: ScheduleEventUiModel) {
         binding.scheduleEvent = item
         binding.onBookmarkCheckedListener = onBookmarkCheckedListener
         setupEventViewByStatus(item.status)
     }
 
-    private fun setupEventViewByStatus(status: ScheduleEventStatus) {
+    private fun setupEventViewByStatus(status: ScheduleEventUiStatus) {
         val context = binding.root.context
         val gray050 = ContextCompat.getColor(context, R.color.gray050)
         val gray400 = ContextCompat.getColor(context, R.color.gray400)
@@ -32,17 +33,17 @@ class ScheduleItemViewHolder(
         val black400 = ContextCompat.getColor(context, R.color.black400)
 
         when (status) {
-            ScheduleEventStatus.COMPLETED -> {
+            ScheduleEventUiStatus.COMPLETED -> {
                 val borderColor = R.drawable.bg_stroke_gray400_radius_10dp
                 binding.clScheduleEventCard.setBackgroundResource(borderColor)
-
-                binding.tvScheduleEventStatus.text = status.toKoreanString(context)
-                binding.tvScheduleEventStatus.setTextColor(gray400)
-                binding.tvScheduleEventStatus.gravity = Gravity.END
-
-                binding.ivScheduleEventTimeLineCircle.setImageResource(R.drawable.ic_circle_gray300)
-
-                setupEventContentsColor(
+                setupScheduleEventStatusText(
+                    context = context,
+                    status = status,
+                    textColor = gray400,
+                    backgroundResId = null,
+                )
+                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_gray300)
+                setupScheduleEventContentsColor(
                     titleColor = gray400,
                     timeColor = gray400,
                     locationColor = gray400,
@@ -50,17 +51,17 @@ class ScheduleItemViewHolder(
                 )
             }
 
-            ScheduleEventStatus.ONGOING -> {
+            ScheduleEventUiStatus.ONGOING -> {
                 val borderColor = R.drawable.bg_stroke_blue400_radius_10dp
                 binding.clScheduleEventCard.setBackgroundResource(borderColor)
-
-                binding.tvScheduleEventStatus.text = status.toKoreanString(context)
-                binding.tvScheduleEventStatus.setTextColor(gray050)
-                binding.tvScheduleEventStatus.setBackgroundResource(R.drawable.bg_gray900_radius_6dp)
-
-                binding.ivScheduleEventTimeLineCircle.setImageResource(R.drawable.ic_circle_blue400)
-
-                setupEventContentsColor(
+                setupScheduleEventStatusText(
+                    context = context,
+                    status = status,
+                    textColor = gray050,
+                    backgroundResId = R.drawable.bg_gray900_radius_6dp,
+                )
+                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_blue400)
+                setupScheduleEventContentsColor(
                     titleColor = gray900,
                     timeColor = gray500,
                     locationColor = gray500,
@@ -68,32 +69,32 @@ class ScheduleItemViewHolder(
                 )
             }
 
-            ScheduleEventStatus.UPCOMING -> {
+            ScheduleEventUiStatus.UPCOMING -> {
                 val borderColor = R.drawable.bg_stroke_1dp_radius_10dp
                 binding.clScheduleEventCard.setBackgroundResource(borderColor)
-
-                binding.tvScheduleEventStatus.text = status.toKoreanString(context)
-                binding.tvScheduleEventStatus.setTextColor(gray900)
-                binding.tvScheduleEventStatus.setBackgroundResource(R.drawable.bg_stroke_gray900_radius_6dp)
-                binding.tvScheduleEventStatus.layoutParams =
-                    binding.tvScheduleEventStatus.layoutParams.apply {
-                        width = 36.toPx(context)
-                        height = 24.toPx(context)
-                    }
-
-                binding.ivScheduleEventTimeLineCircle.setImageResource(R.drawable.ic_circle_green400)
-
-                setupEventContentsColor(
+                setupScheduleEventStatusText(
+                    context = context,
+                    status = status,
+                    textColor = gray900,
+                    backgroundResId = R.drawable.bg_stroke_gray900_radius_6dp,
+                )
+                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_green400)
+                setupScheduleEventContentsColor(
                     titleColor = gray900,
                     timeColor = gray500,
                     locationColor = gray500,
                     bookmarkColor = black400,
                 )
+                binding.tvScheduleEventStatus.layoutParams =
+                    binding.tvScheduleEventStatus.layoutParams.apply {
+                        width = UPCOMING_TEXT_WIDTH.toPx(context)
+                        height = UPCOMING_TEXT_HEIGHT.toPx(context)
+                    }
             }
         }
     }
 
-    private fun setupEventContentsColor(
+    private fun setupScheduleEventContentsColor(
         titleColor: Int,
         timeColor: Int,
         locationColor: Int,
@@ -107,7 +108,26 @@ class ScheduleItemViewHolder(
         binding.ivScheduleEventBookMark.setColorFilter(bookmarkColor)
     }
 
+    private fun setupScheduleEventStatusText(
+        context: Context,
+        status: ScheduleEventUiStatus,
+        textColor: Int,
+        backgroundResId: Int?,
+    ) = with(binding.tvScheduleEventStatus) {
+        text = status.toKoreanString(context)
+        setTextColor(textColor)
+        gravity = if (status == ScheduleEventUiStatus.COMPLETED) Gravity.END else Gravity.CENTER
+        backgroundResId?.let { setBackgroundResource(it) }
+    }
+
+    private fun setupScheduleEventTimeLineCircleIcon(iconRes: Int) {
+        binding.ivScheduleEventTimeLineCircle.setImageResource(iconRes)
+    }
+
     companion object {
+        private const val UPCOMING_TEXT_WIDTH = 36
+        private const val UPCOMING_TEXT_HEIGHT = 24
+
         fun from(
             parent: ViewGroup,
             onBookmarkCheckedListener: OnBookmarkCheckedListener,

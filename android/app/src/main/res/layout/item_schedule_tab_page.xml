@@ -7,7 +7,7 @@
 
         <variable
             name="scheduleEvent"
-            type="com.daedan.festabook.domain.model.ScheduleEvent" />
+            type="com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel" />
 
         <variable
             name="onBookmarkCheckedListener"

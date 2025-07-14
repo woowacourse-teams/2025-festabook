@@ -1,12 +1,12 @@
 package com.daedan.festabook.presentation.schedule
 
-import com.daedan.festabook.domain.model.ScheduleEvent
+import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 
 sealed class ScheduleUiState {
     data object Loading : ScheduleUiState()
 
     data class Success(
-        val events: List<ScheduleEvent>,
+        val events: List<ScheduleEventUiModel>,
     ) : ScheduleUiState()
 
     data class Error(
