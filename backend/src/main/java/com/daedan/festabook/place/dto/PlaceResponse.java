@@ -7,7 +7,6 @@ import java.time.LocalTime;
 
 public record PlaceResponse(
         Long id,
-        Long organizationId,
         String title,
         String description,
         PlaceCategory category,
@@ -20,7 +19,6 @@ public record PlaceResponse(
     public static PlaceResponse from(Place place) {
         return new PlaceResponse(
                 place.getId(),
-                place.getOrganization().getId(),
                 place.getTitle(),
                 place.getDescription(),
                 place.getCategory(),
