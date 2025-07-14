@@ -1,7 +1,6 @@
 package com.daedan.festabook.announcement.controller;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
@@ -16,9 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
-import org.springframework.test.context.jdbc.Sql;
 
-@Sql(value = "classpath:/reset_auto_increment.sql")
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class AnnouncementControllerTest {
 
@@ -46,29 +43,28 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Long organizationId = 2L;
-
             Organization seoul = new Organization("서울대학교");
             Organization woowa = new Organization("우아한대학교");
 
-            Announcement announcement1 = new Announcement("서울대학교입니다.", "서울테스트", true, seoul);
-            Announcement announcement2 = new Announcement("우아한대학교입니다.", "우아한테스트", false, woowa);
+            Announcement seoulAnnouncement = new Announcement("서울대학교입니다.", "서울테스트", true, seoul);
+            Announcement woowaAnnouncement = new Announcement("우아한대학교입니다.", "우아한테스트", false, woowa);
 
             organizationJpaRepository.saveAll(List.of(seoul, woowa));
-            announcementJpaRepository.saveAll(List.of(announcement1, announcement2));
+            announcementJpaRepository.saveAll(List.of(seoulAnnouncement, woowaAnnouncement));
 
             // when & then
             RestAssured.given()
-                    .header(ORGANIZATION_HEADER_NAME, organizationId)
+                    .header(ORGANIZATION_HEADER_NAME, woowa.getId())
                     .when()
                     .get("/announcements")
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].title", equalTo(announcement2.getTitle()))
-                    .body("[0].content", equalTo(announcement2.getContent()))
-                    .body("[0].isPinned", equalTo(announcement2.isPinned()))
-                    .body("[0].createdAt", notNullValue());
+                    .body("[0].id", equalTo(woowaAnnouncement.getId().intValue()))
+                    .body("[0].title", equalTo(woowaAnnouncement.getTitle()))
+                    .body("[0].content", equalTo(woowaAnnouncement.getContent()))
+                    .body("[0].isPinned", equalTo(woowaAnnouncement.isPinned()))
+                    .body("[0].createdAt", equalTo(woowaAnnouncement.getCreatedAt().toString()));
         }
     }
 }
