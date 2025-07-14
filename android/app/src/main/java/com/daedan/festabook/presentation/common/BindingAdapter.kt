@@ -7,11 +7,7 @@ import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @BindingAdapter("formattedNoticeDateTime")
-fun TextView.setFormattedNoticeDateTime(isoDateTime: String?) {
-    if (isoDateTime.isNullOrEmpty()) {
-        text = ""
-        return
-    }
+fun TextView.setFormattedNoticeDateTime(isoDateTime: String) {
     val formattedDateTime =
         runCatching {
             val instant = Instant.parse(isoDateTime)
