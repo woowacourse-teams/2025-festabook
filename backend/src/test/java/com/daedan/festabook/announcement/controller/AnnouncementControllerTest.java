@@ -90,8 +90,8 @@ class AnnouncementControllerTest {
                     .body("id", containsInAnyOrder(
                             announcements.get(0).getId().intValue(),
                             announcements.get(1).getId().intValue(),
-                            announcements.get(2).getId().intValue())
-                    );
+                            announcements.get(2).getId().intValue()
+                    ));
         }
 
         @Test
