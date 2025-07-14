@@ -7,6 +7,7 @@ public record AnnouncementResponse(
         Long id,
         String title,
         String content,
+        boolean isPinned,
         LocalDateTime createdAt
 ) {
 
@@ -15,6 +16,7 @@ public record AnnouncementResponse(
                 announcement.getId(),
                 announcement.getTitle(),
                 announcement.getContent(),
+                announcement.isPinned(),
                 announcement.getCreatedAt()
         );
     }
