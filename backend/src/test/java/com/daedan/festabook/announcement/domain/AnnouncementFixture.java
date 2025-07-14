@@ -19,13 +19,4 @@ public class AnnouncementFixture {
     ) {
         return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, DEFAULT_IS_PINNED, organization);
     }
-
-    public static Announcement create(
-            String title,
-            String content,
-            boolean isPinned,
-            Organization organization
-    ) {
-        return new Announcement(title, content, isPinned, organization);
-    }
 }

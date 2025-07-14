@@ -47,29 +47,23 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Organization targetOrganization = organizationJpaRepository.save(OrganizationFixture.create("우아한대학교"));
-            Organization anotherOrganization = organizationJpaRepository.save(OrganizationFixture.create("서울대학교"));
+            Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
 
-            Announcement targetAnnouncement = AnnouncementFixture.create("우아한대학교입니다.", "우아한테스트", false,
-                    targetOrganization);
-            Announcement anotherAnnouncement = AnnouncementFixture.create("서울대학교입니다.", "서울테스트", true,
-                    anotherOrganization);
-
-            announcementJpaRepository.saveAll(List.of(anotherAnnouncement, targetAnnouncement));
+            Announcement announcement = announcementJpaRepository.save(AnnouncementFixture.create(organization));
 
             // when & then
             RestAssured.given()
-                    .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/announcements")
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].id", equalTo(targetAnnouncement.getId().intValue()))
-                    .body("[0].title", equalTo(targetAnnouncement.getTitle()))
-                    .body("[0].content", equalTo(targetAnnouncement.getContent()))
-                    .body("[0].isPinned", equalTo(targetAnnouncement.isPinned()))
-                    .body("[0].createdAt", equalTo(targetAnnouncement.getCreatedAt().toString()));
+                    .body("[0].id", equalTo(announcement.getId().intValue()))
+                    .body("[0].title", equalTo(announcement.getTitle()))
+                    .body("[0].content", equalTo(announcement.getContent()))
+                    .body("[0].isPinned", equalTo(announcement.isPinned()))
+                    .body("[0].createdAt", equalTo(announcement.getCreatedAt().toString()));
         }
 
         @Test
@@ -93,6 +87,27 @@ class AnnouncementControllerTest {
                     .body("id", hasItem(announcement1.getId().intValue()))
                     .body("id", hasItem(announcement2.getId().intValue()))
                     .body("id", hasItem(announcement3.getId().intValue()));
+        }
+
+        @Test
+        void 성공_서로_다른_조직() {
+            // given
+            Organization targetOrganization = organizationJpaRepository.save(OrganizationFixture.create());
+            Organization anotherOrganization = organizationJpaRepository.save(OrganizationFixture.create());
+
+            Announcement targetAnnouncement = AnnouncementFixture.create(targetOrganization);
+            Announcement anotherAnnouncement = AnnouncementFixture.create(anotherOrganization);
+            announcementJpaRepository.saveAll(List.of(anotherAnnouncement, targetAnnouncement));
+
+            // when & then
+            RestAssured.given()
+                    .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
+                    .when()
+                    .get("/announcements")
+                    .then()
+                    .statusCode(200)
+                    .body("size()", equalTo(1))
+                    .body("[0].id", equalTo(targetAnnouncement.getId().intValue()));
         }
     }
 }
