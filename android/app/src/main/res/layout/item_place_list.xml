@@ -3,7 +3,7 @@
     <data>
         <variable
             name="place"
-            type="com.daedan.festabook.presentation.placeList.Place" />
+            type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
@@ -59,7 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="@{place.category}"
+                app:category="@{place.category}"
                 tools:text="푸드트럭"
                 android:textColor="@color/gray050"
                 android:textAppearance="@style/PretendardRegular10" />
