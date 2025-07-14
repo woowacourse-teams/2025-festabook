@@ -16,8 +16,8 @@ public class ScheduleService {
     private final EventDateJpaRepository eventDateJpaRepository;
     private final EventJpaRepository eventJpaRepository;
 
-    public EventDateResponses getAllEventDate() {
-        List<EventDate> eventDates = eventDateJpaRepository.findAll().stream()
+    public EventDateResponses getAllEventDateByOrganizationId(Long organizationId) {
+        List<EventDate> eventDates = eventDateJpaRepository.findAllByOrganizationId(organizationId).stream()
                 .sorted()
                 .toList();
         return EventDateResponses.from(eventDates);
