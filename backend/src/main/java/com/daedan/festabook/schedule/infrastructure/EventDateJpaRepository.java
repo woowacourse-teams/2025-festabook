@@ -5,5 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventDateJpaRepository extends JpaRepository<EventDate, Long> {
+
     List<EventDate> findAllByOrganizationId(Long organizationId);
 }
