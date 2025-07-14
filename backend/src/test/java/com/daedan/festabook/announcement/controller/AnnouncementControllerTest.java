@@ -53,6 +53,8 @@ class AnnouncementControllerTest {
 
             Announcement announcement = announcementJpaRepository.save(AnnouncementFixture.create(organization));
 
+            int expectedSize = 1;
+
             // when & then
             RestAssured.given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
@@ -60,7 +62,7 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(1))
+                    .body("$", hasSize(expectedSize))
                     .body("[0].id", equalTo(announcement.getId().intValue()))
                     .body("[0].title", equalTo(announcement.getTitle()))
                     .body("[0].content", equalTo(announcement.getContent()))
@@ -100,6 +102,8 @@ class AnnouncementControllerTest {
             Announcement anotherAnnouncement = AnnouncementFixture.create(anotherOrganization);
             announcementJpaRepository.saveAll(List.of(anotherAnnouncement, targetAnnouncement));
 
+            int expectedSize = 1;
+
             // when & then
             RestAssured.given()
                     .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
@@ -107,7 +111,7 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(1))
+                    .body("$", hasSize(expectedSize))
                     .body("[0].id", equalTo(targetAnnouncement.getId().intValue()));
         }
     }
