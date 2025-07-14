@@ -78,6 +78,12 @@ public class QuestionAnswerFixture {
         );
     }
 
+    public static List<QuestionAnswer> createList(int size, Organization organization) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> create(organization))
+                .collect(Collectors.toList());
+    }
+
     public static List<QuestionAnswer> createList(int size) {
         return IntStream.range(0, size)
                 .mapToObj(i -> create())

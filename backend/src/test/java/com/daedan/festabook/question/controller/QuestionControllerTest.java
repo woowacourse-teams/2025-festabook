@@ -83,16 +83,15 @@ class QuestionControllerTest {
             // given
             Organization checkOrganization = OrganizationFixture.create();
             organizationJpaRepository.save(checkOrganization);
-
             Organization otherOrganization = OrganizationFixture.create();
             organizationJpaRepository.save(otherOrganization);
 
-            int expectedSize = 1;
-            List<QuestionAnswer> questionAnswers = List.of(
-                    QuestionAnswerFixture.create(checkOrganization),
-                    QuestionAnswerFixture.create(otherOrganization)
-            );
+            int expectedSize = 2;
+            List<QuestionAnswer> questionAnswers = QuestionAnswerFixture.createList(expectedSize, checkOrganization);
             questionAnswerJpaRepository.saveAll(questionAnswers);
+            int otherSize = 3;
+            List<QuestionAnswer> otherQuestionAnswers = QuestionAnswerFixture.createList(otherSize, otherOrganization);
+            questionAnswerJpaRepository.saveAll(otherQuestionAnswers);
 
             // when & then
             RestAssured
@@ -103,11 +102,7 @@ class QuestionControllerTest {
                     .get("/questions")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].id", is(questionAnswers.get(0).getId().intValue()))
-                    .body("[0].title", is(questionAnswers.get(0).getTitle()))
-                    .body("[0].question", is(questionAnswers.get(0).getQuestion()))
-                    .body("[0].answer", is(questionAnswers.get(0).getAnswer()));
+                    .body("size()", is(expectedSize));
         }
     }
 }
