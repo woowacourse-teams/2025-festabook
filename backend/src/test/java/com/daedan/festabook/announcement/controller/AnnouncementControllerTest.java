@@ -3,8 +3,10 @@ package com.daedan.festabook.announcement.controller;
 import static org.hamcrest.Matchers.equalTo;
 
 import com.daedan.festabook.announcement.domain.Announcement;
+import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import java.util.List;
@@ -41,13 +43,12 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Organization seoul = new Organization("서울대학교");
-            Organization woowa = new Organization("우아한대학교");
+            Organization seoul = organizationJpaRepository.save(OrganizationFixture.create("서울대학교"));
+            Organization woowa = organizationJpaRepository.save(OrganizationFixture.create("우아한대학교"));
 
-            Announcement seoulAnnouncement = new Announcement("서울대학교입니다.", "서울테스트", true, seoul);
-            Announcement woowaAnnouncement = new Announcement("우아한대학교입니다.", "우아한테스트", false, woowa);
+            Announcement seoulAnnouncement = AnnouncementFixture.create("서울대학교입니다.", "서울테스트", true, seoul);
+            Announcement woowaAnnouncement = AnnouncementFixture.create("우아한대학교입니다.", "우아한테스트", false, woowa);
 
-            organizationJpaRepository.saveAll(List.of(seoul, woowa));
             announcementJpaRepository.saveAll(List.of(seoulAnnouncement, woowaAnnouncement));
 
             // when & then
