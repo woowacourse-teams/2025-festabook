@@ -56,6 +56,18 @@ public class QuestionAnswerFixture {
         );
     }
 
+    public static QuestionAnswer create(
+            Organization organization
+    ) {
+        return create(
+                organization,
+                DEFAULT_TITLE,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                DEFAULT_CREATED_AT
+        );
+    }
+
     public static QuestionAnswer create() {
         return create(
                 DEFAULT_ORGANIZATION,
