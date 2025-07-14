@@ -1,7 +1,6 @@
 package com.daedan.festabook.place.controller;
 
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -109,7 +108,7 @@ class PlaceControllerTest {
                     .body("[0].id", equalTo(expected.getId().intValue()))
                     .body("[0].title", equalTo(expected.getTitle()))
                     .body("[0].content", equalTo(expected.getContent()))
-                    .body("[0].createdAt", notNullValue());
+                    .body("[0].createdAt", equalTo(expected.getCreatedAt()));
         }
     }
 
