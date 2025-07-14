@@ -16,14 +16,24 @@ import io.restassured.RestAssured;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScheduleControllerTest {
+
+    private static final String ORGANIZATION_HEADER_NAME = "organization";
+
+    @LocalServerPort
+    private int port;
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
@@ -33,6 +43,11 @@ class ScheduleControllerTest {
 
     @Autowired
     private EventJpaRepository eventJpaRepository;
+
+    @BeforeEach
+    void setUp() {
+        RestAssured.port = port;
+    }
 
     @Nested
     class getAllEventDateByOrganizationId {
@@ -50,7 +65,7 @@ class ScheduleControllerTest {
 
             // when & then
             RestAssured.given()
-                    .header("organization", organization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/schedules")
                     .then()
@@ -83,7 +98,7 @@ class ScheduleControllerTest {
 
             // when & then
             RestAssured.given()
-                    .header("organization", organization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/schedules")
                     .then()
