@@ -2,6 +2,9 @@ package com.daedan.festabook.announcement.domain;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class AnnouncementFixture {
 
@@ -18,5 +21,14 @@ public class AnnouncementFixture {
             Organization organization
     ) {
         return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, DEFAULT_IS_PINNED, organization);
+    }
+
+    public static List<Announcement> createList(
+            int size,
+            Organization organization
+    ) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> create(organization))
+                .collect(Collectors.toList());
     }
 }

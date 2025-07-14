@@ -72,10 +72,9 @@ class AnnouncementControllerTest {
             // given
             Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
 
-            Announcement announcement1 = AnnouncementFixture.create(organization);
-            Announcement announcement2 = AnnouncementFixture.create(organization);
-            Announcement announcement3 = AnnouncementFixture.create(organization);
-            announcementJpaRepository.saveAll(List.of(announcement1, announcement2, announcement3));
+            int expectedSize = 3;
+            List<Announcement> announcements = AnnouncementFixture.createList(expectedSize, organization);
+            announcementJpaRepository.saveAll(announcements);
 
             // when & then
             RestAssured.given()
@@ -84,10 +83,10 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(200)
-                    .body("$", hasSize(3))
-                    .body("id", hasItem(announcement1.getId().intValue()))
-                    .body("id", hasItem(announcement2.getId().intValue()))
-                    .body("id", hasItem(announcement3.getId().intValue()));
+                    .body("$", hasSize(expectedSize))
+                    .body("id", hasItem(announcements.get(0).getId().intValue()))
+                    .body("id", hasItem(announcements.get(1).getId().intValue()))
+                    .body("id", hasItem(announcements.get(2).getId().intValue()));
         }
 
         @Test
