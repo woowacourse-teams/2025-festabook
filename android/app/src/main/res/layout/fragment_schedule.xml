@@ -18,7 +18,7 @@
             style="@style/PretendardBold24"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:text="타임라인"
+            android:text="@string/schedule_title"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.tabs.TabLayout
