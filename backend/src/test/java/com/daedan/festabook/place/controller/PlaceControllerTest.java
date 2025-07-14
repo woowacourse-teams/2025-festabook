@@ -1,6 +1,7 @@
 package com.daedan.festabook.place.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.organization.domain.Organization;
@@ -16,7 +17,6 @@ import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
@@ -88,6 +88,7 @@ class PlaceControllerTest {
                     .get("/places")
                     .then()
                     .statusCode(200)
+                    .body("$", hasSize(places.size()))
                     .body("[0].id", equalTo(places.get(0).getId().intValue()))
                     .body("[0].title", equalTo(places.get(0).getTitle()))
                     .body("[0].description", equalTo(places.get(0).getDescription()))
@@ -127,7 +128,6 @@ class PlaceControllerTest {
                             "우천으로 인해 부스 운영을 오후 4시까지로 단축합니다. 양해 부탁드립니다."
                     )
             ));
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
 
             // when & then
             RestAssured.given()
@@ -136,6 +136,7 @@ class PlaceControllerTest {
                     .get("/places/" + place.getId() + "/announcements")
                     .then()
                     .statusCode(200)
+                    .body("$", hasSize(placeAnnouncements.size()))
                     .body("[0].id", equalTo(placeAnnouncements.get(0).getId().intValue()))
                     .body("[0].title", equalTo(placeAnnouncements.get(0).getTitle()))
                     .body("[0].content", equalTo(placeAnnouncements.get(0).getContent()))
@@ -173,6 +174,7 @@ class PlaceControllerTest {
                     .get("/places/" + place.getId() + "/images")
                     .then()
                     .statusCode(200)
+                    .body("$", hasSize(placeImages.size()))
                     .body("[0].id", equalTo(placeImages.get(0).getId().intValue()))
                     .body("[0].imageUrl", equalTo(placeImages.get(0).getImageUrl()))
                     .body("[1].id", equalTo(placeImages.get(1).getId().intValue()))
