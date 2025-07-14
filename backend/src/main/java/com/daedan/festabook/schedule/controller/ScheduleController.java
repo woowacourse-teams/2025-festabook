@@ -5,6 +5,7 @@ import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.service.ScheduleService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -43,7 +44,7 @@ public class ScheduleController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
     public EventResponses getAllEventByEventDateId(
-            @PathVariable Long eventDateId
+            @Parameter(hidden = true) @PathVariable Long eventDateId
     ) {
         return scheduleService.getAllEventByEventDateId(eventDateId);
     }
