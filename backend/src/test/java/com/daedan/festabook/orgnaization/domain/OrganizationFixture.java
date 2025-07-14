@@ -4,7 +4,7 @@ import com.daedan.festabook.organization.domain.Organization;
 
 public class OrganizationFixture {
 
-    private static final String DEFAULT_NAME = "페스타북 대학교";
+    private static final String DEFAULT_NAME = "페스타북";
 
     public static Organization create() {
         return new Organization(
