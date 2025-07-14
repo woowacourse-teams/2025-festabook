@@ -33,8 +33,6 @@ class AnnouncementControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        organizationJpaRepository.deleteAll();
-        announcementJpaRepository.deleteAll();
     }
 
     @Nested
