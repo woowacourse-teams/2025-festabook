@@ -3,29 +3,23 @@ package com.daedan.festabook.presentation.placeList
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
-import android.view.animation.AccelerateInterpolator
-import android.view.animation.OvershootInterpolator
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
+import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.daedan.festabook.R
-import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
-import com.daedan.festabook.databinding.ItemPlaceListBinding
-import androidx.core.content.withStyledAttributes
 import com.daedan.festabook.presentation.common.scrollAnimation
 
 class PlaceListScrollBehavior(
     val context: Context,
-    attrs: AttributeSet
+    attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<ConstraintLayout>() {
-    private lateinit var binding:FragmentPlaceListBinding
+    private lateinit var binding: FragmentPlaceListBinding
     private var initialY: Float = 0f
     private var minimumY: Float = 0f
     private var isInitialized = false
@@ -40,11 +34,11 @@ class PlaceListScrollBehavior(
     override fun onLayoutChild(
         parent: CoordinatorLayout,
         child: ConstraintLayout,
-        layoutDirection: Int
+        layoutDirection: Int,
     ): Boolean {
         if (!isInitialized) {
             binding = DataBindingUtil.findBinding<FragmentPlaceListBinding>(parent)
-                ?:return super.onLayoutChild(parent, child, layoutDirection)
+                ?: return super.onLayoutChild(parent, child, layoutDirection)
             isInitialized = true
             child.translationY = child.rootView.height - initialY
         }
@@ -57,10 +51,8 @@ class PlaceListScrollBehavior(
         directTargetChild: View,
         target: View,
         axes: Int,
-        type: Int
-    ): Boolean {
-        return axes == ViewCompat.SCROLL_AXIS_VERTICAL
-    }
+        type: Int,
+    ): Boolean = axes == ViewCompat.SCROLL_AXIS_VERTICAL
 
     override fun onNestedPreScroll(
         coordinatorLayout: CoordinatorLayout,
@@ -69,10 +61,10 @@ class PlaceListScrollBehavior(
         dx: Int,
         dy: Int,
         consumed: IntArray,
-        type: Int
+        type: Int,
     ) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
-        //아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
+        // 아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
         if (dy < 0 && binding.rvPlaces.canScrollVertically(-1)) {
             child.background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
             consumed[1] = 0
@@ -97,9 +89,9 @@ class PlaceListScrollBehavior(
         dxUnconsumed: Int,
         dyUnconsumed: Int,
         type: Int,
-        consumed: IntArray
+        consumed: IntArray,
     ) {
-        //리스트가 모두 펼쳐지면 모서리 부분을 없앱니다
+        // 리스트가 모두 펼쳐지면 모서리 부분을 없앱니다
         if (dyUnconsumed == 0) {
             child.background = ContextCompat.getColor(context, R.color.gray050).toDrawable()
         }
@@ -113,8 +105,7 @@ class PlaceListScrollBehavior(
             dxUnconsumed,
             dyUnconsumed,
             type,
-            consumed
+            consumed,
         )
     }
 }
-
