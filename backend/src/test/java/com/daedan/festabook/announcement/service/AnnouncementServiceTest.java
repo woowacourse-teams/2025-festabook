@@ -21,6 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AnnouncementServiceTest {
 
+    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+
     @Mock
     private AnnouncementJpaRepository announcementJpaRepository;
 
@@ -28,7 +30,7 @@ class AnnouncementServiceTest {
     private AnnouncementService announcementService;
 
     @Nested
-    class getAllAnnouncement {
+    class getAllAnnouncementByOrganizationId {
 
         @Test
         void 성공() {
@@ -36,14 +38,15 @@ class AnnouncementServiceTest {
             Announcement announcement1 = AnnouncementFixture.create();
             Announcement announcement2 = AnnouncementFixture.create();
             Announcement announcement3 = AnnouncementFixture.create();
-            given(announcementJpaRepository.findAll())
+            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(List.of(announcement1, announcement2, announcement3));
 
             AnnouncementResponses expected = AnnouncementResponses.from(
                     List.of(announcement1, announcement2, announcement3));
 
             // when
-            AnnouncementResponses result = announcementService.getAllAnnouncement();
+            AnnouncementResponses result = announcementService.getAllAnnouncementByOrganizationId(
+                    DEFAULT_ORGANIZATION_ID);
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -52,13 +55,14 @@ class AnnouncementServiceTest {
         @Test
         void 성공_빈컬렉션() {
             // given
-            given(announcementJpaRepository.findAll())
+            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(List.of());
 
             AnnouncementResponses expected = new AnnouncementResponses(List.of());
 
             // when
-            AnnouncementResponses result = announcementService.getAllAnnouncement();
+            AnnouncementResponses result = announcementService.getAllAnnouncementByOrganizationId(
+                    DEFAULT_ORGANIZATION_ID);
 
             // then
             assertThat(result).isEqualTo(expected);
