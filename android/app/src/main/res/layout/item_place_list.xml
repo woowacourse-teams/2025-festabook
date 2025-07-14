@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <data>
+
         <variable
             name="place"
             type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
@@ -11,8 +13,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="12dp"
-        >
+        android:paddingBottom="12dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cv_place_image"
@@ -31,8 +32,7 @@
                 android:layout_height="match_parent"
                 android:contentDescription="@string/content_description_booth_image"
                 android:scaleType="centerCrop"
-                app:imageUrl="@{place.imageUrl}"
-                />
+                app:imageUrl="@{place.imageUrl}" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -46,8 +46,7 @@
             app:layout_constraintStart_toEndOf="@id/cv_place_image"
             app:layout_constraintTop_toTopOf="@id/cv_place_image"
             app:strokeWidth="0dp"
-            app:category="@{place.category}"
-            >
+            app:category="@{place.category}">
 
             <View
                 android:layout_width="match_parent"

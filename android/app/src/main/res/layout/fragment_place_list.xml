@@ -13,8 +13,8 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_place_list"
-            app:layout_behavior="com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior"
             app:initialY="334dp"
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior"
             app:minimumY="110dp">
 
             <androidx.recyclerview.widget.RecyclerView
