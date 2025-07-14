@@ -57,13 +57,4 @@ public class QuestionAnswer {
         this.answer = answer;
         this.createdAt = createdAt;
     }
-
-    public QuestionAnswer(
-            Organization organization,
-            String title,
-            String question,
-            String answer
-    ) {
-        this(organization, title, question, answer, null);
-    }
 }
