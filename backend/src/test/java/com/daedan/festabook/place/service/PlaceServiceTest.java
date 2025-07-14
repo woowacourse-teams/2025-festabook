@@ -28,7 +28,7 @@ class PlaceServiceTest {
     private PlaceService placeService;
 
     @Nested
-    class getAllPlace {
+    class getAllPlaceByOrganizationId {
 
         @Test
         void 성공() {
@@ -36,12 +36,13 @@ class PlaceServiceTest {
             Place place1 = PlaceFixture.create();
             Place place2 = PlaceFixture.create();
             Place place3 = PlaceFixture.create();
+            Long organizationId = 1L;
 
-            given(placeJpaRepository.findAll())
+            given(placeJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(List.of(place1, place2, place3));
 
             // when
-            PlaceResponses result = placeService.getAllPlace();
+            PlaceResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
 
             // then
             assertThat(result.responses()).hasSize(3);

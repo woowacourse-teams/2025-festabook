@@ -1,12 +1,16 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.organization.domain.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,6 +24,10 @@ public class Place {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Organization organization;
 
     @Column(nullable = false)
     private String title;
@@ -43,6 +51,7 @@ public class Place {
     private LocalTime endTime;
 
     public Place(
+            Organization organization,
             String title,
             String description,
             PlaceCategory category,
@@ -51,6 +60,7 @@ public class Place {
             LocalTime startTime,
             LocalTime endTime
     ) {
+        this.organization = organization;
         this.title = title;
         this.description = description;
         this.category = category;
