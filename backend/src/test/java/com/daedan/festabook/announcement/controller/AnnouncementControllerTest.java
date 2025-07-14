@@ -2,6 +2,7 @@ package com.daedan.festabook.announcement.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasItem;
+import static org.hamcrest.Matchers.hasSize;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -58,7 +59,7 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(200)
-                    .body("size()", equalTo(1))
+                    .body("$", hasSize(1))
                     .body("[0].id", equalTo(announcement.getId().intValue()))
                     .body("[0].title", equalTo(announcement.getTitle()))
                     .body("[0].content", equalTo(announcement.getContent()))
@@ -83,7 +84,7 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(200)
-                    .body("size()", equalTo(3))
+                    .body("$", hasSize(3))
                     .body("id", hasItem(announcement1.getId().intValue()))
                     .body("id", hasItem(announcement2.getId().intValue()))
                     .body("id", hasItem(announcement3.getId().intValue()));
@@ -106,7 +107,7 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(200)
-                    .body("size()", equalTo(1))
+                    .body("$", hasSize(1))
                     .body("[0].id", equalTo(targetAnnouncement.getId().intValue()));
         }
     }
