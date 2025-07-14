@@ -6,5 +6,5 @@ data class Place(
     val category: PlaceCategory,
     val title: String,
     val description: String,
-    val location: String,
+    val location: String
 )
