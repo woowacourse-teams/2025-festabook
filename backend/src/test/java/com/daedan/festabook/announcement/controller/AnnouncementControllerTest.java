@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -58,7 +59,7 @@ class AnnouncementControllerTest {
                     .when()
                     .get("/announcements")
                     .then()
-                    .statusCode(200)
+                    .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(1))
                     .body("[0].id", equalTo(announcement.getId().intValue()))
                     .body("[0].title", equalTo(announcement.getTitle()))
@@ -82,7 +83,7 @@ class AnnouncementControllerTest {
                     .when()
                     .get("/announcements")
                     .then()
-                    .statusCode(200)
+                    .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("id", hasItem(announcements.get(0).getId().intValue()))
                     .body("id", hasItem(announcements.get(1).getId().intValue()))
@@ -105,7 +106,7 @@ class AnnouncementControllerTest {
                     .when()
                     .get("/announcements")
                     .then()
-                    .statusCode(200)
+                    .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(1))
                     .body("[0].id", equalTo(targetAnnouncement.getId().intValue()));
         }
