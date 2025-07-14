@@ -31,6 +31,6 @@ public class QuestionController {
     public QuestionAnswerResponses getAllQuestionAnswerByOrganizationId(
             @OrganizationId Long organizationId
     ) {
-        return questionAnswerService.getAllQuestionAnswerByOrganizationIdOrderByCreatedAtDesc(organizationId);
+        return questionAnswerService.getAllQuestionAnswerByOrganizationId(organizationId);
     }
 }

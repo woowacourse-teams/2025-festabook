@@ -11,7 +11,7 @@ public class QuestionAnswerService {
 
     private final QuestionAnswerJpaRepository questionAnswerJpaRepository;
 
-    public QuestionAnswerResponses getAllQuestionAnswerByOrganizationIdOrderByCreatedAtDesc(Long organizationId) {
+    public QuestionAnswerResponses getAllQuestionAnswerByOrganizationId(Long organizationId) {
         return QuestionAnswerResponses.from(
                 questionAnswerJpaRepository.findByOrganizationIdOrderByCreatedAtDesc(organizationId));
     }

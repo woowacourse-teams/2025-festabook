@@ -29,7 +29,7 @@ class QuestionAnswerServiceTest {
     private QuestionAnswerService questionAnswerService;
 
     @Nested
-    class getAllQuestionAnswerByOrganizationIdOrderByCreatedAtDesc {
+    class getAllQuestionAnswerByOrganizationId {
 
         @Test
         void 성공_응답_개수() {
@@ -41,7 +41,7 @@ class QuestionAnswerServiceTest {
                     questionAnswers);
 
             // when
-            int result = questionAnswerService.getAllQuestionAnswerByOrganizationIdOrderByCreatedAtDesc(organizationId)
+            int result = questionAnswerService.getAllQuestionAnswerByOrganizationId(organizationId)
                     .responses().size();
 
             // then
@@ -61,7 +61,7 @@ class QuestionAnswerServiceTest {
 
             // when
             QuestionAnswerResponses questionAnswerResponses =
-                    questionAnswerService.getAllQuestionAnswerByOrganizationIdOrderByCreatedAtDesc(organizationId);
+                    questionAnswerService.getAllQuestionAnswerByOrganizationId(organizationId);
 
             // then
             boolean result = questionAnswerResponses.responses().getFirst().createdAt()
