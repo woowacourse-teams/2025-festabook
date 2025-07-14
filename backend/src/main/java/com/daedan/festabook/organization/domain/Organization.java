@@ -21,15 +21,9 @@ public class Organization {
     @Column(nullable = false)
     private String name;
 
-    protected Organization(
-            Long id,
+    public Organization(
             String name
     ) {
-        this.id = id;
         this.name = name;
-    }
-
-    public Organization(String name) {
-        this(null, name);
     }
 }
