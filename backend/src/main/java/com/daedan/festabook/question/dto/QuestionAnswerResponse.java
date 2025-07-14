@@ -5,7 +5,6 @@ import java.time.LocalDateTime;
 
 public record QuestionAnswerResponse(
         Long id,
-        Long organizationId,
         String title,
         String question,
         String answer,
@@ -15,7 +14,6 @@ public record QuestionAnswerResponse(
     public static QuestionAnswerResponse from(QuestionAnswer questionAnswer) {
         return new QuestionAnswerResponse(
                 questionAnswer.getId(),
-                questionAnswer.getOrganization().getId(),
                 questionAnswer.getTitle(),
                 questionAnswer.getQuestion(),
                 questionAnswer.getAnswer(),
