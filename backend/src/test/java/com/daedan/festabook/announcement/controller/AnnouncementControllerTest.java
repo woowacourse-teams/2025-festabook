@@ -100,11 +100,14 @@ class AnnouncementControllerTest {
             Organization targetOrganization = organizationJpaRepository.save(OrganizationFixture.create());
             Organization anotherOrganization = organizationJpaRepository.save(OrganizationFixture.create());
 
-            Announcement targetAnnouncement = AnnouncementFixture.create(targetOrganization);
-            Announcement anotherAnnouncement = AnnouncementFixture.create(anotherOrganization);
-            announcementJpaRepository.saveAll(List.of(anotherAnnouncement, targetAnnouncement));
+            int expectedSize = 3;
+            List<Announcement> targetAnnouncements = AnnouncementFixture.createList(expectedSize, targetOrganization);
+            announcementJpaRepository.saveAll(targetAnnouncements);
 
-            int expectedSize = 1;
+            int notExpectedSize = 4;
+            List<Announcement> anotherAnnouncements = AnnouncementFixture.createList(notExpectedSize,
+                    anotherOrganization);
+            announcementJpaRepository.saveAll(anotherAnnouncements);
 
             // when & then
             RestAssured.given()
@@ -114,7 +117,11 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
-                    .body("[0].id", equalTo(targetAnnouncement.getId().intValue()));
+                    .body("id", containsInAnyOrder(
+                            targetAnnouncements.get(0).getId().intValue(),
+                            targetAnnouncements.get(1).getId().intValue(),
+                            targetAnnouncements.get(2).getId().intValue()
+                    ));
         }
     }
 }
