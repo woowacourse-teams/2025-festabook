@@ -29,6 +29,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScheduleServiceTest {
 
+    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+
     @Mock
     private EventDateJpaRepository eventDateJpaRepository;
 
@@ -39,7 +41,7 @@ class ScheduleServiceTest {
     private ScheduleService scheduleService;
 
     @Nested
-    class getAllEventDate {
+    class getAllEventDateByOrganizationId {
 
         @Test
         void 성공() {
@@ -49,13 +51,13 @@ class ScheduleServiceTest {
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2);
 
-            given(eventDateJpaRepository.findAll())
+            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(eventDates);
 
             LocalDate expected = LocalDate.of(2025, 10, 26);
 
             // when
-            EventDateResponses result = scheduleService.getAllEventDate();
+            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
 
             // then
             assertSoftly(s -> {
@@ -73,11 +75,11 @@ class ScheduleServiceTest {
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3);
 
-            given(eventDateJpaRepository.findAll())
+            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(eventDates);
 
             // when
-            EventDateResponses result = scheduleService.getAllEventDate();
+            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
 
             // then
             assertThat(result.eventDate())
