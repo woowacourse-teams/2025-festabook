@@ -4,6 +4,7 @@ import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import com.daedan.festabook.question.dto.QuestionAnswerResponses;
 import com.daedan.festabook.question.service.QuestionAnswerService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +30,7 @@ public class QuestionController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public QuestionAnswerResponses getAllQuestionAnswerByOrganizationId(
-            @OrganizationId Long organizationId
+            @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return questionAnswerService.getAllQuestionAnswerByOrganizationId(organizationId);
     }
