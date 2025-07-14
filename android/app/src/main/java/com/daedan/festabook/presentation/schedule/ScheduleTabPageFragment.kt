@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.schedule
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -22,6 +23,8 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                 viewModel.updateBookmark(scheduleEventId)
             })
         binding.rvScheduleEvent.adapter = adapter
+        (binding.rvScheduleEvent.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
+            false
         binding.lifecycleOwner = viewLifecycleOwner
         setupObservers()
     }
