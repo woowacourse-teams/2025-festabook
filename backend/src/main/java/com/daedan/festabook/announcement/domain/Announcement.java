@@ -33,6 +33,9 @@ public class Announcement {
     @Column(nullable = false)
     private String content;
 
+    @Column(nullable = false)
+    private boolean isPinned;
+
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
     private Organization organization;
@@ -44,10 +47,12 @@ public class Announcement {
     public Announcement(
             String title,
             String content,
+            Boolean isPinned,
             Organization organization
     ) {
         this.title = title;
         this.content = content;
+        this.isPinned = isPinned;
         this.organization = organization;
     }
 }
