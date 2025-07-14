@@ -54,6 +54,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:textColor="@color/gray500"
+            app:formattedIsoDateTime='@{"2025-07-14T05:22:39.963Z"}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="00/00 00:00" />
