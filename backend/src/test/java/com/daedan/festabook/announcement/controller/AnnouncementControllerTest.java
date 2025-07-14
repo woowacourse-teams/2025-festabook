@@ -1,6 +1,7 @@
 package com.daedan.festabook.announcement.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
@@ -50,8 +51,8 @@ class AnnouncementControllerTest {
             Organization seoul = new Organization("서울대학교");
             Organization woowa = new Organization("우아한대학교");
 
-            Announcement announcement1 = new Announcement("서울대학교입니다.", "테스트", false, seoul);
-            Announcement announcement2 = new Announcement("우아한대학교입니다.", "테스트", false, woowa);
+            Announcement announcement1 = new Announcement("서울대학교입니다.", "서울테스트", true, seoul);
+            Announcement announcement2 = new Announcement("우아한대학교입니다.", "우아한테스트", false, woowa);
 
             organizationJpaRepository.saveAll(List.of(seoul, woowa));
             announcementJpaRepository.saveAll(List.of(announcement1, announcement2));
@@ -64,7 +65,10 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].title", equalTo("우아한대학교입니다."));
+                    .body("[0].title", equalTo(announcement2.getTitle()))
+                    .body("[0].content", equalTo(announcement2.getContent()))
+                    .body("[0].isPinned", equalTo(announcement2.isPinned()))
+                    .body("[0].createdAt", notNullValue());
         }
     }
 }
