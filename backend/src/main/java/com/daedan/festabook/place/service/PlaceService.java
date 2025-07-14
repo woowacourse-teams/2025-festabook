@@ -11,8 +11,7 @@ public class PlaceService {
 
     private final PlaceJpaRepository placeJpaRepository;
 
-    // TODO: 학교 연결
-    public PlaceResponses getAllPlace() {
-        return PlaceResponses.from(placeJpaRepository.findAll());
+    public PlaceResponses getAllPlaceByOrganizationId(Long organizationId) {
+        return PlaceResponses.from(placeJpaRepository.findAllByOrganizationId(organizationId));
     }
 }
