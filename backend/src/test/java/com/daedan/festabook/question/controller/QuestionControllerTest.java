@@ -102,7 +102,7 @@ class QuestionControllerTest {
                     .get("/questions")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("size()", is(expectedSize));
+                    .body("$", hasSize(expectedSize));
         }
     }
 }
