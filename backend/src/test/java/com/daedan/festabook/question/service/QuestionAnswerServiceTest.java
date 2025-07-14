@@ -42,7 +42,7 @@ class QuestionAnswerServiceTest {
 
             // when
             int result = questionAnswerService.getAllQuestionAnswerByOrganizationIdOrderByCreatedAtDesc(organizationId)
-                    .questionAnswerResponses().size();
+                    .responses().size();
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -64,8 +64,8 @@ class QuestionAnswerServiceTest {
                     questionAnswerService.getAllQuestionAnswerByOrganizationIdOrderByCreatedAtDesc(organizationId);
 
             // then
-            boolean result = questionAnswerResponses.questionAnswerResponses().getFirst().createdAt()
-                    .isAfter(questionAnswerResponses.questionAnswerResponses().getLast().createdAt());
+            boolean result = questionAnswerResponses.responses().getFirst().createdAt()
+                    .isAfter(questionAnswerResponses.responses().getLast().createdAt());
             assertThat(result).isTrue();
         }
     }

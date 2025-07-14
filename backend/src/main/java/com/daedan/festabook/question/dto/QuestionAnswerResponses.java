@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 
 public record QuestionAnswerResponses(
-        @JsonValue List<QuestionAnswerResponse> questionAnswerResponses
+        @JsonValue List<QuestionAnswerResponse> responses
 ) {
 
     public static QuestionAnswerResponses from(List<QuestionAnswer> questionAnswers) {
