@@ -1,6 +1,7 @@
 package com.daedan.festabook.announcement.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -69,6 +70,29 @@ class AnnouncementControllerTest {
                     .body("[0].content", equalTo(targetAnnouncement.getContent()))
                     .body("[0].isPinned", equalTo(targetAnnouncement.isPinned()))
                     .body("[0].createdAt", equalTo(targetAnnouncement.getCreatedAt().toString()));
+        }
+
+        @Test
+        void 성공_여러_값_조회() {
+            // given
+            Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
+
+            Announcement announcement1 = AnnouncementFixture.create(organization);
+            Announcement announcement2 = AnnouncementFixture.create(organization);
+            Announcement announcement3 = AnnouncementFixture.create(organization);
+            announcementJpaRepository.saveAll(List.of(announcement1, announcement2, announcement3));
+
+            // when & then
+            RestAssured.given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/announcements")
+                    .then()
+                    .statusCode(200)
+                    .body("size()", equalTo(3))
+                    .body("id", hasItem(announcement1.getId().intValue()))
+                    .body("id", hasItem(announcement2.getId().intValue()))
+                    .body("id", hasItem(announcement3.getId().intValue()));
         }
     }
 }

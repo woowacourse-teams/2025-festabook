@@ -11,12 +11,13 @@ public class AnnouncementFixture {
     private static final Boolean DEFAULT_IS_PINNED = false;
 
     public static Announcement create() {
-        return new Announcement(
-                DEFAULT_TITLE,
-                DEFAULT_CONTENT,
-                DEFAULT_IS_PINNED,
-                DEFAULT_ORGANIZATION
-        );
+        return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, DEFAULT_IS_PINNED, DEFAULT_ORGANIZATION);
+    }
+
+    public static Announcement create(
+            Organization organization
+    ) {
+        return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, DEFAULT_IS_PINNED, organization);
     }
 
     public static Announcement create(
