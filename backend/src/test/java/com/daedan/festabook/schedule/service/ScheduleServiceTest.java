@@ -29,6 +29,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScheduleServiceTest {
 
+    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+
     @Mock
     private EventDateJpaRepository eventDateJpaRepository;
 
@@ -46,17 +48,16 @@ class ScheduleServiceTest {
             // given
             EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
             EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
-            Long organizationId = 1L;
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2);
 
-            given(eventDateJpaRepository.findAllByOrganizationId(organizationId))
+            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(eventDates);
 
             LocalDate expected = LocalDate.of(2025, 10, 26);
 
             // when
-            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(organizationId);
+            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
 
             // then
             assertSoftly(s -> {
@@ -71,15 +72,14 @@ class ScheduleServiceTest {
             EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
             EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
             EventDate eventDate3 = EventDateFixture.create(LocalDate.of(2025, 10, 25));
-            Long organizationId = 1L;
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3);
 
-            given(eventDateJpaRepository.findAllByOrganizationId(organizationId))
+            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(eventDates);
 
             // when
-            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(organizationId);
+            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
 
             // then
             assertThat(result.eventDate())
