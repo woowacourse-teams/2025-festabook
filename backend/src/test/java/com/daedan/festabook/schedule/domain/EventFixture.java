@@ -56,9 +56,9 @@ public class EventFixture {
         );
     }
 
-    public static List<Event> createList(int listSize, EventDate eventDate) {
+    public static List<Event> createList(int size, EventDate eventDate) {
         List<Event> events = new ArrayList<>();
-        for (int i = 0; i < listSize; i++) {
+        for (int i = 0; i < size; i++) {
             events.add(create(eventDate));
         }
         return events;
