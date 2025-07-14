@@ -47,11 +47,12 @@ public class Announcement {
     public Announcement(
             String title,
             String content,
+            Boolean isPinned,
             Organization organization
     ) {
         this.title = title;
         this.content = content;
-        this.isPinned = false;
+        this.isPinned = isPinned;
         this.organization = organization;
     }
 }
