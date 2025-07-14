@@ -46,27 +46,29 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Organization seoul = organizationJpaRepository.save(OrganizationFixture.create("서울대학교"));
-            Organization woowa = organizationJpaRepository.save(OrganizationFixture.create("우아한대학교"));
+            Organization targetOrganization = organizationJpaRepository.save(OrganizationFixture.create("우아한대학교"));
+            Organization anotherOrganization = organizationJpaRepository.save(OrganizationFixture.create("서울대학교"));
 
-            Announcement seoulAnnouncement = AnnouncementFixture.create("서울대학교입니다.", "서울테스트", true, seoul);
-            Announcement woowaAnnouncement = AnnouncementFixture.create("우아한대학교입니다.", "우아한테스트", false, woowa);
+            Announcement targetAnnouncement = AnnouncementFixture.create("우아한대학교입니다.", "우아한테스트", false,
+                    targetOrganization);
+            Announcement anotherAnnouncement = AnnouncementFixture.create("서울대학교입니다.", "서울테스트", true,
+                    anotherOrganization);
 
-            announcementJpaRepository.saveAll(List.of(seoulAnnouncement, woowaAnnouncement));
+            announcementJpaRepository.saveAll(List.of(anotherAnnouncement, targetAnnouncement));
 
             // when & then
             RestAssured.given()
-                    .header(ORGANIZATION_HEADER_NAME, woowa.getId())
+                    .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
                     .when()
                     .get("/announcements")
                     .then()
                     .statusCode(200)
                     .body("size()", equalTo(1))
-                    .body("[0].id", equalTo(woowaAnnouncement.getId().intValue()))
-                    .body("[0].title", equalTo(woowaAnnouncement.getTitle()))
-                    .body("[0].content", equalTo(woowaAnnouncement.getContent()))
-                    .body("[0].isPinned", equalTo(woowaAnnouncement.isPinned()))
-                    .body("[0].createdAt", equalTo(woowaAnnouncement.getCreatedAt().toString()));
+                    .body("[0].id", equalTo(targetAnnouncement.getId().intValue()))
+                    .body("[0].title", equalTo(targetAnnouncement.getTitle()))
+                    .body("[0].content", equalTo(targetAnnouncement.getContent()))
+                    .body("[0].isPinned", equalTo(targetAnnouncement.isPinned()))
+                    .body("[0].createdAt", equalTo(targetAnnouncement.getCreatedAt().toString()));
         }
     }
 }
