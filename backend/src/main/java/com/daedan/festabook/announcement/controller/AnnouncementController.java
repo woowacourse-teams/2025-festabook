@@ -2,7 +2,9 @@ package com.daedan.festabook.announcement.controller;
 
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.service.AnnouncementService;
+import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +29,9 @@ public class AnnouncementController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public AnnouncementResponses getAllAnnouncement() {
-        return announcementService.getAllAnnouncement();
+    public AnnouncementResponses getAllAnnouncementByOrganizationId(
+            @Parameter(hidden = true) @OrganizationId Long organizationId
+    ) {
+        return announcementService.getAllAnnouncementByOrganizationId(organizationId);
     }
 }
