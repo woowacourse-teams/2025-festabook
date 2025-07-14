@@ -6,6 +6,7 @@ import java.time.LocalTime;
 
 public class PlaceFixture {
 
+    private static final Organization DEFAULT_ORGANIZATION = OrganizationFixture.create();
     private static final String DEFAULT_TITLE = "코딩하며 한잔";
     private static final String DEFAULT_DESCRIPTION = "시원한 맥주와 맛있는 치킨!";
     private static final PlaceCategory DEFAULT_CATEGORY = PlaceCategory.BAR;
@@ -16,7 +17,7 @@ public class PlaceFixture {
 
     public static Place create() {
         return new Place(
-                OrganizationFixture.create(),
+                DEFAULT_ORGANIZATION,
                 DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION,
                 DEFAULT_CATEGORY,
