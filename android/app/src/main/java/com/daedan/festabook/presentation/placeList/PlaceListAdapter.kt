@@ -26,7 +26,7 @@ class PlaceListAdapter :
         when (viewType) {
             PlaceListViewHolder.VIEW_TYPE_HEADER -> PlaceListViewHolder.Header.of(parent)
             PlaceListViewHolder.VIEW_TYPE_ITEM -> PlaceListViewHolder.PlaceViewHolder.of(parent)
-            else -> throw IllegalArgumentException("Invalid view type")
+            else -> throw IllegalArgumentException(ERR_INVALID_VIEW_TYPE)
         }
 
     override fun onBindViewHolder(
@@ -37,9 +37,14 @@ class PlaceListAdapter :
     }
 
     override fun getItemViewType(position: Int): Int =
-        if (position == 0) {
+        if (position == POSITION_HEADER) {
             PlaceListViewHolder.VIEW_TYPE_HEADER
         } else {
             PlaceListViewHolder.VIEW_TYPE_ITEM
         }
+
+    companion object {
+        private const val POSITION_HEADER = 0
+        private const val ERR_INVALID_VIEW_TYPE = "Invalid view type"
+    }
 }
