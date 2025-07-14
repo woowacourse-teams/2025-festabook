@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 
 public record EventDateResponses(
-        @JsonValue List<EventDateResponse> eventDate
+        @JsonValue List<EventDateResponse> responses
 ) {
 
     public static EventDateResponses from(List<EventDate> eventDates) {

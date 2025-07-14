@@ -61,8 +61,8 @@ class ScheduleServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.eventDate()).hasSize(2);
-                s.assertThat(result.eventDate().getFirst().date()).isEqualTo(expected);
+                s.assertThat(result.responses()).hasSize(2);
+                s.assertThat(result.responses().getFirst().date()).isEqualTo(expected);
             });
         }
 
@@ -82,7 +82,7 @@ class ScheduleServiceTest {
             EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
 
             // then
-            assertThat(result.eventDate())
+            assertThat(result.responses())
                     .extracting(EventDateResponse::date)
                     .containsExactly(
                             eventDate3.getDate(),
