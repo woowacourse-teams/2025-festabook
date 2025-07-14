@@ -28,22 +28,24 @@ class AnnouncementServiceTest {
     private AnnouncementService announcementService;
 
     @Nested
-    class getAllAnnouncement {
+    class getAllAnnouncementByOrganizationId {
 
         @Test
         void 성공() {
             // given
+            Long organizationId = 1L;
+
             Announcement announcement1 = AnnouncementFixture.create();
             Announcement announcement2 = AnnouncementFixture.create();
             Announcement announcement3 = AnnouncementFixture.create();
-            given(announcementJpaRepository.findAll())
+            given(announcementJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(List.of(announcement1, announcement2, announcement3));
 
             AnnouncementResponses expected = AnnouncementResponses.from(
                     List.of(announcement1, announcement2, announcement3));
 
             // when
-            AnnouncementResponses result = announcementService.getAllAnnouncement();
+            AnnouncementResponses result = announcementService.getAllAnnouncementByOrganizationId(organizationId);
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -52,13 +54,15 @@ class AnnouncementServiceTest {
         @Test
         void 성공_빈컬렉션() {
             // given
-            given(announcementJpaRepository.findAll())
+            Long organizationId = 1L;
+
+            given(announcementJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(List.of());
 
             AnnouncementResponses expected = new AnnouncementResponses(List.of());
 
             // when
-            AnnouncementResponses result = announcementService.getAllAnnouncement();
+            AnnouncementResponses result = announcementService.getAllAnnouncementByOrganizationId(organizationId);
 
             // then
             assertThat(result).isEqualTo(expected);
