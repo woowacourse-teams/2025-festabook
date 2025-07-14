@@ -27,6 +27,8 @@ import org.springframework.boot.test.web.server.LocalServerPort;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class PlaceControllerTest {
 
+    private static final String ORGANIZATION_HEADER_NAME = "organization";
+
     @LocalServerPort
     private int port;
 
@@ -67,7 +69,7 @@ class PlaceControllerTest {
 
             // when & then
             RestAssured.given()
-                    .header("organization", organization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/places")
                     .then()
@@ -99,7 +101,7 @@ class PlaceControllerTest {
 
             // when & then
             RestAssured.given()
-                    .header("organization", organization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/places/" + place.getId() + "/announcements")
                     .then()
@@ -126,7 +128,7 @@ class PlaceControllerTest {
 
             // when & then
             RestAssured.given()
-                    .header("organization", organization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/places/" + place.getId() + "/images")
                     .then()
