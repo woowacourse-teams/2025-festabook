@@ -33,15 +33,23 @@ class QuestionAnswerJpaRepositoryTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            QuestionAnswer newerQuestionAnswer = QuestionAnswerFixture.create(
+            QuestionAnswer todayQuestionAnswer = QuestionAnswerFixture.create(
                     organization,
                     LocalDateTime.now()
             );
-            QuestionAnswer olderQuestionAnswer = QuestionAnswerFixture.create(
+            QuestionAnswer yesterdayQuestionAnswer = QuestionAnswerFixture.create(
                     organization,
                     LocalDateTime.now().minusDays(1)
             );
-            questionAnswerJpaRepository.saveAll(List.of(olderQuestionAnswer, newerQuestionAnswer));
+            QuestionAnswer twoDaysAgoQuestionAnswer = QuestionAnswerFixture.create(
+                    organization,
+                    LocalDateTime.now().minusDays(2)
+            );
+            questionAnswerJpaRepository.saveAll(List.of(
+                    twoDaysAgoQuestionAnswer,
+                    yesterdayQuestionAnswer,
+                    todayQuestionAnswer
+            ));
 
             // when
             List<QuestionAnswer> questionAnswers =
