@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
@@ -46,6 +47,8 @@ class PlaceListFragment :
 
     private fun startPlaceDetailFragment() {
         parentFragmentManager.commit {
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
+            setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
             replace(R.id.fcv_fragment_container, PlaceDetailFragment())
             addToBackStack(null)
         }
