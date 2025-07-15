@@ -1,6 +1,7 @@
 package com.daedan.festabook.schedule.controller;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 
 import com.daedan.festabook.organization.domain.Organization;
@@ -25,15 +26,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScheduleControllerTest {
 
     private static final String ORGANIZATION_HEADER_NAME = "organization";
-
-    @LocalServerPort
-    private int port;
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
@@ -44,6 +43,9 @@ class ScheduleControllerTest {
     @Autowired
     private EventJpaRepository eventJpaRepository;
 
+    @LocalServerPort
+    private int port;
+
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
@@ -53,24 +55,47 @@ class ScheduleControllerTest {
     class getAllEventDateByOrganizationId {
 
         @Test
-        void 성공_조직_ID_기반() {
+        void 성공() {
             // given
-            Organization organization = OrganizationFixture.create("우리 학교");
-            Organization otherOrganization = OrganizationFixture.create("다른 학교");
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
 
-            organizationJpaRepository.saveAll(List.of(organization, otherOrganization));
-
-            eventDateJpaRepository.saveAll(EventDateFixture.createList(4, organization));
-            eventDateJpaRepository.saveAll(EventDateFixture.createList(5, otherOrganization));
+            EventDate eventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(eventDate);
 
             // when & then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/schedules")
                     .then()
-                    .statusCode(200)
-                    .body("size()", is(4));
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].size()", is(2))
+                    .body("[0].id", is(eventDate.getId().intValue()))
+                    .body("[0].date", is(eventDate.getDate().toString()));
+        }
+
+        @Test
+        void 성공_조직_ID_기반() {
+            // given
+            Organization organization = OrganizationFixture.create("우리 학교");
+            Organization otherOrganization = OrganizationFixture.create("다른 학교");
+            organizationJpaRepository.saveAll(List.of(organization, otherOrganization));
+
+            int expected = 4;
+            eventDateJpaRepository.saveAll(EventDateFixture.createList(expected, organization));
+            eventDateJpaRepository.saveAll(EventDateFixture.createList(5, otherOrganization));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/schedules")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expected));
         }
 
         @Test
@@ -97,13 +122,13 @@ class ScheduleControllerTest {
                     .toList();
 
             // when & then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/schedules")
                     .then()
-                    .statusCode(200)
-                    .body("size()", is(4))
+                    .statusCode(HttpStatus.OK.value())
                     .body("date", contains(
                             expectedSortedDates.toArray()
                     ));
@@ -112,6 +137,33 @@ class ScheduleControllerTest {
 
     @Nested
     class getAllEventByEventDateId {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            EventDate eventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(eventDate);
+
+            Event event = eventJpaRepository.save(EventFixture.create(eventDate));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/schedules/{eventDateId}", eventDate.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].size()", is(6))
+                    .body("[0].id", is(event.getId().intValue()))
+                    .body("[0].status", is(event.getStatus().name()))
+                    .body("[0].startTime", is(event.getStartTime().toString()))
+                    .body("[0].endTime", is(event.getEndTime().toString()))
+                    .body("[0].title", is(event.getTitle()))
+                    .body("[0].location", is(event.getLocation()));
+        }
 
         @Test
         void 성공_특정_날짜_ID_기반() {
@@ -123,16 +175,18 @@ class ScheduleControllerTest {
             EventDate otherEventDate = EventDateFixture.create(organization, LocalDate.now().plusDays(1));
             eventDateJpaRepository.saveAll(List.of(eventDate, otherEventDate));
 
-            eventJpaRepository.saveAll(EventFixture.createList(3, eventDate));
+            int expected = 3;
+            eventJpaRepository.saveAll(EventFixture.createList(expected, eventDate));
             eventJpaRepository.saveAll(EventFixture.createList(5, otherEventDate));
 
             // when & then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .when()
-                    .get("/schedules/" + eventDate.getId())
+                    .get("/schedules/{eventDateId}", eventDate.getId())
                     .then()
-                    .statusCode(200)
-                    .body("size()", is(3));
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expected));
         }
 
         @Test
@@ -149,21 +203,20 @@ class ScheduleControllerTest {
                     EventFixture.create(LocalTime.of(12, 0), LocalTime.of(15, 0), eventDate),
                     EventFixture.create(LocalTime.of(12, 0), LocalTime.of(16, 0), eventDate)
             );
-
             eventJpaRepository.saveAll(events);
 
+            List<String> startTimeExpected = List.of("12:00", "12:00", "15:00");
+            List<String> endTimeExpected = List.of("15:00", "16:00", "18:00");
+
             // when & then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .when()
-                    .get("/schedules/" + eventDate.getId())
+                    .get("/schedules/{eventDateId}", eventDate.getId())
                     .then()
-                    .statusCode(200)
-                    .body("startTime", contains(
-                            "12:00", "12:00", "15:00"
-                    ))
-                    .body("endTime", contains(
-                            "15:00", "16:00", "18:00"
-                    ));
+                    .statusCode(HttpStatus.OK.value())
+                    .body("startTime", is(startTimeExpected))
+                    .body("endTime", is(endTimeExpected));
         }
     }
 }

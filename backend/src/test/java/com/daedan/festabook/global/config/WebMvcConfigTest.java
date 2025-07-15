@@ -42,12 +42,13 @@ class WebMvcConfigTest {
             String expected = String.valueOf(organizationId);
 
             // when && then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .header(ORGANIZATION_HEADER_NAME, organizationId)
                     .when()
                     .get("/test")
                     .then()
-                    .statusCode(200)
+                    .statusCode(HttpStatus.OK.value())
                     .body(equalTo(expected));
         }
     }

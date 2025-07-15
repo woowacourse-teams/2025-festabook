@@ -3,8 +3,9 @@ package com.daedan.festabook.schedule.domain;
 import static com.daedan.festabook.schedule.domain.EventStatus.ONGOING;
 
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class EventFixture {
 
@@ -14,28 +15,13 @@ public class EventFixture {
     private static final String DEFAULT_TITLE = "title";
     private static final String DEFAULT_LOCATION = "location";
 
-    private static Event create(
+    public static Event create(
             EventDate eventDate
     ) {
         return new Event(
                 DEFAULT_STATUS,
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME,
-                DEFAULT_TITLE,
-                DEFAULT_LOCATION,
-                eventDate
-        );
-    }
-
-    public static Event create(
-            LocalTime startTime,
-            LocalTime endTime,
-            EventDate eventDate
-    ) {
-        return new Event(
-                DEFAULT_STATUS,
-                startTime,
-                endTime,
                 DEFAULT_TITLE,
                 DEFAULT_LOCATION,
                 eventDate
@@ -56,11 +42,24 @@ public class EventFixture {
         );
     }
 
+    public static Event create(
+            LocalTime startTime,
+            LocalTime endTime,
+            EventDate eventDate
+    ) {
+        return new Event(
+                DEFAULT_STATUS,
+                startTime,
+                endTime,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION,
+                eventDate
+        );
+    }
+
     public static List<Event> createList(int size, EventDate eventDate) {
-        List<Event> events = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            events.add(create(eventDate));
-        }
-        return events;
+        return IntStream.range(0, size)
+                .mapToObj(i -> create(eventDate))
+                .collect(Collectors.toList());
     }
 }
