@@ -93,22 +93,23 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_조직의_모든_플레이스_조회() {
             // given
-            int expectedSize = 2;
-
-            List<Organization> organizations = OrganizationFixture.createList(expectedSize);
-            organizationJpaRepository.saveAll(organizations);
+            Organization targetOrganization = OrganizationFixture.create();
+            Organization anotherOrganization = OrganizationFixture.create();
+            organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
 
             List<Place> places = List.of(
-                    PlaceFixture.create(organizations.get(0)),
-                    PlaceFixture.create(organizations.get(0)),
-                    PlaceFixture.create(organizations.get(1))
+                    PlaceFixture.create(targetOrganization),
+                    PlaceFixture.create(targetOrganization),
+                    PlaceFixture.create(anotherOrganization)
             );
             placeJpaRepository.saveAll(places);
+
+            int expectedSize = 2;
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organizations.get(0).getId())
+                    .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
                     .when()
                     .get("/places")
                     .then()
@@ -154,27 +155,28 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_플레이스의_모든_공지_조회() {
             // given
-            int expectedSize = 2;
-
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<Place> places = PlaceFixture.createList(expectedSize, organization);
-            placeJpaRepository.saveAll(places);
+            Place targetPlace = PlaceFixture.create(organization);
+            Place anotherPlace = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(targetPlace, anotherPlace));
 
             List<PlaceAnnouncement> placeAnnouncements = List.of(
-                    PlaceAnnouncementFixture.create(places.get(0)),
-                    PlaceAnnouncementFixture.create(places.get(0)),
-                    PlaceAnnouncementFixture.create(places.get(1))
+                    PlaceAnnouncementFixture.create(targetPlace),
+                    PlaceAnnouncementFixture.create(targetPlace),
+                    PlaceAnnouncementFixture.create(anotherPlace)
             );
             placeAnnouncementJpaRepository.saveAll(placeAnnouncements);
+
+            int expectedSize = 2;
 
             // when & then
             RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places/{placeId}/announcements", places.get(0).getId())
+                    .get("/places/{placeId}/announcements", targetPlace.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
@@ -216,27 +218,28 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_플레이스의_모든_이미지_조회() {
             // given
-            int expectedSize = 2;
-
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<Place> places = PlaceFixture.createList(expectedSize, organization);
-            placeJpaRepository.saveAll(places);
+            Place targetPlace = PlaceFixture.create(organization);
+            Place anotherPlace = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(targetPlace, anotherPlace));
 
             List<PlaceImage> placeImages = List.of(
-                    PlaceImageFixture.create(places.get(0)),
-                    PlaceImageFixture.create(places.get(0)),
-                    PlaceImageFixture.create(places.get(1))
+                    PlaceImageFixture.create(targetPlace),
+                    PlaceImageFixture.create(targetPlace),
+                    PlaceImageFixture.create(anotherPlace)
             );
             placeImageJpaRepository.saveAll(placeImages);
+
+            int expectedSize = 2;
 
             // when & then
             RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places/{placeId}/images", places.get(0).getId())
+                    .get("/places/{placeId}/images", targetPlace.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
