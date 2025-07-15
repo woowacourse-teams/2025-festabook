@@ -28,6 +28,8 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class QuestionControllerTest {
 
+    private static final String ORGANIZATION_HEADER_NAME = "organization";
+
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
 
@@ -61,7 +63,7 @@ class QuestionControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header("organization", organization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/questions")
                     .then()
@@ -97,7 +99,7 @@ class QuestionControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header("organization", checkOrganization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, checkOrganization.getId())
                     .when()
                     .get("/questions")
                     .then()
