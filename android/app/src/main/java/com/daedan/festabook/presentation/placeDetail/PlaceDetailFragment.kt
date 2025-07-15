@@ -5,8 +5,9 @@ import android.view.View
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.placeDetail.dummy.DummyPlaceDetail
-import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
+import com.daedan.festabook.presentation.placeList.uimodel.Place
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
     override fun onViewCreated(
@@ -14,12 +15,24 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        val dummyDetail = DummyPlaceDetail.create(DummyPlace.placeList[0])
-
+        val place = arguments?.getObject<Place>(TAG_PLACE_DETAIL_FRAGMENT) ?: return
+        val dummyDetail = DummyPlaceDetail.create(place)
         binding.placeDetail = dummyDetail
         binding.rvPlaceNotice.adapter =
             PlaceNoticeAdapter().apply {
                 submitList(dummyDetail.notices)
+            }
+    }
+
+    companion object {
+        private const val TAG_PLACE_DETAIL_FRAGMENT = "placeDetailFragment"
+
+        fun newInstance(place: Place): PlaceDetailFragment =
+            PlaceDetailFragment().apply {
+                arguments =
+                    Bundle().apply {
+                        putParcelable(TAG_PLACE_DETAIL_FRAGMENT, place)
+                    }
             }
     }
 }

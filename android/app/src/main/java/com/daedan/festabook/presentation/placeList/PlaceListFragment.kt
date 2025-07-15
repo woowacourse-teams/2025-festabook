@@ -10,6 +10,7 @@ import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
+import com.daedan.festabook.presentation.placeList.uimodel.Place
 import com.daedan.festabook.presentation.placeList.uimodel.PlaceListEvent
 
 class PlaceListFragment :
@@ -32,8 +33,9 @@ class PlaceListFragment :
         setUpObservers()
     }
 
-    override fun onPlaceClicked() {
+    override fun onPlaceClicked(place: Place) {
         viewModel.publishClickEvent()
+        viewModel.setPlace(place)
     }
 
     private fun setUpObservers() {
@@ -49,7 +51,12 @@ class PlaceListFragment :
         parentFragmentManager.commit {
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-            replace(R.id.fcv_fragment_container, PlaceDetailFragment())
+            replace(
+                R.id.fcv_fragment_container,
+                PlaceDetailFragment.newInstance(
+                    viewModel.place.value ?: return,
+                ),
+            )
             addToBackStack(null)
         }
     }
