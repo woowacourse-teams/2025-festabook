@@ -48,7 +48,7 @@ class QuestionControllerTest {
     class getAllQuestionAnswerByOrganizationId {
 
         @Test
-        void 성공_조직에_등록된_모든_질문_조회() {
+        void 성공_날짜_오름차순_데이터() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -58,6 +58,8 @@ class QuestionControllerTest {
                     QuestionAnswerFixture.create(organization, LocalDateTime.now())
             );
             questionAnswerJpaRepository.saveAll(questionAnswers);
+
+            int expectedFieldSize = 5;
 
             // when & then
             RestAssured
@@ -69,11 +71,13 @@ class QuestionControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(questionAnswers.size()))
+                    .body("[0].size()", is(expectedFieldSize))
                     .body("[0].id", is(questionAnswers.get(1).getId().intValue()))
                     .body("[0].title", is(questionAnswers.get(1).getTitle()))
                     .body("[0].question", is(questionAnswers.get(1).getQuestion()))
                     .body("[0].answer", is(questionAnswers.get(1).getAnswer()))
 
+                    .body("[1].size()", is(expectedFieldSize))
                     .body("[1].id", is(questionAnswers.get(0).getId().intValue()))
                     .body("[1].title", is(questionAnswers.get(0).getTitle()))
                     .body("[1].question", is(questionAnswers.get(0).getQuestion()))
