@@ -3,8 +3,10 @@
 
     <data>
         <variable
-            name="place"
-            type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
+            name="placeDetail"
+            type="com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail" />
+
+        <import type="com.daedan.festabook.presentation.placeList.uimodel.Place"/>
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -21,7 +23,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="232dp"
                 android:background="@color/gray300"
-                android:src="@{place.imageUrl}"
+                android:scaleType="centerCrop"
+                app:imageUrl="@{placeDetail.place.imageUrl}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,7 +36,7 @@
                 android:layout_marginTop="24dp"
                 app:cardBackgroundColor="@color/gray900"
                 app:cardCornerRadius="6dp"
-                app:category="@{place.category}"
+                app:category="@{placeDetail.place.category}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/iv_place_image"
                 app:strokeWidth="0dp">
@@ -44,7 +47,7 @@
                     android:layout_gravity="center"
                     android:textAppearance="@style/PretendardRegular10"
                     android:textColor="@color/gray050"
-                    app:category="@{place.category}"
+                    app:category="@{placeDetail.place.category}"
                     tools:text="푸드트럭" />
 
             </com.google.android.material.card.MaterialCardView>
@@ -55,7 +58,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textColor="@color/gray900"
-                android:text="@{}"
+                android:text="@{placeDetail.place.title}"
                 app:layout_constraintStart_toStartOf="@id/cv_place_category"
                 app:layout_constraintTop_toBottomOf="@id/cv_place_category"
                 android:textAppearance="@style/PretendardBold20"
@@ -76,6 +79,8 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
+                app:startTime="@{placeDetail.startTime}"
+                app:endTime="@{placeDetail.endTime}"
                 app:layout_constraintStart_toEndOf="@id/iv_time"
                 app:layout_constraintTop_toTopOf="@id/iv_time"
                 app:layout_constraintBottom_toBottomOf="@id/iv_time"
@@ -96,6 +101,7 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
+                android:text="@{placeDetail.place.location}"
                 app:layout_constraintStart_toEndOf="@id/iv_location"
                 app:layout_constraintTop_toTopOf="@id/iv_location"
                 app:layout_constraintBottom_toBottomOf="@id/iv_location"
@@ -116,6 +122,7 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
+                android:text="@{placeDetail.host}"
                 app:layout_constraintStart_toEndOf="@id/iv_host"
                 app:layout_constraintTop_toTopOf="@id/iv_host"
                 app:layout_constraintBottom_toBottomOf="@id/iv_host"
@@ -126,6 +133,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
+                android:text="@{placeDetail.place.description}"
                 app:layout_constraintTop_toBottomOf="@id/iv_host"
                 app:layout_constraintStart_toStartOf="@id/iv_host"
                 android:textAppearance="@style/PretendardRegular14"
@@ -168,6 +176,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
+                android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintTop_toBottomOf="@id/tv_notice_description"
                 tools:itemCount="2"

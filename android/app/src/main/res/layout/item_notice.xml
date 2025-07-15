@@ -15,6 +15,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
+        android:layout_marginHorizontal="16dp"
         android:background="@drawable/bg_stroke_gray400_radius_10dp"
         android:paddingBottom="20dp">
 
@@ -36,6 +37,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="@color/gray900"
+            android:text="@{notice.title}"
             app:layout_constraintBottom_toBottomOf="@id/iv_speaker"
             app:layout_constraintStart_toEndOf="@id/iv_speaker"
             app:layout_constraintTop_toTopOf="@id/iv_speaker"
