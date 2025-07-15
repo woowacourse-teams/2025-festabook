@@ -71,13 +71,15 @@ class PlaceListScrollBehavior(
             return
         }
 
-        val currentTranslationY = child.translationY
-        val newTranslationY = currentTranslationY - dy
-        val maxHeight = child.rootView.height.toFloat()
-        val limitedTranslationY = newTranslationY.coerceIn(0f, maxHeight - minimumY)
-        child.translationY = limitedTranslationY
-        child.scrollAnimation(limitedTranslationY)
-        consumed[1] = limitedTranslationY.toInt()
+        child.apply {
+            val currentTranslationY = translationY
+            val newTranslationY = currentTranslationY - dy
+            val maxHeight = rootView.height.toFloat()
+            val limitedTranslationY = newTranslationY.coerceIn(0f, maxHeight - minimumY)
+            translationY = limitedTranslationY
+            scrollAnimation(limitedTranslationY)
+            consumed[1] = limitedTranslationY.toInt()
+        }
     }
 
     override fun onNestedScroll(
