@@ -3,8 +3,8 @@ name: Backend CI/CD
 on:
   push:
     branches:
-      # main 브랜치에 푸시될(코드 변화) 때 트리거
-      - main
+      # backend 브랜치에 푸시될(코드 변화) 때 트리거
+      - backend
     paths:
       # backend 디렉토리 내의 파일 변경 시 트리거
       - 'backend/**'
