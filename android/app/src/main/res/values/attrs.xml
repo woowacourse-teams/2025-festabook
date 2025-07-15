@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="PlaceListScrollBehavior">
+        <attr name="initialY" format="dimension" />
+        <attr name="minimumY" format="dimension" />
+    </declare-styleable>
+</resources>

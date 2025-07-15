@@ -8,6 +8,16 @@
     <string name="menu_news_title">소식</string>
     <string name="menu_setting_title">설정</string>
 
+    <!--한 눈에 보기 화면 -->
+    <string name="place_list_title">한 눈에 보기</string>
+    <string name="place_list_title_booth">부스</string>
+    <string name="place_list_title_bar">주점</string>
+    <string name="place_list_title_food_truck">푸드트럭</string>
+
+    <!--플레이스 상세 화면-->
+    <string name="place_detail_notice_description">최근 3개의 공지사항만 표시됩니다</string>
+    <string name="place_detail_notice_title">공지사항</string>
+
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
     <!--일정 화면-->
@@ -15,6 +25,7 @@
     <string name="schedule_status_upcoming">예정</string>
     <string name="schedule_status_ongoing">진행중</string>
     <string name="schedule_status_completed">종료</string>
+
     <!-- 아이콘 contentDescription   -->
     <string name="schedule_location">위치</string>
     <string name="schedule_time">시간</string>
@@ -26,4 +37,7 @@
 
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
+    <string name="content_description_iv_location">위치 아이콘</string>
+    <string name="content_description_booth_image">부스 이미지</string>
+
 </resources>
