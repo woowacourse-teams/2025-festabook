@@ -103,7 +103,9 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_조직의_모든_플레이스_조회() {
             // given
-            List<Organization> organizations = OrganizationFixture.createList(2);
+            int expectedSize = 2;
+
+            List<Organization> organizations = OrganizationFixture.createList(expectedSize);
             organizationJpaRepository.saveAll(organizations);
 
             List<Place> places = List.of(
@@ -112,8 +114,6 @@ class PlaceControllerTest {
                     PlaceFixture.create(organizations.get(1))
             );
             placeJpaRepository.saveAll(places);
-
-            int expectedSize = 2;
 
             // when & then
             RestAssured
@@ -168,10 +168,12 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_플레이스의_모든_공지_조회() {
             // given
+            int expectedSize = 2;
+
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<Place> places = PlaceFixture.createList(2, organization);
+            List<Place> places = PlaceFixture.createList(expectedSize, organization);
             placeJpaRepository.saveAll(places);
 
             List<PlaceAnnouncement> placeAnnouncements = List.of(
@@ -180,8 +182,6 @@ class PlaceControllerTest {
                     PlaceAnnouncementFixture.create(places.get(1))
             );
             placeAnnouncementJpaRepository.saveAll(placeAnnouncements);
-
-            int expectedSize = 2;
 
             // when & then
             RestAssured
@@ -233,10 +233,12 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_플레이스의_모든_이미지_조회() {
             // given
+            int expectedSize = 2;
+
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<Place> places = PlaceFixture.createList(2, organization);
+            List<Place> places = PlaceFixture.createList(expectedSize, organization);
             placeJpaRepository.saveAll(places);
 
             List<PlaceImage> placeImages = List.of(
@@ -245,8 +247,6 @@ class PlaceControllerTest {
                     PlaceImageFixture.create(places.get(1))
             );
             placeImageJpaRepository.saveAll(placeImages);
-
-            int expectedSize = 2;
 
             // when & then
             RestAssured
