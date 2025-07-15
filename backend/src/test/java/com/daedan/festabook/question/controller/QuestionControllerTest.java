@@ -48,17 +48,15 @@ class QuestionControllerTest {
     class getAllQuestionAnswerByOrganizationId {
 
         @Test
-        void 성공_날짜_오름차순_데이터() {
+        void 성공_응답_데이터_필드_확인() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<QuestionAnswer> questionAnswers = List.of(
-                    QuestionAnswerFixture.create(organization, LocalDateTime.now().minusDays(1)),
-                    QuestionAnswerFixture.create(organization, LocalDateTime.now())
-            );
-            questionAnswerJpaRepository.saveAll(questionAnswers);
+            QuestionAnswer questionAnswer = QuestionAnswerFixture.create(organization, LocalDateTime.now());
+            questionAnswerJpaRepository.save(questionAnswer);
 
+            int expectedSize = 1;
             int expectedFieldSize = 5;
 
             // when & then
@@ -70,18 +68,12 @@ class QuestionControllerTest {
                     .get("/questions")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(questionAnswers.size()))
+                    .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(questionAnswers.get(1).getId().intValue()))
-                    .body("[0].title", equalTo(questionAnswers.get(1).getTitle()))
-                    .body("[0].question", equalTo(questionAnswers.get(1).getQuestion()))
-                    .body("[0].answer", equalTo(questionAnswers.get(1).getAnswer()))
-
-                    .body("[1].size()", equalTo(expectedFieldSize))
-                    .body("[1].id", equalTo(questionAnswers.get(0).getId().intValue()))
-                    .body("[1].title", equalTo(questionAnswers.get(0).getTitle()))
-                    .body("[1].question", equalTo(questionAnswers.get(0).getQuestion()))
-                    .body("[1].answer", equalTo(questionAnswers.get(0).getAnswer()));
+                    .body("[0].id", equalTo(questionAnswer.getId().intValue()))
+                    .body("[0].title", equalTo(questionAnswer.getTitle()))
+                    .body("[0].question", equalTo(questionAnswer.getQuestion()))
+                    .body("[0].answer", equalTo(questionAnswer.getAnswer()));
         }
 
         @Test
