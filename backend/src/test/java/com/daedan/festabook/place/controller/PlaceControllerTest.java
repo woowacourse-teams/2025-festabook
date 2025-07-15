@@ -10,7 +10,6 @@ import com.daedan.festabook.orgnaization.domain.OrganizationFixture;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
-import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
@@ -18,7 +17,6 @@ import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
-import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -66,16 +64,7 @@ class PlaceControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            Place place = PlaceFixture.create(
-                    organization,
-                    "코딩하며 한잔",
-                    "시원한 맥주와 시원한 치킨!",
-                    PlaceCategory.BAR,
-                    "공학관 앞",
-                    "C블C블",
-                    LocalTime.of(9, 0),
-                    LocalTime.of(18, 0)
-            );
+            Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
             int expectedSize = 1;
@@ -140,11 +129,7 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(
-                    place,
-                    "치킨 재고 소진되었습니다.",
-                    "앞으로 더 좋은 주점으로 찾아뵙겠습니다."
-            );
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
             placeAnnouncementJpaRepository.save(placeAnnouncement);
 
             int expectedSize = 1;
@@ -208,10 +193,7 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceImage placeImage = PlaceImageFixture.create(
-                    place,
-                    "https://example.com/image1.jpg"
-            );
+            PlaceImage placeImage = PlaceImageFixture.create(place);
             placeImageJpaRepository.save(placeImage);
 
             int expectedSize = 1;
