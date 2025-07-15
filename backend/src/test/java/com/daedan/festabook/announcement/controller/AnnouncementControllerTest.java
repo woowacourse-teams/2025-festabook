@@ -49,9 +49,11 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
 
-            Announcement announcement = announcementJpaRepository.save(AnnouncementFixture.create(organization));
+            Announcement announcement = AnnouncementFixture.create(organization);
+            announcementJpaRepository.save(announcement);
 
             int expectedSize = 1;
             int expectedFieldSize = 5;
@@ -76,7 +78,8 @@ class AnnouncementControllerTest {
         @Test
         void 성공_여러_값_조회() {
             // given
-            Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
 
             int expectedSize = 3;
             List<Announcement> announcements = AnnouncementFixture.createList(expectedSize, organization);
@@ -101,8 +104,9 @@ class AnnouncementControllerTest {
         @Test
         void 성공_서로_다른_조직() {
             // given
-            Organization targetOrganization = organizationJpaRepository.save(OrganizationFixture.create());
-            Organization anotherOrganization = organizationJpaRepository.save(OrganizationFixture.create());
+            Organization targetOrganization = OrganizationFixture.create();
+            Organization anotherOrganization = OrganizationFixture.create();
+            organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
 
             int expectedSize = 3;
             List<Announcement> targetAnnouncements = AnnouncementFixture.createList(expectedSize, targetOrganization);
