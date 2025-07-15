@@ -88,7 +88,7 @@ class QuestionControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            QuestionAnswer questionAnswer = QuestionAnswerFixture.create(organization, LocalDateTime.now());
+            QuestionAnswer questionAnswer = QuestionAnswerFixture.create(organization);
             questionAnswerJpaRepository.save(questionAnswer);
 
             int expectedSize = 1;
