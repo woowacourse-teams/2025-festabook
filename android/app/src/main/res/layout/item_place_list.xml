@@ -42,18 +42,12 @@
             android:layout_height="17dp"
             android:layout_marginStart="16dp"
             android:layout_marginTop="0dp"
+            app:cardBackgroundColor="@color/gray900"
             app:cardCornerRadius="6dp"
             app:layout_constraintStart_toEndOf="@id/cv_place_image"
             app:layout_constraintTop_toTopOf="@id/cv_place_image"
             app:strokeWidth="0dp"
             app:category="@{place.category}">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/gray900"
-                android:contentDescription="@string/content_description_booth_image"
-                android:scaleType="centerCrop" />
 
             <TextView
                 android:layout_width="wrap_content"
