@@ -32,7 +32,7 @@ public class PlaceController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "모든 플레이스 조회 (organizationId 헤더 필요)")
+    @Operation(summary = "특정 조직의 모든 플레이스 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })

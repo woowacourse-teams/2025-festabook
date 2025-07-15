@@ -15,6 +15,16 @@ public class PlaceAnnouncementFixture {
     }
 
     public static PlaceAnnouncement create(
+            Place place
+    ) {
+        return new PlaceAnnouncement(
+                place,
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT
+        );
+    }
+
+    public static PlaceAnnouncement create(
             Place place,
             String title,
             String content

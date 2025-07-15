@@ -13,6 +13,15 @@ public class PlaceImageFixture {
     }
 
     public static PlaceImage create(
+            Place place
+    ) {
+        return new PlaceImage(
+                place,
+                DEFAULT_IMAGE_URL
+        );
+    }
+
+    public static PlaceImage create(
             Place place,
             String imageUrl
     ) {
