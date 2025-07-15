@@ -15,4 +15,5 @@
     <string name="iv_speaker">speaker</string>
     <string name="place_detail_notice_description">최근 3개의 공지사항만 표시됩니다</string>
     <string name="place_detail_notice_title">공지사항</string>
+    <string name="content_description_iv_location">위치 아이콘</string>
 </resources>
