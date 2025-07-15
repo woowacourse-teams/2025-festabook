@@ -1,8 +1,8 @@
 package com.daedan.festabook.schedule.controller;
 
 import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.is;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
@@ -75,9 +75,9 @@ class ScheduleControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
-                    .body("[0].size()", is(expectedFieldSize))
-                    .body("[0].id", is(eventDate.getId().intValue()))
-                    .body("[0].date", is(eventDate.getDate().toString()));
+                    .body("[0].size()", equalTo(expectedFieldSize))
+                    .body("[0].id", equalTo(eventDate.getId().intValue()))
+                    .body("[0].date", equalTo(eventDate.getDate().toString()));
         }
 
         @Test
@@ -87,9 +87,11 @@ class ScheduleControllerTest {
             Organization otherOrganization = OrganizationFixture.create("다른 학교");
             organizationJpaRepository.saveAll(List.of(organization, otherOrganization));
 
-            int expected = 4;
-            eventDateJpaRepository.saveAll(EventDateFixture.createList(expected, organization));
-            eventDateJpaRepository.saveAll(EventDateFixture.createList(5, otherOrganization));
+            int expectedSize = 4;
+            List<EventDate> eventDates = EventDateFixture.createList(expectedSize, organization);
+            List<EventDate> otherEventDates = EventDateFixture.createList(5, otherOrganization);
+            eventDateJpaRepository.saveAll(eventDates);
+            eventDateJpaRepository.saveAll(otherEventDates);
 
             // when & then
             RestAssured
@@ -99,7 +101,7 @@ class ScheduleControllerTest {
                     .get("/schedules")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expected));
+                    .body("$", hasSize(expectedSize));
         }
 
         @Test
@@ -115,9 +117,7 @@ class ScheduleControllerTest {
                     LocalDate.of(2025, 7, 19)
             );
 
-            List<EventDate> eventDates = dates.stream()
-                    .map(date -> EventDateFixture.create(organization, date))
-                    .toList();
+            List<EventDate> eventDates = EventDateFixture.createList(dates, organization);
             eventDateJpaRepository.saveAll(eventDates);
 
             List<String> expectedSortedDates = dates.stream()
@@ -151,7 +151,8 @@ class ScheduleControllerTest {
             EventDate eventDate = EventDateFixture.create(organization);
             eventDateJpaRepository.save(eventDate);
 
-            Event event = eventJpaRepository.save(EventFixture.create(eventDate));
+            Event event = EventFixture.create(eventDate);
+            eventJpaRepository.save(event);
 
             int expectedSize = 1;
             int expectedFieldSize = 6;
@@ -164,13 +165,13 @@ class ScheduleControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
-                    .body("[0].size()", is(expectedFieldSize))
-                    .body("[0].id", is(event.getId().intValue()))
-                    .body("[0].status", is(event.getStatus().name()))
-                    .body("[0].startTime", is(event.getStartTime().toString()))
-                    .body("[0].endTime", is(event.getEndTime().toString()))
-                    .body("[0].title", is(event.getTitle()))
-                    .body("[0].location", is(event.getLocation()));
+                    .body("[0].size()", equalTo(expectedFieldSize))
+                    .body("[0].id", equalTo(event.getId().intValue()))
+                    .body("[0].status", equalTo(event.getStatus().name()))
+                    .body("[0].startTime", equalTo(event.getStartTime().toString()))
+                    .body("[0].endTime", equalTo(event.getEndTime().toString()))
+                    .body("[0].title", equalTo(event.getTitle()))
+                    .body("[0].location", equalTo(event.getLocation()));
         }
 
         @Test
@@ -183,9 +184,11 @@ class ScheduleControllerTest {
             EventDate otherEventDate = EventDateFixture.create(organization, LocalDate.now().plusDays(1));
             eventDateJpaRepository.saveAll(List.of(eventDate, otherEventDate));
 
-            int expected = 3;
-            eventJpaRepository.saveAll(EventFixture.createList(expected, eventDate));
-            eventJpaRepository.saveAll(EventFixture.createList(5, otherEventDate));
+            int expectedSize = 3;
+            List<Event> events = EventFixture.createList(expectedSize, eventDate);
+            List<Event> otherEvents = EventFixture.createList(5, otherEventDate);
+            eventJpaRepository.saveAll(events);
+            eventJpaRepository.saveAll(otherEvents);
 
             // when & then
             RestAssured
@@ -194,7 +197,7 @@ class ScheduleControllerTest {
                     .get("/schedules/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expected));
+                    .body("$", hasSize(expectedSize));
         }
 
         @Test
@@ -213,8 +216,8 @@ class ScheduleControllerTest {
             );
             eventJpaRepository.saveAll(events);
 
-            List<String> startTimeExpected = List.of("12:00", "12:00", "15:00");
-            List<String> endTimeExpected = List.of("15:00", "16:00", "18:00");
+            List<String> expectedStartTime = List.of("12:00", "12:00", "15:00");
+            List<String> expectedEndTime = List.of("15:00", "16:00", "18:00");
 
             // when & then
             RestAssured
@@ -223,8 +226,8 @@ class ScheduleControllerTest {
                     .get("/schedules/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("startTime", is(startTimeExpected))
-                    .body("endTime", is(endTimeExpected));
+                    .body("startTime", equalTo(expectedStartTime))
+                    .body("endTime", equalTo(expectedEndTime));
         }
     }
 }

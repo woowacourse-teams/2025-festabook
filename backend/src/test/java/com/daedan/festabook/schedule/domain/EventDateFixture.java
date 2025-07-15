@@ -51,4 +51,10 @@ public class EventDateFixture {
                 .mapToObj(i -> create(organization))
                 .toList();
     }
+
+    public static List<EventDate> createList(List<LocalDate> dates, Organization organization) {
+        return dates.stream()
+                .map(date -> create(organization, date))
+                .toList();
+    }
 }
