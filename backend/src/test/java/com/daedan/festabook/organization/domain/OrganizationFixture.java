@@ -11,7 +11,7 @@ public class OrganizationFixture {
     }
 
     public static Organization create() {
-        return create(
+        return new Organization(
                 DEFAULT_NAME
         );
     }
