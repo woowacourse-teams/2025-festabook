@@ -56,7 +56,8 @@ class AnnouncementControllerTest {
             int expectedSize = 1;
 
             // when & then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/announcements")
@@ -80,7 +81,8 @@ class AnnouncementControllerTest {
             announcementJpaRepository.saveAll(announcements);
 
             // when & then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/announcements")
@@ -110,7 +112,8 @@ class AnnouncementControllerTest {
             announcementJpaRepository.saveAll(anotherAnnouncements);
 
             // when & then
-            RestAssured.given()
+            RestAssured
+                    .given()
                     .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
                     .when()
                     .get("/announcements")
