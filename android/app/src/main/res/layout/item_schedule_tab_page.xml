@@ -59,7 +59,7 @@
                 android:layout_marginTop="12dp"
                 android:contentDescription="@string/schedule_location"
                 android:src="@drawable/ic_location"
-                app:layout_constraintBottom_toBottomOf="@+id/cl_schedule_event_card"
+                app:layout_constraintBottom_toBottomOf="@id/cl_schedule_event_card"
                 app:layout_constraintEnd_toStartOf="@id/tv_schedule_event_location"
                 app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card" />
 
@@ -131,7 +131,7 @@
             android:elevation="11dp"
             android:src="@drawable/ic_circle_gray300"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toStartOf="@+id/cl_schedule_event_card"
+            app:layout_constraintEnd_toStartOf="@id/cl_schedule_event_card"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 

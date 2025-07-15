@@ -36,14 +36,14 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/gray300"
-            app:layout_constraintTop_toBottomOf="@+id/tl_schedule" />
+            app:layout_constraintTop_toBottomOf="@id/tl_schedule" />
 
         <androidx.viewpager2.widget.ViewPager2
             android:id="@+id/vp_schedule"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tl_schedule" />
+            app:layout_constraintTop_toBottomOf="@id/tl_schedule" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
