@@ -133,9 +133,7 @@ class ScheduleControllerTest {
                     .get("/schedules")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("date", contains(
-                            expectedSortedDates.toArray()
-                    ));
+                    .body("date", contains(expectedSortedDates.toArray()));
         }
     }
 
