@@ -16,7 +16,7 @@ import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.scrollAnimation
 
 class PlaceListScrollBehavior(
-    val context: Context,
+    private val context: Context,
     attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<ConstraintLayout>() {
     private lateinit var binding: FragmentPlaceListBinding
