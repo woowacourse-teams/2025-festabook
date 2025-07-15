@@ -56,6 +56,18 @@ public class QuestionAnswerFixture {
         );
     }
 
+    public static QuestionAnswer create(
+            Organization organization
+    ) {
+        return create(
+                organization,
+                DEFAULT_TITLE,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                DEFAULT_CREATED_AT
+        );
+    }
+
     public static QuestionAnswer create() {
         return create(
                 DEFAULT_ORGANIZATION,
@@ -64,6 +76,18 @@ public class QuestionAnswerFixture {
                 DEFAULT_ANSWER,
                 DEFAULT_CREATED_AT
         );
+    }
+
+    public static List<QuestionAnswer> createList(List<LocalDateTime> createdAts, Organization organization) {
+        return createdAts.stream()
+                .map(createdAt -> create(organization, createdAt))
+                .collect(Collectors.toList());
+    }
+
+    public static List<QuestionAnswer> createList(int size, Organization organization) {
+        return IntStream.range(0, size)
+                .mapToObj(i -> create(organization))
+                .collect(Collectors.toList());
     }
 
     public static List<QuestionAnswer> createList(int size) {
