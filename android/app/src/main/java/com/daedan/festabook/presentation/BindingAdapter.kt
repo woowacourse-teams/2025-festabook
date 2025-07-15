@@ -5,7 +5,7 @@ import android.widget.TextView
 import androidx.databinding.BindingAdapter
 import com.daedan.festabook.R
 
-@BindingAdapter("startTime", "endTime")
+@BindingAdapter("startTime", "endTime", requireAll = true)
 fun setFormatDate(
     textView: TextView,
     startTime: String?,
