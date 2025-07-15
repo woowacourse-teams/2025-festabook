@@ -10,7 +10,7 @@ import com.daedan.festabook.question.domain.QuestionAnswer;
 import com.daedan.festabook.question.domain.QuestionAnswerFixture;
 import com.daedan.festabook.question.infrastructure.QuestionAnswerJpaRepository;
 import io.restassured.RestAssured;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -45,6 +45,42 @@ class QuestionControllerTest {
 
     @Nested
     class getAllQuestionAnswerByOrganizationId {
+
+        @Test
+        void 성공_날짜_내림차순_데이터() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            List<LocalDate> dates = List.of(
+                    LocalDate.now().minusDays(1),
+                    LocalDate.now()
+            );
+
+            List<QuestionAnswer> questionAnswers = dates.stream()
+                    .map(date -> QuestionAnswerFixture.create(
+                            organization,
+                            date.atStartOfDay()
+                    ))
+                    .toList();
+            questionAnswerJpaRepository.saveAll(questionAnswers);
+
+            List<QuestionAnswer> expectedQuestionAnswers = questionAnswers.stream()
+                    .sorted((qa1, qa2) -> qa2.getCreatedAt().compareTo(qa1.getCreatedAt()))
+                    .toList();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/questions")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(questionAnswers.size()))
+                    .body("[0].id", equalTo(expectedQuestionAnswers.get(0).getId().intValue()))
+                    .body("[1].id", equalTo(expectedQuestionAnswers.get(1).getId().intValue()));
+        }
 
         @Test
         void 성공_응답_데이터_필드_확인() {
