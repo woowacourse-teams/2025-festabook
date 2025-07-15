@@ -28,14 +28,14 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class QuestionControllerTest {
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
 
     @Autowired
     private QuestionAnswerJpaRepository questionAnswerJpaRepository;
+
+    @LocalServerPort
+    private int port;
 
     @BeforeEach
     void setup() {
