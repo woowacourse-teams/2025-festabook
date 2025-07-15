@@ -1,6 +1,5 @@
 package com.daedan.festabook.presentation.placeList
 
-import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
@@ -11,7 +10,10 @@ import com.daedan.festabook.presentation.placeList.uimodel.PlaceCategory
 import com.google.android.material.card.MaterialCardView
 
 @BindingAdapter("category")
-fun setCategory(view: MaterialCardView, category: PlaceCategory) {
+fun setCategory(
+    view: MaterialCardView,
+    category: PlaceCategory,
+) {
     val density = view.context.resources.displayMetrics.density
     val layoutParams = view.layoutParams
     when (category) {
@@ -20,20 +22,28 @@ fun setCategory(view: MaterialCardView, category: PlaceCategory) {
         PlaceCategory.BOOTH -> layoutParams.width = (34 * density).toInt()
     }
     view.layoutParams = layoutParams
-
 }
 
 @BindingAdapter("category")
-fun setCategory(view: TextView, category: PlaceCategory) {
+fun setCategory(
+    view: TextView,
+    category: PlaceCategory,
+) {
     when (category) {
-        PlaceCategory.FOOD_TRUCK -> view.text = view.context.getString(R.string.place_list_title_food_truck)
+        PlaceCategory.FOOD_TRUCK ->
+            view.text =
+                view.context.getString(R.string.place_list_title_food_truck)
+
         PlaceCategory.BAR -> view.text = view.context.getString(R.string.place_list_title_bar)
         PlaceCategory.BOOTH -> view.text = view.context.getString(R.string.place_list_title_booth)
     }
 }
 
 @BindingAdapter("imageUrl")
-fun setImage(view: ImageView, imageUrl: String) {
+fun setImage(
+    view: ImageView,
+    imageUrl: String,
+) {
     view.load(imageUrl) {
         crossfade(true)
     }
