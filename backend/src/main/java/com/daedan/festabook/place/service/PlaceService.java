@@ -19,15 +19,15 @@ import org.springframework.stereotype.Service;
 public class PlaceService {
 
     private final PlaceJpaRepository placeJpaRepository;
-    private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
+    private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     public PlaceListResponses getAllPlaceByOrganizationId(Long organizationId) {
         List<Place> places = placeJpaRepository.findAllByOrganizationId(organizationId);
         List<Long> placeIds = places.stream()
                 .map(Place::getId)
                 .toList();
-        List<PlaceImage> images = placeImageJpaRepository.findAllByPlaceIdIn((placeIds));
+        List<PlaceImage> images = placeImageJpaRepository.findAllByPlaceIdIn(placeIds);
 
         return PlaceListResponses.from(places, images);
     }

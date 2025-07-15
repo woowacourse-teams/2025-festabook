@@ -67,8 +67,11 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
+            PlaceImage placeImage = PlaceImageFixture.create(place);
+            placeImageJpaRepository.save(placeImage);
+
             int expectedSize = 1;
-            int expectedFieldSize = 8;
+            int expectedFieldSize = 6;
 
             // when & then
             RestAssured
@@ -81,28 +84,32 @@ class PlaceControllerTest {
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].id", equalTo(place.getId().intValue()))
+                    .body("[0].imageUrl", equalTo(placeImage.getImageUrl()))
+                    .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].title", equalTo(place.getTitle()))
                     .body("[0].description", equalTo(place.getDescription()))
-                    .body("[0].category", equalTo(place.getCategory().name()))
-                    .body("[0].location", equalTo(place.getLocation()))
-                    .body("[0].host", equalTo(place.getHost()))
-                    .body("[0].startTime", equalTo(place.getStartTime().toString()))
-                    .body("[0].endTime", equalTo(place.getEndTime().toString()));
+                    .body("[0].location", equalTo(place.getLocation()));
         }
 
         @Test
-        void 성공_특정_조직의_모든_플레이스_조회() {
+        void 성공_특정_조직의_모든_플레이스_리스트_조회() {
             // given
             Organization targetOrganization = OrganizationFixture.create();
             Organization anotherOrganization = OrganizationFixture.create();
             organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
 
-            List<Place> places = List.of(
-                    PlaceFixture.create(targetOrganization),
-                    PlaceFixture.create(targetOrganization),
-                    PlaceFixture.create(anotherOrganization)
-            );
+            Place targetPlace1 = PlaceFixture.create(targetOrganization);
+            Place targetPlace2 = PlaceFixture.create(targetOrganization);
+            Place anotherPlace = PlaceFixture.create(anotherOrganization);
+            List<Place> places = List.of(targetPlace1, targetPlace2, anotherPlace);
             placeJpaRepository.saveAll(places);
+
+            List<PlaceImage> placeImages = List.of(
+                    PlaceImageFixture.create(targetPlace1),
+                    PlaceImageFixture.create(targetPlace2),
+                    PlaceImageFixture.create(anotherPlace)
+            );
+            placeImageJpaRepository.saveAll(placeImages);
 
             int expectedSize = 2;
 
@@ -119,7 +126,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getAllPlaceAnnouncementByPlaceId {
+    class getPlaceById {
 
         @Test
         void 성공() {
@@ -130,119 +137,49 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
-            placeAnnouncementJpaRepository.save(placeAnnouncement);
+            PlaceImage placeImage1 = PlaceImageFixture.create(place);
+            placeImageJpaRepository.save(placeImage1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place);
+            placeImageJpaRepository.save(placeImage2);
 
-            int expectedSize = 1;
-            int expectedFieldSize = 4;
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.save(placeAnnouncement1);
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.save(placeAnnouncement2);
 
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/places/{placeId}/announcements", place.getId())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(placeAnnouncement.getId().intValue()))
-                    .body("[0].title", equalTo(placeAnnouncement.getTitle()))
-                    .body("[0].content", equalTo(placeAnnouncement.getContent()))
-                    .body("[0].createdAt", notNullValue());
-        }
-
-        @Test
-        void 성공_특정_플레이스의_모든_공지_조회() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            Place targetPlace = PlaceFixture.create(organization);
-            Place anotherPlace = PlaceFixture.create(organization);
-            placeJpaRepository.saveAll(List.of(targetPlace, anotherPlace));
-
-            List<PlaceAnnouncement> placeAnnouncements = List.of(
-                    PlaceAnnouncementFixture.create(targetPlace),
-                    PlaceAnnouncementFixture.create(targetPlace),
-                    PlaceAnnouncementFixture.create(anotherPlace)
-            );
-            placeAnnouncementJpaRepository.saveAll(placeAnnouncements);
-
-            int expectedSize = 2;
+            int expectedFieldSize = 10;
+            int expectedPlaceImagesSize = 2;
+            int expectedPlaceAnnouncementsSize = 2;
 
             // when & then
             RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places/{placeId}/announcements", targetPlace.getId())
+                    .get("/places/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize));
-        }
-    }
-
-    @Nested
-    class getAllPlaceImageByPlaceId {
-
-        @Test
-        void 성공() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            Place place = PlaceFixture.create(organization);
-            placeJpaRepository.save(place);
-
-            PlaceImage placeImage = PlaceImageFixture.create(place);
-            placeImageJpaRepository.save(placeImage);
-
-            int expectedSize = 1;
-            int expectedFieldSize = 2;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/places/{placeId}/images", place.getId())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(placeImage.getId().intValue()))
-                    .body("[0].imageUrl", equalTo(placeImage.getImageUrl()));
-        }
-
-        @Test
-        void 성공_특정_플레이스의_모든_이미지_조회() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            Place targetPlace = PlaceFixture.create(organization);
-            Place anotherPlace = PlaceFixture.create(organization);
-            placeJpaRepository.saveAll(List.of(targetPlace, anotherPlace));
-
-            List<PlaceImage> placeImages = List.of(
-                    PlaceImageFixture.create(targetPlace),
-                    PlaceImageFixture.create(targetPlace),
-                    PlaceImageFixture.create(anotherPlace)
-            );
-            placeImageJpaRepository.saveAll(placeImages);
-
-            int expectedSize = 2;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/places/{placeId}/images", targetPlace.getId())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize));
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("id", equalTo(place.getId().intValue()))
+                    .body("placeImages", hasSize(expectedPlaceImagesSize))
+                    .body("placeImages[0].id", equalTo(placeImage1.getId().intValue()))
+                    .body("placeImages[0].imageUrl", equalTo(placeImage1.getImageUrl()))
+                    .body("category", equalTo(place.getCategory().name()))
+                    .body("title", equalTo(place.getTitle()))
+                    .body("startTime", equalTo(place.getStartTime().toString()))
+                    .body("endTime", equalTo(place.getEndTime().toString()))
+                    .body("location", equalTo(place.getLocation()))
+                    .body("host", equalTo(place.getHost()))
+                    .body("description", equalTo(place.getDescription()))
+                    .body("placeAnnouncements", hasSize(expectedPlaceAnnouncementsSize))
+                    .body("placeAnnouncements[0].id", equalTo(placeAnnouncement1.getId().intValue()))
+                    .body("placeAnnouncements[0].title", equalTo(placeAnnouncement1.getTitle()))
+                    .body("placeAnnouncements[0].content", equalTo(placeAnnouncement1.getContent()))
+                    .body("placeAnnouncements[0].createdAt", notNullValue())
+                    .body("placeAnnouncements[1].id", equalTo(placeAnnouncement2.getId().intValue()))
+                    .body("placeAnnouncements[1].title", equalTo(placeAnnouncement2.getTitle()))
+                    .body("placeAnnouncements[1].content", equalTo(placeAnnouncement2.getContent()))
+                    .body("placeAnnouncements[1].createdAt", notNullValue());
         }
     }
 }
