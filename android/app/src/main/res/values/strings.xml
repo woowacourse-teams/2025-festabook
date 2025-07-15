@@ -1,10 +1,25 @@
 <resources>
     <string name="app_name">Festabook</string>
+
+    <!--바텀 네비게이션 바-->
     <string name="menu_home_title">홈</string>
     <string name="menu_schedule_title">일정</string>
     <string name="menu_map_title">지도</string>
     <string name="menu_news_title">소식</string>
     <string name="menu_setting_title">설정</string>
+
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <!--일정 화면-->
+    <string name="schedule_title">일정 타임라인</string>
+    <string name="schedule_status_upcoming">예정</string>
+    <string name="schedule_status_ongoing">진행중</string>
+    <string name="schedule_status_completed">종료</string>
+    <!-- 아이콘 contentDescription   -->
+    <string name="schedule_location">위치</string>
+    <string name="schedule_time">시간</string>
+    <string name="all_book_mark">북마크</string>
+    <string name="schedule_circle">원</string>
 
     <!-- News Screen -->
     <string name="news_title">소식</string>
