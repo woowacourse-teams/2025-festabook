@@ -5,7 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewmodel.CreationExtras
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.ScheduleRepository
 import com.daedan.festabook.presentation.schedule.mapper.toUiModel
@@ -52,15 +53,11 @@ class ScheduleViewModel(
 
     companion object {
         val Factory: ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(
-                    modelClass: Class<T>,
-                    extras: CreationExtras,
-                ): T {
-                    val application = checkNotNull(extras[APPLICATION_KEY]) as FestaBookApp
-                    return ScheduleViewModel(
-                        scheduleRepository = application.scheduleRepository,
-                    ) as T
+            viewModelFactory {
+                initializer {
+                    val scheduleRepository =
+                        (this[APPLICATION_KEY] as FestaBookApp).scheduleRepository
+                    ScheduleViewModel(scheduleRepository)
                 }
             }
     }
