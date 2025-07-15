@@ -173,6 +173,7 @@
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_place_notice"
+                android:layout_marginHorizontal="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"
