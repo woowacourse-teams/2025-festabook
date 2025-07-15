@@ -54,6 +54,7 @@ class AnnouncementControllerTest {
             Announcement announcement = announcementJpaRepository.save(AnnouncementFixture.create(organization));
 
             int expectedSize = 1;
+            int expectedFieldSize = 5;
 
             // when & then
             RestAssured
@@ -64,6 +65,7 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
+                    .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].id", equalTo(announcement.getId().intValue()))
                     .body("[0].title", equalTo(announcement.getTitle()))
                     .body("[0].content", equalTo(announcement.getContent()))
