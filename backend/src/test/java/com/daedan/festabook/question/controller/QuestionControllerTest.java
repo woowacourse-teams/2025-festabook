@@ -10,7 +10,6 @@ import com.daedan.festabook.question.domain.QuestionAnswer;
 import com.daedan.festabook.question.domain.QuestionAnswerFixture;
 import com.daedan.festabook.question.infrastructure.QuestionAnswerJpaRepository;
 import io.restassured.RestAssured;
-import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -62,7 +61,6 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .contentType(ContentType.JSON)
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
                     .get("/questions")
@@ -93,7 +91,6 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .contentType(ContentType.JSON)
                     .header(ORGANIZATION_HEADER_NAME, checkOrganization.getId())
                     .when()
                     .get("/questions")
