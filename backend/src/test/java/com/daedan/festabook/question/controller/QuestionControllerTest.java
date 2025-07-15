@@ -10,7 +10,7 @@ import com.daedan.festabook.question.domain.QuestionAnswer;
 import com.daedan.festabook.question.domain.QuestionAnswerFixture;
 import com.daedan.festabook.question.infrastructure.QuestionAnswerJpaRepository;
 import io.restassured.RestAssured;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -52,15 +52,15 @@ class QuestionControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<LocalDate> dates = List.of(
-                    LocalDate.now().minusDays(1),
-                    LocalDate.now()
+            List<LocalDateTime> dateTimes = List.of(
+                    LocalDateTime.now().minusDays(1),
+                    LocalDateTime.now()
             );
 
-            List<QuestionAnswer> questionAnswers = dates.stream()
-                    .map(date -> QuestionAnswerFixture.create(
+            List<QuestionAnswer> questionAnswers = dateTimes.stream()
+                    .map(dateTime -> QuestionAnswerFixture.create(
                             organization,
-                            date.atStartOfDay()
+                            dateTime
                     ))
                     .toList();
             questionAnswerJpaRepository.saveAll(questionAnswers);
