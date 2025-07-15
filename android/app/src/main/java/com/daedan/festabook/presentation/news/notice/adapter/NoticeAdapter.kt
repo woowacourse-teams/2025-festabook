@@ -24,7 +24,7 @@ class NoticeAdapter : ListAdapter<NoticeUiModel, NoticeViewHolder>(noticeDiffCal
                 override fun areItemsTheSame(
                     oldItem: NoticeUiModel,
                     newItem: NoticeUiModel,
-                ): Boolean = oldItem.title == newItem.title
+                ): Boolean = oldItem.id == newItem.id
 
                 override fun areContentsTheSame(
                     oldItem: NoticeUiModel,
