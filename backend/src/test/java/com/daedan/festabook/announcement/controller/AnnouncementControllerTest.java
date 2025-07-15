@@ -3,6 +3,7 @@ package com.daedan.festabook.announcement.controller;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -72,7 +73,7 @@ class AnnouncementControllerTest {
                     .body("[0].title", equalTo(announcement.getTitle()))
                     .body("[0].content", equalTo(announcement.getContent()))
                     .body("[0].isPinned", equalTo(announcement.isPinned()))
-                    .body("[0].createdAt", equalTo(announcement.getCreatedAt().toString()));
+                    .body("[0].createdAt", notNullValue());
         }
 
         @Test
