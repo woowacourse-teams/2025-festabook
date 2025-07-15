@@ -7,7 +7,8 @@ import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.Header
 import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.PlaceViewHolder
 import com.daedan.festabook.presentation.placeList.uimodel.Place
 
-class PlaceListAdapter : ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
+class PlaceListAdapter :
+    ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,

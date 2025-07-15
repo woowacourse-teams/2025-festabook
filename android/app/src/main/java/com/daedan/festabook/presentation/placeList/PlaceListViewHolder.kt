@@ -14,21 +14,29 @@ sealed class PlaceListViewHolder(
 
     class PlaceViewHolder private constructor(
         private val binding: ItemPlaceListBinding,
+        handler: PlaceListHandler,
     ) : PlaceListViewHolder(binding) {
+        init {
+            binding.handler = handler
+        }
+
         override fun bind(place: Place) {
             binding.place = place
         }
 
         companion object {
             val VIEW_TYPE = 0
-
-            fun of(parent: ViewGroup): PlaceViewHolder =
+            fun of(
+                parent: ViewGroup,
+                handler: PlaceListHandler,
+            ): PlaceViewHolder =
                 PlaceViewHolder(
                     ItemPlaceListBinding.inflate(
                         android.view.LayoutInflater.from(parent.context),
                         parent,
                         false,
                     ),
+                    handler,
                 )
         }
     }
