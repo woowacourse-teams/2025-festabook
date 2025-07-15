@@ -17,11 +17,5 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         super.onViewCreated(view, savedInstanceState)
 
         binding.rvNoticeList.adapter = noticeAdapter
-        val notices =
-            listOf(
-                NoticeUiModel("제목1", "설명1", "2025-07-14T05:22:39.963Z"),
-                NoticeUiModel("제목2", "설명2", "2025-07-13T11:11:39.963Z"),
-            )
-        noticeAdapter.submitList(notices)
     }
 }
