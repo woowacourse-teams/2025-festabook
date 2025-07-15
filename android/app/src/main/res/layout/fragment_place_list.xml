@@ -15,7 +15,7 @@
             android:background="@drawable/bg_place_list"
             app:initialY="320dp"
             app:layout_behavior="com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior"
-            app:minimumY="110dp">
+            app:minimumY="220dp">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_places"
