@@ -5,11 +5,17 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+
+    private val placeListFragment by lazy {
+        PlaceListFragment().newInstance()
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -22,9 +28,55 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
-        val fragment = PlaceListFragment()
-        val fragmentTransaction = supportFragmentManager.beginTransaction()
-        fragmentTransaction.replace(R.id.fcv_fragment_container, fragment)
-        fragmentTransaction.commit()
+        if (savedInstanceState == null) {
+            supportFragmentManager.commit {
+                add(R.id.fcv_fragment_container, placeListFragment, TAG_HOME_FRAGMENT)
+            }
+        }
+        onClickBottomNavigationBarItem()
+    }
+
+    private fun onClickBottomNavigationBarItem() {
+        binding.bnvMenu.setOnItemSelectedListener { icon ->
+
+            if (binding.bnvMenu.selectedItemId == icon.itemId) {
+                return@setOnItemSelectedListener false
+            }
+            when (icon.itemId) {
+                R.id.item_menu_home -> Unit
+                R.id.item_menu_schedule -> Unit
+                R.id.item_menu_map -> switchFragment(placeListFragment, TAG_HOME_FRAGMENT)
+                R.id.item_menu_news -> {}
+                R.id.item_menu_setting -> {}
+            }
+            true
+        }
+    }
+
+    private fun switchFragment(
+        fragment: Fragment,
+        tag: String,
+    ) {
+        supportFragmentManager.commit {
+            supportFragmentManager.fragments.forEach { fragment -> hide(fragment) }
+
+            val existing = supportFragmentManager.findFragmentByTag(tag)
+            if (existing != null) {
+                show(existing)
+            } else {
+                add(R.id.fcv_fragment_container, fragment, tag)
+            }
+            setReorderingAllowed(true)
+        }
+    }
+
+    companion object {
+        private const val TAG_HOME_FRAGMENT = "homeFragment"
+        private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
+
+        fun Fragment.newInstance(): Fragment =
+            this.apply {
+                arguments = Bundle()
+            }
     }
 }

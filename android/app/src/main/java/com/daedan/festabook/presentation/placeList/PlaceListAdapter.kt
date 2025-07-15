@@ -3,6 +3,8 @@ package com.daedan.festabook.presentation.placeList
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.Header
+import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.PlaceViewHolder
 import com.daedan.festabook.presentation.placeList.uimodel.Place
 
 class PlaceListAdapter : ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
@@ -10,10 +12,9 @@ class PlaceListAdapter : ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
         parent: ViewGroup,
         viewType: Int,
     ): PlaceListViewHolder =
-        when (viewType) {
-            PlaceListViewHolder.VIEW_TYPE_HEADER -> PlaceListViewHolder.Header.of(parent)
-            PlaceListViewHolder.VIEW_TYPE_ITEM -> PlaceListViewHolder.PlaceViewHolder.of(parent)
-            else -> throw IllegalArgumentException(ERR_INVALID_VIEW_TYPE)
+        when (PlaceListViewHolder.ViewType.find(viewType)) {
+            PlaceListViewHolder.ViewType.HEADER -> Header.of(parent)
+            PlaceListViewHolder.ViewType.ITEM -> PlaceViewHolder.of(parent)
         }
 
     override fun onBindViewHolder(
@@ -25,14 +26,13 @@ class PlaceListAdapter : ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
 
     override fun getItemViewType(position: Int): Int =
         if (position == POSITION_HEADER) {
-            PlaceListViewHolder.VIEW_TYPE_HEADER
+            Header.VIEW_TYPE
         } else {
-            PlaceListViewHolder.VIEW_TYPE_ITEM
+            PlaceViewHolder.VIEW_TYPE
         }
 
     companion object {
         private const val POSITION_HEADER = 0
-        private const val ERR_INVALID_VIEW_TYPE = "Invalid view type"
         private val DIFF_UTIL =
             object : DiffUtil.ItemCallback<Place>() {
                 override fun areItemsTheSame(

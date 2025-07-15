@@ -20,6 +20,8 @@ sealed class PlaceListViewHolder(
         }
 
         companion object {
+            val VIEW_TYPE = 0
+
             fun of(parent: ViewGroup): PlaceViewHolder =
                 PlaceViewHolder(
                     ItemPlaceListBinding.inflate(
@@ -37,6 +39,8 @@ sealed class PlaceListViewHolder(
         override fun bind(place: Place) = Unit
 
         companion object {
+            val VIEW_TYPE = 1
+
             fun of(parent: ViewGroup): Header =
                 Header(
                     ItemPlaceListHeaderBinding.inflate(
@@ -48,8 +52,18 @@ sealed class PlaceListViewHolder(
         }
     }
 
-    companion object {
-        const val VIEW_TYPE_HEADER = 0
-        const val VIEW_TYPE_ITEM = 1
+    enum class ViewType {
+        HEADER,
+        ITEM,
+        ;
+
+        companion object {
+            fun find(viewType: Int): ViewType =
+                when (viewType) {
+                    Header.VIEW_TYPE -> HEADER
+                    PlaceViewHolder.VIEW_TYPE -> ITEM
+                    else -> throw IllegalArgumentException("Invalid view type")
+                }
+        }
     }
 }
