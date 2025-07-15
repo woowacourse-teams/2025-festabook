@@ -17,4 +17,10 @@
 
     <!--red-->
     <color name="red400">#FFFF4B3E</color>
+
+    <!--blue-->
+    <color name="blue400">#0094FF</color>
+
+    <!--green-->
+    <color name="green400">#00AB40</color>
 </resources>

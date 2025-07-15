@@ -1,5 +1,6 @@
 package com.daedan.festabook.schedule.service;
 
+import com.daedan.festabook.schedule.domain.Event;
 import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
@@ -24,6 +25,9 @@ public class ScheduleService {
     }
 
     public EventResponses getAllEventByEventDateId(Long eventDateId) {
-        return EventResponses.from(eventJpaRepository.findAllByEventDateId(eventDateId));
+        List<Event> events = eventJpaRepository.findAllByEventDateId(eventDateId).stream()
+                .sorted()
+                .toList();
+        return EventResponses.from(events);
     }
 }

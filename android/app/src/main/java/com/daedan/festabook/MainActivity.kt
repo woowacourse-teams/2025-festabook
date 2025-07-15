@@ -9,12 +9,21 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
+import com.daedan.festabook.presentation.schedule.ScheduleFragment
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val placeListFragment by lazy {
         PlaceListFragment().newInstance()
+    }
+
+    private val homeFragment by lazy {
+        HomeFragment().newInstance()
+    }
+
+    private val scheduleFragment by lazy {
+        ScheduleFragment().newInstance()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

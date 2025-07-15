@@ -61,8 +61,8 @@ class ScheduleServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.eventDate()).hasSize(2);
-                s.assertThat(result.eventDate().getFirst().date()).isEqualTo(expected);
+                s.assertThat(result.responses()).hasSize(2);
+                s.assertThat(result.responses().getFirst().date()).isEqualTo(expected);
             });
         }
 
@@ -82,7 +82,7 @@ class ScheduleServiceTest {
             EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
 
             // then
-            assertThat(result.eventDate())
+            assertThat(result.responses())
                     .extracting(EventDateResponse::date)
                     .containsExactly(
                             eventDate3.getDate(),
@@ -100,8 +100,8 @@ class ScheduleServiceTest {
             // given
             Long eventDateId = 1L;
 
-            Event event1 = EventFixture.create("무대 공연", EventStatus.COMPLETED);
-            Event event2 = EventFixture.create("부스 운영", EventStatus.UPCOMING);
+            Event event1 = EventFixture.create(EventStatus.COMPLETED, "무대 공연");
+            Event event2 = EventFixture.create(EventStatus.UPCOMING, "부스 운영");
 
             given(eventJpaRepository.findAllByEventDateId(eventDateId))
                     .willReturn(List.of(event1, event2));

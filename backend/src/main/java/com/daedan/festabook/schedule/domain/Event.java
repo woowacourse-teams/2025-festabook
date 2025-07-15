@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Event {
+public class Event implements Comparable<Event> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -57,5 +57,13 @@ public class Event {
         this.title = title;
         this.location = location;
         this.eventDate = eventDate;
+    }
+
+    @Override
+    public int compareTo(Event otherEvent) {
+        if (startTime.equals(otherEvent.startTime)) {
+            return endTime.compareTo(otherEvent.endTime);
+        }
+        return startTime.compareTo(otherEvent.startTime);
     }
 }
