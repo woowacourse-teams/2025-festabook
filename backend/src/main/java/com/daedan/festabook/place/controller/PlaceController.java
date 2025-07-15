@@ -1,11 +1,8 @@
 package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.place.dto.PlaceAnnouncementResponses;
-import com.daedan.festabook.place.dto.PlaceImageResponses;
-import com.daedan.festabook.place.dto.PlaceResponses;
-import com.daedan.festabook.place.service.PlaceAnnouncementService;
-import com.daedan.festabook.place.service.PlaceImageService;
+import com.daedan.festabook.place.dto.PlaceListResponses;
+import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,42 +24,28 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlaceController {
 
     private final PlaceService placeService;
-    private final PlaceAnnouncementService placeAnnouncementService;
-    private final PlaceImageService placeImageService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직의 모든 플레이스 조회")
+    @Operation(summary = "특정 조직의 모든 플레이스 리스트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponses getAllPlaceByOrganizationId(
+    public PlaceListResponses getAllPlaceByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return placeService.getAllPlaceByOrganizationId(organizationId);
     }
 
-    @GetMapping("/{placeId}/announcements")
+    @GetMapping("/{placeId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 플레이스의 모든 공지 조회")
+    @Operation(summary = "특정 플레이스의 세부 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceAnnouncementResponses getAllPlaceAnnouncementByPlaceId(
+    public PlaceResponse getPlaceById(
             @PathVariable Long placeId
     ) {
-        return placeAnnouncementService.getAllPlaceAnnouncementByPlaceId(placeId);
-    }
-
-    @GetMapping("/{placeId}/images")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 플레이스의 모든 이미지 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
-    })
-    public PlaceImageResponses getAllPlaceImageByPlaceId(
-            @PathVariable Long placeId
-    ) {
-        return placeImageService.getAllPlaceImageByPlaceId(placeId);
+        return placeService.getPlaceById(placeId);
     }
 }
