@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat
 import androidx.databinding.DataBindingUtil
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
+import com.daedan.festabook.presentation.common.canScrollUp
 import com.daedan.festabook.presentation.common.scrollAnimation
 
 class PlaceListScrollBehavior(
@@ -20,14 +21,14 @@ class PlaceListScrollBehavior(
     attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<ConstraintLayout>() {
     private lateinit var binding: FragmentPlaceListBinding
-    private var initialY: Float = 0f
-    private var minimumY: Float = 0f
+    private var initialY: Float = DEFAULT_VALUE
+    private var minimumY: Float = DEFAULT_VALUE
     private var isInitialized = false
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
-            initialY = getDimension(R.styleable.PlaceListScrollBehavior_initialY, 0f)
-            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, 0f)
+            initialY = getDimension(R.styleable.PlaceListScrollBehavior_initialY, DEFAULT_VALUE)
+            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, DEFAULT_VALUE)
         }
     }
 
@@ -65,7 +66,7 @@ class PlaceListScrollBehavior(
     ) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
         // 아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
-        if (dy < 0 && binding.rvPlaces.canScrollVertically(-1)) {
+        if (dy < 0 && binding.rvPlaces.canScrollUp()) {
             child.background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
             consumed[1] = 0
             return
@@ -75,7 +76,7 @@ class PlaceListScrollBehavior(
             val currentTranslationY = translationY
             val newTranslationY = currentTranslationY - dy
             val maxHeight = rootView.height.toFloat()
-            val limitedTranslationY = newTranslationY.coerceIn(0f, maxHeight - minimumY)
+            val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight - minimumY)
             translationY = limitedTranslationY
             scrollAnimation(limitedTranslationY)
             consumed[1] = limitedTranslationY.toInt()
@@ -109,5 +110,9 @@ class PlaceListScrollBehavior(
             type,
             consumed,
         )
+    }
+
+    companion object {
+        private const val DEFAULT_VALUE = 0f
     }
 }
