@@ -5,20 +5,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.placeList.uimodel.Place
 
-class PlaceListAdapter :
-    ListAdapter<Place, PlaceListViewHolder>(
-        object : DiffUtil.ItemCallback<Place>() {
-            override fun areItemsTheSame(
-                oldItem: Place,
-                newItem: Place,
-            ): Boolean = oldItem.id == newItem.id
-
-            override fun areContentsTheSame(
-                oldItem: Place,
-                newItem: Place,
-            ): Boolean = oldItem == newItem
-        },
-    ) {
+class PlaceListAdapter : ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -46,5 +33,17 @@ class PlaceListAdapter :
     companion object {
         private const val POSITION_HEADER = 0
         private const val ERR_INVALID_VIEW_TYPE = "Invalid view type"
+        private val DIFF_UTIL =
+            object : DiffUtil.ItemCallback<Place>() {
+                override fun areItemsTheSame(
+                    oldItem: Place,
+                    newItem: Place,
+                ): Boolean = oldItem.id == newItem.id
+
+                override fun areContentsTheSame(
+                    oldItem: Place,
+                    newItem: Place,
+                ): Boolean = oldItem == newItem
+            }
     }
 }
