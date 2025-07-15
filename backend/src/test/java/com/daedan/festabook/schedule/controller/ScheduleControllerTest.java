@@ -63,6 +63,9 @@ class ScheduleControllerTest {
             EventDate eventDate = EventDateFixture.create(organization);
             eventDateJpaRepository.save(eventDate);
 
+            int expectedSize = 1;
+            int expectedFieldSize = 2;
+
             // when & then
             RestAssured
                     .given()
@@ -71,7 +74,8 @@ class ScheduleControllerTest {
                     .get("/schedules")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("[0].size()", is(2))
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].size()", is(expectedFieldSize))
                     .body("[0].id", is(eventDate.getId().intValue()))
                     .body("[0].date", is(eventDate.getDate().toString()));
         }
@@ -149,6 +153,9 @@ class ScheduleControllerTest {
 
             Event event = eventJpaRepository.save(EventFixture.create(eventDate));
 
+            int expectedSize = 1;
+            int expectedFieldSize = 6;
+
             // when & then
             RestAssured
                     .given()
@@ -156,7 +163,8 @@ class ScheduleControllerTest {
                     .get("/schedules/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("[0].size()", is(6))
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].size()", is(expectedFieldSize))
                     .body("[0].id", is(event.getId().intValue()))
                     .body("[0].status", is(event.getStatus().name()))
                     .body("[0].startTime", is(event.getStartTime().toString()))
