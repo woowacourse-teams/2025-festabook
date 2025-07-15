@@ -52,7 +52,7 @@ class ScheduleItemViewHolder(
             }
 
             ScheduleEventUiStatus.ONGOING -> {
-                val borderColor = R.drawable.bg_stroke_blue400_radius_10dp
+                val borderColor = R.drawable.schedule_bg_stroke_blue400_radius_10dp
                 binding.clScheduleEventCard.setBackgroundResource(borderColor)
                 setupScheduleEventStatusText(
                     context = context,
@@ -70,7 +70,7 @@ class ScheduleItemViewHolder(
             }
 
             ScheduleEventUiStatus.UPCOMING -> {
-                val borderColor = R.drawable.bg_stroke_1dp_radius_10dp
+                val borderColor = R.drawable.schedule_bg_stroke_1dp_radius_10dp
                 binding.clScheduleEventCard.setBackgroundResource(borderColor)
                 setupScheduleEventStatusText(
                     context = context,
