@@ -6,6 +6,9 @@
     <string name="menu_news_title">소식</string>
     <string name="menu_setting_title">설정</string>
 
+    <!-- News Screen -->
+    <string name="news_title">소식</string>
+
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
 </resources>
