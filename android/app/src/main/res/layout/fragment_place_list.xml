@@ -13,7 +13,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_place_list"
-            app:initialY="320dp"
+            app:initialY="432dp"
             app:layout_behavior="com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior"
             app:minimumY="220dp">
 
