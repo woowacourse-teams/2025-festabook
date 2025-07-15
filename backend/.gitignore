@@ -32,4 +32,6 @@ bin/**
 ### VS Code ###
 .vscode/
 
-application-secret.yml
+
+### 백엔드 secret 설정 파일 ###
+**/application-secret.yml
