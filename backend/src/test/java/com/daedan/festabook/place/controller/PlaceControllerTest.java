@@ -9,9 +9,11 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import com.daedan.festabook.orgnaization.domain.OrganizationFixture;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
+import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
+import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
@@ -60,10 +62,10 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_조직의_모든_플레이스_조회() {
             // given
-            Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
+            List<Organization> organizations = organizationJpaRepository.saveAll(OrganizationFixture.createList(2));
             List<Place> places = placeJpaRepository.saveAll(List.of(
                     new Place(
-                            organization,
+                            organizations.get(0),
                             "코딩하며 한잔",
                             "시원한 맥주와 시원한 치킨!",
                             PlaceCategory.BAR,
@@ -73,7 +75,7 @@ class PlaceControllerTest {
                             LocalTime.of(18, 0)
                     ),
                     new Place(
-                            organization,
+                            organizations.get(0),
                             "레트로 뽑기방",
                             "추억의 장난감과 인형을 뽑아가세요!",
                             PlaceCategory.BOOTH,
@@ -81,17 +83,19 @@ class PlaceControllerTest {
                             "응답하라 부스",
                             LocalTime.of(10, 0),
                             LocalTime.of(19, 0)
-                    )
+                    ),
+                    PlaceFixture.create(organizations.get(1))
             ));
+            int expectedSize = 2;
 
             // when & then
             RestAssured.given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(ORGANIZATION_HEADER_NAME, organizations.get(0).getId())
                     .when()
                     .get("/places")
                     .then()
                     .statusCode(200)
-                    .body("$", hasSize(places.size()))
+                    .body("$", hasSize(expectedSize))
                     .body("[0].id", equalTo(places.get(0).getId().intValue()))
                     .body("[0].title", equalTo(places.get(0).getTitle()))
                     .body("[0].description", equalTo(places.get(0).getDescription()))
@@ -118,28 +122,30 @@ class PlaceControllerTest {
         void 성공_특정_플레이스의_모든_공지_조회() {
             // given
             Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
-            Place place = placeJpaRepository.save(PlaceFixture.create(organization));
+            List<Place> places = placeJpaRepository.saveAll(PlaceFixture.createList(2, organization));
             List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.saveAll(List.of(
                     new PlaceAnnouncement(
-                            place,
+                            places.get(0),
                             "치킨 재고 소진되었습니다.",
                             "앞으로 더 좋은 주점으로 찾아뵙겠습니다."
                     ),
                     new PlaceAnnouncement(
-                            place,
+                            places.get(0),
                             "운영 시간이 변경되었습니다.",
                             "우천으로 인해 부스 운영을 오후 4시까지로 단축합니다. 양해 부탁드립니다."
-                    )
+                    ),
+                    PlaceAnnouncementFixture.create(places.get(1))
             ));
+            int expectedSize = 2;
 
             // when & then
             RestAssured.given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places/" + place.getId() + "/announcements")
+                    .get("/places/{placeId}/announcements", places.get(0).getId())
                     .then()
                     .statusCode(200)
-                    .body("$", hasSize(placeAnnouncements.size()))
+                    .body("$", hasSize(expectedSize))
                     .body("[0].id", equalTo(placeAnnouncements.get(0).getId().intValue()))
                     .body("[0].title", equalTo(placeAnnouncements.get(0).getTitle()))
                     .body("[0].content", equalTo(placeAnnouncements.get(0).getContent()))
@@ -158,26 +164,28 @@ class PlaceControllerTest {
         void 성공_특정_플레이스의_모든_이미지_조회() {
             // given
             Organization organization = organizationJpaRepository.save(OrganizationFixture.create());
-            Place place = placeJpaRepository.save(PlaceFixture.create(organization));
+            List<Place> places = placeJpaRepository.saveAll(PlaceFixture.createList(2, organization));
             List<PlaceImage> placeImages = placeImageJpaRepository.saveAll(List.of(
                     new PlaceImage(
-                            place,
+                            places.get(0),
                             "https://example.com/image1.jpg"
                     ),
                     new PlaceImage(
-                            place,
+                            places.get(0),
                             "https://example.com/image2.jpg"
-                    )
+                    ),
+                    PlaceImageFixture.create(places.get(1))
             ));
+            int expectedSize = 2;
 
             // when & then
             RestAssured.given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places/" + place.getId() + "/images")
+                    .get("/places/{placeId}/images", places.get(0).getId())
                     .then()
                     .statusCode(200)
-                    .body("$", hasSize(placeImages.size()))
+                    .body("$", hasSize(expectedSize))
                     .body("[0].id", equalTo(placeImages.get(0).getId().intValue()))
                     .body("[0].imageUrl", equalTo(placeImages.get(0).getImageUrl()))
                     .body("[1].id", equalTo(placeImages.get(1).getId().intValue()))
