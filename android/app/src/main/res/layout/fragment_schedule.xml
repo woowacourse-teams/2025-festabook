@@ -18,7 +18,7 @@
             style="@style/PretendardBold24"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
+            android:layout_marginTop="40dp"
             android:text="@string/schedule_title"
             android:textColor="@color/gray900"
             app:layout_constraintBottom_toTopOf="@id/tl_schedule"
