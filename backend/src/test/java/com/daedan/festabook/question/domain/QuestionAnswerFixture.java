@@ -78,6 +78,12 @@ public class QuestionAnswerFixture {
         );
     }
 
+    public static List<QuestionAnswer> createList(List<LocalDateTime> createdAts, Organization organization) {
+        return createdAts.stream()
+                .map(createdAt -> create(organization, createdAt))
+                .collect(Collectors.toList());
+    }
+
     public static List<QuestionAnswer> createList(int size, Organization organization) {
         return IntStream.range(0, size)
                 .mapToObj(i -> create(organization))

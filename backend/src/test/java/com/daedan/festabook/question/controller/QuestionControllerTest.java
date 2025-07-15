@@ -57,12 +57,7 @@ class QuestionControllerTest {
                     LocalDateTime.now()
             );
 
-            List<QuestionAnswer> questionAnswers = dateTimes.stream()
-                    .map(dateTime -> QuestionAnswerFixture.create(
-                            organization,
-                            dateTime
-                    ))
-                    .toList();
+            List<QuestionAnswer> questionAnswers = QuestionAnswerFixture.createList(dateTimes, organization);
             questionAnswerJpaRepository.saveAll(questionAnswers);
 
             List<QuestionAnswer> expectedQuestionAnswers = questionAnswers.stream()
