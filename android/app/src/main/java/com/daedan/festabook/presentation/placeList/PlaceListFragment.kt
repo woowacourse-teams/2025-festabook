@@ -51,12 +51,13 @@ class PlaceListFragment :
         parentFragmentManager.commit {
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN)
             setTransition(FragmentTransaction.TRANSIT_FRAGMENT_CLOSE)
-            replace(
+            add(
                 R.id.fcv_fragment_container,
                 PlaceDetailFragment.newInstance(
                     viewModel.place.value ?: return,
                 ),
             )
+            hide(this@PlaceListFragment)
             addToBackStack(null)
         }
     }
