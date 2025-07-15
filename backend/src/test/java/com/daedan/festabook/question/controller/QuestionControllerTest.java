@@ -80,9 +80,8 @@ class QuestionControllerTest {
         void 성공_조직에_해당하는_질문만_조회() {
             // given
             Organization checkOrganization = OrganizationFixture.create();
-            organizationJpaRepository.save(checkOrganization);
             Organization otherOrganization = OrganizationFixture.create();
-            organizationJpaRepository.save(otherOrganization);
+            organizationJpaRepository.saveAll(List.of(checkOrganization, otherOrganization));
 
             int expectedSize = 2;
             List<QuestionAnswer> questionAnswers = QuestionAnswerFixture.createList(expectedSize, checkOrganization);
