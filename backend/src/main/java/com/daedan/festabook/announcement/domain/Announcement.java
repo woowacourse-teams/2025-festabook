@@ -27,6 +27,10 @@ public class Announcement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Organization organization;
+
     @Column(nullable = false)
     private String title;
 
@@ -35,10 +39,6 @@ public class Announcement {
 
     @Column(nullable = false)
     private boolean isPinned;
-
-    @JoinColumn(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Organization organization;
 
     @CreatedDate
     @Column(nullable = false)
