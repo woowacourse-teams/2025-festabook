@@ -2,9 +2,9 @@ name: Android CI
 
 on:
   push:
-    branches: 'android/**'
+    branches: ['android/**']
   pull_request:
-    branches: 'android/**'
+    branches: ['android/**']
 
 jobs:
   build:
@@ -24,3 +24,5 @@ jobs:
         run: chmod +x gradlew
       - name: Build with Gradle
         run: ./gradlew build
+      - name: Run ktlint
+        run: ./gradlew ktlintCheck
