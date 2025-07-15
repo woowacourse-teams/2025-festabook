@@ -36,8 +36,7 @@
             app:tabGravity="fill"
             app:tabIndicator="@null"
             app:tabMode="scrollable"
-            app:tabRippleColor="@android:color/transparent"
-            tools:layout_editor_absoluteX="0dp" />
+            app:tabRippleColor="@android:color/transparent" />
 
         <View
             android:id="@+id/view_schedule_tab_line"
