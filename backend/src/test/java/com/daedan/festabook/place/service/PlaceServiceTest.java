@@ -27,7 +27,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -53,7 +52,7 @@ class PlaceServiceTest {
             // given
             Long organizationId = 1L;
 
-            Integer representativeSequence = 1;
+            int representativeSequence = 1;
 
             Place place1 = PlaceFixture.create(1L);
             Place place2 = PlaceFixture.create(2L);
@@ -76,6 +75,38 @@ class PlaceServiceTest {
             // then
             assertThat(result.responses()).hasSize(3);
         }
+
+        @Test
+        void 성공_대표_이미지가_없으면_null_반환() {
+            // given
+            Long organizationId = 1L;
+
+            int representativeSequence = 1;
+
+            Place place1 = PlaceFixture.create(1L);
+            Place place2 = PlaceFixture.create(2L);
+            Place place3 = PlaceFixture.create(3L);
+            List<Place> places = List.of(place1, place2, place3);
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
+            List<PlaceImage> placeImages = List.of(placeImage1, placeImage2);
+
+            given(placeJpaRepository.findAllByOrganizationId(organizationId))
+                    .willReturn(places);
+            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
+                    .willReturn(placeImages);
+
+            // when
+            PlacePreviewResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
+                s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(placeImage2.getImageUrl());
+                s.assertThat(result.responses().get(2).imageUrl()).isEqualTo(null);
+            });
+        }
     }
 
     @Nested
@@ -86,8 +117,7 @@ class PlaceServiceTest {
             // given
             Long placeId = 1L;
 
-            Place place = PlaceFixture.create();
-            ReflectionTestUtils.setField(place, "id", placeId);
+            Place place = PlaceFixture.create(1L);
 
             PlaceImage image1 = PlaceImageFixture.create(place);
             PlaceImage image2 = PlaceImageFixture.create(place);
@@ -97,7 +127,7 @@ class PlaceServiceTest {
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
-            given(placeImageJpaRepository.findAllByPlaceId(placeId))
+            given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
                     .willReturn(List.of(image1, image2));
             given(placeAnnouncementJpaRepository.findAllByPlaceId(placeId))
                     .willReturn(List.of(announcement1, announcement2));
@@ -110,6 +140,33 @@ class PlaceServiceTest {
                 s.assertThat(result).isNotNull();
                 s.assertThat(result.placeImages().responses()).hasSize(2);
                 s.assertThat(result.placeAnnouncements().responses()).hasSize(2);
+            });
+        }
+
+        @Test
+        void 성공_이미지_sequence로_오름차순_정렬() {
+            // given
+            Long placeId = 1L;
+
+            Place place = PlaceFixture.create(1L);
+
+            PlaceImage image3 = PlaceImageFixture.create(place, 3);
+            PlaceImage image2 = PlaceImageFixture.create(place, 2);
+            PlaceImage image1 = PlaceImageFixture.create(place, 1);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+            given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
+                    .willReturn(List.of(image1, image2, image3));
+
+            // when
+            PlaceResponse result = placeService.getPlaceByPlaceId(placeId);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.placeImages().responses().get(0).sequence()).isEqualTo(image1.getSequence());
+                s.assertThat(result.placeImages().responses().get(1).sequence()).isEqualTo(image2.getSequence());
+                s.assertThat(result.placeImages().responses().get(2).sequence()).isEqualTo(image3.getSequence());
             });
         }
 

@@ -127,6 +127,41 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
         }
+
+        @Test
+        void 성공_대표_이미지가_아니라면_null_반환() {
+            // given
+            int representativeSequence = 1;
+            int anotherSequence = 3;
+
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place1 = PlaceFixture.create(organization);
+            Place place2 = PlaceFixture.create(organization);
+            Place place3 = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(place1, place2, place3));
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
+            PlaceImage placeImage3 = PlaceImageFixture.create(place3, anotherSequence);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2, placeImage3));
+
+            int expectedSize = 3;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
+                    .body("[1].imageUrl", equalTo(placeImage2.getImageUrl()))
+                    .body("[2].imageUrl", equalTo(null));
+        }
     }
 
     @Nested
@@ -170,8 +205,10 @@ class PlaceControllerTest {
                     .body("placeImages", hasSize(expectedPlaceImagesSize))
                     .body("placeImages[0].id", equalTo(placeImage1.getId().intValue()))
                     .body("placeImages[0].imageUrl", equalTo(placeImage1.getImageUrl()))
+                    .body("placeImages[0].sequence", equalTo(placeImage1.getSequence()))
                     .body("placeImages[1].id", equalTo(placeImage2.getId().intValue()))
                     .body("placeImages[1].imageUrl", equalTo(placeImage2.getImageUrl()))
+                    .body("placeImages[1].sequence", equalTo(placeImage1.getSequence()))
                     .body("category", equalTo(place.getCategory().name()))
                     .body("title", equalTo(place.getTitle()))
                     .body("startTime", equalTo(place.getStartTime().toString()))
@@ -188,6 +225,37 @@ class PlaceControllerTest {
                     .body("placeAnnouncements[1].title", equalTo(placeAnnouncement2.getTitle()))
                     .body("placeAnnouncements[1].content", equalTo(placeAnnouncement2.getContent()))
                     .body("placeAnnouncements[1].createdAt", notNullValue());
+        }
+
+        @Test
+        void 성공_이미지_오름차순_정렬() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.save(place);
+
+            PlaceImage placeImage5 = PlaceImageFixture.create(place, 5);
+            PlaceImage placeImage4 = PlaceImageFixture.create(place, 4);
+            PlaceImage placeImage3 = PlaceImageFixture.create(place, 3);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, 2);
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, 1);
+            placeImageJpaRepository.saveAll(List.of(placeImage5, placeImage4, placeImage3, placeImage2, placeImage1));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("placeImages[0].sequence", equalTo(placeImage1.getSequence()))
+                    .body("placeImages[1].sequence", equalTo(placeImage2.getSequence()))
+                    .body("placeImages[2].sequence", equalTo(placeImage3.getSequence()))
+                    .body("placeImages[3].sequence", equalTo(placeImage4.getSequence()))
+                    .body("placeImages[4].sequence", equalTo(placeImage5.getSequence()));
         }
 
         // TODO: ExceptionHandler 등록 후 활성화
