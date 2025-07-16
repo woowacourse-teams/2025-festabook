@@ -18,7 +18,7 @@ class PlaceListFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.rvPlaces.adapter =
             PlaceListAdapter().apply {
-                submitList(DummyPlace.placeList)
+                submitList(DummyPlace.placeUiModelList)
             }
     }
 }

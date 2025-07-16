@@ -5,18 +5,18 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.daedan.festabook.databinding.ItemPlaceListBinding
 import com.daedan.festabook.databinding.ItemPlaceListHeaderBinding
-import com.daedan.festabook.presentation.placeList.uimodel.Place
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 sealed class PlaceListViewHolder(
     binding: ViewBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    abstract fun bind(place: Place)
+    abstract fun bind(placeUiModel: PlaceUiModel)
 
     class PlaceViewHolder private constructor(
         private val binding: ItemPlaceListBinding,
     ) : PlaceListViewHolder(binding) {
-        override fun bind(place: Place) {
-            binding.place = place
+        override fun bind(placeUiModel: PlaceUiModel) {
+            binding.place = placeUiModel
         }
 
         companion object {
@@ -36,7 +36,7 @@ sealed class PlaceListViewHolder(
     class Header private constructor(
         binding: ItemPlaceListHeaderBinding,
     ) : PlaceListViewHolder(binding) {
-        override fun bind(place: Place) = Unit
+        override fun bind(placeUiModel: PlaceUiModel) = Unit
 
         companion object {
             val VIEW_TYPE = 1

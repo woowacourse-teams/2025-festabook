@@ -6,7 +6,7 @@ import androidx.databinding.BindingAdapter
 import coil3.load
 import coil3.request.crossfade
 import com.daedan.festabook.R
-import com.daedan.festabook.presentation.placeList.uimodel.PlaceCategory
+import com.daedan.festabook.presentation.placeList.model.PlaceCategory
 import com.google.android.material.card.MaterialCardView
 
 @BindingAdapter("category")
