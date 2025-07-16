@@ -1,5 +1,6 @@
-package com.daedan.festabook.presentation.placeList
+package com.daedan.festabook.presentation.placeList.adapter
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -25,7 +26,7 @@ sealed class PlaceListViewHolder(
             fun of(parent: ViewGroup): PlaceViewHolder =
                 PlaceViewHolder(
                     ItemPlaceListBinding.inflate(
-                        android.view.LayoutInflater.from(parent.context),
+                        LayoutInflater.from(parent.context),
                         parent,
                         false,
                     ),
@@ -44,7 +45,7 @@ sealed class PlaceListViewHolder(
             fun of(parent: ViewGroup): Header =
                 Header(
                     ItemPlaceListHeaderBinding.inflate(
-                        android.view.LayoutInflater.from(parent.context),
+                        LayoutInflater.from(parent.context),
                         parent,
                         false,
                     ),

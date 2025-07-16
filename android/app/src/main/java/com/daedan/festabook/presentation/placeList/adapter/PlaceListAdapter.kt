@@ -1,10 +1,10 @@
-package com.daedan.festabook.presentation.placeList
+package com.daedan.festabook.presentation.placeList.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.Header
-import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.PlaceViewHolder
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListViewHolder.Header
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListViewHolder.PlaceViewHolder
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceListAdapter : ListAdapter<PlaceUiModel, PlaceListViewHolder>(DIFF_UTIL) {

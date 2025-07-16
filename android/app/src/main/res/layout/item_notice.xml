@@ -7,7 +7,7 @@
 
         <variable
             name="notice"
-            type="com.daedan.festabook.presentation.news.notice.NoticeUiModel" />
+            type="com.daedan.festabook.presentation.news.notice.model.NoticeUiModel" />
 
     </data>
 
@@ -47,10 +47,10 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:text="@{notice.description}"
             android:textColor="@color/gray500"
             app:layout_constraintStart_toStartOf="@id/tv_notice_title"
             app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
-            android:text="@{notice.description}"
             tools:text="설명입니다.설명입니다.설명입니다." />
 
         <TextView
