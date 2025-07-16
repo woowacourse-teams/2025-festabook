@@ -29,16 +29,26 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         savedInstanceState: Bundle?,
     ) {
         binding.vpSchedule.adapter = adapter
+        setupScheduleTabLayout(view)
+    }
 
+    private fun setupScheduleTabLayout(view: View) {
         TabLayoutMediator(binding.tlSchedule, binding.vpSchedule) { tab, position ->
-            val itemTabBinding =
+            val itemScheduleTabBinding =
                 ItemScheduleTabBinding.inflate(
                     LayoutInflater.from(view.context),
                     binding.tlSchedule,
                     false,
                 )
-            itemTabBinding.tvScheduleTabItem.text = tabTitles[position]
-            tab.customView = itemTabBinding.root
+            tab.customView = itemScheduleTabBinding.root
+            itemScheduleTabBinding.tvScheduleTabItem.text = tabTitles[position]
+            addScheduleTabSelectedListener(itemScheduleTabBinding)
         }.attach()
+    }
+
+    private fun addScheduleTabSelectedListener(itemScheduleTabBinding: ItemScheduleTabBinding) {
+        binding.tlSchedule.addOnTabSelectedListener(
+            ScheduleTabSelectedListener(itemScheduleTabBinding),
+        )
     }
 }
