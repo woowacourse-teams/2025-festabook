@@ -39,7 +39,7 @@ public class PlaceController {
 
     @GetMapping("/{placeId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 플레이스의 세부 정보 조회")
+    @Operation(summary = "특정 플레이스의 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
