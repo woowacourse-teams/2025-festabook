@@ -6,7 +6,7 @@
         android:id="@+id/cl_schedule_tab_item"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/selector_schedule_tab_background"
+        android:background="@drawable/selector_bg_gray900_radius_20"
         android:paddingHorizontal="8dp">
 
         <TextView

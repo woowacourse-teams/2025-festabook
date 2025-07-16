@@ -41,7 +41,7 @@ class ScheduleItemViewHolder(
                     textColor = gray400,
                     backgroundResId = null,
                 )
-                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_schedule_circle_gray300)
+                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_gray300)
                 setupScheduleEventContentsColor(
                     titleColor = gray400,
                     timeColor = gray400,
@@ -51,7 +51,7 @@ class ScheduleItemViewHolder(
             }
 
             ScheduleEventUiStatus.ONGOING -> {
-                val borderColor = R.drawable.bg_schedule_stroke_blue400_radius_10dp
+                val borderColor = R.drawable.bg_stroke_blue400_radius_10dp
                 binding.clScheduleEventCard.setBackgroundResource(borderColor)
                 setupScheduleEventStatusText(
                     context = context,
@@ -59,7 +59,7 @@ class ScheduleItemViewHolder(
                     textColor = gray050,
                     backgroundResId = R.drawable.bg_gray900_radius_6dp,
                 )
-                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_schedule_circle_blue400)
+                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_blue400)
                 setupScheduleEventContentsColor(
                     titleColor = gray900,
                     timeColor = gray500,
@@ -69,7 +69,7 @@ class ScheduleItemViewHolder(
             }
 
             ScheduleEventUiStatus.UPCOMING -> {
-                val borderColor = R.drawable.bg_schedule_stroke_1dp_radius_10dp
+                val borderColor = R.drawable.bg_stroke_green400_radius_10dp
                 binding.clScheduleEventCard.setBackgroundResource(borderColor)
                 setupScheduleEventStatusText(
                     context = context,
@@ -77,7 +77,7 @@ class ScheduleItemViewHolder(
                     textColor = gray900,
                     backgroundResId = R.drawable.bg_stroke_gray900_radius_6dp,
                 )
-                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_schedule_circle_green400)
+                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_green400)
                 setupScheduleEventContentsColor(
                     titleColor = gray900,
                     timeColor = gray500,

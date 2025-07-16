@@ -91,7 +91,7 @@
             android:layout_height="14dp"
             android:layout_marginTop="2dp"
             android:contentDescription="@string/content_description_iv_location"
-            android:src="@drawable/ic_place_list_location"
+            android:src="@drawable/ic_location"
             app:layout_constraintBottom_toBottomOf="@id/tv_location"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toTopOf="@id/tv_location" />
