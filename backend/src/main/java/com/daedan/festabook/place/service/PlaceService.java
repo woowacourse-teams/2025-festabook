@@ -29,13 +29,12 @@ public class PlaceService {
 
     public PlacePreviewResponses getAllPlaceByOrganizationId(Long organizationId) {
         List<Place> places = placeJpaRepository.findAllByOrganizationId(organizationId);
-        List<PlaceImage> representativeImages =
-                placeImageJpaRepository.findAllByPlaceInAndSequence(places, REPRESENTATIVE_IMAGE_SEQUENCE);
-        Map<Long, PlaceImage> images = representativeImages.stream()
-                .collect(Collectors.toMap(
-                        image -> image.getPlace().getId(), // TODO: N+1 문제 해결
-                        Function.identity()
-                ));
+        Map<Long, PlaceImage> images =
+                placeImageJpaRepository.findAllByPlaceInAndSequence(places, REPRESENTATIVE_IMAGE_SEQUENCE).stream()
+                        .collect(Collectors.toMap(
+                                image -> image.getPlace().getId(), // TODO: N+1 문제 해결
+                                Function.identity()
+                        ));
 
         return PlacePreviewResponses.from(places, images);
     }
