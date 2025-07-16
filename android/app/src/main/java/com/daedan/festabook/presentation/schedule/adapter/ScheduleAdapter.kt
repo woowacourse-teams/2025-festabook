@@ -8,7 +8,7 @@ import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 
 class ScheduleAdapter(
     private val onBookmarkCheckedListener: OnBookmarkCheckedListener,
-) : ListAdapter<ScheduleEventUiModel, ScheduleItemViewHolder>(DIFF_UTIL_CALLBACK) {
+) : ListAdapter<ScheduleEventUiModel, ScheduleItemViewHolder>(DIFF_UTIL) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -22,7 +22,7 @@ class ScheduleAdapter(
     }
 
     companion object {
-        private val DIFF_UTIL_CALLBACK =
+        private val DIFF_UTIL =
             object :
                 DiffUtil.ItemCallback<ScheduleEventUiModel>() {
                 override fun areItemsTheSame(
