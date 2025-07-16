@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.news.notice
+package com.daedan.festabook.presentation.news.notice.model
 
 data class NoticeUiModel(
     val id: Long,

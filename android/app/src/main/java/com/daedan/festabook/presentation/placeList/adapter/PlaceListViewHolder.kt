@@ -1,31 +1,30 @@
-package com.daedan.festabook.presentation.placeList
+package com.daedan.festabook.presentation.placeList.adapter
 
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.daedan.festabook.databinding.ItemPlaceListBinding
 import com.daedan.festabook.databinding.ItemPlaceListHeaderBinding
-import com.daedan.festabook.presentation.placeList.uimodel.Place
+import com.daedan.festabook.presentation.placeList.PlaceListHandler
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 sealed class PlaceListViewHolder(
     binding: ViewBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    abstract fun bind(place: Place)
+    abstract fun bind(placeUiModel: PlaceUiModel)
 
     class PlaceViewHolder private constructor(
         private val binding: ItemPlaceListBinding,
-        handler: PlaceListHandler,
+        private val handler: PlaceListHandler,
     ) : PlaceListViewHolder(binding) {
-        init {
+        override fun bind(placeUiModel: PlaceUiModel) {
+            binding.place = placeUiModel
             binding.handler = handler
         }
 
-        override fun bind(place: Place) {
-            binding.place = place
-        }
-
         companion object {
-            val VIEW_TYPE = 0
+            const val VIEW_TYPE = 0
 
             fun of(
                 parent: ViewGroup,
@@ -33,7 +32,7 @@ sealed class PlaceListViewHolder(
             ): PlaceViewHolder =
                 PlaceViewHolder(
                     ItemPlaceListBinding.inflate(
-                        android.view.LayoutInflater.from(parent.context),
+                        LayoutInflater.from(parent.context),
                         parent,
                         false,
                     ),
@@ -45,15 +44,15 @@ sealed class PlaceListViewHolder(
     class Header private constructor(
         binding: ItemPlaceListHeaderBinding,
     ) : PlaceListViewHolder(binding) {
-        override fun bind(place: Place) = Unit
+        override fun bind(place: PlaceUiModel) = Unit
 
         companion object {
-            val VIEW_TYPE = 1
+            const val VIEW_TYPE = 1
 
             fun of(parent: ViewGroup): Header =
                 Header(
                     ItemPlaceListHeaderBinding.inflate(
-                        android.view.LayoutInflater.from(parent.context),
+                        LayoutInflater.from(parent.context),
                         parent,
                         false,
                     ),

@@ -9,9 +9,9 @@ import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
-import com.daedan.festabook.presentation.placeList.uimodel.Place
-import com.daedan.festabook.presentation.placeList.uimodel.PlaceListEvent
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -27,13 +27,13 @@ class PlaceListFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.rvPlaces.adapter =
             PlaceListAdapter(this).apply {
-                submitList(DummyPlace.placeList)
+                submitList(DummyPlace.placeUiModelList)
             }
 
         setUpObservers()
     }
 
-    override fun onPlaceClicked(place: Place) {
+    override fun onPlaceClicked(place: PlaceUiModel) {
         viewModel.publishClickEvent()
         viewModel.setPlace(place)
     }

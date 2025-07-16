@@ -4,21 +4,20 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.daedan.festabook.presentation.common.SingleLiveData
-import com.daedan.festabook.presentation.placeList.uimodel.Place
-import com.daedan.festabook.presentation.placeList.uimodel.PlaceListEvent
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceListViewModel : ViewModel() {
     private val _event: SingleLiveData<PlaceListEvent> = SingleLiveData(PlaceListEvent.RUNNING)
     val event: SingleLiveData<PlaceListEvent> = _event
 
-    private val _place: MutableLiveData<Place> = MutableLiveData()
-    val place: LiveData<Place> = _place
+    private val _place: MutableLiveData<PlaceUiModel> = MutableLiveData()
+    val place: LiveData<PlaceUiModel> = _place
 
     fun publishClickEvent() {
         _event.postValue(PlaceListEvent.PLACE_CLICKED)
     }
 
-    fun setPlace(place: Place) {
+    fun setPlace(place: PlaceUiModel) {
         _place.value = place
     }
 }

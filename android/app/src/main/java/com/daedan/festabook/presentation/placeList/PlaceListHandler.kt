@@ -1,7 +1,7 @@
 package com.daedan.festabook.presentation.placeList
 
-import com.daedan.festabook.presentation.placeList.uimodel.Place
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 fun interface PlaceListHandler {
-    fun onPlaceClicked(place: Place)
+    fun onPlaceClicked(place: PlaceUiModel)
 }

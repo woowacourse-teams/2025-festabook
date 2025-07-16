@@ -8,7 +8,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.placeDetail.dummy.DummyPlaceDetail
 import com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail
-import com.daedan.festabook.presentation.placeList.uimodel.Place
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
     override fun onViewCreated(
@@ -16,7 +16,7 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        val place = arguments?.getObject<Place>(TAG_PLACE_DETAIL_FRAGMENT) ?: return
+        val place = arguments?.getObject<PlaceUiModel>(TAG_PLACE_DETAIL_FRAGMENT) ?: return
         val dummyDetail = DummyPlaceDetail.create(place)
         setUpBinding(dummyDetail)
     }
@@ -36,7 +36,7 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
     companion object {
         private const val TAG_PLACE_DETAIL_FRAGMENT = "placeDetailFragment"
 
-        fun newInstance(place: Place): PlaceDetailFragment =
+        fun newInstance(place: PlaceUiModel): PlaceDetailFragment =
             PlaceDetailFragment().apply {
                 arguments =
                     Bundle().apply {

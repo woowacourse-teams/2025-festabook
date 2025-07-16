@@ -5,7 +5,7 @@
 
         <variable
             name="place"
-            type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
+            type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
 
         <variable
             name="handler"
@@ -55,13 +55,8 @@
             app:strokeWidth="0dp"
             app:category="@{place.category}">
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/gray900"
-                android:scaleType="centerCrop" />
-
             <TextView
+                android:id="@+id/tv_place_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -102,8 +97,8 @@
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:layout_marginTop="2dp"
-            android:src="@drawable/ic_place_list_location"
             android:contentDescription="@string/content_description_iv_location"
+            android:src="@drawable/ic_location"
             app:layout_constraintBottom_toBottomOf="@id/tv_location"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toTopOf="@id/tv_location" />
@@ -123,13 +118,14 @@
 
         <ImageButton
             android:id="@+id/iv_bookmark"
-            android:onClick="@{(v)->v.setSelected(!v.isSelected)}"
+            isBookmarked="@{place.isBookmarked}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:clickable="true"
             android:background="@android:color/transparent"
-            android:src="@drawable/btn_bookmark"
+            android:clickable="true"
+            android:contentDescription="@string/all_book_mark"
+            android:src="@drawable/ic_bookmark_normal"
             app:layout_constraintBottom_toBottomOf="@id/tv_location"
             app:layout_constraintEnd_toEndOf="parent" />
 

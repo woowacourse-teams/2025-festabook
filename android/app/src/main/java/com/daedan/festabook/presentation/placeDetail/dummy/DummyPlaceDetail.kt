@@ -1,8 +1,8 @@
 package com.daedan.festabook.presentation.placeDetail.dummy
 
-import com.daedan.festabook.presentation.news.notice.NoticeUiModel
+import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail
-import com.daedan.festabook.presentation.placeList.uimodel.Place
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 object DummyPlaceDetail {
     private val noticeList =
@@ -30,7 +30,7 @@ object DummyPlaceDetail {
             ),
         )
 
-    fun create(place: Place): PlaceDetail =
+    fun create(place: PlaceUiModel): PlaceDetail =
         PlaceDetail(
             place = place,
             notices = noticeList,

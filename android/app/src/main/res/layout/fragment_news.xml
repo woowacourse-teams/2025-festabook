@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="16dp"
-        tools:context=".presentation.news.notice.NewsFragment">
+        tools:context=".presentation.news.NewsFragment">
 
         <TextView
             android:id="@+id/tv_news_title"
@@ -27,9 +27,9 @@
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_marginTop="20dp"
-            tools:listitem="@layout/item_notice"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@id/tv_news_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_news_title"
+            tools:listitem="@layout/item_notice" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

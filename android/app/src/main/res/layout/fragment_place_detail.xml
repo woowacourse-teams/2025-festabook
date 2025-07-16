@@ -6,7 +6,7 @@
             name="placeDetail"
             type="com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail" />
 
-        <import type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
+        <import type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -89,7 +89,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:layout_marginTop="4dp"
-                android:src="@drawable/ic_place_list_location"
+                android:src="@drawable/ic_location"
                 app:layout_constraintTop_toBottomOf="@id/iv_time"
                 app:layout_constraintStart_toStartOf="@id/iv_time" />
 
