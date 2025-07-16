@@ -1,9 +1,11 @@
 package com.daedan.festabook.place.service;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -108,6 +110,17 @@ class PlaceServiceTest {
                 s.assertThat(result.placeImages().responses()).hasSize(2);
                 s.assertThat(result.placeImages().responses()).hasSize(2);
             });
+        }
+
+        @Test
+        void 실패_존재하지_않는_place_id() {
+            // given
+            Long placeId = 999L;
+
+            // when & then
+            assertThatThrownBy(() -> placeService.getPlaceById(placeId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 플레이스입니다.");
         }
     }
 }
