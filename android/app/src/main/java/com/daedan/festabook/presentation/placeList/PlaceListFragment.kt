@@ -1,22 +1,17 @@
 package com.daedan.festabook.presentation.placeList
 
-import android.content.Context
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.animateHideBottomNavigationView
-import com.daedan.festabook.presentation.common.animateShowBottomNavigationView
+import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 import com.daedan.festabook.presentation.placeList.uimodel.Place
 import com.daedan.festabook.presentation.placeList.uimodel.PlaceListEvent
-import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -54,28 +49,7 @@ class PlaceListFragment :
 
     private fun startPlaceDetailFragment() {
         parentFragmentManager.registerFragmentLifecycleCallbacks(
-            object : FragmentManager.FragmentLifecycleCallbacks() {
-                override fun onFragmentStopped(
-                    fm: FragmentManager,
-                    f: Fragment,
-                ) {
-                    activity
-                        ?.findViewById<BottomNavigationView>(R.id.bnv_menu)
-                        ?.animateShowBottomNavigationView()
-                    super.onFragmentStopped(fm, f)
-                }
-
-                override fun onFragmentAttached(
-                    fm: FragmentManager,
-                    f: Fragment,
-                    context: Context,
-                ) {
-                    activity
-                        ?.findViewById<BottomNavigationView>(R.id.bnv_menu)
-                        ?.animateHideBottomNavigationView()
-                    super.onFragmentAttached(fm, f, context)
-                }
-            },
+            getBottomNavigationViewAnimationCallback(),
             false,
         )
         parentFragmentManager.commit {
