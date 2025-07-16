@@ -6,5 +6,5 @@ data class NoticeUiModel(
     val description: String,
     val createdAt: String,
     val isPinned: Boolean = false,
-    val isExpanded: Boolean = false,
+    var isExpanded: Boolean = false,
 )

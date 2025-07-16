@@ -5,11 +5,13 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
-class NoticeAdapter : ListAdapter<NoticeUiModel, NoticeViewHolder>(noticeDiffCallback) {
+class NoticeAdapter(
+    private val noticeListener: OnNoticeClickListener,
+) : ListAdapter<NoticeUiModel, NoticeViewHolder>(noticeDiffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): NoticeViewHolder = NoticeViewHolder.from(parent)
+    ): NoticeViewHolder = NoticeViewHolder.from(parent, noticeListener)
 
     override fun onBindViewHolder(
         holder: NoticeViewHolder,
