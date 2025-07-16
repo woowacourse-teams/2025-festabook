@@ -61,13 +61,13 @@ class PlaceControllerTest {
         @Test
         void 성공() {
             // given
-            int representativeSequence = 1;
-
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
+
+            int representativeSequence = 1;
 
             PlaceImage placeImage = PlaceImageFixture.create(place, representativeSequence);
             placeImageJpaRepository.save(placeImage);
@@ -96,8 +96,6 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_조직의_모든_플레이스_리스트_조회() {
             // given
-            int representativeSequence = 1;
-
             Organization targetOrganization = OrganizationFixture.create();
             Organization anotherOrganization = OrganizationFixture.create();
             organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
@@ -106,6 +104,8 @@ class PlaceControllerTest {
             Place targetPlace2 = PlaceFixture.create(targetOrganization);
             Place anotherPlace = PlaceFixture.create(anotherOrganization);
             placeJpaRepository.saveAll(List.of(targetPlace1, targetPlace2, anotherPlace));
+
+            int representativeSequence = 1;
 
             PlaceImage placeImage1 = PlaceImageFixture.create(targetPlace1, representativeSequence);
             PlaceImage placeImage2 = PlaceImageFixture.create(targetPlace2, representativeSequence);
@@ -128,9 +128,6 @@ class PlaceControllerTest {
         @Test
         void 성공_대표_이미지가_없다면_null_반환() {
             // given
-            int representativeSequence = 1;
-            int anotherSequence = 3;
-
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
@@ -138,6 +135,9 @@ class PlaceControllerTest {
             Place place2 = PlaceFixture.create(organization);
             Place place3 = PlaceFixture.create(organization);
             placeJpaRepository.saveAll(List.of(place1, place2, place3));
+
+            int representativeSequence = 1;
+            int anotherSequence = 3;
 
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
             PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
@@ -164,13 +164,13 @@ class PlaceControllerTest {
         @Test
         void 성공() {
             // given
-            int representativeSequence = 1;
-
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
+
+            int representativeSequence = 1;
 
             PlaceImage placeImage1 = PlaceImageFixture.create(place, representativeSequence);
             PlaceImage placeImage2 = PlaceImageFixture.create(place, representativeSequence);

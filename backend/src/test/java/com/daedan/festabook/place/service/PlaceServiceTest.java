@@ -50,19 +50,19 @@ class PlaceServiceTest {
         @Test
         void 성공() {
             // given
-            Long organizationId = 1L;
-
-            int representativeSequence = 1;
-
             Place place1 = PlaceFixture.create(1L);
             Place place2 = PlaceFixture.create(2L);
             Place place3 = PlaceFixture.create(3L);
             List<Place> places = List.of(place1, place2, place3);
 
+            int representativeSequence = 1;
+
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
             PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
             PlaceImage placeImage3 = PlaceImageFixture.create(place3, representativeSequence);
             List<PlaceImage> placeImages = List.of(placeImage1, placeImage2, placeImage3);
+
+            Long organizationId = 1L;
 
             given(placeJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(places);
@@ -79,18 +79,18 @@ class PlaceServiceTest {
         @Test
         void 성공_대표_이미지가_없다면_null_반환() {
             // given
-            Long organizationId = 1L;
-
-            int representativeSequence = 1;
-
             Place place1 = PlaceFixture.create(1L);
             Place place2 = PlaceFixture.create(2L);
             Place place3 = PlaceFixture.create(3L);
             List<Place> places = List.of(place1, place2, place3);
 
+            int representativeSequence = 1;
+
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
             PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
             List<PlaceImage> placeImages = List.of(placeImage1, placeImage2);
+
+            Long organizationId = 1L;
 
             given(placeJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(places);
@@ -117,7 +117,7 @@ class PlaceServiceTest {
             // given
             Long placeId = 1L;
 
-            Place place = PlaceFixture.create(1L);
+            Place place = PlaceFixture.create(placeId);
 
             PlaceImage image1 = PlaceImageFixture.create(place);
             PlaceImage image2 = PlaceImageFixture.create(place);
@@ -148,7 +148,7 @@ class PlaceServiceTest {
             // given
             Long placeId = 1L;
 
-            Place place = PlaceFixture.create(1L);
+            Place place = PlaceFixture.create(placeId);
 
             PlaceImage image3 = PlaceImageFixture.create(place, 3);
             PlaceImage image2 = PlaceImageFixture.create(place, 2);
