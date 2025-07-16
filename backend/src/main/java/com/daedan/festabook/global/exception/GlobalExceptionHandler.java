@@ -13,12 +13,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<String> handleBusinessException(BusinessException businessException) {
-        return ResponseEntity.status(businessException.getStatus()).body(businessException.getMessage());
+        return ResponseEntity.status(businessException.getStatus())
+                .body(businessException.getMessage());
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleException(Exception exception) {
         log.warn(exception.getMessage());
-        return ResponseEntity.internalServerError().body(INTERNAL_ERROR_MESSAGE);
+        return ResponseEntity.internalServerError()
+                .body(INTERNAL_ERROR_MESSAGE);
     }
 }
