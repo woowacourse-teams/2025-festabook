@@ -28,11 +28,16 @@ public class PlaceImage {
     @Column(nullable = false)
     private String imageUrl;
 
+    @Column(nullable = false)
+    private Integer order;
+
     public PlaceImage(
             Place place,
-            String imageUrl
+            String imageUrl,
+            Integer order
     ) {
         this.place = place;
         this.imageUrl = imageUrl;
+        this.order = order;
     }
 }
