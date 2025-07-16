@@ -22,7 +22,7 @@
             <ImageView
                 android:id="@+id/iv_place_image"
                 android:layout_width="match_parent"
-                android:layout_height="232dp"
+                android:layout_height="240dp"
                 android:background="@color/gray300"
                 android:scaleType="centerCrop"
                 app:imageUrl="@{placeDetail.place.imageUrl}"
