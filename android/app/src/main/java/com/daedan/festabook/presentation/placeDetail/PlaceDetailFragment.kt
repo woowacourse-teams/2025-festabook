@@ -22,6 +22,7 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
             PlaceNoticeAdapter().apply {
                 submitList(dummyDetail.notices)
             }
+        binding.vpPlaceImages.adapter = PlaceImageViewPagerAdapter(dummyDetail.images)
     }
 
     companion object {

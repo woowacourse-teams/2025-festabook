@@ -9,4 +9,5 @@ data class PlaceDetail(
     val host: String,
     val startTime: String,
     val endTime: String,
+    val images: List<String>,
 )
