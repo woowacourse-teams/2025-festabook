@@ -16,14 +16,13 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_stroke_gray400_radius_10dp"
-        android:paddingBottom="20dp">
+        android:paddingVertical="16dp">
 
         <ImageView
             android:id="@+id/iv_speaker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:layout_marginTop="16dp"
             android:contentDescription="@string/iv_speaker"
             android:src="@drawable/ic_speaker"
             app:layout_constraintStart_toStartOf="parent"
@@ -48,10 +47,11 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:layout_marginHorizontal="16dp"
             android:text="@{notice.description}"
             android:textColor="@color/gray500"
-            app:layout_constraintEnd_toEndOf="@+id/textView"
-            app:layout_constraintStart_toStartOf="@id/tv_notice_title"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
             tools:text="설명입니다.설명입니다.설명입니다." />
 
@@ -60,7 +60,6 @@
             style="@style/PretendardRegular10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginEnd="16dp"
             android:textColor="@color/gray500"
             app:formattedNoticeDateTime='@{notice.createdAt}'
