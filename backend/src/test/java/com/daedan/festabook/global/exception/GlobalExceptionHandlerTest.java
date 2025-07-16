@@ -1,5 +1,6 @@
 package com.daedan.festabook.global.exception;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 import io.restassured.RestAssured;
@@ -55,8 +56,9 @@ class GlobalExceptionHandlerTest {
         }
 
         @Test
-        void BusinessException과_하위_예외를_제외한_예외는_잡히지_않는다() {
+        void 예상치_못한_예외_발생시_안내_메시지를_응답한다() {
             // given
+            String expectedMessage = "관리자에게";
             int expectedStatusCode = 500;
 
             // when & then
@@ -67,7 +69,8 @@ class GlobalExceptionHandlerTest {
                     .then()
                     .log()
                     .all()
-                    .statusCode(expectedStatusCode);
+                    .statusCode(expectedStatusCode)
+                    .body(containsString(expectedMessage));
         }
     }
 
