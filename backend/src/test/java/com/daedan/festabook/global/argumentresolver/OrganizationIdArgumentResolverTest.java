@@ -1,8 +1,8 @@
-package com.daedan.festabook.global.config;
+package com.daedan.festabook.global.argumentresolver;
 
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class WebMvcConfigTest {
+class OrganizationIdArgumentResolverTest {
 
     private static final String ORGANIZATION_HEADER_NAME = "organization";
 
@@ -39,7 +39,7 @@ class WebMvcConfigTest {
     }
 
     @Nested
-    class addArgumentResolvers {
+    class resolveArgument {
 
         @Test
         void 성공() {
@@ -47,22 +47,68 @@ class WebMvcConfigTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            // when && then
+            // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header("organization", organization.getId())
                     .when()
-                    .get("/test/addArgumentResolvers")
+                    .get("/test/resolveArgument")
                     .then()
+                    .log()
+                    .all()
                     .statusCode(HttpStatus.OK.value())
                     .body(equalTo(String.valueOf(organization.getId())));
+        }
+
+        @Test
+        void 예외_헤더가_누락된_경우() {
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/test/resolveArgument")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body(containsString("Organization 헤더가 누락되었습니다"));
+        }
+
+        @Test
+        void 예외_숫자가_아닌_값이_전달된_경우() {
+            // given
+            String invalidOrganizationId = "invalid-id";
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, invalidOrganizationId)
+                    .when()
+                    .get("/test/resolveArgument")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body(containsString("Organization 헤더의 값은 숫자여야 합니다"));
+        }
+
+        @Test
+        void 예외_존재하지_않는_조직_ID가_전달된_경우_실패() {
+            // given
+            Long nonExistingOrganizationId = 999999L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, nonExistingOrganizationId)
+                    .when()
+                    .get("/test/resolveArgument")
+                    .then()
+                    .statusCode(HttpStatus.FORBIDDEN.value())
+                    .body(containsString("존재하지 않는 OrganizationId 입니다"));
         }
     }
 
     @RestController
     static class TestController {
 
-        @GetMapping("/test/addArgumentResolvers")
+        @GetMapping("/test/resolveArgument")
         @ResponseStatus(HttpStatus.OK)
         public Long test(@OrganizationId Long organizationId) {
             return organizationId;
