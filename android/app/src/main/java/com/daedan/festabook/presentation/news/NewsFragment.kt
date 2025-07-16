@@ -11,8 +11,8 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private val noticeAdapter: NoticeAdapter by lazy {
         NoticeAdapter { notice ->
             val newList =
-                noticeAdapter.currentList.map {
-                    if (it.id == notice.id) it.copy(isExpanded = !it.isExpanded) else it
+                noticeAdapter.currentList.map { updateNotice ->
+                    if (updateNotice.id == notice.id) updateNotice.copy(isExpanded = !updateNotice.isExpanded) else updateNotice
                 }
             noticeAdapter.submitList(newList)
         }
