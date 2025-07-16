@@ -9,10 +9,10 @@ import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 
 class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private val noticeAdapter: NoticeAdapter by lazy {
-        NoticeAdapter { notice ->
+        NoticeAdapter { noticeId ->
             val newList =
                 noticeAdapter.currentList.map { updateNotice ->
-                    if (updateNotice.id == notice.id) updateNotice.copy(isExpanded = !updateNotice.isExpanded) else updateNotice
+                    if (updateNotice.id == noticeId) updateNotice.copy(isExpanded = !updateNotice.isExpanded) else updateNotice
                 }
             noticeAdapter.submitList(newList)
         }
