@@ -77,7 +77,7 @@ class PlaceServiceTest {
         }
 
         @Test
-        void 성공_대표_이미지가_없으면_null_반환() {
+        void 성공_대표_이미지가_없다면_null_반환() {
             // given
             Long organizationId = 1L;
 

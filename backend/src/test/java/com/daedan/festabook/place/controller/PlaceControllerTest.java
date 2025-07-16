@@ -126,7 +126,7 @@ class PlaceControllerTest {
         }
 
         @Test
-        void 성공_대표_이미지가_아니라면_null_반환() {
+        void 성공_대표_이미지가_없다면_null_반환() {
             // given
             int representativeSequence = 1;
             int anotherSequence = 3;
