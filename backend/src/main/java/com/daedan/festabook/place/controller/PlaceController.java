@@ -1,7 +1,7 @@
 package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.place.dto.PlaceListResponses;
+import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -31,7 +31,7 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceListResponses getAllPlaceByOrganizationId(
+    public PlacePreviewResponses getAllPlaceByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return placeService.getAllPlaceByOrganizationId(organizationId);
@@ -43,9 +43,9 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponse getPlaceById(
+    public PlaceResponse getPlaceByPlaceId(
             @PathVariable Long placeId
     ) {
-        return placeService.getPlaceById(placeId);
+        return placeService.getPlaceByPlaceId(placeId);
     }
 }
