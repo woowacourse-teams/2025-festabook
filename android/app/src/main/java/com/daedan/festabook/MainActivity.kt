@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 
@@ -26,6 +27,10 @@ class MainActivity : AppCompatActivity() {
         ScheduleFragment().newInstance()
     }
 
+    private val newFragment by lazy {
+        NewsFragment().newInstance()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -37,12 +42,16 @@ class MainActivity : AppCompatActivity() {
             insets
         }
 
+        setupHomeFragment(savedInstanceState)
+        onClickBottomNavigationBarItem()
+    }
+
+    private fun setupHomeFragment(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
-                add(R.id.fcv_fragment_container, placeListFragment, TAG_HOME_FRAGMENT)
+                add(R.id.fcv_fragment_container, homeFragment, TAG_HOME_FRAGMENT)
             }
         }
-        onClickBottomNavigationBarItem()
     }
 
     private fun onClickBottomNavigationBarItem() {
@@ -52,10 +61,10 @@ class MainActivity : AppCompatActivity() {
                 return@setOnItemSelectedListener false
             }
             when (icon.itemId) {
-                R.id.item_menu_home -> Unit
-                R.id.item_menu_schedule -> Unit
-                R.id.item_menu_map -> switchFragment(placeListFragment, TAG_HOME_FRAGMENT)
-                R.id.item_menu_news -> {}
+                R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
+                R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
+                R.id.item_menu_map -> switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
+                R.id.item_menu_news -> switchFragment(newFragment, TAG_NEW_FRAGMENT)
                 R.id.item_menu_setting -> {}
             }
             true
@@ -82,6 +91,8 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG_HOME_FRAGMENT = "homeFragment"
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
+        private const val TAG_PLACE_LIST_FRAGMENT = "placeListFragment"
+        private const val TAG_NEW_FRAGMENT = "newFragment"
 
         fun Fragment.newInstance(): Fragment =
             this.apply {

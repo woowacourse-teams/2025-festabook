@@ -1,13 +1,13 @@
-package com.daedan.festabook.presentation.placeList
+package com.daedan.festabook.presentation.placeList.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.Header
-import com.daedan.festabook.presentation.placeList.PlaceListViewHolder.PlaceViewHolder
-import com.daedan.festabook.presentation.placeList.uimodel.Place
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListViewHolder.Header
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListViewHolder.PlaceViewHolder
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
-class PlaceListAdapter : ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
+class PlaceListAdapter : ListAdapter<PlaceUiModel, PlaceListViewHolder>(DIFF_UTIL) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -34,15 +34,15 @@ class PlaceListAdapter : ListAdapter<Place, PlaceListViewHolder>(DIFF_UTIL) {
     companion object {
         private const val POSITION_HEADER = 0
         private val DIFF_UTIL =
-            object : DiffUtil.ItemCallback<Place>() {
+            object : DiffUtil.ItemCallback<PlaceUiModel>() {
                 override fun areItemsTheSame(
-                    oldItem: Place,
-                    newItem: Place,
+                    oldItem: PlaceUiModel,
+                    newItem: PlaceUiModel,
                 ): Boolean = oldItem.id == newItem.id
 
                 override fun areContentsTheSame(
-                    oldItem: Place,
-                    newItem: Place,
+                    oldItem: PlaceUiModel,
+                    newItem: PlaceUiModel,
                 ): Boolean = oldItem == newItem
             }
     }

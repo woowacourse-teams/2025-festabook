@@ -1,15 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
 
         <variable
             name="place"
-            type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
+            type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -44,20 +43,20 @@
             android:layout_marginTop="0dp"
             app:cardBackgroundColor="@color/gray900"
             app:cardCornerRadius="6dp"
+            app:category="@{place.category}"
             app:layout_constraintStart_toEndOf="@id/cv_place_image"
             app:layout_constraintTop_toTopOf="@id/cv_place_image"
-            app:strokeWidth="0dp"
-            app:category="@{place.category}">
+            app:strokeWidth="0dp">
 
             <TextView
                 android:id="@+id/tv_place_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                app:category="@{place.category}"
-                tools:text="푸드트럭"
+                android:textAppearance="@style/PretendardRegular10"
                 android:textColor="@color/gray050"
-                android:textAppearance="@style/PretendardRegular10" />
+                app:category="@{place.category}"
+                tools:text="푸드트럭" />
 
         </com.google.android.material.card.MaterialCardView>
 
@@ -66,11 +65,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
+            android:text="@{place.title}"
+            android:textAppearance="@style/PretendardMedium14"
             android:textColor="@color/gray900"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toBottomOf="@id/cv_place_category"
-            android:textAppearance="@style/PretendardMedium14"
-            android:text="@{place.title}"
             tools:text="컴공과 주점 ‘코딩하며 한잔'" />
 
         <TextView
@@ -78,11 +77,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
+            android:text="@{place.description}"
+            android:textAppearance="@style/PretendardRegular12"
             android:textColor="@color/gray500"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toBottomOf="@id/tv_title_place"
-            android:textAppearance="@style/PretendardRegular12"
-            android:text="@{place.description}"
 
             tools:text="시원한 맥주와 맛있는 파전!" />
 
@@ -91,8 +90,8 @@
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:layout_marginTop="2dp"
-            android:src="@drawable/ic_place_list_location"
             android:contentDescription="@string/content_description_iv_location"
+            android:src="@drawable/ic_location"
             app:layout_constraintBottom_toBottomOf="@id/tv_location"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toTopOf="@id/tv_location" />
@@ -103,22 +102,23 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:layout_marginTop="2dp"
+            android:text="@{place.location}"
+            android:textAppearance="@style/PretendardRegular12"
             android:textColor="@color/gray500"
             app:layout_constraintStart_toEndOf="@id/iv_location"
             app:layout_constraintTop_toBottomOf="@id/tv_title_description"
-            android:textAppearance="@style/PretendardRegular12"
-            android:text="@{place.location}"
             tools:text="공학관 앞" />
 
         <ImageButton
             android:id="@+id/iv_bookmark"
-            android:onClick="@{(v)->v.setSelected(!v.isSelected)}"
+            isBookmarked="@{place.isBookmarked}"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
-            android:clickable="true"
             android:background="@android:color/transparent"
-            android:src="@drawable/btn_bookmark"
+            android:clickable="true"
+            android:contentDescription="@string/all_book_mark"
+            android:src="@drawable/ic_bookmark_normal"
             app:layout_constraintBottom_toBottomOf="@id/tv_location"
             app:layout_constraintEnd_toEndOf="parent" />
 

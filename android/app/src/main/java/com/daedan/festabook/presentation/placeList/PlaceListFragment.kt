@@ -5,6 +5,7 @@ import android.view.View
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 
 class PlaceListFragment :
@@ -18,7 +19,7 @@ class PlaceListFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.rvPlaces.adapter =
             PlaceListAdapter().apply {
-                submitList(DummyPlace.placeList)
+                submitList(DummyPlace.placeUiModelList)
             }
     }
 }

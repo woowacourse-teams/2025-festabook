@@ -4,7 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.databinding.ItemNoticeBinding
-import com.daedan.festabook.presentation.news.notice.NoticeUiModel
+import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 class NoticeViewHolder(
     private val binding: ItemNoticeBinding,
