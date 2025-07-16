@@ -12,7 +12,7 @@ import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlaceListResponses;
+import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -53,24 +53,24 @@ class PlaceServiceTest {
             // given
             Long organizationId = 1L;
 
-            Place place1 = PlaceFixture.create();
-            Place place2 = PlaceFixture.create();
-            Place place3 = PlaceFixture.create();
-            ReflectionTestUtils.setField(place1, "id", 1L);
-            ReflectionTestUtils.setField(place2, "id", 2L);
-            ReflectionTestUtils.setField(place3, "id", 3L);
+            Place place1 = PlaceFixture.create(1L);
+            Place place2 = PlaceFixture.create(2L);
+            Place place3 = PlaceFixture.create(3L);
 
             PlaceImage placeImage1 = PlaceImageFixture.create(place1);
             PlaceImage placeImage2 = PlaceImageFixture.create(place2);
             PlaceImage placeImage3 = PlaceImageFixture.create(place3);
 
+            int representativeOrder = 1;
+
             given(placeJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(List.of(place1, place2, place3));
-            given(placeImageJpaRepository.findAllByPlaceIdIn(List.of(place1.getId(), place2.getId(), place3.getId())))
-                    .willReturn(List.of(placeImage1, placeImage2, placeImage3));
+            given(placeImageJpaRepository.findAllByPlaceIdInAndOrder(
+                    List.of(place1.getId(), place2.getId(), place3.getId()), representativeOrder
+            )).willReturn(List.of(placeImage1, placeImage2, placeImage3));
 
             // when
-            PlaceListResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
+            PlacePreviewResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
 
             // then
             assertThat(result.responses()).hasSize(3);
@@ -78,7 +78,7 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class getPlaceById {
+    class getPlaceByPlaceId {
 
         @Test
         void 성공() {
@@ -102,7 +102,7 @@ class PlaceServiceTest {
                     .willReturn(List.of(announcement1, announcement2));
 
             // when
-            PlaceResponse result = placeService.getPlaceById(placeId);
+            PlaceResponse result = placeService.getPlaceByPlaceId(placeId);
 
             // then
             assertSoftly(s -> {
@@ -118,7 +118,7 @@ class PlaceServiceTest {
             Long placeId = 999L;
 
             // when & then
-            assertThatThrownBy(() -> placeService.getPlaceById(placeId))
+            assertThatThrownBy(() -> placeService.getPlaceByPlaceId(placeId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }

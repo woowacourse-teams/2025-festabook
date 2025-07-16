@@ -31,6 +31,22 @@ public class PlaceFixture {
     }
 
     public static Place create(
+            Long id
+    ) {
+        return new Place(
+                id,
+                DEFAULT_ORGANIZATION,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_CATEGORY,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
+        );
+    }
+
+    public static Place create(
             Organization organization
     ) {
         return new Place(
