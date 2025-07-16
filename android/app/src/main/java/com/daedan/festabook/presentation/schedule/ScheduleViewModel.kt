@@ -9,8 +9,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.ScheduleRepository
-import com.daedan.festabook.presentation.schedule.mapper.toUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
+import com.daedan.festabook.presentation.schedule.model.toUiModel
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository,

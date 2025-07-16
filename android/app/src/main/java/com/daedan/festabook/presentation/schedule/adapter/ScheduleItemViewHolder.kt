@@ -9,10 +9,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemScheduleTabPageBinding
 import com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener
-import com.daedan.festabook.presentation.schedule.mapper.toKoreanString
-import com.daedan.festabook.presentation.schedule.mapper.toPx
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
+import com.daedan.festabook.presentation.schedule.model.toKoreanString
 
 class ScheduleItemViewHolder(
     private val binding: ItemScheduleTabPageBinding,
@@ -138,3 +137,5 @@ class ScheduleItemViewHolder(
         }
     }
 }
+
+fun Int.toPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
