@@ -16,7 +16,7 @@ public record PlacePreviewResponse(
     public static PlacePreviewResponse from(Place place, PlaceImage placeImage) {
         return new PlacePreviewResponse(
                 place.getId(),
-                placeImage.getImageUrl(),
+                placeImage != null ? placeImage.getImageUrl() : null,
                 place.getCategory(),
                 place.getTitle(),
                 place.getDescription(),
