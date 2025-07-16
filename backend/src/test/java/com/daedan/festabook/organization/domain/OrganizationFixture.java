@@ -17,7 +17,8 @@ public class OrganizationFixture {
         return new Organization(
                 DEFAULT_NAME,
                 DEFAULT_ZOOM,
-                DEFAULT_CENTER_COORDINATE
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY
         );
     }
 
@@ -27,7 +28,8 @@ public class OrganizationFixture {
         return new Organization(
                 name,
                 DEFAULT_ZOOM,
-                DEFAULT_CENTER_COORDINATE
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY
         );
     }
 

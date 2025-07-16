@@ -4,6 +4,7 @@ import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -31,13 +32,12 @@ public class Organization {
 
     @Column(nullable = false)
     private Coordinate centerCoordinate;
-
-    // TODO: 해결 안된 N+1
+    
     @CollectionTable(
             name = "organization_polygon_hole_boundary",
             joinColumns = @JoinColumn(nullable = false)
     )
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     private List<Coordinate> polygonHoleBoundary = new ArrayList<>();
 
     protected Organization(
@@ -57,10 +57,12 @@ public class Organization {
     public Organization(
             String name,
             Integer zoom,
-            Coordinate centerCoordinate
+            Coordinate centerCoordinate,
+            List<Coordinate> polygonHoleBoundary
     ) {
         this.name = name;
         this.zoom = zoom;
         this.centerCoordinate = centerCoordinate;
+        this.polygonHoleBoundary = polygonHoleBoundary;
     }
 }
