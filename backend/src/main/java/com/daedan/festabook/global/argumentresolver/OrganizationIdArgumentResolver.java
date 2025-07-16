@@ -16,6 +16,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 public class OrganizationIdArgumentResolver implements HandlerMethodArgumentResolver {
 
     private static final String ORGANIZATION_ID_HEADER = "organization";
+
     private final OrganizationJpaRepository organizationJpaRepository;
 
     @Override
@@ -37,20 +38,33 @@ public class OrganizationIdArgumentResolver implements HandlerMethodArgumentReso
     }
 
     private Long validateAndParseOrganizationId(String organizationId) {
+        validateOrganizationIdNotNull(organizationId);
+        Long parsedId = parseAndValidateNumeric(organizationId);
+        validateOrganizationExists(parsedId);
+
+        return parsedId;
+    }
+
+    private void validateOrganizationIdNotNull(String organizationId) {
         if (organizationId == null) {
+            // TODO: 커스텀 예외 등록 시 변경
             throw new BusinessException("Organization 헤더가 누락되었습니다.", HttpStatus.FORBIDDEN);
         }
+    }
 
-        Long parsedId;
+    private Long parseAndValidateNumeric(String organizationId) {
         try {
-            parsedId = Long.parseLong(organizationId);
+            return Long.parseLong(organizationId);
         } catch (NumberFormatException e) {
+            // TODO: 커스텀 예외 등록 시 변경
             throw new BusinessException("Organization 헤더의 값은 숫자여야 합니다.", HttpStatus.FORBIDDEN);
         }
+    }
 
-        if (!organizationJpaRepository.existsById(parsedId)) {
+    private void validateOrganizationExists(Long organizationId) {
+        if (!organizationJpaRepository.existsById(organizationId)) {
+            // TODO: 커스텀 예외 등록 시 변경
             throw new BusinessException("존재하지 않는 OrganizationId 입니다.", HttpStatus.FORBIDDEN);
         }
-        return parsedId;
     }
 }
