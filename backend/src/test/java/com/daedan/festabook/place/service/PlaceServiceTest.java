@@ -53,21 +53,22 @@ class PlaceServiceTest {
             // given
             Long organizationId = 1L;
 
+            Integer representativeSequence = 1;
+
             Place place1 = PlaceFixture.create(1L);
             Place place2 = PlaceFixture.create(2L);
             Place place3 = PlaceFixture.create(3L);
+            List<Place> places = List.of(place1, place2, place3);
 
-            PlaceImage placeImage1 = PlaceImageFixture.create(place1);
-            PlaceImage placeImage2 = PlaceImageFixture.create(place2);
-            PlaceImage placeImage3 = PlaceImageFixture.create(place3);
-
-            int representativeOrder = 1;
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
+            PlaceImage placeImage3 = PlaceImageFixture.create(place3, representativeSequence);
+            List<PlaceImage> placeImages = List.of(placeImage1, placeImage2, placeImage3);
 
             given(placeJpaRepository.findAllByOrganizationId(organizationId))
-                    .willReturn(List.of(place1, place2, place3));
-            given(placeImageJpaRepository.findAllByPlaceIdInAndOrder(
-                    List.of(place1.getId(), place2.getId(), place3.getId()), representativeOrder
-            )).willReturn(List.of(placeImage1, placeImage2, placeImage3));
+                    .willReturn(places);
+            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
+                    .willReturn(placeImages);
 
             // when
             PlacePreviewResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
@@ -108,7 +109,7 @@ class PlaceServiceTest {
             assertSoftly(s -> {
                 s.assertThat(result).isNotNull();
                 s.assertThat(result.placeImages().responses()).hasSize(2);
-                s.assertThat(result.placeImages().responses()).hasSize(2);
+                s.assertThat(result.placeAnnouncements().responses()).hasSize(2);
             });
         }
 
@@ -118,6 +119,7 @@ class PlaceServiceTest {
             Long placeId = 999L;
 
             // when & then
+            // TODO: ExceptionHandler 등록 후 변경
             assertThatThrownBy(() -> placeService.getPlaceByPlaceId(placeId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
