@@ -67,8 +67,13 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
+            int representativeSequence = 1;
+
+            PlaceImage placeImage = PlaceImageFixture.create(place, representativeSequence);
+            placeImageJpaRepository.save(placeImage);
+
             int expectedSize = 1;
-            int expectedFieldSize = 8;
+            int expectedFieldSize = 6;
 
             // when & then
             RestAssured
@@ -81,28 +86,31 @@ class PlaceControllerTest {
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].id", equalTo(place.getId().intValue()))
+                    .body("[0].imageUrl", equalTo(placeImage.getImageUrl()))
+                    .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].title", equalTo(place.getTitle()))
                     .body("[0].description", equalTo(place.getDescription()))
-                    .body("[0].category", equalTo(place.getCategory().name()))
-                    .body("[0].location", equalTo(place.getLocation()))
-                    .body("[0].host", equalTo(place.getHost()))
-                    .body("[0].startTime", equalTo(place.getStartTime().toString()))
-                    .body("[0].endTime", equalTo(place.getEndTime().toString()));
+                    .body("[0].location", equalTo(place.getLocation()));
         }
 
         @Test
-        void 성공_특정_조직의_모든_플레이스_조회() {
+        void 성공_특정_조직의_모든_플레이스_리스트_조회() {
             // given
             Organization targetOrganization = OrganizationFixture.create();
             Organization anotherOrganization = OrganizationFixture.create();
             organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
 
-            List<Place> places = List.of(
-                    PlaceFixture.create(targetOrganization),
-                    PlaceFixture.create(targetOrganization),
-                    PlaceFixture.create(anotherOrganization)
-            );
-            placeJpaRepository.saveAll(places);
+            Place targetPlace1 = PlaceFixture.create(targetOrganization);
+            Place targetPlace2 = PlaceFixture.create(targetOrganization);
+            Place anotherPlace = PlaceFixture.create(anotherOrganization);
+            placeJpaRepository.saveAll(List.of(targetPlace1, targetPlace2, anotherPlace));
+
+            int representativeSequence = 1;
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(targetPlace1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(targetPlace2, representativeSequence);
+            PlaceImage placeImage3 = PlaceImageFixture.create(anotherPlace, representativeSequence);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2, placeImage3));
 
             int expectedSize = 2;
 
@@ -116,10 +124,42 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
         }
+
+        @Test
+        void 성공_대표_이미지가_없다면_null_반환() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place1 = PlaceFixture.create(organization);
+            Place place2 = PlaceFixture.create(organization);
+            Place place3 = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(place1, place2, place3));
+
+            int representativeSequence = 1;
+            int anotherSequence = 3;
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
+            PlaceImage placeImage3 = PlaceImageFixture.create(place3, anotherSequence);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2, placeImage3));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
+                    .body("[1].imageUrl", equalTo(placeImage2.getImageUrl()))
+                    .body("[2].imageUrl", equalTo(null));
+        }
     }
 
     @Nested
-    class getAllPlaceAnnouncementByPlaceId {
+    class getPlaceByPlaceId {
 
         @Test
         void 성공() {
@@ -130,64 +170,57 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
-            placeAnnouncementJpaRepository.save(placeAnnouncement);
+            int representativeSequence = 1;
 
-            int expectedSize = 1;
-            int expectedFieldSize = 4;
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, representativeSequence);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
 
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/places/{placeId}/announcements", place.getId())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(placeAnnouncement.getId().intValue()))
-                    .body("[0].title", equalTo(placeAnnouncement.getTitle()))
-                    .body("[0].content", equalTo(placeAnnouncement.getContent()))
-                    .body("[0].createdAt", notNullValue());
-        }
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
 
-        @Test
-        void 성공_특정_플레이스의_모든_공지_조회() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            Place targetPlace = PlaceFixture.create(organization);
-            Place anotherPlace = PlaceFixture.create(organization);
-            placeJpaRepository.saveAll(List.of(targetPlace, anotherPlace));
-
-            List<PlaceAnnouncement> placeAnnouncements = List.of(
-                    PlaceAnnouncementFixture.create(targetPlace),
-                    PlaceAnnouncementFixture.create(targetPlace),
-                    PlaceAnnouncementFixture.create(anotherPlace)
-            );
-            placeAnnouncementJpaRepository.saveAll(placeAnnouncements);
-
-            int expectedSize = 2;
+            int expectedFieldSize = 10;
+            int expectedPlaceImagesSize = 2;
+            int expectedPlaceAnnouncementsSize = 2;
 
             // when & then
             RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places/{placeId}/announcements", targetPlace.getId())
+                    .get("/places/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize));
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("id", equalTo(place.getId().intValue()))
+                    .body("placeImages", hasSize(expectedPlaceImagesSize))
+                    .body("placeImages[0].id", equalTo(placeImage1.getId().intValue()))
+                    .body("placeImages[0].imageUrl", equalTo(placeImage1.getImageUrl()))
+                    .body("placeImages[0].sequence", equalTo(placeImage1.getSequence()))
+                    .body("placeImages[1].id", equalTo(placeImage2.getId().intValue()))
+                    .body("placeImages[1].imageUrl", equalTo(placeImage2.getImageUrl()))
+                    .body("placeImages[1].sequence", equalTo(placeImage1.getSequence()))
+                    .body("category", equalTo(place.getCategory().name()))
+                    .body("title", equalTo(place.getTitle()))
+                    .body("startTime", equalTo(place.getStartTime().toString()))
+                    .body("endTime", equalTo(place.getEndTime().toString()))
+                    .body("location", equalTo(place.getLocation()))
+                    .body("host", equalTo(place.getHost()))
+                    .body("description", equalTo(place.getDescription()))
+                    .body("placeAnnouncements", hasSize(expectedPlaceAnnouncementsSize))
+                    .body("placeAnnouncements[0].id", equalTo(placeAnnouncement1.getId().intValue()))
+                    .body("placeAnnouncements[0].title", equalTo(placeAnnouncement1.getTitle()))
+                    .body("placeAnnouncements[0].content", equalTo(placeAnnouncement1.getContent()))
+                    .body("placeAnnouncements[0].createdAt", notNullValue())
+                    .body("placeAnnouncements[1].id", equalTo(placeAnnouncement2.getId().intValue()))
+                    .body("placeAnnouncements[1].title", equalTo(placeAnnouncement2.getTitle()))
+                    .body("placeAnnouncements[1].content", equalTo(placeAnnouncement2.getContent()))
+                    .body("placeAnnouncements[1].createdAt", notNullValue());
         }
-    }
-
-    @Nested
-    class getAllPlaceImageByPlaceId {
 
         @Test
-        void 성공() {
+        void 성공_이미지_오름차순_정렬() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -195,54 +228,44 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceImage placeImage = PlaceImageFixture.create(place);
-            placeImageJpaRepository.save(placeImage);
-
-            int expectedSize = 1;
-            int expectedFieldSize = 2;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/places/{placeId}/images", place.getId())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(placeImage.getId().intValue()))
-                    .body("[0].imageUrl", equalTo(placeImage.getImageUrl()));
-        }
-
-        @Test
-        void 성공_특정_플레이스의_모든_이미지_조회() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            Place targetPlace = PlaceFixture.create(organization);
-            Place anotherPlace = PlaceFixture.create(organization);
-            placeJpaRepository.saveAll(List.of(targetPlace, anotherPlace));
-
-            List<PlaceImage> placeImages = List.of(
-                    PlaceImageFixture.create(targetPlace),
-                    PlaceImageFixture.create(targetPlace),
-                    PlaceImageFixture.create(anotherPlace)
-            );
-            placeImageJpaRepository.saveAll(placeImages);
-
-            int expectedSize = 2;
+            PlaceImage placeImage5 = PlaceImageFixture.create(place, 5);
+            PlaceImage placeImage4 = PlaceImageFixture.create(place, 4);
+            PlaceImage placeImage3 = PlaceImageFixture.create(place, 3);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, 2);
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, 1);
+            placeImageJpaRepository.saveAll(List.of(placeImage5, placeImage4, placeImage3, placeImage2, placeImage1));
 
             // when & then
             RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places/{placeId}/images", targetPlace.getId())
+                    .get("/places/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize));
+                    .body("placeImages[0].sequence", equalTo(placeImage1.getSequence()))
+                    .body("placeImages[1].sequence", equalTo(placeImage2.getSequence()))
+                    .body("placeImages[2].sequence", equalTo(placeImage3.getSequence()))
+                    .body("placeImages[3].sequence", equalTo(placeImage4.getSequence()))
+                    .body("placeImages[4].sequence", equalTo(placeImage5.getSequence()));
         }
+
+        // TODO: ExceptionHandler 등록 후 활성화
+//        @Test
+//        void 실패_존재하지_않는_place_id() {
+//            // given
+//            Organization organization = OrganizationFixture.create();
+//            organizationJpaRepository.save(organization);
+//
+//            Long placeId = 0L;
+//
+//            RestAssured
+//                    .given()
+//                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+//                    .when()
+//                    .get("/places/{placeId}", placeId)
+//                    .then()
+//                    .statusCode(HttpStatus.NOT_FOUND.value());
+//        }
     }
 }

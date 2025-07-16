@@ -3,8 +3,6 @@ package com.daedan.festabook.place.domain;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import java.time.LocalTime;
-import java.util.List;
-import java.util.stream.IntStream;
 
 public class PlaceFixture {
 
@@ -19,6 +17,22 @@ public class PlaceFixture {
 
     public static Place create() {
         return new Place(
+                DEFAULT_ORGANIZATION,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_CATEGORY,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
+        );
+    }
+
+    public static Place create(
+            Long id
+    ) {
+        return new Place(
+                id,
                 DEFAULT_ORGANIZATION,
                 DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION,
@@ -55,12 +69,15 @@ public class PlaceFixture {
             LocalTime startTime,
             LocalTime endTime
     ) {
-        return new Place(organization, title, description, category, location, host, startTime, endTime);
-    }
-
-    public static List<Place> createList(int size, Organization organization) {
-        return IntStream.range(0, size)
-                .mapToObj(i -> create(organization))
-                .toList();
+        return new Place(
+                organization,
+                title,
+                description,
+                category,
+                location,
+                host,
+                startTime,
+                endTime
+        );
     }
 }

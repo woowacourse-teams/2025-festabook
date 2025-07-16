@@ -50,6 +50,28 @@ public class Place {
     @Column(nullable = false)
     private LocalTime endTime;
 
+    protected Place(
+            Long id,
+            Organization organization,
+            String title,
+            String description,
+            PlaceCategory category,
+            String location,
+            String host,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        this.id = id;
+        this.organization = organization;
+        this.title = title;
+        this.description = description;
+        this.category = category;
+        this.location = location;
+        this.host = host;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     public Place(
             Organization organization,
             String title,
@@ -60,13 +82,16 @@ public class Place {
             LocalTime startTime,
             LocalTime endTime
     ) {
-        this.organization = organization;
-        this.title = title;
-        this.description = description;
-        this.category = category;
-        this.location = location;
-        this.host = host;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this(
+                null,
+                organization,
+                title,
+                description,
+                category,
+                location,
+                host,
+                startTime,
+                endTime
+        );
     }
 }

@@ -1,13 +1,24 @@
 package com.daedan.festabook.place.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceAnnouncement;
+import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
-import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.domain.PlaceImage;
+import com.daedan.festabook.place.domain.PlaceImageFixture;
+import com.daedan.festabook.place.dto.PlacePreviewResponses;
+import com.daedan.festabook.place.dto.PlaceResponse;
+import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
+import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -24,6 +35,12 @@ class PlaceServiceTest {
     @Mock
     private PlaceJpaRepository placeJpaRepository;
 
+    @Mock
+    private PlaceImageJpaRepository placeImageJpaRepository;
+
+    @Mock
+    private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
+
     @InjectMocks
     private PlaceService placeService;
 
@@ -33,19 +50,136 @@ class PlaceServiceTest {
         @Test
         void 성공() {
             // given
-            Place place1 = PlaceFixture.create();
-            Place place2 = PlaceFixture.create();
-            Place place3 = PlaceFixture.create();
+            Place place1 = PlaceFixture.create(1L);
+            Place place2 = PlaceFixture.create(2L);
+            Place place3 = PlaceFixture.create(3L);
+            List<Place> places = List.of(place1, place2, place3);
+
+            int representativeSequence = 1;
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
+            PlaceImage placeImage3 = PlaceImageFixture.create(place3, representativeSequence);
+            List<PlaceImage> placeImages = List.of(placeImage1, placeImage2, placeImage3);
+
             Long organizationId = 1L;
 
             given(placeJpaRepository.findAllByOrganizationId(organizationId))
-                    .willReturn(List.of(place1, place2, place3));
+                    .willReturn(places);
+            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
+                    .willReturn(placeImages);
 
             // when
-            PlaceResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
+            PlacePreviewResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
 
             // then
             assertThat(result.responses()).hasSize(3);
+        }
+
+        @Test
+        void 성공_대표_이미지가_없다면_null_반환() {
+            // given
+            Place place1 = PlaceFixture.create(1L);
+            Place place2 = PlaceFixture.create(2L);
+            Place place3 = PlaceFixture.create(3L);
+            List<Place> places = List.of(place1, place2, place3);
+
+            int representativeSequence = 1;
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
+            List<PlaceImage> placeImages = List.of(placeImage1, placeImage2);
+
+            Long organizationId = 1L;
+
+            given(placeJpaRepository.findAllByOrganizationId(organizationId))
+                    .willReturn(places);
+            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
+                    .willReturn(placeImages);
+
+            // when
+            PlacePreviewResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
+                s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(placeImage2.getImageUrl());
+                s.assertThat(result.responses().get(2).imageUrl()).isEqualTo(null);
+            });
+        }
+    }
+
+    @Nested
+    class getPlaceByPlaceId {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeId = 1L;
+
+            Place place = PlaceFixture.create(placeId);
+
+            PlaceImage image1 = PlaceImageFixture.create(place);
+            PlaceImage image2 = PlaceImageFixture.create(place);
+
+            PlaceAnnouncement announcement1 = PlaceAnnouncementFixture.create(place);
+            PlaceAnnouncement announcement2 = PlaceAnnouncementFixture.create(place);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+            given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
+                    .willReturn(List.of(image1, image2));
+            given(placeAnnouncementJpaRepository.findAllByPlaceId(placeId))
+                    .willReturn(List.of(announcement1, announcement2));
+
+            // when
+            PlaceResponse result = placeService.getPlaceByPlaceId(placeId);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result).isNotNull();
+                s.assertThat(result.placeImages().responses()).hasSize(2);
+                s.assertThat(result.placeAnnouncements().responses()).hasSize(2);
+            });
+        }
+
+        @Test
+        void 성공_이미지_sequence로_오름차순_정렬() {
+            // given
+            Long placeId = 1L;
+
+            Place place = PlaceFixture.create(placeId);
+
+            PlaceImage image3 = PlaceImageFixture.create(place, 3);
+            PlaceImage image2 = PlaceImageFixture.create(place, 2);
+            PlaceImage image1 = PlaceImageFixture.create(place, 1);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+            given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
+                    .willReturn(List.of(image1, image2, image3));
+
+            // when
+            PlaceResponse result = placeService.getPlaceByPlaceId(placeId);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.placeImages().responses().get(0).sequence()).isEqualTo(image1.getSequence());
+                s.assertThat(result.placeImages().responses().get(1).sequence()).isEqualTo(image2.getSequence());
+                s.assertThat(result.placeImages().responses().get(2).sequence()).isEqualTo(image3.getSequence());
+            });
+        }
+
+        @Test
+        void 실패_존재하지_않는_place_id() {
+            // given
+            Long placeId = 999L;
+
+            // when & then
+            // TODO: ExceptionHandler 등록 후 변경
+            assertThatThrownBy(() -> placeService.getPlaceByPlaceId(placeId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 플레이스입니다.");
         }
     }
 }
