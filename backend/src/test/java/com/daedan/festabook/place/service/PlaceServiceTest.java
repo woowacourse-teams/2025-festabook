@@ -1,6 +1,7 @@
 package com.daedan.festabook.place.service;
 
 import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.place.domain.Place;
@@ -102,9 +103,11 @@ class PlaceServiceTest {
             PlaceResponse result = placeService.getPlaceById(placeId);
 
             // then
-            assertThat(result).isNotNull();
-            assertThat(result.placeImages().responses()).hasSize(2);
-            assertThat(result.placeImages().responses()).hasSize(2);
+            assertSoftly(s -> {
+                s.assertThat(result).isNotNull();
+                s.assertThat(result.placeImages().responses()).hasSize(2);
+                s.assertThat(result.placeImages().responses()).hasSize(2);
+            });
         }
     }
 }
