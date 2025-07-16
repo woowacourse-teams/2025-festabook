@@ -39,7 +39,7 @@ class GlobalExceptionHandlerTest {
         void 예외를_성공적으로_잡는다() {
             // given
             String expectedMessage = "예외가 발생했습니다.";
-            int expectedStatusCode = 418;
+            int expectedStatusCode = HttpStatus.I_AM_A_TEAPOT.value();
 
             // when & then
             RestAssured
@@ -59,7 +59,7 @@ class GlobalExceptionHandlerTest {
         void 예상치_못한_예외_발생시_안내_메시지를_응답한다() {
             // given
             String expectedMessage = "관리자에게";
-            int expectedStatusCode = 500;
+            int expectedStatusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
 
             // when & then
             RestAssured
