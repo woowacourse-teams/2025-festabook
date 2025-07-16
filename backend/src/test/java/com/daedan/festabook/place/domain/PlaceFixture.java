@@ -1,7 +1,7 @@
 package com.daedan.festabook.place.domain;
 
 import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.orgnaization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.IntStream;

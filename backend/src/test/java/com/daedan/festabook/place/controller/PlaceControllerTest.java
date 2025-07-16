@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
-import com.daedan.festabook.orgnaization.domain.OrganizationFixture;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
