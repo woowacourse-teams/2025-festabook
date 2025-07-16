@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PlaceImageJpaRepository extends JpaRepository<PlaceImage, Long> {
 
-    List<PlaceImage> findAllByPlaceId(Long placeId);
+    List<PlaceImage> findAllByPlaceIdOrderBySequenceAsc(Long placeId);
 
     List<PlaceImage> findAllByPlaceInAndSequence(List<Place> places, int sequence);
 }

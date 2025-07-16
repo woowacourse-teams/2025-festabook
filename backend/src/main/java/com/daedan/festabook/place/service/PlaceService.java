@@ -46,7 +46,7 @@ public class PlaceService {
 
     public PlaceResponse getPlaceByPlaceId(Long placeId) {
         Place place = getPlaceById(placeId);
-        List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceId(placeId);
+        List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId);
         List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
 
         return PlaceResponse.from(place, placeImages, placeAnnouncements);
