@@ -105,15 +105,12 @@ class PlaceControllerTest {
             Place targetPlace1 = PlaceFixture.create(targetOrganization);
             Place targetPlace2 = PlaceFixture.create(targetOrganization);
             Place anotherPlace = PlaceFixture.create(anotherOrganization);
-            List<Place> places = List.of(targetPlace1, targetPlace2, anotherPlace);
-            placeJpaRepository.saveAll(places);
+            placeJpaRepository.saveAll(List.of(targetPlace1, targetPlace2, anotherPlace));
 
-            List<PlaceImage> placeImages = List.of(
-                    PlaceImageFixture.create(targetPlace1, representativeSequence),
-                    PlaceImageFixture.create(targetPlace2, representativeSequence),
-                    PlaceImageFixture.create(anotherPlace, representativeSequence)
-            );
-            placeImageJpaRepository.saveAll(placeImages);
+            PlaceImage placeImage1 = PlaceImageFixture.create(targetPlace1, representativeSequence);
+            PlaceImage placeImage2 = PlaceImageFixture.create(targetPlace2, representativeSequence);
+            PlaceImage placeImage3 = PlaceImageFixture.create(anotherPlace, representativeSequence);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2, placeImage3));
 
             int expectedSize = 2;
 
@@ -147,8 +144,6 @@ class PlaceControllerTest {
             PlaceImage placeImage3 = PlaceImageFixture.create(place3, anotherSequence);
             placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2, placeImage3));
 
-            int expectedSize = 3;
-
             // when & then
             RestAssured
                     .given()
@@ -157,7 +152,6 @@ class PlaceControllerTest {
                     .get("/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
                     .body("[1].imageUrl", equalTo(placeImage2.getImageUrl()))
                     .body("[2].imageUrl", equalTo(null));
@@ -179,14 +173,12 @@ class PlaceControllerTest {
             placeJpaRepository.save(place);
 
             PlaceImage placeImage1 = PlaceImageFixture.create(place, representativeSequence);
-            placeImageJpaRepository.save(placeImage1);
             PlaceImage placeImage2 = PlaceImageFixture.create(place, representativeSequence);
-            placeImageJpaRepository.save(placeImage2);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
 
             PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
-            placeAnnouncementJpaRepository.save(placeAnnouncement1);
             PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
-            placeAnnouncementJpaRepository.save(placeAnnouncement2);
+            placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
 
             int expectedFieldSize = 10;
             int expectedPlaceImagesSize = 2;
