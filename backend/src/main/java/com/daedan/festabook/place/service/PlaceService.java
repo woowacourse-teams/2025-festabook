@@ -4,7 +4,6 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceImage;
-import com.daedan.festabook.place.dto.PlacePreviewResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -37,11 +36,8 @@ public class PlaceService {
                         image -> image.getPlace().getId(), // TODO: N+1 문제 해결
                         Function.identity()
                 ));
-        List<PlacePreviewResponse> responses = places.stream()
-                .map(place -> PlacePreviewResponse.from(place, images.get(place.getId())))
-                .toList();
 
-        return PlacePreviewResponses.from(responses);
+        return PlacePreviewResponses.from(places, images);
     }
 
     public PlaceResponse getPlaceByPlaceId(Long placeId) {
