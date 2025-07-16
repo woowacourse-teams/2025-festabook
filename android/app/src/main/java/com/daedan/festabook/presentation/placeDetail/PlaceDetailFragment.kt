@@ -7,6 +7,7 @@ import com.daedan.festabook.databinding.FragmentPlaceDetailBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.placeDetail.dummy.DummyPlaceDetail
+import com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail
 import com.daedan.festabook.presentation.placeList.uimodel.Place
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
@@ -17,12 +18,19 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         super.onViewCreated(view, savedInstanceState)
         val place = arguments?.getObject<Place>(TAG_PLACE_DETAIL_FRAGMENT) ?: return
         val dummyDetail = DummyPlaceDetail.create(place)
+        setUpBinding(dummyDetail)
+    }
+
+    private fun setUpBinding(dummyDetail: PlaceDetail) {
         binding.placeDetail = dummyDetail
         binding.rvPlaceNotice.adapter =
             PlaceNoticeAdapter().apply {
                 submitList(dummyDetail.notices)
             }
-        binding.vpPlaceImages.adapter = PlaceImageViewPagerAdapter(dummyDetail.images)
+        binding.vpPlaceImages.adapter =
+            PlaceImageViewPagerAdapter().apply {
+                submitList(dummyDetail.images)
+            }
     }
 
     companion object {

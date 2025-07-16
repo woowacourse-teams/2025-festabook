@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.databinding.ItemPlaceImageBinding
 
-class PlaceImageViewPagerAdapter(
-    private val imageUrls: List<String>,
-) : ListAdapter<String, PlaceImageViewPagerAdapter.ViewHolder>(DIFF_UTIL_CALLBACK) {
+class PlaceImageViewPagerAdapter : ListAdapter<String, PlaceImageViewPagerAdapter.ViewHolder>(DIFF_UTIL_CALLBACK) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -21,8 +19,6 @@ class PlaceImageViewPagerAdapter(
     ) {
         holder.bind(getItem(position))
     }
-
-    override fun getItemCount(): Int = imageUrls.size
 
     class ViewHolder(
         val binding: ItemPlaceImageBinding,
