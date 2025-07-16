@@ -40,6 +40,10 @@ public class PlaceImageFixture {
             String imageUrl,
             Integer sequence
     ) {
-        return new PlaceImage(place, imageUrl, sequence);
+        return new PlaceImage(
+                place,
+                imageUrl,
+                sequence
+        );
     }
 }
