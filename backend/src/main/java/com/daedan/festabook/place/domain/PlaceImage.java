@@ -29,15 +29,15 @@ public class PlaceImage {
     private String imageUrl;
 
     @Column(nullable = false)
-    private Integer order;
+    private Integer sequence;
 
     public PlaceImage(
             Place place,
             String imageUrl,
-            Integer order
+            Integer sequence
     ) {
         this.place = place;
         this.imageUrl = imageUrl;
-        this.order = order;
+        this.sequence = sequence;
     }
 }

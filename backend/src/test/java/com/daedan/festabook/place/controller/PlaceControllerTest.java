@@ -61,13 +61,15 @@ class PlaceControllerTest {
         @Test
         void 성공() {
             // given
+            int representativeSequence = 1;
+
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceImage placeImage = PlaceImageFixture.create(place);
+            PlaceImage placeImage = PlaceImageFixture.create(place, representativeSequence);
             placeImageJpaRepository.save(placeImage);
 
             int expectedSize = 1;
@@ -94,6 +96,8 @@ class PlaceControllerTest {
         @Test
         void 성공_특정_조직의_모든_플레이스_리스트_조회() {
             // given
+            int representativeSequence = 1;
+
             Organization targetOrganization = OrganizationFixture.create();
             Organization anotherOrganization = OrganizationFixture.create();
             organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
@@ -105,9 +109,9 @@ class PlaceControllerTest {
             placeJpaRepository.saveAll(places);
 
             List<PlaceImage> placeImages = List.of(
-                    PlaceImageFixture.create(targetPlace1),
-                    PlaceImageFixture.create(targetPlace2),
-                    PlaceImageFixture.create(anotherPlace)
+                    PlaceImageFixture.create(targetPlace1, representativeSequence),
+                    PlaceImageFixture.create(targetPlace2, representativeSequence),
+                    PlaceImageFixture.create(anotherPlace, representativeSequence)
             );
             placeImageJpaRepository.saveAll(placeImages);
 
@@ -126,20 +130,22 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getPlaceById {
+    class getPlaceByPlaceId {
 
         @Test
         void 성공() {
             // given
+            int representativeSequence = 1;
+
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceImage placeImage1 = PlaceImageFixture.create(place);
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, representativeSequence);
             placeImageJpaRepository.save(placeImage1);
-            PlaceImage placeImage2 = PlaceImageFixture.create(place);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, representativeSequence);
             placeImageJpaRepository.save(placeImage2);
 
             PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
@@ -164,6 +170,8 @@ class PlaceControllerTest {
                     .body("placeImages", hasSize(expectedPlaceImagesSize))
                     .body("placeImages[0].id", equalTo(placeImage1.getId().intValue()))
                     .body("placeImages[0].imageUrl", equalTo(placeImage1.getImageUrl()))
+                    .body("placeImages[1].id", equalTo(placeImage2.getId().intValue()))
+                    .body("placeImages[1].imageUrl", equalTo(placeImage2.getImageUrl()))
                     .body("category", equalTo(place.getCategory().name()))
                     .body("title", equalTo(place.getTitle()))
                     .body("startTime", equalTo(place.getStartTime().toString()))
@@ -181,5 +189,23 @@ class PlaceControllerTest {
                     .body("placeAnnouncements[1].content", equalTo(placeAnnouncement2.getContent()))
                     .body("placeAnnouncements[1].createdAt", notNullValue());
         }
+
+        // TODO: ExceptionHandler 등록 후 활성화
+//        @Test
+//        void 실패_존재하지_않는_place_id() {
+//            // given
+//            Organization organization = OrganizationFixture.create();
+//            organizationJpaRepository.save(organization);
+//
+//            Long placeId = 0L;
+//
+//            RestAssured
+//                    .given()
+//                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+//                    .when()
+//                    .get("/places/{placeId}", placeId)
+//                    .then()
+//                    .statusCode(HttpStatus.NOT_FOUND.value());
+//        }
     }
 }
