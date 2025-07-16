@@ -2,6 +2,7 @@
 <layout>
 
     <data>
+
         <variable
             name="place"
             type="com.daedan.festabook.presentation.placeList.uimodel.Place" />

@@ -59,7 +59,9 @@ class PlaceListFragment :
                     fm: FragmentManager,
                     f: Fragment,
                 ) {
-                    activity?.findViewById<BottomNavigationView>(R.id.bnv_menu)?.animateShowBottomNavigationView()
+                    activity
+                        ?.findViewById<BottomNavigationView>(R.id.bnv_menu)
+                        ?.animateShowBottomNavigationView()
                     super.onFragmentStopped(fm, f)
                 }
 
@@ -68,7 +70,9 @@ class PlaceListFragment :
                     f: Fragment,
                     context: Context,
                 ) {
-                    activity?.findViewById<BottomNavigationView>(R.id.bnv_menu)?.animateHideBottomNavigationView()
+                    activity
+                        ?.findViewById<BottomNavigationView>(R.id.bnv_menu)
+                        ?.animateHideBottomNavigationView()
                     super.onFragmentAttached(fm, f, context)
                 }
             },

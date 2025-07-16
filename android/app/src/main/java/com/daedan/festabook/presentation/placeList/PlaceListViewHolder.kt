@@ -26,6 +26,7 @@ sealed class PlaceListViewHolder(
 
         companion object {
             val VIEW_TYPE = 0
+
             fun of(
                 parent: ViewGroup,
                 handler: PlaceListHandler,

@@ -4,7 +4,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.news.notice.NoticeUiModel
-import com.daedan.festabook.presentation.placeDetail.PlaceNoticeViewHolder
 
 class PlaceNoticeAdapter : ListAdapter<NoticeUiModel, PlaceNoticeViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(
