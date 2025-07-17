@@ -9,7 +9,7 @@
 
         <variable
             name="handler"
-            type="com.daedan.festabook.presentation.placeList.PlaceListHandler" />
+            type="com.daedan.festabook.presentation.placeList.OnPlaceClickedListener" />
 
     </data>
 

@@ -17,7 +17,7 @@ class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
         R.layout.fragment_place_list,
     ),
-    PlaceListHandler {
+    OnPlaceClickedListener {
     private val viewModel by viewModels<PlaceListViewModel>()
 
     override fun onViewCreated(

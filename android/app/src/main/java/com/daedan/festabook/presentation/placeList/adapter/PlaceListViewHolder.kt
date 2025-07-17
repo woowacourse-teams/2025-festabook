@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.daedan.festabook.databinding.ItemPlaceListBinding
 import com.daedan.festabook.databinding.ItemPlaceListHeaderBinding
-import com.daedan.festabook.presentation.placeList.PlaceListHandler
+import com.daedan.festabook.presentation.placeList.OnPlaceClickedListener
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 sealed class PlaceListViewHolder(
@@ -16,7 +16,7 @@ sealed class PlaceListViewHolder(
 
     class PlaceViewHolder private constructor(
         private val binding: ItemPlaceListBinding,
-        private val handler: PlaceListHandler,
+        private val handler: OnPlaceClickedListener,
     ) : PlaceListViewHolder(binding) {
         override fun bind(placeUiModel: PlaceUiModel) {
             binding.place = placeUiModel
@@ -28,7 +28,7 @@ sealed class PlaceListViewHolder(
 
             fun from(
                 parent: ViewGroup,
-                handler: PlaceListHandler,
+                handler: OnPlaceClickedListener,
             ): PlaceViewHolder =
                 PlaceViewHolder(
                     ItemPlaceListBinding.inflate(
