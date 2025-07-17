@@ -29,6 +29,10 @@ public class PlaceAnnouncementFixture {
             String title,
             String content
     ) {
-        return new PlaceAnnouncement(place, title, content);
+        return new PlaceAnnouncement(
+                place,
+                title,
+                content
+        );
     }
 }

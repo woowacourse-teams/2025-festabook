@@ -1,0 +1,53 @@
+name: Run Test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - backend
+
+jobs:
+  Run-PR-Test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Run Gradle Test
+        id: run_gradle_test
+        run: ./gradlew clean test
+        working-directory: backend
+
+      - name: Comment on PR based on test result
+        if: always()
+        run: |
+          TEST_RESULT="${{ steps.run_gradle_test.outcome }}"
+          if [[ "$TEST_RESULT" == "success" ]]; then
+            MESSAGE="✅ 테스트가 성공적으로 완료되었습니다. 고생하셨습니다."
+          elif [[ "$TEST_RESULT" == "failure" ]]; then
+            MESSAGE="❌ 테스트가 실패했습니다. 로그를 확인해주세요."
+          else
+            MESSAGE="⚠️ 테스트가 완료되지 않았습니다. (상태: ${TEST_RESULT})"
+          fi
+          
+          gh pr comment ${{ github.event.pull_request.number }} --body "$MESSAGE"
+        env:
+          GITHUB_TOKEN: ${{ secrets.PR_COMMENT_TOKEN }}
