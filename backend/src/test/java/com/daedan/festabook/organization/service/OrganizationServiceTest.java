@@ -7,7 +7,7 @@ import static org.mockito.BDDMockito.given;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.dto.OrganizationGeographicResponse;
+import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -41,10 +41,10 @@ class OrganizationServiceTest {
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
 
-            OrganizationGeographicResponse expected = OrganizationGeographicResponse.from(organization);
+            OrganizationGeographyResponse expected = OrganizationGeographyResponse.from(organization);
 
             // when
-            OrganizationGeographicResponse result =
+            OrganizationGeographyResponse result =
                     organizationService.getOrganizationGeographicByOrganizationId(organizationId);
 
             // then

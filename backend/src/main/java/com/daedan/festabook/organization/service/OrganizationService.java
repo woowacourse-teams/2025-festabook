@@ -2,7 +2,7 @@ package com.daedan.festabook.organization.service;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.dto.OrganizationGeographicResponse;
+import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -14,10 +14,10 @@ public class OrganizationService {
 
     private final OrganizationJpaRepository organizationJpaRepository;
 
-    public OrganizationGeographicResponse getOrganizationGeographicByOrganizationId(Long organizationId) {
+    public OrganizationGeographyResponse getOrganizationGeographicByOrganizationId(Long organizationId) {
         Organization organization = organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("조직이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 
-        return OrganizationGeographicResponse.from(organization);
+        return OrganizationGeographyResponse.from(organization);
     }
 }

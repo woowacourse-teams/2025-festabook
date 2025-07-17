@@ -1,7 +1,7 @@
 package com.daedan.festabook.organization.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.organization.dto.OrganizationGeographicResponse;
+import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,7 +29,7 @@ public class OrganizationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public OrganizationGeographicResponse getOrganizationGeographicById(
+    public OrganizationGeographyResponse getOrganizationGeographicById(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return organizationService.getOrganizationGeographicByOrganizationId(organizationId);

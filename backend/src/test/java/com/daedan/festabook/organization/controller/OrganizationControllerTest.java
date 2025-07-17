@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.dto.OrganizationGeographicResponse;
+import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -47,10 +47,10 @@ class OrganizationControllerTest {
 
             int expectedFieldSize = 3;
 
-            OrganizationGeographicResponse expected = OrganizationGeographicResponse.from(organization);
+            OrganizationGeographyResponse expected = OrganizationGeographyResponse.from(organization);
 
             // when & then
-            OrganizationGeographicResponse result = RestAssured
+            OrganizationGeographyResponse result = RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
@@ -59,7 +59,7 @@ class OrganizationControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .extract()
-                    .as(OrganizationGeographicResponse.class);
+                    .as(OrganizationGeographyResponse.class);
 
             assertThat(result).isEqualTo(expected);
         }
