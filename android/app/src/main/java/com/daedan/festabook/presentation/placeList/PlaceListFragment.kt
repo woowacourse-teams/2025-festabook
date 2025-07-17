@@ -34,8 +34,8 @@ class PlaceListFragment :
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
-        viewModel.publishClickEvent()
         viewModel.setPlace(place)
+        viewModel.publishClickEvent()
     }
 
     private fun setUpObservers() {
