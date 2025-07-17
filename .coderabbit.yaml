@@ -48,6 +48,7 @@ reviews:
   auto_review:
     enabled: true
     auto_incremental_review: true
+    base_branches: ["android", "backend"]
 
   finishing_touches:
     docstrings:
