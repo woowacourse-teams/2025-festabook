@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +12,14 @@ android {
     compileSdk = 36
 
     defaultConfig {
+        val properties = Properties()
+        val localPropertiesFile = rootProject.file("local.properties")
+        if (localPropertiesFile.exists()) {
+            localPropertiesFile.inputStream().use { input ->
+                properties.load(input)
+            }
+        }
+
         applicationId = "com.daedan.festabook"
         minSdk = 28
         targetSdk = 36
@@ -22,6 +32,12 @@ android {
             "String",
             "FESTABOOK_URL",
             "\"http://festabook.woowacourse.com/\"",
+        )
+
+        buildConfigField(
+            "String",
+            "NAVER_MAP_CLIENT_ID",
+            "${properties.getProperty("naver.map.client.id")}",
         )
     }
 
@@ -49,7 +65,7 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.map.sdk)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.appcompat)
