@@ -5,14 +5,14 @@ import com.daedan.festabook.organization.domain.Organization;
 public record OrganizationGeographyResponse(
         Integer zoom,
         CoordinateResponse centerCoordinate,
-        OrganizationPolygonHoleBoundaryResponse polygonHoleBoundary
+        PolygonHoleBoundaryResponse polygonHoleBoundary
 ) {
 
     public static OrganizationGeographyResponse from(Organization organization) {
         return new OrganizationGeographyResponse(
                 organization.getZoom(),
                 CoordinateResponse.from(organization.getCenterCoordinate()),
-                OrganizationPolygonHoleBoundaryResponse.from(organization.getPolygonHoleBoundary())
+                PolygonHoleBoundaryResponse.from(organization.getPolygonHoleBoundary())
         );
     }
 }
