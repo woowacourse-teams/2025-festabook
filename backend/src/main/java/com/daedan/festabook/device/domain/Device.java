@@ -21,9 +21,20 @@ public class Device {
 
     // TODO: 마지막 접근한 시간 추후 구현
 
+    protected Device(
+            Long id,
+            String fcmToken
+    ) {
+        this.id = id;
+        this.fcmToken = fcmToken;
+    }
+
     public Device(
             String fcmToken
     ) {
-        this.fcmToken = fcmToken;
+        this(
+                null,
+                fcmToken
+        );
     }
 }
