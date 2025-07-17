@@ -39,9 +39,9 @@ class PlaceListFragment :
     }
 
     private fun setUpObservers() {
-        viewModel.event.observe(this) { event ->
+        viewModel.userActionEvent.observe(this) { event ->
             when (event) {
-                PlaceListEvent.PLACE_CLICKED -> startPlaceDetailFragment()
+                PlaceListUserActionEvent.PLACE_CLICKED -> startPlaceDetailFragment()
             }
         }
     }

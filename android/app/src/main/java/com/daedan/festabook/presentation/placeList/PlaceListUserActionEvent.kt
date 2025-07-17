@@ -1,5 +1,5 @@
 package com.daedan.festabook.presentation.placeList
 
-enum class PlaceListEvent {
+enum class PlaceListUserActionEvent {
     PLACE_CLICKED,
 }
