@@ -1,6 +1,7 @@
 package com.daedan.festabook.announcement.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.announcement.domain.Announcement;
@@ -56,12 +57,14 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(organization));
 
             // when
-            AnnouncementResponse result = announcementService.createAnnouncement(1L, request);
+            AnnouncementResponse result = announcementService.createAnnouncement(organizationId, request);
 
             // then
-            assertThat(result.title()).isEqualTo(request.title());
-            assertThat(result.content()).isEqualTo(request.content());
-            assertThat(result.isPinned()).isEqualTo(request.isPinned());
+            assertSoftly(s -> {
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.content()).isEqualTo(request.content());
+                s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
+            });
         }
     }
 
