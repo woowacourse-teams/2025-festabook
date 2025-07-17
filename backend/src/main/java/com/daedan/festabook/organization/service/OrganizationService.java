@@ -14,7 +14,7 @@ public class OrganizationService {
 
     private final OrganizationJpaRepository organizationJpaRepository;
 
-    public OrganizationGeographyResponse getOrganizationGeographicByOrganizationId(Long organizationId) {
+    public OrganizationGeographyResponse getOrganizationGeographyByOrganizationId(Long organizationId) {
         Organization organization = organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("조직이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
 

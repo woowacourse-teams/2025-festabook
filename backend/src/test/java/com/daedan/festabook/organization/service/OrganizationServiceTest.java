@@ -30,7 +30,7 @@ class OrganizationServiceTest {
     private OrganizationService organizationService;
 
     @Nested
-    class getOrganizationGeographicById {
+    class getOrganizationGeographyByOrganizationId {
 
         @Test
         void 성공() {
@@ -45,7 +45,7 @@ class OrganizationServiceTest {
 
             // when
             OrganizationGeographyResponse result =
-                    organizationService.getOrganizationGeographicByOrganizationId(organizationId);
+                    organizationService.getOrganizationGeographyByOrganizationId(organizationId);
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -61,7 +61,7 @@ class OrganizationServiceTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                organizationService.getOrganizationGeographicByOrganizationId(notExistsId);
+                organizationService.getOrganizationGeographyByOrganizationId(notExistsId);
             }).isInstanceOf(BusinessException.class)
                     .hasMessageContaining("조직이 존재하지 않습니다.");
         }

@@ -37,7 +37,7 @@ class OrganizationControllerTest {
     }
 
     @Nested
-    class getOrganizationGeographicById {
+    class getOrganizationGeographyByOrganizationId {
 
         @Test
         void 성공() {
