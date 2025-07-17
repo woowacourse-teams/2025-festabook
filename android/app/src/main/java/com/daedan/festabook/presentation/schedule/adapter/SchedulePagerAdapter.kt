@@ -16,7 +16,13 @@ class SchedulePagerAdapter(
     }
 
     fun submitList(newIds: List<Long>) {
+        items.clear()
         items.addAll(newIds)
-        notifyDataSetChanged()
+        val lastIndex: Int = newIds.size - 1
+        notifyItemRangeChanged(FIRST_INDEX, lastIndex)
+    }
+
+    companion object {
+        private const val FIRST_INDEX: Int = 0
     }
 }
