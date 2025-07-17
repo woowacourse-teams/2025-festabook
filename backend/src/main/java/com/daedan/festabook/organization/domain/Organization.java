@@ -34,12 +34,12 @@ public class Organization {
     @Embedded
     @Column(nullable = false)
     private Coordinate centerCoordinate;
-    
+
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
             name = "organization_polygon_hole_boundary",
             joinColumns = @JoinColumn(nullable = false)
     )
-    @ElementCollection(fetch = FetchType.EAGER)
     private List<Coordinate> polygonHoleBoundary = new ArrayList<>();
 
     protected Organization(
