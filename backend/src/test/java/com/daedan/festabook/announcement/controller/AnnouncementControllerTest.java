@@ -7,11 +7,13 @@ import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
+import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -42,6 +44,41 @@ class AnnouncementControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    @Nested
+    class createAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            AnnouncementRequest request = new AnnouncementRequest(
+                    "폭우가 내립니다.",
+                    "우산을 챙겨주세요.",
+                    true
+            );
+
+            int expectedFieldSize = 5;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/announcements")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("title", equalTo(request.title()))
+                    .body("content", equalTo(request.content()))
+                    .body("isPinned", equalTo(request.isPinned()))
+                    .body("createdAt", notNullValue());
+        }
     }
 
     @Nested

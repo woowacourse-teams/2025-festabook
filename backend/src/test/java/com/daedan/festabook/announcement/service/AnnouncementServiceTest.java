@@ -1,13 +1,20 @@
 package com.daedan.festabook.announcement.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
+import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -26,8 +33,40 @@ class AnnouncementServiceTest {
     @Mock
     private AnnouncementJpaRepository announcementJpaRepository;
 
+    @Mock
+    private OrganizationJpaRepository organizationJpaRepository;
+
     @InjectMocks
     private AnnouncementService announcementService;
+
+    @Nested
+    class createAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            AnnouncementRequest request = new AnnouncementRequest(
+                    "폭우가 내립니다.",
+                    "우산을 챙겨주세요.",
+                    true
+            );
+            Long organizationId = 1L;
+            Organization organization = OrganizationFixture.create(organizationId);
+
+            given(organizationJpaRepository.findById(organizationId))
+                    .willReturn(Optional.of(organization));
+
+            // when
+            AnnouncementResponse result = announcementService.createAnnouncement(organizationId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.content()).isEqualTo(request.content());
+                s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
+            });
+        }
+    }
 
     @Nested
     class getAllAnnouncementByOrganizationId {

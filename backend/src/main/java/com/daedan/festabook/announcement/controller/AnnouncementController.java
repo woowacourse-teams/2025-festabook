@@ -1,5 +1,7 @@
 package com.daedan.festabook.announcement.controller;
 
+import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.service.AnnouncementService;
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
@@ -11,6 +13,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +26,19 @@ import org.springframework.web.bind.annotation.RestController;
 public class AnnouncementController {
 
     private final AnnouncementService announcementService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "공지 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
+    })
+    public AnnouncementResponse createAnnouncement(
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @RequestBody AnnouncementRequest request
+    ) {
+        return announcementService.createAnnouncement(organizationId, request);
+    }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)

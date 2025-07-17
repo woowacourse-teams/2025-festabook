@@ -62,9 +62,12 @@ public class Organization {
             Coordinate centerCoordinate,
             List<Coordinate> polygonHoleBoundary
     ) {
-        this.name = name;
-        this.zoom = zoom;
-        this.centerCoordinate = centerCoordinate;
-        this.polygonHoleBoundary = polygonHoleBoundary;
+        this(
+                null,
+                name, 
+                zoom, 
+                centerCoordinate,
+                polygonHoleBoundary
+        );
     }
 }
