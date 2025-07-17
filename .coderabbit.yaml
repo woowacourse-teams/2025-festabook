@@ -24,8 +24,6 @@ reviews:
   poem: false
 
   # 경로별 리뷰 지침 및 제외 폴더
-  path_filters:
-    - !.github/**
   path_instructions:
     - path: android/**
       instructions: |
