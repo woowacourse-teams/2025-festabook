@@ -3,11 +3,9 @@ spring:
     name: festabook
   jpa:
     open-in-view: false
-    hibernate:
-      ddl-auto: create-drop # TODO: 추후 운영 환경에서 변경 필요
     defer-datasource-initialization: true
-  profiles:
-    include: secret
+  datasource:
+    driver-class-name: org.h2.Driver
 
 # Swagger
 springdoc:
