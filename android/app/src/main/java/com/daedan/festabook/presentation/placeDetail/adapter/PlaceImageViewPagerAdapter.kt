@@ -3,8 +3,9 @@ package com.daedan.festabook.presentation.placeDetail.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
+import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 
-class PlaceImageViewPagerAdapter : ListAdapter<String, PlaceImageViewPagerViewHolder>(DIFF_UTIL_CALLBACK) {
+class PlaceImageViewPagerAdapter : ListAdapter<ImageUiModel, PlaceImageViewPagerViewHolder>(DIFF_UTIL_CALLBACK) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -19,15 +20,15 @@ class PlaceImageViewPagerAdapter : ListAdapter<String, PlaceImageViewPagerViewHo
 
     companion object {
         private val DIFF_UTIL_CALLBACK =
-            object : DiffUtil.ItemCallback<String>() {
+            object : DiffUtil.ItemCallback<ImageUiModel>() {
                 override fun areItemsTheSame(
-                    oldItem: String,
-                    newItem: String,
-                ): Boolean = oldItem == newItem
+                    oldItem: ImageUiModel,
+                    newItem: ImageUiModel,
+                ): Boolean = oldItem.id == newItem.id
 
                 override fun areContentsTheSame(
-                    oldItem: String,
-                    newItem: String,
+                    oldItem: ImageUiModel,
+                    newItem: ImageUiModel,
                 ): Boolean = oldItem == newItem
             }
     }

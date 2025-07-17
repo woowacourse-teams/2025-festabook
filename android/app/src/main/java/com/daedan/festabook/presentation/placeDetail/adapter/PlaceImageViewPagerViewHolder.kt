@@ -4,12 +4,13 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.databinding.ItemPlaceImageBinding
+import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 
 class PlaceImageViewPagerViewHolder(
     val binding: ItemPlaceImageBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(imageUrl: String) {
-        binding.imageUrl = imageUrl
+    fun bind(imageUiModel: ImageUiModel) {
+        binding.image = imageUiModel
     }
 
     companion object {

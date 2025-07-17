@@ -9,7 +9,7 @@ import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceNoticeAdapter
 import com.daedan.festabook.presentation.placeDetail.dummy.DummyPlaceDetail
-import com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
@@ -31,7 +31,7 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         setUpBinding(dummyDetail)
     }
 
-    private fun setUpBinding(dummyDetail: PlaceDetail) {
+    private fun setUpBinding(dummyDetail: PlaceDetailUiModel) {
         binding.placeDetail = dummyDetail
         binding.rvPlaceNotice.adapter = placeNoticeAdapter
         binding.vpPlaceImages.adapter = placeImageAdapter
