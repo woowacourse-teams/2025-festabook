@@ -5,19 +5,13 @@ INSERT INTO organization (name, zoom, latitude, longitude)
 VALUES ('서울시립대학교', 15, 37.583585, 127.0588862);
 
 INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
-VALUES (1, 37.5850814, 127.0593583);
-INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
-VALUES (1, 37.5844352, 127.0555388);
-INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
-VALUES (1, 37.5805582, 127.0573842);
-INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
-VALUES (1, 37.5811704, 127.0600879);
-INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
-VALUES (1, 37.5826668, 127.0630061);
-INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
-VALUES (1, 37.5846053, 127.0639073);
-INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
-VALUES (1, 37.5853875, 127.0619761);
+VALUES (1, 37.5850814, 127.0593583),
+       (1, 37.5844352, 127.0555388),
+       (1, 37.5805582, 127.0573842),
+       (1, 37.5811704, 127.0600879),
+       (1, 37.5826668, 127.0630061),
+       (1, 37.5846053, 127.0639073),
+       (1, 37.5853875, 127.0619761);
 
 -- ========================
 -- 2. 일정 날짜 (EventDate)
