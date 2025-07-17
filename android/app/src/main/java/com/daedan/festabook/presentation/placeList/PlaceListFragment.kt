@@ -42,7 +42,6 @@ class PlaceListFragment :
         viewModel.event.observe(this) { event ->
             when (event) {
                 PlaceListEvent.PLACE_CLICKED -> startPlaceDetailFragment()
-                PlaceListEvent.RUNNING -> Unit
             }
         }
     }

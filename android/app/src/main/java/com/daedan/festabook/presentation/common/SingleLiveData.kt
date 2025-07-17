@@ -2,30 +2,25 @@ package com.daedan.festabook.presentation.common
 
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 
-class SingleLiveData<T>(
-    value: T,
-) {
+class SingleLiveData<T> : MutableLiveData<T>() {
     private val liveData = MutableLiveData<Event<T>>()
 
-    init {
+    override fun setValue(value: T) {
         liveData.value = Event(value)
     }
 
-    fun setValue(value: T) {
-        liveData.value = Event(value)
-    }
-
-    fun postValue(value: T) {
+    override fun postValue(value: T) {
         liveData.postValue(Event(value))
     }
 
-    fun getValue() = liveData.value?.peekContent()
+    override fun getValue() = liveData.value?.peekContent()
 
-    fun observe(
+    override fun observe(
         owner: LifecycleOwner,
-        onResult: (T) -> Unit,
+        observer: Observer<in T>,
     ) {
-        liveData.observe(owner) { it.getContentIfNotHandled()?.let(onResult) }
+        liveData.observe(owner) { it.getContentIfNotHandled()?.let(observer::onChanged) }
     }
 }

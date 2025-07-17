@@ -7,8 +7,8 @@ import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceListViewModel : ViewModel() {
-    private val _event: SingleLiveData<PlaceListEvent> = SingleLiveData(PlaceListEvent.RUNNING)
-    val event: SingleLiveData<PlaceListEvent> = _event
+    private val _event: SingleLiveData<PlaceListEvent> = SingleLiveData()
+    val event: LiveData<PlaceListEvent> = _event
 
     private val _place: MutableLiveData<PlaceUiModel> = MutableLiveData()
     val place: LiveData<PlaceUiModel> = _place
