@@ -34,3 +34,6 @@ bin/**
 
 ### 백엔드 secret 설정 파일 ###
 **/application-secret.yml
+
+### FCM firebase-adminsdk ###
+**/firebase/*.json
