@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.daedan.festabook.databinding.ItemPlaceListBinding
 import com.daedan.festabook.databinding.ItemPlaceListHeaderBinding
+import com.daedan.festabook.presentation.placeList.OnPlaceClickedListener
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 sealed class PlaceListViewHolder(
@@ -15,21 +16,27 @@ sealed class PlaceListViewHolder(
 
     class PlaceViewHolder private constructor(
         private val binding: ItemPlaceListBinding,
+        private val handler: OnPlaceClickedListener,
     ) : PlaceListViewHolder(binding) {
         override fun bind(placeUiModel: PlaceUiModel) {
             binding.place = placeUiModel
+            binding.handler = handler
         }
 
         companion object {
-            val VIEW_TYPE = 0
+            const val VIEW_TYPE = 0
 
-            fun of(parent: ViewGroup): PlaceViewHolder =
+            fun from(
+                parent: ViewGroup,
+                handler: OnPlaceClickedListener,
+            ): PlaceViewHolder =
                 PlaceViewHolder(
                     ItemPlaceListBinding.inflate(
                         LayoutInflater.from(parent.context),
                         parent,
                         false,
                     ),
+                    handler,
                 )
         }
     }
@@ -37,12 +44,12 @@ sealed class PlaceListViewHolder(
     class Header private constructor(
         binding: ItemPlaceListHeaderBinding,
     ) : PlaceListViewHolder(binding) {
-        override fun bind(placeUiModel: PlaceUiModel) = Unit
+        override fun bind(place: PlaceUiModel) = Unit
 
         companion object {
-            val VIEW_TYPE = 1
+            const val VIEW_TYPE = 1
 
-            fun of(parent: ViewGroup): Header =
+            fun from(parent: ViewGroup): Header =
                 Header(
                     ItemPlaceListHeaderBinding.inflate(
                         LayoutInflater.from(parent.context),

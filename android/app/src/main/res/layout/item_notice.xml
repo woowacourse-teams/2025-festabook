@@ -40,6 +40,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:textColor="@color/gray900"
+            android:text="@{notice.title}"
             app:layout_constraintBottom_toBottomOf="@id/iv_speaker"
             app:layout_constraintStart_toEndOf="@id/iv_speaker"
             app:layout_constraintTop_toTopOf="@id/iv_speaker"
