@@ -10,10 +10,13 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
+import com.daedan.festabook.place.domain.PlaceDetail;
+import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
+import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
@@ -42,6 +45,9 @@ class PlaceControllerTest {
     private PlaceJpaRepository placeJpaRepository;
 
     @Autowired
+    private PlaceDetailJpaRepository placeDetailJpaRepository;
+
+    @Autowired
     private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     @Autowired
@@ -67,6 +73,9 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
+            PlaceDetail placeDetail = PlaceDetailFixture.create(place);
+            placeDetailJpaRepository.save(placeDetail);
+
             int representativeSequence = 1;
 
             PlaceImage placeImage = PlaceImageFixture.create(place, representativeSequence);
@@ -88,9 +97,9 @@ class PlaceControllerTest {
                     .body("[0].id", equalTo(place.getId().intValue()))
                     .body("[0].imageUrl", equalTo(placeImage.getImageUrl()))
                     .body("[0].category", equalTo(place.getCategory().name()))
-                    .body("[0].title", equalTo(place.getTitle()))
-                    .body("[0].description", equalTo(place.getDescription()))
-                    .body("[0].location", equalTo(place.getLocation()));
+                    .body("[0].title", equalTo(placeDetail.getTitle()))
+                    .body("[0].description", equalTo(placeDetail.getDescription()))
+                    .body("[0].location", equalTo(placeDetail.getLocation()));
         }
 
         @Test
@@ -105,8 +114,12 @@ class PlaceControllerTest {
             Place anotherPlace = PlaceFixture.create(anotherOrganization);
             placeJpaRepository.saveAll(List.of(targetPlace1, targetPlace2, anotherPlace));
 
-            int representativeSequence = 1;
+            PlaceDetail targetPlaceDetail1 = PlaceDetailFixture.create(targetPlace1);
+            PlaceDetail targetPlaceDetail2 = PlaceDetailFixture.create(targetPlace2);
+            PlaceDetail anotherPlaceDetail = PlaceDetailFixture.create(anotherPlace);
+            placeDetailJpaRepository.saveAll(List.of(targetPlaceDetail1, targetPlaceDetail2, anotherPlaceDetail));
 
+            int representativeSequence = 1;
             PlaceImage placeImage1 = PlaceImageFixture.create(targetPlace1, representativeSequence);
             PlaceImage placeImage2 = PlaceImageFixture.create(targetPlace2, representativeSequence);
             PlaceImage placeImage3 = PlaceImageFixture.create(anotherPlace, representativeSequence);
@@ -133,16 +146,18 @@ class PlaceControllerTest {
 
             Place place1 = PlaceFixture.create(organization);
             Place place2 = PlaceFixture.create(organization);
-            Place place3 = PlaceFixture.create(organization);
-            placeJpaRepository.saveAll(List.of(place1, place2, place3));
+            placeJpaRepository.saveAll(List.of(place1, place2));
+
+            PlaceDetail placeDetail1 = PlaceDetailFixture.create(place1);
+            PlaceDetail placeDetail2 = PlaceDetailFixture.create(place2);
+            placeDetailJpaRepository.saveAll(List.of(placeDetail1, placeDetail2));
 
             int representativeSequence = 1;
-            int anotherSequence = 3;
+            int anotherSequence = 2;
 
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
-            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
-            PlaceImage placeImage3 = PlaceImageFixture.create(place3, anotherSequence);
-            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2, placeImage3));
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, anotherSequence);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
 
             // when & then
             RestAssured
@@ -153,8 +168,7 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
-                    .body("[1].imageUrl", equalTo(placeImage2.getImageUrl()))
-                    .body("[2].imageUrl", equalTo(null));
+                    .body("[1].imageUrl", equalTo(null));
         }
     }
 
@@ -169,6 +183,9 @@ class PlaceControllerTest {
 
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
+
+            PlaceDetail placeDetail = PlaceDetailFixture.create(place);
+            placeDetailJpaRepository.save(placeDetail);
 
             int representativeSequence = 1;
 
@@ -202,12 +219,12 @@ class PlaceControllerTest {
                     .body("placeImages[1].imageUrl", equalTo(placeImage2.getImageUrl()))
                     .body("placeImages[1].sequence", equalTo(placeImage1.getSequence()))
                     .body("category", equalTo(place.getCategory().name()))
-                    .body("title", equalTo(place.getTitle()))
-                    .body("startTime", equalTo(place.getStartTime().toString()))
-                    .body("endTime", equalTo(place.getEndTime().toString()))
-                    .body("location", equalTo(place.getLocation()))
-                    .body("host", equalTo(place.getHost()))
-                    .body("description", equalTo(place.getDescription()))
+                    .body("title", equalTo(placeDetail.getTitle()))
+                    .body("startTime", equalTo(placeDetail.getStartTime().toString()))
+                    .body("endTime", equalTo(placeDetail.getEndTime().toString()))
+                    .body("location", equalTo(placeDetail.getLocation()))
+                    .body("host", equalTo(placeDetail.getHost()))
+                    .body("description", equalTo(placeDetail.getDescription()))
                     .body("placeAnnouncements", hasSize(expectedPlaceAnnouncementsSize))
                     .body("placeAnnouncements[0].id", equalTo(placeAnnouncement1.getId().intValue()))
                     .body("placeAnnouncements[0].title", equalTo(placeAnnouncement1.getTitle()))
@@ -227,6 +244,9 @@ class PlaceControllerTest {
 
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
+
+            PlaceDetail placeDetail = PlaceDetailFixture.create(place);
+            placeDetailJpaRepository.save(placeDetail);
 
             PlaceImage placeImage5 = PlaceImageFixture.create(place, 5);
             PlaceImage placeImage4 = PlaceImageFixture.create(place, 4);
@@ -249,8 +269,9 @@ class PlaceControllerTest {
                     .body("placeImages[3].sequence", equalTo(placeImage4.getSequence()))
                     .body("placeImages[4].sequence", equalTo(placeImage5.getSequence()));
         }
+    }
 
-        // TODO: ExceptionHandler 등록 후 활성화
+    // TODO: ExceptionHandler 등록 후 활성화
 //        @Test
 //        void 실패_존재하지_않는_place_id() {
 //            // given
@@ -267,5 +288,5 @@ class PlaceControllerTest {
 //                    .then()
 //                    .statusCode(HttpStatus.NOT_FOUND.value());
 //        }
-    }
+//    }
 }

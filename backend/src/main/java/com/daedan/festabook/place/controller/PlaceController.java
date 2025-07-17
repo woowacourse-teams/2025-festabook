@@ -31,10 +31,10 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlacePreviewResponses getAllPlaceByOrganizationId(
+    public PlacePreviewResponses getAllPreviewPlaceByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
-        return placeService.getAllPlaceByOrganizationId(organizationId);
+        return placeService.getAllPreviewPlaceByOrganizationId(organizationId);
     }
 
     @GetMapping("/{placeId}")
