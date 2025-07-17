@@ -6,6 +6,8 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getObject
+import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
+import com.daedan.festabook.presentation.placeDetail.adapter.PlaceNoticeAdapter
 import com.daedan.festabook.presentation.placeDetail.dummy.DummyPlaceDetail
 import com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel

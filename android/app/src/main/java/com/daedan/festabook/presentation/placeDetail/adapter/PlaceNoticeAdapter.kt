@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.placeDetail
+package com.daedan.festabook.presentation.placeDetail.adapter
 
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
