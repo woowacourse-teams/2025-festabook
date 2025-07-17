@@ -13,22 +13,33 @@
             android:id="@+id/fcv_fragment_container"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@+id/bnv_menu"
+            app:layout_constraintBottom_toTopOf="@id/cv_bnv_wrapper"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:id="@+id/bnv_menu"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@color/gray050"
-            app:itemActiveIndicatorStyle="@style/NoActiveIndicator"
-            app:itemIconTint="@color/menu_bottom_navigation_color"
-            app:itemTextColor="@color/menu_bottom_navigation_color"
-            app:labelVisibilityMode="labeled"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_bnv_wrapper"
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            app:cardElevation="8dp"
+            app:cardCornerRadius="0dp"
+            app:strokeWidth="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:menu="@menu/menu_bottom_navigation" />
+            app:layout_constraintStart_toStartOf="parent">
+
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bnv_menu"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/gray050"
+                app:itemActiveIndicatorStyle="@style/NoActiveIndicator"
+                app:itemIconTint="@color/menu_bottom_navigation_color"
+                app:itemTextColor="@color/menu_bottom_navigation_color"
+                app:labelVisibilityMode="labeled"
+                app:menu="@menu/menu_bottom_navigation" />
+
+        </com.google.android.material.card.MaterialCardView>
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
