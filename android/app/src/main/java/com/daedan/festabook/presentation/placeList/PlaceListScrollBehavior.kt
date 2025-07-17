@@ -10,9 +10,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
 import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
-import androidx.databinding.DataBindingUtil
+import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
-import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.canScrollUp
 import com.daedan.festabook.presentation.common.scrollAnimation
 
@@ -20,15 +19,20 @@ class PlaceListScrollBehavior(
     private val context: Context,
     attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<ConstraintLayout>() {
-    private lateinit var binding: FragmentPlaceListBinding
     private var initialY: Float = DEFAULT_VALUE
     private var minimumY: Float = DEFAULT_VALUE
+    private var recyclerViewId: Int = DEFAULT_VALUE.toInt()
+    private var companionViewId: Int = DEFAULT_VALUE.toInt()
+    private var recyclerView: RecyclerView? = null
+    private var companionView: View? = null
     private var isInitialized = false
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
             initialY = getDimension(R.styleable.PlaceListScrollBehavior_initialY, DEFAULT_VALUE)
             minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, DEFAULT_VALUE)
+            recyclerViewId = getResourceId(R.styleable.PlaceListScrollBehavior_recyclerView, DEFAULT_VALUE.toInt())
+            companionViewId = getResourceId(R.styleable.PlaceListScrollBehavior_companionView, DEFAULT_VALUE.toInt())
         }
     }
 
@@ -38,11 +42,12 @@ class PlaceListScrollBehavior(
         layoutDirection: Int,
     ): Boolean {
         if (!isInitialized) {
-            binding = DataBindingUtil.findBinding<FragmentPlaceListBinding>(parent)
-                ?: return super.onLayoutChild(parent, child, layoutDirection)
+            recyclerView = parent.findViewById(recyclerViewId)
+            companionView = parent.findViewById(companionViewId)
             isInitialized = true
             child.translationY = child.rootView.height - initialY
         }
+        companionView.setCompanionHeight(child)
         return super.onLayoutChild(parent, child, layoutDirection)
     }
 
@@ -65,21 +70,27 @@ class PlaceListScrollBehavior(
         type: Int,
     ) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
-        // 아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
-        if (dy < 0 && binding.rvPlaces.canScrollUp()) {
-            child.background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
-            consumed[1] = 0
-            return
-        }
 
-        child.apply {
-            val currentTranslationY = translationY
-            val newTranslationY = currentTranslationY - dy
-            val maxHeight = rootView.height.toFloat()
-            val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight - minimumY)
-            translationY = limitedTranslationY
-            scrollAnimation(limitedTranslationY)
-            consumed[1] = limitedTranslationY.toInt()
+        companionView.setCompanionHeight(child)
+
+        recyclerView?.let {
+            // 아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
+            if (dy < 0 && it.canScrollUp()) {
+                child.background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
+                consumed[1] = 0
+                return
+            }
+
+            // 리사이클러 뷰 스크롤 전 배경 스크롤 처리
+            child.apply {
+                val currentTranslationY = translationY
+                val newTranslationY = currentTranslationY - dy
+                val maxHeight = rootView.height.toFloat()
+                val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight - minimumY)
+                translationY = limitedTranslationY
+                scrollAnimation(limitedTranslationY)
+                consumed[1] = limitedTranslationY.toInt()
+            }
         }
     }
 
@@ -110,6 +121,12 @@ class PlaceListScrollBehavior(
             type,
             consumed,
         )
+    }
+
+    private fun View?.setCompanionHeight(child: ConstraintLayout) {
+        this?.apply {
+            y = child.translationY - height
+        }
     }
 
     companion object {
