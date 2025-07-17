@@ -1,8 +1,8 @@
 -- ========================
 -- 1. 조직 (Organization)
 -- ========================
-INSERT INTO Organization (id, name, zoom, latitude, longitude)
-VALUES (1, '서울시립대학교', 15, 37.583585, 127.0588862);
+INSERT INTO organization (name, zoom, latitude, longitude)
+VALUES ('서울시립대학교', 15, 37.583585, 127.0588862);
 
 INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
 VALUES (1, 37.5850814, 127.0593583);
