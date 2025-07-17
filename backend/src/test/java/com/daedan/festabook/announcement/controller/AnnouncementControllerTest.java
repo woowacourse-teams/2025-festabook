@@ -61,6 +61,8 @@ class AnnouncementControllerTest {
                     true
             );
 
+            int expectedFieldSize = 5;
+
             // when & then
             RestAssured
                     .given()
@@ -71,6 +73,7 @@ class AnnouncementControllerTest {
                     .post("/announcements")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
                     .body("title", equalTo(request.title()))
                     .body("content", equalTo(request.content()))
                     .body("isPinned", equalTo(request.isPinned()))
