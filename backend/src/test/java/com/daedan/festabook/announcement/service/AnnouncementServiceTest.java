@@ -51,7 +51,7 @@ class AnnouncementServiceTest {
                     true
             );
             Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create();
+            Organization organization = OrganizationFixture.create(organizationId);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));

@@ -10,6 +10,15 @@ public class OrganizationFixture {
         return new Organization(name);
     }
 
+    public static Organization create(
+            Long id
+    ) {
+        return new Organization(
+                id,
+                DEFAULT_NAME
+        );
+    }
+
     public static Organization create() {
         return new Organization(
                 DEFAULT_NAME
