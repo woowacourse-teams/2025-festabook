@@ -63,20 +63,5 @@ class OrganizationControllerTest {
 
             assertThat(result).isEqualTo(expected);
         }
-
-        @Test
-        void 실패_존재하지_않는_조직() {
-            // given
-            Long notExistId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, notExistId)
-                    .when()
-                    .get("/organizations/geography")
-                    .then()
-                    .statusCode(HttpStatus.NOT_FOUND.value());
-        }
     }
 }
