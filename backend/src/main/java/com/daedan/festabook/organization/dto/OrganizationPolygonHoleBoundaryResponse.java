@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 
 public record OrganizationPolygonHoleBoundaryResponse(
-        @JsonValue List<CoordinateResponse> response
+        @JsonValue List<CoordinateResponse> responses
 ) {
 
     public static OrganizationPolygonHoleBoundaryResponse from(List<Coordinate> coordinates) {
