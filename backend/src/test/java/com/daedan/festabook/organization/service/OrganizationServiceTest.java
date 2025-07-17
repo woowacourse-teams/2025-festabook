@@ -62,7 +62,8 @@ class OrganizationServiceTest {
             // when & then
             assertThatThrownBy(() -> {
                 organizationService.getOrganizationGeographicByOrganizationId(notExistsId);
-            }).isInstanceOf(BusinessException.class);
+            }).isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("조직이 존재하지 않습니다.");
         }
     }
 }
