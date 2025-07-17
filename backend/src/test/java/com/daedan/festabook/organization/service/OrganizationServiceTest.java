@@ -52,7 +52,7 @@ class OrganizationServiceTest {
         }
 
         @Test
-        void 실패_주어진_id의_조직이_존재하지_않는다면_예외가_발생한다() {
+        void 예외_주어진_id의_조직이_존재하지_않는다면_예외가_발생한다() {
             // given
             Long notExistsId = 1L;
 
