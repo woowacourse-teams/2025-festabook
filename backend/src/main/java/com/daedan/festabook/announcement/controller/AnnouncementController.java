@@ -34,7 +34,7 @@ public class AnnouncementController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public AnnouncementResponse createAnnouncement(
-            @OrganizationId Long organizationId,
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody AnnouncementRequest request
     ) {
         return announcementService.createAnnouncement(organizationId, request);
