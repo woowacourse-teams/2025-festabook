@@ -1,0 +1,55 @@
+name: Run Test
+
+# base가 main, backend로 PR
+on:
+  pull_request:
+    branches:
+      - main
+      - backend
+
+jobs:
+  Run-PR-Test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read # 저장소 읽기 권한
+      pull-requests: write # PR 코멘트 권한
+
+    steps:
+      # 저장소 checkout
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+
+      # 자바 21
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      # 캐시
+      - name: Cache Gradle packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.gradle/caches
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      # 테스트 실행
+      - name: Run Gradle Test
+        run: ./gradlew clean test
+        working-directory: backend
+
+      # 테스트 성공 유무 알림
+      - name: Comment on PR (Success)
+        if: success()
+        run: gh pr comment ${{ github.event.pull_request.number }} --body "✅ 테스트가 성공적으로 완료되었습니다."
+        env:
+          GITHUB_TOKEN: ${{ secrets.PR_COMMENT_TOKEN }}
+
+      - name: Comment on PR (Failure)
+        if: failure()
+        run: gh pr comment ${{ github.event.pull_request.number }} --body "❌ 테스트가 실패했습니다. 로그를 확인해주세요."
+        env:
+          GITHUB_TOKEN: ${{ secrets.PR_COMMENT_TOKEN }}
+
