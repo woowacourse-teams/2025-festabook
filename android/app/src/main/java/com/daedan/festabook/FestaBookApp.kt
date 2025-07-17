@@ -10,4 +10,9 @@ class FestaBookApp : Application() {
         super.onCreate()
         appContainer = AppContainer()
     }
+
+    override fun onCreate() {
+        super.onCreate()
+        RepositoryProvider.initialize()
+    }
 }
