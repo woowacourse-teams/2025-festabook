@@ -25,7 +25,7 @@ public class OrganizationController {
 
     @GetMapping("/geography")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직의 지리 정보 조회")
+    @Operation(summary = "특정 조직의 초기 지리 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
