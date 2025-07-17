@@ -5,13 +5,13 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 
 public record OrganizationPolygonHoleBoundaryResponse(
-        @JsonValue List<OrganizationCoordinateResponse> response
+        @JsonValue List<CoordinateResponse> response
 ) {
 
     public static OrganizationPolygonHoleBoundaryResponse from(List<Coordinate> coordinates) {
         return new OrganizationPolygonHoleBoundaryResponse(
                 coordinates.stream()
-                        .map(OrganizationCoordinateResponse::from)
+                        .map(CoordinateResponse::from)
                         .toList()
         );
     }

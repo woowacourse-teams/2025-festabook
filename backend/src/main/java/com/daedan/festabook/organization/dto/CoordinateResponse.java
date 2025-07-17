@@ -2,13 +2,13 @@ package com.daedan.festabook.organization.dto;
 
 import com.daedan.festabook.organization.domain.Coordinate;
 
-public record OrganizationCoordinateResponse(
+public record CoordinateResponse(
         Double latitude,
         Double longitude
 ) {
 
-    public static OrganizationCoordinateResponse from(Coordinate coordinate) {
-        return new OrganizationCoordinateResponse(
+    public static CoordinateResponse from(Coordinate coordinate) {
+        return new CoordinateResponse(
                 coordinate.getLatitude(),
                 coordinate.getLongitude()
         );
