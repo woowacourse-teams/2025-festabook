@@ -8,7 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.daedan.festabook.databinding.ActivityMainBinding
-import com.daedan.festabook.presentation.news.NewsFragment
+import com.daedan.festabook.presentation.news.notice.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 
