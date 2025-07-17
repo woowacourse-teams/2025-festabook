@@ -11,8 +11,10 @@ public record PlacePreviewResponses(
         @JsonValue List<PlacePreviewResponse> responses
 ) {
 
-    public static PlacePreviewResponses from(List<Place> places, Map<Long, PlaceDetail> placeDetails,
-                                             Map<Long, PlaceImage> images) {
+    public static PlacePreviewResponses from(List<Place> places,
+                                             Map<Long, PlaceDetail> placeDetails,
+                                             Map<Long, PlaceImage> images
+    ) {
         return new PlacePreviewResponses(
                 places.stream()
                         .map(place -> PlacePreviewResponse.from(
