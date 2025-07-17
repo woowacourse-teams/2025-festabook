@@ -14,7 +14,7 @@ class PlaceListViewModel : ViewModel() {
     val place: LiveData<PlaceUiModel> = _place
 
     fun publishClickEvent() {
-        _event.postValue(PlaceListEvent.PLACE_CLICKED)
+        _event.setValue(PlaceListEvent.PLACE_CLICKED)
     }
 
     fun setPlace(place: PlaceUiModel) {
