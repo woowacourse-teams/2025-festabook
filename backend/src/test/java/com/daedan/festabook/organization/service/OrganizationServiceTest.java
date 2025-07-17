@@ -45,7 +45,7 @@ class OrganizationServiceTest {
 
             // when
             OrganizationGeographicResponse result =
-                    organizationService.getOrganizationGeographicById(organizationId);
+                    organizationService.getOrganizationGeographicByOrganizationId(organizationId);
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -61,7 +61,7 @@ class OrganizationServiceTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                organizationService.getOrganizationGeographicById(notExistsId);
+                organizationService.getOrganizationGeographicByOrganizationId(notExistsId);
             }).isInstanceOf(BusinessException.class);
         }
     }

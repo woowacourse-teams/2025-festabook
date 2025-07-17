@@ -32,6 +32,6 @@ public class OrganizationController {
     public OrganizationGeographicResponse getOrganizationGeographicById(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
-        return organizationService.getOrganizationGeographicById(organizationId);
+        return organizationService.getOrganizationGeographicByOrganizationId(organizationId);
     }
 }
