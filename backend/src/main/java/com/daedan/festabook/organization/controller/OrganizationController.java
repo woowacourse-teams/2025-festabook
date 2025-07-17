@@ -29,7 +29,7 @@ public class OrganizationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public OrganizationGeographyResponse getOrganizationGeographicById(
+    public OrganizationGeographyResponse getOrganizationGeographicByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return organizationService.getOrganizationGeographicByOrganizationId(organizationId);
