@@ -9,7 +9,7 @@ class PlaceNoticeAdapter : ListAdapter<NoticeUiModel, PlaceNoticeViewHolder>(DIF
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): PlaceNoticeViewHolder = PlaceNoticeViewHolder.of(parent)
+    ): PlaceNoticeViewHolder = PlaceNoticeViewHolder.from(parent)
 
     override fun onBindViewHolder(
         holder: PlaceNoticeViewHolder,

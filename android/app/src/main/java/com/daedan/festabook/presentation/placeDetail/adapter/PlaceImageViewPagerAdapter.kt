@@ -8,7 +8,7 @@ class PlaceImageViewPagerAdapter : ListAdapter<String, PlaceImageViewPagerViewHo
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): PlaceImageViewPagerViewHolder = PlaceImageViewPagerViewHolder.of(parent)
+    ): PlaceImageViewPagerViewHolder = PlaceImageViewPagerViewHolder.from(parent)
 
     override fun onBindViewHolder(
         holder: PlaceImageViewPagerViewHolder,

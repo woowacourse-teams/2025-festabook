@@ -14,7 +14,7 @@ class PlaceNoticeViewHolder private constructor(
     }
 
     companion object {
-        fun of(parent: ViewGroup): PlaceNoticeViewHolder =
+        fun from(parent: ViewGroup): PlaceNoticeViewHolder =
             PlaceNoticeViewHolder(
                 ItemNoticeBinding.inflate(
                     LayoutInflater.from(parent.context),

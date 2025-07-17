@@ -26,7 +26,7 @@ sealed class PlaceListViewHolder(
         companion object {
             const val VIEW_TYPE = 0
 
-            fun of(
+            fun from(
                 parent: ViewGroup,
                 handler: PlaceListHandler,
             ): PlaceViewHolder =
@@ -49,7 +49,7 @@ sealed class PlaceListViewHolder(
         companion object {
             const val VIEW_TYPE = 1
 
-            fun of(parent: ViewGroup): Header =
+            fun from(parent: ViewGroup): Header =
                 Header(
                     ItemPlaceListHeaderBinding.inflate(
                         LayoutInflater.from(parent.context),

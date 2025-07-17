@@ -16,8 +16,8 @@ class PlaceListAdapter(
         viewType: Int,
     ): PlaceListViewHolder =
         when (PlaceListViewHolder.ViewType.find(viewType)) {
-            PlaceListViewHolder.ViewType.HEADER -> Header.of(parent)
-            PlaceListViewHolder.ViewType.ITEM -> PlaceViewHolder.of(parent, handler)
+            PlaceListViewHolder.ViewType.HEADER -> Header.from(parent)
+            PlaceListViewHolder.ViewType.ITEM -> PlaceViewHolder.from(parent, handler)
         }
 
     override fun onBindViewHolder(

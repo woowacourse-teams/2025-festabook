@@ -13,7 +13,7 @@ class PlaceImageViewPagerViewHolder(
     }
 
     companion object {
-        fun of(parent: ViewGroup): PlaceImageViewPagerViewHolder {
+        fun from(parent: ViewGroup): PlaceImageViewPagerViewHolder {
             val layoutInflater = LayoutInflater.from(parent.context)
             val binding = ItemPlaceImageBinding.inflate(layoutInflater, parent, false)
             return PlaceImageViewPagerViewHolder(binding)
