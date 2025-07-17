@@ -1,5 +1,6 @@
 package com.daedan.festabook.data.model.response
 
+import com.daedan.festabook.domain.model.Notice
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -16,3 +17,12 @@ data class NoticeResponse(
     @SerialName("createdAt")
     val createdAt: String,
 )
+
+fun NoticeResponse.toDomain() =
+    Notice(
+        id = id,
+        title = title,
+        content = content,
+        isPinned = isPinned,
+        createdAt = createdAt,
+    )
