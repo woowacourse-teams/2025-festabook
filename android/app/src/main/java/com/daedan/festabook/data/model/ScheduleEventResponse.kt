@@ -5,10 +5,6 @@ import com.daedan.festabook.domain.model.ScheduleEventStatus
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
-// @Serializable
-// data class ScheduleEventsResponse(
-//    val scheduleEvents: List<ScheduleEvent>,
-// ) {
 @Serializable
 data class ScheduleEventResponse(
     @SerialName("id")
@@ -24,7 +20,6 @@ data class ScheduleEventResponse(
     @SerialName("location")
     val location: String,
 )
-// }
 
 fun ScheduleEventResponse.toDomain(): ScheduleEvent =
     ScheduleEvent(
