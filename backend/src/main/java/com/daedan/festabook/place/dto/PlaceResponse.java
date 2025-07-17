@@ -3,6 +3,7 @@ package com.daedan.festabook.place.dto;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceCategory;
+import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
@@ -21,17 +22,22 @@ public record PlaceResponse(
         PlaceAnnouncementResponses placeAnnouncements
 ) {
 
-    public static PlaceResponse from(Place place, List<PlaceImage> images, List<PlaceAnnouncement> announcements) {
+    public static PlaceResponse from(
+            Place place,
+            PlaceDetail details,
+            List<PlaceImage> images,
+            List<PlaceAnnouncement> announcements
+    ) {
         return new PlaceResponse(
                 place.getId(),
                 PlaceImageResponses.from(images),
                 place.getCategory(),
-                place.getTitle(),
-                place.getStartTime(),
-                place.getEndTime(),
-                place.getLocation(),
-                place.getHost(),
-                place.getDescription(),
+                details.getTitle(),
+                details.getStartTime(),
+                details.getEndTime(),
+                details.getLocation(),
+                details.getHost(),
+                details.getDescription(),
                 PlaceAnnouncementResponses.from(announcements)
         );
     }
