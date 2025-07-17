@@ -44,7 +44,6 @@
             app:layout_constraintBottom_toBottomOf="@id/iv_speaker"
             app:layout_constraintStart_toEndOf="@id/iv_speaker"
             app:layout_constraintTop_toTopOf="@id/iv_speaker"
-            android:text="@{notice.title}"
             tools:text="제목입니다." />
 
         <TextView
