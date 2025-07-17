@@ -3,6 +3,7 @@ package com.daedan.festabook.organization.domain;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -30,6 +31,7 @@ public class Organization {
     @Column(nullable = false)
     private Integer zoom;
 
+    @Embedded
     @Column(nullable = false)
     private Coordinate centerCoordinate;
     
