@@ -1,8 +1,17 @@
 -- ========================
 -- 1. 조직 (Organization)
 -- ========================
-INSERT INTO organization (name)
-VALUES ('우아대학교');
+INSERT INTO organization (name, zoom, latitude, longitude)
+VALUES ('서울시립대학교', 15, 37.583585, 127.0588862);
+
+INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
+VALUES (1, 37.5850814, 127.0593583),
+       (1, 37.5844352, 127.0555388),
+       (1, 37.5805582, 127.0573842),
+       (1, 37.5811704, 127.0600879),
+       (1, 37.5826668, 127.0630061),
+       (1, 37.5846053, 127.0639073),
+       (1, 37.5853875, 127.0619761);
 
 -- ========================
 -- 2. 일정 날짜 (EventDate)
@@ -120,4 +129,3 @@ VALUES (1, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=fo
        (8, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80', 3),
        (8, 'https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=500&q=80', 4),
        (8, 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=500&q=80', 5);
-
