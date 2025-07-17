@@ -34,12 +34,12 @@ class PlaceListFragment :
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
-        viewModel.publishClickEvent()
         viewModel.setPlace(place)
+        viewModel.publishClickEvent()
     }
 
     private fun setUpObservers() {
-        viewModel.userActionEvent.observe(this) { event ->
+        viewModel.userActionEvent.observe(viewLifecycleOwner) { event ->
             when (event) {
                 PlaceListUserActionEvent.PLACE_CLICKED -> startPlaceDetailFragment()
             }

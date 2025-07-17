@@ -6,6 +6,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNewsBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
+import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private val noticeAdapter: NoticeAdapter by lazy {

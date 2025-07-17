@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
-import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.android.material.card.MaterialCardView
 
 fun ViewGroup.scrollAnimation(limitedTranslationY: Float) {
     animate()
@@ -20,7 +20,7 @@ fun ViewGroup.scrollAnimation(limitedTranslationY: Float) {
 
 fun RecyclerView.canScrollUp(): Boolean = this.canScrollVertically(-1)
 
-fun BottomNavigationView.animateHideBottomNavigationView() {
+fun MaterialCardView.animateHideBottomNavigationView() {
     clearAnimation()
     animate()
         .translationY(height.toFloat())
@@ -30,7 +30,7 @@ fun BottomNavigationView.animateHideBottomNavigationView() {
         }.start()
 }
 
-fun BottomNavigationView.animateShowBottomNavigationView() {
+fun MaterialCardView.animateShowBottomNavigationView() {
     clearAnimation()
     visibility = View.VISIBLE
     animate()
@@ -46,7 +46,7 @@ fun Fragment.getBottomNavigationViewAnimationCallback() =
             f: Fragment,
         ) {
             requireActivity()
-                .findViewById<BottomNavigationView>(R.id.bnv_menu)
+                .findViewById<MaterialCardView>(R.id.cv_bnv_wrapper)
                 ?.animateShowBottomNavigationView()
             super.onFragmentStopped(fm, f)
         }
@@ -57,7 +57,7 @@ fun Fragment.getBottomNavigationViewAnimationCallback() =
             context: Context,
         ) {
             requireActivity()
-                .findViewById<BottomNavigationView>(R.id.bnv_menu)
+                .findViewById<MaterialCardView>(R.id.cv_bnv_wrapper)
                 ?.animateHideBottomNavigationView()
             super.onFragmentAttached(fm, f, context)
         }
