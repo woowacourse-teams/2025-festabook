@@ -6,6 +6,8 @@ on:
     branches:
       - main
       - backend
+    paths:
+      - 'backend/**' # backend 디렉토리 및 모든 하위 파일/폴더 변경 감지
 
 jobs:
   Run-PR-Test:
