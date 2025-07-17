@@ -35,6 +35,6 @@ public class AnnouncementService {
     private Organization getOrganizationById(Long organizationId) {
         // TODO: 커스텀 예외 설정
         return organizationJpaRepository.findById(organizationId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.NOT_FOUND));
+                .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
     }
 }
