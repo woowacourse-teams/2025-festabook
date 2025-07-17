@@ -12,3 +12,8 @@ springdoc:
   swagger-ui:
     path: /api-docs
     persist-authorization: true
+
+firebase:
+  adminsdk:
+    account:
+      path: firebase/firebase-adminsdk-account.json
