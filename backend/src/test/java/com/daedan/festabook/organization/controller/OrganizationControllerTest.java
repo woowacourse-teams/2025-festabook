@@ -56,7 +56,6 @@ class OrganizationControllerTest {
                     .when()
                     .get("/organizations/geography")
                     .then()
-                    .log().all()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .extract()
