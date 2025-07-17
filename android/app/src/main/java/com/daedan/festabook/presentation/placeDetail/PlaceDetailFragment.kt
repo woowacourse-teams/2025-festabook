@@ -11,6 +11,14 @@ import com.daedan.festabook.presentation.placeDetail.uimodel.PlaceDetail
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
+    private val placeNoticeAdapter by lazy {
+        PlaceNoticeAdapter()
+    }
+
+    private val placeImageAdapter by lazy {
+        PlaceImageViewPagerAdapter()
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -23,14 +31,11 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
 
     private fun setUpBinding(dummyDetail: PlaceDetail) {
         binding.placeDetail = dummyDetail
-        binding.rvPlaceNotice.adapter =
-            PlaceNoticeAdapter().apply {
-                submitList(dummyDetail.notices)
-            }
-        binding.vpPlaceImages.adapter =
-            PlaceImageViewPagerAdapter().apply {
-                submitList(dummyDetail.images)
-            }
+        binding.rvPlaceNotice.adapter = placeNoticeAdapter
+        binding.vpPlaceImages.adapter = placeImageAdapter
+
+        placeImageAdapter.submitList(dummyDetail.images)
+        placeNoticeAdapter.submitList(dummyDetail.notices)
     }
 
     companion object {
