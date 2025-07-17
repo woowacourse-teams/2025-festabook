@@ -35,8 +35,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         binding = ActivityMainBinding.inflate(layoutInflater)
-        binding.bnvMenu.setOnApplyWindowInsetsListener(null)
-        binding.bnvMenu.setPadding(0, 0, 0, 0)
 
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
@@ -46,7 +44,13 @@ class MainActivity : AppCompatActivity() {
         }
 
         setupHomeFragment(savedInstanceState)
+        setUpBottomNavigation()
         onClickBottomNavigationBarItem()
+    }
+
+    private fun setUpBottomNavigation() {
+        binding.bnvMenu.setOnApplyWindowInsetsListener(null)
+        binding.bnvMenu.setPadding(0, 0, 0, 0)
     }
 
     private fun setupHomeFragment(savedInstanceState: Bundle?) {
