@@ -5,7 +5,6 @@ import com.daedan.festabook.domain.model.ScheduleEventStatus
 
 data class ScheduleEventUiModel(
     val id: Long,
-    val eventDayId: Long,
     val status: ScheduleEventUiStatus,
     val startTime: String,
     val endTime: String,
@@ -17,7 +16,6 @@ data class ScheduleEventUiModel(
 fun ScheduleEvent.toUiModel(): ScheduleEventUiModel =
     ScheduleEventUiModel(
         id = id,
-        eventDayId = eventDayId,
         status =
             when (status) {
                 ScheduleEventStatus.COMPLETED -> ScheduleEventUiStatus.COMPLETED

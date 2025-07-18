@@ -1,6 +1,7 @@
 package com.daedan.festabook.presentation.schedule
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -12,16 +13,10 @@ import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 
 class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule) {
-    private val tabTitles =
-        listOf(
-            "5/20(화)",
-            "5/20(화)",
-            "5/20(화)",
-            "5/20(화)",
-        )
     private val adapter: SchedulePagerAdapter by lazy {
-        SchedulePagerAdapter(this, tabTitles)
+        SchedulePagerAdapter(this)
     }
+
     private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
 
     override fun onViewCreated(
@@ -29,26 +24,42 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         savedInstanceState: Bundle?,
     ) {
         binding.vpSchedule.adapter = adapter
-        setupScheduleTabLayout(view)
+        setupObservers()
+        setupScheduleTabLayout()
     }
 
-    private fun setupScheduleTabLayout(view: View) {
+    private fun setupScheduleTabLayout() {
         TabLayoutMediator(binding.tlSchedule, binding.vpSchedule) { tab, position ->
             val itemScheduleTabBinding =
                 ItemScheduleTabBinding.inflate(
-                    LayoutInflater.from(view.context),
+                    LayoutInflater.from(requireContext()),
                     binding.tlSchedule,
                     false,
                 )
             tab.customView = itemScheduleTabBinding.root
-            itemScheduleTabBinding.tvScheduleTabItem.text = tabTitles[position]
-            addScheduleTabSelectedListener(itemScheduleTabBinding)
+            itemScheduleTabBinding.tvScheduleTabItem.text =
+                viewModel.scheduleDatesUiState.value
+                    .let { (it as? ScheduleDatesUiState.Success)?.dates?.get(position)?.date ?: "" }
         }.attach()
     }
 
-    private fun addScheduleTabSelectedListener(itemScheduleTabBinding: ItemScheduleTabBinding) {
-        binding.tlSchedule.addOnTabSelectedListener(
-            ScheduleTabSelectedListener(itemScheduleTabBinding),
-        )
+    private fun setupObservers() {
+        viewModel.scheduleDatesUiState.observe(viewLifecycleOwner) { scheduleDateUiModels ->
+
+            when (scheduleDateUiModels) {
+                is ScheduleDatesUiState.Loading -> {
+                    Log.d("TAG", "setupDate: 로딩중")
+                }
+
+                is ScheduleDatesUiState.Success -> {
+                    setupScheduleTabLayout()
+                    adapter.submitList(scheduleDateUiModels.dates.map { it.id })
+                }
+
+                is ScheduleDatesUiState.Error -> {
+                    Log.d("TAG", "setupDate: ${scheduleDateUiModels.message}")
+                }
+            }
+        }
     }
 }

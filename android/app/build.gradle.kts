@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.serialization)
     id("kotlin-kapt")
     id("kotlin-parcelize")
 }
@@ -21,7 +22,7 @@ android {
         buildConfigField(
             "String",
             "FESTABOOK_URL",
-            "\"http://festabook.woowacourse.com/\"",
+            "\"http://festabook.woowacourse.com:8080/\"",
         )
     }
 
