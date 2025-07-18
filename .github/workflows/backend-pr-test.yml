@@ -32,18 +32,5 @@ jobs:
             ${{ runner.os }}-gradle-
 
       - name: Run Gradle Test
-        id: run_gradle_test
         run: ./gradlew clean test
         working-directory: backend
-
-      - name: Comment on PR based on test result
-        if: always()
-        run: |
-          TEST_RESULT="${{ steps.run_gradle_test.outcome }}"
-          if [[ "$TEST_RESULT" == "success" ]]; then
-            MESSAGE="✅ 테스트가 성공적으로 완료되었습니다. 고생하셨습니다."
-          fi
-          
-          gh pr comment ${{ github.event.pull_request.number }} --body "$MESSAGE"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
