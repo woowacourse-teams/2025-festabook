@@ -94,7 +94,7 @@ class PlaceBookmarkControllerTest {
         }
 
         @Test
-        void 실패_존재하지_않는_디바이스() {
+        void 예외_존재하지_않는_디바이스() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -119,7 +119,7 @@ class PlaceBookmarkControllerTest {
         }
 
         @Test
-        void 실패_존재하지_않는_플레이스() {
+        void 예외_존재하지_않는_플레이스() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -177,7 +177,7 @@ class PlaceBookmarkControllerTest {
         }
 
         @Test
-        void 실패_존재하지_않는_디바이스() {
+        void 예외_존재하지_않는_디바이스() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
