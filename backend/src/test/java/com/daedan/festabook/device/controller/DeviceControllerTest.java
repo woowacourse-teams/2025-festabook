@@ -33,7 +33,7 @@ class DeviceControllerTest {
         @Test
         void 성공() {
             // given
-            DeviceRequest request = new DeviceRequest("e4Jse...");
+            DeviceRequest request = new DeviceRequest("f47ac10b...", "e4Jse...");
 
             int expectedFieldSize = 1;
 

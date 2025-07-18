@@ -1,5 +1,6 @@
 package com.daedan.festabook.device.domain;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -17,23 +18,28 @@ public class Device {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String fcmToken;
+    @Column(nullable = false)
+    private String deviceIdentifier;
 
-    // TODO: 마지막 접근한 시간 추후 구현
+    private String fcmToken;
 
     protected Device(
             Long id,
+            String deviceIdentifier,
             String fcmToken
     ) {
         this.id = id;
+        this.deviceIdentifier = deviceIdentifier;
         this.fcmToken = fcmToken;
     }
 
     public Device(
+            String deviceIdentifier,
             String fcmToken
     ) {
         this(
                 null,
+                deviceIdentifier,
                 fcmToken
         );
     }
