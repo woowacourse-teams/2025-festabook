@@ -16,137 +16,137 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # 러너에 프로젝트 레포지토리 가져오기
-      - name: Checkout project repository
-        uses: actions/checkout@v4
+    # 러너에 프로젝트 레포지토리 가져오기
+    - name: Checkout project repository
+      uses: actions/checkout@v4
 
-      # 러너에 JDK 21 설정하기
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
+    # 러너에 JDK 21 설정하기
+    - name: Set up JDK 21
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
 
-      # 러너가 받은 프로젝트 레포지토리에서 gradlew 실행 권한 부여하기
-      - name: Grant execute permission for gradlew
-        run: chmod +x backend/gradlew
+    # 러너가 받은 프로젝트 레포지토리에서 gradlew 실행 권한 부여하기
+    - name: Grant execute permission for gradlew
+      run: chmod +x backend/gradlew
 
-      # 러너에서 받은 프로젝트 레포지토리에 github secret 데이터를 application-secret.yml 파일로 생성
-      - name: Create application-secret.yml
-        run: |
-          mkdir -p backend/src/main/resources # 디렉토리가 없을 경우 생성
-          echo "starting to create application-secret.yml file"
-          echo "${{ secrets.SECRET_YML }}" > backend/src/main/resources/application-secret.yml
-          echo "application-secret.yml file created successfully"
+    # 러너에서 받은 프로젝트 레포지토리에 github secret 데이터를 application-secret.yml 파일로 생성
+    - name: Create application-secret.yml
+      run: |
+        mkdir -p backend/src/main/resources # 디렉토리가 없을 경우 생성
+        echo "starting to create application-secret.yml file"
+        echo "${{ secrets.SECRET_YML }}" > backend/src/main/resources/application-secret.yml
+        echo "application-secret.yml file created successfully"
 
-      # Firebase Admin SDK 인증을 위한 JSON 키 파일 생성
-      # GitHub Secret에 저장된 키 값을 복호화하여 리소스 디렉토리에 파일로 생성
-      - name: Create firebase-adminsdk-account.json
-        run: |
-          mkdir -p backend/src/main/resources/firebase
-          echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
+    # Firebase Admin SDK 인증을 위한 JSON 키 파일 생성
+    # GitHub Secret에 저장된 키 값을 복호화하여 리소스 디렉토리에 파일로 생성
+    - name: Create firebase-adminsdk-account.json
+      run: |
+        mkdir -p backend/src/main/resources/firebase
+        echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
 
-      # 러너에서 gradlew 빌드
-      - name: Build with Gradle
-        run: ./gradlew clean build
-        working-directory: ./backend # 우리 레포지토리 구조가 backend 디렉토리 안에 gradlew가 존재함.
+    # 러너에서 gradlew 빌드
+    - name: Build with Gradle
+      run: ./gradlew clean build
+      working-directory: ./backend # 우리 레포지토리 구조가 backend 디렉토리 안에 gradlew가 존재함.
 
-      # 러너에서 빌드 완료된 jar 파일 이름과 경로를 변수로 저장하기
-      - name: Get JAR file name and path
-        id: get_jar_name
-        run: |
-          JAR_FILE=$(find ./backend/build/libs -name "*.jar" ! -name "*plain.jar" | head -n 1)
-          echo "JAR_FILE_PATH=${JAR_FILE}" >> $GITHUB_OUTPUT
-          echo "JAR_FILE_NAME=$(basename ${JAR_FILE})" >> $GITHUB_OUTPUT
+    # 러너에서 빌드 완료된 jar 파일 이름과 경로를 변수로 저장하기
+    - name: Get JAR file name and path
+      id: get_jar_name
+      run: |
+        JAR_FILE=$(find ./backend/build/libs -name "*.jar" ! -name "*plain.jar" | head -n 1)
+        echo "JAR_FILE_PATH=${JAR_FILE}" >> $GITHUB_OUTPUT
+        echo "JAR_FILE_NAME=$(basename ${JAR_FILE})" >> $GITHUB_OUTPUT
 
-      # 서버의 예전 jar 서버 종료 및 jar 파일 삭제
-      - name: Ubuntu close old server and delete old Jar
-        uses: appleboy/ssh-action@master # SSH를 통해 원격 서버에 명령 실행 및 파일 전송
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            # 서버에 배포될 경로 설정
-            REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
-            REMOTE_JAR_PATH="${REMOTE_APP_DIR}/${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
-            
-            echo "Deploying to ${REMOTE_JAR_PATH}"
-            
-            # 원격 디렉토리 생성 (없을 경우)
-            mkdir -p "${REMOTE_APP_DIR}"
-            
-            # 8080 포트를 사용하는 프로세스 종료
-            # lsof 명령어를 사용하여 8080 포트를 점유하고 있는 프로세스의 PID를 찾습니다.
-            PID=$(lsof -t -i:8080 || true)
-            if [ -n "$PID" ]; then
-              echo "Killing process with PID: $PID that is using port 8080"
-              kill -9 $PID
-              sleep 5 # 프로세스 종료 대기
-            else
-              echo "No process found using port 8080."
-            fi
-            
-            # 이전 JAR 파일 삭제 (선택 사항이지만 권장)
-            rm -f "${REMOTE_APP_DIR}/*.jar"
-            
-            echo "Preparation on remote server complete."
+    # 서버의 예전 jar 서버 종료 및 jar 파일 삭제
+    - name: Ubuntu close old server and delete old Jar
+      uses: appleboy/ssh-action@master # SSH를 통해 원격 서버에 명령 실행 및 파일 전송
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          # 서버에 배포될 경로 설정
+          REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
+          REMOTE_JAR_PATH="${REMOTE_APP_DIR}/${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
+          
+          echo "Deploying to ${REMOTE_JAR_PATH}"
+          
+          # 원격 디렉토리 생성 (없을 경우)
+          mkdir -p "${REMOTE_APP_DIR}"
+          
+          # 8080 포트를 사용하는 프로세스 종료
+          # lsof 명령어를 사용하여 8080 포트를 점유하고 있는 프로세스의 PID를 찾습니다.
+          PID=$(lsof -t -i:8080 || true)
+          if [ -n "$PID" ]; then
+            echo "Killing process with PID: $PID that is using port 8080"
+            kill -9 $PID
+            sleep 5 # 프로세스 종료 대기
+          else
+            echo "No process found using port 8080."
+          fi
+          
+          # 이전 JAR 파일 삭제 (선택 사항이지만 권장)
+          rm -f "${REMOTE_APP_DIR}/*.jar"
+          
+          echo "Preparation on remote server complete."
 
-      # scp-action 실행 전, 전송할 파일의 경로와 대상 경로 확인
-      - name: Debug print file transfer path info
-        run: |
-          echo "--- Debugging Info for File Transfer ---"
-          echo "Source Path on Runner: ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }}"
-          echo "Root Source Path on Runner: ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
-          echo "Target Directory on Server: /home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
+    # scp-action 실행 전, 전송할 파일의 경로와 대상 경로 확인
+    - name: Debug print file transfer path info
+      run: |
+        echo "--- Debugging Info for File Transfer ---"
+        echo "Source Path on Runner: ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }}"
+        echo "Root Source Path on Runner: ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
+        echo "Target Directory on Server: /home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
 
-      # 전송 경로 문제를 해결하기 위해 프로젝트 루트로 JAR 파일 복사
-      # scp source에  ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }} 사용시
-      # /home/***/github-action-CD-test/backend/backend/build/libs/demo-0.0.1-SNAPSHOT.jar 모습으로 전송됨
-      - name: Prepare file for transfer
-        run: cp ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }} ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}
+    # 전송 경로 문제를 해결하기 위해 프로젝트 루트로 JAR 파일 복사
+    # scp source에  ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }} 사용시
+    # /home/***/github-action-CD-test/backend/backend/build/libs/demo-0.0.1-SNAPSHOT.jar 모습으로 전송됨
+    - name: Prepare file for transfer
+      run: cp ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }} ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}
 
-      # 러너에서 빌드된 Jar 파일 우분투로 이동
-      - name: Transfer JAR file to Ubuntu Server
-        uses: appleboy/scp-action@master # SCP를 통해 파일 전송
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }} # GitHub Actions runner의 JAR 파일 경로
-          target: /home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend # Ubuntu 서버의 대상 디렉토리
+    # 러너에서 빌드된 Jar 파일 우분투로 이동
+    - name: Transfer JAR file to Ubuntu Server
+      uses: appleboy/scp-action@master # SCP를 통해 파일 전송
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        source: ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }} # GitHub Actions runner의 JAR 파일 경로
+        target: /home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend # Ubuntu 서버의 대상 디렉토리
 
-      # 우분투에서 jar 파일 실행
-      - name: Run Spring Boot Application
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          script: |
-            REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
-            JAR_FILE_NAME="${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
-            JAR_PATH="${REMOTE_APP_DIR}/${JAR_FILE_NAME}"
-            
-            echo "--- Starting Deployment ---"
-            echo "Remote App Directory: ${REMOTE_APP_DIR}"
-            echo "JAR File Name: ${JAR_FILE_NAME}"
-            echo "Attempting to run JAR at: ${JAR_PATH}"
-            
-            echo "Listing contents of the deployment directory..."
-            ls -la "${REMOTE_APP_DIR}"
-            
-            if [ -f "${JAR_PATH}" ]; then
-              echo "JAR file found. Starting application..."
-              nohup java -jar "${JAR_PATH}" > "${REMOTE_APP_DIR}/application.log" 2>&1 &
-              echo "Application start command issued."
-            else
-              echo "ERROR: JAR file not found at the expected path!"
-              exit 1
-            fi
+    # 우분투에서 jar 파일 실행
+    - name: Run Spring Boot Application
+      uses: appleboy/ssh-action@master
+      with:
+        host: ${{ secrets.SSH_HOST }}
+        port: ${{ secrets.SSH_PORT }}
+        username: ${{ secrets.SSH_USERNAME }}
+        key: ${{ secrets.SSH_PRIVATE_KEY }}
+        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        script: |
+          REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
+          JAR_FILE_NAME="${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
+          JAR_PATH="${REMOTE_APP_DIR}/${JAR_FILE_NAME}"
+          
+          echo "--- Starting Deployment ---"
+          echo "Remote App Directory: ${REMOTE_APP_DIR}"
+          echo "JAR File Name: ${JAR_FILE_NAME}"
+          echo "Attempting to run JAR at: ${JAR_PATH}"
+          
+          echo "Listing contents of the deployment directory..."
+          ls -la "${REMOTE_APP_DIR}"
+          
+          if [ -f "${JAR_PATH}" ]; then
+            echo "JAR file found. Starting application..."
+            nohup java -jar "${JAR_PATH}" > "${REMOTE_APP_DIR}/application.log" 2>&1 &
+            echo "Application start command issued."
+          else
+            echo "ERROR: JAR file not found at the expected path!"
+            exit 1
+          fi
