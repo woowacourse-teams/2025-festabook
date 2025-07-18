@@ -271,22 +271,23 @@ class PlaceControllerTest {
         }
     }
 
-    // TODO: ExceptionHandler 등록 후 활성화
-//        @Test
-//        void 실패_존재하지_않는_place_id() {
-//            // given
-//            Organization organization = OrganizationFixture.create();
-//            organizationJpaRepository.save(organization);
-//
-//            Long placeId = 0L;
-//
-//            RestAssured
-//                    .given()
-//                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-//                    .when()
-//                    .get("/places/{placeId}", placeId)
-//                    .then()
-//                    .statusCode(HttpStatus.NOT_FOUND.value());
-//        }
-//    }
+    @Test
+    void 실패_존재하지_않는_place_id() {
+        // given
+        Organization organization = OrganizationFixture.create();
+        organizationJpaRepository.save(organization);
+
+        Long placeId = 0L;
+
+        RestAssured
+                .given()
+                .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                .when()
+                .get("/places/{placeId}", placeId)
+                .then()
+                .log()
+                .all()
+                .statusCode(HttpStatus.NOT_FOUND.value())
+                .body(equalTo("존재하지 않는 플레이스입니다."));
+    }
 }
