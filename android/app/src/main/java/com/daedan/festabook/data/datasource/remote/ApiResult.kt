@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.datasource.remote.adapter
+package com.daedan.festabook.data.datasource.remote
 
 import retrofit2.Response
 
@@ -33,7 +33,7 @@ sealed class ApiResult<out T> {
                     } else {
                         when (response.code()) {
                             in 400..499 ->
-                                ApiResult.ClientError(
+                                ClientError(
                                     response.code(),
                                     response.message(),
                                 )

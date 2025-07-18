@@ -1,8 +1,8 @@
 package com.daedan.festabook.data.datasource.remote.schedule
 
-import com.daedan.festabook.data.datasource.remote.adapter.ApiResult
-import com.daedan.festabook.data.model.ScheduleDateResponse
-import com.daedan.festabook.data.model.ScheduleEventResponse
+import com.daedan.festabook.data.datasource.remote.ApiResult
+import com.daedan.festabook.data.model.response.ScheduleDateResponse
+import com.daedan.festabook.data.model.response.ScheduleEventResponse
 
 interface ScheduleDataSource {
     suspend fun fetchScheduleDates(): ApiResult<List<ScheduleDateResponse>>

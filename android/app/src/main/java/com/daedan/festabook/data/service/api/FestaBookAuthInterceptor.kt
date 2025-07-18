@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.interceptor
+package com.daedan.festabook.data.service.api
 
 import okhttp3.Interceptor
 import okhttp3.Response

@@ -1,12 +1,12 @@
-package com.daedan.festabook.data.api
+package com.daedan.festabook.data.service
 
-import com.daedan.festabook.data.model.ScheduleDateResponse
-import com.daedan.festabook.data.model.ScheduleEventResponse
+import com.daedan.festabook.data.model.response.ScheduleDateResponse
+import com.daedan.festabook.data.model.response.ScheduleEventResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
 
-interface ScheduleApi {
+interface ScheduleService {
     @GET("schedules/{eventDateId}")
     suspend fun fetchScheduleEventsById(
         @Path("eventDateId") eventDateId: Long,

@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.model
+package com.daedan.festabook.data.model.response
 
 import com.daedan.festabook.domain.model.ScheduleEvent
 import com.daedan.festabook.domain.model.ScheduleEventStatus
