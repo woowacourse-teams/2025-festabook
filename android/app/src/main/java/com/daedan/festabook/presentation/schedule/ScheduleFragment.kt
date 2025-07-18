@@ -40,7 +40,6 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
             itemScheduleTabBinding.tvScheduleTabItem.text =
                 viewModel.scheduleDatesUiState.value
                     .let { (it as? ScheduleDatesUiState.Success)?.dates?.get(position)?.date ?: "" }
-            addScheduleTabSelectedListener(itemScheduleTabBinding)
         }.attach()
     }
 
@@ -62,11 +61,5 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
                 }
             }
         }
-    }
-
-    private fun addScheduleTabSelectedListener(itemScheduleTabBinding: ItemScheduleTabBinding) {
-        binding.tlSchedule.addOnTabSelectedListener(
-            ScheduleTabSelectedListener(itemScheduleTabBinding),
-        )
     }
 }
