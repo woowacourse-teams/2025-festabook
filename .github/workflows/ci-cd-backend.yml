@@ -91,6 +91,7 @@ jobs:
           
           # 이전 JAR 파일 삭제 (선택 사항이지만 권장)
           rm -f "${REMOTE_APP_DIR}/*.jar"
+
           echo "Preparation on remote server complete."
 
     # scp-action 실행 전, 전송할 파일의 경로와 대상 경로 확인
@@ -132,6 +133,7 @@ jobs:
           REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
           JAR_FILE_NAME="${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
           JAR_PATH="${REMOTE_APP_DIR}/${JAR_FILE_NAME}"
+
           echo "--- Starting Deployment ---"
           echo "Remote App Directory: ${REMOTE_APP_DIR}"
           echo "JAR File Name: ${JAR_FILE_NAME}"
