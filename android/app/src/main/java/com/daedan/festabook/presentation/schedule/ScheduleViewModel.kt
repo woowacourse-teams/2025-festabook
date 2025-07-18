@@ -85,7 +85,7 @@ class ScheduleViewModel(
             viewModelFactory {
                 initializer {
                     val scheduleRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).scheduleRepository
+                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.scheduleRepository
                     ScheduleViewModel(scheduleRepository)
                 }
             }
