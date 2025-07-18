@@ -7,6 +7,7 @@ import com.daedan.festabook.notification.constants.TopicConstants;
 import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceBookmark;
+import com.daedan.festabook.place.dto.PlaceBookmarkRequest;
 import com.daedan.festabook.place.dto.PlaceBookmarkResponse;
 import com.daedan.festabook.place.infrastructure.PlaceBookmarkJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
@@ -25,25 +26,27 @@ public class PlaceBookmarkService {
     private final NotificationService notificationService;
 
     @Transactional
-    public PlaceBookmarkResponse createPlaceBookmark(Long placeId, Long deviceId) {
+    public PlaceBookmarkResponse createPlaceBookmark(Long placeId, PlaceBookmarkRequest request) {
         Place place = getPlaceById(placeId);
-        Device device = getDeviceById(deviceId);
+        Device device = getDeviceById(request.deviceId());
         PlaceBookmark placeBookmark = new PlaceBookmark(place, device);
 
         placeBookmarkJpaRepository.save(placeBookmark);
 
-        notificationService.subscribeTopic(device.getFcmToken(), TopicConstants.getPlaceTopicById(placeId));
+        String topic = TopicConstants.getPlaceTopicById(placeId);
+        notificationService.subscribeTopic(device.getFcmToken(), topic);
 
         return PlaceBookmarkResponse.from(placeBookmark);
     }
 
     @Transactional
-    public void deletePlaceBookmark(Long deviceId, Long placeId) {
-        Device device = getDeviceById(deviceId);
+    public void deletePlaceBookmark(Long placeId, PlaceBookmarkRequest request) {
+        Device device = getDeviceById(request.deviceId());
 
-        placeBookmarkJpaRepository.deleteByPlaceIdAndDeviceId(placeId, deviceId);
+        placeBookmarkJpaRepository.deleteByPlaceIdAndDeviceId(placeId, request.deviceId());
 
-        notificationService.unsubscribeTopic(device.getFcmToken(), TopicConstants.getPlaceTopicById(placeId));
+        String topic = TopicConstants.getPlaceTopicById(placeId);
+        notificationService.unsubscribeTopic(device.getFcmToken(), topic);
     }
 
     private Device getDeviceById(Long deviceId) {
