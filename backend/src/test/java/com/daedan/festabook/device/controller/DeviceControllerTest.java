@@ -1,6 +1,7 @@
 package com.daedan.festabook.device.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.device.dto.DeviceRequest;
 import io.restassured.RestAssured;
@@ -31,9 +32,11 @@ class DeviceControllerTest {
     class createDevice {
 
         @Test
-        void 성공() {
+        void 성공_신규_Device_등록_id_응답() {
             // given
-            DeviceRequest request = new DeviceRequest("f47ac10b...", "e4Jse...");
+            String expectedDeviceIdentifier = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
+            String expectedFcmToken = "FCM_00000000";
+            DeviceRequest request = new DeviceRequest(expectedDeviceIdentifier, expectedFcmToken);
 
             int expectedFieldSize = 1;
 
@@ -47,6 +50,40 @@ class DeviceControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize));
+        }
+
+        @Test
+        void 성공_복귀_Device_등록_id_응답() {
+            // given
+            String expectedDeviceIdentifier = "BBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB";
+            String expectedFcmToken = "FCM_11111111";
+            DeviceRequest request = new DeviceRequest(expectedDeviceIdentifier, expectedFcmToken);
+
+            Integer expectedId = RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/devices")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("id", notNullValue())
+                    .extract()
+                    .path("id");
+
+            int expectedFieldSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/devices")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("id", equalTo(expectedId));
         }
     }
 }
