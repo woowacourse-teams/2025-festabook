@@ -44,7 +44,7 @@ jobs:
       - name: Create firebase-adminsdk-account.json
         run: |
           mkdir -p backend/src/main/resources/firebase
-          printf "%s" "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
+          echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
 
       # 러너에서 gradlew 빌드
       - name: Build with Gradle
