@@ -36,7 +36,7 @@ class GlobalExceptionHandlerTest {
     class handleBusinessException {
 
         @Test
-        void 예외를_성공적으로_잡는다() {
+        void 성공_커스텀_예외_정상_처리() {
             // given
             String expectedMessage = "예외가 발생했습니다.";
             int expectedStatusCode = HttpStatus.I_AM_A_TEAPOT.value();
@@ -56,7 +56,7 @@ class GlobalExceptionHandlerTest {
         }
 
         @Test
-        void 예상치_못한_예외_발생시_안내_메시지를_응답한다() {
+        void 성공_예상치_못한_예외_발생시_안내_메시지를_응답() {
             // given
             String expectedMessage = "관리자에게";
             int expectedStatusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
