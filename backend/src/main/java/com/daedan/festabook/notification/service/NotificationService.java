@@ -15,8 +15,7 @@ public class NotificationService {
 
     public void subscribeTopic(String fcmToken, String topic) {
         try {
-            FirebaseMessaging.getInstance()
-                    .subscribeToTopic(List.of(fcmToken), topic);
+            FirebaseMessaging.getInstance().subscribeToTopic(List.of(fcmToken), topic);
         } catch (FirebaseMessagingException e) {
             throw new BusinessException("FCM 토픽 구독을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -24,8 +23,7 @@ public class NotificationService {
 
     public void unsubscribeTopic(String fcmToken, String topic) {
         try {
-            FirebaseMessaging.getInstance()
-                    .unsubscribeFromTopic(List.of(fcmToken), topic);
+            FirebaseMessaging.getInstance().unsubscribeFromTopic(List.of(fcmToken), topic);
         } catch (FirebaseMessagingException e) {
             throw new BusinessException("FCM 토픽 구독 취소를 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -39,7 +37,6 @@ public class NotificationService {
                         .setBody(request.body())
                         .build())
                 .build();
-
         try {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
