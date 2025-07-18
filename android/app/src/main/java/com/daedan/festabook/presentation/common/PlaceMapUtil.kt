@@ -1,5 +1,7 @@
 package com.daedan.festabook.presentation.common
 
+import androidx.core.graphics.toColorInt
+import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.toLatLng
 import com.naver.maps.geometry.LatLng
@@ -7,9 +9,7 @@ import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
-
-private const val POSITION_TO_LATITUDE_WIGHT = -0.000015
-const val LOGO_MARGIN_TOP_PX = 75
+import com.naver.maps.map.overlay.PolygonOverlay
 
 fun NaverMap.setUp(initialMapSettingUiModel: InitialMapSettingUiModel) {
     mapType = NaverMap.MapType.Basic
@@ -29,6 +29,7 @@ fun NaverMap.setUp(initialMapSettingUiModel: InitialMapSettingUiModel) {
         )
     moveCamera(cameraUpdate1)
     moveCamera(cameraUpdate2)
+    setInitialPolygon(initialMapSettingUiModel.border)
 }
 
 fun NaverMap.setContentPaddingBottom(height: Int) {
@@ -62,6 +63,20 @@ fun NaverMap.setLogoMarginBottom(height: Int) {
     )
 }
 
+private fun NaverMap.setInitialPolygon(border: List<CoordinateUiModel>) {
+    val polygon = PolygonOverlay()
+    polygon.coords = EDGE_COORS
+    polygon.holes =
+        listOf(
+            border.map {
+                it.toLatLng()
+            },
+        )
+    polygon.color = OVERLAY_COLOR_INT.toColorInt()
+    polygon.outlineWidth = OVERLAY_OUTLINE_STROKE_WIDTH
+    polygon.map = this
+}
+
 private fun CameraPosition.copy(
     latitude: Double = target.latitude,
     longitude: Double = target.longitude,
@@ -71,3 +86,15 @@ private fun CameraPosition.copy(
         LatLng(latitude, longitude),
         zoom,
     )
+
+private const val POSITION_TO_LATITUDE_WIGHT = -0.000015
+private const val OVERLAY_COLOR_INT = "#4D000000"
+private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
+private val EDGE_COORS =
+    listOf(
+        LatLng(39.2163345, 123.5125660),
+        LatLng(39.2163345, 130.5440844),
+        LatLng(32.8709533, 130.5440844),
+        LatLng(32.8709533, 123.5125660),
+    )
+const val LOGO_MARGIN_TOP_PX = 75
