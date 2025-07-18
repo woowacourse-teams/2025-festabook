@@ -25,13 +25,13 @@ public class DeviceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "디바이스 생성")
+    @Operation(summary = "디바이스 등록")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public DeviceResponse createDevice(
             @RequestBody DeviceRequest request
     ) {
-        return deviceService.createDevice(request);
+        return deviceService.getOrCreateDevice(request);
     }
 }

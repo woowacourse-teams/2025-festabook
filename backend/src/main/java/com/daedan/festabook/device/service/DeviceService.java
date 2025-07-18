@@ -13,10 +13,14 @@ public class DeviceService {
 
     private final DeviceJpaRepository deviceJpaRepository;
 
-    public DeviceResponse createDevice(DeviceRequest request) {
-        Device device = request.toEntity();
-        deviceJpaRepository.save(device);
-
+    public DeviceResponse getOrCreateDevice(DeviceRequest request) {
+        Device device = deviceJpaRepository.findByDeviceIdentifier(request.deviceIdentifier())
+                .orElseGet(() -> saveNewDevice(request));
         return DeviceResponse.from(device);
+    }
+
+    private Device saveNewDevice(DeviceRequest request) {
+        Device newDevice = request.toEntity();
+        return deviceJpaRepository.save(newDevice);
     }
 }

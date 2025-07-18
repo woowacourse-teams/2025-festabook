@@ -1,14 +1,17 @@
 package com.daedan.festabook.device.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.dto.DeviceRequest;
 import com.daedan.festabook.device.dto.DeviceResponse;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -32,21 +35,41 @@ class DeviceServiceTest {
     class createDevice {
 
         @Test
-        void 성공() {
+        void 성공_신규_Device_등록_id_응답() {
             // given
-            Long id = 1L;
+            Long expectedId = 1L;
+            Device device = DeviceFixture.create(expectedId);
+            DeviceRequest request = new DeviceRequest(device.getDeviceIdentifier(), device.getFcmToken());
 
-            DeviceRequest request = mock(DeviceRequest.class);
-            Device device = DeviceFixture.create(id);
-
-            given(request.toEntity())
+            given(deviceJpaRepository.findByDeviceIdentifier(request.deviceIdentifier()))
+                    .willReturn(Optional.empty());
+            given(deviceJpaRepository.save(any(Device.class)))
                     .willReturn(device);
 
             // when
-            DeviceResponse result = deviceService.createDevice(request);
+            DeviceResponse result = deviceService.getOrCreateDevice(request);
 
             // then
-            assertThat(result.id()).isEqualTo(id);
+            assertThat(result.id()).isEqualTo(expectedId);
+            verify(deviceJpaRepository).save(any());
+        }
+
+        @Test
+        void 성공_복귀_Device_등록_id_응답() {
+            // given
+            Long expectedId = 1L;
+            Device device = DeviceFixture.create(expectedId);
+            DeviceRequest request = new DeviceRequest(device.getDeviceIdentifier(), device.getFcmToken());
+
+            given(deviceJpaRepository.findByDeviceIdentifier(request.deviceIdentifier()))
+                    .willReturn(Optional.of(device));
+
+            // when
+            DeviceResponse result = deviceService.getOrCreateDevice(request);
+
+            // then
+            assertThat(result.id()).isEqualTo(expectedId);
+            verify(deviceJpaRepository, never()).save(any());
         }
     }
 }
