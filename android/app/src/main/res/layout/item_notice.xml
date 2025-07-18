@@ -53,7 +53,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:layout_marginHorizontal="16dp"
-            android:text="@{notice.description}"
+            android:text="@{notice.content}"
             android:textColor="@color/gray500"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

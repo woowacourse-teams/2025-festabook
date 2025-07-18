@@ -11,7 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginHorizontal="16dp"
-        tools:context=".presentation.news.notice.NewsFragment">
+        tools:context=".presentation.news.NewsFragment">
 
         <TextView
             android:id="@+id/tv_news_title"
