@@ -4,11 +4,15 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
+import com.daedan.festabook.notification.constants.TopicConstants;
+import com.daedan.festabook.notification.dto.NotificationRequest;
+import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -25,6 +29,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -37,6 +42,9 @@ class AnnouncementControllerTest {
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
+
+    @MockitoBean
+    private NotificationService notificationService;
 
     @LocalServerPort
     private int port;
@@ -55,10 +63,16 @@ class AnnouncementControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            AnnouncementRequest request = new AnnouncementRequest(
+            AnnouncementRequest announcementRequest = new AnnouncementRequest(
                     "폭우가 내립니다.",
                     "우산을 챙겨주세요.",
                     true
+            );
+
+            NotificationRequest notificationRequest = new NotificationRequest(
+                    TopicConstants.getOrganizationTopicById(organization.getId()),
+                    announcementRequest.title(),
+                    announcementRequest.content()
             );
 
             int expectedFieldSize = 5;
@@ -68,16 +82,19 @@ class AnnouncementControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
-                    .body(request)
+                    .body(announcementRequest)
                     .when()
                     .post("/announcements")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("title", equalTo(request.title()))
-                    .body("content", equalTo(request.content()))
-                    .body("isPinned", equalTo(request.isPinned()))
+                    .body("title", equalTo(announcementRequest.title()))
+                    .body("content", equalTo(announcementRequest.content()))
+                    .body("isPinned", equalTo(announcementRequest.isPinned()))
                     .body("createdAt", notNullValue());
+
+            // then
+            verify(notificationService).sendToTopic(notificationRequest);
         }
     }
 
