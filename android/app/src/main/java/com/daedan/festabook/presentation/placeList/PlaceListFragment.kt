@@ -39,6 +39,23 @@ class PlaceListFragment :
         placeAdapter.submitList(DummyPlace.placeUiModelList)
 
         setUpObservers()
+        setUpMap()
+    }
+
+    override fun onPlaceClicked(place: PlaceUiModel) {
+        viewModel.publishClickEvent()
+        viewModel.setPlace(place)
+    }
+
+    private fun setUpObservers() {
+        viewModel.userActionEvent.observe(this) { event ->
+            when (event) {
+                PlaceListUserActionEvent.PLACE_CLICKED -> startPlaceDetailFragment()
+            }
+        }
+    }
+
+    private fun setUpMap() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
         mapFragment.getMapAsync { map ->
             binding.lbvCurrentLocation.map = map
@@ -51,19 +68,6 @@ class PlaceListFragment :
             val behavior = binding.layoutPlaceList.placeListScrollBehavior()
             behavior?.onScrollListener = { dy ->
                 map.cameraScroll(dy)
-            }
-        }
-    }
-
-    override fun onPlaceClicked(place: PlaceUiModel) {
-        viewModel.publishClickEvent()
-        viewModel.setPlace(place)
-    }
-
-    private fun setUpObservers() {
-        viewModel.userActionEvent.observe(this) { event ->
-            when (event) {
-                PlaceListUserActionEvent.PLACE_CLICKED -> startPlaceDetailFragment()
             }
         }
     }

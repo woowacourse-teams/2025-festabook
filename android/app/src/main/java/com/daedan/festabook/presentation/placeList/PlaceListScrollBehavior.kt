@@ -80,7 +80,6 @@ class PlaceListScrollBehavior(
     ) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
         companionView.setCompanionHeight(child)
-        onScrollListener?.invoke(dy.toFloat())
 
         recyclerView?.let {
             // 아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
@@ -95,8 +94,12 @@ class PlaceListScrollBehavior(
         child.apply {
             val currentTranslationY = translationY
             val newTranslationY = currentTranslationY - dy
-            val maxHeight = rootView.height.toFloat()
-            val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight - minimumY)
+            val maxHeight = rootView.height.toFloat() - minimumY
+            val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight)
+
+            if (newTranslationY in DEFAULT_VALUE..maxHeight) {
+                onScrollListener?.invoke(dy.toFloat())
+            }
             translationY = limitedTranslationY
             scrollAnimation(limitedTranslationY)
             consumed[1] = limitedTranslationY.toInt()

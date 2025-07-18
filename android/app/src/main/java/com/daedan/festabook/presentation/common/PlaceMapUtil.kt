@@ -8,7 +8,7 @@ import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
 
-private const val POSITION_TO_LATITUDE_WIGHT = -0.00001
+private const val POSITION_TO_LATITUDE_WIGHT = -0.000015
 
 fun NaverMap.setUp(initialMapSettingUiModel: InitialMapSettingUiModel) {
     mapType = NaverMap.MapType.Basic
