@@ -2,6 +2,8 @@ package com.daedan.festabook.presentation.placeList.dummy
 
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategory
+import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 
 object DummyMapData {
     val initialMapSettingUiModel =
@@ -22,5 +24,57 @@ object DummyMapData {
                     CoordinateUiModel(latitude = 37.5846053, longitude = 127.0639073),
                     CoordinateUiModel(latitude = 37.5853875, longitude = 127.0619761),
                 ),
+        )
+
+    val placeCoordinates =
+        listOf(
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.58363767265077,
+                        127.0585779665425,
+                    ),
+                category = PlaceCategory.SMOKING_AREA,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.583651080599815,
+                        127.05879308749738,
+                    ),
+                category = PlaceCategory.TOILET,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.583961996341635,
+                        127.05864615056845,
+                    ),
+                category = PlaceCategory.BOOTH,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.583201906206114,
+                        127.05607556594641,
+                    ),
+                category = PlaceCategory.FOOD_TRUCK,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.58302357371701,
+                        127.06137955847021,
+                    ),
+                category = PlaceCategory.TRASH_CAN,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.58383522055214,
+                        127.05991407372454,
+                    ),
+                category = PlaceCategory.BAR,
+            ),
         )
 }

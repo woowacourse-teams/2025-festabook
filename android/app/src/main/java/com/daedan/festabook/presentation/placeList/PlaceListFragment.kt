@@ -8,11 +8,10 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.LOGO_MARGIN_TOP_PX
-import com.daedan.festabook.presentation.common.cameraScroll
 import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
-import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.common.setContentPaddingBottom
 import com.daedan.festabook.presentation.common.setLogoMarginBottom
+import com.daedan.festabook.presentation.common.setPlaceLocation
 import com.daedan.festabook.presentation.common.setUp
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
@@ -80,12 +79,13 @@ class PlaceListFragment :
             )
             map.setContentPaddingBottom(initialPadding)
             map.setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
+            map.setPlaceLocation(DummyMapData.placeCoordinates)
             map.locationSource = locationSource
 
-            val behavior = binding.layoutPlaceList.placeListScrollBehavior()
-            behavior?.onScrollListener = { dy ->
-                map.cameraScroll(dy)
-            }
+//            val behavior = binding.layoutPlaceList.placeListScrollBehavior()
+//            behavior?.onScrollListener = { dy ->
+//                map.cameraScroll(dy)
+//            }
         }
     }
 

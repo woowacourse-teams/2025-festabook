@@ -1,14 +1,19 @@
 package com.daedan.festabook.presentation.common
 
 import androidx.core.graphics.toColorInt
+import com.daedan.festabook.R
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategory
+import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.toLatLng
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
 import com.naver.maps.map.CameraPosition
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.overlay.Marker
+import com.naver.maps.map.overlay.OverlayImage
 import com.naver.maps.map.overlay.PolygonOverlay
 
 fun NaverMap.setUp(initialMapSettingUiModel: InitialMapSettingUiModel) {
@@ -43,7 +48,8 @@ fun NaverMap.setContentPaddingBottom(height: Int) {
 }
 
 fun NaverMap.cameraScroll(y: Float) {
-    val dy = y * POSITION_TO_LATITUDE_WIGHT
+    val dy =
+        y * POSITION_TO_LATITUDE_WIGHT
     val update =
         CameraUpdate
             .toCameraPosition(
@@ -75,6 +81,28 @@ private fun NaverMap.setInitialPolygon(border: List<CoordinateUiModel>) {
     polygon.color = OVERLAY_COLOR_INT.toColorInt()
     polygon.outlineWidth = OVERLAY_OUTLINE_STROKE_WIDTH
     polygon.map = this
+}
+
+fun NaverMap.setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
+    coordinates.forEach { place ->
+        val marker = Marker()
+        marker.position = place.coordinate.toLatLng()
+        when (place.category) {
+            PlaceCategory.BOOTH ->
+                marker.icon = OverlayImage.fromResource(R.drawable.ic_booth)
+            PlaceCategory.FOOD_TRUCK ->
+                marker.icon = OverlayImage.fromResource(R.drawable.ic_food_truck)
+            PlaceCategory.TOILET ->
+                marker.icon = OverlayImage.fromResource(R.drawable.ic_toilet)
+            PlaceCategory.BAR ->
+                marker.icon = OverlayImage.fromResource(R.drawable.ic_bar)
+            PlaceCategory.TRASH_CAN ->
+                marker.icon = OverlayImage.fromResource(R.drawable.ic_trash)
+            PlaceCategory.SMOKING_AREA ->
+                marker.icon = OverlayImage.fromResource(R.drawable.ic_smoking_area)
+        }
+        marker.map = this
+    }
 }
 
 private fun CameraPosition.copy(
