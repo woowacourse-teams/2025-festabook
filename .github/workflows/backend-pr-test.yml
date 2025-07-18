@@ -42,12 +42,8 @@ jobs:
           TEST_RESULT="${{ steps.run_gradle_test.outcome }}"
           if [[ "$TEST_RESULT" == "success" ]]; then
             MESSAGE="✅ 테스트가 성공적으로 완료되었습니다. 고생하셨습니다."
-          elif [[ "$TEST_RESULT" == "failure" ]]; then
-            MESSAGE="❌ 테스트가 실패했습니다. 로그를 확인해주세요."
-          else
-            MESSAGE="⚠️ 테스트가 완료되지 않았습니다. (상태: ${TEST_RESULT})"
           fi
           
           gh pr comment ${{ github.event.pull_request.number }} --body "$MESSAGE"
         env:
-          GITHUB_TOKEN: ${{ secrets.PR_COMMENT_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
