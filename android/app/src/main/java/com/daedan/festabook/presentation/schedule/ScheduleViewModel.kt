@@ -43,6 +43,8 @@ class ScheduleViewModel(
 
     fun loadScheduleByDate(dateId: Long) {
         viewModelScope.launch {
+            _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
+
             val result = scheduleRepository.fetchScheduleEventsById(dateId)
             result
                 .onSuccess { scheduleEvents ->
@@ -58,6 +60,8 @@ class ScheduleViewModel(
 
     private fun loadAllScheduleDates() {
         viewModelScope.launch {
+            _scheduleDatesUiState.value = ScheduleDatesUiState.Loading
+
             val result = scheduleRepository.fetchAllScheduleDates()
             result
                 .onSuccess { scheduleDates ->

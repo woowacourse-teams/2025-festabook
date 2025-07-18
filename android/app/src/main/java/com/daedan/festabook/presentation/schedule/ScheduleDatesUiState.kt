@@ -2,14 +2,14 @@ package com.daedan.festabook.presentation.schedule
 
 import com.daedan.festabook.presentation.schedule.model.ScheduleDateUiModel
 
-sealed class ScheduleDatesUiState {
-    data object Loading : ScheduleDatesUiState()
+sealed interface ScheduleDatesUiState {
+    data object Loading : ScheduleDatesUiState
 
     data class Success(
         val dates: List<ScheduleDateUiModel>,
-    ) : ScheduleDatesUiState()
+    ) : ScheduleDatesUiState
 
     data class Error(
         val message: String,
-    ) : ScheduleDatesUiState()
+    ) : ScheduleDatesUiState
 }
