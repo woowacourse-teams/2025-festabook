@@ -56,6 +56,7 @@ fun setCategory(
         PlaceCategory.FOOD_TRUCK -> layoutParams.width = (50 * density).toInt()
         PlaceCategory.BAR -> layoutParams.width = (34 * density).toInt()
         PlaceCategory.BOOTH -> layoutParams.width = (34 * density).toInt()
+        PlaceCategory.SMOKING_AREA, PlaceCategory.TOILET, PlaceCategory.TRASH_CAN -> Unit
     }
     view.layoutParams = layoutParams
 }
@@ -72,6 +73,7 @@ fun setCategory(
 
         PlaceCategory.BAR -> view.text = view.context.getString(R.string.place_list_title_bar)
         PlaceCategory.BOOTH -> view.text = view.context.getString(R.string.place_list_title_booth)
+        PlaceCategory.SMOKING_AREA, PlaceCategory.TOILET, PlaceCategory.TRASH_CAN -> Unit
     }
 }
 
