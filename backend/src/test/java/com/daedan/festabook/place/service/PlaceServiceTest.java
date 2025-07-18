@@ -70,7 +70,6 @@ class PlaceServiceTest {
             List<PlaceImage> placeImages = List.of(placeImage1, placeImage2);
 
             Long organizationId = 1L;
-
             given(placeJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(places);
             given(placeDetailJpaRepository.findAllByPlaceIn(places))
@@ -78,11 +77,13 @@ class PlaceServiceTest {
             given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
                     .willReturn(placeImages);
 
+            int expectedSize = 2;
+
             // when
             PlacePreviewResponses result = placeService.getAllPreviewPlaceByOrganizationId(organizationId);
 
             // then
-            assertThat(result.responses()).hasSize(2);
+            assertThat(result.responses()).hasSize(expectedSize);
         }
 
         @Test

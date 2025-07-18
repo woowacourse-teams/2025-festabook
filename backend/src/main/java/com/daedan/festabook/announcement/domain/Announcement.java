@@ -47,7 +47,7 @@ public class Announcement {
     public Announcement(
             String title,
             String content,
-            Boolean isPinned,
+            boolean isPinned,
             Organization organization
     ) {
         this.title = title;

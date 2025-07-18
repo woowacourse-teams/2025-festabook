@@ -24,7 +24,7 @@ public record PlaceResponse(
 
     public static PlaceResponse from(
             Place place,
-            PlaceDetail details,
+            PlaceDetail detail,
             List<PlaceImage> images,
             List<PlaceAnnouncement> announcements
     ) {
@@ -32,12 +32,12 @@ public record PlaceResponse(
                 place.getId(),
                 PlaceImageResponses.from(images),
                 place.getCategory(),
-                details.getTitle(),
-                details.getStartTime(),
-                details.getEndTime(),
-                details.getLocation(),
-                details.getHost(),
-                details.getDescription(),
+                detail.getTitle(),
+                detail.getStartTime(),
+                detail.getEndTime(),
+                detail.getLocation(),
+                detail.getHost(),
+                detail.getDescription(),
                 PlaceAnnouncementResponses.from(announcements)
         );
     }
