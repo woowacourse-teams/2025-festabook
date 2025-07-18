@@ -66,6 +66,7 @@ android {
 
 dependencies {
     implementation(libs.map.sdk)
+    implementation(libs.play.services.location)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.appcompat)

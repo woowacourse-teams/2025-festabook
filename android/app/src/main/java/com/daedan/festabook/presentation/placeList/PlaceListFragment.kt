@@ -20,6 +20,7 @@ import com.daedan.festabook.presentation.placeList.dummy.DummyMapData
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.naver.maps.map.MapFragment
+import com.naver.maps.map.util.FusedLocationSource
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -32,6 +33,8 @@ class PlaceListFragment :
         PlaceListAdapter(this)
     }
 
+    private lateinit var locationSource: FusedLocationSource
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -42,6 +45,7 @@ class PlaceListFragment :
 
         setUpObservers()
         setUpMap()
+        setUpLocation()
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
@@ -57,6 +61,14 @@ class PlaceListFragment :
         }
     }
 
+    private fun setUpLocation() {
+        locationSource =
+            FusedLocationSource(
+                this,
+                LOCATION_PERMISSION_REQUEST_CODE,
+            )
+    }
+
     private fun setUpMap() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
 
@@ -68,6 +80,8 @@ class PlaceListFragment :
             )
             map.setContentPaddingBottom(initialPadding)
             map.setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
+            map.locationSource = locationSource
+
             val behavior = binding.layoutPlaceList.placeListScrollBehavior()
             behavior?.onScrollListener = { dy ->
                 map.cameraScroll(dy)
@@ -96,5 +110,9 @@ class PlaceListFragment :
             hide(this@PlaceListFragment)
             addToBackStack(null)
         }
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
     }
 }
