@@ -25,14 +25,23 @@ class PlaceListScrollBehavior(
     private var companionViewId: Int = DEFAULT_VALUE.toInt()
     private var recyclerView: RecyclerView? = null
     private var companionView: View? = null
+    var onScrollListener: ((dy: Float) -> Unit)? = null
     private var isInitialized = false
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
             initialY = getDimension(R.styleable.PlaceListScrollBehavior_initialY, DEFAULT_VALUE)
             minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, DEFAULT_VALUE)
-            recyclerViewId = getResourceId(R.styleable.PlaceListScrollBehavior_recyclerView, DEFAULT_VALUE.toInt())
-            companionViewId = getResourceId(R.styleable.PlaceListScrollBehavior_companionView, DEFAULT_VALUE.toInt())
+            recyclerViewId =
+                getResourceId(
+                    R.styleable.PlaceListScrollBehavior_recyclerView,
+                    DEFAULT_VALUE.toInt(),
+                )
+            companionViewId =
+                getResourceId(
+                    R.styleable.PlaceListScrollBehavior_companionView,
+                    DEFAULT_VALUE.toInt(),
+                )
         }
     }
 
@@ -70,8 +79,8 @@ class PlaceListScrollBehavior(
         type: Int,
     ) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
-
         companionView.setCompanionHeight(child)
+        onScrollListener?.invoke(dy.toFloat())
 
         recyclerView?.let {
             // 아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
@@ -80,17 +89,17 @@ class PlaceListScrollBehavior(
                 consumed[1] = 0
                 return
             }
+        }
 
-            // 리사이클러 뷰 스크롤 전 배경 스크롤 처리
-            child.apply {
-                val currentTranslationY = translationY
-                val newTranslationY = currentTranslationY - dy
-                val maxHeight = rootView.height.toFloat()
-                val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight - minimumY)
-                translationY = limitedTranslationY
-                scrollAnimation(limitedTranslationY)
-                consumed[1] = limitedTranslationY.toInt()
-            }
+        // 리사이클러 뷰 스크롤 전 배경 스크롤 처리
+        child.apply {
+            val currentTranslationY = translationY
+            val newTranslationY = currentTranslationY - dy
+            val maxHeight = rootView.height.toFloat()
+            val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight - minimumY)
+            translationY = limitedTranslationY
+            scrollAnimation(limitedTranslationY)
+            consumed[1] = limitedTranslationY.toInt()
         }
     }
 
