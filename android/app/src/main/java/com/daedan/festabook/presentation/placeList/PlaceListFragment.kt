@@ -8,12 +8,14 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
+import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.dummy.DummyMapData
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
+import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.util.FusedLocationSource
 
@@ -69,6 +71,7 @@ class PlaceListFragment :
 
         mapFragment.getMapAsync { map ->
             val initialPadding = binding.layoutPlaceList.height / 2
+            val mapScrollManager = MapScrollManager(map)
             binding.lbvCurrentLocation.map = map
             map.locationSource = locationSource
 
@@ -78,10 +81,10 @@ class PlaceListFragment :
                 setPlaceLocation(DummyMapData.placeCoordinates)
             }
 
-//            val behavior = binding.layoutPlaceList.placeListScrollBehavior()
-//            behavior?.onScrollListener = { dy ->
-//                map.cameraScroll(dy)
-//            }
+            val behavior = binding.layoutPlaceList.placeListScrollBehavior()
+            behavior?.onScrollListener = { dy ->
+                mapScrollManager.cameraScroll(dy)
+            }
         }
     }
 
