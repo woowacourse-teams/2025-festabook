@@ -35,30 +35,30 @@ public class Place {
     private PlaceCategory category;
 
     @Embedded
-    private Coordinate condition;
+    private Coordinate coordinate;
 
     protected Place(
             Long id,
             Organization organization,
             PlaceCategory category,
-            Coordinate condition
+            Coordinate coordinate
     ) {
         this.id = id;
         this.organization = organization;
         this.category = category;
-        this.condition = condition;
+        this.coordinate = coordinate;
     }
 
     public Place(
             Organization organization,
             PlaceCategory category,
-            Coordinate condition
+            Coordinate coordinate
     ) {
         this(
                 null,
                 organization,
                 category,
-                condition
+                coordinate
         );
     }
 }
