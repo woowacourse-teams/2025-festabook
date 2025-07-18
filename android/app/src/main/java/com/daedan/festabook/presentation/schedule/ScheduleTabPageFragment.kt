@@ -19,6 +19,18 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        setupScheduleEventRecyclerView()
+
+        binding.lifecycleOwner = viewLifecycleOwner
+        setupObservers()
+
+        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: return
+        viewModel.loadScheduleByDate(dateId)
+
+        onSwipeRefreshScheduleByDateListener(dateId)
+    }
+
+    private fun setupScheduleEventRecyclerView() {
         adapter =
             ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
                 viewModel.updateBookmark(scheduleEventId)
@@ -26,10 +38,12 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         binding.rvScheduleEvent.adapter = adapter
         (binding.rvScheduleEvent.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
             false
-        binding.lifecycleOwner = viewLifecycleOwner
-        setupObservers()
-        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: return
-        viewModel.loadScheduleByDate(dateId)
+    }
+
+    private fun onSwipeRefreshScheduleByDateListener(dateId: Long) {
+        binding.srlScheduleEvent.setOnRefreshListener {
+            viewModel.loadScheduleByDate(dateId)
+        }
     }
 
     private fun setupObservers() {
@@ -39,9 +53,14 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                     Log.d("TAG", "setupObservers: 로딩중")
                 }
 
-                is ScheduleEventsUiState.Success -> adapter.submitList(schedule.events)
+                is ScheduleEventsUiState.Success -> {
+                    adapter.submitList(schedule.events)
+                    binding.srlScheduleEvent.isRefreshing = false
+                }
+
                 is ScheduleEventsUiState.Error -> {
                     Log.d("TAG", "setupObservers: ${schedule.message}")
+                    binding.srlScheduleEvent.isRefreshing = false
                 }
             }
         }
