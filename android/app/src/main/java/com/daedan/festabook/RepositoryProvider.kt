@@ -1,6 +1,6 @@
 package com.daedan.festabook
 
-import com.daedan.festabook.data.datasource.remote.NetworkModule
+import com.daedan.festabook.data.datasource.remote.ApiClient
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.domain.repository.NoticeRepository
@@ -21,7 +21,7 @@ object RepositoryProvider {
     fun initialize() {
         if (isInitialized) return
 
-        val noticeDataSource = NoticeDataSourceImpl(NetworkModule.noticeService)
+        val noticeDataSource = NoticeDataSourceImpl(ApiClient.noticeService)
         _noticeRepository = NoticeRepositoryImpl(noticeDataSource)
 
         isInitialized = true
