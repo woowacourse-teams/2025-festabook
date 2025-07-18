@@ -1,8 +1,8 @@
 package com.daedan.festabook.data.datasource.remote
 
 import com.daedan.festabook.BuildConfig
-import com.daedan.festabook.data.service.ScheduleService
 import com.daedan.festabook.data.service.NoticeService
+import com.daedan.festabook.data.service.ScheduleService
 import com.daedan.festabook.data.service.api.FestaBookAuthInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -21,14 +21,12 @@ object ApiClient {
             .build()
     }
 
-    private val contentType = "application/json".toMediaType()
-
     private val retrofit: Retrofit by lazy {
         Retrofit
             .Builder()
             .baseUrl(BASE_URL)
             .client(okHttpClient)
-            .addConverterFactory(json.asConverterFactory(contentType))
+            .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
             .build()
     }
 
