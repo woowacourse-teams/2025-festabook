@@ -93,7 +93,6 @@ class AnnouncementControllerTest {
                     .body("isPinned", equalTo(announcementRequest.isPinned()))
                     .body("createdAt", notNullValue());
 
-            // then
             verify(notificationService).sendToTopic(notificationRequest);
         }
     }
