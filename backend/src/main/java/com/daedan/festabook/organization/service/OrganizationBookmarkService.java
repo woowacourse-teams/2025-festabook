@@ -7,6 +7,7 @@ import com.daedan.festabook.notification.constants.TopicConstants;
 import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationBookmark;
+import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -25,31 +26,28 @@ public class OrganizationBookmarkService {
     private final NotificationService notificationService;
 
     @Transactional
-    public OrganizationBookmarkResponse createOrganizationBookmark(Long organizationId, Long deviceId) {
+    public OrganizationBookmarkResponse createOrganizationBookmark(Long organizationId,
+                                                                   OrganizationBookmarkRequest request) {
         Organization organization = getOrganizationById(organizationId);
-        Device device = getDeviceById(deviceId);
+        Device device = getDeviceById(request.deviceId());
         OrganizationBookmark organizationBookmark = new OrganizationBookmark(organization, device);
 
         organizationBookmarkJpaRepository.save(organizationBookmark);
 
-        notificationService.subscribeTopic(
-                device.getFcmToken(),
-                TopicConstants.getOrganizationTopicById(organizationId)
-        );
+        String topic = TopicConstants.getOrganizationTopicById(organizationId);
+        notificationService.subscribeTopic(device.getFcmToken(), topic);
 
         return OrganizationBookmarkResponse.from(organizationBookmark);
     }
 
     @Transactional
-    public void deleteOrganizationBookmark(Long deviceId, Long organizationId) {
-        Device device = getDeviceById(deviceId);
+    public void deleteOrganizationBookmark(Long organizationId, OrganizationBookmarkRequest request) {
+        Device device = getDeviceById(request.deviceId());
 
-        organizationBookmarkJpaRepository.deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
+        organizationBookmarkJpaRepository.deleteByOrganizationIdAndDeviceId(organizationId, request.deviceId());
 
-        notificationService.unsubscribeTopic(
-                device.getFcmToken(),
-                TopicConstants.getOrganizationTopicById(organizationId)
-        );
+        String topic = TopicConstants.getOrganizationTopicById(organizationId);
+        notificationService.unsubscribeTopic(device.getFcmToken(), topic);
     }
 
     private Device getDeviceById(Long deviceId) {
