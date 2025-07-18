@@ -129,3 +129,26 @@ VALUES (1, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=fo
        (8, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80', 3),
        (8, 'https://images.unsplash.com/photo-1464306076886-debca5e8a6b0?auto=format&fit=crop&w=500&q=80', 4),
        (8, 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=500&q=80', 5);
+
+-- ========================
+-- 9. 디바이스 (Device)
+-- ========================
+INSERT INTO device (device_identifier, fcm_token)
+VALUES ('android-uuid-1234', 'fcm-token-1234'),
+       ('android-uuid-5678', 'fcm-token-5678');
+
+-- ========================
+-- 10. 플레이스 북마크 (PlaceBookmark)
+-- ========================
+INSERT INTO place_bookmark (place_id, device_id)
+VALUES (1, 1),
+       (2, 1),
+       (3, 2),
+       (4, 2);
+
+-- ========================
+-- 11. 조직 북마크 (OrganizationBookmark)
+-- ========================
+INSERT INTO organization_bookmark (organization_id, device_id)
+VALUES (1, 1),
+       (1, 2);
