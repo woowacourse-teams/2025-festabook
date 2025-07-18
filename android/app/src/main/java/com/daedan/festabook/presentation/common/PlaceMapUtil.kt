@@ -9,11 +9,13 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
 
 private const val POSITION_TO_LATITUDE_WIGHT = -0.000015
+const val LOGO_MARGIN_TOP_PX = 75
 
 fun NaverMap.setUp(initialMapSettingUiModel: InitialMapSettingUiModel) {
     mapType = NaverMap.MapType.Basic
     isIndoorEnabled = true
     uiSettings.isZoomControlEnabled = false
+    uiSettings.isScaleBarEnabled = false
 
     val cameraUpdate1 =
         CameraUpdate
@@ -49,6 +51,15 @@ fun NaverMap.cameraScroll(y: Float) {
                 ),
             ).animate(CameraAnimation.Easing)
     moveCamera(update)
+}
+
+fun NaverMap.setLogoMarginBottom(height: Int) {
+    uiSettings.setLogoMargin(
+        16,
+        0,
+        0,
+        height,
+    )
 }
 
 private fun CameraPosition.copy(

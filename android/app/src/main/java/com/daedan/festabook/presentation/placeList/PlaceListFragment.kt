@@ -7,10 +7,12 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.LOGO_MARGIN_TOP_PX
 import com.daedan.festabook.presentation.common.cameraScroll
 import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.common.setContentPaddingBottom
+import com.daedan.festabook.presentation.common.setLogoMarginBottom
 import com.daedan.festabook.presentation.common.setUp
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
@@ -57,14 +59,15 @@ class PlaceListFragment :
 
     private fun setUpMap() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
+
         mapFragment.getMapAsync { map ->
+            val initialPadding = binding.layoutPlaceList.height / 2
             binding.lbvCurrentLocation.map = map
             map.setUp(
                 DummyMapData.initialMapSettingUiModel,
             )
-            map.setContentPaddingBottom(
-                binding.layoutPlaceList.height / 2,
-            )
+            map.setContentPaddingBottom(initialPadding)
+            map.setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
             val behavior = binding.layoutPlaceList.placeListScrollBehavior()
             behavior?.onScrollListener = { dy ->
                 map.cameraScroll(dy)
