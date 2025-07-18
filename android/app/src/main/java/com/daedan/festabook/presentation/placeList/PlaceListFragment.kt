@@ -7,11 +7,17 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.cameraScroll
 import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
+import com.daedan.festabook.presentation.common.placeListScrollBehavior
+import com.daedan.festabook.presentation.common.setContentPaddingBottom
+import com.daedan.festabook.presentation.common.setUp
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
+import com.daedan.festabook.presentation.placeList.dummy.DummyMapData
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.naver.maps.map.MapFragment
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -20,17 +26,33 @@ class PlaceListFragment :
     OnPlaceClickedListener {
     private val viewModel by viewModels<PlaceListViewModel>()
 
+    private val placeAdapter by lazy {
+        PlaceListAdapter(this)
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvPlaces.adapter =
-            PlaceListAdapter(this).apply {
-                submitList(DummyPlace.placeUiModelList)
-            }
+        binding.rvPlaces.adapter = placeAdapter
+        placeAdapter.submitList(DummyPlace.placeUiModelList)
 
         setUpObservers()
+        val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
+        mapFragment.getMapAsync { map ->
+            binding.lbvCurrentLocation.map = map
+            map.setUp(
+                DummyMapData.initialMapSettingUiModel,
+            )
+            map.setContentPaddingBottom(
+                binding.layoutPlaceList.height / 2,
+            )
+            val behavior = binding.layoutPlaceList.placeListScrollBehavior()
+            behavior?.onScrollListener = { dy ->
+                map.cameraScroll(dy)
+            }
+        }
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
