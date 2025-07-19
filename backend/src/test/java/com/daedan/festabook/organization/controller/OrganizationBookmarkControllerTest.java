@@ -116,7 +116,7 @@ class OrganizationBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            Long invalidOrgId = 0L;
+            Long invalidOrganizationId = 0L;
             OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(device.getId());
 
             // when & then
@@ -125,7 +125,7 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/bookmarks/" + invalidOrgId)
+                    .post("/organizations/bookmarks/" + invalidOrganizationId)
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value());
         }
@@ -157,7 +157,7 @@ class OrganizationBookmarkControllerTest {
                     .delete("/organizations/bookmarks/" + organization.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
-            
+
             verify(notificationService).unsubscribeTopic(
                     device.getFcmToken(),
                     "notifications-organization-" + organization.getId()
