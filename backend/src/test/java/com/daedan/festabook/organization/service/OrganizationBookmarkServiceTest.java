@@ -48,48 +48,49 @@ class OrganizationBookmarkServiceTest {
     @InjectMocks
     private OrganizationBookmarkService organizationBookmarkService;
 
-    private static final Long ORGANIZATION_ID = 1L;
-    private static final Long DEVICE_ID = 10L;
-
     @Nested
     class createOrganizationBookmark {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            Device device = DeviceFixture.create(DEVICE_ID);
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(DEVICE_ID);
+            Long organizationId = 1L;
+            Organization organization = OrganizationFixture.create(organizationId);
+            Long deviceId = 10L;
+            Device device = DeviceFixture.create(deviceId);
+            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
 
-            given(organizationJpaRepository.findById(ORGANIZATION_ID))
+            given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
-            given(deviceJpaRepository.findById(DEVICE_ID))
+            given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
 
             // when
             OrganizationBookmarkResponse result = organizationBookmarkService.createOrganizationBookmark(
-                    ORGANIZATION_ID, request);
+                    organizationId, request);
 
             // then
             assertThat(result).isNotNull();
             verify(organizationBookmarkJpaRepository).save(any(OrganizationBookmark.class));
             verify(notificationService).subscribeTopic(device.getFcmToken(),
-                    TopicConstants.getOrganizationTopicById(ORGANIZATION_ID));
+                    TopicConstants.getOrganizationTopicById(organizationId));
         }
 
         @Test
         void 예외_존재하지_않는_디바이스() {
             // given
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(DEVICE_ID);
+            Long deviceId = 10L;
+            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
 
-            given(organizationJpaRepository.findById(ORGANIZATION_ID))
+            Long organizationId = 1L;
+            given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(OrganizationFixture.create()));
-            given(deviceJpaRepository.findById(DEVICE_ID))
+            given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() ->
-                    organizationBookmarkService.createOrganizationBookmark(ORGANIZATION_ID, request)
+                    organizationBookmarkService.createOrganizationBookmark(organizationId, request)
             ).isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 디바이스입니다.");
         }
@@ -97,14 +98,16 @@ class OrganizationBookmarkServiceTest {
         @Test
         void 예외_존재하지_않는_플레이스() {
             // given
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(DEVICE_ID);
+            Long deviceId = 10L;
+            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
 
-            given(organizationJpaRepository.findById(ORGANIZATION_ID))
+            Long organizationId = 1L;
+            given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() ->
-                    organizationBookmarkService.createOrganizationBookmark(ORGANIZATION_ID, request)
+                    organizationBookmarkService.createOrganizationBookmark(organizationId, request)
             ).isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
@@ -116,34 +119,38 @@ class OrganizationBookmarkServiceTest {
         @Test
         void 성공() {
             // given
-            Device device = DeviceFixture.create(DEVICE_ID);
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(DEVICE_ID);
+            Long organizationId = 1L;
+            Long deviceId = 10L;
+            Device device = DeviceFixture.create(deviceId);
+            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
 
-            given(deviceJpaRepository.findById(DEVICE_ID))
+            given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
 
             // when
-            organizationBookmarkService.deleteOrganizationBookmark(ORGANIZATION_ID, request);
+            organizationBookmarkService.deleteOrganizationBookmark(organizationId, request);
 
             // then
-            verify(organizationBookmarkJpaRepository).deleteByOrganizationIdAndDeviceId(ORGANIZATION_ID, DEVICE_ID);
+            verify(organizationBookmarkJpaRepository).deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
             verify(notificationService).unsubscribeTopic(
                     device.getFcmToken(),
-                    TopicConstants.getOrganizationTopicById(ORGANIZATION_ID)
+                    TopicConstants.getOrganizationTopicById(organizationId)
             );
         }
 
         @Test
         void 예외_존재하지_않는_디바이스() {
             // given
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(DEVICE_ID);
+            Long organizationId = 1L;
+            Long deviceId = 10L;
+            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
 
-            given(deviceJpaRepository.findById(DEVICE_ID))
+            given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() ->
-                    organizationBookmarkService.deleteOrganizationBookmark(ORGANIZATION_ID, request)
+                    organizationBookmarkService.deleteOrganizationBookmark(organizationId, request)
             ).isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 디바이스입니다.");
         }
