@@ -14,6 +14,7 @@ import com.daedan.festabook.notification.constants.TopicConstants;
 import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationBookmark;
+import com.daedan.festabook.organization.domain.OrganizationBookmarkFixture;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkResponse;
@@ -58,19 +59,27 @@ class OrganizationBookmarkServiceTest {
             Organization organization = OrganizationFixture.create(organizationId);
             Long deviceId = 10L;
             Device device = DeviceFixture.create(deviceId);
+            Long organizationBookmarkId = 100L;
+            OrganizationBookmark organizationBookmark = OrganizationBookmarkFixture.create(
+                    organizationBookmarkId,
+                    organization,
+                    device
+            );
             OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
+            given(organizationBookmarkJpaRepository.save(any(OrganizationBookmark.class)))
+                    .willReturn(organizationBookmark);
 
             // when
             OrganizationBookmarkResponse result = organizationBookmarkService.createOrganizationBookmark(
                     organizationId, request);
 
             // then
-            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(organizationBookmarkId);
             verify(organizationBookmarkJpaRepository).save(any(OrganizationBookmark.class));
             verify(notificationService).subscribeTopic(device.getFcmToken(),
                     TopicConstants.getOrganizationTopicById(organizationId));

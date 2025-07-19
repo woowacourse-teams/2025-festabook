@@ -29,11 +29,24 @@ public class OrganizationBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
+    protected OrganizationBookmark(
+            Long id,
+            Organization organization,
+            Device device
+    ) {
+        this.id = id;
+        this.organization = organization;
+        this.device = device;
+    }
+
     public OrganizationBookmark(
             Organization organization,
             Device device
     ) {
-        this.organization = organization;
-        this.device = device;
+        this(
+                null,
+                organization,
+                device
+        );
     }
 }
