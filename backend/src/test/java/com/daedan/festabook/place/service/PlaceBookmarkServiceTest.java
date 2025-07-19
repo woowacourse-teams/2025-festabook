@@ -14,6 +14,7 @@ import com.daedan.festabook.notification.constants.TopicConstants;
 import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceBookmark;
+import com.daedan.festabook.place.domain.PlaceBookmarkFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceBookmarkRequest;
 import com.daedan.festabook.place.dto.PlaceBookmarkResponse;
@@ -58,18 +59,22 @@ class PlaceBookmarkServiceTest {
             Place place = PlaceFixture.create(placeId);
             Long deviceId = 10L;
             Device device = DeviceFixture.create(deviceId);
+            Long placeBookmarkId = 100L;
+            PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(placeBookmarkId, place, device);
             PlaceBookmarkRequest request = new PlaceBookmarkRequest(deviceId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
+            given(placeBookmarkJpaRepository.save(any(PlaceBookmark.class)))
+                    .willReturn(placeBookmark);
 
             // when
             PlaceBookmarkResponse result = placeBookmarkService.createPlaceBookmark(placeId, request);
 
             // then
-            assertThat(result).isNotNull();
+            assertThat(result.id()).isEqualTo(placeBookmarkId);
             verify(placeBookmarkJpaRepository).save(any(PlaceBookmark.class));
             verify(notificationService).subscribeTopic(device.getFcmToken(),
                     TopicConstants.getPlaceTopicById(placeId));

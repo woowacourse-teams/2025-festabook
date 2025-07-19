@@ -29,11 +29,24 @@ public class PlaceBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
+    protected PlaceBookmark(
+            Long id,
+            Place place,
+            Device device
+    ) {
+        this.id = id;
+        this.place = place;
+        this.device = device;
+    }
+
     public PlaceBookmark(
             Place place,
             Device device
     ) {
-        this.place = place;
-        this.device = device;
+        this(
+                null,
+                place,
+                device
+        );
     }
 }
