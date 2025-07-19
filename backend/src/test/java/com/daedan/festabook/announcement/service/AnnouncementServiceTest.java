@@ -123,7 +123,7 @@ class AnnouncementServiceTest {
             assertThatThrownBy(() ->
                     announcementService.createAnnouncement(organizationId, request)
             ).isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("FCM 메서지 전송을 실패했습니다.");
+                    .hasMessage("FCM 메서지 전송을 실패했습니다.");
         }
     }
 
