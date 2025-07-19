@@ -32,8 +32,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class OrganizationBookmarkControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
-
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
 
@@ -73,7 +71,6 @@ class OrganizationBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -96,7 +93,6 @@ class OrganizationBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -120,7 +116,6 @@ class OrganizationBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -150,7 +145,6 @@ class OrganizationBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -171,7 +165,6 @@ class OrganizationBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()

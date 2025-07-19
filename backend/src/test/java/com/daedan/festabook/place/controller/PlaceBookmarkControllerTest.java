@@ -35,8 +35,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceBookmarkControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
-
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
 
@@ -82,7 +80,6 @@ class PlaceBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -109,7 +106,6 @@ class PlaceBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -134,7 +130,6 @@ class PlaceBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -167,7 +162,6 @@ class PlaceBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -192,7 +186,6 @@ class PlaceBookmarkControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
