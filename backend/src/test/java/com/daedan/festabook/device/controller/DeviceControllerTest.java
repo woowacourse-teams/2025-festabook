@@ -49,7 +49,8 @@ class DeviceControllerTest {
                     .post("/devices")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedFieldSize));
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("id", notNullValue());
         }
 
         @Test
