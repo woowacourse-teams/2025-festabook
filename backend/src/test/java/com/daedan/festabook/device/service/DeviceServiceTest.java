@@ -43,7 +43,7 @@ class DeviceServiceTest {
 
             given(deviceJpaRepository.findByDeviceIdentifier(request.deviceIdentifier()))
                     .willReturn(Optional.empty());
-            given(deviceJpaRepository.save(any(Device.class)))
+            given(deviceJpaRepository.save(any()))
                     .willReturn(device);
 
             // when
