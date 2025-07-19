@@ -2,6 +2,7 @@ package com.daedan.festabook.organization.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -79,6 +80,11 @@ class OrganizationBookmarkControllerTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", notNullValue());
+
+            verify(notificationService).subscribeTopic(
+                    device.getFcmToken(),
+                    "notifications-organization-" + organization.getId()
+            );
         }
 
         @Test
@@ -151,6 +157,11 @@ class OrganizationBookmarkControllerTest {
                     .delete("/organizations/bookmarks/" + organization.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+            
+            verify(notificationService).unsubscribeTopic(
+                    device.getFcmToken(),
+                    "notifications-organization-" + organization.getId()
+            );
         }
 
         @Test
