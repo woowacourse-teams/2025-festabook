@@ -34,9 +34,9 @@ class DeviceControllerTest {
         @Test
         void 성공_신규_Device_등록_id_응답() {
             // given
-            String expectedDeviceIdentifier = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
-            String expectedFcmToken = "FCM_00000000";
-            DeviceRequest request = new DeviceRequest(expectedDeviceIdentifier, expectedFcmToken);
+            String deviceIdentifier = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
+            String fcmToken = "FCM_00000000";
+            DeviceRequest request = new DeviceRequest(deviceIdentifier, fcmToken);
 
             int expectedFieldSize = 1;
 
@@ -56,9 +56,9 @@ class DeviceControllerTest {
         @Test
         void 성공_복귀_Device_등록_id_응답() {
             // given
-            String expectedDeviceIdentifier = "BBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB";
-            String expectedFcmToken = "FCM_11111111";
-            DeviceRequest request = new DeviceRequest(expectedDeviceIdentifier, expectedFcmToken);
+            String deviceIdentifier = "BBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB";
+            String fcmToken = "FCM_11111111";
+            DeviceRequest request = new DeviceRequest(deviceIdentifier, fcmToken);
 
             Integer expectedId = RestAssured
                     .given()
