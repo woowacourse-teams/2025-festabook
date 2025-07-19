@@ -96,7 +96,7 @@ class OrganizationBookmarkServiceTest {
         }
 
         @Test
-        void 예외_존재하지_않는_플레이스() {
+        void 예외_존재하지_않는_조직() {
             // given
             Long deviceId = 10L;
             OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
