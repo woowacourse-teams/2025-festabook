@@ -1,11 +1,10 @@
 package com.daedan.festabook.presentation.news
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
+import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
-import com.daedan.festabook.RepositoryProvider
 import com.daedan.festabook.databinding.FragmentNewsBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.notice.NoticeViewModel
@@ -14,7 +13,7 @@ import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private val viewModel: NoticeViewModel by viewModels {
         NoticeViewModel.factory(
-            noticeRepository = RepositoryProvider.noticeRepository,
+            noticeRepository = (requireActivity().application as FestaBookApp).appContainer.noticeRepository,
         )
     }
 
@@ -22,6 +21,11 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         NoticeAdapter { noticeId ->
             viewModel.toggleNoticeExpanded(noticeId)
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        fetchNotices()
     }
 
     override fun onViewCreated(
@@ -33,13 +37,11 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.rvNoticeList.adapter = noticeAdapter
 
-        fetchNotices()
         initObserver()
     }
 
     private fun fetchNotices() {
         viewModel.fetchNotices()
-        Log.d("fetchNotices", "fetchNotices")
     }
 
     private fun initObserver() {
