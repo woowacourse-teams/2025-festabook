@@ -21,7 +21,7 @@ public record PlacePreviewResponses(
                         .map(place -> PlacePreviewResponse.from(
                                 place,
                                 placeDetails.get(place.getId()),
-                                images.get(place.getId())
+                                images.getOrDefault(place.getId(), null)
                         ))
                         .toList()
         );
