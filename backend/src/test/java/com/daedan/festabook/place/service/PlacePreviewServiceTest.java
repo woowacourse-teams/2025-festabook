@@ -11,7 +11,6 @@ import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
-import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
@@ -37,9 +36,6 @@ class PlacePreviewServiceTest {
 
     @Mock
     private PlaceDetailJpaRepository placeDetailJpaRepository;
-
-    @Mock
-    private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     @InjectMocks
     private PlacePreviewService placePreviewService;
