@@ -5,6 +5,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import java.time.LocalTime;
 import lombok.AccessLevel;
@@ -21,6 +22,7 @@ public class PlaceDetail {
     private Long id;
 
     @OneToOne
+    @JoinColumn(nullable = false)
     private Place place;
 
     @Column(nullable = false)
@@ -32,6 +34,7 @@ public class PlaceDetail {
     @Column(nullable = false)
     private String location;
 
+    @Column(nullable = false)
     private String host;
 
     @Column(nullable = false)
