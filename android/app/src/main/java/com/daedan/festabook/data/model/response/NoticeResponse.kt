@@ -3,6 +3,7 @@ package com.daedan.festabook.data.model.response
 import com.daedan.festabook.domain.model.Notice
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.LocalDateTime
 
 @Serializable
 data class NoticeResponse(
@@ -24,5 +25,5 @@ fun NoticeResponse.toDomain() =
         title = title,
         content = content,
         isPinned = isPinned,
-        createdAt = createdAt,
+        createdAt = LocalDateTime.parse(createdAt),
     )

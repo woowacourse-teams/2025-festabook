@@ -4,6 +4,7 @@ import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import java.time.LocalDateTime
 
 object DummyPlaceDetail {
     private val noticeList =
@@ -12,21 +13,21 @@ object DummyPlaceDetail {
                 id = 1,
                 title = "매장 공지사항",
                 content = "공지사항 설명",
-                createdAt = "2025-07-14T05:22:39.963Z",
+                createdAt = LocalDateTime.now(),
                 isExpanded = false,
             ),
             NoticeUiModel(
                 id = 2,
                 title = "매장 공지사항",
                 content = "공지사항 설명",
-                createdAt = "2025-07-14T05:22:39.963Z",
+                createdAt = LocalDateTime.now(),
                 isExpanded = true,
             ),
             NoticeUiModel(
                 id = 3,
                 title = "매장 공지사항",
                 content = "공지사항 설명",
-                createdAt = "2025-07-14T05:22:39.963Z",
+                createdAt = LocalDateTime.now(),
                 isExpanded = true,
             ),
         )
