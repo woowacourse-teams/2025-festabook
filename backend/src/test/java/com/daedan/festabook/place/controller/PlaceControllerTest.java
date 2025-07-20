@@ -269,25 +269,82 @@ class PlaceControllerTest {
                     .body("placeImages[3].sequence", equalTo(placeImage4.getSequence()))
                     .body("placeImages[4].sequence", equalTo(placeImage5.getSequence()));
         }
-    }
 
-    @Test
-    void 실패_placeDetail의_존재하지_않는_place_id() {
-        // given
-        Organization organization = OrganizationFixture.create();
-        organizationJpaRepository.save(organization);
+        @Test
+        void 성공_이미지가_없는_경우_빈_배열_반환() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
 
-        Long placeId = 0L;
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.save(place);
 
-        RestAssured
-                .given()
-                .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                .when()
-                .get("/places/{placeId}", placeId)
-                .then()
-                .log()
-                .all()
-                .statusCode(HttpStatus.NOT_FOUND.value())
-                .body(equalTo("존재하지 않는 플레이스 세부 정보입니다."));
+            PlaceDetail placeDetail = PlaceDetailFixture.create(place);
+            placeDetailJpaRepository.save(placeDetail);
+
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.save(placeAnnouncement);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places/{placeId}", place.getId())
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("placeImages", hasSize(0));
+        }
+
+        @Test
+        void 성공_공지가_없는_경우_빈_배열_반환() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.save(place);
+
+            PlaceDetail placeDetail = PlaceDetailFixture.create(place);
+            placeDetailJpaRepository.save(placeDetail);
+
+            PlaceImage placeImage = PlaceImageFixture.create(place);
+            placeImageJpaRepository.save(placeImage);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places/{placeId}", place.getId())
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("placeAnnouncements", hasSize(0));
+        }
+
+        @Test
+        void 실패_placeDetail이_존재하지_않는_place_id() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Long placeId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places/{placeId}", placeId)
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(HttpStatus.NOT_FOUND.value())
+                    .body(equalTo("존재하지 않는 플레이스 세부 정보입니다."));
+        }
     }
 }
