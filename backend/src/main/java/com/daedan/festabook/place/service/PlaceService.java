@@ -32,18 +32,9 @@ public class PlaceService {
 
     public PlacePreviewResponses getAllPreviewPlaceByOrganizationId(Long organizationId) {
         List<Place> places = placeJpaRepository.findAllByOrganizationId(organizationId);
-        Map<Long, PlaceImage> placeImages =
-                placeImageJpaRepository.findAllByPlaceInAndSequence(places, REPRESENTATIVE_IMAGE_SEQUENCE).stream()
-                        .collect(Collectors.toMap(
-                                image -> image.getPlace().getId(), // TODO: N+1 문제 해결
-                                Function.identity()
-                        ));
 
-        Map<Long, PlaceDetail> placeDetails = placeDetailJpaRepository.findAllByPlaceIn(places).stream()
-                .collect(Collectors.toMap(
-                        detail -> detail.getPlace().getId(),
-                        Function.identity()
-                ));
+        Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(places);
+        Map<Long, PlaceDetail> placeDetails = mapPlaceDetailsToIds(places);
 
         return PlacePreviewResponses.from(places, placeDetails, placeImages);
     }
@@ -55,6 +46,22 @@ public class PlaceService {
         List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
 
         return PlaceResponse.from(place, placeDetail, placeImages, placeAnnouncements);
+    }
+
+    private Map<Long, PlaceImage> mapPlaceImagesToIds(List<Place> places) {
+        return placeImageJpaRepository.findAllByPlaceInAndSequence(places, REPRESENTATIVE_IMAGE_SEQUENCE).stream()
+                .collect(Collectors.toMap(
+                        image -> image.getPlace().getId(), // TODO: N+1 문제 해결
+                        Function.identity()
+                ));
+    }
+
+    private Map<Long, PlaceDetail> mapPlaceDetailsToIds(List<Place> places) {
+        return placeDetailJpaRepository.findAllByPlaceIn(places).stream()
+                .collect(Collectors.toMap(
+                        detail -> detail.getPlace().getId(), // TODO: N+1 문제 해결
+                        Function.identity()
+                ));
     }
 
     // TODO: ExceptionHandler 등록 후 예외 변경
