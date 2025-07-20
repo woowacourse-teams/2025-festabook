@@ -116,14 +116,14 @@ class AnnouncementServiceTest {
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
-            doThrow(new BusinessException("FCM 메서지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
+            doThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
                     .when(notificationService).sendToTopic(any());
 
             // when & then
             assertThatThrownBy(() ->
                     announcementService.createAnnouncement(organizationId, request)
             ).isInstanceOf(BusinessException.class)
-                    .hasMessage("FCM 메서지 전송을 실패했습니다.");
+                    .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
     }
 

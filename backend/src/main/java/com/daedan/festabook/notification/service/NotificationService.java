@@ -40,7 +40,7 @@ public class NotificationService {
         try {
             FirebaseMessaging.getInstance().send(message);
         } catch (FirebaseMessagingException e) {
-            throw new BusinessException("FCM 메서지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }
