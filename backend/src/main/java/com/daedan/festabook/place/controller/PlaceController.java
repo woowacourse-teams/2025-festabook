@@ -3,6 +3,7 @@ package com.daedan.festabook.place.controller;
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceResponse;
+import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -24,17 +25,18 @@ import org.springframework.web.bind.annotation.RestController;
 public class PlaceController {
 
     private final PlaceService placeService;
+    private final PlacePreviewService placePreviewService;
 
-    @GetMapping
+    @GetMapping("/previews")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 조직의 모든 플레이스 프리뷰 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlacePreviewResponses getAllPlaceByOrganizationId(
+    public PlacePreviewResponses getAllPreviewPlaceByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
-        return placeService.getAllPlaceByOrganizationId(organizationId);
+        return placePreviewService.getAllPreviewPlaceByOrganizationId(organizationId);
     }
 
     @GetMapping("/{placeId}")

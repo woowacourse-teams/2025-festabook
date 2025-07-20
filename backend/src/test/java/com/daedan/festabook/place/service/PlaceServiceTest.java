@@ -1,7 +1,6 @@
 package com.daedan.festabook.place.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
@@ -9,14 +8,15 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
+import com.daedan.festabook.place.domain.PlaceDetail;
+import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
+import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
-import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -33,81 +33,16 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PlaceServiceTest {
 
     @Mock
-    private PlaceJpaRepository placeJpaRepository;
+    private PlaceImageJpaRepository placeImageJpaRepository;
 
     @Mock
-    private PlaceImageJpaRepository placeImageJpaRepository;
+    private PlaceDetailJpaRepository placeDetailJpaRepository;
 
     @Mock
     private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     @InjectMocks
     private PlaceService placeService;
-
-    @Nested
-    class getAllPlaceByOrganizationId {
-
-        @Test
-        void 성공() {
-            // given
-            Place place1 = PlaceFixture.create(1L);
-            Place place2 = PlaceFixture.create(2L);
-            Place place3 = PlaceFixture.create(3L);
-            List<Place> places = List.of(place1, place2, place3);
-
-            int representativeSequence = 1;
-
-            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
-            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
-            PlaceImage placeImage3 = PlaceImageFixture.create(place3, representativeSequence);
-            List<PlaceImage> placeImages = List.of(placeImage1, placeImage2, placeImage3);
-
-            Long organizationId = 1L;
-
-            given(placeJpaRepository.findAllByOrganizationId(organizationId))
-                    .willReturn(places);
-            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
-                    .willReturn(placeImages);
-
-            // when
-            PlacePreviewResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
-
-            // then
-            assertThat(result.responses()).hasSize(3);
-        }
-
-        @Test
-        void 성공_대표_이미지가_없다면_null_반환() {
-            // given
-            Place place1 = PlaceFixture.create(1L);
-            Place place2 = PlaceFixture.create(2L);
-            Place place3 = PlaceFixture.create(3L);
-            List<Place> places = List.of(place1, place2, place3);
-
-            int representativeSequence = 1;
-
-            PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
-            PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
-            List<PlaceImage> placeImages = List.of(placeImage1, placeImage2);
-
-            Long organizationId = 1L;
-
-            given(placeJpaRepository.findAllByOrganizationId(organizationId))
-                    .willReturn(places);
-            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
-                    .willReturn(placeImages);
-
-            // when
-            PlacePreviewResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
-                s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(placeImage2.getImageUrl());
-                s.assertThat(result.responses().get(2).imageUrl()).isEqualTo(null);
-            });
-        }
-    }
 
     @Nested
     class getPlaceByPlaceId {
@@ -119,14 +54,16 @@ class PlaceServiceTest {
 
             Place place = PlaceFixture.create(placeId);
 
+            PlaceDetail detail = PlaceDetailFixture.create(place);
+
             PlaceImage image1 = PlaceImageFixture.create(place);
             PlaceImage image2 = PlaceImageFixture.create(place);
 
             PlaceAnnouncement announcement1 = PlaceAnnouncementFixture.create(place);
             PlaceAnnouncement announcement2 = PlaceAnnouncementFixture.create(place);
 
-            given(placeJpaRepository.findById(placeId))
-                    .willReturn(Optional.of(place));
+            given(placeDetailJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(detail));
             given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
                     .willReturn(List.of(image1, image2));
             given(placeAnnouncementJpaRepository.findAllByPlaceId(placeId))
@@ -150,12 +87,14 @@ class PlaceServiceTest {
 
             Place place = PlaceFixture.create(placeId);
 
+            PlaceDetail detail = PlaceDetailFixture.create(place);
+
             PlaceImage image3 = PlaceImageFixture.create(place, 3);
             PlaceImage image2 = PlaceImageFixture.create(place, 2);
             PlaceImage image1 = PlaceImageFixture.create(place, 1);
 
-            given(placeJpaRepository.findById(placeId))
-                    .willReturn(Optional.of(place));
+            given(placeDetailJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(detail));
             given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
                     .willReturn(List.of(image1, image2, image3));
 
@@ -179,7 +118,7 @@ class PlaceServiceTest {
             // TODO: ExceptionHandler 등록 후 변경
             assertThatThrownBy(() -> placeService.getPlaceByPlaceId(placeId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 플레이스입니다.");
+                    .hasMessage("존재하지 않는 플레이스 세부 정보입니다.");
         }
     }
 }
