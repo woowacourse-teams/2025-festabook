@@ -5,5 +5,9 @@ public enum PlaceCategory {
     BAR,
     FOOD_TRUCK,
     SMOKING,
-    TRASH_CAN
+    TRASH_CAN;
+
+    public boolean isServiceLocation() {
+        return this == BOOTH || this == BAR || this == FOOD_TRUCK;
+    }
 }

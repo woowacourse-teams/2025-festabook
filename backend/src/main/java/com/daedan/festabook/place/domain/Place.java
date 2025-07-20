@@ -63,6 +63,6 @@ public class Place {
     }
 
     public boolean hasDetail() {
-        return !(category == PlaceCategory.SMOKING || category == PlaceCategory.TRASH_CAN);
+        return category.isServiceLocation();
     }
 }
