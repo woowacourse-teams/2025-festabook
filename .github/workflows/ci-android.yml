@@ -32,6 +32,9 @@ jobs:
 
       - name: Check local.properties content
         run:  cat local.properties
+        
+      - name: Echo env var
+        run: echo "${{ secrets.BASE_URL }}"
 
       - name: Clean Project
         run: ./gradlew clean
