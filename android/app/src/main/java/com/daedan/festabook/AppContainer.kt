@@ -1,13 +1,13 @@
 package com.daedan.festabook
 
-import com.daedan.festabook.data.datasource.remote.ApiClient.noticeService
-import com.daedan.festabook.data.datasource.remote.ApiClient.scheduleService
 import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
+import com.daedan.festabook.data.service.api.ApiClient.noticeService
+import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.ScheduleRepository
 

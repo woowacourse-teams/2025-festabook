@@ -1,9 +1,8 @@
-package com.daedan.festabook.data.datasource.remote
+package com.daedan.festabook.data.service.api
 
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.data.service.NoticeService
 import com.daedan.festabook.data.service.ScheduleService
-import com.daedan.festabook.data.service.api.FestaBookAuthInterceptor
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
