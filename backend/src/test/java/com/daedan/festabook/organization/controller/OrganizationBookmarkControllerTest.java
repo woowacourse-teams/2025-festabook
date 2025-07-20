@@ -1,5 +1,6 @@
 package com.daedan.festabook.organization.controller;
 
+import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.Mockito.verify;
@@ -17,6 +18,7 @@ import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaR
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -51,6 +53,7 @@ class OrganizationBookmarkControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+        RestAssured.registerParser("text/plain", Parser.TEXT);
     }
 
     @Nested
@@ -70,8 +73,7 @@ class OrganizationBookmarkControllerTest {
             int expectedFieldSize = 1;
 
             // when & then
-            RestAssured
-                    .given()
+            given()
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -104,7 +106,8 @@ class OrganizationBookmarkControllerTest {
                     .when()
                     .post("/organizations/bookmarks/" + organization.getId())
                     .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(equalTo("존재하지 않는 디바이스입니다."));
         }
 
         @Test
@@ -120,14 +123,14 @@ class OrganizationBookmarkControllerTest {
             OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(device.getId());
 
             // when & then
-            RestAssured
-                    .given()
+            given()
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .post("/organizations/bookmarks/" + invalidOrganizationId)
                     .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(equalTo("존재하지 않는 조직입니다."));
         }
     }
 
@@ -149,8 +152,7 @@ class OrganizationBookmarkControllerTest {
             OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(device.getId());
 
             // when & then
-            RestAssured
-                    .given()
+            given()
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -174,14 +176,14 @@ class OrganizationBookmarkControllerTest {
             OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(invalidDeviceId);
 
             // when & then
-            RestAssured
-                    .given()
+            given()
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .delete("/organizations/bookmarks/" + organization.getId())
                     .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body(equalTo("존재하지 않는 디바이스입니다."));
         }
     }
 }
