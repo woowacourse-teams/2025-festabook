@@ -61,4 +61,8 @@ public class Place {
                 coordinate
         );
     }
+
+    public boolean hasDetail() {
+        return !(category == PlaceCategory.SMOKING || category == PlaceCategory.TRASH_CAN);
+    }
 }
