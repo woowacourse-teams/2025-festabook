@@ -29,7 +29,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "FESTABOOK_URL", "\"$baseUrl\"")
+        buildConfigField("String", "FESTABOOK_URL", "\"" + baseUrl + "\"")
     }
 
     buildTypes {
