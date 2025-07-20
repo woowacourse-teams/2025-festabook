@@ -50,20 +50,31 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         viewModel.scheduleEventsUiState.observe(viewLifecycleOwner) { schedule ->
             when (schedule) {
                 is ScheduleEventsUiState.Loading -> {
-                    Log.d("TAG", "setupObservers: 로딩중")
+                    showSkeleton(isLoading = true)
                 }
 
                 is ScheduleEventsUiState.Success -> {
                     adapter.submitList(schedule.events)
-                    binding.srlScheduleEvent.isRefreshing = false
+                    showSkeleton(isLoading = false)
                 }
 
                 is ScheduleEventsUiState.Error -> {
                     Log.d("TAG", "setupObservers: ${schedule.message}")
-                    binding.srlScheduleEvent.isRefreshing = false
+                    showSkeleton(isLoading = false)
                 }
             }
         }
+    }
+
+    private fun showSkeleton(isLoading: Boolean) {
+        if (isLoading) {
+            binding.rvScheduleEvent.visibility = View.INVISIBLE
+            binding.sflScheduleSkeleton.visibility = View.VISIBLE
+        } else {
+            binding.rvScheduleEvent.visibility = View.VISIBLE
+            binding.sflScheduleSkeleton.visibility = View.GONE
+        }
+        binding.srlScheduleEvent.isRefreshing = isLoading
     }
 
     companion object {

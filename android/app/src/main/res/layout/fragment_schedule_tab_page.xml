@@ -2,11 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <data>
-
-    </data>
-
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -28,6 +24,28 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/sfl_schedule_skeleton"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:shimmer_auto_start="true">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <include layout="@layout/item_schedule_tab_page_skeleton" />
+
+                <include layout="@layout/item_schedule_tab_page_skeleton" />
+
+                <include layout="@layout/item_schedule_tab_page_skeleton" />
+
+                <include layout="@layout/item_schedule_tab_page_skeleton" />
+
+                <include layout="@layout/item_schedule_tab_page_skeleton" />
+
+            </LinearLayout>
+        </com.facebook.shimmer.ShimmerFrameLayout>
+    </FrameLayout>
 </layout>
