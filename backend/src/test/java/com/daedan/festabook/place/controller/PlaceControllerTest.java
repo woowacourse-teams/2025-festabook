@@ -62,7 +62,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getAllPlaceByOrganizationId {
+    class getAllPreviewPlaceByOrganizationId {
 
         @Test
         void 성공() {
@@ -89,7 +89,7 @@ class PlaceControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places")
+                    .get("/places/previews")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
@@ -132,7 +132,7 @@ class PlaceControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
                     .when()
-                    .get("/places")
+                    .get("/places/previews")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
@@ -164,7 +164,7 @@ class PlaceControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/places")
+                    .get("/places/previews")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
@@ -272,7 +272,7 @@ class PlaceControllerTest {
     }
 
     @Test
-    void 실패_존재하지_않는_place_id() {
+    void 실패_placeDetail의_존재하지_않는_place_id() {
         // given
         Organization organization = OrganizationFixture.create();
         organizationJpaRepository.save(organization);
@@ -288,6 +288,6 @@ class PlaceControllerTest {
                 .log()
                 .all()
                 .statusCode(HttpStatus.NOT_FOUND.value())
-                .body(equalTo("존재하지 않는 플레이스입니다."));
+                .body(equalTo("존재하지 않는 플레이스 세부 정보입니다."));
     }
 }

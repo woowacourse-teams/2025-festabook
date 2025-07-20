@@ -17,7 +17,6 @@ import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
-import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -32,9 +31,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceServiceTest {
-
-    @Mock
-    private PlaceJpaRepository placeJpaRepository;
 
     @Mock
     private PlaceImageJpaRepository placeImageJpaRepository;
@@ -66,8 +62,6 @@ class PlaceServiceTest {
             PlaceAnnouncement announcement1 = PlaceAnnouncementFixture.create(place);
             PlaceAnnouncement announcement2 = PlaceAnnouncementFixture.create(place);
 
-            given(placeJpaRepository.findById(placeId))
-                    .willReturn(Optional.of(place));
             given(placeDetailJpaRepository.findById(placeId))
                     .willReturn(Optional.of(detail));
             given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
@@ -99,8 +93,6 @@ class PlaceServiceTest {
             PlaceImage image2 = PlaceImageFixture.create(place, 2);
             PlaceImage image1 = PlaceImageFixture.create(place, 1);
 
-            given(placeJpaRepository.findById(placeId))
-                    .willReturn(Optional.of(place));
             given(placeDetailJpaRepository.findById(placeId))
                     .willReturn(Optional.of(detail));
             given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
@@ -126,7 +118,7 @@ class PlaceServiceTest {
             // TODO: ExceptionHandler 등록 후 변경
             assertThatThrownBy(() -> placeService.getPlaceByPlaceId(placeId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 플레이스입니다.");
+                    .hasMessage("존재하지 않는 플레이스 세부 정보입니다.");
         }
     }
 }
