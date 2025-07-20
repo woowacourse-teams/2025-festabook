@@ -30,6 +30,9 @@ jobs:
       - name: Create local.properties with BASE_URL
         run: echo BASE_URL=\"${{ secrets.BASE_URL }}\" > local.properties
 
+      - name: Check local.properties content
+        run:  cat local.properties
+
       - name: Clean Project
         run: ./gradlew clean
 
