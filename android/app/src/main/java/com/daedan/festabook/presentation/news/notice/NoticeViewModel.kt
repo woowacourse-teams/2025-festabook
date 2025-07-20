@@ -5,6 +5,8 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
@@ -28,19 +30,22 @@ class NoticeViewModel(
     }
 
     fun toggleNoticeExpanded(noticeId: Long) {
-        _notices.value?.map { notice ->
-            if (notice.id == noticeId) {
-                notice.copy(isExpanded = !notice.isExpanded)
-            } else {
-                notice
+        val currentList = _notices.value ?: return
+        val updatedList =
+            currentList.map { notice ->
+                if (notice.id == noticeId) {
+                    notice.copy(isExpanded = !notice.isExpanded)
+                } else {
+                    notice
+                }
             }
-        }
+        _notices.value = updatedList
     }
 
     companion object {
         fun factory(noticeRepository: NoticeRepository): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                override fun <T : ViewModel> create(modelClass: Class<T>): T = NoticeViewModel(noticeRepository) as T
+            viewModelFactory {
+                initializer { NoticeViewModel(noticeRepository) }
             }
     }
 }
