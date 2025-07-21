@@ -184,7 +184,7 @@ class PlaceBookmarkControllerTest {
         }
 
         @Test
-        void 예외_존재하지_않는_디바이스() {
+        void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -204,8 +204,7 @@ class PlaceBookmarkControllerTest {
                     .when()
                     .delete("/places/bookmarks/" + place.getId())
                     .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body(equalTo("존재하지 않는 디바이스입니다."));
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

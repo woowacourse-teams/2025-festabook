@@ -41,12 +41,15 @@ public class OrganizationBookmarkService {
 
     @Transactional
     public void deleteOrganizationBookmark(Long organizationId, OrganizationBookmarkRequest request) {
-        Device device = getDeviceById(request.deviceId());
-
-        organizationBookmarkJpaRepository.deleteByOrganizationIdAndDeviceId(organizationId, request.deviceId());
-
-        String topic = TopicConstants.getOrganizationTopicById(organizationId);
-        notificationService.unsubscribeTopic(device.getFcmToken(), topic);
+        deviceJpaRepository.findById(request.deviceId())
+                .ifPresent(device -> {
+                    organizationBookmarkJpaRepository.deleteByOrganizationIdAndDeviceId(
+                            organizationId,
+                            request.deviceId()
+                    );
+                    String topic = TopicConstants.getOrganizationTopicById(organizationId);
+                    notificationService.unsubscribeTopic(device.getFcmToken(), topic);
+                });
     }
 
     private Device getDeviceById(Long deviceId) {

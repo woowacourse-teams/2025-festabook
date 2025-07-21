@@ -40,12 +40,12 @@ public class PlaceBookmarkService {
 
     @Transactional
     public void deletePlaceBookmark(Long placeId, PlaceBookmarkRequest request) {
-        Device device = getDeviceById(request.deviceId());
-
-        placeBookmarkJpaRepository.deleteByPlaceIdAndDeviceId(placeId, request.deviceId());
-
-        String topic = TopicConstants.getPlaceTopicById(placeId);
-        notificationService.unsubscribeTopic(device.getFcmToken(), topic);
+        deviceJpaRepository.findById(request.deviceId())
+                .ifPresent(device -> {
+                    placeBookmarkJpaRepository.deleteByPlaceIdAndDeviceId(placeId, request.deviceId());
+                    String topic = TopicConstants.getPlaceTopicById(placeId);
+                    notificationService.unsubscribeTopic(device.getFcmToken(), topic);
+                });
     }
 
     private Device getDeviceById(Long deviceId) {

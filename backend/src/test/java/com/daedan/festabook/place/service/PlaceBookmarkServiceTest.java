@@ -1,6 +1,7 @@
 package com.daedan.festabook.place.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -143,20 +144,19 @@ class PlaceBookmarkServiceTest {
         }
 
         @Test
-        void 예외_존재하지_않는_디바이스() {
+        void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
             // given
             Long placeId = 1L;
-            Long deviceId = 10L;
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(deviceId);
+            Long invalidDeviceId = 0L;
+            PlaceBookmarkRequest request = new PlaceBookmarkRequest(invalidDeviceId);
 
-            given(deviceJpaRepository.findById(deviceId))
+            given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() ->
+            assertThatCode(() ->
                     placeBookmarkService.deletePlaceBookmark(placeId, request)
-            ).isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 디바이스입니다.");
+            ).doesNotThrowAnyException();
         }
     }
 }
