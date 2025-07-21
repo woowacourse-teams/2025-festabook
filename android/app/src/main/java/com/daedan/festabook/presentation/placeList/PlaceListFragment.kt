@@ -8,6 +8,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
+import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
@@ -54,7 +55,7 @@ class PlaceListFragment :
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
 
         mapFragment.getMapAsync { map ->
-            val initialPadding = binding.layoutPlaceList.height / 2
+            val initialPadding = binding.initialPadding()
             val mapScrollManager = MapScrollManager(map)
             binding.lbvCurrentLocation.map = map
             map.locationSource = locationSource

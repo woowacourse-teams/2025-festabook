@@ -19,10 +19,10 @@ class PlaceListScrollBehavior(
     private val context: Context,
     attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<ConstraintLayout>() {
-    private var initialY: Float = DEFAULT_VALUE
-    private var minimumY: Float = DEFAULT_VALUE
-    private var recyclerViewId: Int = DEFAULT_VALUE.toInt()
-    private var companionViewId: Int = DEFAULT_VALUE.toInt()
+    private var initialY: Float = UNINITIALIZED_VALUE
+    private var minimumY: Float = UNINITIALIZED_VALUE
+    private var recyclerViewId: Int = UNINITIALIZED_VALUE.toInt()
+    private var companionViewId: Int = UNINITIALIZED_VALUE.toInt()
     private var recyclerView: RecyclerView? = null
     private var companionView: View? = null
     var onScrollListener: ((dy: Float) -> Unit)? = null
@@ -30,17 +30,17 @@ class PlaceListScrollBehavior(
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
-            initialY = getDimension(R.styleable.PlaceListScrollBehavior_initialY, DEFAULT_VALUE)
-            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, DEFAULT_VALUE)
+            initialY = getDimension(R.styleable.PlaceListScrollBehavior_initialY, UNINITIALIZED_VALUE)
+            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, UNINITIALIZED_VALUE)
             recyclerViewId =
                 getResourceId(
                     R.styleable.PlaceListScrollBehavior_recyclerView,
-                    DEFAULT_VALUE.toInt(),
+                    UNINITIALIZED_VALUE.toInt(),
                 )
             companionViewId =
                 getResourceId(
                     R.styleable.PlaceListScrollBehavior_companionView,
-                    DEFAULT_VALUE.toInt(),
+                    UNINITIALIZED_VALUE.toInt(),
                 )
         }
     }
@@ -95,9 +95,9 @@ class PlaceListScrollBehavior(
             val currentTranslationY = translationY
             val newTranslationY = currentTranslationY - dy
             val maxHeight = rootView.height.toFloat() - minimumY
-            val limitedTranslationY = newTranslationY.coerceIn(DEFAULT_VALUE, maxHeight)
+            val limitedTranslationY = newTranslationY.coerceIn(UNINITIALIZED_VALUE, maxHeight)
 
-            if (newTranslationY in DEFAULT_VALUE..maxHeight) {
+            if (newTranslationY in UNINITIALIZED_VALUE..maxHeight) {
                 onScrollListener?.invoke(dy.toFloat())
             }
             translationY = limitedTranslationY
@@ -142,6 +142,6 @@ class PlaceListScrollBehavior(
     }
 
     companion object {
-        private const val DEFAULT_VALUE = 0f
+        private const val UNINITIALIZED_VALUE = 0f
     }
 }

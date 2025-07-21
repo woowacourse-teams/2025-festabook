@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
@@ -18,3 +19,5 @@ fun ConstraintLayout.placeListScrollBehavior(): PlaceListScrollBehavior? {
     val behavior = layoutParams?.behavior as? PlaceListScrollBehavior
     return behavior
 }
+
+fun FragmentPlaceListBinding.initialPadding() = layoutPlaceList.height / 2
