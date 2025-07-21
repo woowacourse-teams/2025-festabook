@@ -56,7 +56,7 @@ class AnnouncementServiceTest {
         @Test
         void 성공() {
             // given
-            AnnouncementRequest announcementRequest = AnnouncementRequestFixture.create(
+            AnnouncementRequest request = AnnouncementRequestFixture.create(
                     "폭우가 내립니다.",
                     "우산을 챙겨주세요.",
                     false
@@ -68,13 +68,13 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(organization));
 
             // when
-            AnnouncementResponse result = announcementService.createAnnouncement(organizationId, announcementRequest);
+            AnnouncementResponse result = announcementService.createAnnouncement(organizationId, request);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.title()).isEqualTo(announcementRequest.title());
-                s.assertThat(result.content()).isEqualTo(announcementRequest.content());
-                s.assertThat(result.isPinned()).isEqualTo(announcementRequest.isPinned());
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.content()).isEqualTo(request.content());
+                s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
                 verify(notificationManager).sendToOrganizationTopic(any(), any());
             });
         }
