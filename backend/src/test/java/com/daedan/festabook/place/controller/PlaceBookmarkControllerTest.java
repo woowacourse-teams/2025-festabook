@@ -2,12 +2,13 @@ package com.daedan.festabook.place.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
-import com.daedan.festabook.notification.service.NotificationService;
+import com.daedan.festabook.notification.infrastructure.FCMNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -50,7 +51,7 @@ class PlaceBookmarkControllerTest {
     private PlaceBookmarkJpaRepository placeBookmarkJpaRepository;
 
     @MockitoBean
-    private NotificationService notificationService;
+    private FCMNotificationManager notificationManager;
 
     @LocalServerPort
     int port;
@@ -91,10 +92,7 @@ class PlaceBookmarkControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", notNullValue());
 
-            verify(notificationService).subscribeTopic(
-                    device.getFcmToken(),
-                    "notifications-place-" + place.getId()
-            );
+            verify(notificationManager).subscribePlaceTopic(any(), any());
         }
 
         @Test
@@ -178,10 +176,7 @@ class PlaceBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
-            verify(notificationService).unsubscribeTopic(
-                    device.getFcmToken(),
-                    "notifications-place-" + place.getId()
-            );
+            verify(notificationManager).unsubscribePlaceTopic(any(), any());
         }
 
         @Test

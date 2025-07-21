@@ -6,10 +6,9 @@ import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.constants.TopicConstants;
-import com.daedan.festabook.notification.dto.NotificationRequest;
-import com.daedan.festabook.notification.service.NotificationService;
+import com.daedan.festabook.notification.dto.NotificationMessage;
 import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,7 +21,7 @@ public class AnnouncementService {
 
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
-    private final NotificationService notificationService;
+    private final OrganizationNotificationManager notificationManager;
 
     @Transactional
     public AnnouncementResponse createAnnouncement(Long organizationId, AnnouncementRequest request) {
@@ -30,12 +29,11 @@ public class AnnouncementService {
         Announcement announcement = request.toEntity(organization);
         announcementJpaRepository.save(announcement);
 
-        NotificationRequest notificationRequest = new NotificationRequest(
-                TopicConstants.getOrganizationTopicById(organizationId),
+        NotificationMessage notificationMessage = new NotificationMessage(
                 request.title(),
                 request.content()
         );
-        notificationService.sendToTopic(notificationRequest);
+        notificationManager.sendToOrganizationTopic(organizationId, notificationMessage);
 
         return AnnouncementResponse.from(announcement);
     }

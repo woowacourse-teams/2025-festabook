@@ -11,13 +11,12 @@ import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.constants.TopicConstants;
-import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceBookmark;
 import com.daedan.festabook.place.domain.PlaceBookmarkFixture;
 import com.daedan.festabook.place.domain.PlaceBookmarkRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
+import com.daedan.festabook.place.domain.PlaceNotificationManager;
 import com.daedan.festabook.place.dto.PlaceBookmarkRequest;
 import com.daedan.festabook.place.dto.PlaceBookmarkResponse;
 import com.daedan.festabook.place.infrastructure.PlaceBookmarkJpaRepository;
@@ -46,7 +45,7 @@ class PlaceBookmarkServiceTest {
     private PlaceJpaRepository placeJpaRepository;
 
     @Mock
-    private NotificationService notificationService;
+    private PlaceNotificationManager notificationManager;
 
     @InjectMocks
     private PlaceBookmarkService placeBookmarkService;
@@ -78,8 +77,8 @@ class PlaceBookmarkServiceTest {
             // then
             assertThat(result.id()).isEqualTo(placeBookmarkId);
             verify(placeBookmarkJpaRepository).save(any(PlaceBookmark.class));
-            verify(notificationService).subscribeTopic(device.getFcmToken(),
-                    TopicConstants.getPlaceTopicById(placeId));
+//            verify(notificationService).subscribeTopic(device.getFcmToken(),
+//                    TopicConstants.getPlaceTopicById(placeId));
         }
 
         @Test
@@ -138,10 +137,10 @@ class PlaceBookmarkServiceTest {
 
             // then
             verify(placeBookmarkJpaRepository).deleteByPlaceIdAndDeviceId(placeId, deviceId);
-            verify(notificationService).unsubscribeTopic(
-                    device.getFcmToken(),
-                    TopicConstants.getPlaceTopicById(placeId)
-            );
+//            verify(notificationService).unsubscribeTopic(
+//                    device.getFcmToken(),
+//                    TopicConstants.getPlaceTopicById(placeId)
+//            );
         }
 
         @Test

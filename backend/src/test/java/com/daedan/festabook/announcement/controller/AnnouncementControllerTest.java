@@ -4,15 +4,14 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
-import com.daedan.festabook.notification.constants.TopicConstants;
-import com.daedan.festabook.notification.dto.NotificationRequest;
-import com.daedan.festabook.notification.service.NotificationService;
+import com.daedan.festabook.notification.infrastructure.FCMNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -44,7 +43,7 @@ class AnnouncementControllerTest {
     private OrganizationJpaRepository organizationJpaRepository;
 
     @MockitoBean
-    private NotificationService notificationService;
+    private FCMNotificationManager notificationManager;
 
     @LocalServerPort
     private int port;
@@ -69,12 +68,6 @@ class AnnouncementControllerTest {
                     true
             );
 
-            NotificationRequest notificationRequest = new NotificationRequest(
-                    TopicConstants.getOrganizationTopicById(organization.getId()),
-                    announcementRequest.title(),
-                    announcementRequest.content()
-            );
-
             int expectedFieldSize = 5;
 
             // when & then
@@ -93,7 +86,7 @@ class AnnouncementControllerTest {
                     .body("isPinned", equalTo(announcementRequest.isPinned()))
                     .body("createdAt", notNullValue());
 
-            verify(notificationService).sendToTopic(notificationRequest);
+            verify(notificationManager).sendToOrganizationTopic(any(), any());
         }
     }
 

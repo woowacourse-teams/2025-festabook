@@ -3,12 +3,13 @@ package com.daedan.festabook.organization.controller;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
-import com.daedan.festabook.notification.service.NotificationService;
+import com.daedan.festabook.notification.infrastructure.FCMNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationBookmark;
 import com.daedan.festabook.organization.domain.OrganizationBookmarkFixture;
@@ -45,7 +46,7 @@ class OrganizationBookmarkControllerTest {
     private OrganizationBookmarkJpaRepository organizationBookmarkJpaRepository;
 
     @MockitoBean
-    private NotificationService notificationService;
+    private FCMNotificationManager notificationManager;
 
     @LocalServerPort
     int port;
@@ -82,10 +83,7 @@ class OrganizationBookmarkControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", notNullValue());
 
-            verify(notificationService).subscribeTopic(
-                    device.getFcmToken(),
-                    "notifications-organization-" + organization.getId()
-            );
+            verify(notificationManager).subscribeOrganizationTopic(any(), any());
         }
 
         @Test
@@ -159,10 +157,7 @@ class OrganizationBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
-            verify(notificationService).unsubscribeTopic(
-                    device.getFcmToken(),
-                    "notifications-organization-" + organization.getId()
-            );
+            verify(notificationManager).unsubscribeOrganizationTopic(any(), any());
         }
 
         @Test

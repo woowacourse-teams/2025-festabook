@@ -3,10 +3,9 @@ package com.daedan.festabook.organization.service;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.constants.TopicConstants;
-import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationBookmark;
+import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaRepository;
@@ -23,7 +22,7 @@ public class OrganizationBookmarkService {
     private final OrganizationBookmarkJpaRepository organizationBookmarkJpaRepository;
     private final DeviceJpaRepository deviceJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
-    private final NotificationService notificationService;
+    private final OrganizationNotificationManager notificationManager;
 
     @Transactional
     public OrganizationBookmarkResponse createOrganizationBookmark(Long organizationId,
@@ -33,8 +32,7 @@ public class OrganizationBookmarkService {
         OrganizationBookmark organizationBookmark = new OrganizationBookmark(organization, device);
         OrganizationBookmark savedOrganizationBookmark = organizationBookmarkJpaRepository.save(organizationBookmark);
 
-        String topic = TopicConstants.getOrganizationTopicById(organizationId);
-        notificationService.subscribeTopic(device.getFcmToken(), topic);
+        notificationManager.subscribeOrganizationTopic(organizationId, device.getFcmToken());
 
         return OrganizationBookmarkResponse.from(savedOrganizationBookmark);
     }
@@ -47,8 +45,7 @@ public class OrganizationBookmarkService {
                             organizationId,
                             request.deviceId()
                     );
-                    String topic = TopicConstants.getOrganizationTopicById(organizationId);
-                    notificationService.unsubscribeTopic(device.getFcmToken(), topic);
+                    notificationManager.unsubscribeOrganizationTopic(organizationId, device.getFcmToken());
                 });
     }
 

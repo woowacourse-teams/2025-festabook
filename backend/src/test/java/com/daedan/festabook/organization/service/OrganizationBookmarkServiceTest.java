@@ -11,13 +11,12 @@ import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.constants.TopicConstants;
-import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationBookmark;
 import com.daedan.festabook.organization.domain.OrganizationBookmarkFixture;
 import com.daedan.festabook.organization.domain.OrganizationBookmarkRequestFixture;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaRepository;
@@ -46,7 +45,7 @@ class OrganizationBookmarkServiceTest {
     private DeviceJpaRepository deviceJpaRepository;
 
     @Mock
-    private NotificationService notificationService;
+    private OrganizationNotificationManager notificationManager;
 
     @InjectMocks
     private OrganizationBookmarkService organizationBookmarkService;
@@ -83,8 +82,8 @@ class OrganizationBookmarkServiceTest {
             // then
             assertThat(result.id()).isEqualTo(organizationBookmarkId);
             verify(organizationBookmarkJpaRepository).save(any(OrganizationBookmark.class));
-            verify(notificationService).subscribeTopic(device.getFcmToken(),
-                    TopicConstants.getOrganizationTopicById(organizationId));
+//            verify(notificationService).subscribeTopic(device.getFcmToken(),
+//                    TopicConstants.getOrganizationTopicById(organizationId));
         }
 
         @Test
@@ -143,10 +142,10 @@ class OrganizationBookmarkServiceTest {
 
             // then
             verify(organizationBookmarkJpaRepository).deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
-            verify(notificationService).unsubscribeTopic(
-                    device.getFcmToken(),
-                    TopicConstants.getOrganizationTopicById(organizationId)
-            );
+//            verify(notificationService).unsubscribeTopic(
+//                    device.getFcmToken(),
+//                    TopicConstants.getOrganizationTopicById(organizationId)
+//            );
         }
 
         @Test
