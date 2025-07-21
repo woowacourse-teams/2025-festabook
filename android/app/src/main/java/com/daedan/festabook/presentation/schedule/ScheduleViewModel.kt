@@ -12,7 +12,6 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.ScheduleRepository
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.toUiModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class ScheduleViewModel(
@@ -44,7 +43,6 @@ class ScheduleViewModel(
 
     fun loadScheduleByDate(dateId: Long) {
         viewModelScope.launch {
-            delay(5000)
             _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
 
             val result = scheduleRepository.fetchScheduleEventsById(dateId)
@@ -62,8 +60,6 @@ class ScheduleViewModel(
 
     private fun loadAllScheduleDates() {
         viewModelScope.launch {
-            delay(5000)
-
             _scheduleDatesUiState.value = ScheduleDatesUiState.Loading
 
             val result = scheduleRepository.fetchAllScheduleDates()
