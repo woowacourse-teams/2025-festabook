@@ -54,7 +54,7 @@ class PlaceBookmarkControllerTest {
     private FCMNotificationManager notificationManager;
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
     void setUp() {

@@ -49,7 +49,7 @@ class OrganizationBookmarkControllerTest {
     private FCMNotificationManager notificationManager;
 
     @LocalServerPort
-    int port;
+    private int port;
 
     @BeforeEach
     void setUp() {
