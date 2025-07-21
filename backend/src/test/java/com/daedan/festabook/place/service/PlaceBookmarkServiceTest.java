@@ -77,8 +77,7 @@ class PlaceBookmarkServiceTest {
             // then
             assertThat(result.id()).isEqualTo(placeBookmarkId);
             verify(placeBookmarkJpaRepository).save(any(PlaceBookmark.class));
-//            verify(notificationService).subscribeTopic(device.getFcmToken(),
-//                    TopicConstants.getPlaceTopicById(placeId));
+            verify(notificationManager).subscribePlaceTopic(any(), any());
         }
 
         @Test
@@ -137,10 +136,7 @@ class PlaceBookmarkServiceTest {
 
             // then
             verify(placeBookmarkJpaRepository).deleteByPlaceIdAndDeviceId(placeId, deviceId);
-//            verify(notificationService).unsubscribeTopic(
-//                    device.getFcmToken(),
-//                    TopicConstants.getPlaceTopicById(placeId)
-//            );
+            verify(notificationManager).unsubscribePlaceTopic(any(), any());
         }
 
         @Test

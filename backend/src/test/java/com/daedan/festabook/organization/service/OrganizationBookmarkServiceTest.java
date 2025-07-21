@@ -82,8 +82,7 @@ class OrganizationBookmarkServiceTest {
             // then
             assertThat(result.id()).isEqualTo(organizationBookmarkId);
             verify(organizationBookmarkJpaRepository).save(any(OrganizationBookmark.class));
-//            verify(notificationService).subscribeTopic(device.getFcmToken(),
-//                    TopicConstants.getOrganizationTopicById(organizationId));
+            verify(notificationManager).subscribeOrganizationTopic(any(), any());
         }
 
         @Test
@@ -142,10 +141,7 @@ class OrganizationBookmarkServiceTest {
 
             // then
             verify(organizationBookmarkJpaRepository).deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
-//            verify(notificationService).unsubscribeTopic(
-//                    device.getFcmToken(),
-//                    TopicConstants.getOrganizationTopicById(organizationId)
-//            );
+            verify(notificationManager).unsubscribeOrganizationTopic(any(), any());
         }
 
         @Test

@@ -6,6 +6,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -74,7 +75,7 @@ class AnnouncementServiceTest {
                 s.assertThat(result.title()).isEqualTo(announcementRequest.title());
                 s.assertThat(result.content()).isEqualTo(announcementRequest.content());
                 s.assertThat(result.isPinned()).isEqualTo(announcementRequest.isPinned());
-                // verify(notificationService).sendToTopic(notificationRequest);
+                verify(notificationManager).sendToOrganizationTopic(any());
             });
         }
 
