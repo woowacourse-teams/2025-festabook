@@ -18,8 +18,10 @@ android {
             .inputStream()
             .use { Properties().apply { load(it) } }
 
-    val baseUrl = localProperties["BASE_URL"] as String
-
+    val baseUrl =
+        checkNotNull(localProperties["BASE_URL"] as? String) {
+            "BASE_URL is missing or not a String in local.properties"
+        }
     defaultConfig {
         applicationId = "com.daedan.festabook"
         minSdk = 28
