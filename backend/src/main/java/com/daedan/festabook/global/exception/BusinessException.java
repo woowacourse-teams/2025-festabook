@@ -13,7 +13,7 @@ public class BusinessException extends RuntimeException {
         this.status = status;
     }
 
-    public ExceptionResponse getResponse() {
+    public ExceptionResponse toResponse() {
         return ExceptionResponse.from(getMessage());
     }
 }
