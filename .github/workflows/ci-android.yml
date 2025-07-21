@@ -30,7 +30,7 @@ jobs:
       - name: Create local.properties with BASE_URL
         run: |
           echo BASE_URL=\"${{ secrets.BASE_URL }}\" > local.properties
-          echo NAVER_MAP_CLIENT_ID="${{ secrets.NAVER_MAP_CLIENT_ID }}" >> local.properties
+          echo NAVER_MAP_CLIENT_ID=\"${{ secrets.NAVER_MAP_CLIENT_ID }}\" >> local.properties
 
       - name: Check local.properties content
         run:  cat local.properties
