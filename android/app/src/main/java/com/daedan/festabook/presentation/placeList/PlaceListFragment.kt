@@ -40,15 +40,18 @@ class PlaceListFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvPlaces.adapter = placeAdapter
-        placeAdapter.submitList(DummyPlace.placeUiModelList)
-
+        setUpPlaceAdapter()
         setUpMap()
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
         viewModel.setPlace(place)
         startPlaceDetailFragment()
+    }
+
+    private fun setUpPlaceAdapter() {
+        binding.rvPlaces.adapter = placeAdapter
+        placeAdapter.submitList(DummyPlace.placeUiModelList)
     }
 
     private fun setUpMap() {
