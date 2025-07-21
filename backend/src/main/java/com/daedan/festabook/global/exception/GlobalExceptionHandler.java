@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException businessException) {
-
+        log.info(businessException.getMessage());
         return ResponseEntity.status(businessException.getStatus())
                 .body(businessException.toResponse());
     }
