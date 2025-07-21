@@ -40,9 +40,9 @@ class ClusterManager(
         }
     }
 
-    private val cluster: Clusterer<ItemKey> =
+    private val cluster: Clusterer<ClusteringMarkerKey> =
         Clusterer
-            .Builder<ItemKey>()
+            .Builder<ClusteringMarkerKey>()
             .clusterMarkerUpdater(clusterMarkerUpdater)
             .leafMarkerUpdater(leafMarkerUpdater)
             .animate(false)
@@ -55,14 +55,14 @@ class ClusterManager(
     }
 
     object DSLHelper {
-        val itemKeyMap = mutableMapOf<ItemKey, PlaceCategory>()
+        val itemKeyMap = mutableMapOf<ClusteringMarkerKey, PlaceCategory>()
 
         fun put(
             position: LatLng,
             idx: Int,
             place: PlaceCoordinateUiModel,
         ) {
-            itemKeyMap[ItemKey(idx, position)] = place.category
+            itemKeyMap[ClusteringMarkerKey(idx, position)] = place.category
         }
     }
 
