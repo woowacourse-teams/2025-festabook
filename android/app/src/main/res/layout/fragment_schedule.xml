@@ -54,6 +54,7 @@
             android:id="@+id/sfl_schedule_tab_skeleton"
             android:layout_width="match_parent"
             android:layout_height="32dp"
+            android:importantForAccessibility="no"
             app:layout_constraintBottom_toTopOf="@id/view_schedule_tab_line"
             app:layout_constraintTop_toBottomOf="@+id/tv_schedule_title"
             app:shimmer_auto_start="true">
@@ -68,21 +69,21 @@
                     layout="@layout/item_schedule_tab_skeleton"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginEnd="@dimen/schedule_tab_item_end_margin"
                     android:layout_weight="1" />
 
                 <include
                     layout="@layout/item_schedule_tab_skeleton"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginEnd="@dimen/schedule_tab_item_end_margin"
                     android:layout_weight="1" />
 
                 <include
                     layout="@layout/item_schedule_tab_skeleton"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="12dp"
+                    android:layout_marginEnd="@dimen/schedule_tab_item_end_margin"
                     android:layout_weight="1" />
 
                 <include
@@ -98,6 +99,7 @@
             android:id="@+id/sfl_schedule_skeleton"
             android:layout_width="match_parent"
             android:layout_height="0dp"
+            android:importantForAccessibility="no"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/view_schedule_tab_line"
             app:shimmer_auto_start="true">
