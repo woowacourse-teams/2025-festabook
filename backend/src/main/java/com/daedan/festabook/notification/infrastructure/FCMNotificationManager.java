@@ -48,7 +48,7 @@ public class FCMNotificationManager implements OrganizationNotificationManager, 
         unsubscribeTopic(topic, fcmToken);
     }
 
-    protected void subscribeTopic(String topic, String fcmToken) {
+    private void subscribeTopic(String topic, String fcmToken) {
         try {
             FirebaseMessaging.getInstance().subscribeToTopic(List.of(fcmToken), topic);
         } catch (FirebaseMessagingException e) {
@@ -56,7 +56,7 @@ public class FCMNotificationManager implements OrganizationNotificationManager, 
         }
     }
 
-    protected void unsubscribeTopic(String topic, String fcmToken) {
+    private void unsubscribeTopic(String topic, String fcmToken) {
         try {
             FirebaseMessaging.getInstance().unsubscribeFromTopic(List.of(fcmToken), topic);
         } catch (FirebaseMessagingException e) {
@@ -64,7 +64,7 @@ public class FCMNotificationManager implements OrganizationNotificationManager, 
         }
     }
 
-    protected void sendToTopic(String topic, NotificationMessage notificationMessage) {
+    private void sendToTopic(String topic, NotificationMessage notificationMessage) {
         Message message = Message.builder()
                 .setTopic(topic)
                 .setNotification(Notification.builder()
