@@ -12,6 +12,10 @@ class FestaBookApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        setUpNaverSdk()
+    }
+
+    private fun setUpNaverSdk() {
         NaverMapSdk.getInstance(this).client =
             NaverMapSdk.NcpKeyClient(BuildConfig.NAVER_MAP_CLIENT_ID)
     }
