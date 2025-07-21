@@ -62,7 +62,7 @@ class AnnouncementControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            AnnouncementRequest announcementRequest = new AnnouncementRequest(
+            AnnouncementRequest request = new AnnouncementRequest(
                     "폭우가 내립니다.",
                     "우산을 챙겨주세요.",
                     true
@@ -75,15 +75,15 @@ class AnnouncementControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
-                    .body(announcementRequest)
+                    .body(request)
                     .when()
                     .post("/announcements")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("title", equalTo(announcementRequest.title()))
-                    .body("content", equalTo(announcementRequest.content()))
-                    .body("isPinned", equalTo(announcementRequest.isPinned()))
+                    .body("title", equalTo(request.title()))
+                    .body("content", equalTo(request.content()))
+                    .body("isPinned", equalTo(request.isPinned()))
                     .body("createdAt", notNullValue());
 
             verify(notificationManager).sendToOrganizationTopic(any(), any());
