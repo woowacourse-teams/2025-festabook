@@ -1,6 +1,7 @@
 package com.daedan.festabook.presentation.schedule
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -27,26 +28,33 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
             false
         binding.lifecycleOwner = viewLifecycleOwner
         setupObservers()
+        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: return
+        viewModel.loadScheduleByDate(dateId)
     }
 
     private fun setupObservers() {
-        viewModel.scheduleUiState.observe(viewLifecycleOwner) { schedule ->
+        viewModel.scheduleEventsUiState.observe(viewLifecycleOwner) { schedule ->
             when (schedule) {
-                is ScheduleUiState.Loading -> {}
-                is ScheduleUiState.Success -> adapter.submitList(schedule.events)
-                is ScheduleUiState.Error -> {}
+                is ScheduleEventsUiState.Loading -> {
+                    Log.d("TAG", "setupObservers: 로딩중")
+                }
+
+                is ScheduleEventsUiState.Success -> adapter.submitList(schedule.events)
+                is ScheduleEventsUiState.Error -> {
+                    Log.d("TAG", "setupObservers: ${schedule.message}")
+                }
             }
         }
     }
 
     companion object {
-        private const val ARG_DATE = "arg_date"
+        private const val KEY_DATE_ID = "dateId"
 
-        fun newInstance(date: String): ScheduleTabPageFragment {
+        fun newInstance(dateId: Long): ScheduleTabPageFragment {
             val fragment = ScheduleTabPageFragment()
             val args =
                 Bundle().apply {
-                    putString(ARG_DATE, date)
+                    putLong(KEY_DATE_ID, dateId)
                 }
             fragment.arguments = args
             return fragment

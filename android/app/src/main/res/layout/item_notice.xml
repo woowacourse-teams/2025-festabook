@@ -19,8 +19,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:onClick="@{() -> listener.onNoticeClick(notice.id)}"
         android:background="@drawable/bg_stroke_gray400_radius_10dp"
+        android:onClick="@{() -> listener.onNoticeClick(notice.id)}"
         android:paddingVertical="16dp">
 
         <ImageView
@@ -39,8 +39,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:textColor="@color/gray900"
             android:text="@{notice.title}"
+            android:textColor="@color/gray900"
             app:layout_constraintBottom_toBottomOf="@id/iv_speaker"
             app:layout_constraintStart_toEndOf="@id/iv_speaker"
             app:layout_constraintTop_toTopOf="@id/iv_speaker"
@@ -51,12 +51,12 @@
             style="@style/PretendardRegular12"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
             android:layout_marginHorizontal="16dp"
-            android:text="@{notice.description}"
+            android:layout_marginTop="4dp"
+            android:text="@{notice.content}"
             android:textColor="@color/gray500"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
             tools:text="설명입니다.설명입니다.설명입니다." />
 
@@ -66,8 +66,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="16dp"
+            android:text='@{notice.formattedCreatedAt}'
             android:textColor="@color/gray500"
-            app:formattedNoticeDateTime='@{notice.createdAt}'
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="00/00 00:00" />

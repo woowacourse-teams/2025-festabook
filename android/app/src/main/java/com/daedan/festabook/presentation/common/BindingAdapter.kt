@@ -8,22 +8,6 @@ import coil3.request.crossfade
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.placeList.model.PlaceCategory
 import com.google.android.material.card.MaterialCardView
-import java.time.Instant
-import java.time.ZoneId
-import java.time.format.DateTimeFormatter
-
-@BindingAdapter("formattedNoticeDateTime")
-fun TextView.setFormattedNoticeDateTime(isoDateTime: String) {
-    val formattedDateTime =
-        runCatching {
-            val instant = Instant.parse(isoDateTime)
-            val localDateTime = instant.atZone(ZoneId.systemDefault()).toLocalDateTime()
-            val outputFormatter = DateTimeFormatter.ofPattern("MM/dd HH:mm")
-            localDateTime.format(outputFormatter)
-        }.getOrDefault("")
-
-    text = formattedDateTime
-}
 
 @BindingAdapter("startTime", "endTime", requireAll = true)
 fun setFormatDate(

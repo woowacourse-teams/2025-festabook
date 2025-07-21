@@ -6,13 +6,14 @@ import com.daedan.festabook.domain.repository.ScheduleRepository
 import com.naver.maps.map.NaverMapSdk
 
 class FestaBookApp : Application() {
-    val scheduleRepository: ScheduleRepository by lazy {
-        ScheduleRepositoryImpl()
-    }
+    lateinit var appContainer: AppContainer
+        private set
 
     override fun onCreate() {
         super.onCreate()
+        appContainer = AppContainer()
         setUpNaverSdk()
+
     }
 
     private fun setUpNaverSdk() {

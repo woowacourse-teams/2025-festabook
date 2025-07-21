@@ -11,7 +11,8 @@ import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
-import com.daedan.festabook.presentation.news.notice.NewsFragment
+import com.daedan.festabook.presentation.home.HomeFragment
+import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 

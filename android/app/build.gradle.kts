@@ -3,6 +3,7 @@ import java.util.Properties
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.serialization)
     id("kotlin-kapt")
     id("kotlin-parcelize")
 }
@@ -11,15 +12,23 @@ android {
     namespace = "com.daedan.festabook"
     compileSdk = 36
 
-    defaultConfig {
-        val properties = Properties()
-        val localPropertiesFile = rootProject.file("local.properties")
-        if (localPropertiesFile.exists()) {
-            localPropertiesFile.inputStream().use { input ->
-                properties.load(input)
-            }
+    val localProperties =
+        gradle.rootProject
+            .file("local.properties")
+            .inputStream()
+            .use { Properties().apply { load(it) } }
+
+    val baseUrl =
+        checkNotNull(localProperties["BASE_URL"] as? String) {
+            "BASE_URL is missing or not a String in local.properties"
         }
 
+    val naverMapClientId =
+        checkNotNull(localProperties["NAVER_MAP_CLIENT_ID"] as? String) {
+            "NAVER_MAP_CLIENT_ID is missing or not a String in local.properties"
+        }
+
+    defaultConfig {
         applicationId = "com.daedan.festabook"
         minSdk = 28
         targetSdk = 36
@@ -31,13 +40,13 @@ android {
         buildConfigField(
             "String",
             "FESTABOOK_URL",
-            "\"http://festabook.woowacourse.com/\"",
+            baseUrl,
         )
 
         buildConfigField(
             "String",
             "NAVER_MAP_CLIENT_ID",
-            "${properties.getProperty("naver.map.client.id")}",
+            naverMapClientId,
         )
     }
 
