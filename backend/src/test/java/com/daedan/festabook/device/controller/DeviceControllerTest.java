@@ -3,6 +3,7 @@ package com.daedan.festabook.device.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
+import com.daedan.festabook.device.domain.DeviceRequestFixture;
 import com.daedan.festabook.device.dto.DeviceRequest;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -36,7 +37,7 @@ class DeviceControllerTest {
             // given
             String deviceIdentifier = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
             String fcmToken = "FCM_00000000";
-            DeviceRequest request = new DeviceRequest(deviceIdentifier, fcmToken);
+            DeviceRequest request = DeviceRequestFixture.create(deviceIdentifier, fcmToken);
 
             int expectedFieldSize = 1;
 
@@ -58,7 +59,7 @@ class DeviceControllerTest {
             // given
             String deviceIdentifier = "BBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB";
             String fcmToken = "FCM_11111111";
-            DeviceRequest request = new DeviceRequest(deviceIdentifier, fcmToken);
+            DeviceRequest request = DeviceRequestFixture.create(deviceIdentifier, fcmToken);
 
             Integer expectedId = RestAssured
                     .given()

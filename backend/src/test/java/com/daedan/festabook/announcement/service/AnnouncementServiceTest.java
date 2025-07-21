@@ -10,6 +10,7 @@ import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
+import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
@@ -57,10 +58,10 @@ class AnnouncementServiceTest {
         @Test
         void 성공() {
             // given
-            AnnouncementRequest announcementRequest = new AnnouncementRequest(
+            AnnouncementRequest announcementRequest = AnnouncementRequestFixture.create(
                     "폭우가 내립니다.",
                     "우산을 챙겨주세요.",
-                    true
+                    false
             );
             Long organizationId = 1L;
             NotificationRequest notificationRequest = new NotificationRequest(
@@ -88,19 +89,15 @@ class AnnouncementServiceTest {
         @Test
         void 예외_존재하지_않는_조직_ID() {
             // given
-            Long invalidId = 0L;
-            AnnouncementRequest request = new AnnouncementRequest(
-                    "폭우 안내",
-                    "비가 많이 와요",
-                    false
-            );
+            Long invalidDeviceId = 0L;
+            AnnouncementRequest request = AnnouncementRequestFixture.create();
 
-            given(organizationJpaRepository.findById(invalidId))
+            given(organizationJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() ->
-                    announcementService.createAnnouncement(invalidId, request)
+                    announcementService.createAnnouncement(invalidDeviceId, request)
             ).isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
@@ -109,9 +106,7 @@ class AnnouncementServiceTest {
         void 예외_알림_전송_실패시_예외_전파() {
             // given
             Long organizationId = 1L;
-            AnnouncementRequest request = new AnnouncementRequest(
-                    "폭우", "조심", true
-            );
+            AnnouncementRequest request = AnnouncementRequestFixture.create();
             Organization organization = OrganizationFixture.create(organizationId);
 
             given(organizationJpaRepository.findById(organizationId))

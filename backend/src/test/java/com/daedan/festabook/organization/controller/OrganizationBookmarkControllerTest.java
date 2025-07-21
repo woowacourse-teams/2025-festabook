@@ -12,6 +12,7 @@ import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationBookmark;
 import com.daedan.festabook.organization.domain.OrganizationBookmarkFixture;
+import com.daedan.festabook.organization.domain.OrganizationBookmarkRequestFixture;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
 import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaRepository;
@@ -66,7 +67,7 @@ class OrganizationBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(device.getId());
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
 
             int expectedFieldSize = 1;
 
@@ -94,7 +95,7 @@ class OrganizationBookmarkControllerTest {
             organizationJpaRepository.save(organization);
 
             Long invalidDeviceId = 0L;
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(invalidDeviceId);
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(invalidDeviceId);
 
             // when & then
             RestAssured
@@ -118,7 +119,7 @@ class OrganizationBookmarkControllerTest {
             deviceJpaRepository.save(device);
 
             Long invalidOrganizationId = 0L;
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(device.getId());
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
 
             // when & then
             given()
@@ -147,7 +148,7 @@ class OrganizationBookmarkControllerTest {
             OrganizationBookmark bookmark = OrganizationBookmarkFixture.create(organization, device);
             organizationBookmarkJpaRepository.save(bookmark);
 
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(device.getId());
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
 
             // when & then
             given()
@@ -171,7 +172,7 @@ class OrganizationBookmarkControllerTest {
             organizationJpaRepository.save(organization);
 
             Long invalidDeviceId = 0L;
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(invalidDeviceId);
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(invalidDeviceId);
 
             // when & then
             given()

@@ -8,6 +8,7 @@ import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
+import com.daedan.festabook.device.domain.DeviceRequestFixture;
 import com.daedan.festabook.device.dto.DeviceRequest;
 import com.daedan.festabook.device.dto.DeviceResponse;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
@@ -39,7 +40,7 @@ class DeviceServiceTest {
             // given
             Long expectedId = 1L;
             Device device = DeviceFixture.create(expectedId);
-            DeviceRequest request = new DeviceRequest(device.getDeviceIdentifier(), device.getFcmToken());
+            DeviceRequest request = DeviceRequestFixture.create(device.getDeviceIdentifier(), device.getFcmToken());
 
             given(deviceJpaRepository.findByDeviceIdentifier(request.deviceIdentifier()))
                     .willReturn(Optional.empty());
@@ -59,7 +60,7 @@ class DeviceServiceTest {
             // given
             Long expectedId = 1L;
             Device device = DeviceFixture.create(expectedId);
-            DeviceRequest request = new DeviceRequest(device.getDeviceIdentifier(), device.getFcmToken());
+            DeviceRequest request = DeviceRequestFixture.create(device.getDeviceIdentifier(), device.getFcmToken());
 
             given(deviceJpaRepository.findByDeviceIdentifier(request.deviceIdentifier()))
                     .willReturn(Optional.of(device));

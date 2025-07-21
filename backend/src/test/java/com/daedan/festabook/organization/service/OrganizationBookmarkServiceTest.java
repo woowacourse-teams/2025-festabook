@@ -16,6 +16,7 @@ import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationBookmark;
 import com.daedan.festabook.organization.domain.OrganizationBookmarkFixture;
+import com.daedan.festabook.organization.domain.OrganizationBookmarkRequestFixture;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
 import com.daedan.festabook.organization.dto.OrganizationBookmarkResponse;
@@ -66,7 +67,7 @@ class OrganizationBookmarkServiceTest {
                     organization,
                     device
             );
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(deviceId);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
@@ -89,13 +90,13 @@ class OrganizationBookmarkServiceTest {
         @Test
         void 예외_존재하지_않는_디바이스() {
             // given
-            Long deviceId = 10L;
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
+            Long invalidDeviceId = 0L;
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(invalidDeviceId);
 
             Long organizationId = 1L;
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(OrganizationFixture.create()));
-            given(deviceJpaRepository.findById(deviceId))
+            given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
@@ -109,15 +110,15 @@ class OrganizationBookmarkServiceTest {
         void 예외_존재하지_않는_조직() {
             // given
             Long deviceId = 10L;
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(deviceId);
 
-            Long organizationId = 1L;
-            given(organizationJpaRepository.findById(organizationId))
+            Long invalidOrganizationId = 0L;
+            given(organizationJpaRepository.findById(invalidOrganizationId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() ->
-                    organizationBookmarkService.createOrganizationBookmark(organizationId, request)
+                    organizationBookmarkService.createOrganizationBookmark(invalidOrganizationId, request)
             ).isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
@@ -132,7 +133,7 @@ class OrganizationBookmarkServiceTest {
             Long organizationId = 1L;
             Long deviceId = 10L;
             Device device = DeviceFixture.create(deviceId);
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(deviceId);
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(deviceId);
 
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
@@ -153,7 +154,7 @@ class OrganizationBookmarkServiceTest {
             // given
             Long organizationId = 1L;
             Long invalidDeviceId = 0L;
-            OrganizationBookmarkRequest request = new OrganizationBookmarkRequest(invalidDeviceId);
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(invalidDeviceId);
 
             given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());

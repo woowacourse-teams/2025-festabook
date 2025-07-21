@@ -14,6 +14,7 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceBookmark;
 import com.daedan.festabook.place.domain.PlaceBookmarkFixture;
+import com.daedan.festabook.place.domain.PlaceBookmarkRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceBookmarkRequest;
 import com.daedan.festabook.place.infrastructure.PlaceBookmarkJpaRepository;
@@ -74,7 +75,7 @@ class PlaceBookmarkControllerTest {
             Place place = PlaceFixture.create(organization);
             placeJpaRepository.save(place);
 
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(device.getId());
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(device.getId());
 
             int expectedFieldSize = 1;
 
@@ -107,7 +108,7 @@ class PlaceBookmarkControllerTest {
 
             Long invalidDeviceId = 0L;
 
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(invalidDeviceId);
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
 
             // when & then
             RestAssured
@@ -130,7 +131,7 @@ class PlaceBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(device.getId());
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(device.getId());
 
             Long invalidPlaceId = 0L;
 
@@ -165,7 +166,7 @@ class PlaceBookmarkControllerTest {
             PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(place, device);
             placeBookmarkJpaRepository.save(placeBookmark);
 
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(device.getId());
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(device.getId());
 
             // when & then
             RestAssured
@@ -194,7 +195,7 @@ class PlaceBookmarkControllerTest {
 
             Long invalidDeviceId = 0L;
 
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(invalidDeviceId);
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
 
             // when & then
             RestAssured

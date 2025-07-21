@@ -16,6 +16,7 @@ import com.daedan.festabook.notification.service.NotificationService;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceBookmark;
 import com.daedan.festabook.place.domain.PlaceBookmarkFixture;
+import com.daedan.festabook.place.domain.PlaceBookmarkRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceBookmarkRequest;
 import com.daedan.festabook.place.dto.PlaceBookmarkResponse;
@@ -84,13 +85,13 @@ class PlaceBookmarkServiceTest {
         @Test
         void 예외_존재하지_않는_디바이스() {
             // given
-            Long deviceId = 10L;
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(deviceId);
+            Long invalidDeviceId = 0L;
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
 
             Long placeId = 1L;
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(PlaceFixture.create()));
-            given(deviceJpaRepository.findById(deviceId))
+            given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
@@ -104,15 +105,15 @@ class PlaceBookmarkServiceTest {
         void 예외_존재하지_않는_플레이스() {
             // given
             Long deviceId = 10L;
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(deviceId);
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(deviceId);
 
-            Long placeId = 1L;
-            given(placeJpaRepository.findById(placeId))
+            Long invalidPlaceId = 0L;
+            given(placeJpaRepository.findById(invalidPlaceId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() ->
-                    placeBookmarkService.createPlaceBookmark(placeId, request)
+                    placeBookmarkService.createPlaceBookmark(invalidPlaceId, request)
             ).isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
@@ -127,7 +128,7 @@ class PlaceBookmarkServiceTest {
             Long placeId = 1L;
             Long deviceId = 10L;
             Device device = DeviceFixture.create(deviceId);
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(deviceId);
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(deviceId);
 
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
@@ -148,7 +149,7 @@ class PlaceBookmarkServiceTest {
             // given
             Long placeId = 1L;
             Long invalidDeviceId = 0L;
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(invalidDeviceId);
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
 
             given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
