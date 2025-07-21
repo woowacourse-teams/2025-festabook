@@ -72,6 +72,9 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         } else {
             binding.sflScheduleTabSkeleton.visibility = View.GONE
             binding.sflScheduleSkeleton.visibility = View.GONE
+
+            binding.sflScheduleTabSkeleton.stopShimmer()
+            binding.sflScheduleSkeleton.stopShimmer()
         }
     }
 }
