@@ -45,7 +45,7 @@ class OrganizationBookmarkServiceTest {
     private DeviceJpaRepository deviceJpaRepository;
 
     @Mock
-    private OrganizationNotificationManager notificationManager;
+    private OrganizationNotificationManager organizationNotificationManager;
 
     @InjectMocks
     private OrganizationBookmarkService organizationBookmarkService;
@@ -83,7 +83,7 @@ class OrganizationBookmarkServiceTest {
             assertThat(result.id()).isEqualTo(organizationBookmarkId);
             then(organizationBookmarkJpaRepository).should()
                     .save(any());
-            then(notificationManager).should()
+            then(organizationNotificationManager).should()
                     .subscribeOrganizationTopic(any(), any());
         }
 
@@ -144,7 +144,7 @@ class OrganizationBookmarkServiceTest {
             // then
             then(organizationBookmarkJpaRepository).should()
                     .deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
-            then(notificationManager).should()
+            then(organizationNotificationManager).should()
                     .unsubscribeOrganizationTopic(any(), any());
         }
 

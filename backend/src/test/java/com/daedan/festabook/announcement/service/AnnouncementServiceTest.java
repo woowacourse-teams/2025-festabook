@@ -45,7 +45,7 @@ class AnnouncementServiceTest {
     private OrganizationJpaRepository organizationJpaRepository;
 
     @Mock
-    private OrganizationNotificationManager notificationManager;
+    private OrganizationNotificationManager organizationNotificationManager;
 
     @InjectMocks
     private AnnouncementService announcementService;
@@ -76,7 +76,7 @@ class AnnouncementServiceTest {
                 s.assertThat(result.content()).isEqualTo(request.content());
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
             });
-            then(notificationManager).should()
+            then(organizationNotificationManager).should()
                     .sendToOrganizationTopic(any(), any());
         }
 
@@ -106,7 +106,7 @@ class AnnouncementServiceTest {
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
             doThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
-                    .when(notificationManager).sendToOrganizationTopic(any(), any());
+                    .when(organizationNotificationManager).sendToOrganizationTopic(any(), any());
 
             // when & then
             assertThatThrownBy(() ->

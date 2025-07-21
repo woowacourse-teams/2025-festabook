@@ -45,7 +45,7 @@ class PlaceBookmarkServiceTest {
     private PlaceJpaRepository placeJpaRepository;
 
     @Mock
-    private PlaceNotificationManager notificationManager;
+    private PlaceNotificationManager placeNotificationManager;
 
     @InjectMocks
     private PlaceBookmarkService placeBookmarkService;
@@ -78,7 +78,7 @@ class PlaceBookmarkServiceTest {
             assertThat(result.id()).isEqualTo(placeBookmarkId);
             then(placeBookmarkJpaRepository).should()
                     .save(any());
-            then(notificationManager).should()
+            then(placeNotificationManager).should()
                     .subscribePlaceTopic(any(), any());
         }
 
@@ -139,7 +139,7 @@ class PlaceBookmarkServiceTest {
             // then
             then(placeBookmarkJpaRepository).should()
                     .deleteByPlaceIdAndDeviceId(placeId, deviceId);
-            then(notificationManager).should()
+            then(placeNotificationManager).should()
                     .unsubscribePlaceTopic(any(), any());
         }
 
