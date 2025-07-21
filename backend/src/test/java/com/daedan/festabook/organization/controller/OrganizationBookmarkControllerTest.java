@@ -18,7 +18,6 @@ import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaR
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import io.restassured.parsing.Parser;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -53,7 +52,6 @@ class OrganizationBookmarkControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-        RestAssured.registerParser("text/plain", Parser.TEXT);
     }
 
     @Nested
