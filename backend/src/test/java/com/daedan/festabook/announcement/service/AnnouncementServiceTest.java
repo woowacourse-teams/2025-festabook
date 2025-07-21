@@ -75,8 +75,8 @@ class AnnouncementServiceTest {
                 s.assertThat(result.title()).isEqualTo(request.title());
                 s.assertThat(result.content()).isEqualTo(request.content());
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
-                verify(notificationManager).sendToOrganizationTopic(any(), any());
             });
+            verify(notificationManager).sendToOrganizationTopic(any(), any());
         }
 
         @Test
