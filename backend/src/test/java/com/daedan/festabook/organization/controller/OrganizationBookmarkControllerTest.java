@@ -4,7 +4,7 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -83,7 +83,8 @@ class OrganizationBookmarkControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", notNullValue());
 
-            verify(notificationManager).subscribeOrganizationTopic(any(), any());
+            then(notificationManager).should()
+                    .subscribeOrganizationTopic(any(), any());
         }
 
         @Test
@@ -157,7 +158,8 @@ class OrganizationBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
-            verify(notificationManager).unsubscribeOrganizationTopic(any(), any());
+            then(notificationManager).should()
+                    .unsubscribeOrganizationTopic(any(), any());
         }
 
         @Test

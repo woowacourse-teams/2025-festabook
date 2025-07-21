@@ -5,7 +5,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -86,7 +86,8 @@ class AnnouncementControllerTest {
                     .body("isPinned", equalTo(request.isPinned()))
                     .body("createdAt", notNullValue());
 
-            verify(notificationManager).sendToOrganizationTopic(any(), any());
+            then(notificationManager).should()
+                    .sendToOrganizationTopic(any(), any());
         }
     }
 

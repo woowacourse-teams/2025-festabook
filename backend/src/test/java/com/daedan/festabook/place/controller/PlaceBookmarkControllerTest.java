@@ -3,7 +3,7 @@ package com.daedan.festabook.place.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -92,7 +92,8 @@ class PlaceBookmarkControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", notNullValue());
 
-            verify(notificationManager).subscribePlaceTopic(any(), any());
+            then(notificationManager).should()
+                    .subscribePlaceTopic(any(), any());
         }
 
         @Test
@@ -176,7 +177,8 @@ class PlaceBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
-            verify(notificationManager).unsubscribePlaceTopic(any(), any());
+            then(notificationManager).should()
+                    .unsubscribePlaceTopic(any(), any());
         }
 
         @Test

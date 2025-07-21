@@ -5,7 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -81,8 +81,10 @@ class OrganizationBookmarkServiceTest {
 
             // then
             assertThat(result.id()).isEqualTo(organizationBookmarkId);
-            verify(organizationBookmarkJpaRepository).save(any(OrganizationBookmark.class));
-            verify(notificationManager).subscribeOrganizationTopic(any(), any());
+            then(organizationBookmarkJpaRepository).should()
+                    .save(any());
+            then(notificationManager).should()
+                    .subscribeOrganizationTopic(any(), any());
         }
 
         @Test
@@ -140,8 +142,10 @@ class OrganizationBookmarkServiceTest {
             organizationBookmarkService.deleteOrganizationBookmark(organizationId, request);
 
             // then
-            verify(organizationBookmarkJpaRepository).deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
-            verify(notificationManager).unsubscribeOrganizationTopic(any(), any());
+            then(organizationBookmarkJpaRepository).should()
+                    .deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
+            then(notificationManager).should()
+                    .unsubscribeOrganizationTopic(any(), any());
         }
 
         @Test

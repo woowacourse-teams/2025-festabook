@@ -3,8 +3,8 @@ package com.daedan.festabook.device.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -52,7 +52,8 @@ class DeviceServiceTest {
 
             // then
             assertThat(result.id()).isEqualTo(expectedId);
-            verify(deviceJpaRepository).save(any());
+            then(deviceJpaRepository).should()
+                    .save(any());
         }
 
         @Test
@@ -70,7 +71,8 @@ class DeviceServiceTest {
 
             // then
             assertThat(result.id()).isEqualTo(expectedId);
-            verify(deviceJpaRepository, never()).save(any());
+            then(deviceJpaRepository).should(never())
+                    .save(any());
         }
     }
 }

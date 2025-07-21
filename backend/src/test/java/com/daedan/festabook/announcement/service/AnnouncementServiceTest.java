@@ -5,8 +5,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -76,7 +76,8 @@ class AnnouncementServiceTest {
                 s.assertThat(result.content()).isEqualTo(request.content());
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
             });
-            verify(notificationManager).sendToOrganizationTopic(any(), any());
+            then(notificationManager).should()
+                    .sendToOrganizationTopic(any(), any());
         }
 
         @Test
