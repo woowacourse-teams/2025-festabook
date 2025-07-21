@@ -21,6 +21,7 @@ public class SwaggerConfig {
 
     private static final String ORGANIZATION_SCHEME_NAME = "조직(Organization) ID 값";
     private static final List<String[]> API_GROUPS = List.of(
+            new String[]{"전체", "/**"},
             new String[]{"일정 API", "/schedules/**"},
             new String[]{"플레이스 API", "/places/**"},
             new String[]{"공지 API", "/announcements/**"},

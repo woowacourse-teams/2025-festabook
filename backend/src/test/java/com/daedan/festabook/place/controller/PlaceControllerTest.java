@@ -333,6 +333,7 @@ class PlaceControllerTest {
             organizationJpaRepository.save(organization);
 
             Long placeId = 0L;
+            int expectedFieldSize = 1;
 
             // when & then
             RestAssured
@@ -344,7 +345,8 @@ class PlaceControllerTest {
                     .log()
                     .all()
                     .statusCode(HttpStatus.NOT_FOUND.value())
-                    .body(equalTo("존재하지 않는 플레이스 세부 정보입니다."));
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("message", equalTo("존재하지 않는 플레이스 세부 정보입니다."));
         }
     }
 }
