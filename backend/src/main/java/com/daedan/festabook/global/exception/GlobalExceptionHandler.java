@@ -22,6 +22,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ExceptionResponse> handleException(Exception exception) {
         log.warn(exception.getMessage());
         return ResponseEntity.internalServerError()
-                .body(ExceptionResponse.from(INTERNAL_ERROR_MESSAGE));
+                .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
     }
 }

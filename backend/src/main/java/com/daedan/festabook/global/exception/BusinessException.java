@@ -14,6 +14,6 @@ public class BusinessException extends RuntimeException {
     }
 
     public ExceptionResponse toResponse() {
-        return ExceptionResponse.from(getMessage());
+        return new ExceptionResponse(getMessage());
     }
 }
