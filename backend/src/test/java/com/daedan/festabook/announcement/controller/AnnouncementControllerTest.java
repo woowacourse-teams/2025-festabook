@@ -11,7 +11,7 @@ import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
-import com.daedan.festabook.notification.infrastructure.FCMNotificationManager;
+import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -43,7 +43,7 @@ class AnnouncementControllerTest {
     private OrganizationJpaRepository organizationJpaRepository;
 
     @MockitoBean
-    private FCMNotificationManager notificationManager;
+    private FcmNotificationManager fcmNotificationManager;
 
     @LocalServerPort
     private int port;
@@ -86,7 +86,7 @@ class AnnouncementControllerTest {
                     .body("isPinned", equalTo(request.isPinned()))
                     .body("createdAt", notNullValue());
 
-            then(notificationManager).should()
+            then(fcmNotificationManager).should()
                     .sendToOrganizationTopic(any(), any());
         }
     }

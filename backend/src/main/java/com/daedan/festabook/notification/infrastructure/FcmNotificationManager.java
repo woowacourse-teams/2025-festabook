@@ -13,7 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
-public class FCMNotificationManager implements OrganizationNotificationManager, PlaceNotificationManager {
+public class FcmNotificationManager implements OrganizationNotificationManager, PlaceNotificationManager {
 
     private static final String ORGANIZATION_TOPIC_PREFIX = "notifications-organization-";
     private static final String PLACE_TOPIC_PREFIX = "notifications-place-";
