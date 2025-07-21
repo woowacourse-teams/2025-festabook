@@ -9,10 +9,14 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
+import java.lang.IllegalArgumentException
 
 class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
     private lateinit var adapter: ScheduleAdapter
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
+    private val viewModel: ScheduleViewModel by viewModels {
+        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: throw IllegalArgumentException()
+        ScheduleViewModel.Factory(dateId)
+    }
 
     override fun onViewCreated(
         view: View,
@@ -24,10 +28,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         binding.lifecycleOwner = viewLifecycleOwner
         setupObservers()
 
-        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: return
-        viewModel.loadScheduleByDate(dateId)
-
-        onSwipeRefreshScheduleByDateListener(dateId)
+        onSwipeRefreshScheduleByDateListener()
     }
 
     private fun setupScheduleEventRecyclerView() {
@@ -40,9 +41,9 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
             false
     }
 
-    private fun onSwipeRefreshScheduleByDateListener(dateId: Long) {
+    private fun onSwipeRefreshScheduleByDateListener() {
         binding.srlScheduleEvent.setOnRefreshListener {
-            viewModel.loadScheduleByDate(dateId)
+            viewModel.loadScheduleByDate()
         }
     }
 

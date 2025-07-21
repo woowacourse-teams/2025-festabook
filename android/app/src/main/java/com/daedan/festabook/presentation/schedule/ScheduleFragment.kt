@@ -17,7 +17,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         SchedulePagerAdapter(this)
     }
 
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
+    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory() }
 
     override fun onViewCreated(
         view: View,
