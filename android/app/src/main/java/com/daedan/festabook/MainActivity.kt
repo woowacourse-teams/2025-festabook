@@ -9,7 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.common.isGranted
-import com.daedan.festabook.presentation.common.showToastWithFormattedPermission
+import com.daedan.festabook.presentation.common.showToast
+import com.daedan.festabook.presentation.common.toPermissionDeniedText
 import com.daedan.festabook.presentation.news.notice.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
@@ -56,9 +57,11 @@ class MainActivity : AppCompatActivity() {
         grantResults: IntArray,
     ) {
         grantResults.forEachIndexed { index, result ->
-            if (result.isGranted()) {
+            if (!result.isGranted()) {
                 val text = permissions[index]
-                showToastWithFormattedPermission(text)
+                showToast(
+                    toPermissionDeniedText(text) ?: return@forEachIndexed,
+                )
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
