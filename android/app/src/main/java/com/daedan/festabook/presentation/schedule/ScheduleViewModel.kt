@@ -28,7 +28,7 @@ class ScheduleViewModel(
 
     init {
         loadAllScheduleDates()
-        loadScheduleByDate()
+        if (dateId != INVALID_DATE_ID) loadScheduleByDate()
     }
 
     fun updateBookmark(scheduleEventId: Long) {
@@ -87,7 +87,9 @@ class ScheduleViewModel(
     }
 
     companion object {
-        fun Factory(dateId: Long = 0L): ViewModelProvider.Factory =
+        private const val INVALID_DATE_ID: Long = -1L
+
+        fun Factory(dateId: Long = INVALID_DATE_ID): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     val scheduleRepository =
