@@ -8,6 +8,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
@@ -83,7 +84,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun onClickBottomNavigationBarItem() {
         binding.bnvMenu.setOnItemSelectedListener { icon ->
-
             if (binding.bnvMenu.selectedItemId == icon.itemId) {
                 return@setOnItemSelectedListener false
             }
@@ -102,6 +102,9 @@ class MainActivity : AppCompatActivity() {
         fragment: Fragment,
         tag: String,
     ) {
+        supportFragmentManager.unregisterFragmentLifecycleCallbacks(
+            bottomNavigationViewAnimationCallback,
+        )
         supportFragmentManager.commit {
             supportFragmentManager.fragments.forEach { fragment -> hide(fragment) }
 

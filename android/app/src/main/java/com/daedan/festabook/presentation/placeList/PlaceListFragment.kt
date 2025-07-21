@@ -7,7 +7,7 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
+import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
@@ -80,7 +80,7 @@ class PlaceListFragment :
 
     private fun startPlaceDetailFragment() {
         parentFragmentManager.registerFragmentLifecycleCallbacks(
-            getBottomNavigationViewAnimationCallback(),
+            bottomNavigationViewAnimationCallback,
             false,
         )
         parentFragmentManager.commit {
