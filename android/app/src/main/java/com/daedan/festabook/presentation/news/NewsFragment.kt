@@ -37,14 +37,14 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         binding.lifecycleOwner = viewLifecycleOwner
         binding.rvNoticeList.adapter = noticeAdapter
 
-        initObserver()
+        setupObserver()
     }
 
     private fun fetchNotices() {
         viewModel.fetchNotices()
     }
 
-    private fun initObserver() {
+    private fun setupObserver() {
         viewModel.notices.observe(viewLifecycleOwner) { notices ->
             noticeAdapter.submitList(notices)
         }
