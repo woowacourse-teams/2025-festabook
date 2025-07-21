@@ -60,11 +60,13 @@ class PlaceListFragment :
             binding.lbvCurrentLocation.map = map
             map.locationSource = locationSource
 
-            MapManager(map, DummyMapData.initialMapSettingUiModel).apply {
-                setContentPaddingBottom(initialPadding)
-                setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
-                setPlaceLocation(DummyMapData.placeCoordinates)
-            }
+            MapManager(
+                map,
+                initialPadding,
+                DummyMapData.initialMapSettingUiModel,
+            ).setPlaceLocation(
+                DummyMapData.placeCoordinates,
+            )
 
             val behavior = binding.layoutPlaceList.placeListScrollBehavior()
             behavior?.onScrollListener = { dy ->
@@ -98,6 +100,5 @@ class PlaceListFragment :
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
-        private const val LOGO_MARGIN_TOP_PX = 75
     }
 }

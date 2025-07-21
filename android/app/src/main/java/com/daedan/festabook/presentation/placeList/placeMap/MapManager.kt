@@ -16,6 +16,7 @@ import com.naver.maps.map.overlay.PolygonOverlay
 
 class MapManager(
     private val map: NaverMap,
+    private val initialPadding: Int,
     private val settingUiModel: InitialMapSettingUiModel,
 ) {
     private val overlayImageManager =
@@ -37,26 +38,9 @@ class MapManager(
             uiSettings.isScaleBarEnabled = false
             moveToInitialPosition()
             setInitialPolygon(settingUiModel.border)
+            setContentPaddingBottom(initialPadding)
+            setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
         }
-    }
-
-    fun setContentPaddingBottom(height: Int) {
-        map.setContentPadding(
-            0,
-            0,
-            0,
-            height,
-            true,
-        )
-    }
-
-    fun setLogoMarginBottom(height: Int) {
-        map.uiSettings.setLogoMargin(
-            16,
-            0,
-            0,
-            height,
-        )
     }
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
@@ -71,6 +55,25 @@ class MapManager(
                 }
             }
         }
+    }
+
+    private fun setContentPaddingBottom(height: Int) {
+        map.setContentPadding(
+            0,
+            0,
+            0,
+            height,
+            true,
+        )
+    }
+
+    private fun setLogoMarginBottom(height: Int) {
+        map.uiSettings.setLogoMargin(
+            16,
+            0,
+            0,
+            height,
+        )
     }
 
     private fun NaverMap.moveToInitialPosition() {
@@ -107,6 +110,8 @@ class MapManager(
         private const val CLUSTER_CHANGE_TRIGGER_ZOOM = 16.0
         private const val OVERLAY_COLOR_INT = "#4D000000"
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
+        private const val LOGO_MARGIN_TOP_PX = 75
+
         private val EDGE_COORS =
             listOf(
                 LatLng(39.2163345, 123.5125660),
