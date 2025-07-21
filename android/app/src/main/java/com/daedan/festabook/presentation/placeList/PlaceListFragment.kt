@@ -30,7 +30,9 @@ class PlaceListFragment :
         PlaceListAdapter(this)
     }
 
-    private lateinit var locationSource: FusedLocationSource
+    private val locationSource by lazy {
+        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+    }
 
     override fun onViewCreated(
         view: View,
@@ -41,20 +43,11 @@ class PlaceListFragment :
         placeAdapter.submitList(DummyPlace.placeUiModelList)
 
         setUpMap()
-        setUpLocation()
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
         viewModel.setPlace(place)
         startPlaceDetailFragment()
-    }
-
-    private fun setUpLocation() {
-        locationSource =
-            FusedLocationSource(
-                this,
-                LOCATION_PERMISSION_REQUEST_CODE,
-            )
     }
 
     private fun setUpMap() {
