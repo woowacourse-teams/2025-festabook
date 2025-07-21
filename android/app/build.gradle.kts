@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -10,6 +12,16 @@ android {
     namespace = "com.daedan.festabook"
     compileSdk = 36
 
+    val localProperties =
+        gradle.rootProject
+            .file("local.properties")
+            .inputStream()
+            .use { Properties().apply { load(it) } }
+
+    val baseUrl =
+        checkNotNull(localProperties["BASE_URL"] as? String) {
+            "BASE_URL is missing or not a String in local.properties"
+        }
     defaultConfig {
         applicationId = "com.daedan.festabook"
         minSdk = 28
@@ -19,11 +31,7 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField(
-            "String",
-            "FESTABOOK_URL",
-            "\"http://festabook.woowacourse.com:8080/\"",
-        )
+        buildConfigField("String", "FESTABOOK_URL", "\"http://festabook.woowacourse.com:8080/\"")
     }
 
     buildTypes {
