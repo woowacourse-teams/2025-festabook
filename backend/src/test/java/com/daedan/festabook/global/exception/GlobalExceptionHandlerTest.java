@@ -40,6 +40,7 @@ class GlobalExceptionHandlerTest {
             // given
             String expectedMessage = "예외가 발생했습니다.";
             int expectedStatusCode = HttpStatus.I_AM_A_TEAPOT.value();
+            int expectedFieldSize = 1;
 
             // when & then
             RestAssured
@@ -52,7 +53,8 @@ class GlobalExceptionHandlerTest {
                     .log()
                     .all()
                     .statusCode(expectedStatusCode)
-                    .body(equalTo(expectedMessage));
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("message", equalTo(expectedMessage));
         }
 
         @Test
@@ -60,6 +62,7 @@ class GlobalExceptionHandlerTest {
             // given
             String expectedMessage = "관리자에게";
             int expectedStatusCode = HttpStatus.INTERNAL_SERVER_ERROR.value();
+            int expectedFieldSize = 1;
 
             // when & then
             RestAssured
@@ -70,7 +73,8 @@ class GlobalExceptionHandlerTest {
                     .log()
                     .all()
                     .statusCode(expectedStatusCode)
-                    .body(containsString(expectedMessage));
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("message", containsString(expectedMessage));
         }
     }
 
