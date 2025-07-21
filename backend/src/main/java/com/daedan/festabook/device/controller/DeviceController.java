@@ -29,9 +29,9 @@ public class DeviceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public DeviceResponse getOrCreateDevice(
+    public DeviceResponse registerDevice(
             @RequestBody DeviceRequest request
     ) {
-        return deviceService.getOrCreateDevice(request);
+        return deviceService.registerDevice(request);
     }
 }

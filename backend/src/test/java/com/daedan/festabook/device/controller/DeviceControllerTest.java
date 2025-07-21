@@ -30,7 +30,7 @@ class DeviceControllerTest {
     }
 
     @Nested
-    class createDevice {
+    class registerDevice {
 
         @Test
         void 성공_신규_Device_등록_id_응답() {

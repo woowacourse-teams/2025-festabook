@@ -13,7 +13,7 @@ public class DeviceService {
 
     private final DeviceJpaRepository deviceJpaRepository;
 
-    public DeviceResponse getOrCreateDevice(DeviceRequest request) {
+    public DeviceResponse registerDevice(DeviceRequest request) {
         Device device = deviceJpaRepository.findByDeviceIdentifier(request.deviceIdentifier())
                 .orElseGet(() -> saveNewDevice(request));
         return DeviceResponse.from(device);

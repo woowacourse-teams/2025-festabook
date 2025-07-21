@@ -33,7 +33,7 @@ class DeviceServiceTest {
     private DeviceService deviceService;
 
     @Nested
-    class createDevice {
+    class registerDevice {
 
         @Test
         void 성공_신규_Device_등록_id_응답() {
@@ -48,7 +48,7 @@ class DeviceServiceTest {
                     .willReturn(device);
 
             // when
-            DeviceResponse result = deviceService.getOrCreateDevice(request);
+            DeviceResponse result = deviceService.registerDevice(request);
 
             // then
             assertThat(result.id()).isEqualTo(expectedId);
@@ -66,7 +66,7 @@ class DeviceServiceTest {
                     .willReturn(Optional.of(device));
 
             // when
-            DeviceResponse result = deviceService.getOrCreateDevice(request);
+            DeviceResponse result = deviceService.registerDevice(request);
 
             // then
             assertThat(result.id()).isEqualTo(expectedId);
