@@ -40,22 +40,13 @@ class PlaceListFragment :
         binding.rvPlaces.adapter = placeAdapter
         placeAdapter.submitList(DummyPlace.placeUiModelList)
 
-        setUpObservers()
         setUpMap()
         setUpLocation()
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
-        viewModel.publishClickEvent()
         viewModel.setPlace(place)
-    }
-
-    private fun setUpObservers() {
-        viewModel.userActionEvent.observe(this) { event ->
-            when (event) {
-                PlaceListUserActionEvent.PLACE_CLICKED -> startPlaceDetailFragment()
-            }
-        }
+        startPlaceDetailFragment()
     }
 
     private fun setUpLocation() {
