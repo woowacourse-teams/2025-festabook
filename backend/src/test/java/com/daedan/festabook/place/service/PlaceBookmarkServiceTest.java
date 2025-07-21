@@ -125,20 +125,23 @@ class PlaceBookmarkServiceTest {
         @Test
         void 성공() {
             // given
-            Long placeId = 1L;
+            Long placeBookmarkId = 1L;
             Long deviceId = 10L;
-            Device device = DeviceFixture.create(deviceId);
-            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(deviceId);
+            Long placeId = 100L;
 
+            Device device = DeviceFixture.create(deviceId);
+            Place place = PlaceFixture.create(placeId);
+            PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(placeBookmarkId, place, device);
+
+            given(placeBookmarkJpaRepository.findById(placeBookmarkId))
+                    .willReturn(Optional.of(placeBookmark));
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
 
             // when
-            placeBookmarkService.deletePlaceBookmark(placeId, request);
+            placeBookmarkService.deletePlaceBookmark(placeBookmarkId);
 
             // then
-            then(placeBookmarkJpaRepository).should()
-                    .deleteByPlaceIdAndDeviceId(placeId, deviceId);
             then(placeNotificationManager).should()
                     .unsubscribePlaceTopic(any(), any());
         }
@@ -146,16 +149,22 @@ class PlaceBookmarkServiceTest {
         @Test
         void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
             // given
-            Long placeId = 1L;
+            Long placeBookmarkId = 1L;
             Long invalidDeviceId = 0L;
-            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
+            Long placeId = 100L;
 
+            Device device = DeviceFixture.create(invalidDeviceId);
+            Place place = PlaceFixture.create(placeId);
+            PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(placeBookmarkId, place, device);
+
+            given(placeBookmarkJpaRepository.findById(placeBookmarkId))
+                    .willReturn(Optional.of(placeBookmark));
             given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatCode(() ->
-                    placeBookmarkService.deletePlaceBookmark(placeId, request)
+                    placeBookmarkService.deletePlaceBookmark(placeBookmarkId)
             ).doesNotThrowAnyException();
         }
     }

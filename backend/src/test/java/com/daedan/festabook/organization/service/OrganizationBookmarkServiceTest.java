@@ -130,37 +130,54 @@ class OrganizationBookmarkServiceTest {
         @Test
         void 성공() {
             // given
-            Long organizationId = 1L;
+            Long organizationBookmarkId = 1L;
             Long deviceId = 10L;
-            Device device = DeviceFixture.create(deviceId);
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(deviceId);
+            Long organizationId = 100L;
 
+            Device device = DeviceFixture.create(deviceId);
+            Organization organization = OrganizationFixture.create(organizationId);
+            OrganizationBookmark organizationBookmark = OrganizationBookmarkFixture.create(
+                    organizationBookmarkId,
+                    organization,
+                    device
+            );
+
+            given(organizationBookmarkJpaRepository.findById(organizationBookmarkId))
+                    .willReturn(Optional.of(organizationBookmark));
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
 
             // when
-            organizationBookmarkService.deleteOrganizationBookmark(organizationId, request);
+            organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId);
 
             // then
-            then(organizationBookmarkJpaRepository).should()
-                    .deleteByOrganizationIdAndDeviceId(organizationId, deviceId);
             then(organizationNotificationManager).should()
-                    .unsubscribeOrganizationTopic(any(), any());
+                    .unsubscribeOrganizationTopic(organizationId, device.getFcmToken());
         }
 
         @Test
         void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
             // given
-            Long organizationId = 1L;
+            Long organizationBookmarkId = 1L;
             Long invalidDeviceId = 0L;
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(invalidDeviceId);
+            Long organizationId = 100L;
 
+            Device device = DeviceFixture.create(invalidDeviceId);
+            Organization organization = OrganizationFixture.create(organizationId);
+            OrganizationBookmark organizationBookmark = OrganizationBookmarkFixture.create(
+                    organizationBookmarkId,
+                    organization,
+                    device
+            );
+
+            given(organizationBookmarkJpaRepository.findById(organizationBookmarkId))
+                    .willReturn(Optional.of(organizationBookmark));
             given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatCode(() ->
-                    organizationBookmarkService.deleteOrganizationBookmark(organizationId, request)
+                    organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId)
             ).doesNotThrowAnyException();
         }
     }

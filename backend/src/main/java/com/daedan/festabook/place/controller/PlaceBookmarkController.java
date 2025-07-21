@@ -38,16 +38,15 @@ public class PlaceBookmarkController {
         return placeBookmarkService.createPlaceBookmark(placeId, request);
     }
 
-    @DeleteMapping("/{placeId}")
+    @DeleteMapping("/{placeBookmarkId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스의 북마크 삭제 (+ FCM 토픽 구독 취소)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deletePlaceBookmark(
-            @PathVariable Long placeId,
-            @RequestBody PlaceBookmarkRequest request
+            @PathVariable Long placeBookmarkId
     ) {
-        placeBookmarkService.deletePlaceBookmark(placeId, request);
+        placeBookmarkService.deletePlaceBookmark(placeBookmarkId);
     }
 }

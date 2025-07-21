@@ -165,15 +165,12 @@ class PlaceBookmarkControllerTest {
             PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(place, device);
             placeBookmarkJpaRepository.save(placeBookmark);
 
-            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(device.getId());
-
             // when & then
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .body(request)
                     .when()
-                    .delete("/places/bookmarks/" + place.getId())
+                    .delete("/places/bookmarks/" + placeBookmark.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 

@@ -144,17 +144,14 @@ class OrganizationBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            OrganizationBookmark bookmark = OrganizationBookmarkFixture.create(organization, device);
-            organizationBookmarkJpaRepository.save(bookmark);
-
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
+            OrganizationBookmark organizationBookmark = OrganizationBookmarkFixture.create(organization, device);
+            organizationBookmarkJpaRepository.save(organizationBookmark);
 
             // when & then
             given()
                     .contentType(ContentType.JSON)
-                    .body(request)
                     .when()
-                    .delete("/organizations/bookmarks/" + organization.getId())
+                    .delete("/organizations/bookmarks/" + organizationBookmark.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -168,13 +165,9 @@ class OrganizationBookmarkControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            Long invalidDeviceId = 0L;
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(invalidDeviceId);
-
             // when & then
             given()
                     .contentType(ContentType.JSON)
-                    .body(request)
                     .when()
                     .delete("/organizations/bookmarks/" + organization.getId())
                     .then()

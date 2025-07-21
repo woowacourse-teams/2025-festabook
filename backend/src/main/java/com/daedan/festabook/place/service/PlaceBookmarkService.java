@@ -37,11 +37,16 @@ public class PlaceBookmarkService {
     }
 
     @Transactional
-    public void deletePlaceBookmark(Long placeId, PlaceBookmarkRequest request) {
-        deviceJpaRepository.findById(request.deviceId())
-                .ifPresent(device -> {
-                    placeBookmarkJpaRepository.deleteByPlaceIdAndDeviceId(placeId, request.deviceId());
-                    notificationManager.unsubscribePlaceTopic(placeId, device.getFcmToken());
+    public void deletePlaceBookmark(Long placeBookmarkId) {
+        placeBookmarkJpaRepository.findById(placeBookmarkId)
+                .ifPresent(placeBookmark -> {
+                    deviceJpaRepository.findById(placeBookmark.getDevice().getId())
+                            .ifPresent(device -> {
+                                notificationManager.unsubscribePlaceTopic(
+                                        placeBookmark.getPlace().getId(),
+                                        device.getFcmToken()
+                                );
+                            });
                 });
     }
 

@@ -38,16 +38,15 @@ public class OrganizationBookmarkController {
         return organizationBookmarkService.createOrganizationBookmark(organizationId, request);
     }
 
-    @DeleteMapping("/{organizationId}")
+    @DeleteMapping("/{organizationBookmarkId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 조직의 북마크 삭제 (+ FCM 토픽 구독 취소)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deleteOrganizationBookmark(
-            @PathVariable Long organizationId,
-            @RequestBody OrganizationBookmarkRequest request
+            @PathVariable Long organizationBookmarkId
     ) {
-        organizationBookmarkService.deleteOrganizationBookmark(organizationId, request);
+        organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId);
     }
 }

@@ -38,14 +38,16 @@ public class OrganizationBookmarkService {
     }
 
     @Transactional
-    public void deleteOrganizationBookmark(Long organizationId, OrganizationBookmarkRequest request) {
-        deviceJpaRepository.findById(request.deviceId())
-                .ifPresent(device -> {
-                    organizationBookmarkJpaRepository.deleteByOrganizationIdAndDeviceId(
-                            organizationId,
-                            request.deviceId()
-                    );
-                    notificationManager.unsubscribeOrganizationTopic(organizationId, device.getFcmToken());
+    public void deleteOrganizationBookmark(Long organizationBookmarkId) {
+        organizationBookmarkJpaRepository.findById(organizationBookmarkId)
+                .ifPresent(organizationBookmark -> {
+                    deviceJpaRepository.findById(organizationBookmark.getDevice().getId())
+                            .ifPresent(device -> {
+                                notificationManager.unsubscribeOrganizationTopic(
+                                        organizationBookmark.getOrganization().getId(),
+                                        device.getFcmToken()
+                                );
+                            });
                 });
     }
 
