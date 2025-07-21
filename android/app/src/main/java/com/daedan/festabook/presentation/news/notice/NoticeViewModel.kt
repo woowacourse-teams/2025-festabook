@@ -20,8 +20,9 @@ class NoticeViewModel(
 
     fun fetchNotices() {
         viewModelScope.launch {
-            noticeRepository
-                .fetchNotices()
+            val result = noticeRepository.fetchNotices()
+
+            result
                 .onSuccess { notices ->
                     _notices.value = notices.map { it.toUiModel() }
                 }.onFailure {
