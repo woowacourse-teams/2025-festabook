@@ -62,10 +62,7 @@ class ClusterManager(
             idx: Int,
             place: PlaceCoordinateUiModel,
         ) {
-            itemKeyMap.put(
-                ItemKey(idx, position),
-                place.category,
-            )
+            itemKeyMap[ItemKey(idx, position)] = place.category
         }
     }
 
