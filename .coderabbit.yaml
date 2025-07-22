@@ -59,7 +59,7 @@ reviews:
   auto_review:
     enabled: true
     auto_incremental_review: true
-    base_branches: ["android", "backend"]
+    base_branches: ["android", "backend", "frontend"]
 
   finishing_touches:
     docstrings:
@@ -122,4 +122,6 @@ tools:
   gitleaks:
     enabled: true
   sqlfluff:
+    enabled: true
+  oxc:
     enabled: true
