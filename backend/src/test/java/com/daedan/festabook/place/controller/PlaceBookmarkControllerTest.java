@@ -181,7 +181,7 @@ class PlaceBookmarkControllerTest {
         }
 
         @Test
-        void 성공_존재하지_않는_플레이스_북마크에_대해_예외를_터뜨리지_않음() {
+        void 성공_북마크_삭제시_플레이스_북마크가_존재하지_않아도_정상_처리() {
             // given
             Long placeBookmarkId = 0L;
 

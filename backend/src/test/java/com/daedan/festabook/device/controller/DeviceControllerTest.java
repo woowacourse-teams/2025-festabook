@@ -55,7 +55,7 @@ class DeviceControllerTest {
         }
 
         @Test
-        void 성공_기존에_존재하는_Device() {
+        void 성공_기존_디바이스_재등록시_동일한_ID_반환() {
             // given
             String deviceIdentifier = "BBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB";
             String fcmToken = "FCM_11111111";

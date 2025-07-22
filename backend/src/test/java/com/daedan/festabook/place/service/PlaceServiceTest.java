@@ -171,7 +171,7 @@ class PlaceServiceTest {
         }
 
         @Test
-        void 실패_존재하지_않는_place_id() {
+        void 예외_존재하지_않는_place_id() {
             // given
             Long placeId = 999L;
 

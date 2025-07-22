@@ -158,7 +158,7 @@ class OrganizationBookmarkServiceTest {
         }
 
         @Test
-        void 성공_존재하지_않는_조직_북마크에_대해_예외를_터뜨리지_않음() {
+        void 성공_북마크_삭제시_조직_북마크가_존재하지_않아도_정상_처리() {
             // given
             Long invalidOrganizationBookmarkId = 0L;
 
@@ -173,7 +173,7 @@ class OrganizationBookmarkServiceTest {
         }
 
         @Test
-        void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
+        void 성공_북마크_삭제시_디바이스가_존재하지_않아도_정상_처리() {
             // given
             Long organizationBookmarkId = 1L;
             Long invalidDeviceId = 0L;

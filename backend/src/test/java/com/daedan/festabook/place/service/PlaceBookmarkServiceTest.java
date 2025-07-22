@@ -147,7 +147,7 @@ class PlaceBookmarkServiceTest {
         }
 
         @Test
-        void 성공_존재하지_않는_플레이스_북마크에_대해_예외를_터뜨리지_않음() {
+        void 성공_북마크_삭제시_플레이스_북마크가_존재하지_않아도_정상_처리() {
             // given
             Long invalidPlaceBookmarkId = 0L;
 
@@ -162,7 +162,7 @@ class PlaceBookmarkServiceTest {
         }
 
         @Test
-        void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
+        void 성공_북마크_삭제시_디바이스가_존재하지_않아도_정상_처리() {
             // given
             Long placeBookmarkId = 1L;
             Long invalidDeviceId = 0L;
