@@ -22,9 +22,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class FcmNotificationManagerTest {
 
     @Mock
-    private FirebaseMessagingException firebaseMessagingException;
-
-    @Mock
     private FirebaseMessaging firebaseMessaging;
 
     @InjectMocks
@@ -38,7 +35,7 @@ class FcmNotificationManagerTest {
             // given
             Long organizationId = 1L;
             String fcmToken = "fcmToken";
-            willThrow(firebaseMessagingException)
+            willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
                     .subscribeToTopic(any(), any());
 
@@ -59,7 +56,7 @@ class FcmNotificationManagerTest {
             // given
             Long organizationId = 1L;
             String fcmToken = "fcmToken";
-            willThrow(firebaseMessagingException)
+            willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
                     .unsubscribeFromTopic(any(), any());
 
@@ -80,7 +77,7 @@ class FcmNotificationManagerTest {
             // given
             Long organizationId = 1L;
             NotificationMessage notificationMessage = new NotificationMessage("title", "body");
-            willThrow(firebaseMessagingException)
+            willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
                     .send(any());
 
@@ -101,7 +98,7 @@ class FcmNotificationManagerTest {
             // given
             Long placeId = 1L;
             String fcmToken = "fcmToken";
-            willThrow(firebaseMessagingException)
+            willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
                     .subscribeToTopic(any(), any());
 
@@ -122,7 +119,7 @@ class FcmNotificationManagerTest {
             // given
             Long placeId = 1L;
             String fcmToken = "fcmToken";
-            willThrow(firebaseMessagingException)
+            willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
                     .unsubscribeFromTopic(any(), any());
 
