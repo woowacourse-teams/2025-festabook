@@ -17,38 +17,37 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FcmNotificationManager implements OrganizationNotificationManager, PlaceNotificationManager {
 
-    private static final String ORGANIZATION_TOPIC_PREFIX = "notifications-organization-";
-    private static final String PLACE_TOPIC_PREFIX = "notifications-place-";
+    private static final String ORGANIZATION_PREFIX = "organization";
+    private static final String PLACE_PREFIX = "place";
 
     private final FirebaseMessaging firebaseMessaging;
 
     @Override
     public void subscribeOrganizationTopic(Long organizationId, String fcmToken) {
-        String topic = ORGANIZATION_TOPIC_PREFIX + organizationId;
+        String topic = ORGANIZATION_PREFIX + organizationId;
         subscribeTopic(topic, fcmToken);
     }
 
     @Override
     public void unsubscribeOrganizationTopic(Long organizationId, String fcmToken) {
-        String topic = ORGANIZATION_TOPIC_PREFIX + organizationId;
+        String topic = ORGANIZATION_PREFIX + organizationId;
         unsubscribeTopic(topic, fcmToken);
     }
 
     @Override
     public void sendToOrganizationTopic(Long organizationId, NotificationMessage notificationMessage) {
-        String topic = ORGANIZATION_TOPIC_PREFIX + organizationId;
-        sendToTopic(topic, notificationMessage);
+        sendToTopic(ORGANIZATION_PREFIX, organizationId, notificationMessage);
     }
 
     @Override
     public void subscribePlaceTopic(Long placeId, String fcmToken) {
-        String topic = PLACE_TOPIC_PREFIX + placeId;
+        String topic = PLACE_PREFIX + placeId;
         subscribeTopic(topic, fcmToken);
     }
 
     @Override
     public void unsubscribePlaceTopic(Long placeId, String fcmToken) {
-        String topic = PLACE_TOPIC_PREFIX + placeId;
+        String topic = PLACE_PREFIX + placeId;
         unsubscribeTopic(topic, fcmToken);
     }
 
@@ -68,14 +67,19 @@ public class FcmNotificationManager implements OrganizationNotificationManager, 
         }
     }
 
-    private void sendToTopic(String topic, NotificationMessage notificationMessage) {
+    private void sendToTopic(String prefix, Long id, NotificationMessage notificationMessage) {
+        String topic = prefix + id;
+
         Message message = Message.builder()
                 .setTopic(topic)
                 .setNotification(Notification.builder()
                         .setTitle(notificationMessage.title())
                         .setBody(notificationMessage.body())
                         .build())
+                .putData("type", prefix)
+                .putData("id", String.valueOf(id))
                 .build();
+
         try {
             firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
