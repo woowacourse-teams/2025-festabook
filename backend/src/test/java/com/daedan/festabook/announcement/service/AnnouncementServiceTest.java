@@ -6,7 +6,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.doThrow;
+import static org.mockito.BDDMockito.willThrow;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -105,8 +105,9 @@ class AnnouncementServiceTest {
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
-            doThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
-                    .when(organizationNotificationManager).sendToOrganizationTopic(any(), any());
+            willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
+                    .given(organizationNotificationManager)
+                    .sendToOrganizationTopic(any(), any());
 
             // when & then
             assertThatThrownBy(() ->
