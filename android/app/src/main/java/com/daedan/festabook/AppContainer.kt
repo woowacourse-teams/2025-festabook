@@ -6,6 +6,12 @@ import com.daedan.festabook.data.datasource.remote.DeviceDataSource
 import com.daedan.festabook.data.datasource.remote.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.placeDetail.PlaceDetailDataSource
+import com.daedan.festabook.data.datasource.remote.placeDetail.PlaceDetailDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.placeList.PlaceListDataSource
+import com.daedan.festabook.data.datasource.remote.placeList.PlaceListDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSource
+import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
@@ -57,12 +63,16 @@ class AppContainer(
         PlaceDataSourceImpl(placeService)
     }
 
+    private val placeMapDataSource: PlaceMapDataSource by lazy {
+        PlaceMapDataSourceImpl(organizationService)
+    }
+
     val placeDetailRepository: PlaceDetailRepository by lazy {
         PlaceDetailRepositoryImpl(placeDetailDataSource)
     }
 
     val placeListRepository: PlaceListRepository by lazy {
-        PlaceListRepositoryImpl(placeListDataSource)
+        PlaceListRepositoryImpl(placeListDataSource, placeMapDataSource)
     }
 
     val scheduleRepository: ScheduleRepository by lazy {

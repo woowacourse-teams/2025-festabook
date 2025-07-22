@@ -37,4 +37,6 @@ object ApiClient {
     val placeService: PlaceService = retrofit.create(PlaceService::class.java)
     val deviceService: DeviceService by lazy { retrofit.create(DeviceService::class.java) }
     val organizationBookmarkService: OrganizationBookmarkService by lazy { retrofit.create(OrganizationBookmarkService::class.java) }
+
+    val organizationService: OrganizationService = retrofit.create(OrganizationService::class.java)
 }
