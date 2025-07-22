@@ -4,11 +4,14 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
+import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -25,6 +28,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -37,6 +41,9 @@ class AnnouncementControllerTest {
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
+
+    @MockitoBean
+    private FcmNotificationManager fcmNotificationManager;
 
     @LocalServerPort
     private int port;
@@ -78,6 +85,9 @@ class AnnouncementControllerTest {
                     .body("content", equalTo(request.content()))
                     .body("isPinned", equalTo(request.isPinned()))
                     .body("createdAt", notNullValue());
+
+            then(fcmNotificationManager).should()
+                    .sendToOrganizationTopic(any(), any());
         }
     }
 

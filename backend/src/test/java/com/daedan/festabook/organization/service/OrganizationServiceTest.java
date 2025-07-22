@@ -52,7 +52,7 @@ class OrganizationServiceTest {
         }
 
         @Test
-        void 예외_주어진_id의_조직이_존재하지_않는다면_예외가_발생한다() {
+        void 예외_존재하지_않는_조직_ID로_조회시_예외_발생() {
             // given
             Long notExistsId = 1L;
 
@@ -63,7 +63,7 @@ class OrganizationServiceTest {
             assertThatThrownBy(() -> {
                 organizationService.getOrganizationGeographyByOrganizationId(notExistsId);
             }).isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("조직이 존재하지 않습니다.");
+                    .hasMessage("조직이 존재하지 않습니다.");
         }
     }
 }

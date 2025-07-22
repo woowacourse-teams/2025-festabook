@@ -6,6 +6,8 @@ spring:
     defer-datasource-initialization: true
   datasource:
     driver-class-name: org.h2.Driver
+  profiles:
+    active: test
 
 # Swagger
 springdoc:

@@ -6,11 +6,14 @@ import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.notification.dto.NotificationMessage;
 import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -18,12 +21,19 @@ public class AnnouncementService {
 
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
+    private final OrganizationNotificationManager notificationManager;
 
+    @Transactional
     public AnnouncementResponse createAnnouncement(Long organizationId, AnnouncementRequest request) {
         Organization organization = getOrganizationById(organizationId);
-
         Announcement announcement = request.toEntity(organization);
         announcementJpaRepository.save(announcement);
+
+        NotificationMessage notificationMessage = new NotificationMessage(
+                request.title(),
+                request.content()
+        );
+        notificationManager.sendToOrganizationTopic(organizationId, notificationMessage);
 
         return AnnouncementResponse.from(announcement);
     }

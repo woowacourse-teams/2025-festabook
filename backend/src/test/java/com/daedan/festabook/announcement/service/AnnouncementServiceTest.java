@@ -1,17 +1,24 @@
 package com.daedan.festabook.announcement.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
+import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
 import java.util.Optional;
@@ -23,6 +30,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.http.HttpStatus;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -36,6 +44,9 @@ class AnnouncementServiceTest {
     @Mock
     private OrganizationJpaRepository organizationJpaRepository;
 
+    @Mock
+    private OrganizationNotificationManager organizationNotificationManager;
+
     @InjectMocks
     private AnnouncementService announcementService;
 
@@ -45,10 +56,10 @@ class AnnouncementServiceTest {
         @Test
         void 성공() {
             // given
-            AnnouncementRequest request = new AnnouncementRequest(
+            AnnouncementRequest request = AnnouncementRequestFixture.create(
                     "폭우가 내립니다.",
                     "우산을 챙겨주세요.",
-                    true
+                    false
             );
             Long organizationId = 1L;
             Organization organization = OrganizationFixture.create(organizationId);
@@ -65,6 +76,44 @@ class AnnouncementServiceTest {
                 s.assertThat(result.content()).isEqualTo(request.content());
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
             });
+            then(organizationNotificationManager).should()
+                    .sendToOrganizationTopic(any(), any());
+        }
+
+        @Test
+        void 예외_존재하지_않는_조직_ID() {
+            // given
+            Long invalidDeviceId = 0L;
+            AnnouncementRequest request = AnnouncementRequestFixture.create();
+
+            given(organizationJpaRepository.findById(invalidDeviceId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.createAnnouncement(invalidDeviceId, request)
+            ).isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 조직입니다.");
+        }
+
+        @Test
+        void 예외_알림_전송_실패시_예외_전파() {
+            // given
+            Long organizationId = 1L;
+            AnnouncementRequest request = AnnouncementRequestFixture.create();
+            Organization organization = OrganizationFixture.create(organizationId);
+
+            given(organizationJpaRepository.findById(organizationId))
+                    .willReturn(Optional.of(organization));
+            willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
+                    .given(organizationNotificationManager)
+                    .sendToOrganizationTopic(any(), any());
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.createAnnouncement(organizationId, request)
+            ).isInstanceOf(BusinessException.class)
+                    .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
     }
 

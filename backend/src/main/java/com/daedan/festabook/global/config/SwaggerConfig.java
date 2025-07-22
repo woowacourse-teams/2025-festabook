@@ -26,7 +26,8 @@ public class SwaggerConfig {
             new String[]{"플레이스 API", "/places/**"},
             new String[]{"공지 API", "/announcements/**"},
             new String[]{"질문 API", "/questions/**"},
-            new String[]{"조직 API", "/organizations/**"}
+            new String[]{"조직 API", "/organizations/**"},
+            new String[]{"디바이스 API", "/devices/**"}
     );
 
     private final BuildProperties buildProperties;

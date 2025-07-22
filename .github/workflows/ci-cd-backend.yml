@@ -39,6 +39,13 @@ jobs:
         echo "${{ secrets.SECRET_YML }}" > backend/src/main/resources/application-secret.yml
         echo "application-secret.yml file created successfully"
 
+    # Firebase Admin SDK 인증을 위한 JSON 키 파일 생성
+    # GitHub Secret에 저장된 키 값을 복호화하여 리소스 디렉토리에 파일로 생성
+    - name: Create firebase-adminsdk-account.json
+      run: |
+        mkdir -p backend/src/main/resources/firebase
+        echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
+
     # 러너에서 gradlew 빌드
     - name: Build with Gradle
       run: ./gradlew clean build

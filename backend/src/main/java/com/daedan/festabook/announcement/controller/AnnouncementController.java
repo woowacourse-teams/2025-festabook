@@ -29,7 +29,7 @@ public class AnnouncementController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "공지 생성")
+    @Operation(summary = "공지 생성 (+ FCM 알림 요청)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
