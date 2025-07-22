@@ -9,14 +9,18 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
 import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class FcmNotificationManager implements OrganizationNotificationManager, PlaceNotificationManager {
 
     private static final String ORGANIZATION_TOPIC_PREFIX = "notifications-organization-";
     private static final String PLACE_TOPIC_PREFIX = "notifications-place-";
+
+    private final FirebaseMessaging firebaseMessaging;
 
     @Override
     public void subscribeOrganizationTopic(Long organizationId, String fcmToken) {
@@ -50,7 +54,7 @@ public class FcmNotificationManager implements OrganizationNotificationManager, 
 
     private void subscribeTopic(String topic, String fcmToken) {
         try {
-            FirebaseMessaging.getInstance().subscribeToTopic(List.of(fcmToken), topic);
+            firebaseMessaging.subscribeToTopic(List.of(fcmToken), topic);
         } catch (FirebaseMessagingException e) {
             throw new BusinessException("FCM 토픽 구독을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -58,7 +62,7 @@ public class FcmNotificationManager implements OrganizationNotificationManager, 
 
     private void unsubscribeTopic(String topic, String fcmToken) {
         try {
-            FirebaseMessaging.getInstance().unsubscribeFromTopic(List.of(fcmToken), topic);
+            firebaseMessaging.unsubscribeFromTopic(List.of(fcmToken), topic);
         } catch (FirebaseMessagingException e) {
             throw new BusinessException("FCM 토픽 구독 취소를 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -73,7 +77,7 @@ public class FcmNotificationManager implements OrganizationNotificationManager, 
                         .build())
                 .build();
         try {
-            FirebaseMessaging.getInstance().send(message);
+            firebaseMessaging.send(message);
         } catch (FirebaseMessagingException e) {
             throw new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
