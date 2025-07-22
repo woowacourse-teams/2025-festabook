@@ -44,9 +44,16 @@ class AppContainer(
     private val noticeDataSource: NoticeDataSource by lazy {
         NoticeDataSourceImpl(noticeService)
     }
+    private val deviceDataSource: DeviceDataSource by lazy {
+        DeviceDataSourceImpl(deviceService)
+    }
 
     private val placeListDataSource: PlaceDataSource by lazy {
         PlaceDataSourceImpl(placeService)
+    }
+
+    private val organizationBookmarkDataSource: OrganizationBookmarkDataSource by lazy {
+        OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
     }
 
     val placeDetailRepository: PlaceDetailRepository by lazy {
@@ -55,13 +62,6 @@ class AppContainer(
 
     val placeListRepository: PlaceListRepository by lazy {
         PlaceListRepositoryImpl(placeListDataSource)
-    }
-
-    private val deviceDataSource: DeviceDataSource by lazy {
-        DeviceDataSourceImpl(deviceService)
-    }
-    private val organizationBookmarkDataSource: OrganizationBookmarkDataSource by lazy {
-        OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
     }
     val scheduleRepository: ScheduleRepository by lazy {
         ScheduleRepositoryImpl(scheduleDataSource)
