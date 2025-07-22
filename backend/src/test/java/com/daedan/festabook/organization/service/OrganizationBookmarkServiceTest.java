@@ -72,7 +72,7 @@ class OrganizationBookmarkServiceTest {
                     .willReturn(Optional.of(organization));
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
-            given(organizationBookmarkJpaRepository.save(any(OrganizationBookmark.class)))
+            given(organizationBookmarkJpaRepository.save(any()))
                     .willReturn(organizationBookmark);
 
             // when
