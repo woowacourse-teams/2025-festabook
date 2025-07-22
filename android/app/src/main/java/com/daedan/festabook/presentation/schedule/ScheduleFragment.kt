@@ -17,7 +17,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         SchedulePagerAdapter(this)
     }
 
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
+    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory() }
 
     override fun onViewCreated(
         view: View,
@@ -48,18 +48,33 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
 
             when (scheduleDateUiModels) {
                 is ScheduleDatesUiState.Loading -> {
-                    Log.d("TAG", "setupDate: 로딩중")
+                    showSkeleton(isLoading = true)
                 }
 
                 is ScheduleDatesUiState.Success -> {
+                    showSkeleton(isLoading = false)
                     setupScheduleTabLayout()
                     adapter.submitList(scheduleDateUiModels.dates.map { it.id })
                 }
 
                 is ScheduleDatesUiState.Error -> {
+                    showSkeleton(isLoading = false)
                     Log.d("TAG", "setupDate: ${scheduleDateUiModels.message}")
                 }
             }
+        }
+    }
+
+    private fun showSkeleton(isLoading: Boolean) {
+        if (isLoading) {
+            binding.sflScheduleTabSkeleton.visibility = View.VISIBLE
+            binding.sflScheduleSkeleton.visibility = View.VISIBLE
+        } else {
+            binding.sflScheduleTabSkeleton.visibility = View.GONE
+            binding.sflScheduleSkeleton.visibility = View.GONE
+
+            binding.sflScheduleTabSkeleton.stopShimmer()
+            binding.sflScheduleSkeleton.stopShimmer()
         }
     }
 }

@@ -9,16 +9,29 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
+import java.lang.IllegalArgumentException
 
 class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
     private lateinit var adapter: ScheduleAdapter
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
+    private val viewModel: ScheduleViewModel by viewModels {
+        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: throw IllegalArgumentException()
+        ScheduleViewModel.Factory(dateId)
+    }
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        setupScheduleEventRecyclerView()
+
+        binding.lifecycleOwner = viewLifecycleOwner
+        setupObservers()
+
+        onSwipeRefreshScheduleByDateListener()
+    }
+
+    private fun setupScheduleEventRecyclerView() {
         adapter =
             ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
                 viewModel.updateBookmark(scheduleEventId)
@@ -26,25 +39,43 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         binding.rvScheduleEvent.adapter = adapter
         (binding.rvScheduleEvent.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
             false
-        binding.lifecycleOwner = viewLifecycleOwner
-        setupObservers()
-        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: return
-        viewModel.loadScheduleByDate(dateId)
+    }
+
+    private fun onSwipeRefreshScheduleByDateListener() {
+        binding.srlScheduleEvent.setOnRefreshListener {
+            viewModel.loadScheduleByDate()
+        }
     }
 
     private fun setupObservers() {
         viewModel.scheduleEventsUiState.observe(viewLifecycleOwner) { schedule ->
             when (schedule) {
                 is ScheduleEventsUiState.Loading -> {
-                    Log.d("TAG", "setupObservers: 로딩중")
+                    showSkeleton(isLoading = true)
                 }
 
-                is ScheduleEventsUiState.Success -> adapter.submitList(schedule.events)
+                is ScheduleEventsUiState.Success -> {
+                    adapter.submitList(schedule.events)
+                    showSkeleton(isLoading = false)
+                }
+
                 is ScheduleEventsUiState.Error -> {
                     Log.d("TAG", "setupObservers: ${schedule.message}")
+                    showSkeleton(isLoading = false)
                 }
             }
         }
+    }
+
+    private fun showSkeleton(isLoading: Boolean) {
+        if (isLoading) {
+            binding.rvScheduleEvent.visibility = View.INVISIBLE
+            binding.sflScheduleSkeleton.visibility = View.VISIBLE
+        } else {
+            binding.rvScheduleEvent.visibility = View.VISIBLE
+            binding.sflScheduleSkeleton.visibility = View.GONE
+        }
+        binding.srlScheduleEvent.isRefreshing = isLoading
     }
 
     companion object {
