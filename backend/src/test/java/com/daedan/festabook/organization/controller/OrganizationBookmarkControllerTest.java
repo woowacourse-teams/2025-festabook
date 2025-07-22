@@ -160,5 +160,21 @@ class OrganizationBookmarkControllerTest {
                     .unsubscribeOrganizationTopic(any(), any());
 
         }
+
+        @Test
+        void 성공_존재하지_않는_조직_북마크에_대해_예외를_터뜨리지_않음() {
+            // given
+            Long invalidOrganizationBookmarkId = 0L;
+
+            // when & then
+            given()
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .delete("/organizations/bookmarks/" + invalidOrganizationBookmarkId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
+        }
     }
 }

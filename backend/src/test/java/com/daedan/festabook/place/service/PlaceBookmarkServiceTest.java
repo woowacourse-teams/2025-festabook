@@ -147,6 +147,21 @@ class PlaceBookmarkServiceTest {
         }
 
         @Test
+        void 성공_존재하지_않는_플레이스_북마크에_대해_예외를_터뜨리지_않음() {
+            // given
+            Long invalidPlaceBookmarkId = 0L;
+
+            given(placeBookmarkJpaRepository.findById(invalidPlaceBookmarkId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatCode(() -> placeBookmarkService.deletePlaceBookmark(invalidPlaceBookmarkId))
+                    .doesNotThrowAnyException();
+            then(placeNotificationManager)
+                    .shouldHaveNoInteractions();
+        }
+
+        @Test
         void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
             // given
             Long placeBookmarkId = 1L;

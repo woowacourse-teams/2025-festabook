@@ -158,6 +158,21 @@ class OrganizationBookmarkServiceTest {
         }
 
         @Test
+        void 성공_존재하지_않는_조직_북마크에_대해_예외를_터뜨리지_않음() {
+            // given
+            Long invalidOrganizationBookmarkId = 0L;
+
+            given(organizationBookmarkJpaRepository.findById(invalidOrganizationBookmarkId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatCode(() -> organizationBookmarkService.deleteOrganizationBookmark(invalidOrganizationBookmarkId))
+                    .doesNotThrowAnyException();
+            then(organizationNotificationManager)
+                    .shouldHaveNoInteractions();
+        }
+
+        @Test
         void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
             // given
             Long organizationBookmarkId = 1L;

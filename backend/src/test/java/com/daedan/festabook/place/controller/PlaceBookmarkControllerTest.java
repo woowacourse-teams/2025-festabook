@@ -179,5 +179,22 @@ class PlaceBookmarkControllerTest {
             then(fcmNotificationManager).should()
                     .unsubscribePlaceTopic(any(), any());
         }
+
+        @Test
+        void 성공_존재하지_않는_플레이스_북마크에_대해_예외를_터뜨리지_않음() {
+            // given
+            Long placeBookmarkId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .delete("/places/bookmarks/" + placeBookmarkId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
+        }
     }
 }
