@@ -1,6 +1,7 @@
 package com.daedan.festabook.organization.controller;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -155,8 +156,11 @@ class OrganizationBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
+            boolean exists = organizationBookmarkJpaRepository.existsById(organizationBookmark.getId());
+            assertThat(exists).isFalse();
             then(fcmNotificationManager).should()
                     .unsubscribeOrganizationTopic(any(), any());
+
         }
 
         @Test
@@ -172,6 +176,8 @@ class OrganizationBookmarkControllerTest {
                     .delete("/organizations/bookmarks/" + organization.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
         }
     }
 }

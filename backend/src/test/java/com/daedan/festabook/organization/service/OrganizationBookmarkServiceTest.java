@@ -151,6 +151,8 @@ class OrganizationBookmarkServiceTest {
             organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId);
 
             // then
+            then(organizationBookmarkJpaRepository).should()
+                    .deleteById(organizationBookmarkId);
             then(organizationNotificationManager).should()
                     .unsubscribeOrganizationTopic(organizationId, device.getFcmToken());
         }
@@ -176,9 +178,10 @@ class OrganizationBookmarkServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() ->
-                    organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId)
-            ).doesNotThrowAnyException();
+            assertThatCode(() -> organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId))
+                    .doesNotThrowAnyException();
+            then(organizationNotificationManager)
+                    .shouldHaveNoInteractions();
         }
     }
 }

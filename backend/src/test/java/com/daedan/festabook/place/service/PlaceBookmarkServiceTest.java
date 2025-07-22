@@ -95,9 +95,8 @@ class PlaceBookmarkServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() ->
-                    placeBookmarkService.createPlaceBookmark(placeId, request)
-            ).isInstanceOf(BusinessException.class)
+            assertThatThrownBy(() -> placeBookmarkService.createPlaceBookmark(placeId, request))
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 디바이스입니다.");
         }
 
@@ -112,9 +111,8 @@ class PlaceBookmarkServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() ->
-                    placeBookmarkService.createPlaceBookmark(invalidPlaceId, request)
-            ).isInstanceOf(BusinessException.class)
+            assertThatThrownBy(() -> placeBookmarkService.createPlaceBookmark(invalidPlaceId, request))
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
     }
@@ -142,6 +140,8 @@ class PlaceBookmarkServiceTest {
             placeBookmarkService.deletePlaceBookmark(placeBookmarkId);
 
             // then
+            then(placeBookmarkJpaRepository).should()
+                    .deleteById(placeBookmarkId);
             then(placeNotificationManager).should()
                     .unsubscribePlaceTopic(any(), any());
         }
@@ -163,9 +163,10 @@ class PlaceBookmarkServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() ->
-                    placeBookmarkService.deletePlaceBookmark(placeBookmarkId)
-            ).doesNotThrowAnyException();
+            assertThatCode(() -> placeBookmarkService.deletePlaceBookmark(placeBookmarkId))
+                    .doesNotThrowAnyException();
+            then(placeNotificationManager)
+                    .shouldHaveNoInteractions();
         }
     }
 }

@@ -39,16 +39,23 @@ public class OrganizationBookmarkService {
 
     @Transactional
     public void deleteOrganizationBookmark(Long organizationBookmarkId) {
-        organizationBookmarkJpaRepository.findById(organizationBookmarkId)
-                .ifPresent(organizationBookmark -> {
-                    deviceJpaRepository.findById(organizationBookmark.getDevice().getId())
-                            .ifPresent(device -> {
-                                organizationNotificationManager.unsubscribeOrganizationTopic(
-                                        organizationBookmark.getOrganization().getId(),
-                                        device.getFcmToken()
-                                );
-                            });
-                });
+        OrganizationBookmark organizationBookmark = organizationBookmarkJpaRepository.findById(organizationBookmarkId)
+                .orElseGet(() -> null);
+        if (organizationBookmark == null) {
+            return;
+        }
+
+        Device device = deviceJpaRepository.findById(organizationBookmark.getDevice().getId())
+                .orElseGet(() -> null);
+        if (device == null) {
+            return;
+        }
+
+        organizationBookmarkJpaRepository.deleteById(organizationBookmarkId);
+        organizationNotificationManager.unsubscribeOrganizationTopic(
+                organizationBookmark.getOrganization().getId(),
+                device.getFcmToken()
+        );
     }
 
     private Device getDeviceById(Long deviceId) {

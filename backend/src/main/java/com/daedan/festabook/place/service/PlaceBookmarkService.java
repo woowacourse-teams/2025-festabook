@@ -38,16 +38,23 @@ public class PlaceBookmarkService {
 
     @Transactional
     public void deletePlaceBookmark(Long placeBookmarkId) {
-        placeBookmarkJpaRepository.findById(placeBookmarkId)
-                .ifPresent(placeBookmark -> {
-                    deviceJpaRepository.findById(placeBookmark.getDevice().getId())
-                            .ifPresent(device -> {
-                                placeNotificationManager.unsubscribePlaceTopic(
-                                        placeBookmark.getPlace().getId(),
-                                        device.getFcmToken()
-                                );
-                            });
-                });
+        PlaceBookmark placeBookmark = placeBookmarkJpaRepository.findById(placeBookmarkId)
+                .orElseGet(() -> null);
+        if (placeBookmark == null) {
+            return;
+        }
+
+        Device device = deviceJpaRepository.findById(placeBookmark.getDevice().getId())
+                .orElseGet(() -> null);
+        if (device == null) {
+            return;
+        }
+
+        placeBookmarkJpaRepository.deleteById(placeBookmarkId);
+        placeNotificationManager.unsubscribePlaceTopic(
+                placeBookmark.getPlace().getId(),
+                device.getFcmToken()
+        );
     }
 
     private Device getDeviceById(Long deviceId) {

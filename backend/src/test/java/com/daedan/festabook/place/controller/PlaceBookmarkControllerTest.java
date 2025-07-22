@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -174,6 +175,8 @@ class PlaceBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
+            boolean exists = placeBookmarkJpaRepository.existsById(placeBookmark.getId());
+            assertThat(exists).isFalse();
             then(fcmNotificationManager).should()
                     .unsubscribePlaceTopic(any(), any());
         }
@@ -200,6 +203,8 @@ class PlaceBookmarkControllerTest {
                     .delete("/places/bookmarks/" + place.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
         }
     }
 }
