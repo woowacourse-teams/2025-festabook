@@ -1,4 +1,4 @@
-package com.daedan.festabook
+package com.daedan.festabook.presentation.main
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -6,6 +6,7 @@ import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
@@ -13,6 +14,8 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.isGranted
@@ -26,6 +29,7 @@ import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
 
     private val placeListFragment by lazy {
         PlaceListFragment().newInstance()
@@ -64,6 +68,7 @@ class MainActivity : AppCompatActivity() {
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         onClickBottomNavigationBarItem()
+        registerDeviceAndFcmToken()
     }
 
     override fun onRequestPermissionsResult(
@@ -80,6 +85,21 @@ class MainActivity : AppCompatActivity() {
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun registerDeviceAndFcmToken() {
+        val app = application as FestaBookApp
+        val prefsManager = app.appContainer.preferencesManager
+
+        val uuid = prefsManager.getUuid().orEmpty()
+        val fcmToken = prefsManager.getFcmToken().orEmpty()
+
+        if (uuid.isNotBlank() && fcmToken.isNotBlank()) {
+            viewModel.registerDevice(uuid, fcmToken)
+        } else {
+            Timber.w("UUID or FCM token is missing. Device registration skipped.")
+            // 해당 로직 어떻게 구현할 지 생각하기
+        }
     }
 
     private fun setupBinding() {
@@ -103,6 +123,7 @@ class MainActivity : AppCompatActivity() {
                     // 이미 권한이 허용됨
                     Timber.d("Notification permission already granted")
                 }
+
                 shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
                     // 이전에 거부했지만 "다시 묻지 않음"을 선택하지 않은 경우
                     // 권한이 필요한 이유를 설명하는 UI(예: AlertDialog)를 표시
@@ -119,6 +140,7 @@ class MainActivity : AppCompatActivity() {
                             dialog.dismiss()
                         }.show()
                 }
+
                 else -> {
                     // 권한이 없으며, 이전에 "다시 묻지 않음"을 선택하지 않았거나 첫 요청인 경우
                     // 바로 권한 요청 다이얼로그 표시
