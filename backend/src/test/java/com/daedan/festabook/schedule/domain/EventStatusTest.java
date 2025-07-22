@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -19,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventStatusTest {
+
+    private static final LocalDateTime FIXED_CLOCK_DATETIME = LocalDateTime.of(2025, 5, 5, 16, 0, 0);
 
     @Nested
     class determineStatus {
@@ -35,10 +36,7 @@ class EventStatusTest {
         })
         void 성공_지난_일정_경우_COMPLETED(LocalDate date, LocalTime startTime, LocalTime endTime) {
             // given
-            Clock clock = Clock.fixed(
-                    LocalDateTime.of(2025, 5, 5, 16, 0, 0).toInstant(ZoneOffset.ofHours(9)),
-                    ZoneId.of("Asia/Seoul")
-            );
+            Clock clock = createFixedClock();
 
             // when
             EventStatus result = EventStatus.determineStatus(clock, date, startTime, endTime);
@@ -48,7 +46,7 @@ class EventStatusTest {
         }
     }
 
-    @ParameterizedTest(name = "시작 시간: {0}, 종 시간: {1}")
+    @ParameterizedTest(name = "시작 시간: {0}, 종료 시간: {1}")
     @CsvSource({
             // 현재 시간이 시작-종료 시간 사이인 경우
             "15:00:00, 17:00:00",
@@ -58,10 +56,7 @@ class EventStatusTest {
     })
     void 성공_진행중인_일정_경우_ONGOING(LocalTime startTime, LocalTime endTime) {
         // given
-        Clock clock = Clock.fixed(
-                LocalDateTime.of(2025, 5, 5, 16, 0, 0).toInstant(ZoneOffset.ofHours(9)),
-                ZoneId.of("Asia/Seoul")
-        );
+        Clock clock = createFixedClock();
 
         // when
         EventStatus result = EventStatus.determineStatus(clock, LocalDate.now(clock), startTime, endTime);
@@ -82,15 +77,20 @@ class EventStatusTest {
     })
     void 성공_예정된_일정인_경우_UPCOMING(LocalDate date, LocalTime startTime, LocalTime endTime) {
         // given
-        Clock clock = Clock.fixed(
-                LocalDateTime.of(2025, 5, 5, 16, 0, 0).toInstant(ZoneOffset.ofHours(9)),
-                ZoneId.of("Asia/Seoul")
-        );
+        Clock clock = createFixedClock();
 
         // when
         EventStatus result = EventStatus.determineStatus(clock, date, startTime, endTime);
 
         // then
         assertThat(result).isEqualTo(EventStatus.UPCOMING);
+    }
+
+    private Clock createFixedClock() {
+        ZoneId seoulZone = ZoneId.of("Asia/Seoul");
+        return Clock.fixed(
+                FIXED_CLOCK_DATETIME.atZone(seoulZone).toInstant(),
+                seoulZone
+        );
     }
 }

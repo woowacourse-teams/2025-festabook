@@ -19,7 +19,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -36,6 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ScheduleServiceTest {
 
+    private static final LocalDateTime FIXED_CLOCK_DATETIME = LocalDateTime.of(2025, 5, 5, 16, 0, 0);
     private static final Long DEFAULT_ORGANIZATION_ID = 1L;
 
     @Mock
@@ -108,15 +108,7 @@ class ScheduleServiceTest {
         @Test
         void 성공0() {
             // given
-            Clock fixedClock = Clock.fixed(
-                    LocalDateTime.of(2025, 5, 5, 16, 0).toInstant(ZoneOffset.ofHours(9)),
-                    ZoneId.of("Asia/Seoul")
-            );
-
-            given(clock.instant())
-                    .willReturn(fixedClock.instant());
-            given(clock.getZone())
-                    .willReturn(fixedClock.getZone());
+            setFixedClock();
 
             Event event = EventFixture.create(
                     LocalTime.of(16, 0, 0),
@@ -153,15 +145,7 @@ class ScheduleServiceTest {
         })
         void 성공_이벤트_상태_판별(LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus expected) {
             // given
-            Clock fixedClock = Clock.fixed(
-                    LocalDateTime.of(2025, 5, 5, 16, 0).toInstant(ZoneOffset.ofHours(9)),
-                    ZoneId.of("Asia/Seoul")
-            );
-
-            given(clock.instant())
-                    .willReturn(fixedClock.instant());
-            given(clock.getZone())
-                    .willReturn(fixedClock.getZone());
+            setFixedClock();
 
             Event event = EventFixture.create(startTime, endTime, EventDateFixture.create(date));
 
@@ -173,9 +157,19 @@ class ScheduleServiceTest {
             EventResponse result = scheduleService.getAllEventByEventDateId(eventDateId).events().getFirst();
 
             // then
-            assertSoftly(s -> {
-                s.assertThat(result.status()).isEqualTo(expected);
-            });
+            assertThat(result.status()).isEqualTo(expected);
         }
+    }
+
+    private void setFixedClock() {
+        Clock fixedClock = Clock.fixed(
+                FIXED_CLOCK_DATETIME.atZone(ZoneId.systemDefault()).toInstant(),
+                ZoneId.systemDefault()
+        );
+
+        given(clock.instant())
+                .willReturn(fixedClock.instant());
+        given(clock.getZone())
+                .willReturn(fixedClock.getZone());
     }
 }
