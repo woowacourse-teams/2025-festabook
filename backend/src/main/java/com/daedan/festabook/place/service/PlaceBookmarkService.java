@@ -29,11 +29,11 @@ public class PlaceBookmarkService {
         Place place = getPlaceById(placeId);
         Device device = getDeviceById(request.deviceId());
         PlaceBookmark placeBookmark = new PlaceBookmark(place, device);
-        placeBookmarkJpaRepository.save(placeBookmark);
+        PlaceBookmark savedPlaceBookmark = placeBookmarkJpaRepository.save(placeBookmark);
 
         placeNotificationManager.subscribePlaceTopic(placeId, device.getFcmToken());
 
-        return PlaceBookmarkResponse.from(placeBookmark);
+        return PlaceBookmarkResponse.from(savedPlaceBookmark);
     }
 
     @Transactional

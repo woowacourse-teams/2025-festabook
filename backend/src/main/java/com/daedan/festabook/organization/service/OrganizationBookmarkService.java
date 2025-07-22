@@ -30,11 +30,11 @@ public class OrganizationBookmarkService {
         Organization organization = getOrganizationById(organizationId);
         Device device = getDeviceById(request.deviceId());
         OrganizationBookmark organizationBookmark = new OrganizationBookmark(organization, device);
-        organizationBookmarkJpaRepository.save(organizationBookmark);
+        OrganizationBookmark savedOrganizationBookmark = organizationBookmarkJpaRepository.save(organizationBookmark);
 
         organizationNotificationManager.subscribeOrganizationTopic(organizationId, device.getFcmToken());
 
-        return OrganizationBookmarkResponse.from(organizationBookmark);
+        return OrganizationBookmarkResponse.from(savedOrganizationBookmark);
     }
 
     @Transactional
