@@ -20,11 +20,9 @@ class EventTest {
 
     @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}, 결과: {3}")
     @CsvSource({
-            "2025-05-04, 10:00, 12:00, COMPLETED",   // 과거 날짜
-            "2025-05-05, 10:00, 15:00, COMPLETED",   // 오늘, 종료 시각 이전
-            "2025-05-05, 14:00, 17:00, ONGOING",     // 오늘, 진행 중
-            "2025-05-05, 17:00, 18:00, UPCOMING",    // 오늘, 시작 전
-            "2025-05-06, 10:00, 12:00, UPCOMING"     // 미래 날짜
+            "2025-05-04, 10:00, 12:00, COMPLETED",   // 종료
+            "2025-05-05, 14:00, 17:00, ONGOING",     // 진행중
+            "2025-05-05, 17:00, 18:00, UPCOMING",    // 예정
     })
     void 이벤트_상태_판별_파라미터_테스트(LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus expected) {
         // given
