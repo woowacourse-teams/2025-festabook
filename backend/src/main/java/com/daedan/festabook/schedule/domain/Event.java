@@ -8,6 +8,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.Clock;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -49,6 +50,10 @@ public class Event implements Comparable<Event> {
         this.title = title;
         this.location = location;
         this.eventDate = eventDate;
+    }
+
+    public EventStatus getStatus(Clock clock) {
+        return EventStatus.determineStatus(clock, eventDate.getDate(), startTime, endTime);
     }
 
     @Override
