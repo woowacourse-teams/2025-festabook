@@ -6,7 +6,7 @@ import java.time.Clock;
 import java.util.List;
 
 public record EventResponses(
-        @JsonValue List<EventResponse> events
+        @JsonValue List<EventResponse> responses
 ) {
 
     public static EventResponses from(List<Event> events, Clock clock) {

@@ -123,7 +123,7 @@ class ScheduleServiceTest {
                     .willReturn(List.of(event));
 
             // when
-            EventResponse result = scheduleService.getAllEventByEventDateId(eventDateId).events().getFirst();
+            EventResponse result = scheduleService.getAllEventByEventDateId(eventDateId).responses().getFirst();
 
             // then
             assertSoftly(s -> {
@@ -154,7 +154,7 @@ class ScheduleServiceTest {
                     .willReturn(List.of(event));
 
             // when
-            EventResponse result = scheduleService.getAllEventByEventDateId(eventDateId).events().getFirst();
+            EventResponse result = scheduleService.getAllEventByEventDateId(eventDateId).responses().getFirst();
 
             // then
             assertThat(result.status()).isEqualTo(expected);
