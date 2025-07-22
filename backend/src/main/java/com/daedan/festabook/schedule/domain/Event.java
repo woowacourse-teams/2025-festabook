@@ -2,14 +2,13 @@ package com.daedan.festabook.schedule.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import java.time.Clock;
 import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -23,10 +22,6 @@ public class Event implements Comparable<Event> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    @Column(nullable = false)
-    @Enumerated(EnumType.STRING)
-    private EventStatus status;
 
     @Column(nullable = false)
     private LocalTime startTime;
@@ -44,19 +39,21 @@ public class Event implements Comparable<Event> {
     private EventDate eventDate;
 
     public Event(
-            EventStatus status,
             LocalTime startTime,
             LocalTime endTime,
             String title,
             String location,
             EventDate eventDate
     ) {
-        this.status = status;
         this.startTime = startTime;
         this.endTime = endTime;
         this.title = title;
         this.location = location;
         this.eventDate = eventDate;
+    }
+
+    public EventStatus determineStatus(Clock clock) {
+        return EventStatus.determine(clock, eventDate.getDate(), startTime, endTime);
     }
 
     @Override
