@@ -4,8 +4,8 @@ import com.daedan.festabook.device.dto.DeviceRequest;
 
 public class DeviceRequestFixture {
 
-    private static final String DEFAULT_DEVICE_IDENTIFIER = "f47ac10b...";
-    private static final String DEFAULT_FCM_TOKEN = "e4Jse...";
+    private static final String DEFAULT_DEVICE_IDENTIFIER = "test-device-identifier-001";
+    private static final String DEFAULT_FCM_TOKEN = "test-fcm-token-001";
 
     public static DeviceRequest create() {
         return new DeviceRequest(
