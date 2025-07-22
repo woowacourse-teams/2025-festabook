@@ -57,6 +57,7 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
             }
         }
     }
+    }
 
     private fun loadPlaceDetail(placeDetail: PlaceDetailUiModel) {
         binding.placeDetail = placeDetail
