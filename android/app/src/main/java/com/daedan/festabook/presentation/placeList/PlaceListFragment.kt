@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -23,7 +24,7 @@ class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
         R.layout.fragment_place_list,
     ),
-    OnPlaceClickedListener {
+    PlaceClickListener {
     private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
 
     private val placeAdapter by lazy {
@@ -49,8 +50,13 @@ class PlaceListFragment :
         startPlaceDetailFragment()
     }
 
+    override fun onBookmarkClicked(place: PlaceUiModel) {
+        viewModel.updateBookmark(place.id)
+    }
+
     private fun setUpPlaceAdapter() {
         binding.rvPlaces.adapter = placeAdapter
+        (binding.rvPlaces.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
     }
 
     private fun setUpObserver() {

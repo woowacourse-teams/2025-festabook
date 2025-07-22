@@ -17,15 +17,15 @@ import kotlinx.coroutines.launch
 class PlaceListViewModel(
     private val placeListRepository: PlaceListRepository,
 ) : ViewModel() {
-    init {
-        loadAllPlaces()
-    }
-
     private val _selectedPlace: MutableLiveData<PlaceUiModel> = MutableLiveData()
     val selectedPlace: LiveData<PlaceUiModel> = _selectedPlace
 
-    private val _places: MutableLiveData<List<PlaceUiModel>> = MutableLiveData()
+    private val _places: MutableLiveData<List<PlaceUiModel>> = MutableLiveData(emptyList())
     val places: LiveData<List<PlaceUiModel>> = _places
+
+    init {
+        loadAllPlaces()
+    }
 
     fun setPlace(place: PlaceUiModel) {
         _selectedPlace.value = place
@@ -40,6 +40,17 @@ class PlaceListViewModel(
                     _places.value = placeUiModels
                 }.onFailure {}
         }
+    }
+
+    fun updateBookmark(placeId: Long) {
+        _places.value =
+            _places.value?.map {
+                if (it.id == placeId) {
+                    it.copy(isBookmarked = !it.isBookmarked)
+                } else {
+                    it
+                }
+            }
     }
 
     companion object {

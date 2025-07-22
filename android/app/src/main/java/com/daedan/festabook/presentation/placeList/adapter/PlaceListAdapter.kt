@@ -3,13 +3,13 @@ package com.daedan.festabook.presentation.placeList.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.daedan.festabook.presentation.placeList.OnPlaceClickedListener
+import com.daedan.festabook.presentation.placeList.PlaceClickListener
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListViewHolder.Header
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListViewHolder.PlaceViewHolder
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceListAdapter(
-    private val handler: OnPlaceClickedListener,
+    private val handler: PlaceClickListener,
 ) : ListAdapter<PlaceUiModel, PlaceListViewHolder>(DIFF_UTIL) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
