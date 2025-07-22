@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.placeList.model
 
+import com.daedan.festabook.domain.model.Coordinate
 import com.naver.maps.geometry.LatLng
 
 data class CoordinateUiModel(
@@ -8,3 +9,9 @@ data class CoordinateUiModel(
 )
 
 fun CoordinateUiModel.toLatLng() = LatLng(latitude, longitude)
+
+fun Coordinate.toUiModel() =
+    CoordinateUiModel(
+        latitude = latitude,
+        longitude = longitude,
+    )
