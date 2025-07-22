@@ -63,7 +63,7 @@ class OrganizationControllerTest {
 
             int expectedFieldSize = 3;
 
-            OrganizationGeographyResponse expected = OrganizationGeographyResponse.from(organization);
+            OrganizationGeographyResponse.from(organization);
 
             // when & then
             RestAssured
