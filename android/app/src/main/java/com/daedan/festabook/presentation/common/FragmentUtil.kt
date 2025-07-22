@@ -1,7 +1,9 @@
 package com.daedan.festabook.presentation.common
 
+import android.content.Context
 import android.os.Bundle
 import android.os.Parcelable
+import android.util.TypedValue
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
@@ -21,3 +23,11 @@ fun ConstraintLayout.placeListScrollBehavior(): PlaceListScrollBehavior? {
 }
 
 fun FragmentPlaceListBinding.initialPadding() = layoutPlaceList.height / 2
+
+fun Int.toPx(context: Context) =
+    TypedValue
+        .applyDimension(
+            TypedValue.COMPLEX_UNIT_DIP,
+            this.toFloat(),
+            context.resources.displayMetrics,
+        ).toInt()
