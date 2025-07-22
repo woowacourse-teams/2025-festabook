@@ -90,6 +90,7 @@ dependencies {
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.shimmer)
+    implementation(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
