@@ -41,6 +41,19 @@ public class PlaceFixture {
 
     public static Place create(
             Organization organization,
+            PlaceCategory category,
+            Double latitude,
+            Double longitude
+    ) {
+        return new Place(
+                organization,
+                category,
+                new Coordinate(latitude, longitude)
+        );
+    }
+
+    public static Place create(
+            Organization organization,
             PlaceCategory category
     ) {
         return new Place(
