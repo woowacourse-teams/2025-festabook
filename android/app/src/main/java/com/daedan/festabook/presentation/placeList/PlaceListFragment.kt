@@ -72,20 +72,20 @@ class PlaceListFragment :
 
     private fun setUpMap() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
+        viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
+            mapFragment.getMapAsync { map ->
+                val initialPadding = binding.initialPadding()
+                val mapScrollManager = MapScrollManager(map)
+                binding.lbvCurrentLocation.map = map
+                map.locationSource = locationSource
 
-        mapFragment.getMapAsync { map ->
-            val initialPadding = binding.initialPadding()
-            val mapScrollManager = MapScrollManager(map)
-            binding.lbvCurrentLocation.map = map
-            map.locationSource = locationSource
-
-            MapManager(
-                map,
-                initialPadding,
-                DummyMapData.initialMapSettingUiModel,
-            ).setPlaceLocation(
-                DummyMapData.placeCoordinates,
-            )
+                MapManager(
+                    map,
+                    initialPadding,
+                    initialMapSetting,
+                ).setPlaceLocation(
+                    DummyMapData.placeCoordinates,
+                )
 
             setPlaceListScrollListener(mapScrollManager)
         }
@@ -124,6 +124,7 @@ class PlaceListFragment :
                 placeDetailFragment,
             )
             hide(this@PlaceListFragment)
+            addToBackStack(null)
         }
     }
 
