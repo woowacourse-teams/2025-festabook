@@ -4,7 +4,6 @@ import static org.hamcrest.Matchers.equalTo;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
@@ -62,8 +61,6 @@ class OrganizationControllerTest {
             organizationJpaRepository.save(organization);
 
             int expectedFieldSize = 3;
-
-            OrganizationGeographyResponse.from(organization);
 
             // when & then
             RestAssured
