@@ -1,6 +1,7 @@
 package com.daedan.festabook.presentation.placeDetail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
@@ -9,6 +10,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceNoticeAdapter
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
@@ -35,7 +37,6 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
     }
 
     private fun setUpBinding() {
-        binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         binding.rvPlaceNotice.adapter = placeNoticeAdapter
         binding.vpPlaceImages.adapter = placeImageAdapter
@@ -43,8 +44,17 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
 
     private fun setUpObserver() {
         viewModel.placeDetail.observe(viewLifecycleOwner) { placeDetail ->
-            placeImageAdapter.submitList(placeDetail.images)
-            placeNoticeAdapter.submitList(placeDetail.notices)
+            when (placeDetail) {
+                is PlaceDetailUiState.Error -> {}
+                is PlaceDetailUiState.Loading -> {
+                    Log.d("PlaceDetailFragment", "Loading")
+                }
+                is PlaceDetailUiState.Success -> {
+                    binding.placeDetail = placeDetail.placeDetail
+                    placeImageAdapter.submitList(placeDetail.placeDetail.images)
+                    placeNoticeAdapter.submitList(placeDetail.placeDetail.notices)
+                }
+            }
         }
     }
 

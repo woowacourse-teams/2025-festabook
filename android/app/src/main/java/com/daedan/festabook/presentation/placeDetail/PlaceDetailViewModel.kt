@@ -9,7 +9,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
-import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import kotlinx.coroutines.launch
@@ -18,8 +18,11 @@ class PlaceDetailViewModel(
     private val placeDetailRepository: PlaceDetailRepository,
     private val place: PlaceUiModel,
 ) : ViewModel() {
-    private val _placeDetail = MutableLiveData<PlaceDetailUiModel>()
-    val placeDetail: LiveData<PlaceDetailUiModel> = _placeDetail
+    private val _placeDetail =
+        MutableLiveData<PlaceDetailUiState>(
+            PlaceDetailUiState.Loading,
+        )
+    val placeDetail: LiveData<PlaceDetailUiState> = _placeDetail
 
     init {
         loadPlaceDetail()
@@ -30,8 +33,13 @@ class PlaceDetailViewModel(
             val result = placeDetailRepository.fetchPlaceDetail(place.id)
             result
                 .onSuccess { placeDetail ->
-                    _placeDetail.value = placeDetail.toUiModel()
-                }.onFailure { }
+                    _placeDetail.value =
+                        PlaceDetailUiState.Success(
+                            placeDetail.toUiModel(),
+                        )
+                }.onFailure {
+                    _placeDetail.value = PlaceDetailUiState.Error(it.message.toString())
+                }
         }
     }
 
