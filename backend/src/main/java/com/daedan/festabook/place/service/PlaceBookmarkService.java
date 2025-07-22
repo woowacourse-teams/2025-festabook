@@ -22,18 +22,18 @@ public class PlaceBookmarkService {
     private final PlaceBookmarkJpaRepository placeBookmarkJpaRepository;
     private final DeviceJpaRepository deviceJpaRepository;
     private final PlaceJpaRepository placeJpaRepository;
-    private final PlaceNotificationManager notificationManager;
+    private final PlaceNotificationManager placeNotificationManager;
 
     @Transactional
     public PlaceBookmarkResponse createPlaceBookmark(Long placeId, PlaceBookmarkRequest request) {
         Place place = getPlaceById(placeId);
         Device device = getDeviceById(request.deviceId());
         PlaceBookmark placeBookmark = new PlaceBookmark(place, device);
-        PlaceBookmark savedPlaceBookmark = placeBookmarkJpaRepository.save(placeBookmark);
+        placeBookmarkJpaRepository.save(placeBookmark);
 
-        notificationManager.subscribePlaceTopic(placeId, device.getFcmToken());
+        placeNotificationManager.subscribePlaceTopic(placeId, device.getFcmToken());
 
-        return PlaceBookmarkResponse.from(savedPlaceBookmark);
+        return PlaceBookmarkResponse.from(placeBookmark);
     }
 
     @Transactional
@@ -42,7 +42,7 @@ public class PlaceBookmarkService {
                 .ifPresent(placeBookmark -> {
                     deviceJpaRepository.findById(placeBookmark.getDevice().getId())
                             .ifPresent(device -> {
-                                notificationManager.unsubscribePlaceTopic(
+                                placeNotificationManager.unsubscribePlaceTopic(
                                         placeBookmark.getPlace().getId(),
                                         device.getFcmToken()
                                 );

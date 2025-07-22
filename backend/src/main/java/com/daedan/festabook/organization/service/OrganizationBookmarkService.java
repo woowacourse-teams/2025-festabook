@@ -22,7 +22,7 @@ public class OrganizationBookmarkService {
     private final OrganizationBookmarkJpaRepository organizationBookmarkJpaRepository;
     private final DeviceJpaRepository deviceJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
-    private final OrganizationNotificationManager notificationManager;
+    private final OrganizationNotificationManager organizationNotificationManager;
 
     @Transactional
     public OrganizationBookmarkResponse createOrganizationBookmark(Long organizationId,
@@ -30,11 +30,11 @@ public class OrganizationBookmarkService {
         Organization organization = getOrganizationById(organizationId);
         Device device = getDeviceById(request.deviceId());
         OrganizationBookmark organizationBookmark = new OrganizationBookmark(organization, device);
-        OrganizationBookmark savedOrganizationBookmark = organizationBookmarkJpaRepository.save(organizationBookmark);
+        organizationBookmarkJpaRepository.save(organizationBookmark);
 
-        notificationManager.subscribeOrganizationTopic(organizationId, device.getFcmToken());
+        organizationNotificationManager.subscribeOrganizationTopic(organizationId, device.getFcmToken());
 
-        return OrganizationBookmarkResponse.from(savedOrganizationBookmark);
+        return OrganizationBookmarkResponse.from(organizationBookmark);
     }
 
     @Transactional
@@ -43,7 +43,7 @@ public class OrganizationBookmarkService {
                 .ifPresent(organizationBookmark -> {
                     deviceJpaRepository.findById(organizationBookmark.getDevice().getId())
                             .ifPresent(device -> {
-                                notificationManager.unsubscribeOrganizationTopic(
+                                organizationNotificationManager.unsubscribeOrganizationTopic(
                                         organizationBookmark.getOrganization().getId(),
                                         device.getFcmToken()
                                 );
