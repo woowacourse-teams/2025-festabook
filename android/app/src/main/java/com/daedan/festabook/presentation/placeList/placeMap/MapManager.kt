@@ -1,6 +1,7 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
 import androidx.core.graphics.toColorInt
+import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategory
@@ -32,8 +33,8 @@ class MapManager(
 
     init {
         map.apply {
-            mapType = NaverMap.MapType.Basic
             isIndoorEnabled = true
+            customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
             uiSettings.isZoomControlEnabled = false
             uiSettings.isScaleBarEnabled = false
             moveToInitialPosition()
