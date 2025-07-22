@@ -92,7 +92,8 @@ class AnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     announcementService.createAnnouncement(invalidDeviceId, request)
-            ).isInstanceOf(BusinessException.class)
+            )
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
 
@@ -112,7 +113,8 @@ class AnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     announcementService.createAnnouncement(organizationId, request)
-            ).isInstanceOf(BusinessException.class)
+            )
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
     }

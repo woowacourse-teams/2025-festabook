@@ -112,11 +112,10 @@ class PlaceServiceTest {
         @Test
         void 예외_존재하지_않는_place_id() {
             // given
-            Long placeId = 999L;
+            Long inValidPlaceId = 0L;
 
             // when & then
-            // TODO: ExceptionHandler 등록 후 변경
-            assertThatThrownBy(() -> placeService.getPlaceByPlaceId(placeId))
+            assertThatThrownBy(() -> placeService.getPlaceByPlaceId(inValidPlaceId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스 세부 정보입니다.");
         }

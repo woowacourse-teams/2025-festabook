@@ -102,7 +102,8 @@ class OrganizationBookmarkServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     organizationBookmarkService.createOrganizationBookmark(organizationId, request)
-            ).isInstanceOf(BusinessException.class)
+            )
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 디바이스입니다.");
         }
 
@@ -119,7 +120,8 @@ class OrganizationBookmarkServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     organizationBookmarkService.createOrganizationBookmark(invalidOrganizationId, request)
-            ).isInstanceOf(BusinessException.class)
+            )
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
     }
