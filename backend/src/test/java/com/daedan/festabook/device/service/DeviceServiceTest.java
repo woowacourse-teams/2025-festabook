@@ -36,7 +36,7 @@ class DeviceServiceTest {
     class registerDevice {
 
         @Test
-        void 성공_신규_Device_등록_id_응답() {
+        void 성공_Device_등록() {
             // given
             Long expectedId = 1L;
             Device device = DeviceFixture.create(expectedId);
@@ -57,7 +57,7 @@ class DeviceServiceTest {
         }
 
         @Test
-        void 성공_복귀_Device_등록_id_응답() {
+        void 성공_기존에_존재하는_Device() {
             // given
             Long expectedId = 1L;
             Device device = DeviceFixture.create(expectedId);

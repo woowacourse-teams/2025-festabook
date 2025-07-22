@@ -33,7 +33,7 @@ class DeviceControllerTest {
     class registerDevice {
 
         @Test
-        void 성공_신규_Device_등록_id_응답() {
+        void 성공_Device_등록() {
             // given
             String deviceIdentifier = "AAAAAAAA-AAAA-AAAA-AAAA-AAAAAAAAAAAA";
             String fcmToken = "FCM_00000000";
@@ -55,7 +55,7 @@ class DeviceControllerTest {
         }
 
         @Test
-        void 성공_복귀_Device_등록_id_응답() {
+        void 성공_기존에_존재하는_Device() {
             // given
             String deviceIdentifier = "BBBBBB-BBBB-BBBB-BBBB-BBBBBBBBBBBB";
             String fcmToken = "FCM_11111111";
