@@ -13,7 +13,9 @@ import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.canScrollUp
+import com.daedan.festabook.presentation.common.getSystemBarHeightCompat
 import com.daedan.festabook.presentation.common.scrollAnimation
+import com.daedan.festabook.presentation.common.toPx
 
 class PlaceListScrollBehavior(
     private val context: Context,
@@ -30,8 +32,9 @@ class PlaceListScrollBehavior(
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
-            initialY = getDimension(R.styleable.PlaceListScrollBehavior_initialY, UNINITIALIZED_VALUE)
-            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, UNINITIALIZED_VALUE)
+            initialY =
+                getDimension(R.styleable.PlaceListScrollBehavior_initialY, UNINITIALIZED_VALUE).toPx(context)
+            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, UNINITIALIZED_VALUE).toPx(context)
             recyclerViewId =
                 getResourceId(
                     R.styleable.PlaceListScrollBehavior_recyclerView,
@@ -54,7 +57,10 @@ class PlaceListScrollBehavior(
             recyclerView = parent.findViewById(recyclerViewId)
             companionView = parent.findViewById(companionViewId)
             isInitialized = true
-            child.translationY = child.rootView.height - initialY
+
+            // 기기 높이 - 시스템 바 높이
+            val contentAreaHeight = child.rootView.height - child.getSystemBarHeightCompat()
+            child.translationY = contentAreaHeight - initialY
         }
         companionView.setCompanionHeight(child)
         return super.onLayoutChild(parent, child, layoutDirection)
@@ -93,8 +99,12 @@ class PlaceListScrollBehavior(
         // 리사이클러 뷰 스크롤 전 배경 스크롤 처리
         child.apply {
             val currentTranslationY = translationY
+            // 이동한 y만큼 새로운 좌표 지정
             val newTranslationY = currentTranslationY - dy
-            val maxHeight = rootView.height.toFloat() - minimumY
+            // 시스템 기기 높이 - 시스템 바 높이
+            val contentAreaHeight = rootView.height - getSystemBarHeightCompat()
+            // 최대 높이 (0일수록 천장에 가깝고, contentAreaHeight일수록 바닥에 가까움), 즉 maxHeight 까지만 스크롤을 내릴 수 있습니다
+            val maxHeight = contentAreaHeight - minimumY
             val limitedTranslationY = newTranslationY.coerceIn(UNINITIALIZED_VALUE, maxHeight)
 
             if (newTranslationY in UNINITIALIZED_VALUE..maxHeight) {
