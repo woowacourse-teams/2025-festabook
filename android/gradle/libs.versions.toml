@@ -18,6 +18,7 @@ kotlinx-serialization-json = "1.9.0"
 retrofit2KotlinxSerializationConverter = "1.0.0"
 shimmer = "0.5.0"
 swiperefreshlayout = "1.1.0"
+timber = "5.0.1"
 viewpager2 = "1.1.0"
 ktlint = "13.0.0"
 
@@ -41,6 +42,7 @@ retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinx-serialization-json" }
 retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }
 shimmer = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmer" }
+timber = { module = "com.jakewharton.timber:timber", version.ref = "timber" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
