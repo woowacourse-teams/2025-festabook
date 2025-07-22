@@ -22,6 +22,12 @@ android {
         checkNotNull(localProperties["BASE_URL"] as? String) {
             "BASE_URL is missing or not a String in local.properties"
         }
+
+    val naverMapClientId =
+        checkNotNull(localProperties["NAVER_MAP_CLIENT_ID"] as? String) {
+            "NAVER_MAP_CLIENT_ID is missing or not a String in local.properties"
+        }
+
     defaultConfig {
         applicationId = "com.daedan.festabook"
         minSdk = 28
@@ -31,7 +37,17 @@ android {
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        buildConfigField("String", "FESTABOOK_URL", "\"http://festabook.woowacourse.com:8080/\"")
+        buildConfigField(
+            "String",
+            "FESTABOOK_URL",
+            baseUrl,
+        )
+
+        buildConfigField(
+            "String",
+            "NAVER_MAP_CLIENT_ID",
+            naverMapClientId,
+        )
     }
 
     buildTypes {
@@ -58,7 +74,8 @@ android {
 }
 
 dependencies {
-
+    implementation(libs.map.sdk)
+    implementation(libs.play.services.location)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.appcompat)

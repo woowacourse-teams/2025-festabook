@@ -39,13 +39,14 @@ fun MaterialCardView.animateShowBottomNavigationView() {
         .start()
 }
 
-fun Fragment.getBottomNavigationViewAnimationCallback() =
+val bottomNavigationViewAnimationCallback =
     object : FragmentManager.FragmentLifecycleCallbacks() {
         override fun onFragmentStopped(
             fm: FragmentManager,
             f: Fragment,
         ) {
-            requireActivity()
+            f
+                .requireActivity()
                 .findViewById<MaterialCardView>(R.id.cv_bnv_wrapper)
                 ?.animateShowBottomNavigationView()
             super.onFragmentStopped(fm, f)
@@ -56,7 +57,8 @@ fun Fragment.getBottomNavigationViewAnimationCallback() =
             f: Fragment,
             context: Context,
         ) {
-            requireActivity()
+            f
+                .requireActivity()
                 .findViewById<MaterialCardView>(R.id.cv_bnv_wrapper)
                 ?.animateHideBottomNavigationView()
             super.onFragmentAttached(fm, f, context)

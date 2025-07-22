@@ -7,11 +7,18 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.getBottomNavigationViewAnimationCallback
+import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
+import com.daedan.festabook.presentation.common.initialPadding
+import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
+import com.daedan.festabook.presentation.placeList.dummy.DummyMapData
 import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeList.placeMap.MapManager
+import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.util.FusedLocationSource
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -20,35 +27,60 @@ class PlaceListFragment :
     OnPlaceClickedListener {
     private val viewModel by viewModels<PlaceListViewModel>()
 
+    private val placeAdapter by lazy {
+        PlaceListAdapter(this)
+    }
+
+    private val locationSource by lazy {
+        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvPlaces.adapter =
-            PlaceListAdapter(this).apply {
-                submitList(DummyPlace.placeUiModelList)
-            }
-
-        setUpObservers()
+        setUpPlaceAdapter()
+        setUpMap()
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
         viewModel.setPlace(place)
-        viewModel.publishClickEvent()
+        startPlaceDetailFragment()
     }
 
-    private fun setUpObservers() {
-        viewModel.userActionEvent.observe(viewLifecycleOwner) { event ->
-            when (event) {
-                PlaceListUserActionEvent.PLACE_CLICKED -> startPlaceDetailFragment()
+    private fun setUpPlaceAdapter() {
+        binding.rvPlaces.adapter = placeAdapter
+        placeAdapter.submitList(DummyPlace.placeUiModelList)
+    }
+
+    private fun setUpMap() {
+        val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
+
+        mapFragment.getMapAsync { map ->
+            val initialPadding = binding.initialPadding()
+            val mapScrollManager = MapScrollManager(map)
+            binding.lbvCurrentLocation.map = map
+            map.locationSource = locationSource
+
+            MapManager(
+                map,
+                initialPadding,
+                DummyMapData.initialMapSettingUiModel,
+            ).setPlaceLocation(
+                DummyMapData.placeCoordinates,
+            )
+
+            val behavior = binding.layoutPlaceList.placeListScrollBehavior()
+            behavior?.onScrollListener = { dy ->
+                mapScrollManager.cameraScroll(dy)
             }
         }
     }
 
     private fun startPlaceDetailFragment() {
         parentFragmentManager.registerFragmentLifecycleCallbacks(
-            getBottomNavigationViewAnimationCallback(),
+            bottomNavigationViewAnimationCallback,
             false,
         )
         parentFragmentManager.commit {
@@ -67,5 +99,9 @@ class PlaceListFragment :
             hide(this@PlaceListFragment)
             addToBackStack(null)
         }
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
     }
 }

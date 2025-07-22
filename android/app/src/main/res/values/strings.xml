@@ -26,6 +26,9 @@
     <string name="schedule_status_ongoing">진행중</string>
     <string name="schedule_status_completed">종료</string>
 
+    <!--지도 화면-->
+    <string name="map_request_location_permission_message">현재 위치를 확인하시려면 위치 권한이 필요합니다</string>"
+
     <!-- 아이콘 contentDescription   -->
     <string name="schedule_location">위치</string>
     <string name="schedule_time">시간</string>

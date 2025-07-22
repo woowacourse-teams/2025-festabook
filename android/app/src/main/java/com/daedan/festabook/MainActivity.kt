@@ -8,6 +8,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
+import com.daedan.festabook.presentation.common.isGranted
+import com.daedan.festabook.presentation.common.showToast
+import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
 import com.daedan.festabook.presentation.home.HomeFragment
 import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
@@ -49,6 +53,22 @@ class MainActivity : AppCompatActivity() {
         onClickBottomNavigationBarItem()
     }
 
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        grantResults.forEachIndexed { index, result ->
+            if (!result.isGranted()) {
+                val text = permissions[index]
+                showToast(
+                    toLocationPermissionDeniedTextOrNull(text) ?: return@forEachIndexed,
+                )
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     private fun setUpBottomNavigation() {
         binding.bnvMenu.setOnApplyWindowInsetsListener(null)
         binding.bnvMenu.setPadding(0, 0, 0, 0)
@@ -64,7 +84,6 @@ class MainActivity : AppCompatActivity() {
 
     private fun onClickBottomNavigationBarItem() {
         binding.bnvMenu.setOnItemSelectedListener { icon ->
-
             if (binding.bnvMenu.selectedItemId == icon.itemId) {
                 return@setOnItemSelectedListener false
             }
@@ -83,6 +102,9 @@ class MainActivity : AppCompatActivity() {
         fragment: Fragment,
         tag: String,
     ) {
+        supportFragmentManager.unregisterFragmentLifecycleCallbacks(
+            bottomNavigationViewAnimationCallback,
+        )
         supportFragmentManager.commit {
             supportFragmentManager.fragments.forEach { fragment -> hide(fragment) }
 
