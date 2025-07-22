@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList.placeMap
 
 import androidx.core.graphics.toColorInt
 import com.daedan.festabook.BuildConfig
+import com.daedan.festabook.R
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategory
@@ -22,7 +23,7 @@ class MapManager(
 ) {
     private val overlayImageManager =
         OverlayImageManager(
-            PlaceCategory.iconResources,
+            PlaceCategory.iconResources + listOf(R.drawable.ic_cluster_marker),
         )
 
     private val clusterManager =
@@ -31,6 +32,7 @@ class MapManager(
             overlayImageManager,
         )
 
+    // 네이버 지도 초기 세팅
     init {
         map.apply {
             isIndoorEnabled = true
@@ -44,14 +46,20 @@ class MapManager(
         }
     }
 
+    /**
+     * @param coordinates List<PlaceCoordinateUiModel> 리스트
+     * 위치와 카테고리 정보를 받아 마커를 생성합니다
+     */
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         clusterManager.buildCluster {
             coordinates.forEachIndexed { idx, place ->
                 Marker().apply {
-                    overlayImageManager.setIcon(this, place.category)
+                    width = Marker.SIZE_AUTO
+                    height = Marker.SIZE_AUTO
                     position = place.coordinate.toLatLng()
-                    minZoom = CLUSTER_CHANGE_TRIGGER_ZOOM
+                    minZoom = CLUSTER_ZOOM_THRESHOLD
                     map = this@MapManager.map
+                    overlayImageManager.setIcon(this, place.category)
                     put(position, idx, place)
                 }
             }
@@ -77,6 +85,7 @@ class MapManager(
         )
     }
 
+    // 생성자로 입력받은 초기 위치로 카메라를 이동합니다
     private fun NaverMap.moveToInitialPosition() {
         val cameraUpdate1 =
             CameraUpdate
@@ -92,6 +101,7 @@ class MapManager(
         moveCamera(cameraUpdate2)
     }
 
+    // 생성자로 입력받은 초기 위치 경계를 설정합니다
     private fun NaverMap.setInitialPolygon(border: List<CoordinateUiModel>) {
         PolygonOverlay().apply {
             coords = EDGE_COORS
@@ -108,11 +118,15 @@ class MapManager(
     }
 
     companion object {
-        private const val CLUSTER_CHANGE_TRIGGER_ZOOM = 16.0
+        // 아이템 마커와 클러스터링 마커가 전환되는 줌 레벨의 경계.
+        // 이 값보다 줌 레벨이 높거나 같아지면 (즉, 지도를 확대할수록)
+        // 개별 아이템 마커가 지도에 표시되기 시작합니다.
+        private const val CLUSTER_ZOOM_THRESHOLD = 17.0
         private const val OVERLAY_COLOR_INT = "#4D000000"
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val LOGO_MARGIN_TOP_PX = 75
 
+        // 대한민국 전체를 덮는 오버레이 좌표입니다
         private val EDGE_COORS =
             listOf(
                 LatLng(39.2163345, 123.5125660),
