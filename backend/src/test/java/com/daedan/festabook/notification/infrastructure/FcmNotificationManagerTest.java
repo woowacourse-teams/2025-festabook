@@ -99,7 +99,7 @@ class FcmNotificationManagerTest {
         @Test
         void 예외_도메인_예외로_변화하여_던지기() throws FirebaseMessagingException {
             // given
-            Long organizationId = 1L;
+            Long placeId = 1L;
             String fcmToken = "fcmToken";
             willThrow(firebaseMessagingException)
                     .given(firebaseMessaging)
@@ -107,7 +107,7 @@ class FcmNotificationManagerTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                fcmNotificationManager.subscribePlaceTopic(organizationId, fcmToken);
+                fcmNotificationManager.subscribePlaceTopic(placeId, fcmToken);
             })
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 토픽 구독을 실패했습니다.");
@@ -120,7 +120,7 @@ class FcmNotificationManagerTest {
         @Test
         void 예외_도메인_예외로_변화하여_던지기() throws FirebaseMessagingException {
             // given
-            Long organizationId = 1L;
+            Long placeId = 1L;
             String fcmToken = "fcmToken";
             willThrow(firebaseMessagingException)
                     .given(firebaseMessaging)
@@ -128,7 +128,7 @@ class FcmNotificationManagerTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                fcmNotificationManager.unsubscribePlaceTopic(organizationId, fcmToken);
+                fcmNotificationManager.unsubscribePlaceTopic(placeId, fcmToken);
             })
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 토픽 구독 취소를 실패했습니다.");
