@@ -2,10 +2,9 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
         <variable
-            name="placeDetail"
-            type="com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel" />
+            name="viewModel"
+            type="com.daedan.festabook.presentation.placeDetail.PlaceDetailViewModel" />
 
         <import type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
     </data>
@@ -35,7 +34,7 @@
                 android:layout_marginTop="24dp"
                 app:cardBackgroundColor="@color/gray900"
                 app:cardCornerRadius="6dp"
-                app:category="@{placeDetail.place.category}"
+                app:category="@{viewModel.placeDetail.place.category}"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/vp_place_images"
                 app:strokeWidth="0dp">
@@ -46,7 +45,7 @@
                     android:layout_gravity="center"
                     android:textAppearance="@style/PretendardRegular10"
                     android:textColor="@color/gray050"
-                    app:category="@{placeDetail.place.category}"
+                    app:category="@{viewModel.placeDetail.place.category}"
                     tools:text="푸드트럭" />
 
             </com.google.android.material.card.MaterialCardView>
@@ -57,7 +56,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:textColor="@color/gray900"
-                android:text="@{placeDetail.place.title}"
+                android:text="@{viewModel.placeDetail.place.title}"
                 app:layout_constraintStart_toStartOf="@id/cv_place_category"
                 app:layout_constraintTop_toBottomOf="@id/cv_place_category"
                 android:textAppearance="@style/PretendardBold20"
@@ -78,8 +77,8 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
-                app:startTime="@{placeDetail.startTime}"
-                app:endTime="@{placeDetail.endTime}"
+                app:startTime="@{viewModel.placeDetail.startTime}"
+                app:endTime="@{viewModel.placeDetail.endTime}"
                 app:layout_constraintStart_toEndOf="@id/iv_time"
                 app:layout_constraintTop_toTopOf="@id/iv_time"
                 app:layout_constraintBottom_toBottomOf="@id/iv_time"
@@ -100,7 +99,7 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
-                android:text="@{placeDetail.place.location}"
+                android:text="@{viewModel.placeDetail.place.location}"
                 app:layout_constraintStart_toEndOf="@id/iv_location"
                 app:layout_constraintTop_toTopOf="@id/iv_location"
                 app:layout_constraintBottom_toBottomOf="@id/iv_location"
@@ -121,7 +120,7 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
-                android:text="@{placeDetail.host}"
+                android:text="@{viewModel.placeDetail.host}"
                 app:layout_constraintStart_toEndOf="@id/iv_host"
                 app:layout_constraintTop_toTopOf="@id/iv_host"
                 app:layout_constraintBottom_toBottomOf="@id/iv_host"
@@ -132,7 +131,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@{placeDetail.place.description}"
+                android:text="@{viewModel.placeDetail.place.description}"
                 app:layout_constraintTop_toBottomOf="@id/iv_host"
                 app:layout_constraintStart_toStartOf="@id/iv_host"
                 android:textAppearance="@style/PretendardRegular14"

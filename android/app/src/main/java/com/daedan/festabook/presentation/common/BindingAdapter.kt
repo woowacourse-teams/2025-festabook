@@ -32,8 +32,9 @@ fun setBookmarkColor(
 @BindingAdapter("category")
 fun setCategory(
     view: MaterialCardView,
-    category: PlaceCategoryUiModel,
+    category: PlaceCategoryUiModel?,
 ) {
+    category ?: return
     val density = view.context.resources.displayMetrics.density
     val layoutParams = view.layoutParams
     when (category) {
@@ -48,8 +49,9 @@ fun setCategory(
 @BindingAdapter("category")
 fun setCategory(
     view: TextView,
-    category: PlaceCategoryUiModel,
+    category: PlaceCategoryUiModel?,
 ) {
+    category ?: return
     when (category) {
         PlaceCategoryUiModel.FOOD_TRUCK ->
             view.text =
