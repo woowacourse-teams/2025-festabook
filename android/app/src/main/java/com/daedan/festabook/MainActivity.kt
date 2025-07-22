@@ -4,9 +4,9 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
@@ -22,7 +22,7 @@ import com.daedan.festabook.presentation.home.HomeFragment
 import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
-import com.google.firebase.messaging.FirebaseMessaging
+import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -48,9 +48,9 @@ class MainActivity : AppCompatActivity() {
             ActivityResultContracts.RequestPermission(),
         ) { isGranted: Boolean ->
             if (isGranted) {
-                Log.d("Notification_Permission", "Notification permission granted")
+                Timber.d("Notification permission granted")
             } else {
-                Log.d("Notification_Permission", "Notification permission denied")
+                Timber.d("Notification permission denied")
                 // 사용자에게 알림 권한이 필요한 이유를 설명하거나, 설정 화면으로 유도
             }
         }
@@ -58,6 +58,31 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        setupBinding()
+
+        requestNotificationPermission()
+        setupHomeFragment(savedInstanceState)
+        setUpBottomNavigation()
+        onClickBottomNavigationBarItem()
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        grantResults.forEachIndexed { index, result ->
+            if (!result.isGranted()) {
+                val text = permissions[index]
+                showToast(
+                    toLocationPermissionDeniedTextOrNull(text) ?: return@forEachIndexed,
+                )
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun setupBinding() {
         binding = ActivityMainBinding.inflate(layoutInflater)
 
         setContentView(binding.root)
@@ -66,80 +91,44 @@ class MainActivity : AppCompatActivity() {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
-
-        setupFirebaseMessaging()
-        requestNotificationPermission()
-        setupHomeFragment(savedInstanceState)
-        setUpBottomNavigation()
-        onClickBottomNavigationBarItem()
     }
 
     private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) { // Android 13 (API 33) 이상
-            if (ContextCompat.checkSelfPermission(
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
                     this,
                     Manifest.permission.POST_NOTIFICATIONS,
-                ) == PackageManager.PERMISSION_GRANTED
-            ) {
-                // 이미 권한이 허용됨
-                Log.d("Notification_Permission", "Notification permission already granted")
-            } else if (shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS)) {
-                // 이전에 거부했지만 다시 요청할 수 있는 경우: 권한이 필요한 이유를 설명하는 UI 표시
-                // 사용자에게 설명 후 requestPer missionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS) 호출
-                Log.d("Notification_Permission", "Show rationale for notification permission")
-//            } else {
-                // 권한 요청
-                requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // 이미 권한이 허용됨
+                    Timber.d("Notification permission already granted")
+                }
+                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    // 이전에 거부했지만 "다시 묻지 않음"을 선택하지 않은 경우
+                    // 권한이 필요한 이유를 설명하는 UI(예: AlertDialog)를 표시
+                    Timber.d("Show rationale for notification permission")
+                    AlertDialog
+                        .Builder(this)
+                        .setTitle("알림 권한 필요")
+                        .setMessage("새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.")
+                        .setPositiveButton("확인") { dialog, _ ->
+                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                            dialog.dismiss()
+                        }.setNegativeButton("취소") { dialog, _ ->
+                            showToast("알림 권한이 거부되었습니다.")
+                            dialog.dismiss()
+                        }.show()
+                }
+                else -> {
+                    // 권한이 없으며, 이전에 "다시 묻지 않음"을 선택하지 않았거나 첫 요청인 경우
+                    // 바로 권한 요청 다이얼로그 표시
+                    Timber.d("Requesting notification permission for the first time or after 'don't ask again'")
+                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
+        } else {
+            Timber.d("Notification permission not required for API < 33")
         }
-    }
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        grantResults.forEachIndexed { index, result ->
-            if (!result.isGranted()) {
-                val text = permissions[index]
-                showToast(
-                    toLocationPermissionDeniedTextOrNull(text) ?: return@forEachIndexed,
-                )
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    private fun setupFirebaseMessaging() {
-        FirebaseMessaging.getInstance().token.addOnCompleteListener { task ->
-            if (!task.isSuccessful) {
-                Log.w("FCM_Token", "Fetching FCM registration token failed", task.exception)
-                return@addOnCompleteListener
-            }
-
-            // Get new FCM registration token
-            val token = task.result
-            Log.d("FCM_Token", "Current token: $token")
-
-            // TODO: 이 토큰을 서버로 전송하거나 SharedPreferences에 저장하는 로직
-            // MyFirebaseMessagingService의 onNewToken에서 처리하는 것과 동일하게 서버로 전송
-            // sendRegistrationToServer(token)
-        }
-    }
-
-    override fun onRequestPermissionsResult(
-        requestCode: Int,
-        permissions: Array<out String>,
-        grantResults: IntArray,
-    ) {
-        grantResults.forEachIndexed { index, result ->
-            if (!result.isGranted()) {
-                val text = permissions[index]
-                showToast(
-                    toLocationPermissionDeniedTextOrNull(text) ?: return@forEachIndexed,
-                )
-            }
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
     private fun setUpBottomNavigation() {
