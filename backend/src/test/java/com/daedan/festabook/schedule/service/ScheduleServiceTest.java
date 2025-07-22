@@ -11,7 +11,7 @@ import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
 import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
-import com.daedan.festabook.schedule.dto.EventResponse;
+import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
 import java.time.Clock;
@@ -123,15 +123,15 @@ class ScheduleServiceTest {
                     .willReturn(List.of(event));
 
             // when
-            EventResponse result = scheduleService.getAllEventByEventDateId(eventDateId).responses().getFirst();
+            EventResponses result = scheduleService.getAllEventByEventDateId(eventDateId);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.status()).isEqualTo(EventStatus.ONGOING);
-                s.assertThat(result.startTime()).isEqualTo(event.getStartTime());
-                s.assertThat(result.endTime()).isEqualTo(event.getEndTime());
-                s.assertThat(result.title()).isEqualTo(event.getTitle());
-                s.assertThat(result.location()).isEqualTo(event.getLocation());
+                s.assertThat(result.responses().getFirst().status()).isEqualTo(EventStatus.ONGOING);
+                s.assertThat(result.responses().getFirst().startTime()).isEqualTo(event.getStartTime());
+                s.assertThat(result.responses().getFirst().endTime()).isEqualTo(event.getEndTime());
+                s.assertThat(result.responses().getFirst().title()).isEqualTo(event.getTitle());
+                s.assertThat(result.responses().getFirst().location()).isEqualTo(event.getLocation());
             });
         }
 
@@ -154,10 +154,10 @@ class ScheduleServiceTest {
                     .willReturn(List.of(event));
 
             // when
-            EventResponse result = scheduleService.getAllEventByEventDateId(eventDateId).responses().getFirst();
+            EventResponses result = scheduleService.getAllEventByEventDateId(eventDateId);
 
             // then
-            assertThat(result.status()).isEqualTo(expected);
+            assertThat(result.responses().getFirst().status()).isEqualTo(expected);
         }
     }
 
