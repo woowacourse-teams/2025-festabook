@@ -107,7 +107,6 @@ class PlaceBookmarkControllerTest {
             placeJpaRepository.save(place);
 
             Long invalidDeviceId = 0L;
-
             PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
 
             // when & then

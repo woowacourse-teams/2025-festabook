@@ -112,14 +112,12 @@ class OrganizationBookmarkControllerTest {
         @Test
         void 예외_존재하지_않는_조직() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            Long invalidOrganizationId = 0L;
             OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
+
+            Long invalidOrganizationId = 0L;
 
             // when & then
             given()
