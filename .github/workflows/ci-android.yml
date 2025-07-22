@@ -7,7 +7,6 @@ on:
   pull_request:
     branches:
       - 'android'
-  workflow_dispatch:
 
 
 jobs:
@@ -29,11 +28,13 @@ jobs:
           cache: gradle
 
       - name: Create local.properties with BASE_URL
-        run: echo BASE_URL=\"${{ secrets.BASE_URL }}\" > local.properties
+        run: |
+          echo BASE_URL=\"${{ secrets.BASE_URL }}\" > local.properties
+          echo NAVER_MAP_CLIENT_ID=\"${{ secrets.NAVER_MAP_CLIENT_ID }}\" >> local.properties
 
       - name: Check local.properties content
         run:  cat local.properties
-        
+
       - name: Echo env var
         run: echo "${{ secrets.BASE_URL }}"
 
@@ -45,11 +46,3 @@ jobs:
 
       - name: Build with Gradle
         run: ./gradlew build
-
-      - name: Generate local.properties
-        env:
-          BASE_URl: ${{secrets.BASE_URL}}
-          NAVER_MAP_CLIENT_ID: ${{secrets.NAVER_MAP_CLIENT_ID}}
-        run: |
-          echo base.url=\"$BASE_URL\" >> ./local.properties
-          echo naver.map.client.id=\"$NAVER_MAP_CLIENT_ID\" >> ./local.properties
