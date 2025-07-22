@@ -13,18 +13,6 @@ public class EventFixture {
     private static final String DEFAULT_LOCATION = "location";
 
     public static Event create(
-            EventDate eventDate
-    ) {
-        return new Event(
-                DEFAULT_START_TIME,
-                DEFAULT_END_TIME,
-                DEFAULT_TITLE,
-                DEFAULT_LOCATION,
-                eventDate
-        );
-    }
-
-    public static Event create(
             String title
     ) {
         return new Event(
@@ -33,6 +21,18 @@ public class EventFixture {
                 title,
                 DEFAULT_LOCATION,
                 EventDateFixture.create()
+        );
+    }
+
+    public static Event create(
+            EventDate eventDate
+    ) {
+        return new Event(
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION,
+                eventDate
         );
     }
 
@@ -46,6 +46,22 @@ public class EventFixture {
                 endTime,
                 DEFAULT_TITLE,
                 DEFAULT_LOCATION,
+                eventDate
+        );
+    }
+
+    public static Event create(
+            LocalTime startTime,
+            LocalTime endTime,
+            String title,
+            String location,
+            EventDate eventDate
+    ) {
+        return new Event(
+                startTime,
+                endTime,
+                title,
+                location,
                 eventDate
         );
     }
