@@ -32,10 +32,9 @@ object ApiClient {
             .build()
     }
 
-
+    val noticeService: NoticeService = retrofit.create(NoticeService::class.java)
     val placeService: PlaceService = retrofit.create(PlaceService::class.java)
-    val scheduleService: ScheduleService by lazy { retrofit.create(ScheduleService::class.java) }
-    val noticeService: NoticeService by lazy { retrofit.create(NoticeService::class.java) }
     val deviceService: DeviceService by lazy { retrofit.create(DeviceService::class.java) }
+    val scheduleService: ScheduleService by lazy { retrofit.create(ScheduleService::class.java) }
     val organizationBookmarkService: OrganizationBookmarkService by lazy { retrofit.create(OrganizationBookmarkService::class.java) }
 }
