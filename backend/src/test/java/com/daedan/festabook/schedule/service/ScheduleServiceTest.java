@@ -106,7 +106,7 @@ class ScheduleServiceTest {
     class getAllEventByEventDateId {
 
         @Test
-        void 성공0() {
+        void 성공() {
             // given
             setFixedClock();
 
