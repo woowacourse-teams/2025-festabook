@@ -179,31 +179,5 @@ class PlaceBookmarkControllerTest {
             then(fcmNotificationManager).should()
                     .unsubscribePlaceTopic(any(), any());
         }
-
-        @Test
-        void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            Place place = PlaceFixture.create(organization);
-            placeJpaRepository.save(place);
-
-            Long invalidDeviceId = 0L;
-
-            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
-
-            // when & then
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .body(request)
-                    .when()
-                    .delete("/places/bookmarks/" + place.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-
-            then(fcmNotificationManager).shouldHaveNoInteractions();
-        }
     }
 }

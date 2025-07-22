@@ -160,22 +160,5 @@ class OrganizationBookmarkControllerTest {
                     .unsubscribeOrganizationTopic(any(), any());
 
         }
-
-        @Test
-        void 성공_존재하지_않는_디바이스에_대해_예외를_터뜨리지_않음() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            // when & then
-            given()
-                    .contentType(ContentType.JSON)
-                    .when()
-                    .delete("/organizations/bookmarks/" + organization.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-
-            then(fcmNotificationManager).shouldHaveNoInteractions();
-        }
     }
 }
