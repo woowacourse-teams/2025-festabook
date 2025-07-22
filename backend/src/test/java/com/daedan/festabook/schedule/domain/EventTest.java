@@ -19,7 +19,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventTest {
 
-    @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 끝나는 시간: {2}, 결과: {3}")
+    @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}, 결과: {3}")
     @CsvSource({
             "2025-05-04, 10:00, 12:00, COMPLETED",   // 과거 날짜
             "2025-05-05, 10:00, 15:00, COMPLETED",   // 오늘, 종료 시각 이전

@@ -23,13 +23,13 @@ class EventStatusTest {
     @Nested
     class determineStatus {
 
-        @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 끝나는 시간: {2}")
+        @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}")
         @CsvSource({
                 // 과거 날짜인 경우
                 "2025-05-04, 00:00:00, 23:59:59",
                 "2025-04-30, 10:00:00, 20:00:00",
 
-                // 당일 날짜이지만 끝나는 시간(endTime)이 현재 시간보다 이전인 경우
+                // 당일 날짜이지만 종 시간(endTime)이 현재 시간보다 이전인 경우
                 "2025-05-05, 10:00:00, 12:00:00",
                 "2025-05-05, 15:00:00, 15:59:59",
         })
@@ -48,7 +48,7 @@ class EventStatusTest {
         }
     }
 
-    @ParameterizedTest(name = "시작 시간: {0}, 끝나는 시간: {1}")
+    @ParameterizedTest(name = "시작 시간: {0}, 종 시간: {1}")
     @CsvSource({
             // 현재 시간이 시작-종료 시간 사이인 경우
             "15:00:00, 17:00:00",
@@ -70,7 +70,7 @@ class EventStatusTest {
         assertThat(result).isEqualTo(EventStatus.ONGOING);
     }
 
-    @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 끝나는 시간: {2}")
+    @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}")
     @CsvSource({
             // 미래 날짜인 경우
             "2025-05-06, 00:00:00, 23:59:59",
