@@ -26,6 +26,8 @@ public class PlaceBookmarkService {
 
     @Transactional
     public PlaceBookmarkResponse createPlaceBookmark(Long placeId, PlaceBookmarkRequest request) {
+        validateDuplicatedPlaceBookmark(placeId, request.deviceId());
+
         Place place = getPlaceById(placeId);
         Device device = getDeviceById(request.deviceId());
         PlaceBookmark placeBookmark = new PlaceBookmark(place, device);
@@ -55,6 +57,12 @@ public class PlaceBookmarkService {
                 placeBookmark.getPlace().getId(),
                 device.getFcmToken()
         );
+    }
+
+    private void validateDuplicatedPlaceBookmark(Long placeId, Long deviceId) {
+        if (placeBookmarkJpaRepository.existsByPlaceIdAndDeviceId(placeId, deviceId)) {
+            throw new BusinessException("이미 북마크한 플레이스입니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Device getDeviceById(Long deviceId) {
