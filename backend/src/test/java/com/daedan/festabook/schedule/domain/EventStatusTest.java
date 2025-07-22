@@ -44,46 +44,46 @@ class EventStatusTest {
             // then
             assertThat(result).isEqualTo(EventStatus.COMPLETED);
         }
-    }
 
-    @ParameterizedTest(name = "시작 시간: {0}, 종료 시간: {1}")
-    @CsvSource({
-            // 현재 시간이 시작-종료 시간 사이인 경우
-            "15:00:00, 17:00:00",
-            "00:00:00, 23:59:59",
-            "16:00:00, 18:00:00", // 시작 시간이 현재와 같은 경우
-            "14:00:00, 16:00:00", // 종료 시간이 현재와 같은 경우
-    })
-    void 성공_진행중인_일정_경우_ONGOING(LocalTime startTime, LocalTime endTime) {
-        // given
-        Clock clock = createFixedClock();
+        @ParameterizedTest(name = "시작 시간: {0}, 종료 시간: {1}")
+        @CsvSource({
+                // 현재 시간이 시작-종료 시간 사이인 경우
+                "15:00:00, 17:00:00",
+                "00:00:00, 23:59:59",
+                "16:00:00, 18:00:00", // 시작 시간이 현재와 같은 경우
+                "14:00:00, 16:00:00", // 종료 시간이 현재와 같은 경우
+        })
+        void 성공_진행중인_일정_경우_ONGOING(LocalTime startTime, LocalTime endTime) {
+            // given
+            Clock clock = createFixedClock();
 
-        // when
-        EventStatus result = EventStatus.determineStatus(clock, LocalDate.now(clock), startTime, endTime);
+            // when
+            EventStatus result = EventStatus.determineStatus(clock, LocalDate.now(clock), startTime, endTime);
 
-        // then
-        assertThat(result).isEqualTo(EventStatus.ONGOING);
-    }
+            // then
+            assertThat(result).isEqualTo(EventStatus.ONGOING);
+        }
 
-    @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}")
-    @CsvSource({
-            // 미래 날짜인 경우
-            "2025-05-06, 00:00:00, 23:59:59",
-            "2025-06-01, 10:00:00, 11:00:00",
+        @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}")
+        @CsvSource({
+                // 미래 날짜인 경우
+                "2025-05-06, 00:00:00, 23:59:59",
+                "2025-06-01, 10:00:00, 11:00:00",
 
-            // 당일 날짜이지만 시작 시간(startTime)이 현재 시간보다 이후인 경우
-            "2025-05-05, 17:00:00, 18:00:00",
-            "2025-05-05, 16:00:01, 16:30:00",
-    })
-    void 성공_예정된_일정인_경우_UPCOMING(LocalDate date, LocalTime startTime, LocalTime endTime) {
-        // given
-        Clock clock = createFixedClock();
+                // 당일 날짜이지만 시작 시간(startTime)이 현재 시간보다 이후인 경우
+                "2025-05-05, 17:00:00, 18:00:00",
+                "2025-05-05, 16:00:01, 16:30:00",
+        })
+        void 성공_예정된_일정인_경우_UPCOMING(LocalDate date, LocalTime startTime, LocalTime endTime) {
+            // given
+            Clock clock = createFixedClock();
 
-        // when
-        EventStatus result = EventStatus.determineStatus(clock, date, startTime, endTime);
+            // when
+            EventStatus result = EventStatus.determineStatus(clock, date, startTime, endTime);
 
-        // then
-        assertThat(result).isEqualTo(EventStatus.UPCOMING);
+            // then
+            assertThat(result).isEqualTo(EventStatus.UPCOMING);
+        }
     }
 
     private Clock createFixedClock() {
