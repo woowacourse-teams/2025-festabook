@@ -1,22 +1,39 @@
 package com.daedan.festabook
 
+import android.app.Application
+import com.daedan.festabook.data.datasource.local.AppPreferencesManager
+import com.daedan.festabook.data.datasource.remote.DeviceDataSource
+import com.daedan.festabook.data.datasource.remote.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
+import com.daedan.festabook.data.repository.DeviceRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
+import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
+import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.ScheduleRepository
+import com.google.firebase.messaging.FirebaseMessaging
+import timber.log.Timber
+import java.util.UUID
 
-class AppContainer {
+class AppContainer(
+    application: Application,
+) {
+    val preferencesManager = AppPreferencesManager(application)
+
     private val scheduleDataSource: ScheduleDataSource by lazy {
         ScheduleDataSourceImpl(scheduleService)
     }
     private val noticeDataSource: NoticeDataSource by lazy {
         NoticeDataSourceImpl(noticeService)
+    }
+    private val deviceDataSource: DeviceDataSource by lazy {
+        DeviceDataSourceImpl(deviceService)
     }
 
     val scheduleRepository: ScheduleRepository by lazy {
@@ -24,5 +41,26 @@ class AppContainer {
     }
     val noticeRepository: NoticeRepository by lazy {
         NoticeRepositoryImpl(noticeDataSource)
+    }
+    val deviceRepository: DeviceRepository by lazy {
+        DeviceRepositoryImpl(deviceDataSource)
+    }
+
+    init {
+        if (preferencesManager.getUuid().isNullOrEmpty()) {
+            val newUuid = UUID.randomUUID().toString()
+            preferencesManager.saveUuid(newUuid)
+            Timber.d("Generated and saved UUID: $newUuid")
+        }
+
+        FirebaseMessaging
+            .getInstance()
+            .token
+            .addOnSuccessListener { token ->
+                preferencesManager.saveFcmToken(token)
+                Timber.d("Saved FCM token: $token")
+            }.addOnFailureListener {
+                Timber.w(it, "Failed to get FCM token")
+            }
     }
 }
