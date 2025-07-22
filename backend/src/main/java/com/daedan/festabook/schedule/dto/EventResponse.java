@@ -3,6 +3,7 @@ package com.daedan.festabook.schedule.dto;
 import com.daedan.festabook.schedule.domain.Event;
 import com.daedan.festabook.schedule.domain.EventStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import java.time.Clock;
 import java.time.LocalTime;
 
 public record EventResponse(
@@ -14,10 +15,10 @@ public record EventResponse(
         String location
 ) {
 
-    public static EventResponse from(Event event) {
+    public static EventResponse from(Event event, Clock clock) {
         return new EventResponse(
                 event.getId(),
-                event.getStatus(),
+                event.getStatus(clock),
                 event.getStartTime(),
                 event.getEndTime(),
                 event.getTitle(),
