@@ -121,7 +121,7 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
-                android:text="@{placeDetail.host ?? @string/place_detail_default_host}"
+                android:text="@{placeDetail.host}"
                 app:layout_constraintStart_toEndOf="@id/iv_host"
                 app:layout_constraintTop_toTopOf="@id/iv_host"
                 app:layout_constraintBottom_toBottomOf="@id/iv_host"
