@@ -22,7 +22,7 @@ class EventStatusTest {
     private static final LocalDateTime FIXED_CLOCK_DATETIME = LocalDateTime.of(2025, 5, 5, 16, 0, 0);
 
     @Nested
-    class determineStatus {
+    class determine {
 
         @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}")
         @CsvSource({
@@ -39,7 +39,7 @@ class EventStatusTest {
             Clock clock = createFixedClock();
 
             // when
-            EventStatus result = EventStatus.determineStatus(clock, date, startTime, endTime);
+            EventStatus result = EventStatus.determine(clock, date, startTime, endTime);
 
             // then
             assertThat(result).isEqualTo(EventStatus.COMPLETED);
@@ -58,7 +58,7 @@ class EventStatusTest {
             Clock clock = createFixedClock();
 
             // when
-            EventStatus result = EventStatus.determineStatus(clock, LocalDate.now(clock), startTime, endTime);
+            EventStatus result = EventStatus.determine(clock, LocalDate.now(clock), startTime, endTime);
 
             // then
             assertThat(result).isEqualTo(EventStatus.ONGOING);
@@ -79,7 +79,7 @@ class EventStatusTest {
             Clock clock = createFixedClock();
 
             // when
-            EventStatus result = EventStatus.determineStatus(clock, date, startTime, endTime);
+            EventStatus result = EventStatus.determine(clock, date, startTime, endTime);
 
             // then
             assertThat(result).isEqualTo(EventStatus.UPCOMING);

@@ -18,7 +18,7 @@ public record EventResponse(
     public static EventResponse from(Event event, Clock clock) {
         return new EventResponse(
                 event.getId(),
-                event.getStatus(clock),
+                event.determineStatus(clock),
                 event.getStartTime(),
                 event.getEndTime(),
                 event.getTitle(),

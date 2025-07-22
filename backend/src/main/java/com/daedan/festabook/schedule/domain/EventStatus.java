@@ -9,7 +9,7 @@ public enum EventStatus {
     ONGOING,
     UPCOMING;
 
-    public static EventStatus determineStatus(Clock clock, LocalDate date, LocalTime startTime, LocalTime endTime) {
+    public static EventStatus determine(Clock clock, LocalDate date, LocalTime startTime, LocalTime endTime) {
         LocalDate today = LocalDate.now(clock);
 
         if (date.isBefore(today)) {
@@ -20,10 +20,10 @@ public enum EventStatus {
             return UPCOMING;
         }
 
-        return determineTodayStatus(clock, startTime, endTime);
+        return determineToday(clock, startTime, endTime);
     }
 
-    private static EventStatus determineTodayStatus(Clock clock, LocalTime startTime, LocalTime endTime) {
+    private static EventStatus determineToday(Clock clock, LocalTime startTime, LocalTime endTime) {
         LocalTime now = LocalTime.now(clock);
 
         if (now.isBefore(startTime)) {

@@ -52,8 +52,8 @@ public class Event implements Comparable<Event> {
         this.eventDate = eventDate;
     }
 
-    public EventStatus getStatus(Clock clock) {
-        return EventStatus.determineStatus(clock, eventDate.getDate(), startTime, endTime);
+    public EventStatus determineStatus(Clock clock) {
+        return EventStatus.determine(clock, eventDate.getDate(), startTime, endTime);
     }
 
     @Override
