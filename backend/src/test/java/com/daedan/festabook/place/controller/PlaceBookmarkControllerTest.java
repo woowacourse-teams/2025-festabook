@@ -205,7 +205,7 @@ class PlaceBookmarkControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/places/bookmarks/" + placeBookmark.getId())
+                    .delete("/places/bookmarks/{placeBookmarkId}", placeBookmark.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -225,7 +225,7 @@ class PlaceBookmarkControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/places/bookmarks/" + placeBookmarkId)
+                    .delete("/places/bookmarks/{placeBookmarkId}", placeBookmarkId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 

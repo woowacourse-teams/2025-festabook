@@ -184,7 +184,7 @@ class OrganizationBookmarkControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/organizations/bookmarks/" + organizationBookmark.getId())
+                    .delete("/organizations/bookmarks/{organizationBookmarkId}", organizationBookmark.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -205,7 +205,7 @@ class OrganizationBookmarkControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/organizations/bookmarks/" + invalidOrganizationBookmarkId)
+                    .delete("/organizations/bookmarks/{organizationBookmarkId}", invalidOrganizationBookmarkId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
