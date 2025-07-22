@@ -3,7 +3,7 @@ package com.daedan.festabook.presentation.placeList.placeMap
 import androidx.core.graphics.toColorInt
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
-import com.daedan.festabook.presentation.placeList.model.PlaceCategory
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.iconResources
 import com.daedan.festabook.presentation.placeList.model.setIcon
@@ -21,7 +21,7 @@ class MapManager(
 ) {
     private val overlayImageManager =
         OverlayImageManager(
-            PlaceCategory.iconResources,
+            PlaceCategoryUiModel.iconResources,
         )
 
     private val clusterManager =

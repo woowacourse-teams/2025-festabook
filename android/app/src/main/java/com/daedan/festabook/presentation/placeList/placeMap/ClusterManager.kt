@@ -1,6 +1,6 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
-import com.daedan.festabook.presentation.placeList.model.PlaceCategory
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.setIcon
 import com.naver.maps.geometry.LatLng
@@ -34,7 +34,7 @@ class ClusterManager(
                 info: LeafMarkerInfo,
                 marker: Marker,
             ) {
-                val category = info.tag as PlaceCategory
+                val category = info.tag as PlaceCategoryUiModel
                 overlayImageManager.setIcon(marker, category)
             }
         }
@@ -55,7 +55,7 @@ class ClusterManager(
     }
 
     object DSLHelper {
-        val itemKeyMap = mutableMapOf<ClusteringMarkerKey, PlaceCategory>()
+        val itemKeyMap = mutableMapOf<ClusteringMarkerKey, PlaceCategoryUiModel>()
 
         fun put(
             position: LatLng,
