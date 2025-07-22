@@ -118,7 +118,7 @@ class PlaceBookmarkControllerTest {
                     .post("/places/bookmarks/" + place.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body(equalTo("존재하지 않는 디바이스입니다."));
+                    .body("message", equalTo("존재하지 않는 디바이스입니다."));
         }
 
         @Test
@@ -143,7 +143,7 @@ class PlaceBookmarkControllerTest {
                     .post("/places/bookmarks/" + invalidPlaceId)
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body(equalTo("존재하지 않는 플레이스입니다."));
+                    .body("message", equalTo("존재하지 않는 플레이스입니다."));
         }
     }
 

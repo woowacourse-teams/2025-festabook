@@ -105,7 +105,7 @@ class OrganizationBookmarkControllerTest {
                     .post("/organizations/bookmarks/" + organization.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body(equalTo("존재하지 않는 디바이스입니다."));
+                    .body("message", equalTo("존재하지 않는 디바이스입니다."));
         }
 
         @Test
@@ -128,7 +128,7 @@ class OrganizationBookmarkControllerTest {
                     .post("/organizations/bookmarks/" + invalidOrganizationId)
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body(equalTo("존재하지 않는 조직입니다."));
+                    .body("message", equalTo("존재하지 않는 조직입니다."));
         }
     }
 
