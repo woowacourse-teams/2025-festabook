@@ -7,7 +7,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import java.time.ZoneOffset;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -29,9 +28,10 @@ class EventTest {
     })
     void 이벤트_상태_판별_파라미터_테스트(LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus expected) {
         // given
+        ZoneId korea = ZoneId.of("Asia/Seoul");
         Clock clock = Clock.fixed(
-                LocalDateTime.of(2025, 5, 5, 16, 0).toInstant(ZoneOffset.ofHours(9)),
-                ZoneId.of("Asia/Seoul")
+                LocalDateTime.of(2025, 5, 5, 16, 0).atZone(korea).toInstant(),
+                korea
         );
 
         Event event = EventFixture.create(

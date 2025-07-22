@@ -162,9 +162,10 @@ class ScheduleServiceTest {
     }
 
     private void setFixedClock() {
+        ZoneId korea = ZoneId.of("Asia/Seoul");
         Clock fixedClock = Clock.fixed(
-                FIXED_CLOCK_DATETIME.atZone(ZoneId.systemDefault()).toInstant(),
-                ZoneId.systemDefault()
+                FIXED_CLOCK_DATETIME.atZone(korea).toInstant(),
+                korea
         );
 
         given(clock.instant())
