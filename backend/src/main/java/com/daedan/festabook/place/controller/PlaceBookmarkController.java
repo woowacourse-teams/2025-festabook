@@ -19,13 +19,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/places/bookmarks")
+@RequestMapping("/places")
 @Tag(name = "플레이스 북마크", description = "플레이스 북마크 관련 API")
 public class PlaceBookmarkController {
 
     private final PlaceBookmarkService placeBookmarkService;
 
-    @PostMapping("/{placeId}")
+    @PostMapping("/{placeId}/bookmarks")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 플레이스의 북마크 생성 (+ FCM 토픽 구독)")
     @ApiResponses(value = {
@@ -38,7 +38,7 @@ public class PlaceBookmarkController {
         return placeBookmarkService.createPlaceBookmark(placeId, request);
     }
 
-    @DeleteMapping("/{placeBookmarkId}")
+    @DeleteMapping("/bookmarks/{placeBookmarkId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스의 북마크 삭제 (+ FCM 토픽 구독 취소)")
     @ApiResponses(value = {
