@@ -10,6 +10,7 @@ import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +27,7 @@ public class ScheduleService {
         return EventDateResponses.from(eventDates);
     }
 
+    @Transactional(readOnly = true)
     public EventResponses getAllEventByEventDateId(Long eventDateId) {
         List<Event> events = eventJpaRepository.findAllByEventDateId(eventDateId).stream()
                 .sorted()
