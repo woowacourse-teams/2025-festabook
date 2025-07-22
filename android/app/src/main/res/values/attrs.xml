@@ -4,4 +4,8 @@
         <attr name="initialY" format="dimension" />
         <attr name="minimumY" format="dimension" />
     </declare-styleable>
+
+    <declare-styleable name="SkeletonView">
+        <attr name="SkeletonBackground" format="color" />
+    </declare-styleable>
 </resources>
