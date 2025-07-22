@@ -87,7 +87,7 @@ class PlaceBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/places/" + place.getId() + "/bookmarks")
+                    .post("/places/{placeId}/bookmarks", place.getId())
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
@@ -115,7 +115,7 @@ class PlaceBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/places/" + place.getId() + "/bookmarks")
+                    .post("/places/{placeId}/bookmarks", place.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 디바이스입니다."));
@@ -140,7 +140,7 @@ class PlaceBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/places/" + invalidPlaceId + "/bookmarks")
+                    .post("/places/{placeId}/bookmarks", invalidPlaceId)
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 플레이스입니다."));

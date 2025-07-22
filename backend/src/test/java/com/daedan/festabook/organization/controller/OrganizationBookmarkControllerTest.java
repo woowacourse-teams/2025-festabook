@@ -78,7 +78,7 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/" + organization.getId() + "/bookmarks")
+                    .post("/organizations/{organizationId}/bookmarks", organization.getId())
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
@@ -103,7 +103,7 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/" + organization.getId() + "/bookmarks")
+                    .post("/organizations/{organizationId}/bookmarks", organization.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 디바이스입니다."));
@@ -124,7 +124,7 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/" + invalidOrganizationId + "/bookmarks")
+                    .post("/organizations/{organizationId}/bookmarks", invalidOrganizationId)
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 조직입니다."));
