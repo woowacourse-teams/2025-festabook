@@ -47,3 +47,10 @@ tasks.named('test') {
 springBoot {
     buildInfo()
 }
+
+tasks.withType(Test).configureEach {
+    testLogging {
+        events "standardOut"
+        showStandardStreams = true
+    }
+}
