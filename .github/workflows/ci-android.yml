@@ -31,12 +31,14 @@ jobs:
         run: |
           echo BASE_URL=\"${{ secrets.BASE_URL }}\" > local.properties
           echo NAVER_MAP_CLIENT_ID=\"${{ secrets.NAVER_MAP_CLIENT_ID }}\" >> local.properties
-      
+          echo NAVER_MAP_STYLE_ID=\"${{ secrets.NAVER_MAP_STYLE_ID }}\" >> local.properties
+
+
       - name: Load Google Service file
         env:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo "$DATA" > app/google-services.json
-        
+
       - name: Check local.properties content
         run:  cat local.properties
 

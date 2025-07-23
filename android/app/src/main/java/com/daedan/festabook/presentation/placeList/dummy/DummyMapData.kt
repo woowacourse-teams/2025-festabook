@@ -55,8 +55,24 @@ object DummyMapData {
             PlaceCoordinateUiModel(
                 coordinate =
                     CoordinateUiModel(
+                        37.59,
+                        127.058646150568,
+                    ),
+                category = PlaceCategory.BOOTH,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.583961996341635,
+                        127.059,
+                    ),
+                category = PlaceCategory.BOOTH,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
                         37.583201906206114,
-                        127.05607556594641,
+                        127.05807556594641,
                     ),
                 category = PlaceCategory.FOOD_TRUCK,
             ),
@@ -64,6 +80,22 @@ object DummyMapData {
                 coordinate =
                     CoordinateUiModel(
                         37.58302357371701,
+                        127.06137955847021,
+                    ),
+                category = PlaceCategory.TRASH_CAN,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.585,
+                        127.06137955847021,
+                    ),
+                category = PlaceCategory.TRASH_CAN,
+            ),
+            PlaceCoordinateUiModel(
+                coordinate =
+                    CoordinateUiModel(
+                        37.583,
                         127.06137955847021,
                     ),
                 category = PlaceCategory.TRASH_CAN,

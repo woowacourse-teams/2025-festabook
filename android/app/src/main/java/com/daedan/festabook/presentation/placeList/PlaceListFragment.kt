@@ -72,7 +72,7 @@ class PlaceListFragment :
             )
 
             val behavior = binding.layoutPlaceList.placeListScrollBehavior()
-            behavior?.onScrollListener = { dy ->
+            behavior?.setOnScrollListener { dy ->
                 mapScrollManager.cameraScroll(dy)
             }
         }

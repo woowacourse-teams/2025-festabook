@@ -30,8 +30,8 @@
             android:layout_height="match_parent"
             android:background="@drawable/bg_place_list"
             app:layout_behavior="com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior"
-            app:initialY="432dp"
-            app:minimumY="220dp"
+            app:initialY="390dp"
+            app:minimumY="168dp"
             app:recyclerView="@id/rv_places"
             app:companionView="@id/lbv_current_location"
             >
