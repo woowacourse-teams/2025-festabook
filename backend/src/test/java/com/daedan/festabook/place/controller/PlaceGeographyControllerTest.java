@@ -66,11 +66,10 @@ class PlaceGeographyControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            Place place1 = PlaceFixture.create(organization);
-            Place place2 = PlaceFixture.create(organization);
-            placeJpaRepository.saveAll(List.of(place1, place2));
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(place));
 
-            int expectedSize = 2;
+            int expectedSize = 1;
             int expectedFieldSize = 3;
             int expectedMarkerFieldSize = 2;
 
@@ -84,17 +83,34 @@ class PlaceGeographyControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(place1.getId().intValue()))
-                    .body("[0].category", equalTo(place1.getCategory().name()))
+                    .body("[0].id", equalTo(place.getId().intValue()))
+                    .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
-                    .body("[0].markerCoordinate.latitude", equalTo(place1.getCoordinate().getLatitude()))
-                    .body("[0].markerCoordinate.longitude", equalTo(place1.getCoordinate().getLongitude()))
-                    .body("[1].size()", equalTo(expectedFieldSize))
-                    .body("[1].id", equalTo(place2.getId().intValue()))
-                    .body("[1].category", equalTo(place2.getCategory().name()))
-                    .body("[1].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
-                    .body("[1].markerCoordinate.latitude", equalTo(place2.getCoordinate().getLatitude()))
-                    .body("[1].markerCoordinate.longitude", equalTo(place2.getCoordinate().getLongitude()));
+                    .body("[0].markerCoordinate.latitude", equalTo(place.getCoordinate().getLatitude()))
+                    .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()));
+        }
+
+        @Test
+        void 성공_특정_조직의_플레이스_지리_목록() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place1 = PlaceFixture.create(organization);
+            Place place2 = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(place1, place2));
+
+            int expectedSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header("organization", organization.getId())
+                    .when()
+                    .get("/places/geographies")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
         }
     }
 }
