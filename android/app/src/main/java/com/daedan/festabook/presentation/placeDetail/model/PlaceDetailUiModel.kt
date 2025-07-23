@@ -11,11 +11,14 @@ import java.time.format.DateTimeFormatter
 data class PlaceDetailUiModel(
     val place: PlaceUiModel,
     val notices: List<NoticeUiModel>,
-    val host: String,
-    val startTime: String,
-    val endTime: String,
+    val host: String?,
+    val startTime: String?,
+    val endTime: String?,
     val images: List<ImageUiModel>,
-)
+) {
+    companion object {
+    }
+}
 
 fun PlaceDetail.toUiModel() =
     PlaceDetailUiModel(
@@ -27,7 +30,7 @@ fun PlaceDetail.toUiModel() =
         images = images.map { it.toUiModel() },
     )
 
-private fun LocalTime.toFormattedString(): String =
-    this.format(
+private fun LocalTime?.toFormattedString(): String? =
+    this?.format(
         DateTimeFormatter.ofPattern("HH:mm"),
     )

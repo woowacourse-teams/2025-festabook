@@ -18,15 +18,15 @@ data class PlaceDetailResponse(
     @SerialName("category")
     val category: PlaceCategory,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("startTime")
-    val startTime: String,
+    val startTime: String?,
     @SerialName("endTime")
-    val endTime: String,
+    val endTime: String?,
     @SerialName("host")
-    val host: String,
+    val host: String?,
     @SerialName("location")
-    val location: String,
+    val location: String?,
     @SerialName("placeAnnouncements")
     val placeAnnouncements: List<PlaceAnnouncement>,
     @SerialName("placeImages")
@@ -74,7 +74,7 @@ private fun PlaceDetailResponse.toPlace() =
         title = title,
         category = category,
         description = description,
-        imageUrl = placeImages.find { it.sequence == 1 }?.imageUrl ?: PlaceDetailImage.DEFAULT_IMAGE_URL,
+        imageUrl = placeImages.find { it.sequence == 1 }?.imageUrl,
         location = location,
     )
 
