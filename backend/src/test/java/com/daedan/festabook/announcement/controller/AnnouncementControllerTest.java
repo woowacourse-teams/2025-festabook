@@ -194,11 +194,11 @@ class AnnouncementControllerTest {
 
             System.out.println("===== createdAt 출력 시작 =====");
             for (int i = 0; i < result.size(); i++) {
-                System.out.println("pinned[" + i + "] createdAt: " + result.get(i));
+                System.out.println("pinned[" + i + "] createdAt: " + result.get(i).truncatedTo(ChronoUnit.MICROS));
             }
-            System.out.println("announcement1: " + announcement1.getCreatedAt());
-            System.out.println("announcement2: " + announcement2.getCreatedAt());
-            System.out.println("announcement3: " + announcement3.getCreatedAt());
+            System.out.println("announcement1: " + announcement1.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
+            System.out.println("announcement2: " + announcement2.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
+            System.out.println("announcement3: " + announcement3.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
             System.out.println("===== createdAt 출력 끝 =====");
 
             assertSoftly(s -> {
