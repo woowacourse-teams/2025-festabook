@@ -6,14 +6,19 @@ import com.daedan.festabook.data.datasource.remote.DeviceDataSource
 import com.daedan.festabook.data.datasource.remote.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
+import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
+import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
 import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
+import com.daedan.festabook.data.service.api.ApiClient.organizationBookmarkService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
+import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.ScheduleRepository
@@ -35,7 +40,9 @@ class AppContainer(
     private val deviceDataSource: DeviceDataSource by lazy {
         DeviceDataSourceImpl(deviceService)
     }
-
+    private val organizationBookmarkDataSource: OrganizationBookmarkDataSource by lazy {
+        OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
+    }
     val scheduleRepository: ScheduleRepository by lazy {
         ScheduleRepositoryImpl(scheduleDataSource)
     }
@@ -44,6 +51,9 @@ class AppContainer(
     }
     val deviceRepository: DeviceRepository by lazy {
         DeviceRepositoryImpl(deviceDataSource)
+    }
+    val bookmarkRepository: BookmarkRepository by lazy {
+        BookmarkRepositoryImpl(organizationBookmarkDataSource)
     }
 
     init {

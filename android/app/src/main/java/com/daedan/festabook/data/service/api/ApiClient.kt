@@ -3,6 +3,7 @@ package com.daedan.festabook.data.service.api
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.data.service.DeviceService
 import com.daedan.festabook.data.service.NoticeService
+import com.daedan.festabook.data.service.OrganizationBookmarkService
 import com.daedan.festabook.data.service.ScheduleService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -33,4 +34,5 @@ object ApiClient {
     val scheduleService: ScheduleService by lazy { retrofit.create(ScheduleService::class.java) }
     val noticeService: NoticeService by lazy { retrofit.create(NoticeService::class.java) }
     val deviceService: DeviceService by lazy { retrofit.create(DeviceService::class.java) }
+    val organizationBookmarkService: OrganizationBookmarkService by lazy { retrofit.create(OrganizationBookmarkService::class.java) }
 }
