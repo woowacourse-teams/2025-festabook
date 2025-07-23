@@ -34,16 +34,7 @@ class MapManager(
 
     // 네이버 지도 초기 세팅
     init {
-        map.apply {
-            isIndoorEnabled = true
-            customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
-            uiSettings.isZoomControlEnabled = false
-            uiSettings.isScaleBarEnabled = false
-            moveToInitialPosition()
-            setInitialPolygon(settingUiModel.border)
-            setContentPaddingBottom(initialPadding)
-            setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
-        }
+        setupMap()
     }
 
     /**
@@ -63,6 +54,19 @@ class MapManager(
                     put(position, idx, place)
                 }
             }
+        }
+    }
+
+    private fun setupMap() {
+        map.apply {
+            isIndoorEnabled = true
+            customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
+            uiSettings.isZoomControlEnabled = false
+            uiSettings.isScaleBarEnabled = false
+            moveToInitialPosition()
+            setInitialPolygon(settingUiModel.border)
+            setContentPaddingBottom(initialPadding)
+            setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
         }
     }
 
