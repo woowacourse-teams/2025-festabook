@@ -15,6 +15,10 @@ fun setFormatDate(
     startTime: String?,
     endTime: String?,
 ) {
+    if (startTime == null && endTime == null) {
+        textView.text = textView.context.getString(R.string.place_detail_default_time)
+        return
+    }
     val text = listOf(startTime, endTime).joinToString(" ~ ")
     textView.text = text
 }
@@ -66,7 +70,7 @@ fun setCategory(
 @BindingAdapter("imageUrl")
 fun setImage(
     view: ImageView,
-    imageUrl: String,
+    imageUrl: String?,
 ) {
     view.load(imageUrl) {
         crossfade(true)

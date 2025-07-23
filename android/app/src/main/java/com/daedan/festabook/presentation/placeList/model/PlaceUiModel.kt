@@ -7,11 +7,11 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PlaceUiModel(
     val id: Long,
-    val imageUrl: String,
+    val imageUrl: String?,
     val category: PlaceCategoryUiModel,
-    val title: String,
-    val description: String,
-    val location: String,
+    val title: String?,
+    val description: String?,
+    val location: String?,
     val isBookmarked: Boolean = false,
 ) : Parcelable
 

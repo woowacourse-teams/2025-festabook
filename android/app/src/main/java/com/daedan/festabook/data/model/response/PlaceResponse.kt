@@ -14,11 +14,11 @@ data class PlaceResponse(
     @SerialName("category")
     val category: PlaceCategory,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("imageUrl")
-    val imageUrl: String,
+    val imageUrl: String?,
     @SerialName("location")
-    val location: String,
+    val location: String?,
 )
 
 fun PlaceResponse.toDomain() =
