@@ -6,7 +6,7 @@ import androidx.databinding.BindingAdapter
 import coil3.load
 import coil3.request.crossfade
 import com.daedan.festabook.R
-import com.daedan.festabook.presentation.placeList.model.PlaceCategory
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.google.android.material.card.MaterialCardView
 
 @BindingAdapter("startTime", "endTime", requireAll = true)
@@ -32,15 +32,15 @@ fun setBookmarkColor(
 @BindingAdapter("category")
 fun setCategory(
     view: MaterialCardView,
-    category: PlaceCategory,
+    category: PlaceCategoryUiModel,
 ) {
     val density = view.context.resources.displayMetrics.density
     val layoutParams = view.layoutParams
     when (category) {
-        PlaceCategory.FOOD_TRUCK -> layoutParams.width = (50 * density).toInt()
-        PlaceCategory.BAR -> layoutParams.width = (34 * density).toInt()
-        PlaceCategory.BOOTH -> layoutParams.width = (34 * density).toInt()
-        PlaceCategory.SMOKING_AREA, PlaceCategory.TOILET, PlaceCategory.TRASH_CAN -> Unit
+        PlaceCategoryUiModel.FOOD_TRUCK -> layoutParams.width = (50 * density).toInt()
+        PlaceCategoryUiModel.BAR -> layoutParams.width = (34 * density).toInt()
+        PlaceCategoryUiModel.BOOTH -> layoutParams.width = (34 * density).toInt()
+        PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET, PlaceCategoryUiModel.TRASH_CAN -> Unit
     }
     view.layoutParams = layoutParams
 }
@@ -48,16 +48,16 @@ fun setCategory(
 @BindingAdapter("category")
 fun setCategory(
     view: TextView,
-    category: PlaceCategory,
+    category: PlaceCategoryUiModel,
 ) {
     when (category) {
-        PlaceCategory.FOOD_TRUCK ->
+        PlaceCategoryUiModel.FOOD_TRUCK ->
             view.text =
                 view.context.getString(R.string.place_list_title_food_truck)
 
-        PlaceCategory.BAR -> view.text = view.context.getString(R.string.place_list_title_bar)
-        PlaceCategory.BOOTH -> view.text = view.context.getString(R.string.place_list_title_booth)
-        PlaceCategory.SMOKING_AREA, PlaceCategory.TOILET, PlaceCategory.TRASH_CAN -> Unit
+        PlaceCategoryUiModel.BAR -> view.text = view.context.getString(R.string.place_list_title_bar)
+        PlaceCategoryUiModel.BOOTH -> view.text = view.context.getString(R.string.place_list_title_booth)
+        PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET, PlaceCategoryUiModel.TRASH_CAN -> Unit
     }
 }
 

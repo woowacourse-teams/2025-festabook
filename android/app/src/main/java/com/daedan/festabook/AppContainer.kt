@@ -8,19 +8,26 @@ import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
+import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
+import com.daedan.festabook.data.repository.PlaceDetailRepositoryImpl
+import com.daedan.festabook.data.repository.PlaceListRepositoryImpl
 import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
 import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.organizationBookmarkService
+import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
+import com.daedan.festabook.domain.repository.PlaceDetailRepository
+import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.domain.repository.ScheduleRepository
 import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
@@ -37,6 +44,19 @@ class AppContainer(
     private val noticeDataSource: NoticeDataSource by lazy {
         NoticeDataSourceImpl(noticeService)
     }
+
+    private val placeListDataSource: PlaceDataSource by lazy {
+        PlaceDataSourceImpl(placeService)
+    }
+
+    val placeDetailRepository: PlaceDetailRepository by lazy {
+        PlaceDetailRepositoryImpl(placeListDataSource)
+    }
+
+    val placeListRepository: PlaceListRepository by lazy {
+        PlaceListRepositoryImpl(placeListDataSource)
+    }
+
     private val deviceDataSource: DeviceDataSource by lazy {
         DeviceDataSourceImpl(deviceService)
     }

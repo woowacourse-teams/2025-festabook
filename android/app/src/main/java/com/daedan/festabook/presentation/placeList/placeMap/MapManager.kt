@@ -5,7 +5,7 @@ import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
-import com.daedan.festabook.presentation.placeList.model.PlaceCategory
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.iconResources
 import com.daedan.festabook.presentation.placeList.model.setIcon
@@ -23,7 +23,7 @@ class MapManager(
 ) {
     private val overlayImageManager =
         OverlayImageManager(
-            PlaceCategory.iconResources + listOf(R.drawable.ic_cluster_marker),
+            PlaceCategoryUiModel.iconResources + listOf(R.drawable.ic_cluster_marker),
         )
 
     private val clusterManager =
