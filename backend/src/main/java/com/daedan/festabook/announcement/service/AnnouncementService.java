@@ -65,11 +65,11 @@ public class AnnouncementService {
     ) {
         return announcements.stream()
                 .filter(filter)
-                .sorted(getCreatedAtDescendingComparator())
+                .sorted(createdAtDescending())
                 .toList();
     }
 
-    private Comparator<Announcement> getCreatedAtDescendingComparator() {
+    private Comparator<Announcement> createdAtDescending() {
         return Comparator.comparing(Announcement::getCreatedAt).reversed();
     }
 }
