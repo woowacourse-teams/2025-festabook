@@ -72,7 +72,8 @@ class PlaceListScrollBehavior(
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
         state.companionView.setCompanionHeight(child)
 
-        child.consumeIfRecyclerViewCanScrollUp(dy, consumed)
+        val isAlreadyConsumed = child.consumeIfRecyclerViewCanScrollUp(dy, consumed)
+        if (isAlreadyConsumed) return
         child.consumeBackgroundLayoutScroll(dy, consumed)
     }
 
@@ -106,7 +107,7 @@ class PlaceListScrollBehavior(
     }
 
     fun setOnScrollListener(listener: (dy: Float) -> Unit) {
-        state.onScrollListener = listener
+        state = state.copy(onScrollListener = listener)
     }
 
     private fun TypedArray.setAttribute() {
@@ -167,15 +168,17 @@ class PlaceListScrollBehavior(
     private fun ViewGroup.consumeIfRecyclerViewCanScrollUp(
         dy: Int,
         consumed: IntArray,
-    ) {
+    ): Boolean {
         state.recyclerView?.let {
             // 리사이클러 뷰가 위로 스크롤 될 수 있을 때
             if (dy < 0 && it.canScrollUp()) {
                 background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
                 consumed[1] = 0
-                return
+                return true
             }
         }
+
+        return false
     }
 
     private data class Attribute(
@@ -189,7 +192,7 @@ class PlaceListScrollBehavior(
         val recyclerView: RecyclerView?,
         val companionView: View?,
         val rootViewHeight: Int,
-        var onScrollListener: ((dy: Float) -> Unit)? = null,
+        val onScrollListener: ((dy: Float) -> Unit)? = null,
     )
 
     companion object {
