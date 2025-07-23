@@ -9,7 +9,7 @@
 
         <variable
             name="handler"
-            type="com.daedan.festabook.presentation.placeList.OnPlaceClickedListener" />
+            type="com.daedan.festabook.presentation.placeList.PlaceClickListener" />
 
     </data>
 
@@ -117,6 +117,7 @@
             tools:text="공학관 앞" />
 
         <ImageButton
+            android:onClick="@{()->handler.onBookmarkClicked(place)}"
             android:id="@+id/iv_bookmark"
             isBookmarked="@{place.isBookmarked}"
             android:layout_width="wrap_content"

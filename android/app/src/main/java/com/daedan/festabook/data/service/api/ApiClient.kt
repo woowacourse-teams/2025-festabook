@@ -2,6 +2,7 @@ package com.daedan.festabook.data.service.api
 
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.data.service.NoticeService
+import com.daedan.festabook.data.service.PlaceService
 import com.daedan.festabook.data.service.ScheduleService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
@@ -34,4 +35,6 @@ object ApiClient {
     }
 
     val noticeService: NoticeService = retrofit.create(NoticeService::class.java)
+
+    val placeService: PlaceService = retrofit.create(PlaceService::class.java)
 }
