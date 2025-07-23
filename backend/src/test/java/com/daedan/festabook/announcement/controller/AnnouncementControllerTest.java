@@ -19,6 +19,7 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -191,19 +192,13 @@ class AnnouncementControllerTest {
                     .map(LocalDateTime::parse)
                     .toList();
 
-            System.out.println("===== createdAt 출력 시작 =====");
-            for (int i = 0; i < result.size(); i++) {
-                System.out.println("pinned[" + i + "] createdAt: " + result.get(i));
-            }
-            System.out.println("announcement1: " + announcement1.getCreatedAt());
-            System.out.println("announcement2: " + announcement2.getCreatedAt());
-            System.out.println("announcement3: " + announcement3.getCreatedAt());
-            System.out.println("===== createdAt 출력 끝 =====");
-
             assertSoftly(s -> {
-                s.assertThat(result.get(0)).isEqualTo(announcement3.getCreatedAt());
-                s.assertThat(result.get(1)).isEqualTo(announcement2.getCreatedAt());
-                s.assertThat(result.get(2)).isEqualTo(announcement1.getCreatedAt());
+                s.assertThat(result.get(0).truncatedTo(ChronoUnit.MICROS))
+                        .isEqualTo(announcement3.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
+                s.assertThat(result.get(1).truncatedTo(ChronoUnit.MICROS))
+                        .isEqualTo(announcement2.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
+                s.assertThat(result.get(2).truncatedTo(ChronoUnit.MICROS))
+                        .isEqualTo(announcement1.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
             });
         }
 
