@@ -77,15 +77,19 @@ class ClusterManager(
      */
 
     private fun Marker.setSize(info: ClusterMarkerInfo) {
-        if (info.size > HIGH_COUNT_CLUSTER_THRESHOLD) {
-            width = LARGE_CLUSTER_MARKER_SIZE.toPx(context)
-            height = LARGE_CLUSTER_MARKER_SIZE.toPx(context)
-        } else if (info.size > LOW_COUNT_CLUSTER_THRESHOLD && info.size <= HIGH_COUNT_CLUSTER_THRESHOLD) {
-            width = Marker.SIZE_AUTO
-            height = Marker.SIZE_AUTO
-        } else {
-            width = SMALL_CLUSTER_MARKER_SIZE.toPx(context)
-            height = SMALL_CLUSTER_MARKER_SIZE.toPx(context)
+        when (info.size) {
+            in 0 until LOW_COUNT_CLUSTER_THRESHOLD -> {
+                width = SMALL_CLUSTER_MARKER_SIZE.toPx(context)
+                height = SMALL_CLUSTER_MARKER_SIZE.toPx(context)
+            }
+            in LOW_COUNT_CLUSTER_THRESHOLD until HIGH_COUNT_CLUSTER_THRESHOLD -> {
+                width = Marker.SIZE_AUTO
+                height = Marker.SIZE_AUTO
+            }
+            else -> {
+                width = LARGE_CLUSTER_MARKER_SIZE.toPx(context)
+                height = LARGE_CLUSTER_MARKER_SIZE.toPx(context)
+            }
         }
     }
 
