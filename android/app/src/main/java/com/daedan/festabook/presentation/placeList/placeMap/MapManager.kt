@@ -10,7 +10,6 @@ import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.iconResources
 import com.daedan.festabook.presentation.placeList.model.setIcon
 import com.daedan.festabook.presentation.placeList.model.toLatLng
-import com.daedan.festabook.presentation.placeList.placeMap.ClusterManager.DSLHelper.put
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
@@ -87,20 +86,19 @@ class MapManager(
         )
     }
 
-    // 생성자로 입력받은 초기 위치로 카메라를 이동합니다
     private fun NaverMap.moveToInitialPosition() {
-        val cameraUpdate1 =
+        val initialCenterCoordinate =
             CameraUpdate
                 .scrollTo(
                     settingUiModel.initialCenter.toLatLng(),
                 )
 
-        val cameraUpdate2 =
+        val initialZoomLevelCoordinate =
             CameraUpdate.zoomTo(
                 settingUiModel.zoom.toDouble(),
             )
-        moveCamera(cameraUpdate1)
-        moveCamera(cameraUpdate2)
+        moveCamera(initialCenterCoordinate)
+        moveCamera(initialZoomLevelCoordinate)
     }
 
     // 생성자로 입력받은 초기 위치 경계를 설정합니다
