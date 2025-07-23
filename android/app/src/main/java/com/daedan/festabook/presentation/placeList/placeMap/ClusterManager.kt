@@ -5,7 +5,7 @@ import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.model.PlaceCategory
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.setIcon
-import com.naver.maps.geometry.LatLng
+import com.daedan.festabook.presentation.placeList.model.toLatLng
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.clustering.ClusterMarkerInfo
 import com.naver.maps.map.clustering.Clusterer
@@ -97,10 +97,10 @@ class ClusterManager(
         val itemKeyMap = mutableMapOf<ClusteringMarkerKey, PlaceCategory>()
 
         fun put(
-            position: LatLng,
             idx: Int,
             place: PlaceCoordinateUiModel,
         ) {
+            val position = place.coordinate.toLatLng()
             itemKeyMap[ClusteringMarkerKey(idx, position)] = place.category
         }
     }

@@ -10,6 +10,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.iconResources
 import com.daedan.festabook.presentation.placeList.model.setIcon
 import com.daedan.festabook.presentation.placeList.model.toLatLng
+import com.daedan.festabook.presentation.placeList.placeMap.ClusterManager.DSLHelper.put
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
@@ -32,29 +33,26 @@ class MapManager(
             overlayImageManager,
         )
 
-    // 네이버 지도 초기 세팅
     init {
         setupMap()
     }
 
-    /**
-     * @param coordinates List<PlaceCoordinateUiModel> 리스트
-     * 위치와 카테고리 정보를 받아 마커를 생성합니다
-     */
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         clusterManager.buildCluster {
             coordinates.forEachIndexed { idx, place ->
-                Marker().apply {
-                    width = Marker.SIZE_AUTO
-                    height = Marker.SIZE_AUTO
-                    position = place.coordinate.toLatLng()
-                    minZoom = CLUSTER_ZOOM_THRESHOLD
-                    map = this@MapManager.map
-                    overlayImageManager.setIcon(this, place.category)
-                    put(position, idx, place)
-                }
+                Marker().generate(place)
+                put(idx, place)
             }
         }
+    }
+
+    private fun Marker.generate(place: PlaceCoordinateUiModel) {
+        width = Marker.SIZE_AUTO
+        height = Marker.SIZE_AUTO
+        position = place.coordinate.toLatLng()
+        minZoom = CLUSTER_ZOOM_THRESHOLD
+        map = this@MapManager.map
+        overlayImageManager.setIcon(this, place.category)
     }
 
     private fun setupMap() {
