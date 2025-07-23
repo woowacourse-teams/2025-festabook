@@ -1,14 +1,19 @@
-package com.daedan.festabook.organization.controller;
+package com.daedan.festabook.place.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceFixture;
+import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.config.JsonPathConfig;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -24,12 +29,13 @@ import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class OrganizationControllerTest {
-
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+class PlaceGeographyControllerTest {
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
+
+    @Autowired
+    private PlaceJpaRepository placeJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -52,7 +58,7 @@ class OrganizationControllerTest {
     }
 
     @Nested
-    class getOrganizationGeographyByOrganizationId {
+    class getAllPlaceGeographyByOrganizationId {
 
         @Test
         void 성공() {
@@ -60,34 +66,51 @@ class OrganizationControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(place));
+
+            int expectedSize = 1;
             int expectedFieldSize = 3;
+            int expectedMarkerFieldSize = 2;
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header("organization", organization.getId())
                     .when()
-                    .get("/organizations/geography")
+                    .get("/places/geographies")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("zoom", equalTo(organization.getZoom()))
-                    .body("centerCoordinate.latitude",
-                            equalTo(organization.getCenterCoordinate().getLatitude()))
-                    .body("centerCoordinate.longitude",
-                            equalTo(organization.getCenterCoordinate().getLongitude()))
-                    .body("polygonHoleBoundary[0].latitude",
-                            equalTo(organization.getPolygonHoleBoundary().get(0).getLatitude()))
-                    .body("polygonHoleBoundary[0].longitude",
-                            equalTo(organization.getPolygonHoleBoundary().get(0).getLongitude()))
-                    .body("polygonHoleBoundary[1].latitude",
-                            equalTo(organization.getPolygonHoleBoundary().get(1).getLatitude()))
-                    .body("polygonHoleBoundary[1].longitude",
-                            equalTo(organization.getPolygonHoleBoundary().get(1).getLongitude()))
-                    .body("polygonHoleBoundary[2].latitude",
-                            equalTo(organization.getPolygonHoleBoundary().get(2).getLatitude()))
-                    .body("polygonHoleBoundary[2].longitude",
-                            equalTo(organization.getPolygonHoleBoundary().get(2).getLongitude()));
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].size()", equalTo(expectedFieldSize))
+                    .body("[0].id", equalTo(place.getId().intValue()))
+                    .body("[0].category", equalTo(place.getCategory().name()))
+                    .body("[0].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
+                    .body("[0].markerCoordinate.latitude", equalTo(place.getCoordinate().getLatitude()))
+                    .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()));
+        }
+
+        @Test
+        void 성공_특정_조직의_플레이스_지리_목록() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place1 = PlaceFixture.create(organization);
+            Place place2 = PlaceFixture.create(organization);
+            placeJpaRepository.saveAll(List.of(place1, place2));
+
+            int expectedSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header("organization", organization.getId())
+                    .when()
+                    .get("/places/geographies")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
         }
     }
 }
