@@ -1,6 +1,7 @@
 package com.daedan.festabook.presentation.placeList
 
 import android.content.Context
+import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
@@ -21,31 +22,13 @@ class PlaceListScrollBehavior(
     private val context: Context,
     attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<ConstraintLayout>() {
-    private var initialY: Float = UNINITIALIZED_VALUE
-    private var minimumY: Float = UNINITIALIZED_VALUE
-    private var recyclerViewId: Int = UNINITIALIZED_VALUE.toInt()
-    private var companionViewId: Int = UNINITIALIZED_VALUE.toInt()
-    private var recyclerView: RecyclerView? = null
-    private var companionView: View? = null
-    var onScrollListener: ((dy: Float) -> Unit)? = null
-    private var isInitialized = false
-    private var rootViewHeight = UNINITIALIZED_VALUE.toInt()
+    private lateinit var attribute: Attribute
+    private lateinit var state: BehaviorState
+    private var isInitialized: Boolean = false
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
-            initialY =
-                getDimension(R.styleable.PlaceListScrollBehavior_initialY, UNINITIALIZED_VALUE)
-            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, UNINITIALIZED_VALUE)
-            recyclerViewId =
-                getResourceId(
-                    R.styleable.PlaceListScrollBehavior_recyclerView,
-                    UNINITIALIZED_VALUE.toInt(),
-                )
-            companionViewId =
-                getResourceId(
-                    R.styleable.PlaceListScrollBehavior_companionView,
-                    UNINITIALIZED_VALUE.toInt(),
-                )
+            setAttribute()
         }
     }
 
@@ -55,15 +38,16 @@ class PlaceListScrollBehavior(
         layoutDirection: Int,
     ): Boolean {
         if (!isInitialized) {
-            recyclerView = parent.findViewById(recyclerViewId)
-            companionView = parent.findViewById(companionViewId)
+            val recyclerView: RecyclerView? = parent.findViewById(attribute.recyclerViewId)
+            val companionView: View? = parent.findViewById(attribute.companionViewId)
             isInitialized = true
 
             // 기기 높이 - 시스템 바 높이
-            rootViewHeight = child.rootView.height - child.getSystemBarHeightCompat()
-            child.translationY = rootViewHeight - initialY
+            val rootViewHeight = child.rootView.height - child.getSystemBarHeightCompat()
+            child.translationY = rootViewHeight - attribute.initialY
+            state = BehaviorState(recyclerView, companionView, rootViewHeight)
         }
-        companionView.setCompanionHeight(child)
+        state.companionView.setCompanionHeight(child)
         return super.onLayoutChild(parent, child, layoutDirection)
     }
 
@@ -86,7 +70,7 @@ class PlaceListScrollBehavior(
         type: Int,
     ) {
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
-        companionView.setCompanionHeight(child)
+        state.companionView.setCompanionHeight(child)
 
         child.consumeIfRecyclerViewCanScrollUp(dy, consumed)
         child.consumeBackgroundLayoutScroll(dy, consumed)
@@ -121,6 +105,34 @@ class PlaceListScrollBehavior(
         )
     }
 
+    fun setOnScrollListener(listener: (dy: Float) -> Unit) {
+        state.onScrollListener = listener
+    }
+
+    private fun TypedArray.setAttribute() {
+        val initialY =
+            getDimension(R.styleable.PlaceListScrollBehavior_initialY, UNINITIALIZED_VALUE)
+        val minimumY =
+            getDimension(R.styleable.PlaceListScrollBehavior_minimumY, UNINITIALIZED_VALUE)
+        val recyclerViewId =
+            getResourceId(
+                R.styleable.PlaceListScrollBehavior_recyclerView,
+                UNINITIALIZED_VALUE.toInt(),
+            )
+        val companionViewId =
+            getResourceId(
+                R.styleable.PlaceListScrollBehavior_companionView,
+                UNINITIALIZED_VALUE.toInt(),
+            )
+        attribute =
+            Attribute(
+                initialY,
+                minimumY,
+                recyclerViewId,
+                companionViewId,
+            )
+    }
+
     private fun View?.setCompanionHeight(child: ConstraintLayout) {
         this?.apply {
             y = child.translationY - height
@@ -133,13 +145,13 @@ class PlaceListScrollBehavior(
     ) {
         apply {
             // 최대 높이 (0일수록 천장에 가깝고, contentAreaHeight일수록 바닥에 가까움), 즉 maxHeight 까지만 스크롤을 내릴 수 있습니다
-            val maxHeight = rootViewHeight - minimumY
+            val maxHeight = state.rootViewHeight - attribute.minimumY
             val requestedTranslationY = translationY - dy
             val newTranslationY = getNewTranslationY(requestedTranslationY, maxHeight)
 
             // 외부 레이아웃이 스크롤이 되었을 때만 스크롤 리스너 적용
             if (requestedTranslationY in UNINITIALIZED_VALUE..maxHeight) {
-                onScrollListener?.invoke(dy.toFloat())
+                state.onScrollListener?.invoke(dy.toFloat())
             }
             translationY = newTranslationY
             scrollAnimation(newTranslationY)
@@ -156,7 +168,7 @@ class PlaceListScrollBehavior(
         dy: Int,
         consumed: IntArray,
     ) {
-        recyclerView?.let {
+        state.recyclerView?.let {
             // 리사이클러 뷰가 위로 스크롤 될 수 있을 때
             if (dy < 0 && it.canScrollUp()) {
                 background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
@@ -165,6 +177,20 @@ class PlaceListScrollBehavior(
             }
         }
     }
+
+    private data class Attribute(
+        val initialY: Float,
+        val minimumY: Float,
+        val recyclerViewId: Int,
+        val companionViewId: Int,
+    )
+
+    private data class BehaviorState(
+        val recyclerView: RecyclerView?,
+        val companionView: View?,
+        val rootViewHeight: Int,
+        var onScrollListener: ((dy: Float) -> Unit)? = null,
+    )
 
     companion object {
         private const val UNINITIALIZED_VALUE = 0f
