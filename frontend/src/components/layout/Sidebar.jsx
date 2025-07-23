@@ -85,7 +85,7 @@ const Sidebar = () => {
                 <NavLink target="dashboard" icon="fa-tachometer-alt">대시보드</NavLink>
                 <NavLink target="home" icon="fa-home">홈</NavLink>
                 <NavLink target="schedule" icon="fa-calendar-alt">일정</NavLink>
-                <SubMenu icon="fa-map-marked-alt" title="지도" links={[{ target: 'booths', title: '플레이스 관리' }, { target: 'map-settings', title: '지도 설정' }]} open={openMenus[0]} onToggle={() => handleSubMenuToggle(0)} />
+                <SubMenu icon="fa-map-marked-alt" title="지도" links={[{ target: 'booths', title: '플레이스' }, { target: 'map-settings', title: '지도 설정' }]} open={openMenus[0]} onToggle={() => handleSubMenuToggle(0)} />
                 <SubMenu icon="fa-bullhorn" title="소식" links={[{ target: 'notices', title: '공지 사항' }, { target: 'lost-found', title: '분실물' }, { target: 'qna', title: 'QnA' }]} open={openMenus[1]} onToggle={() => handleSubMenuToggle(1)} />
             </nav>
         </aside>

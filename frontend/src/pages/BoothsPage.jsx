@@ -3,7 +3,7 @@ import { useData } from '../hooks/useData';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../constants/categories';
 
-const BoothDetails = ({ booth }) => {
+const BoothDetails = ({ booth, openModal, handleSave, showToast, updateBooth }) => {
     return (
         <div className="p-6 bg-gray-50">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -24,7 +24,7 @@ const BoothDetails = ({ booth }) => {
                 </div>
                 <div>
                      <h4 className="font-semibold text-lg mb-2">사진</h4>
-                     <div className="grid grid-cols-2 gap-2">
+                     <div className="grid grid-cols-2 gap-2 mb-10">
                         {booth.images && booth.images.length > 0 ? booth.images.map((img, index) => (
                             <div key={index} className="relative">
                                 <img src={img} alt={`${booth.title} ${index+1}`} className="w-full h-24 object-cover rounded-md"/>
@@ -36,7 +36,20 @@ const BoothDetails = ({ booth }) => {
                      </div>
                 </div>
             </div>
-            {/* 수정 버튼 제거 */}
+            <div className="flex items-center gap-4 justify-end mt-2">
+                <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${booth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
+                <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
+                <button onClick={() => {
+                    openModal('confirm', {
+                        title: '플레이스 삭제 확인',
+                        message: `'${booth.title}' 플레이스를 정말 삭제하시겠습니까?`,
+                        onConfirm: () => {
+                            updateBooth(booth.id, { ...booth, _delete: true });
+                            showToast('플레이스가 삭제되었습니다.');
+                        }
+                    });
+                }} className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
+            </div>
         </div>
     );
 };
@@ -80,7 +93,7 @@ const BoothsPage = () => {
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-6"><h2 className="text-3xl font-bold">플레이스 관리</h2><button onClick={() => openModal('booth', { onSave: handleSave })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> 새 플레이스 추가</button></div>
+            <div className="flex justify-between items-center mb-6"><h2 className="text-3xl font-bold">플레이스</h2><button onClick={() => openModal('booth', { onSave: handleSave })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> 새 플레이스 추가</button></div>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
                 <table className="min-w-full w-full">
                     <thead className="table-header">
@@ -107,25 +120,21 @@ const BoothsPage = () => {
                                                 <i className={`fas ${expandedIds.includes(booth.id) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
                                                 상세보기
                                             </button>
-                                            <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${booth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
-                                            <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
-                                            <button onClick={() => {
-                                                openModal('confirm', {
-                                                    title: '플레이스 삭제 확인',
-                                                    message: `'${booth.title}' 플레이스를 정말 삭제하시겠습니까?`,
-                                                    onConfirm: () => {
-                                                        updateBooth(booth.id, { ...booth, _delete: true });
-                                                        showToast('플레이스가 삭제되었습니다.');
-                                                    }
-                                                });
-                                            }} className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
                                         </div>
                                     </td>
                                 </tr>
                                 <tr>
                                     <td colSpan="3" className="p-0">
                                         <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
-                                            <BoothDetails booth={booth} />
+                                            {expandedIds.includes(booth.id) && (
+                                                <BoothDetails 
+                                                    booth={booth} 
+                                                    openModal={openModal}
+                                                    handleSave={handleSave}
+                                                    showToast={showToast}
+                                                    updateBooth={updateBooth}
+                                                />
+                                            )}
                                         </div>
                                     </td>
                                 </tr>
