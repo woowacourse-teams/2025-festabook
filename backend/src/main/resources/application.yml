@@ -9,6 +9,11 @@ spring:
   profiles:
     include: secret
 
+  h2:
+    console:
+      path: /h2-console
+      enabled: true
+
 # Swagger
 springdoc:
   swagger-ui:
