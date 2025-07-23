@@ -20,8 +20,8 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(RuntimeException.class)
-    public ResponseEntity<ExceptionResponse> handleException(Exception exception) {
-        log.warn(exception.getMessage());
+    public ResponseEntity<ExceptionResponse> handleRuntimeException(RuntimeException runtimeException) {
+        log.warn(runtimeException.getMessage());
         return ResponseEntity
                 .internalServerError()
                 .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
