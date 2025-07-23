@@ -191,6 +191,15 @@ class AnnouncementControllerTest {
                     .map(LocalDateTime::parse)
                     .toList();
 
+            System.out.println("===== createdAt 출력 시작 =====");
+            for (int i = 0; i < result.size(); i++) {
+                System.out.println("pinned[" + i + "] createdAt: " + result.get(i));
+            }
+            System.out.println("announcement1: " + announcement1.getCreatedAt());
+            System.out.println("announcement2: " + announcement2.getCreatedAt());
+            System.out.println("announcement3: " + announcement3.getCreatedAt());
+            System.out.println("===== createdAt 출력 끝 =====");
+
             assertSoftly(s -> {
                 s.assertThat(result.get(0)).isEqualTo(announcement3.getCreatedAt());
                 s.assertThat(result.get(1)).isEqualTo(announcement2.getCreatedAt());
