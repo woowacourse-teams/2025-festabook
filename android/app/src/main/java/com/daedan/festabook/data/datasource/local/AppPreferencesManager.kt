@@ -28,6 +28,19 @@ class AppPreferencesManager(
 
     fun getDeviceId(): Long = prefs.getLong(KEY_DEVICE_ID, DEFAULT_DEVICE_ID)
 
+    fun saveBookmarkId(bookmarkId: Long) {
+        prefs.edit { putLong(KEY_BOOKMARK_ID, bookmarkId) }
+    }
+
+    fun getBookmarkId(): Long? {
+        val id = prefs.getLong(KEY_BOOKMARK_ID, DEFAULT_BOOKMARK_ID)
+        return if (id == DEFAULT_BOOKMARK_ID) null else id
+    }
+
+    fun clearBookmarkId() {
+        prefs.edit { remove(KEY_BOOKMARK_ID) }
+    }
+
     fun clearAll() {
         prefs.edit { clear() }
     }
@@ -37,6 +50,8 @@ class AppPreferencesManager(
         private const val KEY_UUID = "device_uuid"
         private const val KEY_FCM_TOKEN = "fcm_token"
         private const val KEY_DEVICE_ID = "server_device_id"
+        private const val KEY_BOOKMARK_ID = "bookmark_id"
+        private const val DEFAULT_BOOKMARK_ID = -1L
         const val DEFAULT_DEVICE_ID = -1L
     }
 }
