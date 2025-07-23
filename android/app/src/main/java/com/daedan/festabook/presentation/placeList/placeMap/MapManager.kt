@@ -1,6 +1,6 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
-import androidx.core.graphics.toColorInt
+import androidx.core.content.ContextCompat
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
@@ -111,7 +111,8 @@ class MapManager(
                         it.toLatLng()
                     },
                 )
-            color = OVERLAY_COLOR_INT.toColorInt()
+            val overlayColor = ContextCompat.getColor(context, R.color.black400_alpha30)
+            color = overlayColor
             outlineWidth = OVERLAY_OUTLINE_STROKE_WIDTH
             map = this@MapManager.map
         }
@@ -122,7 +123,6 @@ class MapManager(
         // 이 값보다 줌 레벨이 높거나 같아지면 (즉, 지도를 확대할수록)
         // 개별 아이템 마커가 지도에 표시되기 시작합니다.
         private const val CLUSTER_ZOOM_THRESHOLD = 17.0
-        private const val OVERLAY_COLOR_INT = "#4D000000"
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val LOGO_MARGIN_TOP_PX = 75
 
