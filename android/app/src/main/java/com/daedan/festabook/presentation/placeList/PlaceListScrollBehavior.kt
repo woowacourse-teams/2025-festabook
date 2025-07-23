@@ -28,6 +28,7 @@ class PlaceListScrollBehavior(
     private var companionView: View? = null
     var onScrollListener: ((dy: Float) -> Unit)? = null
     private var isInitialized = false
+    private var rootViewHeight = UNINITIALIZED_VALUE.toInt()
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
@@ -58,8 +59,8 @@ class PlaceListScrollBehavior(
             isInitialized = true
 
             // 기기 높이 - 시스템 바 높이
-            val contentAreaHeight = child.rootView.height - child.getSystemBarHeightCompat()
-            child.translationY = contentAreaHeight - initialY
+            rootViewHeight = child.rootView.height - child.getSystemBarHeightCompat()
+            child.translationY = rootViewHeight - initialY
         }
         companionView.setCompanionHeight(child)
         return super.onLayoutChild(parent, child, layoutDirection)
@@ -100,10 +101,8 @@ class PlaceListScrollBehavior(
             val currentTranslationY = translationY
             // 이동한 y만큼 새로운 좌표 지정
             val newTranslationY = currentTranslationY - dy
-            // 시스템 기기 높이 - 시스템 바 높이
-            val contentAreaHeight = rootView.height - getSystemBarHeightCompat()
             // 최대 높이 (0일수록 천장에 가깝고, contentAreaHeight일수록 바닥에 가까움), 즉 maxHeight 까지만 스크롤을 내릴 수 있습니다
-            val maxHeight = contentAreaHeight - minimumY
+            val maxHeight = rootViewHeight - minimumY
             val limitedTranslationY = newTranslationY.coerceIn(UNINITIALIZED_VALUE, maxHeight)
 
             if (newTranslationY in UNINITIALIZED_VALUE..maxHeight) {
