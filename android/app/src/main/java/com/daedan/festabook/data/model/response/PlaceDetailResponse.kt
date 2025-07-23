@@ -2,6 +2,7 @@ package com.daedan.festabook.data.model.response
 
 import com.daedan.festabook.domain.model.Notice
 import com.daedan.festabook.domain.model.Place
+import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.model.PlaceDetail
 import com.daedan.festabook.domain.model.PlaceDetailImage
 import kotlinx.serialization.SerialName
@@ -13,7 +14,7 @@ data class PlaceDetailResponse(
     @SerialName("id")
     val id: Long,
     @SerialName("category")
-    val category: String,
+    val category: PlaceCategory,
     @SerialName("description")
     val description: String,
     @SerialName("startTime")
@@ -69,7 +70,7 @@ private fun PlaceDetailResponse.toPlace() =
     Place(
         id = id,
         title = title,
-        category = category.toPlaceCategory(),
+        category = category,
         description = description,
         imageUrl = placeImages.find { it.sequence == 1 }?.imageUrl ?: PlaceDetailImage.DEFAULT_IMAGE_URL,
         location = location,

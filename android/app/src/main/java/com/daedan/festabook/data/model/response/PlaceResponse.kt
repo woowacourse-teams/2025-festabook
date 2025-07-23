@@ -12,7 +12,7 @@ data class PlaceResponse(
     @SerialName("title")
     val title: String,
     @SerialName("category")
-    val category: String,
+    val category: PlaceCategory,
     @SerialName("description")
     val description: String,
     @SerialName("imageUrl")
@@ -25,19 +25,8 @@ fun PlaceResponse.toDomain() =
     Place(
         id = id,
         title = title,
-        category = category.toPlaceCategory(),
+        category = category,
         description = description,
         imageUrl = imageUrl,
         location = location,
     )
-
-fun String.toPlaceCategory(): PlaceCategory =
-    when (this) {
-        "FOOD_TRUCK" -> PlaceCategory.FOOD_TRUCK
-        "BOOTH" -> PlaceCategory.BOOTH
-        "BAR" -> PlaceCategory.BAR
-        "TRASH_CAN" -> PlaceCategory.TRASH_CAN
-        "TOILET" -> PlaceCategory.TOILET
-        "SMOKING_AREA" -> PlaceCategory.SMOKING_AREA
-        else -> throw IllegalArgumentException("잘못된 카테고리 값입니다")
-    }
