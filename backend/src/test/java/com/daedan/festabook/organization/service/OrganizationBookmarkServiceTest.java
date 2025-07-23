@@ -88,7 +88,7 @@ class OrganizationBookmarkServiceTest {
         }
 
         @Test
-        void 예외_이미_북마크한_조직() {
+        void 예외_조직에_이미_북마크한_디바이스() {
             // given
             Long organizationId = 1L;
             Long deviceId = 1L;

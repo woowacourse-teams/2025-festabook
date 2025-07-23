@@ -83,7 +83,7 @@ class PlaceBookmarkServiceTest {
         }
 
         @Test
-        void 예외_이미_북마크한_플레이스() {
+        void 예외_플레이스에_이미_북마크한_디바이스() {
             // given
             Long placeId = 1L;
             Long deviceId = 1L;
