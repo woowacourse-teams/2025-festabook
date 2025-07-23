@@ -61,8 +61,8 @@ fun PlaceDetailResponse.toDomain() =
         place = toPlace(),
         notices = toNotices(),
         host = host,
-        startTime = startTime,
-        endTime = endTime,
+        startTime = LocalDateTime.parse(startTime),
+        endTime = LocalDateTime.parse(endTime),
         images = toPlaceDetailImages(),
     )
 
