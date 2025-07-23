@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
                 .body(businessException.toResponse());
     }
 
-    @ExceptionHandler(Exception.class)
+    @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionResponse> handleException(Exception exception) {
         log.warn(exception.getMessage());
         return ResponseEntity
