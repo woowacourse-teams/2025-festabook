@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList
 import android.content.Context
 import android.util.AttributeSet
 import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
@@ -87,31 +88,8 @@ class PlaceListScrollBehavior(
         super.onNestedPreScroll(coordinatorLayout, child, target, dx, dy, consumed, type)
         companionView.setCompanionHeight(child)
 
-        recyclerView?.let {
-            // 아래로 스크롤 하고, 리사이클러 뷰의 최상단에 도달하지 않았을 때
-            if (dy < 0 && it.canScrollUp()) {
-                child.background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
-                consumed[1] = 0
-                return
-            }
-        }
-
-        // 리사이클러 뷰 스크롤 전 배경 스크롤 처리
-        child.apply {
-            val currentTranslationY = translationY
-            // 이동한 y만큼 새로운 좌표 지정
-            val newTranslationY = currentTranslationY - dy
-            // 최대 높이 (0일수록 천장에 가깝고, contentAreaHeight일수록 바닥에 가까움), 즉 maxHeight 까지만 스크롤을 내릴 수 있습니다
-            val maxHeight = rootViewHeight - minimumY
-            val limitedTranslationY = newTranslationY.coerceIn(UNINITIALIZED_VALUE, maxHeight)
-
-            if (newTranslationY in UNINITIALIZED_VALUE..maxHeight) {
-                onScrollListener?.invoke(dy.toFloat())
-            }
-            translationY = limitedTranslationY
-            scrollAnimation(limitedTranslationY)
-            consumed[1] = limitedTranslationY.toInt()
-        }
+        child.consumeIfRecyclerViewCanScrollUp(dy, consumed)
+        child.consumeBackgroundLayoutScroll(dy, consumed)
     }
 
     override fun onNestedScroll(
@@ -146,6 +124,45 @@ class PlaceListScrollBehavior(
     private fun View?.setCompanionHeight(child: ConstraintLayout) {
         this?.apply {
             y = child.translationY - height
+        }
+    }
+
+    private fun ViewGroup.consumeBackgroundLayoutScroll(
+        dy: Int,
+        consumed: IntArray,
+    ) {
+        apply {
+            // 최대 높이 (0일수록 천장에 가깝고, contentAreaHeight일수록 바닥에 가까움), 즉 maxHeight 까지만 스크롤을 내릴 수 있습니다
+            val maxHeight = rootViewHeight - minimumY
+            val requestedTranslationY = translationY - dy
+            val newTranslationY = getNewTranslationY(requestedTranslationY, maxHeight)
+
+            // 외부 레이아웃이 스크롤이 되었을 때만 스크롤 리스너 적용
+            if (requestedTranslationY in UNINITIALIZED_VALUE..maxHeight) {
+                onScrollListener?.invoke(dy.toFloat())
+            }
+            translationY = newTranslationY
+            scrollAnimation(newTranslationY)
+            consumed[1] = newTranslationY.toInt()
+        }
+    }
+
+    private fun ViewGroup.getNewTranslationY(
+        requestedTranslationY: Float,
+        maxHeight: Float,
+    ): Float = requestedTranslationY.coerceIn(UNINITIALIZED_VALUE, maxHeight)
+
+    private fun ViewGroup.consumeIfRecyclerViewCanScrollUp(
+        dy: Int,
+        consumed: IntArray,
+    ) {
+        recyclerView?.let {
+            // 리사이클러 뷰가 위로 스크롤 될 수 있을 때
+            if (dy < 0 && it.canScrollUp()) {
+                background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
+                consumed[1] = 0
+                return
+            }
         }
     }
 
