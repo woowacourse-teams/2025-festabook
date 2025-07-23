@@ -202,12 +202,12 @@ class AnnouncementControllerTest {
             System.out.println("===== createdAt 출력 끝 =====");
 
             assertSoftly(s -> {
-                s.assertThat(result.get(0).truncatedTo(ChronoUnit.MICROS))
-                        .isEqualTo(announcement3.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
-                s.assertThat(result.get(1).truncatedTo(ChronoUnit.MICROS))
-                        .isEqualTo(announcement2.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
-                s.assertThat(result.get(2).truncatedTo(ChronoUnit.MICROS))
-                        .isEqualTo(announcement1.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
+                s.assertThat(result.get(0))
+                        .isEqualTo(roundToMicros(announcement3.getCreatedAt()));
+                s.assertThat(result.get(1))
+                        .isEqualTo(roundToMicros(announcement2.getCreatedAt()));
+                s.assertThat(result.get(2))
+                        .isEqualTo(roundToMicros(announcement1.getCreatedAt()));
             });
         }
 
@@ -243,5 +243,11 @@ class AnnouncementControllerTest {
                             targetAnnouncements.get(2).getId().intValue()
                     ));
         }
+    }
+
+    private LocalDateTime roundToMicros(LocalDateTime dateTime) {
+        int nano = dateTime.getNano();
+        int micros = (nano + 500) / 1000; // 반올림
+        return dateTime.withNano(micros * 1000);
     }
 }
