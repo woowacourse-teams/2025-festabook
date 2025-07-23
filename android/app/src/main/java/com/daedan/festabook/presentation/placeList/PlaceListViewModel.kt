@@ -31,7 +31,7 @@ class PlaceListViewModel(
         _selectedPlace.value = place
     }
 
-    fun loadAllPlaces() {
+    private fun loadAllPlaces() {
         viewModelScope.launch {
             val result = placeListRepository.fetchPlaces()
             result
