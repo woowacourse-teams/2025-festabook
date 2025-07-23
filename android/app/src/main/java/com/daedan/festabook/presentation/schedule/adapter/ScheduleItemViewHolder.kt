@@ -8,6 +8,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemScheduleTabPageBinding
+import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
@@ -138,5 +139,3 @@ class ScheduleItemViewHolder(
         }
     }
 }
-
-fun Int.toPx(context: Context): Int = (this * context.resources.displayMetrics.density).toInt()
