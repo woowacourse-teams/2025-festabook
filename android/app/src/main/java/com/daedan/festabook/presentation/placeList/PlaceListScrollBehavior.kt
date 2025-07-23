@@ -15,7 +15,6 @@ import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.canScrollUp
 import com.daedan.festabook.presentation.common.getSystemBarHeightCompat
 import com.daedan.festabook.presentation.common.scrollAnimation
-import com.daedan.festabook.presentation.common.toPx
 
 class PlaceListScrollBehavior(
     private val context: Context,
@@ -33,8 +32,8 @@ class PlaceListScrollBehavior(
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
             initialY =
-                getDimension(R.styleable.PlaceListScrollBehavior_initialY, UNINITIALIZED_VALUE).toPx(context)
-            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, UNINITIALIZED_VALUE).toPx(context)
+                getDimension(R.styleable.PlaceListScrollBehavior_initialY, UNINITIALIZED_VALUE)
+            minimumY = getDimension(R.styleable.PlaceListScrollBehavior_minimumY, UNINITIALIZED_VALUE)
             recyclerViewId =
                 getResourceId(
                     R.styleable.PlaceListScrollBehavior_recyclerView,

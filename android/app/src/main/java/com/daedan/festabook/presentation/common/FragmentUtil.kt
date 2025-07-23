@@ -35,14 +35,6 @@ fun Int.toPx(context: Context) =
             context.resources.displayMetrics,
         ).toInt()
 
-fun Float.toPx(context: Context) =
-    TypedValue
-        .applyDimension(
-            TypedValue.COMPLEX_UNIT_DIP,
-            this,
-            context.resources.displayMetrics,
-        )
-
 fun View.getSystemBarHeightCompat() =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         rootWindowInsets
