@@ -113,10 +113,11 @@ class ScheduleItemViewHolder(
         textColor: Int,
         backgroundResId: Int?,
     ) = with(binding.tvScheduleEventStatus) {
+        val gray050 = ContextCompat.getColor(context, R.color.gray050)
         text = status.toKoreanString(context)
         setTextColor(textColor)
         gravity = if (status == ScheduleEventUiStatus.COMPLETED) Gravity.END else Gravity.CENTER
-        backgroundResId?.let { setBackgroundResource(it) }
+        backgroundResId?.let { setBackgroundResource(it) } ?: setBackgroundColor(gray050)
     }
 
     private fun setupScheduleEventTimeLineCircleIcon(iconRes: Int) {
