@@ -47,6 +47,9 @@ class AppContainer(
     private val deviceDataSource: DeviceDataSource by lazy {
         DeviceDataSourceImpl(deviceService)
     }
+    private val organizationBookmarkDataSource: OrganizationBookmarkDataSource by lazy {
+        OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
+    }
 
     private val placeListDataSource: PlaceDataSource by lazy {
         PlaceDataSourceImpl(placeService)
