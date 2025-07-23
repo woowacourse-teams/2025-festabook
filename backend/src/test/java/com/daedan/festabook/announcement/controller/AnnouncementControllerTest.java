@@ -19,7 +19,6 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -191,15 +190,6 @@ class AnnouncementControllerTest {
             List<LocalDateTime> result = dateTime.stream()
                     .map(LocalDateTime::parse)
                     .toList();
-
-            System.out.println("===== createdAt 출력 시작 =====");
-            for (int i = 0; i < result.size(); i++) {
-                System.out.println("pinned[" + i + "] createdAt: " + result.get(i).truncatedTo(ChronoUnit.MICROS));
-            }
-            System.out.println("announcement1: " + announcement1.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
-            System.out.println("announcement2: " + announcement2.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
-            System.out.println("announcement3: " + announcement3.getCreatedAt().truncatedTo(ChronoUnit.MICROS));
-            System.out.println("===== createdAt 출력 끝 =====");
 
             assertSoftly(s -> {
                 s.assertThat(result.get(0))
