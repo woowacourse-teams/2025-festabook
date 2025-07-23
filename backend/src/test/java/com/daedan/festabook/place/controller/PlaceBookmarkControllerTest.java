@@ -98,6 +98,37 @@ class PlaceBookmarkControllerTest {
         }
 
         @Test
+        void 예외_이미_북마크한_플레이스() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Device device = DeviceFixture.create();
+            deviceJpaRepository.save(device);
+
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.save(place);
+
+            PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(place, device);
+            placeBookmarkJpaRepository.save(placeBookmark);
+
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(device.getId());
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/places/{placeId}/bookmarks", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("이미 북마크한 플레이스입니다."));
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
+        }
+
+        @Test
         void 예외_존재하지_않는_디바이스() {
             // given
             Organization organization = OrganizationFixture.create();
@@ -119,6 +150,8 @@ class PlaceBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 디바이스입니다."));
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
         }
 
         @Test
@@ -144,6 +177,8 @@ class PlaceBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 플레이스입니다."));
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
         }
     }
 
@@ -170,7 +205,7 @@ class PlaceBookmarkControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/places/bookmarks/" + placeBookmark.getId())
+                    .delete("/places/bookmarks/{placeBookmarkId}", placeBookmark.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -190,7 +225,7 @@ class PlaceBookmarkControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/places/bookmarks/" + placeBookmarkId)
+                    .delete("/places/bookmarks/{placeBookmarkId}", placeBookmarkId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 

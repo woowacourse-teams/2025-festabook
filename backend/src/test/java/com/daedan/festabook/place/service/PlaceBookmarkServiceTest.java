@@ -83,6 +83,23 @@ class PlaceBookmarkServiceTest {
         }
 
         @Test
+        void 예외_이미_북마크한_플레이스() {
+            // given
+            Long placeId = 1L;
+            Long deviceId = 1L;
+
+            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(deviceId);
+
+            given(placeBookmarkJpaRepository.existsByPlaceIdAndDeviceId(placeId, deviceId))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> placeBookmarkService.createPlaceBookmark(placeId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이미 북마크한 플레이스입니다.");
+        }
+
+        @Test
         void 예외_존재하지_않는_디바이스() {
             // given
             Long invalidDeviceId = 0L;

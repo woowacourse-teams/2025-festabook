@@ -88,6 +88,23 @@ class OrganizationBookmarkServiceTest {
         }
 
         @Test
+        void 예외_이미_북마크한_조직() {
+            // given
+            Long organizationId = 1L;
+            Long deviceId = 1L;
+
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(deviceId);
+
+            given(organizationBookmarkJpaRepository.existsByOrganizationIdAndDeviceId(organizationId, deviceId))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> organizationBookmarkService.createOrganizationBookmark(organizationId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이미 북마크한 조직입니다.");
+        }
+
+        @Test
         void 예외_존재하지_않는_디바이스() {
             // given
             Long invalidDeviceId = 0L;

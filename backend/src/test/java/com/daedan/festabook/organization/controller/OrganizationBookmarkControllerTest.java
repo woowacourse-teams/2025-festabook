@@ -1,6 +1,5 @@
 package com.daedan.festabook.organization.controller;
 
-import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
@@ -74,7 +73,8 @@ class OrganizationBookmarkControllerTest {
             int expectedFieldSize = 1;
 
             // when & then
-            given()
+            RestAssured
+                    .given()
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -86,6 +86,34 @@ class OrganizationBookmarkControllerTest {
 
             then(fcmNotificationManager).should()
                     .subscribeOrganizationTopic(any(), any());
+        }
+
+        @Test
+        void 예외_이미_북마크한_조직() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Device device = DeviceFixture.create();
+            deviceJpaRepository.save(device);
+
+            OrganizationBookmark organizationBookmark = OrganizationBookmarkFixture.create(organization, device);
+            organizationBookmarkJpaRepository.save(organizationBookmark);
+
+            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/organizations/{organizationId}/bookmarks", organization.getId())
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("이미 북마크한 조직입니다."));
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
         }
 
         @Test
@@ -107,6 +135,8 @@ class OrganizationBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 디바이스입니다."));
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
         }
 
         @Test
@@ -120,7 +150,8 @@ class OrganizationBookmarkControllerTest {
             Long invalidOrganizationId = 0L;
 
             // when & then
-            given()
+            RestAssured.
+                    given()
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -128,6 +159,8 @@ class OrganizationBookmarkControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 조직입니다."));
+
+            then(fcmNotificationManager).shouldHaveNoInteractions();
         }
     }
 
@@ -147,10 +180,11 @@ class OrganizationBookmarkControllerTest {
             organizationBookmarkJpaRepository.save(organizationBookmark);
 
             // when & then
-            given()
+            RestAssured
+                    .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/organizations/bookmarks/" + organizationBookmark.getId())
+                    .delete("/organizations/bookmarks/{organizationBookmarkId}", organizationBookmark.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -167,10 +201,11 @@ class OrganizationBookmarkControllerTest {
             Long invalidOrganizationBookmarkId = 0L;
 
             // when & then
-            given()
+            RestAssured
+                    .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/organizations/bookmarks/" + invalidOrganizationBookmarkId)
+                    .delete("/organizations/bookmarks/{organizationBookmarkId}", invalidOrganizationBookmarkId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 

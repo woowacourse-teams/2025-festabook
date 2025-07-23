@@ -27,6 +27,8 @@ public class OrganizationBookmarkService {
     @Transactional
     public OrganizationBookmarkResponse createOrganizationBookmark(Long organizationId,
                                                                    OrganizationBookmarkRequest request) {
+        validateDuplicatedOrganizationBookmark(organizationId, request.deviceId());
+
         Organization organization = getOrganizationById(organizationId);
         Device device = getDeviceById(request.deviceId());
         OrganizationBookmark organizationBookmark = new OrganizationBookmark(organization, device);
@@ -56,6 +58,12 @@ public class OrganizationBookmarkService {
                 organizationBookmark.getOrganization().getId(),
                 device.getFcmToken()
         );
+    }
+
+    private void validateDuplicatedOrganizationBookmark(Long organizationId, Long deviceId) {
+        if (organizationBookmarkJpaRepository.existsByOrganizationIdAndDeviceId(organizationId, deviceId)) {
+            throw new BusinessException("이미 북마크한 조직입니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Device getDeviceById(Long deviceId) {
