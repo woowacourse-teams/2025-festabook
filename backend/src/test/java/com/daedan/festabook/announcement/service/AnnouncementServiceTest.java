@@ -149,8 +149,8 @@ class AnnouncementServiceTest {
             // given
             // pinned 공지
             Announcement announcement1 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 5, 2, 10, 0));
-            Announcement announcement2 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 5, 3, 10, 0));
-            Announcement announcement3 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 6, 3, 10, 0));
+            Announcement announcement2 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 5, 3, 10, 0));
+            Announcement announcement3 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 6, 3, 10, 0));
 
             // unpinned 공지
             Announcement announcement4 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 5, 2, 10, 0));
