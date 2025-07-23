@@ -42,10 +42,10 @@ class PlaceListViewModel(
         }
     }
 
-    fun updateBookmark(placeId: Long) {
+    fun updateBookmark(place: PlaceUiModel) {
         _places.value =
             _places.value?.map {
-                if (it.id == placeId) {
+                if (it.id == place.id) {
                     it.copy(isBookmarked = !it.isBookmarked)
                 } else {
                     it

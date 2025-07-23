@@ -17,7 +17,6 @@ import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.dummy.DummyMapData
-import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
@@ -57,7 +56,7 @@ class PlaceListFragment :
     }
 
     override fun onBookmarkClicked(place: PlaceUiModel) {
-        viewModel.updateBookmark(place.id)
+        viewModel.updateBookmark(place)
     }
 
     private fun setUpPlaceAdapter() {
