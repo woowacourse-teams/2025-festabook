@@ -5,6 +5,8 @@ import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.toUiModel
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 data class PlaceDetailUiModel(
     val place: PlaceUiModel,
@@ -20,7 +22,12 @@ fun PlaceDetail.toUiModel() =
         place = place.toUiModel(),
         notices = notices.map { it.toUiModel() },
         host = host,
-        startTime = startTime,
-        endTime = endTime,
+        startTime = startTime.toFormattedString(),
+        endTime = endTime.toFormattedString(),
         images = images.map { it.toUiModel() },
+    )
+
+private fun LocalTime.toFormattedString(): String =
+    this.format(
+        DateTimeFormatter.ofPattern("HH:mm"),
     )

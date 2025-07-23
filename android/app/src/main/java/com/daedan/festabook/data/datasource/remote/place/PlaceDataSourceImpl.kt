@@ -10,5 +10,6 @@ class PlaceDataSourceImpl(
 ) : PlaceDataSource {
     override suspend fun fetchPlaces(): ApiResult<List<PlaceResponse>> = ApiResult.toApiResult { placeService.getPlaces() }
 
-    override suspend fun fetchPlaceDetail(): ApiResult<PlaceDetailResponse> = ApiResult.toApiResult { placeService.getPlaceDetail() }
+    override suspend fun fetchPlaceDetail(placeId: Long): ApiResult<PlaceDetailResponse> =
+        ApiResult.toApiResult { placeService.getPlaceDetail(placeId) }
 }

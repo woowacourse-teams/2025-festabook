@@ -8,6 +8,8 @@ import com.daedan.festabook.domain.model.PlaceDetailImage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Serializable
 data class PlaceDetailResponse(
@@ -61,8 +63,8 @@ fun PlaceDetailResponse.toDomain() =
         place = toPlace(),
         notices = toNotices(),
         host = host,
-        startTime = LocalDateTime.parse(startTime),
-        endTime = LocalDateTime.parse(endTime),
+        startTime = LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm")),
+        endTime = LocalTime.parse(endTime, DateTimeFormatter.ofPattern("HH:mm")),
         images = toPlaceDetailImages(),
     )
 
