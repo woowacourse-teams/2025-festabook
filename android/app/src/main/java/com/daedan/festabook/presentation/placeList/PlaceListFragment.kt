@@ -2,6 +2,9 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -34,6 +37,8 @@ class PlaceListFragment :
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
+
+    private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
 
     override fun onViewCreated(
         view: View,
@@ -82,10 +87,14 @@ class PlaceListFragment :
                 DummyMapData.placeCoordinates,
             )
 
-            val behavior = binding.layoutPlaceList.placeListScrollBehavior()
-            behavior?.onScrollListener = { dy ->
-                mapScrollManager.cameraScroll(dy)
-            }
+            setPlaceListScrollListener(mapScrollManager)
+        }
+    }
+
+    private fun setPlaceListScrollListener(mapScrollManager: MapScrollManager) {
+        val behavior = binding.layoutPlaceList.placeListScrollBehavior()
+        behavior?.onScrollListener = { dy ->
+            mapScrollManager.cameraScroll(dy)
         }
     }
 
@@ -94,22 +103,38 @@ class PlaceListFragment :
             bottomNavigationViewAnimationCallback,
             false,
         )
-        parentFragmentManager.commit {
+        parentFragmentManager.commitWithSavedFragment {
             setCustomAnimations(
                 R.anim.anim_fade_in_left,
                 R.anim.anim_fade_out,
                 R.anim.anim_fade_in_right,
                 R.anim.anim_fade_out,
             )
-            add(
-                R.id.fcv_fragment_container,
-                PlaceDetailFragment.newInstance(
-                    viewModel.selectedPlace.value ?: return,
-                ),
-            )
-            hide(this@PlaceListFragment)
             addToBackStack(null)
         }
+    }
+
+    private fun FragmentManager.commitWithSavedFragment(block: FragmentTransaction.() -> Unit) {
+        val placeDetailFragment = getPlaceDetailFragment() ?: return
+
+        commit {
+            block()
+            add(
+                R.id.fcv_fragment_container,
+                placeDetailFragment,
+            )
+            hide(this@PlaceListFragment)
+        }
+    }
+
+    private fun getPlaceDetailFragment(): Fragment? {
+        val selectedPlace = viewModel.selectedPlace.value ?: return null
+        fragmentContainer[selectedPlace] ?: run {
+            fragmentContainer[selectedPlace] =
+                PlaceDetailFragment.newInstance(selectedPlace)
+        }
+
+        return fragmentContainer[selectedPlace]
     }
 
     companion object {
