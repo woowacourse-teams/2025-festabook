@@ -1,8 +1,10 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useContext } from 'react';
 import { usePage } from '../../hooks/usePage';
+import { ModalContext } from '../../contexts/ModalContext';
 
 const Sidebar = () => {
     const { page, setPage } = usePage();
+    const { openModal } = useContext(ModalContext);
 
     // SubMenu가 몇 개인지에 따라 open 상태 배열 생성 (지도, 소식: 2개)
     const [openMenus, setOpenMenus] = useState([false, false]);
@@ -67,7 +69,16 @@ const Sidebar = () => {
     return (
         <aside className="w-64 bg-gray-50 p-6 shrink-0 flex flex-col border-r border-gray-200">
             <div className="flex flex-col mb-4 mt-2 shrink-0">
-                <h1 className="text-xl font-bold cursor-pointer" onClick={() => setPage('dashboard')}>Festabook</h1>
+                <div className="flex items-center">
+                    <h1 className="text-xl font-bold cursor-pointer" onClick={() => setPage('dashboard')}>Festabook</h1>
+                    <button
+                        className="ml-2 text-gray-500 hover:text-gray-800 focus:outline-none"
+                        title="Organization 변경"
+                        onClick={() => openModal('organization')}
+                    >
+                        <i className="fas fa-lock text-lg" />
+                    </button>
+                </div>
                 <div className="w-full h-px bg-gray-200 mt-3" />
             </div>
             <nav className="flex flex-col space-y-2">

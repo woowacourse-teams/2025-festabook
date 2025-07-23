@@ -32,6 +32,7 @@ import { NoticeDetailModal } from './components/modals/NoticeModal';
 
 // Common Components
 import Toast from './components/common/Toast';
+import OrganizationPage from "./pages/OrganizationPage.jsx";
 
 function App() {
     const [page, setPage] = useState('dashboard');
@@ -74,6 +75,8 @@ function App() {
             case 'copyLink': return <CopyLinkModal {...allProps} />;
             case 'confirm': return <ConfirmModal {...allProps} onConfirm={() => { props.onConfirm(); closeModal(); }} onCancel={closeModal} />;
             case 'image': return <Modal isOpen={true} onClose={closeModal} maxWidth="max-w-4xl"><div className="relative"><img src={props.src} className="max-w-full max-h-[80vh] rounded-lg mx-auto" alt="상세 이미지" /><button onClick={closeModal} className="absolute top-2 right-2 text-white text-3xl bg-black bg-opacity-50 rounded-full w-8 h-8 flex items-center justify-center">&times;</button></div></Modal>;
+            case 'organization':
+                return <OrganizationPage {...allProps} />;
             default: return null;
         }
     };
@@ -83,6 +86,8 @@ function App() {
             <PageContext.Provider value={{ page, setPage }}>
                 <ModalContext.Provider value={{ openModal, closeModal, showToast }}>
                     <div className="bg-gray-100 text-gray-800 flex h-screen">
+
+                        {localStorage.getItem('organization') === null ? <OrganizationPage/> : <></>}
                         <Sidebar />
                         <main className="flex-1 p-8 overflow-y-auto">
                             {renderPage()}
