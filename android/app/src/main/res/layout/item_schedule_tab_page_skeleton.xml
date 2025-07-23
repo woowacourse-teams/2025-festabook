@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_schedule_event_card_skeleton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/bg_gray300_radius_10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_schedule_event_time_line_circle_skeleton"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_schedule_event_title_skeleton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="20dp"
+            app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card_skeleton"
+            app:layout_constraintTop_toTopOf="@id/cl_schedule_event_card_skeleton" />
+
+
+        <TextView
+            android:id="@+id/tv_schedule_event_status_skeleton"
+            android:layout_width="48dp"
+            android:layout_height="24dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="16dp"
+            android:gravity="center"
+            app:layout_constraintEnd_toEndOf="@id/cl_schedule_event_card_skeleton"
+            app:layout_constraintTop_toTopOf="@id/cl_schedule_event_card_skeleton" />
+
+        <View
+            android:id="@+id/view_schedule_event_location_skeleton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="@string/schedule_location"
+            app:layout_constraintBottom_toBottomOf="@id/cl_schedule_event_card_skeleton"
+            app:layout_constraintEnd_toStartOf="@id/tv_schedule_event_location_skeleton"
+            app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card_skeleton"
+            app:layout_constraintTop_toBottomOf="@id/view_schedule_event_clock_skeleton" />
+
+        <TextView
+            android:id="@+id/tv_schedule_event_location_skeleton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_schedule_event_location_skeleton"
+            app:layout_constraintStart_toEndOf="@id/view_schedule_event_location_skeleton"
+            app:layout_constraintTop_toTopOf="@+id/view_schedule_event_location_skeleton" />
+
+        <View
+            android:id="@+id/view_schedule_event_clock_skeleton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="4dp"
+            android:contentDescription="@string/schedule_time"
+            app:layout_constraintBottom_toTopOf="@id/view_schedule_event_location_skeleton"
+            app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card_skeleton"
+            app:layout_constraintTop_toBottomOf="@id/tv_schedule_event_title_skeleton" />
+
+        <TextView
+            android:id="@+id/tv_schedule_event_time_skeleton"
+            style="@style/PretendardRegular12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            app:layout_constraintBottom_toBottomOf="@id/view_schedule_event_clock_skeleton"
+            app:layout_constraintStart_toEndOf="@id/view_schedule_event_clock_skeleton"
+            app:layout_constraintTop_toTopOf="@id/view_schedule_event_clock_skeleton" />
+
+        <View
+            android:id="@+id/view_schedule_event_book_mark_skeleton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="20dp"
+            android:contentDescription="@string/all_book_mark"
+            app:layout_constraintBottom_toBottomOf="@id/cl_schedule_event_card_skeleton"
+            app:layout_constraintEnd_toEndOf="@id/cl_schedule_event_card_skeleton" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <View
+        android:id="@+id/view_schedule_event_time_line_skeleton"
+        android:layout_width="1dp"
+        android:layout_height="0dp"
+        android:layout_marginEnd="12dp"
+        android:background="?attr/SkeletonBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/cl_schedule_event_card_skeleton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_schedule_event_time_line_circle_skeleton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="12dp"
+        android:contentDescription="@string/schedule_circle"
+        android:elevation="11dp"
+        android:src="@drawable/ic_circle_gray300"
+        app:layout_constraintBottom_toBottomOf="@id/cl_schedule_event_card_skeleton"
+        app:layout_constraintEnd_toStartOf="@id/cl_schedule_event_card_skeleton"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/cl_schedule_event_card_skeleton" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

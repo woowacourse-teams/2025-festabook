@@ -6,4 +6,8 @@
         <attr name="recyclerView" format="reference" />
         <attr name="companionView" format="reference" />
     </declare-styleable>
+
+    <declare-styleable name="SkeletonView">
+        <attr name="SkeletonBackground" format="color" />
+    </declare-styleable>
 </resources>

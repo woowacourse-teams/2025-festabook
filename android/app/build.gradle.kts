@@ -28,6 +28,11 @@ android {
             "NAVER_MAP_CLIENT_ID is missing or not a String in local.properties"
         }
 
+    val naverMapStyleId =
+        checkNotNull(localProperties["NAVER_MAP_STYLE_ID"] as? String) {
+            "NAVER_MAP_STYLE_ID is missing or not a String in local.properties"
+        }
+
     defaultConfig {
         applicationId = "com.daedan.festabook"
         minSdk = 28
@@ -47,6 +52,12 @@ android {
             "String",
             "NAVER_MAP_CLIENT_ID",
             naverMapClientId,
+        )
+
+        buildConfigField(
+            "String",
+            "NAVER_MAP_STYLE_ID",
+            naverMapStyleId,
         )
     }
 
@@ -88,6 +99,9 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.viewpager2)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.shimmer)
+    implementation(libs.timber)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

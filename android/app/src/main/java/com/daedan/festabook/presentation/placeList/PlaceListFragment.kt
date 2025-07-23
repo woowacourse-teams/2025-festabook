@@ -17,6 +17,7 @@ import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.dummy.DummyMapData
+import com.daedan.festabook.presentation.placeList.dummy.DummyPlace
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
@@ -93,7 +94,7 @@ class PlaceListFragment :
 
     private fun setPlaceListScrollListener(mapScrollManager: MapScrollManager) {
         val behavior = binding.layoutPlaceList.placeListScrollBehavior()
-        behavior?.onScrollListener = { dy ->
+        behavior?.setOnScrollListener { dy ->
             mapScrollManager.cameraScroll(dy)
         }
     }

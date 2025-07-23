@@ -1,9 +1,8 @@
 package com.daedan.festabook
 
 import android.app.Application
-import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
-import com.daedan.festabook.domain.repository.ScheduleRepository
 import com.naver.maps.map.NaverMapSdk
+import timber.log.Timber
 
 class FestaBookApp : Application() {
     lateinit var appContainer: AppContainer
@@ -11,9 +10,22 @@ class FestaBookApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        setupTimber()
         appContainer = AppContainer()
         setUpNaverSdk()
+    }
 
+    private fun setupTimber() {
+        if (BuildConfig.DEBUG) plantDebugTimberTree()
+    }
+
+    private fun plantDebugTimberTree() {
+        Timber.plant(
+            object : Timber.DebugTree() {
+                override fun createStackElementTag(element: StackTraceElement): String =
+                    "${super.createStackElementTag(element)}:${element.lineNumber}"
+            },
+        )
     }
 
     private fun setUpNaverSdk() {

@@ -16,6 +16,7 @@ import kotlinx.coroutines.launch
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository,
+    private val dateId: Long,
 ) : ViewModel() {
     private val _scheduleEventsUiState: MutableLiveData<ScheduleEventsUiState> =
         MutableLiveData<ScheduleEventsUiState>()
@@ -27,6 +28,7 @@ class ScheduleViewModel(
 
     init {
         loadAllScheduleDates()
+        if (dateId != INVALID_DATE_ID) loadScheduleByDate()
     }
 
     fun updateBookmark(scheduleEventId: Long) {
@@ -41,7 +43,7 @@ class ScheduleViewModel(
         }
     }
 
-    fun loadScheduleByDate(dateId: Long) {
+    fun loadScheduleByDate() {
         viewModelScope.launch {
             _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
 
@@ -85,12 +87,15 @@ class ScheduleViewModel(
     }
 
     companion object {
-        val Factory: ViewModelProvider.Factory =
+        private const val INVALID_DATE_ID: Long = -1L
+
+        fun Factory(dateId: Long = INVALID_DATE_ID): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     val scheduleRepository =
                         (this[APPLICATION_KEY] as FestaBookApp).appContainer.scheduleRepository
-                    ScheduleViewModel(scheduleRepository)
+
+                    ScheduleViewModel(scheduleRepository, dateId)
                 }
             }
     }
