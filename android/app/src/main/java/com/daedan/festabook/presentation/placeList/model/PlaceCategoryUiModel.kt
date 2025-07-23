@@ -21,11 +21,11 @@ enum class PlaceCategoryUiModel {
 val PlaceCategoryUiModel.Companion.iconResources: List<Int>
     get() =
         listOf(
-            R.drawable.ic_booth,
             R.drawable.ic_food_truck,
-            R.drawable.ic_toilet,
+            R.drawable.ic_booth,
             R.drawable.ic_bar,
             R.drawable.ic_trash,
+            R.drawable.ic_toilet,
             R.drawable.ic_smoking_area,
         )
 
