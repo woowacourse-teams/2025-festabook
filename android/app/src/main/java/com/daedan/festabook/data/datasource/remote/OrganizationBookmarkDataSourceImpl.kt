@@ -7,7 +7,7 @@ import com.daedan.festabook.data.service.OrganizationBookmarkService
 class OrganizationBookmarkDataSourceImpl(
     private val organizationBookmarkService: OrganizationBookmarkService,
 ) : OrganizationBookmarkDataSource {
-    override suspend fun bookmarkOrganization(
+    override suspend fun saveOrganizationBookmark(
         organizationId: Long,
         deviceId: Long,
     ): ApiResult<OrganizationBookmarkResponse> =

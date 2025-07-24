@@ -3,7 +3,7 @@ package com.daedan.festabook.data.datasource.remote
 import com.daedan.festabook.data.model.response.OrganizationBookmarkResponse
 
 interface OrganizationBookmarkDataSource {
-    suspend fun bookmarkOrganization(
+    suspend fun saveOrganizationBookmark(
         organizationId: Long,
         deviceId: Long,
     ): ApiResult<OrganizationBookmarkResponse>

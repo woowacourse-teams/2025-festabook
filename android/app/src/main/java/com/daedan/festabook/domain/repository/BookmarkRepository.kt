@@ -1,7 +1,7 @@
 package com.daedan.festabook.domain.repository
 
 interface BookmarkRepository {
-    suspend fun bookmarkOrganization(
+    suspend fun saveOrganizationBookmark(
         organizationId: Long,
         deviceId: Long,
     ): Result<Long>

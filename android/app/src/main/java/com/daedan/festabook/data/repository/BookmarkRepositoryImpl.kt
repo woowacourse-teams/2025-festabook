@@ -7,13 +7,13 @@ import com.daedan.festabook.domain.repository.BookmarkRepository
 class BookmarkRepositoryImpl(
     private val organizationBookmarkDataSource: OrganizationBookmarkDataSource,
 ) : BookmarkRepository {
-    override suspend fun bookmarkOrganization(
+    override suspend fun saveOrganizationBookmark(
         organizationId: Long,
         deviceId: Long,
     ): Result<Long> {
         val response =
             organizationBookmarkDataSource
-                .bookmarkOrganization(
+                .saveOrganizationBookmark(
                     organizationId = organizationId,
                     deviceId = deviceId,
                 ).toResult()

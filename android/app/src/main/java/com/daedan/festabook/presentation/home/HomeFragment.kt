@@ -37,7 +37,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
         binding.btnSub.setOnClickListener {
             lifecycleScope.launch {
                 val result =
-                    bookmarkRepository.bookmarkOrganization(
+                    bookmarkRepository.saveOrganizationBookmark(
                         organizationId = 1L,
                         deviceId = prefsManager.getDeviceId(),
                     )
