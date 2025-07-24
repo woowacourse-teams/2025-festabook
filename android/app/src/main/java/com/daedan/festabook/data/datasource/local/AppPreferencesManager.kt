@@ -8,7 +8,7 @@ class AppPreferencesManager(
     context: Context,
 ) {
     private val prefs: SharedPreferences =
-        context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        context.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     fun saveUuid(uuid: String) {
         prefs.edit { putString(KEY_UUID, uuid) }
