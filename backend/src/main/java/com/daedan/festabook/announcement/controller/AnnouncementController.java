@@ -75,7 +75,7 @@ public class AnnouncementController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    public void deleteAnnouncement(
+    public void deleteAnnouncementByAnnouncementId(
             @PathVariable Long announcementId
     ) {
         announcementService.deleteAnnouncementByAnnouncementId(announcementId);

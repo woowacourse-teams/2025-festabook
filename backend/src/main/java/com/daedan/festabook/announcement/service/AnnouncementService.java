@@ -61,7 +61,7 @@ public class AnnouncementService {
     @Transactional
     public AnnouncementResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
-        announcement.update(request.title(), request.content());
+        announcement.updateTitleAndContent(request.title(), request.content());
         return AnnouncementResponse.from(announcement);
     }
 
