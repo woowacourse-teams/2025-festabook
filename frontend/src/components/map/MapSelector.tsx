@@ -214,7 +214,8 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
         latitude: coords.lat,
         longitude: coords.lng,
       });
-      onSaved && onSaved(res.data);
+      // PATCH 응답은 coordinate로 옴
+      onSaved && onSaved({ ...res.data, markerCoordinate: res.data.coordinate });
       alert('좌표가 저장되었습니다!');
     } catch (e: any) {
       alert(e.message);

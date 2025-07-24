@@ -231,8 +231,8 @@ const MapSettingsPage = () => {
             placeId={selectedPlace.id}
             onSaved={(newMarker) => {
               setModalOpen(false);
-              if (newMarker && newMarker.markerCoordinate) {
-                setMarkers(prev => prev.map(m => m.id === newMarker.id ? newMarker : m));
+              if (newMarker && newMarker.coordinate) {
+                setMarkers(prev => prev.map(m => m.id === newMarker.id ? { ...newMarker, markerCoordinate: newMarker.coordinate } : m));
               }
             }}
           />
