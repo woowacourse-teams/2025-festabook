@@ -29,6 +29,8 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -78,6 +80,7 @@ class AnnouncementServiceTest {
                 s.assertThat(result.content()).isEqualTo(request.content());
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
             });
+
             then(organizationNotificationManager).should()
                     .sendToOrganizationTopic(any(), any());
         }
@@ -115,6 +118,23 @@ class AnnouncementServiceTest {
             assertThatThrownBy(() -> announcementService.createAnnouncement(organizationId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");
+        }
+
+        @ParameterizedTest(name = "고정 공지 개수: {0}")
+        @ValueSource(longs = {
+                3L, 4L, 10L
+        })
+        void 예외_고정_공지_개수_초과(Long maxPinnedCount) {
+            // given
+            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
+
+            given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(maxPinnedCount);
+
+            // when & then
+            assertThatThrownBy(() -> announcementService.createAnnouncement(DEFAULT_ORGANIZATION_ID, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
         }
     }
 
