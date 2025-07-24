@@ -11,6 +11,17 @@ public class EventDateFixture {
     private static final Organization DEFAULT_ORGANIZATION = OrganizationFixture.create();
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 5, 20);
 
+    public static EventDate create(
+            Long eventDateId,
+            LocalDate date
+    ) {
+        return new EventDate(
+                eventDateId,
+                DEFAULT_ORGANIZATION,
+                date
+        );
+    }
+
     public static EventDate create() {
         return new EventDate(
                 DEFAULT_ORGANIZATION,

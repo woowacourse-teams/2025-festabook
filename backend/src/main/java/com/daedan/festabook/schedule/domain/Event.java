@@ -26,6 +26,7 @@ public class Event implements Comparable<Event> {
     @Column(nullable = false)
     private LocalTime startTime;
 
+    @Column(nullable = false)
     private LocalTime endTime;
 
     @Column(nullable = false)
@@ -38,13 +39,15 @@ public class Event implements Comparable<Event> {
     @ManyToOne(fetch = FetchType.LAZY)
     private EventDate eventDate;
 
-    public Event(
+    protected Event(
+            Long id,
             LocalTime startTime,
             LocalTime endTime,
             String title,
             String location,
             EventDate eventDate
     ) {
+        this.id = id;
         this.startTime = startTime;
         this.endTime = endTime;
         this.title = title;
@@ -52,8 +55,32 @@ public class Event implements Comparable<Event> {
         this.eventDate = eventDate;
     }
 
+    public Event(
+            LocalTime startTime,
+            LocalTime endTime,
+            String title,
+            String location,
+            EventDate eventDate
+    ) {
+        this(
+                null,
+                startTime,
+                endTime,
+                title,
+                location,
+                eventDate
+        );
+    }
+
     public EventStatus determineStatus(Clock clock) {
         return EventStatus.determine(clock, eventDate.getDate(), startTime, endTime);
+    }
+
+    public void updateEvent(Event newEvent) {
+        this.startTime = newEvent.startTime;
+        this.endTime = newEvent.endTime;
+        this.title = newEvent.title;
+        this.location = newEvent.location;
     }
 
     @Override

@@ -13,6 +13,24 @@ public class EventFixture {
     private static final String DEFAULT_LOCATION = "location";
 
     public static Event create(
+            Long id,
+            LocalTime startTime,
+            LocalTime endTime,
+            String title,
+            String location,
+            EventDate eventDate
+    ) {
+        return new Event(
+                id,
+                startTime,
+                endTime,
+                title,
+                location,
+                eventDate
+        );
+    }
+
+    public static Event create(
             String title
     ) {
         return new Event(

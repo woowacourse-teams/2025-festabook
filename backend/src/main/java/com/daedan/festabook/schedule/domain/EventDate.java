@@ -30,12 +30,25 @@ public class EventDate implements Comparable<EventDate> {
     @Column(nullable = false)
     private LocalDate date;
 
+    protected EventDate(
+            Long id,
+            Organization organization,
+            LocalDate date
+    ) {
+        this.id = id;
+        this.organization = organization;
+        this.date = date;
+    }
+
     public EventDate(
             Organization organization,
             LocalDate date
     ) {
-        this.organization = organization;
-        this.date = date;
+        this(
+                null,
+                organization,
+                date
+        );
     }
 
     @Override

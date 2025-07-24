@@ -8,6 +8,8 @@ import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
 import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
+import com.daedan.festabook.schedule.dto.EventRequest;
+import com.daedan.festabook.schedule.dto.EventResponse;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
@@ -29,6 +31,7 @@ public class ScheduleService {
     private final Clock clock;
 
     public EventDateResponse createEventDate(Long organizationId, EventDateRequest request) {
+        // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
         validateDuplicatedEventDate(organizationId, request.date());
 
         Organization organization = getOrganizationById(organizationId);
@@ -55,6 +58,29 @@ public class ScheduleService {
         return EventDateResponses.from(eventDates);
     }
 
+    public EventResponse createEvent(EventRequest request) {
+        // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
+        EventDate eventDate = getEventDate(request.eventDateId());
+        Event event = request.toEntity(eventDate);
+        Event savedEvent = eventJpaRepository.save(event);
+
+        return EventResponse.from(savedEvent, clock);
+    }
+
+    @Transactional
+    public EventResponse updateEvent(Long eventId, EventRequest request) {
+        Event event = getEvent(eventId);
+
+        Event newEvent = request.toEntity(event.getEventDate());
+        event.updateEvent(newEvent);
+
+        return EventResponse.from(event, clock);
+    }
+
+    public void deleteEvent(Long eventId) {
+        eventJpaRepository.deleteById(eventId);
+    }
+
     @Transactional(readOnly = true)
     public EventResponses getAllEventByEventDateId(Long eventDateId) {
         List<Event> events = eventJpaRepository.findAllByEventDateId(eventDateId).stream()
@@ -67,5 +93,17 @@ public class ScheduleService {
         // TODO: 커스텀 예외 설정
         return organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private EventDate getEventDate(Long eventDateId) {
+        // TODO: 커스텀 예외 설정
+        return eventDateJpaRepository.findById(eventDateId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 일정 날짜입니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private Event getEvent(Long eventId) {
+        // TODO: 커스텀 예외 설정
+        return eventJpaRepository.findById(eventId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 일정입니다.", HttpStatus.BAD_REQUEST));
     }
 }

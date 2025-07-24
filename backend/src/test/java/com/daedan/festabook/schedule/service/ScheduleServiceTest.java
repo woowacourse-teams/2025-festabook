@@ -19,6 +19,8 @@ import com.daedan.festabook.schedule.domain.EventStatus;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
 import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
+import com.daedan.festabook.schedule.dto.EventRequest;
+import com.daedan.festabook.schedule.dto.EventResponse;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
@@ -100,6 +102,20 @@ class ScheduleServiceTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("이미 존재하는 일정 날짜입니다.");
         }
+
+        @Test
+        void 예외_존재하지_않는_조직() {
+            // given
+            LocalDate date = LocalDate.of(2025, 7, 18);
+            EventDateRequest request = new EventDateRequest(date);
+            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> scheduleService.createEventDate(DEFAULT_ORGANIZATION_ID, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 조직입니다.");
+        }
     }
 
     @Nested
@@ -116,6 +132,154 @@ class ScheduleServiceTest {
             // then
             then(eventDateJpaRepository).should()
                     .deleteById(eventDateId);
+        }
+    }
+
+    @Nested
+    class createEvent {
+
+        @Test
+        void 성공() {
+            // given
+            setFixedClock();
+
+            EventDate eventDate = EventDateFixture.create(LocalDate.of(2025, 5, 5));
+            EventRequest request = new EventRequest(
+                    LocalTime.of(1, 0),
+                    LocalTime.of(2, 0),
+                    "title",
+                    "location",
+                    eventDate.getId()
+            );
+            given(eventDateJpaRepository.findById(request.eventDateId()))
+                    .willReturn(Optional.of(eventDate));
+
+            Long eventId = 1L;
+            Event event = EventFixture.create(
+                    eventId,
+                    request.startTime(),
+                    request.endTime(),
+                    request.title(),
+                    request.location(),
+                    eventDate
+            );
+            given(eventJpaRepository.save(any()))
+                    .willReturn(event);
+
+            // when
+            EventResponse result = scheduleService.createEvent(request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.id()).isEqualTo(eventId);
+                s.assertThat(result.startTime()).isEqualTo(event.getStartTime());
+                s.assertThat(result.endTime()).isEqualTo(event.getEndTime());
+                s.assertThat(result.title()).isEqualTo(event.getTitle());
+                s.assertThat(result.location()).isEqualTo(event.getLocation());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_일정_날짜() {
+            // given
+            EventRequest request = new EventRequest(
+                    LocalTime.of(1, 0),
+                    LocalTime.of(2, 0),
+                    "title",
+                    "location",
+                    1L
+            );
+            given(eventDateJpaRepository.findById(request.eventDateId()))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> scheduleService.createEvent(request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 일정 날짜입니다.");
+        }
+    }
+
+    @Nested
+    class updateEvent {
+
+        @Test
+        void 성공() {
+            // given
+            setFixedClock();
+
+            Long eventId = 1L;
+            Long eventDateId = 1L;
+            EventDate eventDate = EventDateFixture.create(eventDateId, LocalDate.of(2025, 5, 5));
+            Event event = EventFixture.create(
+                    LocalTime.of(1, 0),
+                    LocalTime.of(2, 0),
+                    eventDate
+            );
+            given(eventJpaRepository.findById(eventId))
+                    .willReturn(Optional.of(event));
+
+            Event updatedEvent = EventFixture.create(
+                    LocalTime.of(3, 0),
+                    LocalTime.of(4, 0),
+                    eventDate
+            );
+
+            EventRequest eventRequest = new EventRequest(
+                    updatedEvent.getStartTime(),
+                    updatedEvent.getEndTime(),
+                    updatedEvent.getTitle(),
+                    updatedEvent.getLocation(),
+                    eventDateId
+            );
+
+            // when
+            EventResponse result = scheduleService.updateEvent(eventId, eventRequest);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.startTime()).isEqualTo(updatedEvent.getStartTime());
+                s.assertThat(result.endTime()).isEqualTo(updatedEvent.getEndTime());
+                s.assertThat(result.title()).isEqualTo(updatedEvent.getTitle());
+                s.assertThat(result.location()).isEqualTo(updatedEvent.getLocation());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_이벤트() {
+            // given
+            Long eventId = 1L;
+            EventRequest request = new EventRequest(
+                    LocalTime.of(1, 0),
+                    LocalTime.of(2, 0),
+                    "title",
+                    "location",
+                    1L
+            );
+
+            given(eventJpaRepository.findById(eventId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> scheduleService.updateEvent(eventId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 일정입니다.");
+        }
+    }
+
+    @Nested
+    class deleteEvent {
+
+        @Test
+        void 성공() {
+            // given
+            Long eventId = 1L;
+
+            // when
+            scheduleService.deleteEvent(eventId);
+
+            // then
+            then(eventJpaRepository).should()
+                    .deleteById(eventId);
         }
     }
 

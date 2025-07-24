@@ -1,5 +1,6 @@
 package com.daedan.festabook.schedule.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -15,6 +16,7 @@ import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
+import com.daedan.festabook.schedule.dto.EventRequest;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
 import io.restassured.RestAssured;
@@ -136,6 +138,7 @@ class ScheduleControllerTest {
                     .delete("/schedules/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+            assertThat(eventDateJpaRepository.findById(eventDate.getId())).isEmpty();
         }
 
         @Test
@@ -144,7 +147,7 @@ class ScheduleControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            Long invalidEventDateId = 999L;
+            Long invalidEventDateId = 0L;
 
             // when & then
             RestAssured
@@ -154,6 +157,146 @@ class ScheduleControllerTest {
                     .delete("/schedules/{eventDateId}", invalidEventDateId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+            assertThat(eventDateJpaRepository.findById(invalidEventDateId)).isEmpty();
+        }
+    }
+
+    @Nested
+    class createEvent {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            LocalDateTime dateTime = LocalDateTime.MAX;
+            setFixedClock(dateTime);
+
+            EventDate eventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(eventDate);
+
+            EventRequest request = new EventRequest(
+                    LocalTime.of(1, 0),
+                    LocalTime.of(2, 0),
+                    "title",
+                    "location",
+                    eventDate.getId()
+            );
+
+            int expectedFieldSize = 6;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .body(request)
+                    .when()
+                    .post("/schedules/events")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("id", notNullValue())
+                    .body("status", notNullValue())
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()))
+                    .body("title", equalTo(request.title()))
+                    .body("location", equalTo(request.location()));
+        }
+    }
+
+    @Nested
+    class updateEvent {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            LocalDateTime dateTime = LocalDateTime.MAX;
+            setFixedClock(dateTime);
+
+            EventDate eventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(eventDate);
+
+            Event event = EventFixture.create(eventDate);
+            eventJpaRepository.save(event);
+
+            EventRequest request = new EventRequest(
+                    LocalTime.of(3, 0),
+                    LocalTime.of(4, 0),
+                    "updated title",
+                    "updated location",
+                    eventDate.getId()
+            );
+
+            int expectedFieldSize = 6;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .body(request)
+                    .when()
+                    .patch("/schedules/events/{eventId}", event.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("id", notNullValue())
+                    .body("status", notNullValue())
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()))
+                    .body("title", equalTo(request.title()))
+                    .body("location", equalTo(request.location()));
+        }
+    }
+
+    @Nested
+    class deleteEvent {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            EventDate eventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(eventDate);
+
+            Event event = EventFixture.create(eventDate);
+            eventJpaRepository.save(event);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .delete("/schedules/events/{eventId}", event.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+            assertThat(eventJpaRepository.findById(event.getId())).isEmpty();
+        }
+
+        @Test
+        void 성공_존재하지_않는_일정_ID() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Long invalidEventId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .delete("/schedules/events/{eventId}", invalidEventId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+            assertThat(eventJpaRepository.findById(invalidEventId)).isEmpty();
         }
     }
 

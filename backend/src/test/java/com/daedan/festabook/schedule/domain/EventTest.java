@@ -10,6 +10,7 @@ import java.time.ZoneId;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -20,8 +21,42 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class EventTest {
 
     @Nested
+    class updateEvent {
+
+        @Test
+        void 성공_이벤트_업데이트() {
+            // given
+            EventDate eventDate = EventDateFixture.create(LocalDate.of(2025, 5, 5));
+            Event originalEvent = EventFixture.create(
+                    LocalTime.of(1, 0),
+                    LocalTime.of(2, 0),
+                    "Original Title",
+                    "Original Location",
+                    eventDate
+            );
+
+            Event newEvent = EventFixture.create(
+                    LocalTime.of(3, 0),
+                    LocalTime.of(4, 0),
+                    "Updated Title",
+                    "Updated Location",
+                    eventDate
+            );
+
+            // when
+            originalEvent.updateEvent(newEvent);
+
+            // then
+            assertThat(originalEvent.getStartTime()).isEqualTo(newEvent.getStartTime());
+            assertThat(originalEvent.getEndTime()).isEqualTo(newEvent.getEndTime());
+            assertThat(originalEvent.getTitle()).isEqualTo(newEvent.getTitle());
+            assertThat(originalEvent.getLocation()).isEqualTo(newEvent.getLocation());
+        }
+    }
+
+    @Nested
     class determineStatus {
-        
+
         @ParameterizedTest(name = "날짜: {0}, 시작 시간: {1}, 종료 시간: {2}, 결과: {3}")
         @CsvSource({
                 "2025-05-04, 10:00, 12:00, COMPLETED",   // 종료
