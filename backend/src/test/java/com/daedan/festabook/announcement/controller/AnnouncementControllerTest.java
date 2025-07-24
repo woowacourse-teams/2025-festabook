@@ -105,6 +105,7 @@ class AnnouncementControllerTest {
             Announcement announcement2 = AnnouncementFixture.create(false, organization);
             announcementJpaRepository.saveAll(List.of(announcement1, announcement2));
 
+            int expectedSize = 2;
             int expectedPinnedSize = 1;
             int expectedUnpinnedSize = 1;
             int expectedFieldSize = 5;
@@ -119,6 +120,7 @@ class AnnouncementControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasKey("pinned"))
                     .body("$", hasKey("unpinned"))
+                    .body("size()", equalTo(expectedSize))
                     .body("pinned.size()", equalTo(expectedPinnedSize))
                     .body("unpinned.size()", equalTo(expectedUnpinnedSize))
                     .body("pinned[0].size()", equalTo(expectedFieldSize))
