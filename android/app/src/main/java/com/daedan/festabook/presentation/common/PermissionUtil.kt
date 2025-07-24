@@ -2,17 +2,7 @@ package com.daedan.festabook.presentation.common
 
 import android.Manifest
 import android.content.Context
-import android.widget.Toast
 import com.daedan.festabook.R
-
-fun Context.showToast(text: String) {
-    Toast
-        .makeText(
-            this,
-            text,
-            Toast.LENGTH_SHORT,
-        ).show()
-}
 
 fun Int.isGranted(): Boolean = this == 0
 
