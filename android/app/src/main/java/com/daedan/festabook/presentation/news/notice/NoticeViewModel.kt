@@ -13,6 +13,7 @@ import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository,
@@ -29,6 +30,7 @@ class NoticeViewModel(
             _noticeUiState.value = NoticeUiState.Loading
 
             val result = noticeRepository.fetchNotices()
+            Timber.d("result: $result")
             result
                 .onSuccess { notices ->
                     _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })
@@ -38,13 +40,13 @@ class NoticeViewModel(
         }
     }
 
-    fun toggleNoticeExpanded(noticeId: Long) {
+    fun toggleNoticeExpanded(notice: NoticeUiModel) {
         updateNoticeUiState { notices ->
-            notices.map { notice ->
-                if (notice.id == noticeId) {
-                    notice.copy(isExpanded = !notice.isExpanded)
+            notices.map { updatedNotice ->
+                if (notice.id == updatedNotice.id) {
+                    updatedNotice.copy(isExpanded = !updatedNotice.isExpanded)
                 } else {
-                    notice
+                    updatedNotice
                 }
             }
         }

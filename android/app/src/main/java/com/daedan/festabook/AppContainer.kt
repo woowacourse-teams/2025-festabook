@@ -79,27 +79,24 @@ class AppContainer(
     }
 
     init {
-        ensureUuidExists()
-        updateFcmToken()
+        ensureDeviceIdentifiers()
     }
 
-    private fun ensureUuidExists() {
+    private fun ensureDeviceIdentifiers() {
         if (preferencesManager.getUuid().isNullOrEmpty()) {
-            val newUuid = UUID.randomUUID().toString()
-            preferencesManager.saveUuid(newUuid)
-            Timber.d("새로 생성한 uuid : $newUuid")
+            val uuid = UUID.randomUUID().toString()
+            preferencesManager.saveUuid(uuid)
+            Timber.d("🆕 UUID 생성 및 저장: $uuid")
         }
-    }
 
-    private fun updateFcmToken() {
         FirebaseMessaging
             .getInstance()
             .token
             .addOnSuccessListener { token ->
                 preferencesManager.saveFcmToken(token)
-                Timber.d(" 저장된 FCM token: $token")
+                Timber.d("📡 FCM 토큰 저장: $token")
             }.addOnFailureListener {
-                Timber.w(it, "Failed to get FCM token")
+                Timber.w(it, "❌ FCM 토큰 수신 실패")
             }
     }
 }

@@ -16,35 +16,38 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_notice_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_stroke_gray400_radius_10dp"
-        android:onClick="@{() -> listener.onNoticeClick(notice.id)}"
+        android:onClick="@{() -> listener.onNoticeClick(notice)}"
         android:paddingVertical="16dp">
 
         <ImageView
-            android:id="@+id/iv_speaker"
+            android:id="@+id/iv_notice_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:contentDescription="@string/iv_speaker"
             android:src="@drawable/ic_speaker"
+            app:layout_constraintBottom_toBottomOf="@id/tv_notice_title"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="@id/tv_notice_title" />
 
         <TextView
             android:id="@+id/tv_notice_title"
             style="@style/PretendardMedium14"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
+            android:layout_marginEnd="4dp"
             android:text="@{notice.title}"
             android:textColor="@color/gray900"
-            app:layout_constraintBottom_toBottomOf="@id/iv_speaker"
-            app:layout_constraintStart_toEndOf="@id/iv_speaker"
-            app:layout_constraintTop_toTopOf="@id/iv_speaker"
-            tools:text="제목입니다." />
+            app:layout_constraintEnd_toStartOf="@id/tv_notice_createdAt"
+            app:layout_constraintStart_toEndOf="@id/iv_notice_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="제목은몇자까지될가요?제목은몇자까지될까요?제목은몇자까지될까오하하이제줄바꿈이되어도안겹치지롱" />
 
         <TextView
             android:id="@+id/tv_notice_description"
@@ -58,10 +61,11 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
-            tools:text="설명입니다.설명입니다.설명입니다." />
+            tools:text="설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면???
+설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면??? 설명입니다.설명입니다.설명입니다.설명이 길어진다면? 설명이 길어진다면???  " />
 
         <TextView
-            android:id="@+id/textView"
+            android:id="@+id/tv_notice_createdAt"
             style="@style/PretendardRegular10"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

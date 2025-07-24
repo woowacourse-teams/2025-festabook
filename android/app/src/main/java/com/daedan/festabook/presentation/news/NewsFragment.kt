@@ -14,8 +14,8 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private val viewModel: NoticeViewModel by viewModels { NoticeViewModel.Factory }
 
     private val noticeAdapter: NoticeAdapter by lazy {
-        NoticeAdapter { noticeId ->
-            viewModel.toggleNoticeExpanded(noticeId)
+        NoticeAdapter { notice ->
+            viewModel.toggleNoticeExpanded(notice)
         }
     }
 

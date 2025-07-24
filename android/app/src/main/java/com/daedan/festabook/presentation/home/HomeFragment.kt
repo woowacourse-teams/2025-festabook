@@ -8,6 +8,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
 import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.showToast
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -47,8 +48,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                         bookmarkedID = bookmarkId
                         prefsManager.saveBookmarkId(bookmarkId)
                         Timber.d("✅ 북마크 등록 성공: $bookmarkId")
+                        requireContext().showToast("북마크 등록 성공")
                     }.onFailure {
                         Timber.e("❌ 북마크 등록 실패: ${it.message}")
+                        requireContext().showToast("북마크 등록 실패")
                     }
             }
         }
@@ -65,8 +68,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                         bookmarkedID = null
                         prefsManager.clearBookmarkId()
                         Timber.d("✅ 북마크 삭제 성공")
+                        requireContext().showToast("북마크 삭제 성공")
                     }.onFailure {
                         Timber.e("❌ 북마크 삭제 실패: ${it.message}")
+                        requireContext().showToast("북마크 삭제 실패")
                     }
             }
         }

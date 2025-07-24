@@ -1,5 +1,7 @@
 package com.daedan.festabook.presentation.news.notice.adapter
 
+import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
+
 fun interface OnNoticeClickListener {
-    fun onNoticeClick(noticeId: Long)
+    fun onNoticeClick(notice: NoticeUiModel)
 }
