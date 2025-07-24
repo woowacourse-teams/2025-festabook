@@ -50,17 +50,15 @@ class AppContainer(
     private val organizationBookmarkDataSource: OrganizationBookmarkDataSource by lazy {
         OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
     }
-
     private val placeListDataSource: PlaceDataSource by lazy {
         PlaceDataSourceImpl(placeService)
     }
-
-    private val organizationBookmarkDataSource: OrganizationBookmarkDataSource by lazy {
-        OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
+    private val placeDetailDataSource: PlaceDataSource by lazy {
+        PlaceDataSourceImpl(placeService)
     }
 
     val placeDetailRepository: PlaceDetailRepository by lazy {
-        PlaceDetailRepositoryImpl(placeListDataSource)
+        PlaceDetailRepositoryImpl(placeDetailDataSource)
     }
     
     val placeDetailRepository: PlaceDetailRepository by lazy {
