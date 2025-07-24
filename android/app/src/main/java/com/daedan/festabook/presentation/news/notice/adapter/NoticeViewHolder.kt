@@ -4,6 +4,7 @@ import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemNoticeBinding
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
@@ -17,6 +18,14 @@ class NoticeViewHolder(
 
     fun bind(notice: NoticeUiModel) {
         binding.notice = notice
+
+        if (notice.isPinned) {
+            binding.ivNoticeIcon.setImageResource(R.drawable.ic_pin)
+            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_gray100_stroke_gray400_radius_10dp)
+        } else {
+            binding.ivNoticeIcon.setImageResource(R.drawable.ic_speaker)
+            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_stroke_gray400_radius_10dp)
+        }
 
         binding.tvNoticeDescription.maxLines =
             if (notice.isExpanded) Integer.MAX_VALUE else DEFAULT_LINE_COUNT

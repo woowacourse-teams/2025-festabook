@@ -32,14 +32,14 @@ class NoticeViewModel(
         }
     }
 
-    fun toggleNoticeExpanded(noticeId: Long) {
+    fun toggleNoticeExpanded(notice: NoticeUiModel) {
         val currentList = _notices.value ?: return
         val updatedList =
-            currentList.map { notice ->
-                if (notice.id == noticeId) {
-                    notice.copy(isExpanded = !notice.isExpanded)
+            currentList.map { updatedNotice ->
+                if (notice.id == updatedNotice.id) {
+                    updatedNotice.copy(isExpanded = !updatedNotice.isExpanded)
                 } else {
-                    notice
+                    updatedNotice
                 }
             }
         _notices.value = updatedList

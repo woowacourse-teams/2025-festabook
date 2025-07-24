@@ -16,15 +16,16 @@
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_notice_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_stroke_gray400_radius_10dp"
-        android:onClick="@{() -> listener.onNoticeClick(notice.id)}"
+        android:onClick="@{() -> listener.onNoticeClick(notice)}"
         android:paddingVertical="16dp">
 
         <ImageView
-            android:id="@+id/iv_speaker"
+            android:id="@+id/iv_notice_icon"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
@@ -44,7 +45,7 @@
             android:text="@{notice.title}"
             android:textColor="@color/gray900"
             app:layout_constraintEnd_toStartOf="@id/tv_notice_createdAt"
-            app:layout_constraintStart_toEndOf="@id/iv_speaker"
+            app:layout_constraintStart_toEndOf="@id/iv_notice_icon"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="제목은몇자까지될가요?제목은몇자까지될까요?제목은몇자까지될까오하하이제줄바꿈이되어도안겹치지롱" />
 

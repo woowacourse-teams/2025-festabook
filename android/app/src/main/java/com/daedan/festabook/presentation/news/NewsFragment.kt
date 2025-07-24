@@ -8,14 +8,13 @@ import com.daedan.festabook.databinding.FragmentNewsBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.notice.NoticeViewModel
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
-import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private val viewModel: NoticeViewModel by viewModels { NoticeViewModel.Factory }
 
     private val noticeAdapter: NoticeAdapter by lazy {
-        NoticeAdapter { noticeId ->
-            viewModel.toggleNoticeExpanded(noticeId)
+        NoticeAdapter { notice ->
+            viewModel.toggleNoticeExpanded(notice)
         }
     }
 
