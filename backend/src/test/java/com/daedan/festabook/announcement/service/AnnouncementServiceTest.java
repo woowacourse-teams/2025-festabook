@@ -127,10 +127,14 @@ class AnnouncementServiceTest {
             int expectedUnPinedSize = 2;
 
             List<Announcement> pinnedAnnouncements = AnnouncementFixture.createList(expectedPinedSize, true);
-            List<Announcement> unPinnedAnnouncements = AnnouncementFixture.createList(expectedUnPinedSize, true);
+            List<Announcement> unPinnedAnnouncements = AnnouncementFixture.createList(expectedUnPinedSize, false);
 
-            announcementJpaRepository.saveAll(pinnedAnnouncements);
-            announcementJpaRepository.saveAll(unPinnedAnnouncements);
+            List<Announcement> allAnnouncements = new ArrayList<>();
+            allAnnouncements.addAll(pinnedAnnouncements);
+            allAnnouncements.addAll(unPinnedAnnouncements);
+
+            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(allAnnouncements);
 
             // when
             AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(
