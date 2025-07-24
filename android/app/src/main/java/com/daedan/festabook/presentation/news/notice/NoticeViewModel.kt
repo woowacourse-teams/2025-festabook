@@ -17,32 +17,46 @@ import kotlinx.coroutines.launch
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository,
 ) : ViewModel() {
-    private val _notices = MutableLiveData<List<NoticeUiModel>>()
-    val notices: LiveData<List<NoticeUiModel>> = _notices
+    private val _noticeUiState: MutableLiveData<NoticeUiState> = MutableLiveData<NoticeUiState>()
+    val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
+
+    init {
+        fetchNotices()
+    }
 
     fun fetchNotices() {
         viewModelScope.launch {
-            val result = noticeRepository.fetchNotices()
+            _noticeUiState.value = NoticeUiState.Loading
 
+            val result = noticeRepository.fetchNotices()
             result
                 .onSuccess { notices ->
-                    _notices.value = notices.map { it.toUiModel() }
+                    _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })
                 }.onFailure {
+                    _noticeUiState.value = NoticeUiState.Error(it.message.toString())
                 }
         }
     }
 
     fun toggleNoticeExpanded(noticeId: Long) {
-        val currentList = _notices.value ?: return
-        val updatedList =
-            currentList.map { notice ->
+        updateNoticeUiState { notices ->
+            notices.map { notice ->
                 if (notice.id == noticeId) {
                     notice.copy(isExpanded = !notice.isExpanded)
                 } else {
                     notice
                 }
             }
-        _notices.value = updatedList
+        }
+    }
+
+    private fun updateNoticeUiState(onUpdate: (List<NoticeUiModel>) -> List<NoticeUiModel>) {
+        val currentState = _noticeUiState.value ?: return
+        _noticeUiState.value =
+            when (currentState) {
+                is NoticeUiState.Success -> currentState.copy(notices = onUpdate(currentState.notices))
+                is NoticeUiState.Error, NoticeUiState.Loading -> currentState
+            }
     }
 
     companion object {
