@@ -18,7 +18,6 @@ import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -176,7 +175,7 @@ class AnnouncementControllerTest {
             announcementJpaRepository.saveAll(List.of(announcement1, announcement2, announcement3));
 
             // when & then
-            List<String> dateTime = RestAssured
+            List<Long> result = RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
@@ -185,19 +184,12 @@ class AnnouncementControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .extract()
                     .jsonPath()
-                    .getList("pinned.createdAt", String.class);
-
-            List<LocalDateTime> result = dateTime.stream()
-                    .map(LocalDateTime::parse)
-                    .toList();
+                    .getList("pinned.id", Long.class);
 
             assertSoftly(s -> {
-                s.assertThat(result.get(0))
-                        .isEqualTo(roundToMicros(announcement3.getCreatedAt()));
-                s.assertThat(result.get(1))
-                        .isEqualTo(roundToMicros(announcement2.getCreatedAt()));
-                s.assertThat(result.get(2))
-                        .isEqualTo(roundToMicros(announcement1.getCreatedAt()));
+                s.assertThat(result.get(0)).isEqualTo(announcement3.getId());
+                s.assertThat(result.get(1)).isEqualTo(announcement2.getId());
+                s.assertThat(result.get(2)).isEqualTo(announcement1.getId());
             });
         }
 
@@ -233,11 +225,5 @@ class AnnouncementControllerTest {
                             targetAnnouncements.get(2).getId().intValue()
                     ));
         }
-    }
-
-    private LocalDateTime roundToMicros(LocalDateTime dateTime) {
-        int nano = dateTime.getNano();
-        int micros = (nano + 500) / 1000; // 반올림
-        return dateTime.withNano(micros * 1000);
     }
 }
