@@ -33,7 +33,7 @@ class PlaceListViewModel(
 
     private fun loadAllPlaces() {
         viewModelScope.launch {
-            val result = placeListRepository.fetchPlaces()
+            val result = placeListRepository.getPlaces()
             result
                 .onSuccess { places ->
                     val placeUiModels = places.map { it.toUiModel() }

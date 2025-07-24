@@ -8,6 +8,8 @@ import com.daedan.festabook.domain.model.PlaceDetailImage
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Serializable
 data class PlaceDetailResponse(
@@ -16,15 +18,15 @@ data class PlaceDetailResponse(
     @SerialName("category")
     val category: PlaceCategory,
     @SerialName("description")
-    val description: String,
+    val description: String?,
     @SerialName("startTime")
-    val startTime: String,
+    val startTime: String?,
     @SerialName("endTime")
-    val endTime: String,
+    val endTime: String?,
     @SerialName("host")
-    val host: String,
+    val host: String?,
     @SerialName("location")
-    val location: String,
+    val location: String?,
     @SerialName("placeAnnouncements")
     val placeAnnouncements: List<PlaceAnnouncement>,
     @SerialName("placeImages")
@@ -61,8 +63,8 @@ fun PlaceDetailResponse.toDomain() =
         place = toPlace(),
         notices = toNotices(),
         host = host,
-        startTime = LocalDateTime.parse(startTime),
-        endTime = LocalDateTime.parse(endTime),
+        startTime = LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm")),
+        endTime = LocalTime.parse(endTime, DateTimeFormatter.ofPattern("HH:mm")),
         images = toPlaceDetailImages(),
     )
 
@@ -72,7 +74,7 @@ private fun PlaceDetailResponse.toPlace() =
         title = title,
         category = category,
         description = description,
-        imageUrl = placeImages.find { it.sequence == 1 }?.imageUrl ?: PlaceDetailImage.DEFAULT_IMAGE_URL,
+        imageUrl = placeImages.find { it.sequence == 1 }?.imageUrl,
         location = location,
     )
 

@@ -2,7 +2,6 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android">
 
     <data>
-
         <variable
             name="placeDetail"
             type="com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel" />
@@ -12,7 +11,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
@@ -100,7 +100,7 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
-                android:text="@{placeDetail.place.location}"
+                android:text="@{placeDetail.place.location ?? @string/place_list_default_location}"
                 app:layout_constraintStart_toEndOf="@id/iv_location"
                 app:layout_constraintTop_toTopOf="@id/iv_location"
                 app:layout_constraintBottom_toBottomOf="@id/iv_location"
@@ -121,7 +121,7 @@
                 android:textColor="@color/gray500"
                 android:layout_marginStart="4dp"
                 android:textAppearance="@style/PretendardRegular14"
-                android:text="@{placeDetail.host}"
+                android:text="@{placeDetail.host ?? @string/place_detail_default_host}"
                 app:layout_constraintStart_toEndOf="@id/iv_host"
                 app:layout_constraintTop_toTopOf="@id/iv_host"
                 app:layout_constraintBottom_toBottomOf="@id/iv_host"
@@ -132,7 +132,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="@{placeDetail.place.description}"
+                android:text="@{placeDetail.place.description ?? @string/place_list_default_description}"
                 app:layout_constraintTop_toBottomOf="@id/iv_host"
                 app:layout_constraintStart_toStartOf="@id/iv_host"
                 android:textAppearance="@style/PretendardRegular14"
@@ -168,6 +168,19 @@
                 android:text="@string/place_detail_notice_description"
                 app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
                 app:layout_constraintStart_toStartOf="@id/tv_notice_title"
+                android:textAppearance="@style/PretendardRegular12" />
+
+            <TextView
+                android:id="@+id/tv_no_notice_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:textColor="@color/gray500"
+                android:text="@string/place_detail_no_notice"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/tv_notice_description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:textAppearance="@style/PretendardRegular12" />
 
             <androidx.recyclerview.widget.RecyclerView

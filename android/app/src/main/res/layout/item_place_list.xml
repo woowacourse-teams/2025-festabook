@@ -88,7 +88,7 @@
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toBottomOf="@id/tv_title_place"
             android:textAppearance="@style/PretendardRegular12"
-            android:text="@{place.description}"
+            android:text="@{place.description ?? @string/place_list_default_description}"
 
             tools:text="시원한 맥주와 맛있는 파전!" />
 
@@ -113,7 +113,7 @@
             app:layout_constraintStart_toEndOf="@id/iv_location"
             app:layout_constraintTop_toBottomOf="@id/tv_title_description"
             android:textAppearance="@style/PretendardRegular12"
-            android:text="@{place.location}"
+            android:text="@{place.location ?? @string/place_list_default_location}"
             tools:text="공학관 앞" />
 
         <ImageButton

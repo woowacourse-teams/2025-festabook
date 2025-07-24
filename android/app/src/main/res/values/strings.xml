@@ -13,10 +13,14 @@
     <string name="place_list_title_booth">부스</string>
     <string name="place_list_title_bar">주점</string>
     <string name="place_list_title_food_truck">푸드트럭</string>
+    <string name="place_list_default_description">상세 정보가 아직 없습니다</string>
+    <string name="place_list_default_location">미지정</string>
 
     <!--플레이스 상세 화면-->
     <string name="place_detail_notice_description">최근 3개의 공지사항만 표시됩니다</string>
     <string name="place_detail_notice_title">공지사항</string>
+    <string name="place_detail_default_time">미지정</string>
+    <string name="place_detail_default_host">미지정</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -42,5 +46,6 @@
     <string name="iv_speaker">speaker</string>
     <string name="content_description_iv_location">위치 아이콘</string>
     <string name="content_description_booth_image">부스 이미지</string>
+    <string name="place_detail_no_notice">공지사항이 없습니다</string>
 
 </resources>
