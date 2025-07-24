@@ -5,14 +5,17 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
+import com.daedan.festabook.announcement.domain.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
@@ -29,6 +32,8 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -78,6 +83,7 @@ class AnnouncementServiceTest {
                 s.assertThat(result.content()).isEqualTo(request.content());
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
             });
+
             then(organizationNotificationManager).should()
                     .sendToOrganizationTopic(any(), any());
         }
@@ -115,6 +121,23 @@ class AnnouncementServiceTest {
             assertThatThrownBy(() -> announcementService.createAnnouncement(organizationId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");
+        }
+
+        @ParameterizedTest(name = "고정 공지 개수: {0}")
+        @ValueSource(longs = {
+                3L, 4L, 10L
+        })
+        void 예외_고정_공지_개수_초과(Long maxPinnedCount) {
+            // given
+            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
+
+            given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(maxPinnedCount);
+
+            // when & then
+            assertThatThrownBy(() -> announcementService.createAnnouncement(DEFAULT_ORGANIZATION_ID, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
         }
     }
 
@@ -201,6 +224,64 @@ class AnnouncementServiceTest {
                 s.assertThat(result.pinned().responses()).isEmpty();
                 s.assertThat(result.unpinned().responses()).isEmpty();
             });
+        }
+    }
+
+    @Nested
+    class updateAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            Announcement announcement = AnnouncementFixture.create();
+
+            given(announcementJpaRepository.findById(announcement.getId()))
+                    .willReturn(Optional.of(announcement));
+
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("new title", "new content");
+
+            // when
+            AnnouncementResponse result = announcementService.updateAnnouncement(announcement.getId(), request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.content()).isEqualTo(request.content());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_공지사항_ID() {
+            // given
+            Long invalidAnnouncementId = 0L;
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
+
+            given(announcementJpaRepository.findById(invalidAnnouncementId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> announcementService.updateAnnouncement(invalidAnnouncementId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 공지입니다.");
+        }
+    }
+
+    @Nested
+    class deleteByAnnouncementId {
+
+        @Test
+        void 성공() {
+            // given
+            Long announcementId = 1L;
+
+            willDoNothing().given(announcementJpaRepository).deleteById(announcementId);
+
+            // when
+            announcementService.deleteAnnouncementByAnnouncementId(announcementId);
+
+            // then
+            then(announcementJpaRepository).should()
+                    .deleteById(announcementId);
         }
     }
 }

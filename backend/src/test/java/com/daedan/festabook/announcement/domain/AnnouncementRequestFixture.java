@@ -17,6 +17,16 @@ public class AnnouncementRequestFixture {
     }
 
     public static AnnouncementRequest create(
+            boolean isPinned
+    ) {
+        return new AnnouncementRequest(
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT,
+                isPinned
+        );
+    }
+
+    public static AnnouncementRequest create(
             String title,
             String content,
             boolean isPinned

@@ -4,6 +4,7 @@ import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.notification.dto.NotificationMessage;
@@ -28,6 +29,10 @@ public class AnnouncementService {
 
     @Transactional
     public AnnouncementResponse createAnnouncement(Long organizationId, AnnouncementRequest request) {
+        if (request.isPinned()) {
+            validatePinnedLimit(organizationId);
+        }
+
         Organization organization = getOrganizationById(organizationId);
         Announcement announcement = request.toEntity(organization);
         announcementJpaRepository.save(announcement);
@@ -53,6 +58,24 @@ public class AnnouncementService {
         );
     }
 
+    @Transactional
+    public AnnouncementResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        announcement.updateTitleAndContent(request.title(), request.content());
+        return AnnouncementResponse.from(announcement);
+    }
+
+    @Transactional
+    public void deleteAnnouncementByAnnouncementId(Long announcementId) {
+        announcementJpaRepository.deleteById(announcementId);
+    }
+
+    private Announcement getAnnouncementById(Long announcementId) {
+        // TODO : 커스텀 예외 설정
+        return announcementJpaRepository.findById(announcementId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 공지입니다.", HttpStatus.BAD_REQUEST));
+    }
+
     private Organization getOrganizationById(Long organizationId) {
         // TODO: 커스텀 예외 설정
         return organizationJpaRepository.findById(organizationId)
@@ -67,6 +90,13 @@ public class AnnouncementService {
                 .filter(filter)
                 .sorted(createdAtDescending())
                 .toList();
+    }
+
+    private void validatePinnedLimit(Long organizationId) {
+        Long pinnedCount = announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(organizationId);
+        if (pinnedCount >= 3) {
+            throw new BusinessException("공지글은 최대 3개까지 고정할 수 있습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Comparator<Announcement> createdAtDescending() {
