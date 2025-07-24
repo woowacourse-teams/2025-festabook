@@ -65,4 +65,8 @@ public class Place {
     public boolean hasDetail() {
         return category.isServiceLocation();
     }
+
+    public void updateCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
+    }
 }
