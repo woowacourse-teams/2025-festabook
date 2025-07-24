@@ -10,11 +10,13 @@ sealed class ApiResult<out T> {
     data class ClientError(
         val code: Int,
         val message: String?,
+        val errorBody: String?,
     ) : ApiResult<Nothing>()
 
     data class ServerError(
         val code: Int,
         val message: String?,
+        val errorBody: String?,
     ) : ApiResult<Nothing>()
 
     data class NetworkError(
@@ -28,20 +30,30 @@ sealed class ApiResult<out T> {
             runCatching { apiCall() }
                 .mapCatching { response ->
                     if (response.isSuccessful) {
-                        response.body()?.let { Success(it) }
-                            ?: UnknownError
+                        val body = response.body()
+                        when {
+                            body != null -> Success(body)
+                            response.code() == 204 -> {
+                                @Suppress("UNCHECKED_CAST")
+                                Success(Unit as T)
+                            }
+
+                            else -> UnknownError
+                        }
                     } else {
                         when (response.code()) {
                             in 400..499 ->
                                 ClientError(
                                     response.code(),
                                     response.message(),
+                                    response.errorBody()?.string(),
                                 )
 
                             in 500..599 ->
                                 ServerError(
                                     response.code(),
                                     response.message(),
+                                    response.errorBody()?.string(),
                                 )
 
                             else -> UnknownError

@@ -1,6 +1,7 @@
 package com.daedan.festabook
 
 import android.app.Application
+import com.daedan.festabook.service.NotificationHelper
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
 
@@ -11,8 +12,19 @@ class FestaBookApp : Application() {
     override fun onCreate() {
         super.onCreate()
         setupTimber()
-        appContainer = AppContainer()
-        setUpNaverSdk()
+        setupNaverSdk()
+        setupNotificationChannel()
+        appContainer = AppContainer(this)
+    }
+
+    private fun setupNotificationChannel() {
+        runCatching {
+            NotificationHelper.createNotificationChannel(this)
+        }.onSuccess {
+            Timber.d("알림 채널 설정 완료")
+        }.onFailure { e ->
+            Timber.e(e, "알림 채널 설정 실패")
+        }
     }
 
     private fun setupTimber() {
@@ -28,7 +40,7 @@ class FestaBookApp : Application() {
         )
     }
 
-    private fun setUpNaverSdk() {
+    private fun setupNaverSdk() {
         NaverMapSdk.getInstance(this).client =
             NaverMapSdk.NcpKeyClient(BuildConfig.NAVER_MAP_CLIENT_ID)
     }

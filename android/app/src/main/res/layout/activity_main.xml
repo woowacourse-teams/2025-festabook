@@ -7,7 +7,7 @@
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context=".MainActivity">
+        tools:context=".presentation.main.MainActivity">
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fcv_fragment_container"
@@ -20,12 +20,12 @@
             android:id="@+id/cv_bnv_wrapper"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:cardElevation="8dp"
             app:cardCornerRadius="0dp"
-            app:strokeWidth="0dp"
+            app:cardElevation="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:strokeWidth="0dp">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bnv_menu"
@@ -39,7 +39,5 @@
                 app:menu="@menu/menu_bottom_navigation" />
 
         </com.google.android.material.card.MaterialCardView>
-
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

@@ -6,6 +6,7 @@ plugins {
     alias(libs.plugins.serialization)
     id("kotlin-kapt")
     id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -99,6 +100,9 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.viewpager2)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.shimmer)
     implementation(libs.timber)
