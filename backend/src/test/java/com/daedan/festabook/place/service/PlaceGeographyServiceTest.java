@@ -94,8 +94,8 @@ class PlaceGeographyServiceTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(result.id()).isEqualTo(placeId);
-                s.assertThat(result.markerCoordinate().latitude()).isEqualTo(request.latitude());
-                s.assertThat(result.markerCoordinate().longitude()).isEqualTo(request.longitude());
+                s.assertThat(result.coordinate().latitude()).isEqualTo(request.latitude());
+                s.assertThat(result.coordinate().longitude()).isEqualTo(request.longitude());
             });
         }
 

@@ -145,11 +145,11 @@ class PlaceGeographyControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("$", hasKey("markerCoordinate"))
-                    .body("markerCoordinate.size()", equalTo(expectedCoordinateSize))
+                    .body("$", hasKey("coordinate"))
+                    .body("coordinate.size()", equalTo(expectedCoordinateSize))
                     .body("id", equalTo(place.getId().intValue()))
-                    .body("markerCoordinate.latitude", equalTo(request.latitude()))
-                    .body("markerCoordinate.longitude", equalTo(request.longitude()));
+                    .body("coordinate.latitude", equalTo(request.latitude()))
+                    .body("coordinate.longitude", equalTo(request.longitude()));
         }
 
         @Test

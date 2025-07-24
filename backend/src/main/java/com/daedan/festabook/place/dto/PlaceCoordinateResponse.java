@@ -5,7 +5,7 @@ import com.daedan.festabook.place.domain.Place;
 
 public record PlaceCoordinateResponse(
         Long id,
-        CoordinateResponse markerCoordinate
+        CoordinateResponse coordinate
 ) {
 
     public static PlaceCoordinateResponse from(Place place) {
