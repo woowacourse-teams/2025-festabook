@@ -165,8 +165,8 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
       const lat = e.coord.lat();
       const lng = e.coord.lng();
       setCoords({ lat, lng });
-      const toRemove = existingMarkerRefs.current.find(marker =>
-        marker.getTitle() === existingMarkers.find(m => m.id === placeId)?.category
+      const toRemove = existingMarkerRefs.current.find((marker, index) => 
+        existingMarkers[index]?.id === placeId
       );
       if (toRemove) {
         toRemove.setMap(null);
