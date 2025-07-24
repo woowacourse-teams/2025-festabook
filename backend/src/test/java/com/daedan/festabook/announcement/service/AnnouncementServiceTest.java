@@ -20,6 +20,7 @@ import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
