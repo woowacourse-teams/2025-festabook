@@ -13,13 +13,11 @@ import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository,
 ) : ViewModel() {
-    private val _notices = MutableLiveData<List<NoticeUiModel>>()
-    val notices: LiveData<List<NoticeUiModel>> = _notices
-
     private val _noticeUiState: MutableLiveData<NoticeUiState> = MutableLiveData<NoticeUiState>()
     val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
 
@@ -32,6 +30,7 @@ class NoticeViewModel(
             _noticeUiState.value = NoticeUiState.Loading
 
             val result = noticeRepository.fetchNotices()
+            Timber.d("result: $result")
             result
                 .onSuccess { notices ->
                     _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })
@@ -42,16 +41,15 @@ class NoticeViewModel(
     }
 
     fun toggleNoticeExpanded(notice: NoticeUiModel) {
-        val currentList = _notices.value ?: return
-        val updatedList =
-            currentList.map { updatedNotice ->
+        updateNoticeUiState { notices ->
+            notices.map { updatedNotice ->
                 if (notice.id == updatedNotice.id) {
                     updatedNotice.copy(isExpanded = !updatedNotice.isExpanded)
                 } else {
                     updatedNotice
                 }
             }
-        _notices.value = updatedList
+        }
     }
 
     private fun updateNoticeUiState(onUpdate: (List<NoticeUiModel>) -> List<NoticeUiModel>) {
