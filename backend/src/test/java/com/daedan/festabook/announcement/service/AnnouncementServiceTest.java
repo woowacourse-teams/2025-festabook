@@ -91,9 +91,7 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() ->
-                    announcementService.createAnnouncement(invalidDeviceId, request)
-            )
+            assertThatThrownBy(() -> announcementService.createAnnouncement(invalidDeviceId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
@@ -107,14 +105,13 @@ class AnnouncementServiceTest {
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
+
             willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
                     .given(organizationNotificationManager)
                     .sendToOrganizationTopic(any(), any());
 
             // when & then
-            assertThatThrownBy(() ->
-                    announcementService.createAnnouncement(organizationId, request)
-            )
+            assertThatThrownBy(() -> announcementService.createAnnouncement(organizationId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
