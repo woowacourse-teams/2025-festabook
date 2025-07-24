@@ -17,6 +17,9 @@ import kotlinx.coroutines.launch
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository,
 ) : ViewModel() {
+    private val _notices = MutableLiveData<List<NoticeUiModel>>()
+    val notices: LiveData<List<NoticeUiModel>> = _notices
+
     private val _noticeUiState: MutableLiveData<NoticeUiState> = MutableLiveData<NoticeUiState>()
     val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
 
