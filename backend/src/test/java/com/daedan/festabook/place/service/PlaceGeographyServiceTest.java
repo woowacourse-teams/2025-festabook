@@ -72,46 +72,46 @@ class PlaceGeographyServiceTest {
                         .isEqualTo(place2.getCoordinate().getLongitude());
             });
         }
+    }
 
-        @Nested
-        class updatePlaceCoordinate {
+    @Nested
+    class updatePlaceCoordinate {
 
-            @Test
-            void 성공() {
-                // given
-                Long placeId = 1L;
-                Organization organization = OrganizationFixture.create(1L);
-                Place place = PlaceFixture.create(placeId, organization, null, null);
-                PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
+        @Test
+        void 성공() {
+            // given
+            Long placeId = 1L;
+            Organization organization = OrganizationFixture.create(1L);
+            Place place = PlaceFixture.create(placeId, organization, null, null);
+            PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
-                given(placeJpaRepository.findById(placeId))
-                        .willReturn(Optional.of(place));
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
 
-                // when
-                PlaceCoordinateResponse result = placeGeographyService.updatePlaceCoordinate(placeId, request);
+            // when
+            PlaceCoordinateResponse result = placeGeographyService.updatePlaceCoordinate(placeId, request);
 
-                // then
-                assertSoftly(s -> {
-                    s.assertThat(result.id()).isEqualTo(placeId);
-                    s.assertThat(result.markerCoordinate().latitude()).isEqualTo(request.latitude());
-                    s.assertThat(result.markerCoordinate().longitude()).isEqualTo(request.longitude());
-                });
-            }
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.id()).isEqualTo(placeId);
+                s.assertThat(result.markerCoordinate().latitude()).isEqualTo(request.latitude());
+                s.assertThat(result.markerCoordinate().longitude()).isEqualTo(request.longitude());
+            });
+        }
 
-            @Test
-            void 예외_존재하지_않는_플레이스() {
-                // given
-                Long placeId = 1L;
-                PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
+        @Test
+        void 예외_존재하지_않는_플레이스() {
+            // given
+            Long placeId = 1L;
+            PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
-                given(placeJpaRepository.findById(placeId))
-                        .willReturn(Optional.empty());
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.empty());
 
-                // when & then
-                assertThatThrownBy(() -> placeGeographyService.updatePlaceCoordinate(placeId, request))
-                        .isInstanceOf(BusinessException.class)
-                        .hasMessage("존재하지 않는 플레이스입니다.");
-            }
+            // when & then
+            assertThatThrownBy(() -> placeGeographyService.updatePlaceCoordinate(placeId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 플레이스입니다.");
         }
     }
 }
