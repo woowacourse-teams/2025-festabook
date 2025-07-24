@@ -27,7 +27,7 @@ public class PlaceGeographyService {
     @Transactional
     public PlaceCoordinateResponse updatePlaceCoordinate(Long placeId, PlaceCoordinateRequest request) {
         Place place = getPlaceById(placeId);
-        Coordinate coordinate = new Coordinate(request.latitude(), request.longitude());
+        Coordinate coordinate = request.toCoordinate();
 
         place.updateCoordinate(coordinate);
 
