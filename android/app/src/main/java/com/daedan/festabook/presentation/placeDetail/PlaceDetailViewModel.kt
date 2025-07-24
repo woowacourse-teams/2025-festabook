@@ -30,7 +30,7 @@ class PlaceDetailViewModel(
 
     fun loadPlaceDetail() {
         viewModelScope.launch {
-            val result = placeDetailRepository.fetchPlaceDetail(place.id)
+            val result = placeDetailRepository.getPlaceDetail(place.id)
             result
                 .onSuccess { placeDetail ->
                     _placeDetail.value =

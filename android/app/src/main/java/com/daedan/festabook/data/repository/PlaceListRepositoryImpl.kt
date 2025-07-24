@@ -9,7 +9,7 @@ import com.daedan.festabook.domain.repository.PlaceListRepository
 class PlaceListRepositoryImpl(
     private val placeDataSource: PlaceDataSource,
 ) : PlaceListRepository {
-    override suspend fun fetchPlaces(): Result<List<Place>> {
+    override suspend fun getPlaces(): Result<List<Place>> {
         val response = placeDataSource.fetchPlaces().toResult()
         return response.map { places -> places.map { it.toDomain() } }
     }

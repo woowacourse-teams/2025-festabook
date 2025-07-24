@@ -8,10 +8,10 @@ import retrofit2.http.Path
 
 interface PlaceService {
     @GET("places/previews")
-    suspend fun getPlaces(): Response<List<PlaceResponse>>
+    suspend fun fetchPlaces(): Response<List<PlaceResponse>>
 
     @GET("places/{placeId}")
-    suspend fun getPlaceDetail(
+    suspend fun fetchPlaceDetail(
         @Path("placeId") id: Long,
     ): Response<PlaceDetailResponse>
 }
