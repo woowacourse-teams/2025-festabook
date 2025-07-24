@@ -7,5 +7,7 @@ import com.daedan.festabook.domain.model.PlaceGeography
 interface PlaceListRepository {
     suspend fun getPlaces(): Result<List<Place>>
 
-    suspend fun getPlaceGeography(): Result<PlaceGeography>
+    suspend fun getPlaceGeographies(): Result<List<PlaceGeography>>
+
+    suspend fun getOrganizationGeography(): Result<OrganizationGeography>
 }

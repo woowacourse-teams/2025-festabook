@@ -6,16 +6,12 @@ import com.daedan.festabook.data.datasource.remote.DeviceDataSource
 import com.daedan.festabook.data.datasource.remote.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.placeDetail.PlaceDetailDataSource
-import com.daedan.festabook.data.datasource.remote.placeDetail.PlaceDetailDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.placeList.PlaceListDataSource
-import com.daedan.festabook.data.datasource.remote.placeList.PlaceListDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSource
-import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSource
+import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
@@ -27,6 +23,7 @@ import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
 import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.organizationBookmarkService
+import com.daedan.festabook.data.service.api.ApiClient.organizationService
 import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.BookmarkRepository

@@ -86,7 +86,8 @@ class PlaceListFragment :
                     initialMapSetting.placeCoordinates,
                 )
 
-            setPlaceListScrollListener(mapScrollManager)
+                setPlaceListScrollListener(mapScrollManager)
+            }
         }
     }
 

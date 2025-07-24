@@ -49,8 +49,8 @@ class PlaceListViewModel(
 
     fun loadOrganizationGeography() {
         viewModelScope.launch {
-            val organizationGeography = placeListRepository.fetchOrganizationGeography().getOrNull()
-            val placeGeographies = placeListRepository.fetchPlaceGeographies().getOrNull()
+            val organizationGeography = placeListRepository.getOrganizationGeography().getOrNull()
+            val placeGeographies = placeListRepository.getPlaceGeographies().getOrNull()
 
             if (organizationGeography == null || placeGeographies == null) {
                 return@launch

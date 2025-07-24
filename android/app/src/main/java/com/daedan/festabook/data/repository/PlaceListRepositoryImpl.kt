@@ -1,8 +1,7 @@
 package com.daedan.festabook.data.repository
 
-import com.daedan.festabook.data.datasource.remote.placeList.PlaceListDataSource
-import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSource
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
+import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSource
 import com.daedan.festabook.data.model.response.toDomain
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.OrganizationGeography
@@ -19,12 +18,12 @@ class PlaceListRepositoryImpl(
         return response.map { places -> places.map { it.toDomain() } }
     }
 
-    override suspend fun fetchOrganizationGeography(): Result<OrganizationGeography> {
+    override suspend fun getOrganizationGeography(): Result<OrganizationGeography> {
         val response = placeMapDataSource.fetchOrganizationGeography().toResult()
         return response.map { it.toDomain() }
     }
 
-    override suspend fun fetchPlaceGeographies(): Result<List<PlaceGeography>> {
+    override suspend fun getPlaceGeographies(): Result<List<PlaceGeography>> {
         val response = placeMapDataSource.fetchPlaceGeographies().toResult()
         return response.map { placeGeographies -> placeGeographies.map { it.toDomain() } }
     }
