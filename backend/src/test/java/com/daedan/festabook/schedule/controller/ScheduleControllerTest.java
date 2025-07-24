@@ -3,6 +3,7 @@ package com.daedan.festabook.schedule.controller;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.organization.domain.Organization;
@@ -13,9 +14,11 @@ import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
+import com.daedan.festabook.schedule.dto.EventDateRequest;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -60,6 +63,98 @@ class ScheduleControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    @Nested
+    class createEventDate {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            EventDateRequest request = new EventDateRequest(LocalDate.of(2025, 5, 5));
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .body(request)
+                    .when()
+                    .post("/schedules")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("id", notNullValue())
+                    .body("date", equalTo(request.date().toString()));
+        }
+
+        @Test
+        void 예외_이미_존재하는_일정_날짜() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            LocalDate date = LocalDate.of(2025, 5, 5);
+            eventDateJpaRepository.save(EventDateFixture.create(organization, date));
+            EventDateRequest request = new EventDateRequest(date);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .body(request)
+                    .when()
+                    .post("/schedules")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("이미 존재하는 일정 날짜입니다."));
+        }
+    }
+
+    @Nested
+    class deleteEventDate {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            EventDate eventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(eventDate);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .delete("/schedules/{eventDateId}", eventDate.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+
+        @Test
+        void 성공_존재하지_않는_일정_날짜_ID() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Long invalidEventDateId = 999L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .delete("/schedules/{eventDateId}", invalidEventDateId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
     }
 
     @Nested

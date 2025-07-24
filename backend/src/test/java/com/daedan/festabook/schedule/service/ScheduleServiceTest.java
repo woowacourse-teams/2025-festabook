@@ -1,14 +1,22 @@
 package com.daedan.festabook.schedule.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
+import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.schedule.domain.Event;
 import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
+import com.daedan.festabook.schedule.dto.EventDateRequest;
 import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventResponses;
@@ -20,6 +28,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.List;
+import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -45,10 +54,70 @@ class ScheduleServiceTest {
     private EventJpaRepository eventJpaRepository;
 
     @Mock
+    private OrganizationJpaRepository organizationJpaRepository;
+
+    @Mock
     private Clock clock;
 
     @InjectMocks
     private ScheduleService scheduleService;
+
+    @Nested
+    class createEventDate {
+
+        @Test
+        void 성공() {
+            // given
+            EventDateRequest request = new EventDateRequest(LocalDate.of(2025, 7, 18));
+            EventDate eventDate = EventDateFixture.create(request.date());
+            given(eventDateJpaRepository.save(any()))
+                    .willReturn(eventDate);
+
+            Organization organization = OrganizationFixture.create(DEFAULT_ORGANIZATION_ID);
+            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(Optional.of(organization));
+
+            // when
+            EventDateResponse result = scheduleService.createEventDate(DEFAULT_ORGANIZATION_ID, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.id()).isEqualTo(eventDate.getId());
+                s.assertThat(result.date()).isEqualTo(eventDate.getDate());
+            });
+        }
+
+        @Test
+        void 예외_이미_존재하는_일정_날짜() {
+            // given
+            LocalDate date = LocalDate.of(2025, 7, 18);
+            EventDateRequest request = new EventDateRequest(date);
+            given(eventDateJpaRepository.existsByOrganizationIdAndDate(DEFAULT_ORGANIZATION_ID, date))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> scheduleService.createEventDate(DEFAULT_ORGANIZATION_ID, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이미 존재하는 일정 날짜입니다.");
+        }
+    }
+
+    @Nested
+    class deleteEventDate {
+
+        @Test
+        void 성공() {
+            // given
+            Long eventDateId = 1L;
+
+            // when
+            scheduleService.deleteEventDate(eventDateId);
+
+            // then
+            then(eventDateJpaRepository).should()
+                    .deleteById(eventDateId);
+        }
+    }
 
     @Nested
     class getAllEventDateByOrganizationId {
