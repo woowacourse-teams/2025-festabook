@@ -62,10 +62,15 @@ class AppContainer(
     val placeDetailRepository: PlaceDetailRepository by lazy {
         PlaceDetailRepositoryImpl(placeListDataSource)
     }
+    
+    val placeDetailRepository: PlaceDetailRepository by lazy {
+        PlaceDetailRepositoryImpl(placeListDataSource)
+    }
 
     val placeListRepository: PlaceListRepository by lazy {
         PlaceListRepositoryImpl(placeListDataSource)
     }
+
     val scheduleRepository: ScheduleRepository by lazy {
         ScheduleRepositoryImpl(scheduleDataSource)
     }
