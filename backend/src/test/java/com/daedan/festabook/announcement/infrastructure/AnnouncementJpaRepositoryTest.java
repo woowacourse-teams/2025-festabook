@@ -1,12 +1,13 @@
 package com.daedan.festabook.announcement.infrastructure;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ class AnnouncementJpaRepositoryTest {
     class countByOrganizationIdAndPinned {
 
         @Test
-        void 특정_조직의_고정_공지사항_개수_반환() {
+        void 성공_특정_조직의_고정_공지사항_개수_반환() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -42,7 +43,20 @@ class AnnouncementJpaRepositoryTest {
             Long result = announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(organization.getId());
 
             // then
-            Assertions.assertThat(result).isEqualTo(expectedPinned);
+            assertThat(result).isEqualTo(expectedPinned);
+        }
+
+        @Test
+        void 성공_특정_조직의_고정_공지사항이_없는_경우() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            // when
+            Long result = announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(organization.getId());
+
+            // then
+            assertThat(result).isEqualTo(0L);
         }
     }
 }
