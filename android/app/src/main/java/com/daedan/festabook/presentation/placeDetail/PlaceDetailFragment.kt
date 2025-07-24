@@ -10,7 +10,10 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceNoticeAdapter
+import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
+import com.daedan.festabook.presentation.placeDetail.model.emptyUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
@@ -43,18 +46,35 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
     }
 
     private fun setUpObserver() {
-        viewModel.placeDetail.observe(viewLifecycleOwner) { placeDetail ->
-            when (placeDetail) {
+        viewModel.placeDetail.observe(viewLifecycleOwner) { result ->
+            when (result) {
                 is PlaceDetailUiState.Error -> {}
                 is PlaceDetailUiState.Loading -> {
                     Log.d("PlaceDetailFragment", "Loading")
                 }
                 is PlaceDetailUiState.Success -> {
-                    binding.placeDetail = placeDetail.placeDetail
-                    placeImageAdapter.submitList(placeDetail.placeDetail.images)
-                    placeNoticeAdapter.submitList(placeDetail.placeDetail.notices)
+                    loadPlaceDetail(result.placeDetail)
                 }
             }
+        }
+    }
+
+    private fun loadPlaceDetail(placeDetail: PlaceDetailUiModel) {
+        binding.placeDetail = placeDetail
+
+        if (placeDetail.images.isEmpty()) {
+            placeImageAdapter.submitList(
+                listOf(ImageUiModel.emptyUiModel()),
+            )
+        } else {
+            placeImageAdapter.submitList(placeDetail.images)
+        }
+
+        if (placeDetail.notices.isEmpty()) {
+            binding.rvPlaceNotice.visibility = View.GONE
+            binding.tvNoNoticeDescription.visibility = View.VISIBLE
+        } else {
+            placeNoticeAdapter.submitList(placeDetail.notices)
         }
     }
 

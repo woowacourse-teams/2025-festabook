@@ -11,7 +11,8 @@
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:fillViewport="true">
 
         <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
             xmlns:tools="http://schemas.android.com/tools"
@@ -167,6 +168,19 @@
                 android:text="@string/place_detail_notice_description"
                 app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
                 app:layout_constraintStart_toStartOf="@id/tv_notice_title"
+                android:textAppearance="@style/PretendardRegular12" />
+
+            <TextView
+                android:id="@+id/tv_no_notice_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="100dp"
+                android:textColor="@color/gray500"
+                android:text="@string/place_detail_no_notice"
+                android:visibility="gone"
+                app:layout_constraintTop_toBottomOf="@id/tv_notice_description"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 android:textAppearance="@style/PretendardRegular12" />
 
             <androidx.recyclerview.widget.RecyclerView
