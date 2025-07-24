@@ -29,7 +29,7 @@ class PlaceListViewModel(
 
     init {
         loadAllPlaces()
-        loadPlaceGeography()
+        loadOrganizationGeography()
     }
 
     fun setPlace(place: PlaceUiModel) {
@@ -47,13 +47,17 @@ class PlaceListViewModel(
         }
     }
 
-    fun loadPlaceGeography() {
+    fun loadOrganizationGeography() {
         viewModelScope.launch {
-            val result = placeListRepository.fetchPlaceGeography()
-            result
-                .onSuccess { placeGeography ->
-                    _initialMapSetting.value = placeGeography.toUiModel()
-                }.onFailure {}
+            val organizationGeography = placeListRepository.fetchOrganizationGeography().getOrNull()
+            val placeGeographies = placeListRepository.fetchPlaceGeographies().getOrNull()
+
+            if (organizationGeography == null || placeGeographies == null) {
+                return@launch
+            }
+            val initialMapSetting = organizationGeography.toUiModel()
+            val placeCoordinates = placeGeographies.map { it.toUiModel() }
+            _initialMapSetting.value = initialMapSetting.copy(placeCoordinates = placeCoordinates)
         }
     }
 

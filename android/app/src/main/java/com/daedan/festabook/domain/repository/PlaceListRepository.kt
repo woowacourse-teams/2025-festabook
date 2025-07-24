@@ -1,5 +1,6 @@
 package com.daedan.festabook.domain.repository
 
+import com.daedan.festabook.domain.model.OrganizationGeography
 import com.daedan.festabook.domain.model.Place
 import com.daedan.festabook.domain.model.PlaceGeography
 

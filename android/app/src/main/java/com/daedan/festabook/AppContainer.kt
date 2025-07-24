@@ -64,7 +64,10 @@ class AppContainer(
     }
 
     private val placeMapDataSource: PlaceMapDataSource by lazy {
-        PlaceMapDataSourceImpl(organizationService)
+        PlaceMapDataSourceImpl(
+            organizationService,
+            placeService,
+        )
     }
 
     val placeDetailRepository: PlaceDetailRepository by lazy {
