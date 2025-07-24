@@ -36,7 +36,7 @@ class MapManager(
         setupMap()
     }
 
-    fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
+    private fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         clusterManager.buildCluster {
             coordinates.forEachIndexed { idx, place ->
                 Marker().generate(place)
@@ -64,6 +64,7 @@ class MapManager(
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
             setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
+            setPlaceLocation(settingUiModel.placeCoordinates)
         }
     }
 

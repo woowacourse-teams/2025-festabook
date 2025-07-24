@@ -74,19 +74,14 @@ class PlaceListFragment :
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             mapFragment.getMapAsync { map ->
                 val initialPadding = binding.initialPadding()
-                val mapScrollManager = MapScrollManager(map)
                 binding.lbvCurrentLocation.map = map
                 map.locationSource = locationSource
-
                 MapManager(
                     map,
                     initialPadding,
                     initialMapSetting,
-                ).setPlaceLocation(
-                    initialMapSetting.placeCoordinates,
                 )
-
-                setPlaceListScrollListener(mapScrollManager)
+                setPlaceListScrollListener(MapScrollManager(map))
             }
         }
     }
