@@ -34,6 +34,7 @@ sealed class ApiResult<out T> {
                         when {
                             body != null -> Success(body)
                             response.code() == 204 -> {
+                                @Suppress("UNCHECKED_CAST")
                                 Success(Unit as T)
                             }
 
