@@ -13,7 +13,6 @@ import com.daedan.festabook.presentation.placeDetail.adapter.PlaceNoticeAdapter
 import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
-import com.daedan.festabook.presentation.placeDetail.model.emptyUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
@@ -64,7 +63,7 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
 
         if (placeDetail.images.isEmpty()) {
             placeImageAdapter.submitList(
-                listOf(ImageUiModel.emptyUiModel()),
+                listOf(ImageUiModel()),
             )
         } else {
             placeImageAdapter.submitList(placeDetail.images)
