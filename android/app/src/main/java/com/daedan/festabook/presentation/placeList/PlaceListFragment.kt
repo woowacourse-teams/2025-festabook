@@ -105,7 +105,6 @@ class PlaceListFragment :
                 R.anim.anim_fade_in_right,
                 R.anim.anim_fade_out,
             )
-            addToBackStack(null)
         }
     }
 
