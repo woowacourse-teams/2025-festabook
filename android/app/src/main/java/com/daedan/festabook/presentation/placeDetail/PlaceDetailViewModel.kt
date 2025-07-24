@@ -47,9 +47,9 @@ class PlaceDetailViewModel(
         fun factory(place: PlaceUiModel) =
             viewModelFactory {
                 initializer {
-                    val placeListRepository =
+                    val placeDetailRepository =
                         (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
-                    PlaceDetailViewModel(placeListRepository, place)
+                    PlaceDetailViewModel(placeDetailRepository, place)
                 }
             }
     }
