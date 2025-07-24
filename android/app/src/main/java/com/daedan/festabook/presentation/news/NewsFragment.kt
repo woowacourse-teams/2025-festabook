@@ -41,8 +41,14 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private fun setupObserver() {
         viewModel.noticeUiState.observe(viewLifecycleOwner) { noticeState ->
             when (noticeState) {
-                is NoticeUiState.Error -> {}
-                NoticeUiState.Loading -> {}
+                is NoticeUiState.Error -> {
+                    binding.srlNoticeList.isRefreshing = false
+                }
+
+                is NoticeUiState.Loading -> {
+                    binding.srlNoticeList.isRefreshing = true
+                }
+
                 is NoticeUiState.Success -> {
                     noticeAdapter.submitList(noticeState.notices)
                     binding.srlNoticeList.isRefreshing = false
