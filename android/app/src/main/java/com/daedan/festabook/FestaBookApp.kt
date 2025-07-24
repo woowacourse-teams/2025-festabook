@@ -18,7 +18,13 @@ class FestaBookApp : Application() {
     }
 
     private fun setupNotificationChannel() {
-        NotificationHelper.createNotificationChannel(this)
+        runCatching {
+            NotificationHelper.createNotificationChannel(this)
+        }.onSuccess {
+            Timber.d("알림 채널 설정 완료")
+        }.onFailure { e ->
+            Timber.e(e, "알림 채널 설정 실패")
+        }
     }
 
     private fun setupTimber() {
