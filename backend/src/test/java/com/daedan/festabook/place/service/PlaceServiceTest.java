@@ -2,21 +2,29 @@ package com.daedan.festabook.place.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
+import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
+import com.daedan.festabook.place.dto.PlaceDetailRequest;
+import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
+import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -33,16 +41,102 @@ import org.mockito.junit.jupiter.MockitoExtension;
 class PlaceServiceTest {
 
     @Mock
+    private PlaceJpaRepository placeJpaRepository;
+
+    @Mock
     private PlaceImageJpaRepository placeImageJpaRepository;
 
     @Mock
     private PlaceDetailJpaRepository placeDetailJpaRepository;
 
     @Mock
+    private OrganizationJpaRepository organizationJpaRepository;
+
+    @Mock
     private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     @InjectMocks
     private PlaceService placeService;
+
+    @Nested
+    class createPlace {
+
+        @Test
+        void 성공() {
+            // given
+            Long organizationId = 1L;
+            Long expectedPlaceId = 1L;
+            PlaceCategory placeCategory = PlaceCategory.BAR;
+            PlaceRequest placeRequest = new PlaceRequest(placeCategory);
+
+            Organization organization = OrganizationFixture.create(organizationId);
+            Place place = PlaceFixture.createEmpty(expectedPlaceId, organization, placeCategory);
+
+            given(organizationJpaRepository.findById(organizationId))
+                    .willReturn(Optional.of(organization));
+            given(placeJpaRepository.save(any()))
+                    .willReturn(place);
+
+            // when
+            PlaceResponse result = placeService.createPlace(organizationId, placeRequest);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.id()).isEqualTo(1L);
+                s.assertThat(result.category()).isEqualTo(PlaceCategory.BAR);
+                s.assertThat(result.title()).isNull();
+                s.assertThat(result.placeImages()).isNull();
+                s.assertThat(result.startTime()).isNull();
+                s.assertThat(result.endTime()).isNull();
+                s.assertThat(result.location()).isNull();
+                s.assertThat(result.host()).isNull();
+                s.assertThat(result.description()).isNull();
+                s.assertThat(result.placeAnnouncements()).isNull();
+            });
+        }
+    }
+
+    @Nested
+    class createPlaceDetail {
+
+        @Test
+        void 성공() {
+            // given
+            Long organizationId = 1L;
+            Long expectedPlaceId = 1L;
+            PlaceCategory placeCategory = PlaceCategory.BAR;
+            String placeTitle = "미소네";
+            PlaceDetailRequest placeDetailRequest = new PlaceDetailRequest(placeCategory, placeTitle);
+
+            Organization organization = OrganizationFixture.create(organizationId);
+            Place place = PlaceFixture.createEmpty(expectedPlaceId, organization, placeCategory);
+            PlaceDetail placeDetail = PlaceDetailFixture.createEmpty(place, placeTitle);
+
+            given(organizationJpaRepository.findById(organizationId))
+                    .willReturn(Optional.of(organization));
+            given(placeJpaRepository.save(any()))
+                    .willReturn(place);
+            given(placeDetailJpaRepository.save(any()))
+                    .willReturn(placeDetail);
+
+            // when
+            PlaceResponse result = placeService.createPlaceDetail(organizationId, placeDetailRequest);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.id()).isEqualTo(1L);
+                s.assertThat(result.category()).isEqualTo(PlaceCategory.BAR);
+                s.assertThat(result.title()).isEqualTo(placeTitle);
+                s.assertThat(result.placeImages()).isNull();
+                s.assertThat(result.startTime()).isNull();
+                s.assertThat(result.endTime()).isNull();
+                s.assertThat(result.location()).isNull();
+                s.assertThat(result.host()).isNull();
+                s.assertThat(result.description()).isNull();
+                s.assertThat(result.placeAnnouncements()).isNull();
+            });
+        }
+    }
 
     @Nested
     class getPlaceByPlaceId {
@@ -62,7 +156,7 @@ class PlaceServiceTest {
             PlaceAnnouncement announcement1 = PlaceAnnouncementFixture.create(place);
             PlaceAnnouncement announcement2 = PlaceAnnouncementFixture.create(place);
 
-            given(placeDetailJpaRepository.findById(placeId))
+            given(placeDetailJpaRepository.findByPlaceId(placeId))
                     .willReturn(Optional.of(detail));
             given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
                     .willReturn(List.of(image1, image2));
@@ -93,7 +187,7 @@ class PlaceServiceTest {
             PlaceImage image2 = PlaceImageFixture.create(place, 2);
             PlaceImage image1 = PlaceImageFixture.create(place, 1);
 
-            given(placeDetailJpaRepository.findById(placeId))
+            given(placeDetailJpaRepository.findByPlaceId(placeId))
                     .willReturn(Optional.of(detail));
             given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
                     .willReturn(List.of(image1, image2, image3));

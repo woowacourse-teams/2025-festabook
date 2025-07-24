@@ -10,16 +10,20 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
+import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
+import com.daedan.festabook.place.dto.PlaceDetailRequest;
+import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -59,6 +63,64 @@ class PlaceControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    @Nested
+    class createPlace {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            PlaceCategory placeCategory = PlaceCategory.BAR;
+            PlaceRequest placeRequest = new PlaceRequest(placeCategory);
+
+            int expectedFieldSize = 10;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(placeRequest)
+                    .post("/places")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("category", equalTo(placeCategory.toString()));
+        }
+    }
+
+    @Nested
+    class createPlaceDetail {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            PlaceCategory placeCategory = PlaceCategory.BAR;
+            String placeTitle = "컴퓨터공학과";
+            PlaceDetailRequest placeDetailRequest = new PlaceDetailRequest(placeCategory, placeTitle);
+
+            int expectedFieldSize = 10;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(placeDetailRequest)
+                    .post("/places/detail")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("category", equalTo(placeCategory.toString()))
+                    .body("title", equalTo(placeTitle));
+        }
     }
 
     @Nested
@@ -206,9 +268,11 @@ class PlaceControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
+                    .log().all()
                     .get("/places/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
+                    .log().all()
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", equalTo(place.getId().intValue()))
                     .body("placeImages", hasSize(expectedPlaceImagesSize))
@@ -263,6 +327,7 @@ class PlaceControllerTest {
                     .get("/places/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
+                    .log().all()
                     .body("placeImages[0].sequence", equalTo(placeImage1.getSequence()))
                     .body("placeImages[1].sequence", equalTo(placeImage2.getSequence()))
                     .body("placeImages[2].sequence", equalTo(placeImage3.getSequence()))
@@ -320,8 +385,6 @@ class PlaceControllerTest {
                     .when()
                     .get("/places/{placeId}", place.getId())
                     .then()
-                    .log()
-                    .all()
                     .statusCode(HttpStatus.OK.value())
                     .body("placeAnnouncements", hasSize(0));
         }

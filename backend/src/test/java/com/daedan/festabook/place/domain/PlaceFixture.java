@@ -62,4 +62,17 @@ public class PlaceFixture {
                 DEFAULT_COORDINATE
         );
     }
+
+    public static Place createEmpty(
+            Long id,
+            Organization organization,
+            PlaceCategory placeCategory
+    ) {
+        return new Place(
+                id,
+                organization,
+                placeCategory,
+                null
+        );
+    }
 }

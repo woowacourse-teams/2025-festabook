@@ -29,19 +29,14 @@ public class PlaceDetail {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
     private String location;
 
-    @Column(nullable = false)
     private String host;
 
-    @Column(nullable = false)
     private LocalTime startTime;
 
-    @Column(nullable = false)
     private LocalTime endTime;
 
     protected PlaceDetail(
@@ -82,6 +77,22 @@ public class PlaceDetail {
                 host,
                 startTime,
                 endTime
+        );
+    }
+
+    public PlaceDetail(
+            Place place,
+            String title
+    ) {
+        this(
+                null,
+                place,
+                title,
+                null,
+                null,
+                null,
+                null,
+                null
         );
     }
 }
