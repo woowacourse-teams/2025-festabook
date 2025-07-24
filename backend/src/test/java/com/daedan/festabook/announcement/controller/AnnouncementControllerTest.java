@@ -1,7 +1,9 @@
 package com.daedan.festabook.announcement.controller;
 
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -92,7 +94,7 @@ class AnnouncementControllerTest {
     }
 
     @Nested
-    class getAllAnnouncementByOrganizationId {
+    class getGroupedAnnouncementByOrganizationId {
 
         @Test
         void 성공() {
@@ -100,10 +102,13 @@ class AnnouncementControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            Announcement announcement = AnnouncementFixture.create(organization);
-            announcementJpaRepository.save(announcement);
+            Announcement announcement1 = AnnouncementFixture.create(true, organization);
+            Announcement announcement2 = AnnouncementFixture.create(false, organization);
+            announcementJpaRepository.saveAll(List.of(announcement1, announcement2));
 
-            int expectedSize = 1;
+            int expectedSize = 2;
+            int expectedPinnedSize = 1;
+            int expectedUnpinnedSize = 1;
             int expectedFieldSize = 5;
 
             // when & then
@@ -114,13 +119,23 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(announcement.getId().intValue()))
-                    .body("[0].title", equalTo(announcement.getTitle()))
-                    .body("[0].content", equalTo(announcement.getContent()))
-                    .body("[0].isPinned", equalTo(announcement.isPinned()))
-                    .body("[0].createdAt", notNullValue());
+                    .body("$", hasKey("pinned"))
+                    .body("$", hasKey("unpinned"))
+                    .body("size()", equalTo(expectedSize))
+                    .body("pinned", hasSize(expectedPinnedSize))
+                    .body("unpinned.size()", equalTo(expectedUnpinnedSize))
+                    .body("pinned[0].size()", equalTo(expectedFieldSize))
+                    .body("pinned[0].id", equalTo(announcement1.getId().intValue()))
+                    .body("pinned[0].title", equalTo(announcement1.getTitle()))
+                    .body("pinned[0].content", equalTo(announcement1.getContent()))
+                    .body("pinned[0].isPinned", equalTo(announcement1.isPinned()))
+                    .body("pinned[0].createdAt", notNullValue())
+                    .body("unpinned[0].size()", equalTo(expectedFieldSize))
+                    .body("unpinned[0].id", equalTo(announcement2.getId().intValue()))
+                    .body("unpinned[0].title", equalTo(announcement2.getTitle()))
+                    .body("unpinned[0].content", equalTo(announcement2.getContent()))
+                    .body("unpinned[0].isPinned", equalTo(announcement2.isPinned()))
+                    .body("unpinned[0].createdAt", notNullValue());
         }
 
         @Test
@@ -129,9 +144,15 @@ class AnnouncementControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            int expectedSize = 3;
-            List<Announcement> announcements = AnnouncementFixture.createList(expectedSize, organization);
-            announcementJpaRepository.saveAll(announcements);
+            int expectedPinnedSize = 3;
+            int expectedUnpinnedSize = 4;
+            List<Announcement> pinnedAnnouncements = AnnouncementFixture.createList(expectedPinnedSize, true,
+                    organization);
+            List<Announcement> unpinnedAnnouncements = AnnouncementFixture.createList(expectedUnpinnedSize, false,
+                    organization);
+
+            announcementJpaRepository.saveAll(pinnedAnnouncements);
+            announcementJpaRepository.saveAll(unpinnedAnnouncements);
 
             // when & then
             RestAssured
@@ -141,12 +162,38 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("id", containsInAnyOrder(
-                            announcements.get(0).getId().intValue(),
-                            announcements.get(1).getId().intValue(),
-                            announcements.get(2).getId().intValue()
-                    ));
+                    .body("pinned.size()", equalTo(expectedPinnedSize))
+                    .body("unpinned.size()", equalTo(expectedUnpinnedSize));
+        }
+
+        @Test
+        void 성공_생성일_역순_정렬() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Announcement announcement1 = AnnouncementFixture.create(true, organization);
+            Announcement announcement2 = AnnouncementFixture.create(true, organization);
+            Announcement announcement3 = AnnouncementFixture.create(true, organization);
+            announcementJpaRepository.saveAll(List.of(announcement1, announcement2, announcement3));
+
+            // when & then
+            List<Long> result = RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/announcements")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .extract()
+                    .jsonPath()
+                    .getList("pinned.id", Long.class);
+
+            assertSoftly(s -> {
+                s.assertThat(result.get(0)).isEqualTo(announcement3.getId());
+                s.assertThat(result.get(1)).isEqualTo(announcement2.getId());
+                s.assertThat(result.get(2)).isEqualTo(announcement1.getId());
+            });
         }
 
         @Test
@@ -157,11 +204,12 @@ class AnnouncementControllerTest {
             organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
 
             int expectedSize = 3;
-            List<Announcement> targetAnnouncements = AnnouncementFixture.createList(expectedSize, targetOrganization);
+            List<Announcement> targetAnnouncements = AnnouncementFixture.createList(expectedSize, true,
+                    targetOrganization);
             announcementJpaRepository.saveAll(targetAnnouncements);
 
             int notExpectedSize = 4;
-            List<Announcement> anotherAnnouncements = AnnouncementFixture.createList(notExpectedSize,
+            List<Announcement> anotherAnnouncements = AnnouncementFixture.createList(notExpectedSize, true,
                     anotherOrganization);
             announcementJpaRepository.saveAll(anotherAnnouncements);
 
@@ -173,8 +221,8 @@ class AnnouncementControllerTest {
                     .get("/announcements")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("id", containsInAnyOrder(
+                    .body("pinned.size()", equalTo(expectedSize))
+                    .body("pinned.id", containsInAnyOrder(
                             targetAnnouncements.get(0).getId().intValue(),
                             targetAnnouncements.get(1).getId().intValue(),
                             targetAnnouncements.get(2).getId().intValue()

@@ -44,15 +44,32 @@ public class Announcement {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    protected Announcement(
+            Long id,
+            String title,
+            String content,
+            boolean isPinned,
+            Organization organization,
+            LocalDateTime createdAt
+    ) {
+        this.id = id;
+        this.title = title;
+        this.content = content;
+        this.isPinned = isPinned;
+        this.organization = organization;
+        this.createdAt = createdAt;
+    }
+
     public Announcement(
             String title,
             String content,
             boolean isPinned,
             Organization organization
     ) {
-        this.title = title;
-        this.content = content;
-        this.isPinned = isPinned;
-        this.organization = organization;
+        this(null, title, content, isPinned, organization, null);
+    }
+
+    public boolean isUnpinned() {
+        return !isPinned;
     }
 }

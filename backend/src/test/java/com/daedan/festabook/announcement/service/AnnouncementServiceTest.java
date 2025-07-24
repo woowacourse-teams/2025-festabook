@@ -1,6 +1,5 @@
 package com.daedan.festabook.announcement.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
@@ -11,15 +10,18 @@ import static org.mockito.BDDMockito.willThrow;
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
+import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
-import com.daedan.festabook.announcement.dto.AnnouncementResponses;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -90,9 +92,7 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() ->
-                    announcementService.createAnnouncement(invalidDeviceId, request)
-            )
+            assertThatThrownBy(() -> announcementService.createAnnouncement(invalidDeviceId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
@@ -106,56 +106,101 @@ class AnnouncementServiceTest {
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
+
             willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
                     .given(organizationNotificationManager)
                     .sendToOrganizationTopic(any(), any());
 
             // when & then
-            assertThatThrownBy(() ->
-                    announcementService.createAnnouncement(organizationId, request)
-            )
+            assertThatThrownBy(() -> announcementService.createAnnouncement(organizationId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
     }
 
     @Nested
-    class getAllAnnouncementByOrganizationId {
+    class getGroupedAnnouncementByOrganizationId {
 
         @Test
-        void 성공() {
+        void 성공_고정_분류() {
             // given
-            Announcement announcement1 = AnnouncementFixture.create();
-            Announcement announcement2 = AnnouncementFixture.create();
-            Announcement announcement3 = AnnouncementFixture.create();
-            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(List.of(announcement1, announcement2, announcement3));
+            int expectedPinedSize = 1;
+            int expectedUnPinedSize = 2;
 
-            AnnouncementResponses expected = AnnouncementResponses.from(
-                    List.of(announcement1, announcement2, announcement3));
+            List<Announcement> pinnedAnnouncements = AnnouncementFixture.createList(expectedPinedSize, true);
+            List<Announcement> unPinnedAnnouncements = AnnouncementFixture.createList(expectedUnPinedSize, false);
+
+            List<Announcement> allAnnouncements = new ArrayList<>();
+            allAnnouncements.addAll(pinnedAnnouncements);
+            allAnnouncements.addAll(unPinnedAnnouncements);
+
+            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(allAnnouncements);
 
             // when
-            AnnouncementResponses result = announcementService.getAllAnnouncementByOrganizationId(
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(
                     DEFAULT_ORGANIZATION_ID);
 
             // then
-            assertThat(result).isEqualTo(expected);
+            assertSoftly(s -> {
+                s.assertThat(result.pinned().responses()).hasSize(1);
+                s.assertThat(result.unpinned().responses()).hasSize(2);
+            });
         }
 
         @Test
-        void 성공_빈컬렉션() {
+        void 성공_생성_날짜_시간_역순으로_정렬() {
+            // given
+            // pinned 공지
+            Announcement announcement1 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 5, 2, 10, 0));
+            Announcement announcement2 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 5, 3, 10, 0));
+            Announcement announcement3 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 6, 3, 10, 0));
+
+            // unpinned 공지
+            Announcement announcement4 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 5, 2, 10, 0));
+            Announcement announcement5 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 5, 3, 10, 0));
+            Announcement announcement6 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 6, 2, 10, 0));
+
+            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(List.of(
+                            announcement1, announcement2, announcement3,
+                            announcement4, announcement5, announcement6
+                    ));
+
+            // when
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(
+                    DEFAULT_ORGANIZATION_ID);
+
+            // then
+            assertSoftly(s -> {
+                List<LocalDateTime> pinnedDates = result.pinned().responses().stream()
+                        .map(AnnouncementResponse::createdAt)
+                        .toList();
+
+                List<LocalDateTime> unpinnedDates = result.unpinned().responses().stream()
+                        .map(AnnouncementResponse::createdAt)
+                        .toList();
+
+                s.assertThat(pinnedDates).isSortedAccordingTo(Comparator.reverseOrder());
+                s.assertThat(unpinnedDates).isSortedAccordingTo(Comparator.reverseOrder());
+            });
+        }
+
+        @Test
+        void 성공_빈_컬렉션() {
             // given
             given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(List.of());
 
-            AnnouncementResponses expected = new AnnouncementResponses(List.of());
-
             // when
-            AnnouncementResponses result = announcementService.getAllAnnouncementByOrganizationId(
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(
                     DEFAULT_ORGANIZATION_ID);
 
             // then
-            assertThat(result).isEqualTo(expected);
+            assertSoftly(s -> {
+                s.assertThat(result.pinned().responses()).isEmpty();
+                s.assertThat(result.unpinned().responses()).isEmpty();
+            });
         }
     }
 }
