@@ -80,18 +80,25 @@ class AppContainer(
     }
 
     init {
+        ensureUuidExists()
+        updateFcmToken()
+    }
+
+    private fun ensureUuidExists() {
         if (preferencesManager.getUuid().isNullOrEmpty()) {
             val newUuid = UUID.randomUUID().toString()
             preferencesManager.saveUuid(newUuid)
-            Timber.d("Generated and saved UUID: $newUuid")
+            Timber.d("새로 생성한 uuid : $newUuid")
         }
+    }
 
+    private fun updateFcmToken() {
         FirebaseMessaging
             .getInstance()
             .token
             .addOnSuccessListener { token ->
                 preferencesManager.saveFcmToken(token)
-                Timber.d("Saved FCM token: $token")
+                Timber.d(" 저장된 FCM token: $token")
             }.addOnFailureListener {
                 Timber.w(it, "Failed to get FCM token")
             }
