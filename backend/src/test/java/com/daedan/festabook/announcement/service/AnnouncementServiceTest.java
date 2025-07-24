@@ -123,12 +123,14 @@ class AnnouncementServiceTest {
         @Test
         void 성공_고정_분류() {
             // given
-            Announcement announcement1 = AnnouncementFixture.create(true);
-            Announcement announcement2 = AnnouncementFixture.create(false);
-            Announcement announcement3 = AnnouncementFixture.create(false);
+            int expectedPinedSize = 1;
+            int expectedUnPinedSize = 2;
 
-            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(List.of(announcement1, announcement2, announcement3));
+            List<Announcement> pinnedAnnouncements = AnnouncementFixture.createList(expectedPinedSize, true);
+            List<Announcement> unPinnedAnnouncements = AnnouncementFixture.createList(expectedUnPinedSize, true);
+
+            announcementJpaRepository.saveAll(pinnedAnnouncements);
+            announcementJpaRepository.saveAll(unPinnedAnnouncements);
 
             // when
             AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(

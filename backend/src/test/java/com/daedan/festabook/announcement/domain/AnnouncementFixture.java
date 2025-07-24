@@ -48,10 +48,10 @@ public class AnnouncementFixture {
 
     public static List<Announcement> createList(
             int size,
-            Organization organization
+            boolean isPinned
     ) {
         return IntStream.range(0, size)
-                .mapToObj(i -> create(organization))
+                .mapToObj(i -> create(isPinned))
                 .collect(Collectors.toList());
     }
 
