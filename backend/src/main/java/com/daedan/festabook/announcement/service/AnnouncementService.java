@@ -28,6 +28,10 @@ public class AnnouncementService {
 
     @Transactional
     public AnnouncementResponse createAnnouncement(Long organizationId, AnnouncementRequest request) {
+        if (request.isPinned()) {
+            validatePinnedLimit(organizationId);
+        }
+
         Organization organization = getOrganizationById(organizationId);
         Announcement announcement = request.toEntity(organization);
         announcementJpaRepository.save(announcement);
@@ -54,8 +58,13 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public AnnouncementResponse updateAnnouncement(Long announcementId, AnnouncementRequest request) {
+    public AnnouncementResponse updateAnnouncement(Long announcementId, Long organizationId,
+                                                   AnnouncementRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
+        if (announcement.isUnpinned() && !request.isPinned()) {
+            validatePinnedLimit(organizationId);
+        }
+
         announcement.updateTitleAndContent(request.title(), request.content());
         return AnnouncementResponse.from(announcement);
     }
@@ -85,6 +94,13 @@ public class AnnouncementService {
                 .filter(filter)
                 .sorted(createdAtDescending())
                 .toList();
+    }
+
+    private void validatePinnedLimit(Long organizationId) {
+        Long pinnedCount = announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(organizationId);
+        if (pinnedCount >= 3) {
+            throw new BusinessException("공지글은 최대 3개까지 고정할 수 있습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Comparator<Announcement> createdAtDescending() {

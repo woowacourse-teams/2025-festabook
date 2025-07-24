@@ -63,9 +63,10 @@ public class AnnouncementController {
     })
     public AnnouncementResponse updateAnnouncement(
             @PathVariable Long announcementId,
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody AnnouncementRequest request
     ) {
-        return announcementService.updateAnnouncement(announcementId, request);
+        return announcementService.updateAnnouncement(announcementId, organizationId, request);
     }
 
     @DeleteMapping("/{announcementId}")
