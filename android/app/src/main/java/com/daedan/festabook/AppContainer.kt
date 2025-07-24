@@ -10,8 +10,6 @@ import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourc
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSource
-import com.daedan.festabook.data.datasource.remote.placeMap.PlaceMapDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
@@ -54,17 +52,10 @@ class AppContainer(
         OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
     }
     private val placeListDataSource: PlaceDataSource by lazy {
-        PlaceDataSourceImpl(placeService)
+        PlaceDataSourceImpl(placeService, organizationService)
     }
     private val placeDetailDataSource: PlaceDataSource by lazy {
-        PlaceDataSourceImpl(placeService)
-    }
-
-    private val placeMapDataSource: PlaceMapDataSource by lazy {
-        PlaceMapDataSourceImpl(
-            organizationService,
-            placeService,
-        )
+        PlaceDataSourceImpl(placeService, organizationService)
     }
 
     val placeDetailRepository: PlaceDetailRepository by lazy {
@@ -72,7 +63,7 @@ class AppContainer(
     }
 
     val placeListRepository: PlaceListRepository by lazy {
-        PlaceListRepositoryImpl(placeListDataSource, placeMapDataSource)
+        PlaceListRepositoryImpl(placeListDataSource)
     }
 
     val scheduleRepository: ScheduleRepository by lazy {
