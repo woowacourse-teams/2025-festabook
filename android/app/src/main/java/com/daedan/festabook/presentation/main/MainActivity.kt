@@ -25,6 +25,7 @@ import com.daedan.festabook.presentation.home.HomeFragment
 import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -65,11 +66,11 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         setupBinding()
 
+        registerDeviceAndFcmToken()
         requestNotificationPermission()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         onClickBottomNavigationBarItem()
-        registerDeviceAndFcmToken()
     }
 
     override fun onRequestPermissionsResult(
@@ -93,13 +94,29 @@ class MainActivity : AppCompatActivity() {
         val prefsManager = app.appContainer.preferencesManager
 
         val uuid = prefsManager.getUuid().orEmpty()
-        val fcmToken = prefsManager.getFcmToken().orEmpty()
+        val fcmToken = prefsManager.getFcmToken()
 
-        if (uuid.isNotBlank() && fcmToken.isNotBlank()) {
-            viewModel.registerDevice(uuid, fcmToken)
-        } else {
-            Timber.w("UUID or FCM token is missing. Device registration skipped.")
-            // 해당 로직 어떻게 구현할 지 생각하기
+        Timber.d("registerDeviceAndFcmToken() UUID: $uuid, FCM: $fcmToken")
+
+        // UUID는 항상 있으므로, FCM 없으면 기다렸다가 호출
+        if (uuid.isNotBlank() && fcmToken.isNullOrBlank()) {
+            FirebaseMessaging
+                .getInstance()
+                .token
+                .addOnSuccessListener { token ->
+                    prefsManager.saveFcmToken(token)
+                    Timber.d("🪄 받은 FCM 토큰으로 디바이스 등록: $token")
+                    viewModel.registerDevice(uuid, token)
+                }.addOnFailureListener {
+                    Timber.w(it, "❌ FCM 토큰 받기 실패")
+                }
+        } else if (fcmToken != null) {
+            if (uuid.isNotBlank() && fcmToken.isNotBlank()) {
+                Timber.d("✅ 기존 값으로 디바이스 등록 실행")
+                viewModel.registerDevice(uuid, fcmToken)
+            } else {
+                Timber.w("❌ UUID 생성 전 or FCM 토큰 없음")
+            }
         }
     }
 
