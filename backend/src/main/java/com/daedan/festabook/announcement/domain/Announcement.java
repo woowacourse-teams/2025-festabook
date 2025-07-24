@@ -72,4 +72,9 @@ public class Announcement {
     public boolean isUnpinned() {
         return !isPinned;
     }
+
+    public void updateTitleAndContent(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
 }

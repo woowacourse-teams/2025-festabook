@@ -53,6 +53,24 @@ public class AnnouncementService {
         );
     }
 
+    @Transactional
+    public AnnouncementResponse updateAnnouncement(Long announcementId, AnnouncementRequest request) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        announcement.updateTitleAndContent(request.title(), request.content());
+        return AnnouncementResponse.from(announcement);
+    }
+
+    @Transactional
+    public void deleteAnnouncementByAnnouncementId(Long announcementId) {
+        announcementJpaRepository.deleteById(announcementId);
+    }
+
+    private Announcement getAnnouncementById(Long announcementId) {
+        // TODO : 커스텀 예외 설정
+        return announcementJpaRepository.findById(announcementId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 공지입니다.", HttpStatus.BAD_REQUEST));
+    }
+
     private Organization getOrganizationById(Long organizationId) {
         // TODO: 커스텀 예외 설정
         return organizationJpaRepository.findById(organizationId)
