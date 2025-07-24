@@ -4,6 +4,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -121,7 +122,7 @@ class AnnouncementControllerTest {
                     .body("$", hasKey("pinned"))
                     .body("$", hasKey("unpinned"))
                     .body("size()", equalTo(expectedSize))
-                    .body("pinned.size()", equalTo(expectedPinnedSize))
+                    .body("pinned", hasSize(expectedPinnedSize))
                     .body("unpinned.size()", equalTo(expectedUnpinnedSize))
                     .body("pinned[0].size()", equalTo(expectedFieldSize))
                     .body("pinned[0].id", equalTo(announcement1.getId().intValue()))
