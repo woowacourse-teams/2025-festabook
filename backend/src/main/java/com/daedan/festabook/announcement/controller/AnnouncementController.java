@@ -3,6 +3,7 @@ package com.daedan.festabook.announcement.controller;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.service.AnnouncementService;
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -63,10 +64,9 @@ public class AnnouncementController {
     })
     public AnnouncementResponse updateAnnouncement(
             @PathVariable Long announcementId,
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
-            @RequestBody AnnouncementRequest request
+            @RequestBody AnnouncementUpdateRequest request
     ) {
-        return announcementService.updateAnnouncement(announcementId, organizationId, request);
+        return announcementService.updateAnnouncement(announcementId, request);
     }
 
     @DeleteMapping("/{announcementId}")

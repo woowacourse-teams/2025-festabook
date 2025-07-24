@@ -4,6 +4,7 @@ import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.notification.dto.NotificationMessage;
@@ -58,14 +59,9 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public AnnouncementResponse updateAnnouncement(Long announcementId, Long organizationId,
-                                                   AnnouncementRequest request) {
+    public AnnouncementResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
-        if (announcement.isUnpinned() && !request.isPinned()) {
-            validatePinnedLimit(organizationId);
-        }
-
-        announcement.updateTitleAndContent(request.title(), request.content());
+        announcement.update(request.title(), request.content());
         return AnnouncementResponse.from(announcement);
     }
 
