@@ -251,16 +251,16 @@ class AnnouncementServiceTest {
         }
 
         @Test
-        void 예외_존재하지_않는_조직_ID() {
+        void 예외_존재하지_않는_공지사항_ID() {
             // given
-            Long invalidDeviceId = 0L;
+            Long invalidAnnouncementId = 0L;
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
 
-            given(announcementJpaRepository.findById(invalidDeviceId))
+            given(announcementJpaRepository.findById(invalidAnnouncementId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> announcementService.updateAnnouncement(invalidDeviceId, request))
+            assertThatThrownBy(() -> announcementService.updateAnnouncement(invalidAnnouncementId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
         }
