@@ -4,6 +4,7 @@ import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.data.service.DeviceService
 import com.daedan.festabook.data.service.NoticeService
 import com.daedan.festabook.data.service.OrganizationBookmarkService
+import com.daedan.festabook.data.service.OrganizationService
 import com.daedan.festabook.data.service.PlaceService
 import com.daedan.festabook.data.service.ScheduleService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -37,4 +38,6 @@ object ApiClient {
     val placeService: PlaceService = retrofit.create(PlaceService::class.java)
     val deviceService: DeviceService by lazy { retrofit.create(DeviceService::class.java) }
     val organizationBookmarkService: OrganizationBookmarkService by lazy { retrofit.create(OrganizationBookmarkService::class.java) }
+
+    val organizationService: OrganizationService = retrofit.create(OrganizationService::class.java)
 }

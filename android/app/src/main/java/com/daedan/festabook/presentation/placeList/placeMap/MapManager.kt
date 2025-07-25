@@ -1,7 +1,6 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
 import androidx.core.content.ContextCompat
-import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -19,7 +18,6 @@ import com.naver.maps.map.overlay.PolygonOverlay
 class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
-    private val settingUiModel: InitialMapSettingUiModel,
 ) {
     private val overlayImageManager =
         OverlayImageManager(
@@ -32,11 +30,7 @@ class MapManager(
             overlayImageManager,
         )
 
-    init {
-        setupMap()
-    }
-
-    fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
+    private fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         clusterManager.buildCluster {
             coordinates.forEachIndexed { idx, place ->
                 Marker().generate(place)
@@ -54,16 +48,17 @@ class MapManager(
         overlayImageManager.setIcon(this, place.category)
     }
 
-    private fun setupMap() {
+    fun setupMap(settingUiModel: InitialMapSettingUiModel) {
         map.apply {
             isIndoorEnabled = true
-            customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
+            symbolScale = SYMBOL_SIZE_WEIGHT
             uiSettings.isZoomControlEnabled = false
             uiSettings.isScaleBarEnabled = false
-            moveToInitialPosition()
+            moveToInitialPosition(settingUiModel)
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
             setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
+            setPlaceLocation(settingUiModel.placeCoordinates)
         }
     }
 
@@ -86,7 +81,7 @@ class MapManager(
         )
     }
 
-    private fun NaverMap.moveToInitialPosition() {
+    private fun NaverMap.moveToInitialPosition(settingUiModel: InitialMapSettingUiModel) {
         val initialCenterCoordinate =
             CameraUpdate
                 .scrollTo(
@@ -125,6 +120,7 @@ class MapManager(
         private const val CLUSTER_ZOOM_THRESHOLD = 17.0
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val LOGO_MARGIN_TOP_PX = 75
+        private const val SYMBOL_SIZE_WEIGHT = 0.8f
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다
         private val EDGE_COORS =

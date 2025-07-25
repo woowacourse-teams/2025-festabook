@@ -16,11 +16,12 @@ import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
-import com.daedan.festabook.presentation.placeList.dummy.DummyMapData
+import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
 import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
 
 class PlaceListFragment :
@@ -39,6 +40,19 @@ class PlaceListFragment :
     }
 
     private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
+
+    private val mapManager by lazy {
+        MapManager(
+            naverMap,
+            binding.initialPadding(),
+        )
+    }
+
+    private val mapScrollManager by lazy {
+        MapScrollManager(naverMap)
+    }
+
+    private lateinit var naverMap: NaverMap
 
     override fun onViewCreated(
         view: View,
@@ -66,32 +80,26 @@ class PlaceListFragment :
 
     private fun setUpObserver() {
         viewModel.places.observe(viewLifecycleOwner) { places ->
-            placeAdapter.submitList(places)
+            if (places !is PlaceListUiState.Success) return@observe
+            placeAdapter.submitList(places.value)
         }
     }
 
     private fun setUpMap() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
-
-        mapFragment.getMapAsync { map ->
-            val initialPadding = binding.initialPadding()
-            val mapScrollManager = MapScrollManager(map)
-            binding.lbvCurrentLocation.map = map
-            map.locationSource = locationSource
-
-            MapManager(
-                map,
-                initialPadding,
-                DummyMapData.initialMapSettingUiModel,
-            ).setPlaceLocation(
-                DummyMapData.placeCoordinates,
-            )
-
-            setPlaceListScrollListener(mapScrollManager)
+        viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
+            if (initialMapSetting !is PlaceListUiState.Success) return@observe
+            mapFragment.getMapAsync { map ->
+                naverMap = map
+                binding.lbvCurrentLocation.map = naverMap
+                naverMap.locationSource = locationSource
+                mapManager.setupMap(initialMapSetting.value)
+                setPlaceListScrollListener()
+            }
         }
     }
 
-    private fun setPlaceListScrollListener(mapScrollManager: MapScrollManager) {
+    private fun setPlaceListScrollListener() {
         val behavior = binding.layoutPlaceList.placeListScrollBehavior()
         behavior?.setOnScrollListener { dy ->
             mapScrollManager.cameraScroll(dy)
@@ -110,7 +118,6 @@ class PlaceListFragment :
                 R.anim.anim_fade_in_right,
                 R.anim.anim_fade_out,
             )
-            addToBackStack(null)
         }
     }
 
@@ -124,6 +131,7 @@ class PlaceListFragment :
                 placeDetailFragment,
             )
             hide(this@PlaceListFragment)
+            addToBackStack(null)
         }
     }
 

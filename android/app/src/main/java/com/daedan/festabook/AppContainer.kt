@@ -21,6 +21,7 @@ import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
 import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.organizationBookmarkService
+import com.daedan.festabook.data.service.api.ApiClient.organizationService
 import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.BookmarkRepository
@@ -51,10 +52,10 @@ class AppContainer(
         OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
     }
     private val placeListDataSource: PlaceDataSource by lazy {
-        PlaceDataSourceImpl(placeService)
+        PlaceDataSourceImpl(placeService, organizationService)
     }
     private val placeDetailDataSource: PlaceDataSource by lazy {
-        PlaceDataSourceImpl(placeService)
+        PlaceDataSourceImpl(placeService, organizationService)
     }
 
     val placeDetailRepository: PlaceDetailRepository by lazy {
