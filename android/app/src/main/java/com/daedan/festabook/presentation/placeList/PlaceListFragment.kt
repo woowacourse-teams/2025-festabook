@@ -16,6 +16,7 @@ import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
+import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
@@ -79,18 +80,20 @@ class PlaceListFragment :
 
     private fun setUpObserver() {
         viewModel.places.observe(viewLifecycleOwner) { places ->
-            placeAdapter.submitList(places)
+            if (places !is PlaceListUiState.Success) return@observe
+            placeAdapter.submitList(places.value)
         }
     }
 
     private fun setUpMap() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
+            if (initialMapSetting !is PlaceListUiState.Success) return@observe
             mapFragment.getMapAsync { map ->
                 naverMap = map
                 binding.lbvCurrentLocation.map = naverMap
                 naverMap.locationSource = locationSource
-                mapManager.setupMap(initialMapSetting)
+                mapManager.setupMap(initialMapSetting.value)
                 setPlaceListScrollListener()
             }
         }

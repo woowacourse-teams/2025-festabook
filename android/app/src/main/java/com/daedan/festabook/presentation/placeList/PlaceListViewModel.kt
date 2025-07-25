@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.toUiModel
 import kotlinx.coroutines.launch
@@ -21,11 +22,13 @@ class PlaceListViewModel(
     private val _selectedPlace: MutableLiveData<PlaceUiModel> = MutableLiveData()
     val selectedPlace: LiveData<PlaceUiModel> = _selectedPlace
 
-    private val _places: MutableLiveData<List<PlaceUiModel>> = MutableLiveData(emptyList())
-    val places: LiveData<List<PlaceUiModel>> = _places
+    private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
+        MutableLiveData(PlaceListUiState.Loading())
+    val places: LiveData<PlaceListUiState<List<PlaceUiModel>>> = _places
 
-    private val _initialMapSetting: MutableLiveData<InitialMapSettingUiModel> = MutableLiveData()
-    val initialMapSetting: LiveData<InitialMapSettingUiModel> = _initialMapSetting
+    private val _initialMapSetting: MutableLiveData<PlaceListUiState<InitialMapSettingUiModel>> =
+        MutableLiveData()
+    val initialMapSetting: LiveData<PlaceListUiState<InitialMapSettingUiModel>> = _initialMapSetting
 
     init {
         loadAllPlaces()
@@ -42,7 +45,10 @@ class PlaceListViewModel(
             result
                 .onSuccess { places ->
                     val placeUiModels = places.map { it.toUiModel() }
-                    _places.value = placeUiModels
+                    _places.value =
+                        PlaceListUiState.Success(
+                            placeUiModels,
+                        )
                 }.onFailure {}
         }
     }
@@ -57,19 +63,27 @@ class PlaceListViewModel(
             }
             val initialMapSetting = organizationGeography.toUiModel()
             val placeCoordinates = placeGeographies.map { it.toUiModel() }
-            _initialMapSetting.value = initialMapSetting.copy(placeCoordinates = placeCoordinates)
+            _initialMapSetting.value =
+                PlaceListUiState.Success(
+                    initialMapSetting.copy(placeCoordinates = placeCoordinates),
+                )
         }
     }
 
     fun updateBookmark(place: PlaceUiModel) {
-        _places.value =
-            _places.value?.map {
-                if (it.id == place.id) {
-                    it.copy(isBookmarked = !it.isBookmarked)
-                } else {
-                    it
+        val currentUiState = _places.value
+        if (currentUiState is PlaceListUiState.Success<List<PlaceUiModel>>) {
+            val currentPlaces = currentUiState.value
+            val updatedPlaces =
+                currentPlaces.map {
+                    if (it.id == place.id) {
+                        it.copy(isBookmarked = !it.isBookmarked)
+                    } else {
+                        it
+                    }
                 }
-            }
+            _places.value = PlaceListUiState.Success(updatedPlaces)
+        }
     }
 
     companion object {
