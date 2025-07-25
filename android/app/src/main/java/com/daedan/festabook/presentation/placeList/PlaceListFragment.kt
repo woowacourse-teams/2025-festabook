@@ -20,6 +20,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
 import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
 
 class PlaceListFragment :
@@ -38,6 +39,19 @@ class PlaceListFragment :
     }
 
     private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
+
+    private val mapManager by lazy {
+        MapManager(
+            naverMap,
+            binding.initialPadding(),
+        )
+    }
+
+    private val mapScrollManager by lazy {
+        MapScrollManager(naverMap)
+    }
+
+    private lateinit var naverMap: NaverMap
 
     override fun onViewCreated(
         view: View,
@@ -73,20 +87,16 @@ class PlaceListFragment :
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             mapFragment.getMapAsync { map ->
-                val initialPadding = binding.initialPadding()
-                binding.lbvCurrentLocation.map = map
-                map.locationSource = locationSource
-                MapManager(
-                    map,
-                    initialPadding,
-                    initialMapSetting,
-                )
-                setPlaceListScrollListener(MapScrollManager(map))
+                naverMap = map
+                binding.lbvCurrentLocation.map = naverMap
+                naverMap.locationSource = locationSource
+                mapManager.setupMap(initialMapSetting)
+                setPlaceListScrollListener()
             }
         }
     }
 
-    private fun setPlaceListScrollListener(mapScrollManager: MapScrollManager) {
+    private fun setPlaceListScrollListener() {
         val behavior = binding.layoutPlaceList.placeListScrollBehavior()
         behavior?.setOnScrollListener { dy ->
             mapScrollManager.cameraScroll(dy)

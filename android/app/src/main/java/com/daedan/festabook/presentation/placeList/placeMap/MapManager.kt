@@ -18,7 +18,6 @@ import com.naver.maps.map.overlay.PolygonOverlay
 class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
-    private val settingUiModel: InitialMapSettingUiModel,
 ) {
     private val overlayImageManager =
         OverlayImageManager(
@@ -30,10 +29,6 @@ class MapManager(
             map,
             overlayImageManager,
         )
-
-    init {
-        setupMap()
-    }
 
     private fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         clusterManager.buildCluster {
@@ -53,13 +48,13 @@ class MapManager(
         overlayImageManager.setIcon(this, place.category)
     }
 
-    private fun setupMap() {
+    fun setupMap(settingUiModel: InitialMapSettingUiModel) {
         map.apply {
             isIndoorEnabled = true
             symbolScale = SYMBOL_SIZE_WEIGHT
             uiSettings.isZoomControlEnabled = false
             uiSettings.isScaleBarEnabled = false
-            moveToInitialPosition()
+            moveToInitialPosition(settingUiModel)
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
             setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
@@ -86,7 +81,7 @@ class MapManager(
         )
     }
 
-    private fun NaverMap.moveToInitialPosition() {
+    private fun NaverMap.moveToInitialPosition(settingUiModel: InitialMapSettingUiModel) {
         val initialCenterCoordinate =
             CameraUpdate
                 .scrollTo(
