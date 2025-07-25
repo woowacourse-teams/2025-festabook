@@ -17,5 +17,5 @@ interface PlaceService {
     ): Response<PlaceDetailResponse>
 
     @GET("places/geographies")
-    suspend fun fetchPlaceGeography(): Response<List<PlaceGeographyResponse>>
+    suspend fun fetchPlaceGeographies(): Response<List<PlaceGeographyResponse>>
 }

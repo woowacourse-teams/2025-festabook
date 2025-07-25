@@ -6,5 +6,5 @@ import retrofit2.http.GET
 
 interface OrganizationService {
     @GET("organizations/geography")
-    suspend fun fetchOrganizations(): Response<OrganizationGeographyResponse>
+    suspend fun fetchOrganizationGeography(): Response<OrganizationGeographyResponse>
 }

@@ -19,11 +19,11 @@ class PlaceDataSourceImpl(
 
     override suspend fun fetchOrganizationGeography(): ApiResult<OrganizationGeographyResponse> =
         ApiResult.toApiResult {
-            organizationService.fetchOrganizations()
+            organizationService.fetchOrganizationGeography()
         }
 
     override suspend fun fetchPlaceGeographies(): ApiResult<List<PlaceGeographyResponse>> =
         ApiResult.toApiResult {
-            placeService.fetchPlaceGeography()
+            placeService.fetchPlaceGeographies()
         }
 }
