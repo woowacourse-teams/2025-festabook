@@ -8,6 +8,7 @@ import com.daedan.festabook.presentation.schedule.ScheduleViewModel
 import com.daedan.festabook.presentation.schedule.model.toUiModel
 import com.daedan.festabook.setUpTestLiveData
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -58,33 +59,37 @@ class ScheduleViewModelTest {
     }
 
     @Test
-    fun `선택한 북마크의 상태가 변경된다`() {
-        // given
-        val id = 1L
+    fun `선택한 북마크의 상태가 변경된다`() =
+        runTest {
+            // given
+            val id = 1L
 
-        setUpTestLiveData(
-            item = FAKE_SCHEDULE_EVENTS_UI_STATE,
-            fieldName = "_scheduleEventsUiState",
-            viewModel = scheduleViewModel,
-        )
+            setUpTestLiveData(
+                item = FAKE_SCHEDULE_EVENTS_UI_STATE,
+                fieldName = "_scheduleEventsUiState",
+                viewModel = scheduleViewModel,
+            )
 
-        // when
-        scheduleViewModel.updateBookmark(id)
+            // when
+            scheduleViewModel.updateBookmark(id)
 
-        // then
-        val events =
-            when (val result = scheduleViewModel.scheduleEventsUiState.getOrAwaitValue()) {
-                is ScheduleEventsUiState.Success -> result.events
-                else -> emptyList()
-            }
+            // then
+            coEvery { scheduleRepository.fetchAllScheduleDates() }
+            coVerify { scheduleRepository.fetchScheduleEventsById(dateId) }
 
-        val expected = true
-        val result = events.find { it.id == id }?.isBookmarked
-        assertEquals(expected, result)
-    }
+            val events =
+                when (val result = scheduleViewModel.scheduleEventsUiState.getOrAwaitValue()) {
+                    is ScheduleEventsUiState.Success -> result.events
+                    else -> emptyList()
+                }
+
+            val expected = true
+            val result = events.find { it.id == id }?.isBookmarked
+            assertEquals(expected, result)
+        }
 
     @Test
-    fun `해당 날짜에 맞는 일정을 불러옫다`() =
+    fun `해당 날짜에 맞는 일정을 불러온다`() =
         runTest {
             // given
 
@@ -93,6 +98,9 @@ class ScheduleViewModelTest {
             advanceUntilIdle()
 
             // then
+            coEvery { scheduleRepository.fetchAllScheduleDates() }
+            coVerify { scheduleRepository.fetchScheduleEventsById(dateId) }
+
             val state = scheduleViewModel.scheduleEventsUiState.value
             assertTrue(state is ScheduleEventsUiState.Success)
 
