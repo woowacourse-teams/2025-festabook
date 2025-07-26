@@ -4,17 +4,21 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
+    <View
+        android:id="@+id/view_space"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        app:layout_constraintBottom_toTopOf="@id/cl_schedule_event_card_skeleton" />
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_schedule_event_card_skeleton"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
-        android:layout_marginTop="20dp"
         android:background="@drawable/bg_gray300_radius_10dp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@id/iv_schedule_event_time_line_circle_skeleton"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toBottomOf="@id/view_space">
 
         <TextView
             android:id="@+id/tv_schedule_event_title_skeleton"
