@@ -31,8 +31,7 @@ public class PlaceService {
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     public PlaceResponse createPlace(Long organizationId, PlaceRequest request) {
-        Organization organization = organizationJpaRepository.findById(organizationId)
-                .orElseThrow(() -> new BusinessException("잘못된 조직입니다.", HttpStatus.BAD_REQUEST));
+        Organization organization = getOrganizationById(organizationId);
 
         Place notSavedPlaceDetail = request.toPlace(organization);
         Place savedPlace = placeJpaRepository.save(notSavedPlaceDetail);
@@ -42,8 +41,7 @@ public class PlaceService {
 
     @Transactional
     public PlaceResponse createPlaceDetail(Long organizationId, PlaceDetailRequest request) {
-        Organization organization = organizationJpaRepository.findById(organizationId)
-                .orElseThrow(() -> new BusinessException("잘못된 조직입니다.", HttpStatus.BAD_REQUEST));
+        Organization organization = getOrganizationById(organizationId);
 
         PlaceDetail notSavedPlaceDetail = request.toPlaceDetail(organization);
         placeJpaRepository.save(notSavedPlaceDetail.getPlace());
@@ -65,5 +63,10 @@ public class PlaceService {
     private PlaceDetail getPlaceDetailById(Long placeId) {
         return placeDetailJpaRepository.findByPlaceId(placeId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스 세부 정보입니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private Organization getOrganizationById(Long organizationId) {
+        return organizationJpaRepository.findById(organizationId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
     }
 }
