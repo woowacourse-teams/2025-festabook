@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.dto;
 
-public record PlaceBookmarkRequest(
+public record PlaceFavoriteRequest(
         Long deviceId
 ) {
 }

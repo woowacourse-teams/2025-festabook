@@ -2,25 +2,25 @@ package com.daedan.festabook.place.domain;
 
 import com.daedan.festabook.device.domain.Device;
 
-public class PlaceBookmarkFixture {
+public class PlaceFavoriteFixture {
 
-    public static PlaceBookmark create(
+    public static PlaceFavorite create(
             Long id,
             Place place,
             Device device
     ) {
-        return new PlaceBookmark(
+        return new PlaceFavorite(
                 id,
                 place,
                 device
         );
     }
 
-    public static PlaceBookmark create(
+    public static PlaceFavorite create(
             Place place,
             Device device
     ) {
-        return new PlaceBookmark(
+        return new PlaceFavorite(
                 place,
                 device
         );
