@@ -99,10 +99,9 @@ class OrganizationNotificationServiceTest {
                     .willReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> organizationNotificationService.subscribeOrganizationNotification(
-                    organizationId,
-                    request
-            ))
+            assertThatThrownBy(() ->
+                    organizationNotificationService.subscribeOrganizationNotification(organizationId, request)
+            )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("이미 알림을 구독한 조직입니다.");
         }
@@ -188,9 +187,11 @@ class OrganizationNotificationServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() -> organizationNotificationService.unsubscribeOrganizationNotification(
-                    invalidOrganizationNotificationId
-            ))
+            assertThatCode(() ->
+                    organizationNotificationService.unsubscribeOrganizationNotification(
+                            invalidOrganizationNotificationId
+                    )
+            )
                     .doesNotThrowAnyException();
             then(organizationNotificationManager)
                     .shouldHaveNoInteractions();
@@ -217,8 +218,9 @@ class OrganizationNotificationServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() -> organizationNotificationService.unsubscribeOrganizationNotification(
-                    organizationNotificationId))
+            assertThatCode(() ->
+                    organizationNotificationService.unsubscribeOrganizationNotification(organizationNotificationId)
+            )
                     .doesNotThrowAnyException();
             then(organizationNotificationManager)
                     .shouldHaveNoInteractions();
