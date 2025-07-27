@@ -1,6 +1,6 @@
 package com.daedan.festabook.organization.dto;
 
-public record OrganizationBookmarkRequest(
+public record OrganizationNotificationRequest(
         Long deviceId
 ) {
 }

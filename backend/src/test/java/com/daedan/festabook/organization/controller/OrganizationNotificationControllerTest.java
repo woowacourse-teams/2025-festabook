@@ -11,13 +11,13 @@ import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationBookmark;
-import com.daedan.festabook.organization.domain.OrganizationBookmarkFixture;
-import com.daedan.festabook.organization.domain.OrganizationBookmarkRequestFixture;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
-import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaRepository;
+import com.daedan.festabook.organization.domain.OrganizationNotification;
+import com.daedan.festabook.organization.domain.OrganizationNotificationFixture;
+import com.daedan.festabook.organization.domain.OrganizationNotificationRequestFixture;
+import com.daedan.festabook.organization.dto.OrganizationNotificationRequest;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.organization.infrastructure.OrganizationNotificationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +34,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class OrganizationBookmarkControllerTest {
+class OrganizationNotificationControllerTest {
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
@@ -43,7 +43,7 @@ class OrganizationBookmarkControllerTest {
     private DeviceJpaRepository deviceJpaRepository;
 
     @Autowired
-    private OrganizationBookmarkJpaRepository organizationBookmarkJpaRepository;
+    private OrganizationNotificationJpaRepository organizationNotificationJpaRepository;
 
     @MockitoBean
     private FcmNotificationManager fcmNotificationManager;
@@ -57,7 +57,7 @@ class OrganizationBookmarkControllerTest {
     }
 
     @Nested
-    class createOrganizationBookmark {
+    class subscribeOrganizationNotification {
 
         @Test
         void 성공() {
@@ -68,7 +68,7 @@ class OrganizationBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
+            OrganizationNotificationRequest request = OrganizationNotificationRequestFixture.create(device.getId());
 
             int expectedFieldSize = 1;
 
@@ -78,7 +78,7 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/{organizationId}/bookmarks", organization.getId())
+                    .post("/organizations/{organizationId}/notifications", organization.getId())
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
@@ -89,7 +89,7 @@ class OrganizationBookmarkControllerTest {
         }
 
         @Test
-        void 예외_조직에_이미_북마크한_디바이스() {
+        void 예외_조직에_이미_알림을_구독한_디바이스() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -97,10 +97,11 @@ class OrganizationBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            OrganizationBookmark organizationBookmark = OrganizationBookmarkFixture.create(organization, device);
-            organizationBookmarkJpaRepository.save(organizationBookmark);
+            OrganizationNotification organizationNotification = OrganizationNotificationFixture.create(organization,
+                    device);
+            organizationNotificationJpaRepository.save(organizationNotification);
 
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
+            OrganizationNotificationRequest request = OrganizationNotificationRequestFixture.create(device.getId());
 
             // when & then
             RestAssured
@@ -108,10 +109,10 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/{organizationId}/bookmarks", organization.getId())
+                    .post("/organizations/{organizationId}/notifications", organization.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("message", equalTo("이미 북마크한 조직입니다."));
+                    .body("message", equalTo("이미 알림을 구독한 조직입니다."));
 
             then(fcmNotificationManager).shouldHaveNoInteractions();
         }
@@ -123,7 +124,7 @@ class OrganizationBookmarkControllerTest {
             organizationJpaRepository.save(organization);
 
             Long invalidDeviceId = 0L;
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(invalidDeviceId);
+            OrganizationNotificationRequest request = OrganizationNotificationRequestFixture.create(invalidDeviceId);
 
             // when & then
             RestAssured
@@ -131,7 +132,7 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/{organizationId}/bookmarks", organization.getId())
+                    .post("/organizations/{organizationId}/notifications", organization.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 디바이스입니다."));
@@ -145,7 +146,7 @@ class OrganizationBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            OrganizationBookmarkRequest request = OrganizationBookmarkRequestFixture.create(device.getId());
+            OrganizationNotificationRequest request = OrganizationNotificationRequestFixture.create(device.getId());
 
             Long invalidOrganizationId = 0L;
 
@@ -155,7 +156,7 @@ class OrganizationBookmarkControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/organizations/{organizationId}/bookmarks", invalidOrganizationId)
+                    .post("/organizations/{organizationId}/notifications", invalidOrganizationId)
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 조직입니다."));
@@ -165,7 +166,7 @@ class OrganizationBookmarkControllerTest {
     }
 
     @Nested
-    class deleteOrganizationBookmark {
+    class unsubscribeOrganizationNotification {
 
         @Test
         void 성공() {
@@ -176,19 +177,21 @@ class OrganizationBookmarkControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            OrganizationBookmark organizationBookmark = OrganizationBookmarkFixture.create(organization, device);
-            organizationBookmarkJpaRepository.save(organizationBookmark);
+            OrganizationNotification organizationNotification = OrganizationNotificationFixture.create(organization,
+                    device);
+            organizationNotificationJpaRepository.save(organizationNotification);
 
             // when & then
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/organizations/bookmarks/{organizationBookmarkId}", organizationBookmark.getId())
+                    .delete("/organizations/notifications/{organizationNotificationId}",
+                            organizationNotification.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
-            boolean exists = organizationBookmarkJpaRepository.existsById(organizationBookmark.getId());
+            boolean exists = organizationNotificationJpaRepository.existsById(organizationNotification.getId());
             assertThat(exists).isFalse();
             then(fcmNotificationManager).should()
                     .unsubscribeOrganizationTopic(any(), any());
@@ -196,16 +199,17 @@ class OrganizationBookmarkControllerTest {
         }
 
         @Test
-        void 성공_북마크_삭제시_조직_북마크가_존재하지_않아도_정상_처리() {
+        void 성공_알림_삭제시_조직_알림이_존재하지_않아도_정상_처리() {
             // given
-            Long invalidOrganizationBookmarkId = 0L;
+            Long invalidOrganizationNotificationId = 0L;
 
             // when & then
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
                     .when()
-                    .delete("/organizations/bookmarks/{organizationBookmarkId}", invalidOrganizationBookmarkId)
+                    .delete("/organizations/notifications/{organizationNotificationId}",
+                            invalidOrganizationNotificationId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 

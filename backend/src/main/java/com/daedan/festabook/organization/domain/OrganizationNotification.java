@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class OrganizationBookmark {
+public class OrganizationNotification {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class OrganizationBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
-    protected OrganizationBookmark(
+    protected OrganizationNotification(
             Long id,
             Organization organization,
             Device device
@@ -39,7 +39,7 @@ public class OrganizationBookmark {
         this.device = device;
     }
 
-    public OrganizationBookmark(
+    public OrganizationNotification(
             Organization organization,
             Device device
     ) {
