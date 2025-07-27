@@ -28,6 +28,9 @@ public class Device {
             String deviceIdentifier,
             String fcmToken
     ) {
+        validateDeviceIdentifier(deviceIdentifier);
+        validateFcmToken(fcmToken);
+
         this.id = id;
         this.deviceIdentifier = deviceIdentifier;
         this.fcmToken = fcmToken;
@@ -42,5 +45,17 @@ public class Device {
                 deviceIdentifier,
                 fcmToken
         );
+    }
+
+    private void validateDeviceIdentifier(String deviceIdentifier) {
+        if (deviceIdentifier == null || deviceIdentifier.trim().isEmpty()) {
+            throw new IllegalArgumentException("디바이스 식별자는 비어 있을 수 없습니다.");
+        }
+    }
+
+    private void validateFcmToken(String fcmToken) {
+        if (fcmToken != null && fcmToken.trim().isEmpty()) {
+            throw new IllegalArgumentException("FCM 토큰은 null(권한 거부일 경우)이거나 유효한 값이어야 합니다.");
+        }
     }
 }
