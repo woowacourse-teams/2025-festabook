@@ -1,7 +1,6 @@
 package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.place.dto.PlaceDetailRequest;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
@@ -9,6 +8,7 @@ import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,28 +34,19 @@ public class PlaceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 조직의 세부 사항 없이 플레이스 저장")
+    @Operation(summary = "특정 조직의 플레이스를 생성 / 또는 디테일과 함께 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public PlaceResponse createPlace(
+            @Schema(description = "디테일 정보와 함께 플레이스를 생성 할지 여부", example = "true") @RequestParam(defaultValue = "false") boolean withDetail,
             @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody PlaceRequest request
     ) {
-        return placeService.createPlace(organizationId, request);
-    }
-
-    @PostMapping("/detail")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 조직의 세부 사항 플레이스 저장")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
-    })
-    public PlaceResponse createPlaceDetail(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
-            @RequestBody PlaceDetailRequest request
-    ) {
-        return placeService.createPlaceDetail(organizationId, request);
+        if (withDetail) {
+            return placeService.createPlaceWithDetail(organizationId, request);
+        }
+        return placeService.createPlaceOnly(organizationId, request);
     }
 
     @GetMapping("/previews")

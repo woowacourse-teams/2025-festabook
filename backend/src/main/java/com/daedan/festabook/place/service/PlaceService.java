@@ -7,7 +7,6 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceImage;
-import com.daedan.festabook.place.dto.PlaceDetailRequest;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -30,17 +29,17 @@ public class PlaceService {
     private final OrganizationJpaRepository organizationJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
-    public PlaceResponse createPlace(Long organizationId, PlaceRequest request) {
+    public PlaceResponse createPlaceOnly(Long organizationId, PlaceRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
-        Place notSavedPlaceDetail = request.toPlace(organization);
-        Place savedPlace = placeJpaRepository.save(notSavedPlaceDetail);
+        Place notSavedPlace = request.toPlace(organization);
+        Place savedPlace = placeJpaRepository.save(notSavedPlace);
 
         return PlaceResponse.from(savedPlace);
     }
 
     @Transactional
-    public PlaceResponse createPlaceDetail(Long organizationId, PlaceDetailRequest request) {
+    public PlaceResponse createPlaceWithDetail(Long organizationId, PlaceRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
         PlaceDetail notSavedPlaceDetail = request.toPlaceDetail(organization);
