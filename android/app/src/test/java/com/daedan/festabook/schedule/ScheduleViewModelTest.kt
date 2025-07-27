@@ -74,7 +74,7 @@ class ScheduleViewModelTest {
             scheduleViewModel.updateBookmark(id)
 
             // then
-            coEvery { scheduleRepository.fetchAllScheduleDates() }
+            coVerify { scheduleRepository.fetchAllScheduleDates() }
             coVerify { scheduleRepository.fetchScheduleEventsById(dateId) }
 
             val events =
@@ -98,7 +98,7 @@ class ScheduleViewModelTest {
             advanceUntilIdle()
 
             // then
-            coEvery { scheduleRepository.fetchAllScheduleDates() }
+            coVerify { scheduleRepository.fetchAllScheduleDates() }
             coVerify { scheduleRepository.fetchScheduleEventsById(dateId) }
 
             val state = scheduleViewModel.scheduleEventsUiState.value
