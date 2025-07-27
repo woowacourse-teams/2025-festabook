@@ -42,8 +42,8 @@ public class OrganizationNotificationService {
 
     @Transactional
     public void unsubscribeOrganizationNotification(Long organizationNotificationId) {
-        OrganizationNotification organizationNotification = organizationNotificationJpaRepository.findById(
-                        organizationNotificationId)
+        OrganizationNotification organizationNotification = organizationNotificationJpaRepository
+                .findById(organizationNotificationId)
                 .orElseGet(() -> null);
         if (organizationNotification == null) {
             return;
