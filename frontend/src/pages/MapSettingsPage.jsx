@@ -160,6 +160,20 @@ const MapSettingsPage = () => {
     return () => window.removeEventListener('resize', updateHeight);
   }, []);
 
+  // 사이드바 변화 감지를 위한 전역 이벤트 리스너
+  useEffect(() => {
+    const handleSidebarToggle = () => {
+      if (mapInstanceRef.current && window.naver) {
+        setTimeout(() => {
+          window.naver.maps.Event.trigger(mapInstanceRef.current, 'resize');
+        }, 300);
+      }
+    };
+    
+    window.addEventListener('sidebarToggle', handleSidebarToggle);
+    return () => window.removeEventListener('sidebarToggle', handleSidebarToggle);
+  }, []);
+
   // 6. ESC로 모달 닫기
   useEffect(() => {
     if (!modalOpen) return;
