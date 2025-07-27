@@ -124,10 +124,31 @@ class AnnouncementServiceTest {
         }
 
         @ParameterizedTest(name = "고정 공지 개수: {0}")
+        @ValueSource(longs = {0L, 1L, 2L})
+        void 성공_고정_공지_개수_제한_미만(Long pinnedCount) {
+            // given
+            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
+            Organization organization = OrganizationFixture.create(DEFAULT_ORGANIZATION_ID);
+
+            given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(pinnedCount);
+            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(Optional.of(organization));
+
+            // when
+            announcementService.createAnnouncement(DEFAULT_ORGANIZATION_ID, request);
+
+            // then
+            then(announcementJpaRepository).should().save(any(Announcement.class));
+            then(organizationNotificationManager).should()
+                    .sendToOrganizationTopic(any(), any());
+        }
+
+        @ParameterizedTest(name = "고정 공지 개수: {0}")
         @ValueSource(longs = {
                 3L, 4L, 10L
         })
-        void 예외_고정_공지_개수_초과(Long maxPinnedCount) {
+        void 예외_고정_공지_개수_제한_초과(Long maxPinnedCount) {
             // given
             AnnouncementRequest request = AnnouncementRequestFixture.create(true);
 

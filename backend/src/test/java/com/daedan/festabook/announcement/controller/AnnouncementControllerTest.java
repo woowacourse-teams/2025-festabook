@@ -102,10 +102,10 @@ class AnnouncementControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            // 고정 공지 3개 생성
-            announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, true, organization));
+            boolean isPinned = true;
+            announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, organization));
 
-            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
+            AnnouncementRequest request = AnnouncementRequestFixture.create(isPinned);
 
             // when & then
             RestAssured
@@ -289,7 +289,7 @@ class AnnouncementControllerTest {
         void 실패_존재하지_않는_공지() {
             // given
             Long notExistId = 0L;
-            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("수정된 제목", "수정된 내용");
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
 
             // when & then
             RestAssured
@@ -299,7 +299,8 @@ class AnnouncementControllerTest {
                     .when()
                     .patch("/announcements/{announcementId}", notExistId)
                     .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value());
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("존재하지 않는 공지입니다."));
         }
     }
 
@@ -327,7 +328,7 @@ class AnnouncementControllerTest {
         }
 
         @Test
-        void 실패_존재하지_않는_공지() {
+        void 성공_존재하지_않는_공지지만_예외_없음() {
             // given
             Long notExistId = 0L;
 

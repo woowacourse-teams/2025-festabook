@@ -8,12 +8,15 @@ import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AnnouncementJpaRepositoryTest {
 
     @Autowired
@@ -31,10 +34,13 @@ class AnnouncementJpaRepositoryTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            Long expectedPinned = 3L;
-            List<Announcement> pinnedAnnouncements = AnnouncementFixture.createList(expectedPinned.intValue(), true,
+            int pinnedSize = 3;
+            int unpinnedSize = 2;
+            Long expectedPinnedCount = 3L;
+
+            List<Announcement> pinnedAnnouncements = AnnouncementFixture.createList(pinnedSize, true, organization);
+            List<Announcement> notPinnedAnnouncements = AnnouncementFixture.createList(unpinnedSize, false,
                     organization);
-            List<Announcement> notPinnedAnnouncements = AnnouncementFixture.createList(2, false, organization);
 
             announcementJpaRepository.saveAll(pinnedAnnouncements);
             announcementJpaRepository.saveAll(notPinnedAnnouncements);
@@ -43,7 +49,7 @@ class AnnouncementJpaRepositoryTest {
             Long result = announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(organization.getId());
 
             // then
-            assertThat(result).isEqualTo(expectedPinned);
+            assertThat(result).isEqualTo(expectedPinnedCount);
         }
 
         @Test
@@ -56,7 +62,7 @@ class AnnouncementJpaRepositoryTest {
             Long result = announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(organization.getId());
 
             // then
-            assertThat(result).isEqualTo(0L);
+            assertThat(result).isZero();
         }
     }
 }

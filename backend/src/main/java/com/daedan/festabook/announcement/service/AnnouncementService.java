@@ -23,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AnnouncementService {
 
+    private static final int MAX_PINNED_ANNOUNCEMENTS = 3;
+
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
     private final OrganizationNotificationManager notificationManager;
@@ -94,8 +96,11 @@ public class AnnouncementService {
 
     private void validatePinnedLimit(Long organizationId) {
         Long pinnedCount = announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(organizationId);
-        if (pinnedCount >= 3) {
-            throw new BusinessException("공지글은 최대 3개까지 고정할 수 있습니다.", HttpStatus.BAD_REQUEST);
+        if (pinnedCount >= MAX_PINNED_ANNOUNCEMENTS) {
+            throw new BusinessException(
+                    String.format("공지글은 최대 %d개까지 고정할 수 있습니다.", MAX_PINNED_ANNOUNCEMENTS),
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 
