@@ -6,6 +6,7 @@ const Sidebar = ({ open, setOpen }) => {
     const { page, setPage } = usePage();
     const { openModal } = useContext(ModalContext);
     const [openMenus, setOpenMenus] = useState([false, false]);
+    const [textVisible, setTextVisible] = useState(open);
     const handleNav = (targetPage) => setPage(targetPage);
     const handleSubMenuToggle = (idx) => {
         setOpenMenus((prev) => {
@@ -14,6 +15,18 @@ const Sidebar = ({ open, setOpen }) => {
             return next;
         });
     };
+
+    // 텍스트 표시 지연 처리
+    React.useEffect(() => {
+        if (open) {
+            // 열 때: 사이드바 너비 변화 후 텍스트 표시
+            const timer = setTimeout(() => setTextVisible(true), 150);
+            return () => clearTimeout(timer);
+        } else {
+            // 닫을 때: 텍스트 먼저 숨기고 사이드바 축소
+            setTextVisible(false);
+        }
+    }, [open]);
     // NavLink 컴포넌트도 open prop을 받도록 수정
     const NavLink = ({ target, icon, children, open }) => (
         <a
@@ -23,7 +36,13 @@ const Sidebar = ({ open, setOpen }) => {
             style={{ justifyContent: 'flex-start' }}
         >
             <i className={`fas ${icon} w-6 text-gray-500`}></i>
-            {open && <span className="ml-2">{children}</span>}
+            {open && (
+                <span 
+                className={`ml-2 transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${textVisible ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                >
+                    {children}
+                </span>
+            )}
         </a>
     );
     // SubMenu는 사이드바가 닫혀있으면 아이콘만, 열려있으면 텍스트와 하위 메뉴까지 보이도록 수정
@@ -43,7 +62,13 @@ const Sidebar = ({ open, setOpen }) => {
                 >
                     <div className="flex items-center">
                         <i className={`fas ${icon} w-6 text-gray-500`}></i>
-                        {sidebarOpen && <span className="ml-2">{title}</span>}
+                        {sidebarOpen && (
+                            <span 
+                                className={`ml-2 transition-opacity duration-200 whitespace-nowrap overflow-hidden ${textVisible ? 'opacity-100' : 'opacity-0'}`}
+                            >
+                                {title}
+                            </span>
+                        )}
                     </div>
                     {/* 사이드바가 열려있을 때만 토글(chevron) 아이콘 노출 */}
                     {sidebarOpen && (
@@ -91,7 +116,7 @@ const Sidebar = ({ open, setOpen }) => {
                 <div className={`flex flex-row items-center mb-4 mt-2 shrink-0 transition-all duration-300 justify-between gap-2`}>
                     <div className="flex flex-row items-center gap-2 min-w-0">
                         <h1
-                            className="text-xl font-bold cursor-pointer transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis"
+                            className={`text-xl font-bold cursor-pointer transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis ${textVisible ? 'opacity-100' : 'opacity-0'}`}
                             onClick={() => setPage('dashboard')}
                         >
                             Festabook
@@ -136,8 +161,8 @@ const Sidebar = ({ open, setOpen }) => {
                     </button>
                 </div>
             )}
-            <div className={`w-full h-px bg-gray-200 mt-3 ${open ? '' : 'hidden'}`} />
-            <nav className="flex flex-col space-y-2">
+            <div className={`w-full h-px bg-gray-300 ${open ? '' : 'hidden'}`} />
+            <nav className="flex flex-col space-y-2 mt-4">
                 <NavLink target="dashboard" icon="fa-tachometer-alt" open={open}>대시보드</NavLink>
                 <NavLink target="home" icon="fa-home" open={open}>홈</NavLink>
                 <NavLink target="schedule" icon="fa-calendar-alt" open={open}>일정</NavLink>
