@@ -44,8 +44,8 @@ class PlaceGeographyServiceTest {
             // given
             Organization organization = OrganizationFixture.create(1L);
 
-            Place place1 = PlaceFixture.create(organization, PlaceCategory.BAR, 125.432, 37.123);
-            Place place2 = PlaceFixture.create(organization, PlaceCategory.SMOKING, 125.782, 37.343);
+            Place place1 = PlaceFixture.create(organization, PlaceCategory.BAR, 37.123, 125.432);
+            Place place2 = PlaceFixture.create(organization, PlaceCategory.SMOKING, 37.343, 125.782);
 
             given(placeJpaRepository.findAllByOrganizationId(organization.getId()))
                     .willReturn(List.of(place1, place2));
@@ -82,7 +82,7 @@ class PlaceGeographyServiceTest {
             // given
             Long placeId = 1L;
             Organization organization = OrganizationFixture.create(1L);
-            Place place = PlaceFixture.create(placeId, organization, null, null);
+            Place place = PlaceFixture.create(placeId, organization, 37.0, 127.0);
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
             given(placeJpaRepository.findById(placeId))
