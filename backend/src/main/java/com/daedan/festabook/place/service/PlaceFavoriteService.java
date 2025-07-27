@@ -22,7 +22,6 @@ public class PlaceFavoriteService {
     private final DeviceJpaRepository deviceJpaRepository;
     private final PlaceJpaRepository placeJpaRepository;
 
-    @Transactional
     public PlaceFavoriteResponse createPlaceFavorite(Long placeId, PlaceFavoriteRequest request) {
         validateDuplicatedPlaceFavorite(placeId, request.deviceId());
 
