@@ -55,7 +55,7 @@ class DeviceTest {
     class validateFcmToken {
 
         @Test
-        void 성공_FCM_토큰_정상값() {
+        void 성공() {
             // given
             String token = "fcm-token-xyz";
 
