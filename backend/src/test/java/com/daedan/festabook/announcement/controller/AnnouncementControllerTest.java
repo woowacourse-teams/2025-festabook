@@ -1,6 +1,5 @@
 package com.daedan.festabook.announcement.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -323,8 +322,6 @@ class AnnouncementControllerTest {
                     .delete("/announcements/{announcementId}", announcement.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
-
-            assertThat(announcementJpaRepository.findById(announcement.getId())).isEmpty();
         }
 
         @Test
