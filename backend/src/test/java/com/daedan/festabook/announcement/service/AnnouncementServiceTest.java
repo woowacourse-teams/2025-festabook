@@ -139,7 +139,9 @@ class AnnouncementServiceTest {
             announcementService.createAnnouncement(DEFAULT_ORGANIZATION_ID, request);
 
             // then
-            then(announcementJpaRepository).should().save(any(Announcement.class));
+            then(announcementJpaRepository).should()
+                    .save(any(Announcement.class));
+
             then(organizationNotificationManager).should()
                     .sendToOrganizationTopic(any(), any());
         }
