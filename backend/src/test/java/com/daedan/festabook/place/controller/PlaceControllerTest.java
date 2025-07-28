@@ -17,8 +17,10 @@ import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.domain.PlaceRequestFixture;
-import com.daedan.festabook.place.dto.PlaceRequest;
+import com.daedan.festabook.place.dto.EtcPlaceRequest;
+import com.daedan.festabook.place.dto.EtcPlaceRequestFixture;
+import com.daedan.festabook.place.dto.MainPlaceRequest;
+import com.daedan.festabook.place.dto.MainPlaceRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -42,7 +44,6 @@ import org.springframework.http.HttpStatus;
 class PlaceControllerTest {
 
     private static final String ORGANIZATION_HEADER_NAME = "organization";
-    private static final String WITH_DETAIL_QUERY_PARAMETER = "withDetail";
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
@@ -68,16 +69,16 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class createPlace {
+    class createEtcPlace {
 
         @Test
-        void 성공_withDetail_쿼리파라미터가_없다면_플레이스만_생성한다() {
+        void 성공() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceRequestFixture.createEmpty(expectedPlaceCategory);
+            EtcPlaceRequest etcPlaceRequest = EtcPlaceRequestFixture.create(expectedPlaceCategory);
 
             int expectedFieldSize = 10;
 
@@ -86,8 +87,8 @@ class PlaceControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
-                    .body(placeRequest)
-                    .post("/places")
+                    .body(etcPlaceRequest)
+                    .post("/places/etc")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
@@ -102,52 +103,19 @@ class PlaceControllerTest {
                     .body("description", nullValue())
                     .body("placeAnnouncements", nullValue());
         }
+    }
 
+    @Nested
+    class createMainPlace {
         @Test
-        void 성공_withDetail_쿼리파라미터가_false_라면_플레이스만_생성한다() {
+        void 성공() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
-
-            boolean withDetail = false;
-            PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceRequestFixture.createEmpty(expectedPlaceCategory);
-
-            int expectedFieldSize = 10;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .contentType(ContentType.JSON)
-                    .queryParam(WITH_DETAIL_QUERY_PARAMETER, withDetail)
-                    .body(placeRequest)
-                    .post("/places")
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
-                    .body("category", equalTo(expectedPlaceCategory.toString()))
-                    .body("placeImages", nullValue())
-                    .body("title", nullValue())
-                    .body("startTime", nullValue())
-                    .body("endTime", nullValue())
-                    .body("location", nullValue())
-                    .body("host", nullValue())
-                    .body("description", nullValue())
-                    .body("placeAnnouncements", nullValue());
-        }
-
-        @Test
-        void 성공_withDetail_쿼리파라미터가_true_라면_detail과_함께_생성한다() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            boolean withDetail = true;
+            
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
             String placeTitle = "컴퓨터공학과 주점";
-            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, placeTitle);
+            MainPlaceRequest mainPlaceRequest = MainPlaceRequestFixture.create(expectedPlaceCategory, placeTitle);
 
             int expectedFieldSize = 10;
 
@@ -156,9 +124,8 @@ class PlaceControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
-                    .queryParam(WITH_DETAIL_QUERY_PARAMETER, withDetail)
-                    .body(placeRequest)
-                    .post("/places")
+                    .body(mainPlaceRequest)
+                    .post("/places/main")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
