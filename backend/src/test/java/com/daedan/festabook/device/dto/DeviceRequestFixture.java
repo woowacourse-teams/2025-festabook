@@ -1,6 +1,4 @@
-package com.daedan.festabook.device.domain;
-
-import com.daedan.festabook.device.dto.DeviceRequest;
+package com.daedan.festabook.device.dto;
 
 public class DeviceRequestFixture {
 

@@ -8,8 +8,8 @@ import static org.mockito.Mockito.never;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
-import com.daedan.festabook.device.domain.DeviceRequestFixture;
 import com.daedan.festabook.device.dto.DeviceRequest;
+import com.daedan.festabook.device.dto.DeviceRequestFixture;
 import com.daedan.festabook.device.dto.DeviceResponse;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import java.util.Optional;

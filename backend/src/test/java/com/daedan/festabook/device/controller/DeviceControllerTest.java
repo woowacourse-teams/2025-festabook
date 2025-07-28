@@ -3,8 +3,8 @@ package com.daedan.festabook.device.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
-import com.daedan.festabook.device.domain.DeviceRequestFixture;
 import com.daedan.festabook.device.dto.DeviceRequest;
+import com.daedan.festabook.device.dto.DeviceRequestFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;

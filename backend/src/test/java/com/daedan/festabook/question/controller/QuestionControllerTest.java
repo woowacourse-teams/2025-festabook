@@ -56,7 +56,7 @@ class QuestionControllerTest {
             questionAnswerJpaRepository.save(questionAnswer);
 
             int expectedSize = 1;
-            int expectedFieldSize = 5;
+            int expectedFieldSize = 4;
 
             // when & then
             RestAssured
@@ -69,7 +69,6 @@ class QuestionControllerTest {
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].id", equalTo(questionAnswer.getId().intValue()))
-                    .body("[0].title", equalTo(questionAnswer.getTitle()))
                     .body("[0].question", equalTo(questionAnswer.getQuestion()))
                     .body("[0].answer", equalTo(questionAnswer.getAnswer()));
         }
