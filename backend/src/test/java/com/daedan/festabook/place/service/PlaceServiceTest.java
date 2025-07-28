@@ -119,7 +119,7 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class createPlaceWithDetail {
+    class createMainPlace {
 
         @Test
         void 성공() {
@@ -142,7 +142,7 @@ class PlaceServiceTest {
                     .willReturn(placeDetail);
 
             // when
-            PlaceResponse result = placeService.createPlaceWithDetail(organizationId, mainPlaceRequest);
+            PlaceResponse result = placeService.createMainPlace(organizationId, mainPlaceRequest);
 
             // then
             assertSoftly(s -> {
@@ -171,7 +171,7 @@ class PlaceServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeService.createPlaceWithDetail(organizationId, mainPlaceRequest))
+            assertThatThrownBy(() -> placeService.createMainPlace(organizationId, mainPlaceRequest))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
 

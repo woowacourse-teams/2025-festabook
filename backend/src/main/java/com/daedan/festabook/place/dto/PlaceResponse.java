@@ -41,33 +41,18 @@ public record PlaceResponse(
         );
     }
 
-    public static PlaceResponse from(PlaceDetail placeDetail) {
+    public static PlaceResponse fromEtcPlace(Place etcPlace) {
         return new PlaceResponse(
-                placeDetail.getPlace().getId(),
-                null,
-                placeDetail.getPlace().getCategory(),
-                placeDetail.getTitle(),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-    }
-
-    public static PlaceResponse from(Place place) {
-        return new PlaceResponse(
-                place.getId(),
-                null,
-                place.getCategory(),
+                etcPlace.getId(),
+                PlaceImageResponses.from(List.of()),
+                etcPlace.getCategory(),
                 null,
                 null,
                 null,
                 null,
                 null,
                 null,
-                null
+                PlaceAnnouncementResponses.from(List.of())
         );
     }
 }

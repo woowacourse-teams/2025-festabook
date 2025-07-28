@@ -36,18 +36,20 @@ public class PlaceService {
         Place notSavedPlace = request.toPlace(organization);
         Place savedPlace = placeJpaRepository.save(notSavedPlace);
 
-        return PlaceResponse.from(savedPlace);
+        return PlaceResponse.fromEtcPlace(savedPlace);
     }
 
     @Transactional
-    public PlaceResponse createPlaceWithDetail(Long organizationId, MainPlaceRequest request) {
+    public PlaceResponse createMainPlace(Long organizationId, MainPlaceRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
         PlaceDetail notSavedPlaceDetail = request.toPlaceDetail(organization);
         placeJpaRepository.save(notSavedPlaceDetail.getPlace());
         PlaceDetail savedPlaceDetail = placeDetailJpaRepository.save(notSavedPlaceDetail);
 
-        return PlaceResponse.from(savedPlaceDetail);
+        List<PlaceImage> emptyImages = List.of();
+        List<PlaceAnnouncement> emptyAnnouncements = List.of();
+        return PlaceResponse.from(savedPlaceDetail, emptyImages, emptyAnnouncements);
     }
 
     @Transactional(readOnly = true)

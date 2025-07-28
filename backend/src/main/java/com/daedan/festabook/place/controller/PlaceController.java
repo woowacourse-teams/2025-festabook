@@ -54,7 +54,7 @@ public class PlaceController {
             @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody MainPlaceRequest request
     ) {
-        return placeService.createPlaceWithDetail(organizationId, request);
+        return placeService.createMainPlace(organizationId, request);
     }
 
     @GetMapping("/previews")
