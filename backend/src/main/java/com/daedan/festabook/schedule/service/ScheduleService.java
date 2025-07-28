@@ -60,7 +60,7 @@ public class ScheduleService {
 
     public EventResponse createEvent(EventRequest request) {
         // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
-        EventDate eventDate = getEventDate(request.eventDateId());
+        EventDate eventDate = getEventDateById(request.eventDateId());
         Event event = request.toEntity(eventDate);
         Event savedEvent = eventJpaRepository.save(event);
 
@@ -69,7 +69,7 @@ public class ScheduleService {
 
     @Transactional
     public EventResponse updateEvent(Long eventId, EventRequest request) {
-        Event event = getEvent(eventId);
+        Event event = getEventById(eventId);
 
         Event newEvent = request.toEntity(event.getEventDate());
         event.updateEvent(newEvent);
@@ -95,13 +95,13 @@ public class ScheduleService {
                 .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
     }
 
-    private EventDate getEventDate(Long eventDateId) {
+    private EventDate getEventDateById(Long eventDateId) {
         // TODO: 커스텀 예외 설정
         return eventDateJpaRepository.findById(eventDateId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 일정 날짜입니다.", HttpStatus.BAD_REQUEST));
     }
 
-    private Event getEvent(Long eventId) {
+    private Event getEventById(Long eventId) {
         // TODO: 커스텀 예외 설정
         return eventJpaRepository.findById(eventId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 일정입니다.", HttpStatus.BAD_REQUEST));
