@@ -29,6 +29,8 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
     }
 
     private fun setupScheduleTabLayout() {
+        binding.vpSchedule.offscreenPageLimit = PRELOAD_PAGE_COUNT
+
         TabLayoutMediator(binding.tlSchedule, binding.vpSchedule) { tab, position ->
             val itemScheduleTabBinding =
                 ItemScheduleTabBinding.inflate(
@@ -76,5 +78,9 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
             binding.sflScheduleTabSkeleton.stopShimmer()
             binding.sflScheduleSkeleton.stopShimmer()
         }
+    }
+
+    companion object {
+        private const val PRELOAD_PAGE_COUNT: Int = 2
     }
 }
