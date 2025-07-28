@@ -63,7 +63,7 @@ public class PlaceFixture {
         );
     }
 
-    public static Place createEmpty(
+    public static Place createWithNullDefaults(
             Long id,
             Organization organization,
             PlaceCategory placeCategory

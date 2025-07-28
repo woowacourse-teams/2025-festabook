@@ -72,7 +72,7 @@ class PlaceServiceTest {
             PlaceRequest placeRequest = PlaceRequestFixture.createEmpty(expectedPlaceCategory);
 
             Organization organization = OrganizationFixture.create(organizationId);
-            Place place = PlaceFixture.createEmpty(expectedPlaceId, organization, expectedPlaceCategory);
+            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, organization, expectedPlaceCategory);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
@@ -129,7 +129,7 @@ class PlaceServiceTest {
             PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, placeTitle);
 
             Organization organization = OrganizationFixture.create(organizationId);
-            Place place = PlaceFixture.createEmpty(expectedPlaceId, organization, expectedPlaceCategory);
+            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, organization, expectedPlaceCategory);
             PlaceDetail placeDetail = PlaceDetailFixture.createEmpty(place, placeTitle);
 
             given(organizationJpaRepository.findById(organizationId))
