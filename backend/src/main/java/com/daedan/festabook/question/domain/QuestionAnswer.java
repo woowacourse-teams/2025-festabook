@@ -38,9 +38,6 @@ public class QuestionAnswer {
     private Organization organization;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
     private String question;
 
     @Column(nullable = false)
@@ -52,18 +49,15 @@ public class QuestionAnswer {
 
     protected QuestionAnswer(
             Organization organization,
-            String title,
             String question,
             String answer,
             LocalDateTime createdAt
     ) {
         validateOrganization(organization);
-        validateTitle(title);
         validateQuestion(question);
         validateAnswer(answer);
 
         this.organization = organization;
-        this.title = title;
         this.question = question;
         this.answer = answer;
         this.createdAt = createdAt;
@@ -72,18 +66,6 @@ public class QuestionAnswer {
     private void validateOrganization(Organization organization) {
         if (organization == null) {
             throw new BusinessException("Organization은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
-    private void validateTitle(String title) {
-        if (title == null || title.trim().isEmpty()) {
-            throw new BusinessException("제목은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
-        }
-        if (title.length() > MAX_TITLE_LENGTH) {
-            throw new BusinessException(
-                    String.format("제목은 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH),
-                    HttpStatus.BAD_REQUEST
-            );
         }
     }
 

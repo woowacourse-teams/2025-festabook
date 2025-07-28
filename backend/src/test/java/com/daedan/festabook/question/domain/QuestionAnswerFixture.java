@@ -10,21 +10,18 @@ import java.util.stream.IntStream;
 public class QuestionAnswerFixture {
 
     private static final Organization DEFAULT_ORGANIZATION = OrganizationFixture.create();
-    private static final String DEFAULT_TITLE = "자주 묻는 질문";
     private static final String DEFAULT_QUESTION = "이 서비스는 무엇인가요?";
     private static final String DEFAULT_ANSWER = "이 서비스는 페스타북입니다.";
     private static final LocalDateTime DEFAULT_CREATED_AT = LocalDateTime.now();
 
     public static QuestionAnswer create(
             Organization organization,
-            String title,
             String question,
             String answer,
             LocalDateTime createdAt
     ) {
         return new QuestionAnswer(
                 organization,
-                title,
                 question,
                 answer,
                 createdAt
@@ -37,7 +34,6 @@ public class QuestionAnswerFixture {
     ) {
         return create(
                 organization,
-                DEFAULT_TITLE,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 createdAt
@@ -49,7 +45,6 @@ public class QuestionAnswerFixture {
     ) {
         return create(
                 DEFAULT_ORGANIZATION,
-                DEFAULT_TITLE,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 createdAt
@@ -61,7 +56,6 @@ public class QuestionAnswerFixture {
     ) {
         return create(
                 organization,
-                DEFAULT_TITLE,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_CREATED_AT
@@ -71,7 +65,6 @@ public class QuestionAnswerFixture {
     public static QuestionAnswer create() {
         return create(
                 DEFAULT_ORGANIZATION,
-                DEFAULT_TITLE,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_CREATED_AT

@@ -16,7 +16,6 @@ import org.junit.jupiter.api.Test;
 class QuestionAnswerTest {
 
     private final Organization DEFAULT_ORGANIZATION = OrganizationFixture.create();
-    private final String DEFAULT_TITLE = "제목";
     private final String DEFAULT_QUESTION = "질문 내용입니다.";
     private final String DEFAULT_ANSWER = "답변 내용입니다.";
     private final LocalDateTime NOW = LocalDateTime.now();
@@ -30,7 +29,7 @@ class QuestionAnswerTest {
             Organization organization = OrganizationFixture.create();
 
             // when & then
-            assertThatCode(() -> new QuestionAnswer(organization, DEFAULT_TITLE, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW))
+            assertThatCode(() -> new QuestionAnswer(organization, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -41,63 +40,10 @@ class QuestionAnswerTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    new QuestionAnswer(organization, DEFAULT_TITLE, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW)
+                    new QuestionAnswer(organization, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("Organization은 null일 수 없습니다.");
-        }
-    }
-
-    @Nested
-    class validateTitle {
-
-        @Test
-        void 성공_경계값() {
-            // given
-            String title = "미".repeat(100);
-
-            // when & then
-            assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, title, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW))
-                    .doesNotThrowAnyException();
-        }
-
-        @Test
-        void 예외_제목_null() {
-            // given
-            String title = null;
-
-            // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, title, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW)
-            )
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("제목은 비어 있을 수 없습니다.");
-        }
-
-        @Test
-        void 예외_제목_blank() {
-            // given
-            String title = " ";
-
-            // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, title, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW)
-            )
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("제목은 비어 있을 수 없습니다.");
-        }
-
-        @Test
-        void 예외_제목_길이_초과() {
-            // given
-            String title = "미".repeat(101);
-
-            // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, title, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW)
-            )
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("제목은 100자를 초과할 수 없습니다.");
         }
     }
 
@@ -110,7 +56,7 @@ class QuestionAnswerTest {
             String question = "미".repeat(500);
 
             // when & then
-            assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, question, DEFAULT_ANSWER, NOW))
+            assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -121,7 +67,7 @@ class QuestionAnswerTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, question, DEFAULT_ANSWER, NOW)
+                    new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 비어 있을 수 없습니다.");
@@ -134,7 +80,7 @@ class QuestionAnswerTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, question, DEFAULT_ANSWER, NOW)
+                    new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 비어 있을 수 없습니다.");
@@ -147,7 +93,7 @@ class QuestionAnswerTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, question, DEFAULT_ANSWER, NOW)
+                    new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 500자를 초과할 수 없습니다.");
@@ -163,7 +109,7 @@ class QuestionAnswerTest {
             String answer = "미".repeat(1000);
 
             // when & then
-            assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, DEFAULT_QUESTION, answer, NOW))
+            assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW))
                     .doesNotThrowAnyException();
         }
 
@@ -174,7 +120,7 @@ class QuestionAnswerTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, DEFAULT_QUESTION, answer, NOW)
+                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 비어 있을 수 없습니다.");
@@ -187,7 +133,7 @@ class QuestionAnswerTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, DEFAULT_QUESTION, answer, NOW)
+                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 비어 있을 수 없습니다.");
@@ -200,7 +146,7 @@ class QuestionAnswerTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, DEFAULT_QUESTION, answer, NOW)
+                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 1000자를 초과할 수 없습니다.");
