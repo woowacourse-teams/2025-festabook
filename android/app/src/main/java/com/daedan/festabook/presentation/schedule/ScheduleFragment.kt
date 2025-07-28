@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.schedule
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -28,6 +29,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         setupScheduleTabLayout()
     }
 
+    @SuppressLint("WrongConstant")
     private fun setupScheduleTabLayout() {
         binding.vpSchedule.offscreenPageLimit = PRELOAD_PAGE_COUNT
 
