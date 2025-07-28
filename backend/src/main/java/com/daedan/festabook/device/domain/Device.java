@@ -23,6 +23,7 @@ public class Device {
     @Column(nullable = false)
     private String deviceIdentifier;
 
+    @Column(nullable = false)
     private String fcmToken;
 
     protected Device(
@@ -56,8 +57,8 @@ public class Device {
     }
 
     private void validateFcmToken(String fcmToken) {
-        if (fcmToken != null && fcmToken.trim().isEmpty()) {
-            throw new BusinessException("FCM 토큰은 null(권한 거부일 경우)이거나 유효한 값이어야 합니다.", HttpStatus.BAD_REQUEST);
+        if (fcmToken == null || fcmToken.trim().isEmpty()) {
+            throw new BusinessException("FCM 토큰은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }

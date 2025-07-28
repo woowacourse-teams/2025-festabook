@@ -65,13 +65,14 @@ class DeviceTest {
         }
 
         @Test
-        void 성공_FCM_토큰_null_허용() {
+        void 예외_FCM_토큰_null() {
             // given
             String token = null;
 
             // when & then
-            assertThatCode(() -> new Device(DEFAULT_DEVICE_IDENTIFIER, token))
-                    .doesNotThrowAnyException();
+            assertThatThrownBy(() -> new Device(DEFAULT_DEVICE_IDENTIFIER, token))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("FCM 토큰은 비어 있을 수 없습니다.");
         }
 
         @Test
@@ -82,7 +83,7 @@ class DeviceTest {
             // when & then
             assertThatThrownBy(() -> new Device(DEFAULT_DEVICE_IDENTIFIER, token))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("FCM 토큰은 null(권한 거부일 경우)이거나 유효한 값이어야 합니다.");
+                    .hasMessage("FCM 토큰은 비어 있을 수 없습니다.");
         }
     }
 }
