@@ -93,19 +93,16 @@ public class ScheduleService {
     }
 
     private Organization getOrganizationById(Long organizationId) {
-        // TODO: 커스텀 예외 설정
         return organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
     }
 
     private EventDate getEventDateById(Long eventDateId) {
-        // TODO: 커스텀 예외 설정
         return eventDateJpaRepository.findById(eventDateId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 일정 날짜입니다.", HttpStatus.BAD_REQUEST));
     }
 
     private Event getEventById(Long eventId) {
-        // TODO: 커스텀 예외 설정
         return eventJpaRepository.findById(eventId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 일정입니다.", HttpStatus.BAD_REQUEST));
     }
