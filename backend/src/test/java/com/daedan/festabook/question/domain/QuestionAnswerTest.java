@@ -39,9 +39,7 @@ class QuestionAnswerTest {
             Organization organization = null;
 
             // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(organization, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW)
-            )
+            assertThatThrownBy(() -> new QuestionAnswer(organization, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("Organization은 null일 수 없습니다.");
         }
@@ -67,9 +65,7 @@ class QuestionAnswerTest {
             String question = null;
 
             // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW)
-            )
+            assertThatThrownBy(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 비어 있을 수 없습니다.");
         }
@@ -80,9 +76,7 @@ class QuestionAnswerTest {
             String question = " ";
 
             // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW)
-            )
+            assertThatThrownBy(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 비어 있을 수 없습니다.");
         }
@@ -94,9 +88,7 @@ class QuestionAnswerTest {
             String question = "미".repeat(maxQuestionLength + 1);
 
             // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW)
-            )
+            assertThatThrownBy(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 500자를 초과할 수 없습니다.");
         }
@@ -122,9 +114,7 @@ class QuestionAnswerTest {
             String answer = null;
 
             // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW)
-            )
+            assertThatThrownBy(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 비어 있을 수 없습니다.");
         }
@@ -135,9 +125,7 @@ class QuestionAnswerTest {
             String answer = " ";
 
             // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW)
-            )
+            assertThatThrownBy(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 비어 있을 수 없습니다.");
         }
@@ -149,9 +137,7 @@ class QuestionAnswerTest {
             String answer = "미".repeat(maxAnswerLength + 1);
 
             // when & then
-            assertThatThrownBy(() ->
-                    new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW)
-            )
+            assertThatThrownBy(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 1000자를 초과할 수 없습니다.");
         }
