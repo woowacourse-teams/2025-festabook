@@ -33,7 +33,7 @@ class CoordinateTest {
         }
 
         @Test
-        void 실패_위도_null() {
+        void 예외_위도_null() {
             // given
             Double latitude = null;
 
@@ -44,7 +44,7 @@ class CoordinateTest {
         }
 
         @Test
-        void 실패_위도_최솟값_미만() {
+        void 예외_위도_최솟값_미만() {
             // given
             Double latitude = -91.0;
 
@@ -55,7 +55,7 @@ class CoordinateTest {
         }
 
         @Test
-        void 실패_위도_최댓값_초과() {
+        void 예외_위도_최댓값_초과() {
             // given
             Double latitude = 90.1;
 
@@ -84,7 +84,7 @@ class CoordinateTest {
         }
 
         @Test
-        void 실패_경도_null() {
+        void 예외_경도_null() {
             // given
             Double longitude = null;
 
@@ -95,7 +95,7 @@ class CoordinateTest {
         }
 
         @Test
-        void 실패_경도_최솟값_미만() {
+        void 예외_경도_최솟값_미만() {
             // given
             Double longitude = -181.0;
 
@@ -106,7 +106,7 @@ class CoordinateTest {
         }
 
         @Test
-        void 실패_경도_최댓값_초과() {
+        void 예외_경도_최댓값_초과() {
             // given
             Double longitude = 181.0;
 

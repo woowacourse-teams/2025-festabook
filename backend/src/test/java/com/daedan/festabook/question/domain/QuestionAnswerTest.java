@@ -35,7 +35,7 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_조직_null() {
+        void 예외_조직_null() {
             // given
             Organization organization = null;
 
@@ -54,7 +54,7 @@ class QuestionAnswerTest {
         @Test
         void 성공_경계값() {
             // given
-            String title = "미" .repeat(100);
+            String title = "미".repeat(100);
 
             // when & then
             assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, title, DEFAULT_QUESTION, DEFAULT_ANSWER, NOW))
@@ -62,7 +62,7 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_제목_null() {
+        void 예외_제목_null() {
             // given
             String title = null;
 
@@ -75,7 +75,7 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_제목_blank() {
+        void 예외_제목_blank() {
             // given
             String title = " ";
 
@@ -88,9 +88,9 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_제목_길이_초과() {
+        void 예외_제목_길이_초과() {
             // given
-            String title = "미" .repeat(101);
+            String title = "미".repeat(101);
 
             // when & then
             assertThatThrownBy(() ->
@@ -107,7 +107,7 @@ class QuestionAnswerTest {
         @Test
         void 성공_경계값() {
             // given
-            String question = "미" .repeat(500);
+            String question = "미".repeat(500);
 
             // when & then
             assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, question, DEFAULT_ANSWER, NOW))
@@ -115,7 +115,7 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_질문_null() {
+        void 예외_질문_null() {
             // given
             String question = null;
 
@@ -128,7 +128,7 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_질문_blank() {
+        void 예외_질문_blank() {
             // given
             String question = " ";
 
@@ -141,9 +141,9 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_질문_길이_초과() {
+        void 예외_질문_길이_초과() {
             // given
-            String question = "미" .repeat(501);
+            String question = "미".repeat(501);
 
             // when & then
             assertThatThrownBy(() ->
@@ -160,7 +160,7 @@ class QuestionAnswerTest {
         @Test
         void 성공_경계값() {
             // given
-            String answer = "미" .repeat(1000);
+            String answer = "미".repeat(1000);
 
             // when & then
             assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_TITLE, DEFAULT_QUESTION, answer, NOW))
@@ -168,7 +168,7 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_답변_null() {
+        void 예외_답변_null() {
             // given
             String answer = null;
 
@@ -181,7 +181,7 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_답변_blank() {
+        void 예외_답변_blank() {
             // given
             String answer = " ";
 
@@ -194,9 +194,9 @@ class QuestionAnswerTest {
         }
 
         @Test
-        void 실패_답변_길이_초과() {
+        void 예외_답변_길이_초과() {
             // given
-            String answer = "미" .repeat(1001);
+            String answer = "미".repeat(1001);
 
             // when & then
             assertThatThrownBy(() ->

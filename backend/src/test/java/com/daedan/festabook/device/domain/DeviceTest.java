@@ -3,6 +3,7 @@ package com.daedan.festabook.device.domain;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
+import com.daedan.festabook.global.exception.BusinessException;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -28,24 +29,24 @@ class DeviceTest {
         }
 
         @Test
-        void 실패_디바이스_식별자_null() {
+        void 예외_디바이스_식별자_null() {
             // given
             String identifier = null;
 
             // when & then
             assertThatThrownBy(() -> new Device(identifier, DEFAULT_FCM_TOKEN))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("디바이스 식별자는 비어 있을 수 없습니다.");
         }
 
         @Test
-        void 실패_디바이스_식별자_blank() {
+        void 예외_디바이스_식별자_blank() {
             // given
             String identifier = " ";
 
             // when & then
             assertThatThrownBy(() -> new Device(identifier, DEFAULT_FCM_TOKEN))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("디바이스 식별자는 비어 있을 수 없습니다.");
         }
     }
@@ -74,13 +75,13 @@ class DeviceTest {
         }
 
         @Test
-        void 실패_FCM_토큰_blank() {
+        void 예외_FCM_토큰_blank() {
             // given
             String token = " ";
 
             // when & then
             assertThatThrownBy(() -> new Device(DEFAULT_DEVICE_IDENTIFIER, token))
-                    .isInstanceOf(IllegalArgumentException.class)
+                    .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 토큰은 null(권한 거부일 경우)이거나 유효한 값이어야 합니다.");
         }
     }

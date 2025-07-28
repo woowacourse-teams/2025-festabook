@@ -25,7 +25,7 @@ class OrganizationTest {
         @Test
         void 성공_경계값() {
             // given
-            String name = "미" .repeat(50);
+            String name = "미".repeat(50);
 
             // when & then
             assertThatCode(() -> new Organization(name, DEFAULT_ZOOM, DEFAULT_COORDINATE, DEFAULT_BOUNDARY))
@@ -33,7 +33,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_조직_이름_null() {
+        void 예외_조직_이름_null() {
             // given
             String invalidName = null;
 
@@ -44,7 +44,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_조직_이름_blank() {
+        void 예외_조직_이름_blank() {
             // given
             String invalidName = " ";
 
@@ -55,9 +55,9 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_조직_이름_길이_초과() {
+        void 예외_조직_이름_길이_초과() {
             // given
-            String invalidName = "미" .repeat(51);
+            String invalidName = "미".repeat(51);
 
             // when & then
             assertThatThrownBy(() -> new Organization(invalidName, DEFAULT_ZOOM, DEFAULT_COORDINATE, DEFAULT_BOUNDARY))
@@ -84,7 +84,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_줌_null() {
+        void 예외_줌_null() {
             // given
             Integer zoom = null;
 
@@ -95,7 +95,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_줌_최솟값_미만() {
+        void 예외_줌_최솟값_미만() {
             // given
             Integer zoom = -1;
 
@@ -106,7 +106,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_줌_최댓값_초과() {
+        void 예외_줌_최댓값_초과() {
             // given
             Integer zoom = 31;
 
@@ -131,7 +131,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_중심_좌표_null() {
+        void 예외_중심_좌표_null() {
             // given
             Coordinate coordinate = null;
 
@@ -156,7 +156,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_폴리곤_내부_구멍_좌표_null() {
+        void 예외_폴리곤_내부_구멍_좌표_null() {
             // given
             List<Coordinate> polygonHoleBoundary = null;
 
@@ -169,7 +169,7 @@ class OrganizationTest {
         }
 
         @Test
-        void 실패_폴리곤_내부_구멍_좌표_빈리스트() {
+        void 예외_폴리곤_내부_구멍_좌표_빈리스트() {
             // given
             List<Coordinate> polygonHoleBoundary = Collections.emptyList();
 
