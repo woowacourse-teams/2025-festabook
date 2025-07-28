@@ -31,7 +31,7 @@ public class ScheduleService {
     private final Clock clock;
 
     public EventDateResponse createEventDate(Long organizationId, EventDateRequest request) {
-        // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
+        // TODO: 권한 검증 추가
         validateDuplicatedEventDate(organizationId, request.date());
 
         Organization organization = getOrganizationById(organizationId);
@@ -43,7 +43,7 @@ public class ScheduleService {
 
     @Transactional
     public void deleteEventDate(Long eventDateId) {
-        // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
+        // TODO: 권한 검증 추가
         eventJpaRepository.deleteAllByEventDateId(eventDateId);
         eventDateJpaRepository.deleteById(eventDateId);
     }
@@ -56,7 +56,7 @@ public class ScheduleService {
     }
 
     public EventResponse createEvent(EventRequest request) {
-        // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
+        // TODO: 권한 검증 추가
         EventDate eventDate = getEventDateById(request.eventDateId());
         Event event = request.toEntity(eventDate);
         Event savedEvent = eventJpaRepository.save(event);
@@ -66,6 +66,7 @@ public class ScheduleService {
 
     @Transactional
     public EventResponse updateEvent(Long eventId, EventRequest request) {
+        // TODO: 권한 검증 추가
         Event event = getEventById(eventId);
 
         Event newEvent = request.toEntity(event.getEventDate());
@@ -75,6 +76,7 @@ public class ScheduleService {
     }
 
     public void deleteEvent(Long eventId) {
+        // TODO: 권한 검증 추가
         eventJpaRepository.deleteById(eventId);
     }
 
