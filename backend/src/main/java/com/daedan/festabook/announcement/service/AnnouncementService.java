@@ -73,13 +73,11 @@ public class AnnouncementService {
     }
 
     private Announcement getAnnouncementById(Long announcementId) {
-        // TODO : 커스텀 예외 설정
         return announcementJpaRepository.findById(announcementId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 공지입니다.", HttpStatus.BAD_REQUEST));
     }
 
     private Organization getOrganizationById(Long organizationId) {
-        // TODO: 커스텀 예외 설정
         return organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
     }
