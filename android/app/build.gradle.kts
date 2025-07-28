@@ -106,6 +106,7 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.shimmer)
     implementation(libs.timber)
+    implementation(libs.lottie)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)
