@@ -56,7 +56,7 @@ class QuestionControllerTest {
             questionAnswerJpaRepository.save(questionAnswer);
 
             int expectedSize = 1;
-            int expectedFieldSize = 5;
+            int expectedFieldSize = 4;
 
             // when & then
             RestAssured
