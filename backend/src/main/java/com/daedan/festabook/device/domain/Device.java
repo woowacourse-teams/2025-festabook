@@ -1,5 +1,6 @@
 package com.daedan.festabook.device.domain;
 
+import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -8,6 +9,7 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
@@ -49,13 +51,13 @@ public class Device {
 
     private void validateDeviceIdentifier(String deviceIdentifier) {
         if (deviceIdentifier == null || deviceIdentifier.trim().isEmpty()) {
-            throw new IllegalArgumentException("디바이스 식별자는 비어 있을 수 없습니다.");
+            throw new BusinessException("디바이스 식별자는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
     private void validateFcmToken(String fcmToken) {
         if (fcmToken != null && fcmToken.trim().isEmpty()) {
-            throw new IllegalArgumentException("FCM 토큰은 null(권한 거부일 경우)이거나 유효한 값이어야 합니다.");
+            throw new BusinessException("FCM 토큰은 null(권한 거부일 경우)이거나 유효한 값이어야 합니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }
