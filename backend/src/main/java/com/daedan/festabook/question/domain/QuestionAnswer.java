@@ -25,7 +25,6 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class QuestionAnswer {
 
-    private static final int MAX_TITLE_LENGTH = 100;
     private static final int MAX_QUESTION_LENGTH = 500;
     private static final int MAX_ANSWER_LENGTH = 1000;
 
