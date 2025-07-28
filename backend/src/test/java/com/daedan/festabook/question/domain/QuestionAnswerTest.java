@@ -53,7 +53,8 @@ class QuestionAnswerTest {
         @Test
         void 성공_경계값() {
             // given
-            String question = "미".repeat(500);
+            int maxQuestionLength = 500;
+            String question = "미".repeat(maxQuestionLength);
 
             // when & then
             assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, question, DEFAULT_ANSWER, NOW))
@@ -89,7 +90,8 @@ class QuestionAnswerTest {
         @Test
         void 예외_질문_길이_초과() {
             // given
-            String question = "미".repeat(501);
+            int maxQuestionLength = 500;
+            String question = "미".repeat(maxQuestionLength + 1);
 
             // when & then
             assertThatThrownBy(() ->
@@ -106,7 +108,8 @@ class QuestionAnswerTest {
         @Test
         void 성공_경계값() {
             // given
-            String answer = "미".repeat(1000);
+            int maxAnswerLength = 1000;
+            String answer = "미".repeat(maxAnswerLength);
 
             // when & then
             assertThatCode(() -> new QuestionAnswer(DEFAULT_ORGANIZATION, DEFAULT_QUESTION, answer, NOW))
@@ -142,7 +145,8 @@ class QuestionAnswerTest {
         @Test
         void 예외_답변_길이_초과() {
             // given
-            String answer = "미".repeat(1001);
+            int maxAnswerLength = 1000;
+            String answer = "미".repeat(maxAnswerLength + 1);
 
             // when & then
             assertThatThrownBy(() ->

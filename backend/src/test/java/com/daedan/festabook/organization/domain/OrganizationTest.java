@@ -25,7 +25,8 @@ class OrganizationTest {
         @Test
         void 성공_경계값() {
             // given
-            String name = "미".repeat(50);
+            int maxNameLength = 50;
+            String name = "미".repeat(maxNameLength);
 
             // when & then
             assertThatCode(() -> new Organization(name, DEFAULT_ZOOM, DEFAULT_COORDINATE, DEFAULT_BOUNDARY))
@@ -57,7 +58,8 @@ class OrganizationTest {
         @Test
         void 예외_조직_이름_길이_초과() {
             // given
-            String invalidName = "미".repeat(51);
+            int maxNameLength = 50;
+            String invalidName = "미".repeat(maxNameLength + 1);
 
             // when & then
             assertThatThrownBy(() -> new Organization(invalidName, DEFAULT_ZOOM, DEFAULT_COORDINATE, DEFAULT_BOUNDARY))
