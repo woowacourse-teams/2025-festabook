@@ -38,6 +38,7 @@ function App() {
     const [page, setPage] = useState('dashboard');
     const [modalState, setModalState] = useState({ type: null, props: {} });
     const [toasts, setToasts] = useState([]);
+    const [sidebarOpen, setSidebarOpen] = useState(true); // 사이드바 열림/닫힘 상태 추가
 
     const showToast = useCallback((message) => {
         const id = Date.now() + Math.random();
@@ -88,7 +89,7 @@ function App() {
                     <div className="bg-gray-100 text-gray-800 flex h-screen">
 
                         {localStorage.getItem('organization') === null ? <OrganizationPage/> : <></>}
-                        <Sidebar />
+                        <Sidebar open={sidebarOpen} setOpen={setSidebarOpen} />
                         <main className="flex-1 p-8 overflow-y-auto">
                             {renderPage()}
                         </main>
