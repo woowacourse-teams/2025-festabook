@@ -41,12 +41,6 @@ public class ScheduleService {
         return EventDateResponse.from(savedEventDate);
     }
 
-    private void validateDuplicatedEventDate(Long organizationId, LocalDate date) {
-        if (eventDateJpaRepository.existsByOrganizationIdAndDate(organizationId, date)) {
-            throw new BusinessException("이미 존재하는 일정 날짜입니다.", HttpStatus.BAD_REQUEST);
-        }
-    }
-
     @Transactional
     public void deleteEventDate(Long eventDateId) {
         // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
@@ -105,5 +99,11 @@ public class ScheduleService {
     private Event getEventById(Long eventId) {
         return eventJpaRepository.findById(eventId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 일정입니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private void validateDuplicatedEventDate(Long organizationId, LocalDate date) {
+        if (eventDateJpaRepository.existsByOrganizationIdAndDate(organizationId, date)) {
+            throw new BusinessException("이미 존재하는 일정 날짜입니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 }
