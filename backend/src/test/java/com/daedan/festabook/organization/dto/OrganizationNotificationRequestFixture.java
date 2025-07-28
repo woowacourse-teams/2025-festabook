@@ -1,6 +1,4 @@
-package com.daedan.festabook.organization.domain;
-
-import com.daedan.festabook.organization.dto.OrganizationNotificationRequest;
+package com.daedan.festabook.organization.dto;
 
 public class OrganizationNotificationRequestFixture {
 

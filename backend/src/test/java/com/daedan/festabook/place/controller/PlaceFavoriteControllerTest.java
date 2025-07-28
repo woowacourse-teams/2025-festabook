@@ -13,9 +13,9 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFavorite;
 import com.daedan.festabook.place.domain.PlaceFavoriteFixture;
-import com.daedan.festabook.place.domain.PlaceFavoriteRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceFavoriteRequest;
+import com.daedan.festabook.place.dto.PlaceFavoriteRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;

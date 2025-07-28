@@ -1,6 +1,4 @@
-package com.daedan.festabook.place.domain;
-
-import com.daedan.festabook.place.dto.PlaceFavoriteRequest;
+package com.daedan.festabook.place.dto;
 
 public class PlaceFavoriteRequestFixture {
 
