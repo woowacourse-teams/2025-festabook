@@ -47,7 +47,7 @@ class PlaceFavoriteServiceTest {
     private PlaceFavoriteService placeFavoriteService;
 
     @Nested
-    class createPlaceFavorite {
+    class addPlaceFavorite {
 
         @Test
         void 성공() {
@@ -68,7 +68,7 @@ class PlaceFavoriteServiceTest {
                     .willReturn(placeFavorite);
 
             // when
-            PlaceFavoriteResponse result = placeFavoriteService.createPlaceFavorite(placeId, request);
+            PlaceFavoriteResponse result = placeFavoriteService.addPlaceFavorite(placeId, request);
 
             // then
             assertThat(result.id()).isEqualTo(placeFavoriteId);
@@ -88,7 +88,7 @@ class PlaceFavoriteServiceTest {
                     .willReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> placeFavoriteService.createPlaceFavorite(placeId, request))
+            assertThatThrownBy(() -> placeFavoriteService.addPlaceFavorite(placeId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("이미 즐겨찾기한 플레이스입니다.");
         }
@@ -106,7 +106,7 @@ class PlaceFavoriteServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeFavoriteService.createPlaceFavorite(placeId, request))
+            assertThatThrownBy(() -> placeFavoriteService.addPlaceFavorite(placeId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 디바이스입니다.");
         }
@@ -122,14 +122,14 @@ class PlaceFavoriteServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeFavoriteService.createPlaceFavorite(invalidPlaceId, request))
+            assertThatThrownBy(() -> placeFavoriteService.addPlaceFavorite(invalidPlaceId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
     }
 
     @Nested
-    class deletePlaceFavorite {
+    class removePlaceFavorite {
 
         @Test
         void 성공() {
@@ -148,7 +148,7 @@ class PlaceFavoriteServiceTest {
                     .willReturn(Optional.of(device));
 
             // when
-            placeFavoriteService.deletePlaceFavorite(placeFavoriteId);
+            placeFavoriteService.removePlaceFavorite(placeFavoriteId);
 
             // then
             then(placeFavoriteJpaRepository).should()
@@ -164,7 +164,7 @@ class PlaceFavoriteServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() -> placeFavoriteService.deletePlaceFavorite(invalidPlaceFavoriteId))
+            assertThatCode(() -> placeFavoriteService.removePlaceFavorite(invalidPlaceFavoriteId))
                     .doesNotThrowAnyException();
         }
 
@@ -185,7 +185,7 @@ class PlaceFavoriteServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() -> placeFavoriteService.deletePlaceFavorite(placeFavoriteId))
+            assertThatCode(() -> placeFavoriteService.removePlaceFavorite(placeFavoriteId))
                     .doesNotThrowAnyException();
         }
     }

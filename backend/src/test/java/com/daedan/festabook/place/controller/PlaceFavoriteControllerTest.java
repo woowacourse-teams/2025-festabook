@@ -56,7 +56,7 @@ class PlaceFavoriteControllerTest {
     }
 
     @Nested
-    class createPlaceFavorite {
+    class addPlaceFavorite {
 
         @Test
         void 성공() {
@@ -167,7 +167,7 @@ class PlaceFavoriteControllerTest {
     }
 
     @Nested
-    class deletePlaceFavorite {
+    class removePlaceFavorite {
 
         @Test
         void 성공() {

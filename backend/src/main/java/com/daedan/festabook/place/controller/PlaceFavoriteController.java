@@ -35,7 +35,7 @@ public class PlaceFavoriteController {
             @PathVariable Long placeId,
             @RequestBody PlaceFavoriteRequest request
     ) {
-        return placeFavoriteService.createPlaceFavorite(placeId, request);
+        return placeFavoriteService.addPlaceFavorite(placeId, request);
     }
 
     @DeleteMapping("/favorites/{placeFavoriteId}")
@@ -47,6 +47,6 @@ public class PlaceFavoriteController {
     public void deletePlaceFavorite(
             @PathVariable Long placeFavoriteId
     ) {
-        placeFavoriteService.deletePlaceFavorite(placeFavoriteId);
+        placeFavoriteService.removePlaceFavorite(placeFavoriteId);
     }
 }

@@ -22,7 +22,7 @@ public class PlaceFavoriteService {
     private final DeviceJpaRepository deviceJpaRepository;
     private final PlaceJpaRepository placeJpaRepository;
 
-    public PlaceFavoriteResponse createPlaceFavorite(Long placeId, PlaceFavoriteRequest request) {
+    public PlaceFavoriteResponse addPlaceFavorite(Long placeId, PlaceFavoriteRequest request) {
         validateDuplicatedPlaceFavorite(placeId, request.deviceId());
 
         Place place = getPlaceById(placeId);
@@ -34,7 +34,7 @@ public class PlaceFavoriteService {
     }
 
     @Transactional
-    public void deletePlaceFavorite(Long placeFavoriteId) {
+    public void removePlaceFavorite(Long placeFavoriteId) {
         PlaceFavorite placeFavorite = placeFavoriteJpaRepository.findById(placeFavoriteId)
                 .orElseGet(() -> null);
         if (placeFavorite == null) {
