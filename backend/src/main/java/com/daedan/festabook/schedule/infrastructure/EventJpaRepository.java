@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface EventJpaRepository extends JpaRepository<Event, Long> {
 
     List<Event> findAllByEventDateId(Long eventDateId);
+
+    void deleteAllByEventDateId(Long eventDateId);
 }

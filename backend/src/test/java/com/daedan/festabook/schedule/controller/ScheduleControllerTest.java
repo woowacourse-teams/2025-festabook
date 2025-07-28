@@ -1,6 +1,7 @@
 package com.daedan.festabook.schedule.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
@@ -130,6 +131,9 @@ class ScheduleControllerTest {
             EventDate eventDate = EventDateFixture.create(organization);
             eventDateJpaRepository.save(eventDate);
 
+            List<Event> events = EventFixture.createList(3, eventDate);
+            eventJpaRepository.saveAll(events);
+
             // when & then
             RestAssured
                     .given()
@@ -138,7 +142,10 @@ class ScheduleControllerTest {
                     .delete("/schedules/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
-            assertThat(eventDateJpaRepository.findById(eventDate.getId())).isEmpty();
+            assertSoftly(s -> {
+                s.assertThat(eventDateJpaRepository.findById(eventDate.getId())).isEmpty();
+                s.assertThat(eventJpaRepository.findAllByEventDateId(eventDate.getId())).isEmpty();
+            });
         }
 
         @Test
@@ -157,7 +164,10 @@ class ScheduleControllerTest {
                     .delete("/schedules/{eventDateId}", invalidEventDateId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
-            assertThat(eventDateJpaRepository.findById(invalidEventDateId)).isEmpty();
+            assertSoftly(s -> {
+                s.assertThat(eventDateJpaRepository.findById(invalidEventDateId)).isEmpty();
+                s.assertThat(eventJpaRepository.findAllByEventDateId(invalidEventDateId)).isEmpty();
+            });
         }
     }
 

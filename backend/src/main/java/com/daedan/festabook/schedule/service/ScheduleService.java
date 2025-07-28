@@ -47,7 +47,10 @@ public class ScheduleService {
         }
     }
 
+    @Transactional
     public void deleteEventDate(Long eventDateId) {
+        // TODO: 추후 검증 추가 관리자 조직 권한과 eventDate의 조직 id 비교하기
+        eventJpaRepository.deleteAllByEventDateId(eventDateId);
         eventDateJpaRepository.deleteById(eventDateId);
     }
 

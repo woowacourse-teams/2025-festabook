@@ -132,6 +132,8 @@ class ScheduleServiceTest {
             // then
             then(eventDateJpaRepository).should()
                     .deleteById(eventDateId);
+            then(eventJpaRepository).should()
+                    .deleteAllByEventDateId(eventDateId);
         }
     }
 
