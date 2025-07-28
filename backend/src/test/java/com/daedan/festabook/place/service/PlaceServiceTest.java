@@ -108,9 +108,7 @@ class PlaceServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> {
-                placeService.createPlaceOnly(organizationId, placeRequest);
-            })
+            assertThatThrownBy(() -> placeService.createPlaceOnly(organizationId, placeRequest))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
 
@@ -171,9 +169,7 @@ class PlaceServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> {
-                placeService.createPlaceWithDetail(organizationId, placeRequest);
-            })
+            assertThatThrownBy(() -> placeService.createPlaceWithDetail(organizationId, placeRequest))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
 
