@@ -3,7 +3,6 @@ package com.daedan.festabook.notification.infrastructure;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.notification.dto.NotificationMessage;
 import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
-import com.daedan.festabook.place.domain.PlaceNotificationManager;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -15,10 +14,9 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FcmNotificationManager implements OrganizationNotificationManager, PlaceNotificationManager {
+public class FcmNotificationManager implements OrganizationNotificationManager {
 
     private static final String ORGANIZATION_PREFIX = "organization";
-    private static final String PLACE_PREFIX = "place";
 
     private final FirebaseMessaging firebaseMessaging;
 
@@ -37,18 +35,6 @@ public class FcmNotificationManager implements OrganizationNotificationManager, 
     @Override
     public void sendToOrganizationTopic(Long organizationId, NotificationMessage notificationMessage) {
         sendToTopic(ORGANIZATION_PREFIX, organizationId, notificationMessage);
-    }
-
-    @Override
-    public void subscribePlaceTopic(Long placeId, String fcmToken) {
-        String topic = PLACE_PREFIX + placeId;
-        subscribeTopic(topic, fcmToken);
-    }
-
-    @Override
-    public void unsubscribePlaceTopic(Long placeId, String fcmToken) {
-        String topic = PLACE_PREFIX + placeId;
-        unsubscribeTopic(topic, fcmToken);
     }
 
     private void subscribeTopic(String topic, String fcmToken) {

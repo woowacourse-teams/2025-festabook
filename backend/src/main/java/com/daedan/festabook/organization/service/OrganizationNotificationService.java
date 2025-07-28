@@ -4,12 +4,12 @@ import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationBookmark;
+import com.daedan.festabook.organization.domain.OrganizationNotification;
 import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
-import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
-import com.daedan.festabook.organization.dto.OrganizationBookmarkResponse;
-import com.daedan.festabook.organization.infrastructure.OrganizationBookmarkJpaRepository;
+import com.daedan.festabook.organization.dto.OrganizationNotificationRequest;
+import com.daedan.festabook.organization.dto.OrganizationNotificationResponse;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.organization.infrastructure.OrganizationNotificationJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,52 +17,54 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class OrganizationBookmarkService {
+public class OrganizationNotificationService {
 
-    private final OrganizationBookmarkJpaRepository organizationBookmarkJpaRepository;
+    private final OrganizationNotificationJpaRepository organizationNotificationJpaRepository;
     private final DeviceJpaRepository deviceJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
     private final OrganizationNotificationManager organizationNotificationManager;
 
     @Transactional
-    public OrganizationBookmarkResponse createOrganizationBookmark(Long organizationId,
-                                                                   OrganizationBookmarkRequest request) {
-        validateDuplicatedOrganizationBookmark(organizationId, request.deviceId());
+    public OrganizationNotificationResponse subscribeOrganizationNotification(Long organizationId,
+                                                                              OrganizationNotificationRequest request) {
+        validateDuplicatedOrganizationNotification(organizationId, request.deviceId());
 
         Organization organization = getOrganizationById(organizationId);
         Device device = getDeviceById(request.deviceId());
-        OrganizationBookmark organizationBookmark = new OrganizationBookmark(organization, device);
-        OrganizationBookmark savedOrganizationBookmark = organizationBookmarkJpaRepository.save(organizationBookmark);
+        OrganizationNotification organizationNotification = new OrganizationNotification(organization, device);
+        OrganizationNotification savedOrganizationNotification = organizationNotificationJpaRepository.save(
+                organizationNotification);
 
         organizationNotificationManager.subscribeOrganizationTopic(organizationId, device.getFcmToken());
 
-        return OrganizationBookmarkResponse.from(savedOrganizationBookmark);
+        return OrganizationNotificationResponse.from(savedOrganizationNotification);
     }
 
     @Transactional
-    public void deleteOrganizationBookmark(Long organizationBookmarkId) {
-        OrganizationBookmark organizationBookmark = organizationBookmarkJpaRepository.findById(organizationBookmarkId)
+    public void unsubscribeOrganizationNotification(Long organizationNotificationId) {
+        OrganizationNotification organizationNotification = organizationNotificationJpaRepository
+                .findById(organizationNotificationId)
                 .orElseGet(() -> null);
-        if (organizationBookmark == null) {
+        if (organizationNotification == null) {
             return;
         }
 
-        Device device = deviceJpaRepository.findById(organizationBookmark.getDevice().getId())
+        Device device = deviceJpaRepository.findById(organizationNotification.getDevice().getId())
                 .orElseGet(() -> null);
         if (device == null) {
             return;
         }
 
-        organizationBookmarkJpaRepository.deleteById(organizationBookmarkId);
+        organizationNotificationJpaRepository.deleteById(organizationNotificationId);
         organizationNotificationManager.unsubscribeOrganizationTopic(
-                organizationBookmark.getOrganization().getId(),
+                organizationNotification.getOrganization().getId(),
                 device.getFcmToken()
         );
     }
 
-    private void validateDuplicatedOrganizationBookmark(Long organizationId, Long deviceId) {
-        if (organizationBookmarkJpaRepository.existsByOrganizationIdAndDeviceId(organizationId, deviceId)) {
-            throw new BusinessException("이미 북마크한 조직입니다.", HttpStatus.BAD_REQUEST);
+    private void validateDuplicatedOrganizationNotification(Long organizationId, Long deviceId) {
+        if (organizationNotificationJpaRepository.existsByOrganizationIdAndDeviceId(organizationId, deviceId)) {
+            throw new BusinessException("이미 알림을 구독한 조직입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 

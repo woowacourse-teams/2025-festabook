@@ -151,17 +151,17 @@ VALUES ('android-uuid-1234', 'fcm-token-1234'),
        ('android-uuid-5678', 'fcm-token-5678');
 
 -- ========================
--- 10. 플레이스 북마크 (PlaceBookmark)
+-- 10. 플레이스 즐겨찾기 (PlaceFavorite)
 -- ========================
-INSERT INTO place_bookmark (place_id, device_id)
+INSERT INTO place_favorite (place_id, device_id)
 VALUES (1, 1),
        (2, 1),
        (3, 2),
        (4, 2);
 
 -- ========================
--- 11. 조직 북마크 (OrganizationBookmark)
+-- 11. 조직 알림 (OrganizationNotification)
 -- ========================
-INSERT INTO organization_bookmark (organization_id, device_id)
+INSERT INTO organization_notification (organization_id, device_id)
 VALUES (1, 1),
        (1, 2);

@@ -12,14 +12,13 @@ import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
-import com.daedan.festabook.place.domain.PlaceBookmark;
-import com.daedan.festabook.place.domain.PlaceBookmarkFixture;
-import com.daedan.festabook.place.domain.PlaceBookmarkRequestFixture;
+import com.daedan.festabook.place.domain.PlaceFavorite;
+import com.daedan.festabook.place.domain.PlaceFavoriteFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
-import com.daedan.festabook.place.domain.PlaceNotificationManager;
-import com.daedan.festabook.place.dto.PlaceBookmarkRequest;
-import com.daedan.festabook.place.dto.PlaceBookmarkResponse;
-import com.daedan.festabook.place.infrastructure.PlaceBookmarkJpaRepository;
+import com.daedan.festabook.place.dto.PlaceFavoriteRequest;
+import com.daedan.festabook.place.dto.PlaceFavoriteRequestFixture;
+import com.daedan.festabook.place.dto.PlaceFavoriteResponse;
+import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -33,10 +32,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class PlaceBookmarkServiceTest {
+class PlaceFavoriteServiceTest {
 
     @Mock
-    private PlaceBookmarkJpaRepository placeBookmarkJpaRepository;
+    private PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
 
     @Mock
     private DeviceJpaRepository deviceJpaRepository;
@@ -44,14 +43,11 @@ class PlaceBookmarkServiceTest {
     @Mock
     private PlaceJpaRepository placeJpaRepository;
 
-    @Mock
-    private PlaceNotificationManager placeNotificationManager;
-
     @InjectMocks
-    private PlaceBookmarkService placeBookmarkService;
+    private PlaceFavoriteService placeFavoriteService;
 
     @Nested
-    class createPlaceBookmark {
+    class addPlaceFavorite {
 
         @Test
         void 성공() {
@@ -60,50 +56,48 @@ class PlaceBookmarkServiceTest {
             Place place = PlaceFixture.create(placeId);
             Long deviceId = 10L;
             Device device = DeviceFixture.create(deviceId);
-            Long placeBookmarkId = 100L;
-            PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(placeBookmarkId, place, device);
-            PlaceBookmarkRequest request = new PlaceBookmarkRequest(deviceId);
+            Long placeFavoriteId = 100L;
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
+            PlaceFavoriteRequest request = new PlaceFavoriteRequest(deviceId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
-            given(placeBookmarkJpaRepository.save(any(PlaceBookmark.class)))
-                    .willReturn(placeBookmark);
+            given(placeFavoriteJpaRepository.save(any(PlaceFavorite.class)))
+                    .willReturn(placeFavorite);
 
             // when
-            PlaceBookmarkResponse result = placeBookmarkService.createPlaceBookmark(placeId, request);
+            PlaceFavoriteResponse result = placeFavoriteService.addPlaceFavorite(placeId, request);
 
             // then
-            assertThat(result.id()).isEqualTo(placeBookmarkId);
-            then(placeBookmarkJpaRepository).should()
+            assertThat(result.id()).isEqualTo(placeFavoriteId);
+            then(placeFavoriteJpaRepository).should()
                     .save(any());
-            then(placeNotificationManager).should()
-                    .subscribePlaceTopic(any(), any());
         }
 
         @Test
-        void 예외_플레이스에_이미_북마크한_디바이스() {
+        void 예외_플레이스에_이미_즐겨찾기한_디바이스() {
             // given
             Long placeId = 1L;
             Long deviceId = 1L;
 
-            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(deviceId);
+            PlaceFavoriteRequest request = PlaceFavoriteRequestFixture.create(deviceId);
 
-            given(placeBookmarkJpaRepository.existsByPlaceIdAndDeviceId(placeId, deviceId))
+            given(placeFavoriteJpaRepository.existsByPlaceIdAndDeviceId(placeId, deviceId))
                     .willReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> placeBookmarkService.createPlaceBookmark(placeId, request))
+            assertThatThrownBy(() -> placeFavoriteService.addPlaceFavorite(placeId, request))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("이미 북마크한 플레이스입니다.");
+                    .hasMessage("이미 즐겨찾기한 플레이스입니다.");
         }
 
         @Test
         void 예외_존재하지_않는_디바이스() {
             // given
             Long invalidDeviceId = 0L;
-            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(invalidDeviceId);
+            PlaceFavoriteRequest request = PlaceFavoriteRequestFixture.create(invalidDeviceId);
 
             Long placeId = 1L;
             given(placeJpaRepository.findById(placeId))
@@ -112,7 +106,7 @@ class PlaceBookmarkServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeBookmarkService.createPlaceBookmark(placeId, request))
+            assertThatThrownBy(() -> placeFavoriteService.addPlaceFavorite(placeId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 디바이스입니다.");
         }
@@ -121,84 +115,78 @@ class PlaceBookmarkServiceTest {
         void 예외_존재하지_않는_플레이스() {
             // given
             Long deviceId = 10L;
-            PlaceBookmarkRequest request = PlaceBookmarkRequestFixture.create(deviceId);
+            PlaceFavoriteRequest request = PlaceFavoriteRequestFixture.create(deviceId);
 
             Long invalidPlaceId = 0L;
             given(placeJpaRepository.findById(invalidPlaceId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeBookmarkService.createPlaceBookmark(invalidPlaceId, request))
+            assertThatThrownBy(() -> placeFavoriteService.addPlaceFavorite(invalidPlaceId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
     }
 
     @Nested
-    class deletePlaceBookmark {
+    class removePlaceFavorite {
 
         @Test
         void 성공() {
             // given
-            Long placeBookmarkId = 1L;
+            Long placeFavoriteId = 1L;
             Long deviceId = 10L;
             Long placeId = 100L;
 
             Device device = DeviceFixture.create(deviceId);
             Place place = PlaceFixture.create(placeId);
-            PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(placeBookmarkId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
 
-            given(placeBookmarkJpaRepository.findById(placeBookmarkId))
-                    .willReturn(Optional.of(placeBookmark));
+            given(placeFavoriteJpaRepository.findById(placeFavoriteId))
+                    .willReturn(Optional.of(placeFavorite));
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
 
             // when
-            placeBookmarkService.deletePlaceBookmark(placeBookmarkId);
+            placeFavoriteService.removePlaceFavorite(placeFavoriteId);
 
             // then
-            then(placeBookmarkJpaRepository).should()
-                    .deleteById(placeBookmarkId);
-            then(placeNotificationManager).should()
-                    .unsubscribePlaceTopic(any(), any());
+            then(placeFavoriteJpaRepository).should()
+                    .deleteById(placeFavoriteId);
         }
 
         @Test
-        void 성공_북마크_삭제시_플레이스_북마크가_존재하지_않아도_정상_처리() {
+        void 성공_즐겨찾기_삭제시_플레이스_즐겨찾기가_존재하지_않아도_정상_처리() {
             // given
-            Long invalidPlaceBookmarkId = 0L;
+            Long invalidPlaceFavoriteId = 0L;
 
-            given(placeBookmarkJpaRepository.findById(invalidPlaceBookmarkId))
+            given(placeFavoriteJpaRepository.findById(invalidPlaceFavoriteId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() -> placeBookmarkService.deletePlaceBookmark(invalidPlaceBookmarkId))
+            assertThatCode(() -> placeFavoriteService.removePlaceFavorite(invalidPlaceFavoriteId))
                     .doesNotThrowAnyException();
-            then(placeNotificationManager)
-                    .shouldHaveNoInteractions();
         }
 
         @Test
-        void 성공_북마크_삭제시_디바이스가_존재하지_않아도_정상_처리() {
+        void 성공_즐겨찾기_삭제시_디바이스가_존재하지_않아도_정상_처리() {
             // given
-            Long placeBookmarkId = 1L;
+            Long placeFavoriteId = 1L;
             Long invalidDeviceId = 0L;
             Long placeId = 100L;
 
             Device device = DeviceFixture.create(invalidDeviceId);
             Place place = PlaceFixture.create(placeId);
-            PlaceBookmark placeBookmark = PlaceBookmarkFixture.create(placeBookmarkId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
 
-            given(placeBookmarkJpaRepository.findById(placeBookmarkId))
-                    .willReturn(Optional.of(placeBookmark));
+            given(placeFavoriteJpaRepository.findById(placeFavoriteId))
+                    .willReturn(Optional.of(placeFavorite));
             given(deviceJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatCode(() -> placeBookmarkService.deletePlaceBookmark(placeBookmarkId))
+            assertThatCode(() -> placeFavoriteService.removePlaceFavorite(placeFavoriteId))
                     .doesNotThrowAnyException();
-            then(placeNotificationManager)
-                    .shouldHaveNoInteractions();
         }
     }
 }

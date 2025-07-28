@@ -1,8 +1,8 @@
 package com.daedan.festabook.place.controller;
 
-import com.daedan.festabook.place.dto.PlaceBookmarkRequest;
-import com.daedan.festabook.place.dto.PlaceBookmarkResponse;
-import com.daedan.festabook.place.service.PlaceBookmarkService;
+import com.daedan.festabook.place.dto.PlaceFavoriteRequest;
+import com.daedan.festabook.place.dto.PlaceFavoriteResponse;
+import com.daedan.festabook.place.service.PlaceFavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,33 +20,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/places")
-@Tag(name = "플레이스 북마크", description = "플레이스 북마크 관련 API")
-public class PlaceBookmarkController {
+@Tag(name = "플레이스 즐겨찾기", description = "플레이스 즐겨찾기 관련 API")
+public class PlaceFavoriteController {
 
-    private final PlaceBookmarkService placeBookmarkService;
+    private final PlaceFavoriteService placeFavoriteService;
 
-    @PostMapping("/{placeId}/bookmarks")
+    @PostMapping("/{placeId}/favorites")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 플레이스의 북마크 생성 (+ FCM 토픽 구독)")
+    @Operation(summary = "특정 플레이스의 즐겨찾기 추가")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public PlaceBookmarkResponse createPlaceBookmark(
+    public PlaceFavoriteResponse createPlaceFavorite(
             @PathVariable Long placeId,
-            @RequestBody PlaceBookmarkRequest request
+            @RequestBody PlaceFavoriteRequest request
     ) {
-        return placeBookmarkService.createPlaceBookmark(placeId, request);
+        return placeFavoriteService.addPlaceFavorite(placeId, request);
     }
 
-    @DeleteMapping("/bookmarks/{placeBookmarkId}")
+    @DeleteMapping("/favorites/{placeFavoriteId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "특정 플레이스의 북마크 삭제 (+ FCM 토픽 구독 취소)")
+    @Operation(summary = "특정 플레이스의 즐겨찾기 취소")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    public void deletePlaceBookmark(
-            @PathVariable Long placeBookmarkId
+    public void deletePlaceFavorite(
+            @PathVariable Long placeFavoriteId
     ) {
-        placeBookmarkService.deletePlaceBookmark(placeBookmarkId);
+        placeFavoriteService.removePlaceFavorite(placeFavoriteId);
     }
 }

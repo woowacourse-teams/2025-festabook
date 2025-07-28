@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceBookmark {
+public class PlaceFavorite {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,7 +29,7 @@ public class PlaceBookmark {
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
-    protected PlaceBookmark(
+    protected PlaceFavorite(
             Long id,
             Place place,
             Device device
@@ -39,7 +39,7 @@ public class PlaceBookmark {
         this.device = device;
     }
 
-    public PlaceBookmark(
+    public PlaceFavorite(
             Place place,
             Device device
     ) {

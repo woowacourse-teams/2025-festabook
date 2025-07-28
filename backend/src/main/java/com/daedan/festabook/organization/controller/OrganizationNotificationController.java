@@ -1,8 +1,8 @@
 package com.daedan.festabook.organization.controller;
 
-import com.daedan.festabook.organization.dto.OrganizationBookmarkRequest;
-import com.daedan.festabook.organization.dto.OrganizationBookmarkResponse;
-import com.daedan.festabook.organization.service.OrganizationBookmarkService;
+import com.daedan.festabook.organization.dto.OrganizationNotificationRequest;
+import com.daedan.festabook.organization.dto.OrganizationNotificationResponse;
+import com.daedan.festabook.organization.service.OrganizationNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -20,33 +20,33 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/organizations")
-@Tag(name = "조직 북마크", description = "조직 북마크 관련 API")
-public class OrganizationBookmarkController {
+@Tag(name = "조직 알림", description = "조직 알림 관련 API")
+public class OrganizationNotificationController {
 
-    private final OrganizationBookmarkService organizationBookmarkService;
+    private final OrganizationNotificationService organizationNotificationService;
 
-    @PostMapping("/{organizationId}/bookmarks")
+    @PostMapping("/{organizationId}/notifications")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 조직의 북마크 생성 (+ FCM 토픽 구독)")
+    @Operation(summary = "특정 조직의 알림 구독 (FCM 토픽 구독)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public OrganizationBookmarkResponse createOrganizationBookmark(
+    public OrganizationNotificationResponse subscribeOrganizationNotification(
             @PathVariable Long organizationId,
-            @RequestBody OrganizationBookmarkRequest request
+            @RequestBody OrganizationNotificationRequest request
     ) {
-        return organizationBookmarkService.createOrganizationBookmark(organizationId, request);
+        return organizationNotificationService.subscribeOrganizationNotification(organizationId, request);
     }
 
-    @DeleteMapping("/bookmarks/{organizationBookmarkId}")
+    @DeleteMapping("/notifications/{organizationNotificationId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "특정 조직의 북마크 삭제 (+ FCM 토픽 구독 취소)")
+    @Operation(summary = "특정 조직의 알림 구독 취소 (FCM 토픽 구독 취소)")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    public void deleteOrganizationBookmark(
-            @PathVariable Long organizationBookmarkId
+    public void unsubscribeOrganizationNotification(
+            @PathVariable Long organizationNotificationId
     ) {
-        organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId);
+        organizationNotificationService.unsubscribeOrganizationNotification(organizationNotificationId);
     }
 }
