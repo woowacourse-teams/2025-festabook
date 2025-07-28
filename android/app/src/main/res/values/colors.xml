@@ -24,4 +24,7 @@
 
     <!--green-->
     <color name="green400">#00AB40</color>
+
+    <!--    transparent-->
+    <color name="transparent">#00000000</color>
 </resources>

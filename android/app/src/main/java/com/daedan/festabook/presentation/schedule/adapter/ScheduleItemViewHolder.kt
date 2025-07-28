@@ -42,7 +42,6 @@ class ScheduleItemViewHolder(
                     textColor = gray400,
                     backgroundResId = null,
                 )
-                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_gray300)
                 setupScheduleEventContentsColor(
                     titleColor = gray400,
                     timeColor = gray400,
@@ -60,7 +59,6 @@ class ScheduleItemViewHolder(
                     textColor = gray050,
                     backgroundResId = R.drawable.bg_gray900_radius_6dp,
                 )
-                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_blue400)
                 setupScheduleEventContentsColor(
                     titleColor = gray900,
                     timeColor = gray500,
@@ -78,7 +76,6 @@ class ScheduleItemViewHolder(
                     textColor = gray900,
                     backgroundResId = R.drawable.bg_stroke_gray900_radius_6dp,
                 )
-                setupScheduleEventTimeLineCircleIcon(R.drawable.ic_circle_green400)
                 setupScheduleEventContentsColor(
                     titleColor = gray900,
                     timeColor = gray500,
@@ -119,10 +116,6 @@ class ScheduleItemViewHolder(
         setTextColor(textColor)
         gravity = if (status == ScheduleEventUiStatus.COMPLETED) Gravity.END else Gravity.CENTER
         backgroundResId?.let { setBackgroundResource(it) } ?: setBackgroundColor(gray050)
-    }
-
-    private fun setupScheduleEventTimeLineCircleIcon(iconRes: Int) {
-        binding.ivScheduleEventTimeLineCircle.setImageResource(iconRes)
     }
 
     companion object {
