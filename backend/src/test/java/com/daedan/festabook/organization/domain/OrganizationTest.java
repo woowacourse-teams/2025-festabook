@@ -10,6 +10,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class OrganizationTest {
@@ -96,21 +98,10 @@ class OrganizationTest {
                     .hasMessage("줌은 null일 수 없습니다.");
         }
 
-        @Test
-        void 예외_줌_최솟값_미만() {
+        @ParameterizedTest
+        @ValueSource(ints = {-1, 31})
+        void 예외_줌_범위_초과(Integer zoom) {
             // given
-            Integer zoom = -1;
-
-            // when & then
-            assertThatThrownBy(() -> new Organization(DEFAULT_NAME, zoom, DEFAULT_COORDINATE, DEFAULT_BOUNDARY))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("줌은 0 이상 30 이하이어야 합니다.");
-        }
-
-        @Test
-        void 예외_줌_최댓값_초과() {
-            // given
-            Integer zoom = 31;
 
             // when & then
             assertThatThrownBy(() -> new Organization(DEFAULT_NAME, zoom, DEFAULT_COORDINATE, DEFAULT_BOUNDARY))

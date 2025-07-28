@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class CoordinateTest {
@@ -43,21 +45,10 @@ class CoordinateTest {
                     .hasMessage("위도는 null일 수 없습니다.");
         }
 
-        @Test
-        void 예외_위도_최솟값_미만() {
+        @ParameterizedTest
+        @ValueSource(doubles = {-90.1, 90.1})
+        void 예외_위도_범위_초과(Double latitude) {
             // given
-            Double latitude = -91.0;
-
-            // when & then
-            assertThatThrownBy(() -> new Coordinate(latitude, DEFAULT_LONGITUDE))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("위도는 -90.0도 이상 90.0도 이하여야 합니다.");
-        }
-
-        @Test
-        void 예외_위도_최댓값_초과() {
-            // given
-            Double latitude = 90.1;
 
             // when & then
             assertThatThrownBy(() -> new Coordinate(latitude, DEFAULT_LONGITUDE))
@@ -94,21 +85,10 @@ class CoordinateTest {
                     .hasMessage("경도는 null일 수 없습니다.");
         }
 
-        @Test
-        void 예외_경도_최솟값_미만() {
+        @ParameterizedTest
+        @ValueSource(doubles = {-180.1, 180.1})
+        void 예외_경도_범위_초과(Double longitude) {
             // given
-            Double longitude = -181.0;
-
-            // when & then
-            assertThatThrownBy(() -> new Coordinate(DEFAULT_LATITUDE, longitude))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("경도는 -180.0도 이상 180.0도 이하여야 합니다.");
-        }
-
-        @Test
-        void 예외_경도_최댓값_초과() {
-            // given
-            Double longitude = 181.0;
 
             // when & then
             assertThatThrownBy(() -> new Coordinate(DEFAULT_LATITUDE, longitude))
