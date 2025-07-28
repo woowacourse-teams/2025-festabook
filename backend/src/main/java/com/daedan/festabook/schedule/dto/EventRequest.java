@@ -11,6 +11,7 @@ public record EventRequest(
         String location,
         Long eventDateId
 ) {
+
     public Event toEntity(EventDate eventDate) {
         return new Event(
                 startTime,
