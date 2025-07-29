@@ -11,7 +11,10 @@ import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
+import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
+import com.daedan.festabook.announcement.domain.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
@@ -90,6 +93,30 @@ class AnnouncementControllerTest {
 
             then(fcmNotificationManager).should()
                     .sendToOrganizationTopic(any(), any());
+        }
+
+        @Test
+        void 예외_고정_공지_최대치_초과() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            boolean isPinned = true;
+            announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, organization));
+
+            AnnouncementRequest request = AnnouncementRequestFixture.create(isPinned);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/announcements")
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("공지글은 최대 3개까지 고정할 수 있습니다."));
         }
     }
 
@@ -227,6 +254,88 @@ class AnnouncementControllerTest {
                             targetAnnouncements.get(1).getId().intValue(),
                             targetAnnouncements.get(2).getId().intValue()
                     ));
+        }
+    }
+
+    @Nested
+    class updateAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Announcement announcement = AnnouncementFixture.create(organization);
+            announcementJpaRepository.save(announcement);
+
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("수정된 제목", "수정된 내용");
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/announcements/{announcementId}", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("title", equalTo(request.title()))
+                    .body("content", equalTo(request.content()));
+        }
+
+        @Test
+        void 실패_존재하지_않는_공지() {
+            // given
+            Long notExistId = 0L;
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/announcements/{announcementId}", notExistId)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("존재하지 않는 공지입니다."));
+        }
+    }
+
+    @Nested
+    class deleteAnnouncementByAnnouncementId {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Announcement announcement = AnnouncementFixture.create(organization);
+            announcementJpaRepository.save(announcement);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/announcements/{announcementId}", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+
+        @Test
+        void 성공_존재하지_않는_공지지만_예외_없음() {
+            // given
+            Long notExistId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/announcements/{announcementId}", notExistId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }
