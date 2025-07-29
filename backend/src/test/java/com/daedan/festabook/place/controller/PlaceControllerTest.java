@@ -107,7 +107,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getALlPlaces {
+    class getAllPlaces {
 
         @Test
         void 성공() {
