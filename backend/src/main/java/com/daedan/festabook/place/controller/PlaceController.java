@@ -50,7 +50,7 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponses getAllPlaces(
+    public PlaceResponses getAllPlaceByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return placeService.getAllPlaceByOrganizationId(organizationId);
