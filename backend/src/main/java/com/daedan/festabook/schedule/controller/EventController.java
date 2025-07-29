@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -65,14 +66,14 @@ public class EventController {
         eventService.deleteEvent(eventId);
     }
 
-    @GetMapping("/{eventDateId}")
+    @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "축제 날짜의 모든 이벤트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
     public EventResponses getAllEventByEventDateId(
-            @PathVariable Long eventDateId
+            @RequestParam Long eventDateId
     ) {
         return eventService.getAllEventByEventDateId(eventDateId);
     }

@@ -228,8 +228,9 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
@@ -263,8 +264,9 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
@@ -294,8 +296,9 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("startTime", equalTo(expectedStartTime))
@@ -329,8 +332,9 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].status", equalTo(status.name()));
