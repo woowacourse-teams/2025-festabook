@@ -9,6 +9,7 @@ import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
+import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -28,7 +29,7 @@ public class PlaceService {
     private final PlaceDetailJpaRepository placeDetailJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
-    
+
     public PlaceResponse createPlace(Long organizationId, PlaceRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
@@ -39,17 +40,39 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public PlaceResponse getPlaceByPlaceId(Long placeId) {
-        PlaceDetail placeDetail = getPlaceDetailById(placeId);
-        Place place = placeDetail.getPlace();
+    public PlaceResponses getAllPlaceByOrganizationId(Long organizationId) {
+        return PlaceResponses.from(
+                placeJpaRepository.findAllByOrganizationId(organizationId).stream()
+                        .map(this::convertPlaceResponse)
+                        .toList()
+        );
+    }
+
+    @Transactional(readOnly = true)
+    public PlaceResponse getPlaceWithDetailByPlaceId(Long placeId) {
+        Place place = getPlaceByPlaceId(placeId);
+        return convertPlaceResponse(place);
+    }
+
+    private PlaceResponse convertPlaceResponse(Place place) {
+        if (!placeDetailJpaRepository.existsByPlace(place)) {
+            return PlaceResponse.from(place);
+        }
+
+        Long placeId = place.getId();
+        PlaceDetail placeDetail = getPlaceDetailByPlaceId(placeId);
         List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId);
         List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
-
-        return PlaceResponse.from(place, placeDetail, placeImages, placeAnnouncements);
+        return PlaceResponse.fromWithDetail(place, placeDetail, placeImages, placeAnnouncements);
     }
 
     // TODO: ExceptionHandler 등록 후 예외 변경
-    private PlaceDetail getPlaceDetailById(Long placeId) {
+    private Place getPlaceByPlaceId(Long placeId) {
+        return placeJpaRepository.findById(placeId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스입니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private PlaceDetail getPlaceDetailByPlaceId(Long placeId) {
         return placeDetailJpaRepository.findByPlaceId(placeId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스 세부 정보입니다.", HttpStatus.NOT_FOUND));
     }

@@ -22,7 +22,7 @@ public record PlaceResponse(
         PlaceAnnouncementResponses placeAnnouncements
 ) {
 
-    public static PlaceResponse from(
+    public static PlaceResponse fromWithDetail(
             Place place,
             PlaceDetail placeDetail,
             List<PlaceImage> images,

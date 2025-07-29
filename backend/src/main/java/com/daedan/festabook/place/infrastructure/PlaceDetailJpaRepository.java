@@ -11,4 +11,6 @@ public interface PlaceDetailJpaRepository extends JpaRepository<PlaceDetail, Lon
     Optional<PlaceDetail> findByPlaceId(Long placeId);
 
     List<PlaceDetail> findAllByPlaceIn(List<Place> places);
+
+    boolean existsByPlace(Place place);
 }

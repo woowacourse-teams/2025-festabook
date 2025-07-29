@@ -107,6 +107,82 @@ class PlaceControllerTest {
     }
 
     @Nested
+    class getALlPlaces {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place mainPlace = PlaceFixture.create(organization);
+            placeJpaRepository.save(mainPlace);
+
+            PlaceDetail mainPlaceDetail = PlaceDetailFixture.create(mainPlace);
+            placeDetailJpaRepository.save(mainPlaceDetail);
+
+            Place etcPlace = PlaceFixture.create(organization);
+            placeJpaRepository.save(etcPlace);
+
+            int expectedSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .get("/places")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
+        }
+
+        @Test
+        void 성공_MainPlace인_경우() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place mainPlace = PlaceFixture.create(organization);
+            placeJpaRepository.save(mainPlace);
+
+            PlaceDetail mainPlaceDetail = PlaceDetailFixture.create(mainPlace);
+            placeDetailJpaRepository.save(mainPlaceDetail);
+
+            int expectedSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .get("/places")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
+        }
+
+        @Test
+        void 성공_EtcPlace인_경우() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place etcPlace = PlaceFixture.create(organization);
+            placeJpaRepository.save(etcPlace);
+
+            int expectedSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .get("/places")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
+        }
+    }
+
+    @Nested
     class getAllPreviewPlaceByOrganizationId {
 
         @Test
@@ -218,7 +294,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getPlaceByPlaceId {
+    class getPlaceWithDetailByPlaceId {
 
         @Test
         void 성공() {
@@ -389,7 +465,7 @@ class PlaceControllerTest {
                     .all()
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("message", equalTo("존재하지 않는 플레이스 세부 정보입니다."));
+                    .body("message", equalTo("존재하지 않는 플레이스입니다."));
         }
     }
 }
