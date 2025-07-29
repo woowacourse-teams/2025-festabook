@@ -7,6 +7,7 @@ sealed interface ScheduleDatesUiState {
 
     data class Success(
         val dates: List<ScheduleDateUiModel>,
+        val initialCurrentDateIndex: Int,
     ) : ScheduleDatesUiState
 
     data class Error(

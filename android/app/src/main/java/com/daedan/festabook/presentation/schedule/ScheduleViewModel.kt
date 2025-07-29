@@ -13,6 +13,7 @@ import com.daedan.festabook.domain.repository.ScheduleRepository
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.toUiModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository,
@@ -68,7 +69,15 @@ class ScheduleViewModel(
             result
                 .onSuccess { scheduleDates ->
                     val scheduleDateUiModels = scheduleDates.map { it.toUiModel() }
-                    _scheduleDatesUiState.value = ScheduleDatesUiState.Success(scheduleDateUiModels)
+                    val today = LocalDate.now()
+
+                    val currentDateIndex =
+                        scheduleDates
+                            .indexOfFirst { !it.date.isBefore(today) }
+                            .let { if (it == INVALID_DATE_INDEX) FIRST_DATE_INDEX else it }
+
+                    _scheduleDatesUiState.value =
+                        ScheduleDatesUiState.Success(scheduleDateUiModels, currentDateIndex)
                 }.onFailure {
                     _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it.message.toString())
                 }
@@ -88,6 +97,8 @@ class ScheduleViewModel(
 
     companion object {
         private const val INVALID_DATE_ID: Long = -1L
+        private const val INVALID_DATE_INDEX: Int = -1
+        private const val FIRST_DATE_INDEX: Int = 0
 
         fun Factory(dateId: Long = INVALID_DATE_ID): ViewModelProvider.Factory =
             viewModelFactory {
