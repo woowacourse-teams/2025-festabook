@@ -44,6 +44,48 @@ public class OrganizationFixture {
     }
 
     public static Organization create(
+            Integer zoom
+    ) {
+        return new Organization(
+                DEFAULT_UNIVERSITY_NAME,
+                DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
+                zoom,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY
+        );
+    }
+
+    public static Organization create(
+            Coordinate centerCoordinate
+    ) {
+        return new Organization(
+                DEFAULT_UNIVERSITY_NAME,
+                DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
+                DEFAULT_ZOOM,
+                centerCoordinate,
+                DEFAULT_POLYGON_HOLE_BOUNDARY
+        );
+    }
+
+    public static Organization create(
+            List<Coordinate> polygonHoleBoundary
+    ) {
+        return new Organization(
+                DEFAULT_UNIVERSITY_NAME,
+                DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                polygonHoleBoundary
+        );
+    }
+
+    public static Organization create(
             Long id
     ) {
         return new Organization(

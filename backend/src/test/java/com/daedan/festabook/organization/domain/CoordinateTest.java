@@ -14,9 +14,6 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class CoordinateTest {
 
-    private final Double DEFAULT_LATITUDE = 37.0;
-    private final Double DEFAULT_LONGITUDE = 127.0;
-
     @Nested
     class validateLatitude {
 
@@ -28,8 +25,8 @@ class CoordinateTest {
 
             // when & then
             assertThatCode(() -> {
-                new Coordinate(min, DEFAULT_LONGITUDE);
-                new Coordinate(max, DEFAULT_LONGITUDE);
+                CoordinateFixture.createWithLatitude(min);
+                CoordinateFixture.createWithLatitude(max);
             })
                     .doesNotThrowAnyException();
         }
@@ -40,7 +37,7 @@ class CoordinateTest {
             Double latitude = null;
 
             // when & then
-            assertThatThrownBy(() -> new Coordinate(latitude, DEFAULT_LONGITUDE))
+            assertThatThrownBy(() -> CoordinateFixture.createWithLatitude(latitude))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("위도는 null일 수 없습니다.");
         }
@@ -51,7 +48,7 @@ class CoordinateTest {
             // given
 
             // when & then
-            assertThatThrownBy(() -> new Coordinate(latitude, DEFAULT_LONGITUDE))
+            assertThatThrownBy(() -> CoordinateFixture.createWithLatitude(latitude))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("위도는 -90.0도 이상 90.0도 이하여야 합니다.");
         }
@@ -68,8 +65,8 @@ class CoordinateTest {
 
             // when & then
             assertThatCode(() -> {
-                new Coordinate(DEFAULT_LATITUDE, min);
-                new Coordinate(DEFAULT_LATITUDE, max);
+                CoordinateFixture.createWithLongitude(min);
+                CoordinateFixture.createWithLongitude(max);
             })
                     .doesNotThrowAnyException();
         }
@@ -80,7 +77,7 @@ class CoordinateTest {
             Double longitude = null;
 
             // when & then
-            assertThatThrownBy(() -> new Coordinate(DEFAULT_LATITUDE, longitude))
+            assertThatThrownBy(() -> CoordinateFixture.createWithLongitude(longitude))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("경도는 null일 수 없습니다.");
         }
@@ -91,7 +88,7 @@ class CoordinateTest {
             // given
 
             // when & then
-            assertThatThrownBy(() -> new Coordinate(DEFAULT_LATITUDE, longitude))
+            assertThatThrownBy(() -> CoordinateFixture.createWithLongitude(longitude))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("경도는 -180.0도 이상 180.0도 이하여야 합니다.");
         }

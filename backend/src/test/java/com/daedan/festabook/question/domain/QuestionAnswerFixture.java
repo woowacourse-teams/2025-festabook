@@ -62,6 +62,28 @@ public class QuestionAnswerFixture {
         );
     }
 
+    public static QuestionAnswer createWithQuestion(
+            String question
+    ) {
+        return create(
+                DEFAULT_ORGANIZATION,
+                question,
+                DEFAULT_ANSWER,
+                DEFAULT_CREATED_AT
+        );
+    }
+
+    public static QuestionAnswer createWithAnswer(
+            String answer
+    ) {
+        return create(
+                DEFAULT_ORGANIZATION,
+                DEFAULT_QUESTION,
+                answer,
+                DEFAULT_CREATED_AT
+        );
+    }
+
     public static QuestionAnswer create() {
         return create(
                 DEFAULT_ORGANIZATION,

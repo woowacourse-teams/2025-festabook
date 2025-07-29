@@ -21,20 +21,20 @@ class DeviceTest {
         @Test
         void 성공() {
             // given
-            String identifier = "device-abc123";
+            String deviceIdentifier = "device-abc123";
 
             // when & then
-            assertThatCode(() -> new Device(identifier, DEFAULT_FCM_TOKEN))
+            assertThatCode(() -> DeviceFixture.createWithDeviceIdentifier(deviceIdentifier))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 예외_디바이스_식별자_null() {
             // given
-            String identifier = null;
+            String deviceIdentifier = null;
 
             // when & then
-            assertThatThrownBy(() -> new Device(identifier, DEFAULT_FCM_TOKEN))
+            assertThatThrownBy(() -> DeviceFixture.createWithDeviceIdentifier(deviceIdentifier))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("디바이스 식별자는 비어 있을 수 없습니다.");
         }
@@ -42,10 +42,10 @@ class DeviceTest {
         @Test
         void 예외_디바이스_식별자_blank() {
             // given
-            String identifier = " ";
+            String deviceIdentifier = " ";
 
             // when & then
-            assertThatThrownBy(() -> new Device(identifier, DEFAULT_FCM_TOKEN))
+            assertThatThrownBy(() -> DeviceFixture.createWithDeviceIdentifier(deviceIdentifier))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("디바이스 식별자는 비어 있을 수 없습니다.");
         }
@@ -57,20 +57,20 @@ class DeviceTest {
         @Test
         void 성공() {
             // given
-            String token = "fcm-token-xyz";
+            String fcmToken = "fcm-token-xyz";
 
             // when & then
-            assertThatCode(() -> new Device(DEFAULT_DEVICE_IDENTIFIER, token))
+            assertThatCode(() -> DeviceFixture.createWithFcmToken(fcmToken))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 예외_FCM_토큰_null() {
             // given
-            String token = null;
+            String fcmToken = null;
 
             // when & then
-            assertThatThrownBy(() -> new Device(DEFAULT_DEVICE_IDENTIFIER, token))
+            assertThatThrownBy(() -> DeviceFixture.createWithFcmToken(fcmToken))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 토큰은 비어 있을 수 없습니다.");
         }
@@ -78,10 +78,10 @@ class DeviceTest {
         @Test
         void 예외_FCM_토큰_blank() {
             // given
-            String token = " ";
+            String fcmToken = " ";
 
             // when & then
-            assertThatThrownBy(() -> new Device(DEFAULT_DEVICE_IDENTIFIER, token))
+            assertThatThrownBy(() -> DeviceFixture.createWithFcmToken(fcmToken))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 토큰은 비어 있을 수 없습니다.");
         }
