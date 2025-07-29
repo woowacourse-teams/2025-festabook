@@ -22,7 +22,7 @@ import org.springframework.http.HttpStatus;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-// TODO: 팀원들 작업 후 University + Festival로 변경
+// TODO: 팀원들 작업 후 Festival로 변경
 public class Organization {
 
     private static final int MAX_NAME_LENGTH = 50;

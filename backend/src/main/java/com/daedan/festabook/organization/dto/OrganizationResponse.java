@@ -5,7 +5,7 @@ import com.daedan.festabook.organization.domain.Organization;
 import java.time.LocalDate;
 import java.util.List;
 
-public record FestivalResponse(
+public record OrganizationResponse(
         Long id,
         String universityName,
         FestivalImageResponses festivalImages,
@@ -14,8 +14,8 @@ public record FestivalResponse(
         LocalDate endDate
 ) {
 
-    public static FestivalResponse from(Organization organization, List<FestivalImage> festivalImages) {
-        return new FestivalResponse(
+    public static OrganizationResponse from(Organization organization, List<FestivalImage> festivalImages) {
+        return new OrganizationResponse(
                 organization.getId(),
                 organization.getUniversityName(),
                 FestivalImageResponses.from(festivalImages),

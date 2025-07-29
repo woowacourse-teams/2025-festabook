@@ -9,8 +9,8 @@ import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.FestivalImageFixture;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.dto.FestivalResponse;
 import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
+import com.daedan.festabook.organization.dto.OrganizationResponse;
 import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
@@ -75,7 +75,7 @@ class OrganizationServiceTest {
     }
 
     @Nested
-    class getFestivalByOrganizationId {
+    class getOrganizationByOrganizationId {
 
         @Test
         void 성공() {
@@ -90,10 +90,10 @@ class OrganizationServiceTest {
             given(festivalImageJpaRepository.findAllByOrganizationId(organizationId))
                     .willReturn(festivalImages);
 
-            FestivalResponse expected = FestivalResponse.from(organization, festivalImages);
+            OrganizationResponse expected = OrganizationResponse.from(organization, festivalImages);
 
             // when
-            FestivalResponse result = organizationService.getFestivalByOrganizationId(organizationId);
+            OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
 
             // then
             assertThat(result).isEqualTo(expected);
@@ -108,7 +108,7 @@ class OrganizationServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> organizationService.getFestivalByOrganizationId(notExistsId))
+            assertThatThrownBy(() -> organizationService.getOrganizationByOrganizationId(notExistsId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("조직이 존재하지 않습니다.");
         }

@@ -100,7 +100,7 @@ class OrganizationControllerTest {
     }
 
     @Nested
-    class getFestivalByOrganizationId {
+    class getOrganizationByOrganizationId {
 
         @Test
         void 성공() {
@@ -120,7 +120,7 @@ class OrganizationControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/organizations/festivals")
+                    .get("/organizations")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))

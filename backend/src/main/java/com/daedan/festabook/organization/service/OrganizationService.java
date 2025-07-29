@@ -3,8 +3,8 @@ package com.daedan.festabook.organization.service;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.dto.FestivalResponse;
 import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
+import com.daedan.festabook.organization.dto.OrganizationResponse;
 import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
@@ -26,11 +26,11 @@ public class OrganizationService {
         return OrganizationGeographyResponse.from(organization);
     }
 
-    public FestivalResponse getFestivalByOrganizationId(Long organizationId) {
+    public OrganizationResponse getOrganizationByOrganizationId(Long organizationId) {
         Organization organization = getOrganizationById(organizationId);
         List<FestivalImage> festivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
 
-        return FestivalResponse.from(organization, festivalImages);
+        return OrganizationResponse.from(organization, festivalImages);
     }
 
     private Organization getOrganizationById(Long organizationId) {
