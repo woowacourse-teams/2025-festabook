@@ -31,7 +31,7 @@ public record PlaceResponse(
         return new PlaceResponse(
                 place.getId(),
                 PlaceImageResponses.from(images),
-                placeDetail.getPlace().getCategory(),
+                place.getCategory(),
                 placeDetail.getTitle(),
                 placeDetail.getStartTime(),
                 placeDetail.getEndTime(),
