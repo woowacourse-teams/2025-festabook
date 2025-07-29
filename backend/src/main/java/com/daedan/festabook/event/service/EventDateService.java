@@ -1,14 +1,14 @@
 package com.daedan.festabook.event.service;
 
-import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +24,7 @@ public class EventDateService {
     private final EventJpaRepository eventJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
 
+    @Transactional
     public EventDateResponse createEventDate(Long organizationId, EventDateRequest request) {
         validateDuplicatedEventDate(organizationId, request.date());
 

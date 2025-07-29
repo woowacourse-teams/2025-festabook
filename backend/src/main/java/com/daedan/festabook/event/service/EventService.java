@@ -1,6 +1,5 @@
 package com.daedan.festabook.event.service;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.event.domain.Event;
 import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.dto.EventRequest;
@@ -8,6 +7,7 @@ import com.daedan.festabook.event.dto.EventResponse;
 import com.daedan.festabook.event.dto.EventResponses;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.time.Clock;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +23,7 @@ public class EventService {
     private final EventDateJpaRepository eventDateJpaRepository;
     private final EventJpaRepository eventJpaRepository;
 
+    @Transactional
     public EventResponse createEvent(EventRequest request) {
         EventDate eventDate = getEventDateById(request.eventDateId());
         Event event = request.toEntity(eventDate);
