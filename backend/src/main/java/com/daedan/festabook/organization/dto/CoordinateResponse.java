@@ -8,6 +8,9 @@ public record CoordinateResponse(
 ) {
 
     public static CoordinateResponse from(Coordinate coordinate) {
+        if (coordinate == null) {
+            return null;
+        }
         return new CoordinateResponse(
                 coordinate.getLatitude(),
                 coordinate.getLongitude()
