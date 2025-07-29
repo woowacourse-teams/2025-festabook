@@ -9,7 +9,6 @@ import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
-import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class EventDateService {
 
-    private final Clock clock;
     private final EventDateJpaRepository eventDateJpaRepository;
     private final EventJpaRepository eventJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
