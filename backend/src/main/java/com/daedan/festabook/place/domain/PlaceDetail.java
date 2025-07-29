@@ -24,7 +24,7 @@ public class PlaceDetail {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Place place;
-    
+
     private String title;
 
     private String description;
@@ -75,22 +75,6 @@ public class PlaceDetail {
                 host,
                 startTime,
                 endTime
-        );
-    }
-
-    public PlaceDetail(
-            Place place,
-            String title
-    ) {
-        this(
-                null,
-                place,
-                title,
-                null,
-                null,
-                null,
-                null,
-                null
         );
     }
 }
