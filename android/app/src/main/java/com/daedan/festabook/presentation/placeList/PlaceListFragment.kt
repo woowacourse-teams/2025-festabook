@@ -7,6 +7,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
@@ -16,13 +17,16 @@ import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
+import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
+import com.daedan.festabook.presentation.placeList.placeMap.getMap
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
+import kotlinx.coroutines.launch
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -41,12 +45,7 @@ class PlaceListFragment :
 
     private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
 
-    private val mapManager by lazy {
-        MapManager(
-            naverMap,
-            binding.initialPadding(),
-        )
-    }
+    private lateinit var mapManager: MapManager
 
     private val mapScrollManager by lazy {
         MapScrollManager(naverMap)
@@ -59,9 +58,11 @@ class PlaceListFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setUpPlaceAdapter()
-        setUpMap()
-        setUpObserver()
+        lifecycleScope.launch {
+            setUpPlaceAdapter()
+            setUpMapManager()
+            setUpObserver()
+        }
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
@@ -71,6 +72,15 @@ class PlaceListFragment :
 
     override fun onBookmarkClicked(place: PlaceUiModel) {
         viewModel.updateBookmark(place)
+    }
+
+    private suspend fun setUpMapManager() {
+        val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
+        naverMap = mapFragment.getMap()
+        binding.lbvCurrentLocation.map = naverMap
+        naverMap.locationSource = locationSource
+        mapManager = MapManager(naverMap, binding.initialPadding())
+        setPlaceListScrollListener()
     }
 
     private fun setUpPlaceAdapter() {
@@ -83,20 +93,21 @@ class PlaceListFragment :
             if (places !is PlaceListUiState.Success) return@observe
             placeAdapter.submitList(places.value)
         }
-    }
 
-    private fun setUpMap() {
-        val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
+        viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
+            if (placeGeographies !is PlaceListUiState.Success) return@observe
+            mapManager.setPlaceLocation(placeGeographies.value)
+        }
+
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
-            mapFragment.getMapAsync { map ->
-                naverMap = map
-                binding.lbvCurrentLocation.map = naverMap
-                naverMap.locationSource = locationSource
-                mapManager.setupMap(initialMapSetting.value)
-                setPlaceListScrollListener()
-            }
+            setUpMap(initialMapSetting)
         }
+    }
+
+    private fun setUpMap(initialMapSetting: PlaceListUiState.Success<InitialMapSettingUiModel>) {
+        mapManager.setupMap(initialMapSetting.value)
+        setPlaceListScrollListener()
     }
 
     private fun setPlaceListScrollListener() {

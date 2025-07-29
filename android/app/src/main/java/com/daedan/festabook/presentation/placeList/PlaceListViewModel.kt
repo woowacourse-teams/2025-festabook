@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.toUiModel
@@ -29,6 +30,9 @@ class PlaceListViewModel(
     private val _initialMapSetting: MutableLiveData<PlaceListUiState<InitialMapSettingUiModel>> =
         MutableLiveData()
     val initialMapSetting: LiveData<PlaceListUiState<InitialMapSettingUiModel>> = _initialMapSetting
+
+    private val _placeGeographies: MutableLiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> = MutableLiveData()
+    val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> = _placeGeographies
 
     init {
         loadAllPlaces()
@@ -55,18 +59,17 @@ class PlaceListViewModel(
 
     fun loadOrganizationGeography() {
         viewModelScope.launch {
-            val organizationGeography = placeListRepository.getOrganizationGeography().getOrNull()
-            val placeGeographies = placeListRepository.getPlaceGeographies().getOrNull()
-
-            if (organizationGeography == null || placeGeographies == null) {
-                return@launch
+            launch {
+                placeListRepository.getOrganizationGeography().onSuccess {
+                    _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
+                }
             }
-            val initialMapSetting = organizationGeography.toUiModel()
-            val placeCoordinates = placeGeographies.map { it.toUiModel() }
-            _initialMapSetting.value =
-                PlaceListUiState.Success(
-                    initialMapSetting.copy(placeCoordinates = placeCoordinates),
-                )
+
+            launch {
+                placeListRepository.getPlaceGeographies().onSuccess {
+                    _placeGeographies.value = PlaceListUiState.Success(it.map { it.toUiModel() })
+                }
+            }
         }
     }
 
