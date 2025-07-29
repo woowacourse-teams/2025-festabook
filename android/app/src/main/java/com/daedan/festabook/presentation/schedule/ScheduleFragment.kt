@@ -58,7 +58,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
                 is ScheduleDatesUiState.Success -> {
                     showSkeleton(isLoading = false)
                     setupScheduleTabLayout(scheduleDatesUiState.initialCurrentDateIndex)
-                    adapter.submitList(scheduleDatesUiState.dates.map { it.id })
+                    adapter.submitList(scheduleDatesUiState.dates)
                 }
 
                 is ScheduleDatesUiState.Error -> {
