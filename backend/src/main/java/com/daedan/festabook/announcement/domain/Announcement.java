@@ -77,4 +77,8 @@ public class Announcement {
         this.title = title;
         this.content = content;
     }
+
+    public void updatePinned(boolean isPinned) {
+        this.isPinned = isPinned;
+    }
 }
