@@ -62,18 +62,6 @@ public class Place {
         );
     }
 
-    public Place(
-            Organization organization,
-            PlaceCategory category
-    ) {
-        this(
-                null,
-                organization,
-                category,
-                null
-        );
-    }
-
     public boolean hasDetail() {
         return category.isServiceLocation();
     }

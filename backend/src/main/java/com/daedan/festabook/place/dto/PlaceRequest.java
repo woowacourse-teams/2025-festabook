@@ -14,7 +14,8 @@ public record PlaceRequest(
     public Place toPlace(Organization organization) {
         return new Place(
                 organization,
-                placeCategory
+                placeCategory,
+                null
         );
     }
 }
