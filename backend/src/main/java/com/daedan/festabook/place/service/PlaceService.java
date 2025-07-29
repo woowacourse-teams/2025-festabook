@@ -28,8 +28,7 @@ public class PlaceService {
     private final PlaceDetailJpaRepository placeDetailJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
-
-    @Transactional
+    
     public PlaceResponse createPlace(Long organizationId, PlaceRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
