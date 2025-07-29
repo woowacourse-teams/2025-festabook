@@ -1,9 +1,13 @@
 package com.daedan.festabook.organization.service;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.dto.FestivalResponse;
 import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
+import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -13,11 +17,24 @@ import org.springframework.stereotype.Service;
 public class OrganizationService {
 
     private final OrganizationJpaRepository organizationJpaRepository;
+    private final FestivalImageJpaRepository festivalImageJpaRepository;
+
 
     public OrganizationGeographyResponse getOrganizationGeographyByOrganizationId(Long organizationId) {
-        Organization organization = organizationJpaRepository.findById(organizationId)
-                .orElseThrow(() -> new BusinessException("조직이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
+        Organization organization = getOrganizationById(organizationId);
 
         return OrganizationGeographyResponse.from(organization);
+    }
+
+    public FestivalResponse getFestivalByOrganizationId(Long organizationId) {
+        Organization organization = getOrganizationById(organizationId);
+        List<FestivalImage> festivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
+
+        return FestivalResponse.from(organization, festivalImages);
+    }
+
+    private Organization getOrganizationById(Long organizationId) {
+        return organizationJpaRepository.findById(organizationId)
+                .orElseThrow(() -> new BusinessException("조직이 존재하지 않습니다.", HttpStatus.NOT_FOUND));
     }
 }

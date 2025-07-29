@@ -1,6 +1,7 @@
 package com.daedan.festabook.organization.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.organization.dto.FestivalResponse;
 import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.service.OrganizationService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,5 +34,17 @@ public class OrganizationController {
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return organizationService.getOrganizationGeographyByOrganizationId(organizationId);
+    }
+
+    @GetMapping("/festivals")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 조직의 축제 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalResponse getFestivalByOrganizationId(
+            @Parameter(hidden = true) @OrganizationId Long organizationId
+    ) {
+        return organizationService.getFestivalByOrganizationId(organizationId);
     }
 }

@@ -11,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -21,6 +22,7 @@ import org.springframework.http.HttpStatus;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+// TODO: 팀원들 작업 후 University + Festival로 변경
 public class Organization {
 
     private static final int MAX_NAME_LENGTH = 50;
@@ -32,7 +34,16 @@ public class Organization {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String universityName;
+
+    @Column(nullable = false)
+    private String festivalName;
+
+    @Column(nullable = false)
+    private LocalDate startDate;
+
+    @Column(nullable = false)
+    private LocalDate endDate;
 
     @Column(nullable = false)
     private Integer zoom;
@@ -50,32 +61,44 @@ public class Organization {
 
     protected Organization(
             Long id,
-            String name,
+            String universityName,
+            String festivalName,
+            LocalDate startDate,
+            LocalDate endDate,
             Integer zoom,
             Coordinate centerCoordinate,
             List<Coordinate> polygonHoleBoundary
     ) {
-        validateName(name);
+        validateName(universityName);
         validateZoom(zoom);
         validateCenterCoordinate(centerCoordinate);
         validatePolygonHoleBoundary(polygonHoleBoundary);
 
         this.id = id;
-        this.name = name;
+        this.universityName = universityName;
+        this.festivalName = festivalName;
+        this.startDate = startDate;
+        this.endDate = endDate;
         this.zoom = zoom;
         this.centerCoordinate = centerCoordinate;
         this.polygonHoleBoundary = polygonHoleBoundary;
     }
 
     public Organization(
-            String name,
+            String universityName,
+            String festivalName,
+            LocalDate startDate,
+            LocalDate endDate,
             Integer zoom,
             Coordinate centerCoordinate,
             List<Coordinate> polygonHoleBoundary
     ) {
         this(
                 null,
-                name,
+                universityName,
+                festivalName,
+                startDate,
+                endDate,
                 zoom,
                 centerCoordinate,
                 polygonHoleBoundary
