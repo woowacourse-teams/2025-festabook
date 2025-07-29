@@ -33,6 +33,14 @@ public class AnnouncementFixture {
     }
 
     public static Announcement create(
+            Long announcementId,
+            boolean isPinned
+    ) {
+        return new Announcement(announcementId, DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_ORGANIZATION,
+                DEFAULT_CREATED_AT);
+    }
+
+    public static Announcement create(
             boolean isPinned,
             LocalDateTime createdAt
     ) {
