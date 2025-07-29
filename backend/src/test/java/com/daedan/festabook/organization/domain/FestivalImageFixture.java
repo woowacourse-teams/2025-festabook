@@ -20,9 +20,20 @@ public class FestivalImageFixture {
         );
     }
 
+    public static FestivalImage create(
+            Organization organization,
+            Integer sequence
+    ) {
+        return new FestivalImage(
+                organization,
+                DEFAULT_IMAGE_URL,
+                sequence
+        );
+    }
+
     public static List<FestivalImage> createList(int size, Organization organization) {
         return IntStream.range(0, size)
-                .mapToObj(i -> create(organization))
+                .mapToObj(i -> FestivalImageFixture.create(organization, i + 1))
                 .collect(Collectors.toList());
     }
 }
