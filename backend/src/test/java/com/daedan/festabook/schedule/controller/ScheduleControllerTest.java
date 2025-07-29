@@ -17,6 +17,7 @@ import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
+import com.daedan.festabook.schedule.dto.EventDateRequestFixture;
 import com.daedan.festabook.schedule.dto.EventRequest;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
@@ -77,7 +78,7 @@ class ScheduleControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            EventDateRequest request = new EventDateRequest(LocalDate.of(2025, 5, 5));
+            EventDateRequest request = EventDateRequestFixture.create();
             int expectedFieldSize = 2;
 
             // when & then
@@ -101,9 +102,16 @@ class ScheduleControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            LocalDate date = LocalDate.of(2025, 5, 5);
-            eventDateJpaRepository.save(EventDateFixture.create(organization, date));
-            EventDateRequest request = new EventDateRequest(date);
+            EventDateRequest request = EventDateRequestFixture.create();
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .body(request)
+                    .when()
+                    .post("/schedules")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value());
 
             // when & then
             RestAssured
