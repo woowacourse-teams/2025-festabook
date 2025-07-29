@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useData } from '../hooks/useData';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 
@@ -15,7 +14,6 @@ function formatDate(dateString) {
 }
 
 const NoticesPage = () => {
-    const { togglePinNotice } = useData();
     const { openModal, showToast } = useModal();
     const [pinned, setPinned] = useState([]);
     const [unpinned, setUnpinned] = useState([]);
@@ -66,9 +64,77 @@ const NoticesPage = () => {
             showToast('공지사항 삭제에 실패했습니다.');
         }
     };
+
+    const handleTogglePin = async (noticeId, currentIsPinned) => {
+        try {
+            const pinnedCount = pinned.length;
+            if (!currentIsPinned && pinnedCount >= 3) {
+                showToast('고정은 최대 3개까지만 가능합니다.');
+                return;
+            }
+            
+            // API 호출 - 변경하려는 값으로 전달
+            const response = await api.patch(`/announcements/${noticeId}/pin`, { 
+                pinned: !currentIsPinned
+            });
+            
+            if (response.status === 204) {
+                // 클라이언트 상태 업데이트
+                if (currentIsPinned) {
+                    // 고정 해제: pinned -> unpinned
+                    const notice = pinned.find(n => n.id === noticeId);
+                    setPinned(prev => prev.filter(n => n.id !== noticeId));
+                    setUnpinned(prev => [{ ...notice, isPinned: false }, ...prev]);
+                } else {
+                    // 고정 등록: unpinned -> pinned  
+                    const notice = unpinned.find(n => n.id === noticeId);
+                    setUnpinned(prev => prev.filter(n => n.id !== noticeId));
+                    setPinned(prev => [...prev, { ...notice, isPinned: true }]);
+                }
+                
+                showToast(currentIsPinned ? '공지사항 고정이 해제되었습니다.' : '공지사항이 고정되었습니다.');
+            }
+        } catch (error) {
+            showToast('고정 상태 변경에 실패했습니다.');
+            console.error('Pin toggle error:', error);
+        }
+    };
     
     return (
         <div>
+            <style>{`
+                /* 고정핀 버튼 스타일 */
+                .pin-button {
+                    cursor: pointer;
+                    border: none;
+                    background: none;
+                    padding: 4px;
+                    border-radius: 4px;
+                }
+                
+                .pin-button:hover {
+                    background-color: #f3f4f6;
+                }
+                
+                .pin-icon { 
+                    color: #d1d5db; 
+                    transition: all 0.2s ease-in-out;
+                    font-size: 16px;
+                }
+                
+                .pin-icon.pinned { 
+                    color: #f59e0b; 
+                    transform: rotate(45deg);
+                }
+                
+                .pin-icon:hover {
+                    color: #9ca3af;
+                }
+                
+                .pin-icon.pinned:hover {
+                    color: #d97706;
+                }
+            `}</style>
             <div className="flex justify-between items-center mb-6"><h2 className="text-3xl font-bold">공지사항</h2><button onClick={() => openModal('notice', { onSave: (data) => handleSave(null, data) })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> 새 공지사항</button></div>
             <p className="text-sm text-gray-500 mb-2">※ 고정은 최대 3개만 가능합니다.</p>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
@@ -88,14 +154,11 @@ const NoticesPage = () => {
                             <React.Fragment key={notice.id}>
                                 <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                                     <td className="p-4 text-center align-top">
-                                        <button onClick={() => {
-                                            const pinnedCount = pinned.length;
-                                            if (!notice.isPinned && pinnedCount >= 3) {
-                                                showToast('고정은 최대 3개까지만 가능합니다.');
-                                                return;
-                                            }
-                                            togglePinNotice(notice.id, showToast);
-                                        }} title="고정 토글">
+                                        <button 
+                                            onClick={() => handleTogglePin(notice.id, notice.isPinned)} 
+                                            title="고정 토글"
+                                            className="pin-button hover:scale-110 transition-transform duration-200"
+                                        >
                                             <i className={`fas fa-thumbtack pin-icon ${notice.isPinned ? 'pinned' : ''}`}></i>
                                         </button>
                                     </td>
@@ -124,14 +187,11 @@ const NoticesPage = () => {
                             <React.Fragment key={notice.id}>
                                 <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                                     <td className="p-4 text-center align-top">
-                                        <button onClick={() => {
-                                            const pinnedCount = pinned.length;
-                                            if (!notice.isPinned && pinnedCount >= 3) {
-                                                showToast('고정은 최대 3개까지만 가능합니다.');
-                                                return;
-                                            }
-                                            togglePinNotice(notice.id, showToast);
-                                        }} title="고정 토글">
+                                        <button 
+                                            onClick={() => handleTogglePin(notice.id, notice.isPinned)} 
+                                            title="고정 토글"
+                                            className="pin-button hover:scale-110 transition-transform duration-200"
+                                        >
                                             <i className={`fas fa-thumbtack pin-icon ${notice.isPinned ? 'pinned' : ''}`}></i>
                                         </button>
                                     </td>
