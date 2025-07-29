@@ -33,7 +33,7 @@ public class PlaceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 organization에 대한 플레이스 생성")
+    @Operation(summary = "특정 조직에 대한 플레이스 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
@@ -46,7 +46,7 @@ public class PlaceController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 organization에 대한 플레이스 전체 조회")
+    @Operation(summary = "특정 조직에 대한 플레이스 전체 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
