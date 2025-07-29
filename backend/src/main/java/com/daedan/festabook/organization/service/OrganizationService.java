@@ -28,7 +28,8 @@ public class OrganizationService {
 
     public OrganizationResponse getOrganizationByOrganizationId(Long organizationId) {
         Organization organization = getOrganizationById(organizationId);
-        List<FestivalImage> festivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
+        List<FestivalImage> festivalImages =
+                festivalImageJpaRepository.findAllByOrganizationIdOrderBySequenceAsc(organizationId);
 
         return OrganizationResponse.from(organization, festivalImages);
     }

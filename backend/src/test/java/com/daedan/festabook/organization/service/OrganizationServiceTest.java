@@ -2,6 +2,7 @@ package com.daedan.festabook.organization.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.global.exception.BusinessException;
@@ -87,7 +88,7 @@ class OrganizationServiceTest {
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
-            given(festivalImageJpaRepository.findAllByOrganizationId(organizationId))
+            given(festivalImageJpaRepository.findAllByOrganizationIdOrderBySequenceAsc(organizationId))
                     .willReturn(festivalImages);
 
             OrganizationResponse expected = OrganizationResponse.from(organization, festivalImages);
@@ -97,6 +98,35 @@ class OrganizationServiceTest {
 
             // then
             assertThat(result).isEqualTo(expected);
+        }
+
+        @Test
+        void 성공_이미지_sequence로_오름차순_정렬() {
+            // given
+            Long organizationId = 1L;
+            Organization organization = OrganizationFixture.create(organizationId);
+
+            FestivalImage festivalImage3 = FestivalImageFixture.create(organization, 3);
+            FestivalImage festivalImage2 = FestivalImageFixture.create(organization, 2);
+            FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
+
+            given(organizationJpaRepository.findById(organizationId))
+                    .willReturn(Optional.of(organization));
+            given(festivalImageJpaRepository.findAllByOrganizationIdOrderBySequenceAsc(organizationId))
+                    .willReturn(List.of(festivalImage1, festivalImage2, festivalImage3));
+
+            // when
+            OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.festivalImages().responses().get(0).sequence())
+                        .isEqualTo(festivalImage1.getSequence());
+                s.assertThat(result.festivalImages().responses().get(1).sequence())
+                        .isEqualTo(festivalImage2.getSequence());
+                s.assertThat(result.festivalImages().responses().get(2).sequence())
+                        .isEqualTo(festivalImage3.getSequence());
+            });
         }
 
         @Test

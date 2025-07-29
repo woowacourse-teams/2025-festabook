@@ -108,8 +108,8 @@ class OrganizationControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            FestivalImage festivalImage1 = FestivalImageFixture.create(organization);
-            FestivalImage festivalImage2 = FestivalImageFixture.create(organization);
+            FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
+            FestivalImage festivalImage2 = FestivalImageFixture.create(organization, 2);
             festivalImageJpaRepository.saveAll(List.of(festivalImage1, festivalImage2));
 
             int festivalImageSize = 2;
@@ -137,6 +137,30 @@ class OrganizationControllerTest {
                     .body("festivalImages[1].id", equalTo(festivalImage2.getId().intValue()))
                     .body("festivalImages[1].imageUrl", equalTo(festivalImage2.getImageUrl()))
                     .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()));
+        }
+
+        @Test
+        void 성공_이미지_오름차순_정렬() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            FestivalImage festivalImage3 = FestivalImageFixture.create(organization, 3);
+            FestivalImage festivalImage2 = FestivalImageFixture.create(organization, 2);
+            FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
+            festivalImageJpaRepository.saveAll(List.of(festivalImage3, festivalImage2, festivalImage1));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/organizations")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
+                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()))
+                    .body("festivalImages[2].sequence", equalTo(festivalImage3.getSequence()));
         }
     }
 }
