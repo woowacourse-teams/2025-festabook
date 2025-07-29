@@ -36,7 +36,7 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public PlaceResponse createEtcPlace(
+    public PlaceResponse createPlace(
             @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody PlaceRequest request
     ) {
