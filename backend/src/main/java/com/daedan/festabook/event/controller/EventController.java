@@ -16,19 +16,18 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/schedules/events")
+@RequestMapping("/event-dates")
 @Tag(name = "행사", description = "행사 관련 API")
 public class EventController {
 
     private final EventService eventService;
 
-    @PostMapping
+    @PostMapping("/events")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "행사 생성")
     @ApiResponses(value = {
@@ -40,7 +39,7 @@ public class EventController {
         eventService.createEvent(request);
     }
 
-    @PatchMapping("/{eventId}")
+    @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "행사 수정")
     @ApiResponses(value = {
@@ -53,7 +52,7 @@ public class EventController {
         eventService.updateEvent(eventId, request);
     }
 
-    @DeleteMapping("/{eventId}")
+    @DeleteMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "행사 삭제")
     @ApiResponses(value = {
@@ -65,14 +64,14 @@ public class EventController {
         eventService.deleteEventByEventId(eventId);
     }
 
-    @GetMapping
+    @GetMapping("{eventDateId}/events")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 행사 날짜의 모든 행사 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
     public EventResponses getAllEventByEventDateId(
-            @RequestParam Long eventDateId
+            @PathVariable Long eventDateId
     ) {
         return eventService.getAllEventByEventDateId(eventDateId);
     }

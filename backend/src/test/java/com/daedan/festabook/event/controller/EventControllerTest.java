@@ -5,9 +5,6 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.BDDMockito.given;
 
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.event.domain.Event;
 import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.domain.EventDateFixture;
@@ -17,6 +14,9 @@ import com.daedan.festabook.event.dto.EventRequest;
 import com.daedan.festabook.event.dto.EventRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -89,7 +89,7 @@ class EventControllerTest {
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .body(request)
                     .when()
-                    .post("/schedules/events")
+                    .post("/event-dates/events")
                     .then()
                     .statusCode(HttpStatus.CREATED.value());
         }
@@ -129,7 +129,7 @@ class EventControllerTest {
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .body(request)
                     .when()
-                    .patch("/schedules/events/{eventId}", eventId)
+                    .patch("/event-dates/events/{eventId}", eventId)
                     .then()
                     .statusCode(HttpStatus.OK.value());
         }
@@ -155,7 +155,7 @@ class EventControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .delete("/schedules/events/{eventId}", event.getId())
+                    .delete("/event-dates/events/{eventId}", event.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
             assertThat(eventJpaRepository.findById(event.getId())).isEmpty();
@@ -174,7 +174,7 @@ class EventControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .delete("/schedules/events/{eventId}", invalidEventId)
+                    .delete("/event-dates/events/{eventId}", invalidEventId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
             assertThat(eventJpaRepository.findById(invalidEventId)).isEmpty();
@@ -209,9 +209,8 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events")
+                    .get("/event-dates/{eventDateId}/events", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
@@ -245,9 +244,8 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events")
+                    .get("/event-dates/{eventDateId}/events", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
@@ -277,9 +275,8 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events")
+                    .get("/event-dates/{eventDateId}/events", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("startTime", equalTo(expectedStartTime))
@@ -313,9 +310,8 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .queryParam("eventDateId", eventDate.getId())
                     .when()
-                    .get("/schedules/events")
+                    .get("/event-dates/{eventDateId}/events", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].status", equalTo(status.name()));
