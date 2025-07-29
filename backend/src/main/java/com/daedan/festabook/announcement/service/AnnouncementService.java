@@ -69,8 +69,12 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public void updateAnnouncementPin(Long announcementId, AnnouncementPinUpdateRequest request) {
+    public void updateAnnouncementPin(Long announcementId, Long organizationId, AnnouncementPinUpdateRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
+        if (announcement.isUnpinned() && request.pinned()) {
+            validatePinnedLimit(organizationId);
+        }
+
         announcement.updatePinned(request.pinned());
     }
 

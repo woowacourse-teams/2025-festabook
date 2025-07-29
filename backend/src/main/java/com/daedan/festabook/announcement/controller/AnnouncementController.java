@@ -77,9 +77,10 @@ public class AnnouncementController {
     })
     public void updateAnnouncementPin(
             @PathVariable Long announcementId,
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody AnnouncementPinUpdateRequest request
     ) {
-        announcementService.updateAnnouncementPin(announcementId, request);
+        announcementService.updateAnnouncementPin(announcementId, organizationId, request);
     }
 
     @DeleteMapping("/{announcementId}")
