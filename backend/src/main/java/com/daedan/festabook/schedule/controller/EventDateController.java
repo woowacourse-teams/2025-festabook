@@ -56,7 +56,7 @@ public class EventDateController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "축제의 모든 축제 날짜 조회")
+    @Operation(summary = "특정 조직의 모든 축제 날짜 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
