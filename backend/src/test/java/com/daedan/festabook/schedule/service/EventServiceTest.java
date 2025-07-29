@@ -8,17 +8,11 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.schedule.domain.Event;
 import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
-import com.daedan.festabook.schedule.dto.EventDateRequest;
-import com.daedan.festabook.schedule.dto.EventDateResponse;
-import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.dto.EventRequest;
 import com.daedan.festabook.schedule.dto.EventResponse;
 import com.daedan.festabook.schedule.dto.EventResponses;
@@ -44,10 +38,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class ScheduleServiceTest {
+class EventServiceTest {
 
     private static final LocalDateTime FIXED_CLOCK_DATETIME = LocalDateTime.of(2025, 5, 5, 16, 0, 0);
-    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+
+    @Mock
+    private Clock clock;
 
     @Mock
     private EventDateJpaRepository eventDateJpaRepository;
@@ -55,87 +51,8 @@ class ScheduleServiceTest {
     @Mock
     private EventJpaRepository eventJpaRepository;
 
-    @Mock
-    private OrganizationJpaRepository organizationJpaRepository;
-
-    @Mock
-    private Clock clock;
-
     @InjectMocks
-    private ScheduleService scheduleService;
-
-    @Nested
-    class createEventDate {
-
-        @Test
-        void 성공() {
-            // given
-            EventDateRequest request = new EventDateRequest(LocalDate.of(2025, 7, 18));
-            EventDate eventDate = EventDateFixture.create(request.date());
-            given(eventDateJpaRepository.save(any()))
-                    .willReturn(eventDate);
-
-            Organization organization = OrganizationFixture.create(DEFAULT_ORGANIZATION_ID);
-            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(Optional.of(organization));
-
-            // when
-            EventDateResponse result = scheduleService.createEventDate(DEFAULT_ORGANIZATION_ID, request);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(eventDate.getId());
-                s.assertThat(result.date()).isEqualTo(eventDate.getDate());
-            });
-        }
-
-        @Test
-        void 예외_이미_존재하는_일정_날짜() {
-            // given
-            LocalDate date = LocalDate.of(2025, 7, 18);
-            EventDateRequest request = new EventDateRequest(date);
-            given(eventDateJpaRepository.existsByOrganizationIdAndDate(DEFAULT_ORGANIZATION_ID, date))
-                    .willReturn(true);
-
-            // when & then
-            assertThatThrownBy(() -> scheduleService.createEventDate(DEFAULT_ORGANIZATION_ID, request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("이미 존재하는 일정 날짜입니다.");
-        }
-
-        @Test
-        void 예외_존재하지_않는_조직() {
-            // given
-            LocalDate date = LocalDate.of(2025, 7, 18);
-            EventDateRequest request = new EventDateRequest(date);
-            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> scheduleService.createEventDate(DEFAULT_ORGANIZATION_ID, request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 조직입니다.");
-        }
-    }
-
-    @Nested
-    class deleteEventDate {
-
-        @Test
-        void 성공() {
-            // given
-            Long eventDateId = 1L;
-
-            // when
-            scheduleService.deleteEventDate(eventDateId);
-
-            // then
-            then(eventDateJpaRepository).should()
-                    .deleteById(eventDateId);
-            then(eventJpaRepository).should()
-                    .deleteAllByEventDateId(eventDateId);
-        }
-    }
+    private EventService eventService;
 
     @Nested
     class createEvent {
@@ -169,7 +86,7 @@ class ScheduleServiceTest {
                     .willReturn(event);
 
             // when
-            EventResponse result = scheduleService.createEvent(request);
+            EventResponse result = eventService.createEvent(request);
 
             // then
             assertSoftly(s -> {
@@ -195,7 +112,7 @@ class ScheduleServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> scheduleService.createEvent(request))
+            assertThatThrownBy(() -> eventService.createEvent(request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 일정 날짜입니다.");
         }
@@ -235,7 +152,7 @@ class ScheduleServiceTest {
             );
 
             // when
-            EventResponse result = scheduleService.updateEvent(eventId, eventRequest);
+            EventResponse result = eventService.updateEvent(eventId, eventRequest);
 
             // then
             assertSoftly(s -> {
@@ -262,7 +179,7 @@ class ScheduleServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> scheduleService.updateEvent(eventId, request))
+            assertThatThrownBy(() -> eventService.updateEvent(eventId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 일정입니다.");
         }
@@ -277,63 +194,11 @@ class ScheduleServiceTest {
             Long eventId = 1L;
 
             // when
-            scheduleService.deleteEvent(eventId);
+            eventService.deleteEvent(eventId);
 
             // then
             then(eventJpaRepository).should()
                     .deleteById(eventId);
-        }
-    }
-
-    @Nested
-    class getAllEventDateByOrganizationId {
-
-        @Test
-        void 성공() {
-            // given
-            EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
-            EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
-
-            List<EventDate> eventDates = List.of(eventDate1, eventDate2);
-
-            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(eventDates);
-
-            LocalDate expected = LocalDate.of(2025, 10, 26);
-
-            // when
-            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.responses()).hasSize(2);
-                s.assertThat(result.responses().getFirst().date()).isEqualTo(expected);
-            });
-        }
-
-        @Test
-        void 성공_날짜_오름차순_정렬() {
-            // given
-            EventDate eventDate1 = EventDateFixture.create(LocalDate.of(2025, 10, 27));
-            EventDate eventDate2 = EventDateFixture.create(LocalDate.of(2025, 10, 26));
-            EventDate eventDate3 = EventDateFixture.create(LocalDate.of(2025, 10, 25));
-
-            List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3);
-
-            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(eventDates);
-
-            // when
-            EventDateResponses result = scheduleService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
-
-            // then
-            assertThat(result.responses())
-                    .extracting(EventDateResponse::date)
-                    .containsExactly(
-                            eventDate3.getDate(),
-                            eventDate2.getDate(),
-                            eventDate1.getDate()
-                    );
         }
     }
 
@@ -358,7 +223,7 @@ class ScheduleServiceTest {
                     .willReturn(List.of(event));
 
             // when
-            EventResponses result = scheduleService.getAllEventByEventDateId(eventDateId);
+            EventResponses result = eventService.getAllEventByEventDateId(eventDateId);
 
             // then
             assertSoftly(s -> {
@@ -389,7 +254,7 @@ class ScheduleServiceTest {
                     .willReturn(List.of(event));
 
             // when
-            EventResponses result = scheduleService.getAllEventByEventDateId(eventDateId);
+            EventResponses result = eventService.getAllEventByEventDateId(eventDateId);
 
             // then
             assertThat(result.responses().getFirst().status()).isEqualTo(expected);

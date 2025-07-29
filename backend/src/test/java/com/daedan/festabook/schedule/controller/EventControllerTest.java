@@ -1,8 +1,6 @@
 package com.daedan.festabook.schedule.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -16,8 +14,6 @@ import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
-import com.daedan.festabook.schedule.dto.EventDateRequest;
-import com.daedan.festabook.schedule.dto.EventDateRequestFixture;
 import com.daedan.festabook.schedule.dto.EventRequest;
 import com.daedan.festabook.schedule.dto.EventRequestFixture;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
@@ -46,18 +42,18 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class ScheduleControllerTest {
+class EventControllerTest {
 
     private static final String ORGANIZATION_HEADER_NAME = "organization";
-
-    @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
 
     @Autowired
     private EventDateJpaRepository eventDateJpaRepository;
 
     @Autowired
     private EventJpaRepository eventJpaRepository;
+
+    @Autowired
+    private OrganizationJpaRepository organizationJpaRepository;
 
     @MockitoBean
     private Clock clock;
@@ -68,116 +64,6 @@ class ScheduleControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
-    }
-
-    @Nested
-    class createEventDate {
-
-        @Test
-        void 성공() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            EventDateRequest request = EventDateRequestFixture.create();
-            int expectedFieldSize = 2;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .body(request)
-                    .when()
-                    .post("/schedules")
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
-                    .body("date", equalTo(request.date().toString()));
-        }
-
-        @Test
-        void 예외_이미_존재하는_일정_날짜() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            EventDateRequest request = EventDateRequestFixture.create();
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .body(request)
-                    .when()
-                    .post("/schedules")
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value());
-
-            // when & then
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .body(request)
-                    .when()
-                    .post("/schedules")
-                    .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("message", equalTo("이미 존재하는 일정 날짜입니다."));
-        }
-    }
-
-    @Nested
-    class deleteEventDate {
-
-        @Test
-        void 성공() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            EventDate eventDate = EventDateFixture.create(organization);
-            eventDateJpaRepository.save(eventDate);
-
-            List<Event> events = EventFixture.createList(3, eventDate);
-            eventJpaRepository.saveAll(events);
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .delete("/schedules/{eventDateId}", eventDate.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-            assertSoftly(s -> {
-                s.assertThat(eventDateJpaRepository.findById(eventDate.getId())).isEmpty();
-                s.assertThat(eventJpaRepository.findAllByEventDateId(eventDate.getId())).isEmpty();
-            });
-        }
-
-        @Test
-        void 성공_존재하지_않는_일정_날짜_ID() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            Long invalidEventDateId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .delete("/schedules/{eventDateId}", invalidEventDateId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-            assertSoftly(s -> {
-                s.assertThat(eventDateJpaRepository.findById(invalidEventDateId)).isEmpty();
-                s.assertThat(eventJpaRepository.findAllByEventDateId(invalidEventDateId)).isEmpty();
-            });
-        }
     }
 
     @Nested
@@ -315,92 +201,6 @@ class ScheduleControllerTest {
     }
 
     @Nested
-    class getAllEventDateByOrganizationId {
-
-        @Test
-        void 성공() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            EventDate eventDate = EventDateFixture.create(organization);
-            eventDateJpaRepository.save(eventDate);
-
-            int expectedSize = 1;
-            int expectedFieldSize = 2;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/schedules")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(eventDate.getId().intValue()))
-                    .body("[0].date", equalTo(eventDate.getDate().toString()));
-        }
-
-        @Test
-        void 성공_조직_ID_기반() {
-            // given
-            Organization organization = OrganizationFixture.create("우리 학교");
-            Organization otherOrganization = OrganizationFixture.create("다른 학교");
-            organizationJpaRepository.saveAll(List.of(organization, otherOrganization));
-
-            int expectedSize = 4;
-            List<EventDate> eventDates = EventDateFixture.createList(expectedSize, organization);
-            List<EventDate> otherEventDates = EventDateFixture.createList(5, otherOrganization);
-            eventDateJpaRepository.saveAll(eventDates);
-            eventDateJpaRepository.saveAll(otherEventDates);
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/schedules")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize));
-        }
-
-        @Test
-        void 성공_날짜_오름차순() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
-            List<LocalDate> dates = List.of(
-                    LocalDate.of(2025, 7, 20),
-                    LocalDate.of(2025, 7, 18),
-                    LocalDate.of(2025, 7, 22),
-                    LocalDate.of(2025, 7, 19)
-            );
-
-            List<EventDate> eventDates = EventDateFixture.createList(dates, organization);
-            eventDateJpaRepository.saveAll(eventDates);
-
-            List<String> expectedSortedDates = dates.stream()
-                    .sorted()
-                    .map(LocalDate::toString)
-                    .toList();
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .when()
-                    .get("/schedules")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("date", contains(expectedSortedDates.toArray()));
-        }
-    }
-
-    @Nested
     class getAllEventByEventDateId {
 
         @Test
@@ -429,7 +229,7 @@ class ScheduleControllerTest {
             RestAssured
                     .given()
                     .when()
-                    .get("/schedules/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
@@ -464,7 +264,7 @@ class ScheduleControllerTest {
             RestAssured
                     .given()
                     .when()
-                    .get("/schedules/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
@@ -495,7 +295,7 @@ class ScheduleControllerTest {
             RestAssured
                     .given()
                     .when()
-                    .get("/schedules/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("startTime", equalTo(expectedStartTime))
@@ -530,7 +330,7 @@ class ScheduleControllerTest {
             RestAssured
                     .given()
                     .when()
-                    .get("/schedules/{eventDateId}", eventDate.getId())
+                    .get("/schedules/events/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].status", equalTo(status.name()));
