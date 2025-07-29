@@ -1,16 +1,41 @@
-import React, { useState } from 'react';
-import { useData } from '../hooks/useData';
+import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../constants/categories';
+import api from '../utils/api';
 
 const BoothDetails = ({ booth, openModal, handleSave, showToast, updateBooth }) => {
+
+    const defaultBooth = (booth) => {
+        return {
+            id: booth.id,
+            category: booth.category,
+            placeImages: booth.placeImages,
+            placeAnnouncements: booth.placeAnnouncements,
+
+            title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
+            description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
+            startTime: getDefaultValueIfNull('00:00', booth.startTime),
+            endTime: getDefaultValueIfNull('00:00', booth.endTime),
+            location: getDefaultValueIfNull('미지정', booth.location),
+            host: getDefaultValueIfNull('미지정', booth.host),
+        }
+    }
+
+    const getDefaultValueIfNull = (defaultValue, nullableValue) => {
+        return nullableValue === null ? defaultValue : nullableValue;
+    }
+
+    const newBooth = defaultBooth(booth);
+    console.log(newBooth);
+    updateBooth(newBooth.id, newBooth);
+
     return (
         <div className="p-6 bg-gray-50">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
                     <h4 className="font-semibold text-lg mb-2">상세 정보</h4>
                     <p className="text-gray-700 whitespace-pre-wrap mb-4">{booth.description}</p>
-                     <div className="text-sm text-gray-600 space-y-1">
+                    <div className="text-sm text-gray-600 space-y-1">
                         <p><i className="fas fa-map-marker-alt w-4 mr-2"></i>위치: {booth.location}</p>
                         <p><i className="fas fa-user-friends w-4 mr-2"></i>운영 주체: {booth.host}</p>
                         <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {booth.startTime} - {booth.endTime}</p>
@@ -23,17 +48,17 @@ const BoothDetails = ({ booth, openModal, handleSave, showToast, updateBooth }) 
                     ) : <p className="text-sm text-gray-500">공지사항 없음</p>}
                 </div>
                 <div>
-                     <h4 className="font-semibold text-lg mb-2">사진</h4>
-                     <div className="grid grid-cols-2 gap-2 mb-10">
+                    <h4 className="font-semibold text-lg mb-2">사진</h4>
+                    <div className="grid grid-cols-2 gap-2 mb-10">
                         {booth.images && booth.images.length > 0 ? booth.images.map((img, index) => (
                             <div key={index} className="relative">
-                                <img src={img} alt={`${booth.title} ${index+1}`} className="w-full h-24 object-cover rounded-md"/>
-                                 {index === booth.mainImageIndex && <span className="main-image-indicator">대표</span>}
+                                <img src={img} alt={`${booth.title} ${index + 1}`} className="w-full h-24 object-cover rounded-md" />
+                                {index === booth.mainImageIndex && <span className="main-image-indicator">대표</span>}
                             </div>
                         )) : (
                             <p className="text-sm text-gray-500">사진 없음</p>
                         )}
-                     </div>
+                    </div>
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
@@ -55,52 +80,88 @@ const BoothDetails = ({ booth, openModal, handleSave, showToast, updateBooth }) 
 };
 
 const BoothsPage = () => {
-    const { booths, addBooth, updateBooth } = useData();
     const { openModal, showToast } = useModal();
+    const [booths, setBooths] = useState([]);
     const [expandedIds, setExpandedIds] = useState([]);
+    const [loading, setLoading] = useState(false);
+
+    // defaultBooth 메서드 (유저가 만든 것 사용)
+    const getDefaultValueIfNull = (defaultValue, nullableValue) => nullableValue === null ? defaultValue : nullableValue;
+    const defaultBooth = (booth) => ({
+        id: booth.id,
+        category: booth.category,
+        placeImages: booth.placeImages,
+        placeAnnouncements: booth.placeAnnouncements,
+        title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
+        description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
+        startTime: getDefaultValueIfNull('00:00', booth.startTime),
+        endTime: getDefaultValueIfNull('00:00', booth.endTime),
+        location: getDefaultValueIfNull('미지정', booth.location),
+        host: getDefaultValueIfNull('미지정', booth.host),
+    });
+
+    // 1. Booth 목록 불러오기
+    useEffect(() => {
+        setLoading(true);
+        api.get('http://festabook.woowacourse.com/places')
+            .then(res => {
+                setBooths(res.data.map(defaultBooth));
+            })
+            .catch(() => showToast('플레이스 목록을 불러오지 못했습니다.'))
+            .finally(() => setLoading(false));
+    }, []);
 
     const toggleExpand = id => {
-        setExpandedIds(prev => 
-            prev.includes(id) 
+        setExpandedIds(prev =>
+            prev.includes(id)
                 ? prev.filter(expandedId => expandedId !== id)
                 : [...prev, id]
         );
     };
-    
-    const handleSave = (data) => {
-        if (!data.title || !data.category) { showToast('플레이스명과 카테고리는 필수 항목입니다.'); return; }
-        if (data.id) {
-            updateBooth(data.id, data);
-            showToast('플레이스 정보가 수정되었습니다.');
-        } else {
-            const newBoothData = {
-                title: data.title,
-                category: data.category,
-                description: '상세 정보가 아직 없습니다.',
-                images: [],
-                mainImageIndex: -1,
-                location: '미지정',
-                host: '미지정',
-                startTime: '00:00',
-                endTime: '00:00',
-                notices: [],
-                editKey: `key${Date.now()}`
-            };
-            addBooth(newBoothData);
+
+    // 2. Booth 생성
+    const handleCreate = async (data) => {
+        if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
+        try {
+            setLoading(true);
+            const res = await api.post('http://festabook.woowacourse.com/places', { placeCategory: data.category });
+            // 응답이 배열이므로, 새로 받은 booth도 defaultBooth 적용
+            const newBooth = defaultBooth(res.data[0]);
+            setBooths(prev => [newBooth, ...prev]);
             showToast('새 플레이스가 추가되었습니다.');
+        } catch (e) {
+            showToast('플레이스 생성에 실패했습니다.');
+        } finally {
+            setLoading(false);
         }
+    };
+
+    // 기존 handleSave는 수정만 담당
+    const handleSave = (data) => {
+        if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
+        // TODO: 수정 API 연동 필요 (현재는 로컬 상태만 갱신)
+        setBooths(prev => prev.map(b => b.id === data.id ? { ...b, ...data } : b));
+        showToast('플레이스 정보가 수정되었습니다.');
     };
 
     return (
         <div>
-            <div className="flex justify-between items-center mb-6"><h2 className="text-3xl font-bold">플레이스</h2><button onClick={() => openModal('booth', { onSave: handleSave })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> 새 플레이스 추가</button></div>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold">플레이스</h2>
+                <button onClick={() => openModal('booth', { onSave: handleCreate })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center">
+                    <i className="fas fa-plus mr-2"></i> 새 플레이스 추가
+                </button>
+            </div>
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                {loading ? (
+                    <div className="p-8 text-center text-gray-500">로딩 중...</div>
+                ) : (
                 <table className="min-w-full w-full">
                     <thead className="table-header">
                         <tr>
                             <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스명</th>
                             <th className="p-4 text-center font-semibold min-w-[100px] w-1/6">카테고리</th>
-                            <th className="p-4 text-center font-semibold min-w-[180px] w-1/4">관리</th>
+                            <th className="p-4 text-right font-semibold min-w-[180px] w-1/4">관리</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -127,12 +188,12 @@ const BoothsPage = () => {
                                     <td colSpan="3" className="p-0">
                                         <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
                                             {expandedIds.includes(booth.id) && (
-                                                <BoothDetails 
-                                                    booth={booth} 
+                                                <BoothDetails
+                                                    booth={booth}
                                                     openModal={openModal}
                                                     handleSave={handleSave}
                                                     showToast={showToast}
-                                                    updateBooth={updateBooth}
+                                                    updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
                                                 />
                                             )}
                                         </div>
@@ -142,6 +203,7 @@ const BoothsPage = () => {
                         ))}
                     </tbody>
                 </table>
+                )}
             </div>
         </div>
     );
