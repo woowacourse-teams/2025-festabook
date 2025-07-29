@@ -22,16 +22,4 @@ public class PlaceDetailFixture {
                 DEFAULT_END_TIME
         );
     }
-
-    public static PlaceDetail createEmpty(Place place, String title) {
-        return new PlaceDetail(
-                place,
-                title,
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-    }
 }
