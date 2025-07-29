@@ -3,12 +3,10 @@ package com.daedan.festabook.schedule.service;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
-import com.daedan.festabook.schedule.domain.Event;
 import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
 import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
-import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
 import java.time.Clock;
@@ -51,14 +49,6 @@ public class EventDateService {
                 .sorted()
                 .toList();
         return EventDateResponses.from(eventDates);
-    }
-
-    @Transactional(readOnly = true)
-    public EventResponses getAllEventByEventDateId(Long eventDateId) {
-        List<Event> events = eventJpaRepository.findAllByEventDateId(eventDateId).stream()
-                .sorted()
-                .toList();
-        return EventResponses.from(events, clock);
     }
 
     private Organization getOrganizationById(Long organizationId) {
