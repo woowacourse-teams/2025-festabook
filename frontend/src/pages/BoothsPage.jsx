@@ -25,9 +25,28 @@ const BoothDetails = ({ booth, openModal, handleSave, showToast, updateBooth }) 
         return nullableValue === null ? defaultValue : nullableValue;
     }
 
-    const newBooth = defaultBooth(booth);
-    console.log(newBooth);
-    updateBooth(newBooth.id, newBooth);
+    React.useEffect(() => {
+        if (
+            booth.title === null ||
+            booth.description === null ||
+            booth.startTime === null ||
+            booth.endTime === null ||
+            booth.location === null ||
+            booth.host === null
+        ) {
+            const newBooth = defaultBooth(booth);
+            updateBooth(newBooth.id, newBooth);
+        }
+    }, [
+        booth.id,
+        booth.title,
+        booth.description,
+        booth.startTime,
+        booth.endTime,
+        booth.location,
+        booth.host,
+        updateBooth
+    ]);
 
     return (
         <div className="p-6 bg-gray-50">
@@ -92,7 +111,10 @@ const BoothsPage = () => {
         category: booth.category,
         placeImages: booth.placeImages,
         placeAnnouncements: booth.placeAnnouncements,
-        title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
+        // 흡연구역, 쓰레기통은 title을 category명으로 세팅
+        title: ['SMOKING', 'TRASH_CAN'].includes(booth.category)
+            ? placeCategories[booth.category]
+            : getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
         description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
         startTime: getDefaultValueIfNull('00:00', booth.startTime),
         endTime: getDefaultValueIfNull('00:00', booth.endTime),
@@ -103,7 +125,7 @@ const BoothsPage = () => {
     // 1. Booth 목록 불러오기
     useEffect(() => {
         setLoading(true);
-        api.get('http://festabook.woowacourse.com/places')
+        api.get('/places')
             .then(res => {
                 setBooths(res.data.map(defaultBooth));
             })
@@ -124,11 +146,15 @@ const BoothsPage = () => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
         try {
             setLoading(true);
-            const res = await api.post('http://festabook.woowacourse.com/places', { placeCategory: data.category });
-            // 응답이 배열이므로, 새로 받은 booth도 defaultBooth 적용
-            const newBooth = defaultBooth(res.data[0]);
-            setBooths(prev => [newBooth, ...prev]);
-            showToast('새 플레이스가 추가되었습니다.');
+            const res = await api.post('/places', { placeCategory: data.category });
+            // 201 응답이면 성공 처리, 응답 구조 반영
+            if (res.status === 201 && res.data) {
+                const newBooth = defaultBooth(res.data);
+                setBooths(prev => [newBooth, ...prev]);
+                showToast('새 플레이스가 추가되었습니다.');
+            } else {
+                showToast('플레이스 생성에 실패했습니다.');
+            }
         } catch (e) {
             showToast('플레이스 생성에 실패했습니다.');
         } finally {
