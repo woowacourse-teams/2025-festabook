@@ -18,8 +18,8 @@ import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlaceREquestFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
+import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -77,7 +77,7 @@ class PlaceControllerTest {
             organizationJpaRepository.save(organization);
 
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceREquestFixture.create(expectedPlaceCategory);
+            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
 
             int expectedFieldSize = 10;
 

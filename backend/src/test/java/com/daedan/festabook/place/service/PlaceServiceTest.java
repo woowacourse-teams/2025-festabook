@@ -20,8 +20,8 @@ import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlaceREquestFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
+import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
@@ -69,7 +69,7 @@ class PlaceServiceTest {
             Long organizationId = 1L;
             Long expectedPlaceId = 1L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceREquestFixture.create(expectedPlaceCategory);
+            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
 
             Organization organization = OrganizationFixture.create(organizationId);
             Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, organization, expectedPlaceCategory);
@@ -104,7 +104,7 @@ class PlaceServiceTest {
             // given
             Long organizationId = 0L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceREquestFixture.create(expectedPlaceCategory);
+            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.empty());
