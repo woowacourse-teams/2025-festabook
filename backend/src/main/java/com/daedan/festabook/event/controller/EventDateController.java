@@ -1,9 +1,9 @@
 package com.daedan.festabook.event.controller;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateResponses;
 import com.daedan.festabook.event.service.EventDateService;
+import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/schedules/event-dates")
+@RequestMapping("/event-dates")
 @Tag(name = "행사 날짜", description = "행사 날짜 관련 API")
 public class EventDateController {
 

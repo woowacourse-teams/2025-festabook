@@ -5,9 +5,6 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.event.domain.Event;
 import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.domain.EventDateFixture;
@@ -16,6 +13,9 @@ import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -77,7 +77,7 @@ class EventDateControllerTest {
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .body(request)
                     .when()
-                    .post("/schedules/event-dates")
+                    .post("/event-dates")
                     .then()
                     .statusCode(HttpStatus.CREATED.value());
         }
@@ -95,7 +95,7 @@ class EventDateControllerTest {
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .body(request)
                     .when()
-                    .post("/schedules/event-dates")
+                    .post("/event-dates")
                     .then()
                     .statusCode(HttpStatus.CREATED.value());
 
@@ -106,7 +106,7 @@ class EventDateControllerTest {
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .body(request)
                     .when()
-                    .post("/schedules/event-dates")
+                    .post("/event-dates")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("이미 존재하는 일정 날짜입니다."));
@@ -133,7 +133,7 @@ class EventDateControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .delete("/schedules/event-dates/{eventDateId}", eventDate.getId())
+                    .delete("/event-dates/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
             assertSoftly(s -> {
@@ -155,7 +155,7 @@ class EventDateControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .delete("/schedules/event-dates/{eventDateId}", invalidEventDateId)
+                    .delete("/event-dates/{eventDateId}", invalidEventDateId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
             assertSoftly(s -> {
@@ -185,7 +185,7 @@ class EventDateControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/schedules/event-dates")
+                    .get("/event-dates")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
@@ -212,7 +212,7 @@ class EventDateControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/schedules/event-dates")
+                    .get("/event-dates")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
@@ -244,7 +244,7 @@ class EventDateControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .when()
-                    .get("/schedules/event-dates")
+                    .get("/event-dates")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("date", contains(expectedSortedDates.toArray()));
