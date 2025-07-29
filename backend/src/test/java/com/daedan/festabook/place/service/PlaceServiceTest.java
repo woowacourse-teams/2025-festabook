@@ -84,7 +84,7 @@ class PlaceServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(1L);
+                s.assertThat(result.id()).isEqualTo(expectedPlaceId);
                 s.assertThat(result.category()).isEqualTo(expectedPlaceCategory);
 
                 s.assertThat(result.placeImages().responses()).isEmpty();
@@ -102,19 +102,20 @@ class PlaceServiceTest {
         @Test
         void 예외_존재하지_않는_조직() {
             // given
-            Long organizationId = 0L;
-            PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
+            Long invalidOrganizationId = 0L;
 
-            given(organizationJpaRepository.findById(organizationId))
+            PlaceRequest placeRequest = PlaceRequestFixture.create();
+
+            given(organizationJpaRepository.findById(invalidOrganizationId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeService.createPlace(organizationId, placeRequest))
+            assertThatThrownBy(() -> placeService.createPlace(invalidOrganizationId, placeRequest))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
 
-            then(placeJpaRepository).should(never()).save(any());
+            then(placeJpaRepository).should(never())
+                    .save(any());
         }
     }
 

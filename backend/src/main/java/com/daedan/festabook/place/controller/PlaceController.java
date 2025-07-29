@@ -32,7 +32,7 @@ public class PlaceController {
 
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "etc 플레이스 생성")
+    @Operation(summary = "플레이스 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
