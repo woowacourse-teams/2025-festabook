@@ -1,6 +1,5 @@
 package com.daedan.festabook.place.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -25,8 +24,7 @@ public class PlaceDetail {
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(nullable = false)
     private Place place;
-
-    @Column(nullable = false)
+    
     private String title;
 
     private String description;
