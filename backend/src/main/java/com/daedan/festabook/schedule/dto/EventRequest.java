@@ -19,7 +19,7 @@ public record EventRequest(
         @Schema(description = "간략한 이벤트 진행 위치", example = "알고리즘 밸리 정문")
         String location,
 
-        @Schema(description = "축제 날짜 ID", example = "1")
+        @Schema(description = "행사 날짜 ID", example = "1")
         Long eventDateId
 ) {
 
