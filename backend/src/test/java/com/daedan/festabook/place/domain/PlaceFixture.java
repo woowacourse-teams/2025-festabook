@@ -53,6 +53,18 @@ public class PlaceFixture {
     }
 
     public static Place create(
+            Organization organization,
+            PlaceCategory category,
+            Coordinate coordinate
+    ) {
+        return new Place(
+                organization,
+                category,
+                coordinate
+        );
+    }
+
+    public static Place create(
             Long id,
             Organization organization,
             Double latitude,

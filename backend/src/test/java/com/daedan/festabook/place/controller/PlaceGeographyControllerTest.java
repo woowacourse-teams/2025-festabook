@@ -8,6 +8,7 @@ import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
@@ -115,6 +116,26 @@ class PlaceGeographyControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
+        }
+
+        @Test
+        void 성공_Coordinate가_없을_경우_null() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, null);
+            placeJpaRepository.saveAll(List.of(place));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header("organization", organization.getId())
+                    .when()
+                    .get("/places/geographies")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].markerCoordinate", equalTo(null));
         }
     }
 
