@@ -1,7 +1,6 @@
 package com.daedan.festabook.schedule.controller;
 
 import com.daedan.festabook.schedule.dto.EventRequest;
-import com.daedan.festabook.schedule.dto.EventResponse;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,10 +34,10 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
-    public EventResponse createEvent(
+    public void createEvent(
             @RequestBody EventRequest request
     ) {
-        return eventService.createEvent(request);
+        eventService.createEvent(request);
     }
 
     @PatchMapping("/{eventId}")
@@ -47,11 +46,11 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
-    public EventResponse updateEvent(
+    public void updateEvent(
             @PathVariable Long eventId,
             @RequestBody EventRequest request
     ) {
-        return eventService.updateEvent(eventId, request);
+        eventService.updateEvent(eventId, request);
     }
 
     @DeleteMapping("/{eventId}")

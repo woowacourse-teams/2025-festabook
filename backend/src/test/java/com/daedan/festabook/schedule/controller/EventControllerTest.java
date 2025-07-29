@@ -3,7 +3,6 @@ package com.daedan.festabook.schedule.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.organization.domain.Organization;
@@ -83,8 +82,6 @@ class EventControllerTest {
 
             EventRequest request = EventRequestFixture.create(eventDate.getId());
 
-            int expectedFieldSize = 6;
-
             // when & then
             RestAssured
                     .given()
@@ -94,14 +91,7 @@ class EventControllerTest {
                     .when()
                     .post("/schedules/events")
                     .then()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
-                    .body("status", notNullValue())
-                    .body("startTime", equalTo(request.startTime().toString()))
-                    .body("endTime", equalTo(request.endTime().toString()))
-                    .body("title", equalTo(request.title()))
-                    .body("location", equalTo(request.location()));
+                    .statusCode(HttpStatus.CREATED.value());
         }
     }
 
@@ -132,8 +122,6 @@ class EventControllerTest {
                     eventDate.getId()
             );
 
-            int expectedFieldSize = 6;
-
             // when & then
             RestAssured
                     .given()
@@ -143,14 +131,7 @@ class EventControllerTest {
                     .when()
                     .patch("/schedules/events/{eventId}", eventId)
                     .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
-                    .body("status", notNullValue())
-                    .body("startTime", equalTo(request.startTime().toString()))
-                    .body("endTime", equalTo(request.endTime().toString()))
-                    .body("title", equalTo(request.title()))
-                    .body("location", equalTo(request.location()));
+                    .statusCode(HttpStatus.OK.value());
         }
     }
 

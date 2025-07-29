@@ -2,7 +2,6 @@ package com.daedan.festabook.schedule.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
-import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.service.EventDateService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,11 +34,11 @@ public class EventDateController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
-    public EventDateResponse createEventDate(
+    public void createEventDate(
             @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody EventDateRequest request
     ) {
-        return eventDateService.createEventDate(organizationId, request);
+        eventDateService.createEventDate(organizationId, request);
     }
 
     @DeleteMapping("/{eventDateId}")

@@ -4,7 +4,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
@@ -70,7 +69,6 @@ class EventDateControllerTest {
             organizationJpaRepository.save(organization);
 
             EventDateRequest request = EventDateRequestFixture.create();
-            int expectedFieldSize = 2;
 
             // when & then
             RestAssured
@@ -81,10 +79,7 @@ class EventDateControllerTest {
                     .when()
                     .post("/schedules/event-dates")
                     .then()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
-                    .body("date", equalTo(request.date().toString()));
+                    .statusCode(HttpStatus.CREATED.value());
         }
 
         @Test
