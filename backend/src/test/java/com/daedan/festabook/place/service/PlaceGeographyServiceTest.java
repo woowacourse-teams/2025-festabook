@@ -90,7 +90,8 @@ class PlaceGeographyServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.responses().getFirst().markerCoordinate()).isNull();
+                s.assertThat(result.responses().getFirst().markerCoordinate().latitude()).isNull();
+                s.assertThat(result.responses().getFirst().markerCoordinate().longitude()).isNull();
             });
         }
     }

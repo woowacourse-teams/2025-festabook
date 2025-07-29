@@ -135,7 +135,8 @@ class PlaceGeographyControllerTest {
                     .get("/places/geographies")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("[0].markerCoordinate", equalTo(null));
+                    .body("[0].markerCoordinate.latitude", equalTo(null))
+                    .body("[0].markerCoordinate.longitude", equalTo(null));
         }
     }
 
