@@ -20,10 +20,8 @@ import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.EtcPlaceRequest;
-import com.daedan.festabook.place.dto.EtcPlaceRequestFixture;
-import com.daedan.festabook.place.dto.MainPlaceRequest;
-import com.daedan.festabook.place.dto.MainPlaceRequestFixture;
+import com.daedan.festabook.place.dto.PlaceREquestFixture;
+import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
@@ -63,7 +61,7 @@ class PlaceServiceTest {
     private PlaceService placeService;
 
     @Nested
-    class createEtcPlace {
+    class createPlace {
 
         @Test
         void 성공() {
@@ -71,7 +69,7 @@ class PlaceServiceTest {
             Long organizationId = 1L;
             Long expectedPlaceId = 1L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            EtcPlaceRequest etcPlaceRequest = EtcPlaceRequestFixture.create(expectedPlaceCategory);
+            PlaceRequest placeRequest = PlaceREquestFixture.create(expectedPlaceCategory);
 
             Organization organization = OrganizationFixture.create(organizationId);
             Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, organization, expectedPlaceCategory);
@@ -82,20 +80,22 @@ class PlaceServiceTest {
                     .willReturn(place);
 
             // when
-            PlaceResponse result = placeService.createEtcPlace(organizationId, etcPlaceRequest);
+            PlaceResponse result = placeService.createPlace(organizationId, placeRequest);
 
             // then
             assertSoftly(s -> {
                 s.assertThat(result.id()).isEqualTo(1L);
                 s.assertThat(result.category()).isEqualTo(expectedPlaceCategory);
+
+                s.assertThat(result.placeImages().responses()).isEmpty();
+                s.assertThat(result.placeAnnouncements().responses()).isEmpty();
+
                 s.assertThat(result.title()).isNull();
-                s.assertThat(result.placeImages()).isNull();
                 s.assertThat(result.startTime()).isNull();
                 s.assertThat(result.endTime()).isNull();
                 s.assertThat(result.location()).isNull();
                 s.assertThat(result.host()).isNull();
                 s.assertThat(result.description()).isNull();
-                s.assertThat(result.placeAnnouncements()).isNull();
             });
         }
 
@@ -104,79 +104,17 @@ class PlaceServiceTest {
             // given
             Long organizationId = 0L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            EtcPlaceRequest etcPlaceRequest = EtcPlaceRequestFixture.create(expectedPlaceCategory);
+            PlaceRequest placeRequest = PlaceREquestFixture.create(expectedPlaceCategory);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeService.createEtcPlace(organizationId, etcPlaceRequest))
+            assertThatThrownBy(() -> placeService.createPlace(organizationId, placeRequest))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
 
             then(placeJpaRepository).should(never()).save(any());
-        }
-    }
-
-    @Nested
-    class createMainPlace {
-
-        @Test
-        void 성공() {
-            // given
-            Long organizationId = 1L;
-            Long expectedPlaceId = 1L;
-            String placeTitle = "미소네";
-            PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            MainPlaceRequest mainPlaceRequest = MainPlaceRequestFixture.create(expectedPlaceCategory, placeTitle);
-
-            Organization organization = OrganizationFixture.create(organizationId);
-            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, organization, expectedPlaceCategory);
-            PlaceDetail placeDetail = PlaceDetailFixture.createEmpty(place, placeTitle);
-
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
-            given(placeJpaRepository.save(any()))
-                    .willReturn(place);
-            given(placeDetailJpaRepository.save(any()))
-                    .willReturn(placeDetail);
-
-            // when
-            PlaceResponse result = placeService.createMainPlace(organizationId, mainPlaceRequest);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(1L);
-                s.assertThat(result.category()).isEqualTo(PlaceCategory.BAR);
-                s.assertThat(result.title()).isEqualTo(placeTitle);
-                s.assertThat(result.placeImages()).isNull();
-                s.assertThat(result.startTime()).isNull();
-                s.assertThat(result.endTime()).isNull();
-                s.assertThat(result.location()).isNull();
-                s.assertThat(result.host()).isNull();
-                s.assertThat(result.description()).isNull();
-                s.assertThat(result.placeAnnouncements()).isNull();
-            });
-        }
-
-        @Test
-        void 예외_존재하지_않는_조직() {
-            // given
-            Long organizationId = 0L;
-            String placeTitle = "미소네";
-            PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            MainPlaceRequest mainPlaceRequest = MainPlaceRequestFixture.create(expectedPlaceCategory, placeTitle);
-
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.empty());
-
-            // when & then
-            assertThatThrownBy(() -> placeService.createMainPlace(organizationId, mainPlaceRequest))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 조직입니다.");
-
-            then(placeJpaRepository).should(never()).save(any());
-            then(placeDetailJpaRepository).should(never()).save(any());
         }
     }
 

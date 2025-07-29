@@ -23,12 +23,13 @@ public record PlaceResponse(
 ) {
 
     public static PlaceResponse from(
+            Place place,
             PlaceDetail placeDetail,
             List<PlaceImage> images,
             List<PlaceAnnouncement> announcements
     ) {
         return new PlaceResponse(
-                placeDetail.getPlace().getId(),
+                place.getId(),
                 PlaceImageResponses.from(images),
                 placeDetail.getPlace().getCategory(),
                 placeDetail.getTitle(),
@@ -41,11 +42,11 @@ public record PlaceResponse(
         );
     }
 
-    public static PlaceResponse fromEtcPlace(Place etcPlace) {
+    public static PlaceResponse from(Place place) {
         return new PlaceResponse(
-                etcPlace.getId(),
+                place.getId(),
                 PlaceImageResponses.from(List.of()),
-                etcPlace.getCategory(),
+                place.getCategory(),
                 null,
                 null,
                 null,

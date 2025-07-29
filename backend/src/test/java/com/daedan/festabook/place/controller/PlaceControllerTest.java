@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.controller;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -17,10 +18,8 @@ import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.EtcPlaceRequest;
-import com.daedan.festabook.place.dto.EtcPlaceRequestFixture;
-import com.daedan.festabook.place.dto.MainPlaceRequest;
-import com.daedan.festabook.place.dto.MainPlaceRequestFixture;
+import com.daedan.festabook.place.dto.PlaceREquestFixture;
+import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -69,7 +68,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class createEtcPlace {
+    class createPlace {
 
         @Test
         void 성공() {
@@ -78,7 +77,7 @@ class PlaceControllerTest {
             organizationJpaRepository.save(organization);
 
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            EtcPlaceRequest etcPlaceRequest = EtcPlaceRequestFixture.create(expectedPlaceCategory);
+            PlaceRequest placeRequest = PlaceREquestFixture.create(expectedPlaceCategory);
 
             int expectedFieldSize = 10;
 
@@ -87,58 +86,23 @@ class PlaceControllerTest {
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
-                    .body(etcPlaceRequest)
-                    .post("/places/etc")
+                    .body(placeRequest)
+                    .post("/places")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", notNullValue())
                     .body("category", equalTo(expectedPlaceCategory.toString()))
-                    .body("placeImages", nullValue())
+
+                    .body("placeImages", empty())
+                    .body("placeAnnouncements", empty())
+
                     .body("title", nullValue())
                     .body("startTime", nullValue())
                     .body("endTime", nullValue())
                     .body("location", nullValue())
                     .body("host", nullValue())
-                    .body("description", nullValue())
-                    .body("placeAnnouncements", nullValue());
-        }
-    }
-
-    @Nested
-    class createMainPlace {
-        @Test
-        void 성공() {
-            // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-            
-            PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            String placeTitle = "컴퓨터공학과 주점";
-            MainPlaceRequest mainPlaceRequest = MainPlaceRequestFixture.create(expectedPlaceCategory, placeTitle);
-
-            int expectedFieldSize = 10;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .contentType(ContentType.JSON)
-                    .body(mainPlaceRequest)
-                    .post("/places/main")
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
-                    .body("category", equalTo(expectedPlaceCategory.toString()))
-                    .body("title", equalTo(placeTitle))
-                    .body("placeImages", nullValue())
-                    .body("startTime", nullValue())
-                    .body("endTime", nullValue())
-                    .body("location", nullValue())
-                    .body("host", nullValue())
-                    .body("description", nullValue())
-                    .body("placeAnnouncements", nullValue());
+                    .body("description", nullValue());
         }
     }
 

@@ -7,8 +7,7 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceImage;
-import com.daedan.festabook.place.dto.EtcPlaceRequest;
-import com.daedan.festabook.place.dto.MainPlaceRequest;
+import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
@@ -30,35 +29,24 @@ public class PlaceService {
     private final OrganizationJpaRepository organizationJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
-    public PlaceResponse createEtcPlace(Long organizationId, EtcPlaceRequest request) {
+    @Transactional
+    public PlaceResponse createPlace(Long organizationId, PlaceRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
         Place notSavedPlace = request.toPlace(organization);
         Place savedPlace = placeJpaRepository.save(notSavedPlace);
 
-        return PlaceResponse.fromEtcPlace(savedPlace);
-    }
-
-    @Transactional
-    public PlaceResponse createMainPlace(Long organizationId, MainPlaceRequest request) {
-        Organization organization = getOrganizationById(organizationId);
-
-        PlaceDetail notSavedPlaceDetail = request.toPlaceDetail(organization);
-        placeJpaRepository.save(notSavedPlaceDetail.getPlace());
-        PlaceDetail savedPlaceDetail = placeDetailJpaRepository.save(notSavedPlaceDetail);
-
-        List<PlaceImage> emptyImages = List.of();
-        List<PlaceAnnouncement> emptyAnnouncements = List.of();
-        return PlaceResponse.from(savedPlaceDetail, emptyImages, emptyAnnouncements);
+        return PlaceResponse.from(savedPlace);
     }
 
     @Transactional(readOnly = true)
     public PlaceResponse getPlaceByPlaceId(Long placeId) {
         PlaceDetail placeDetail = getPlaceDetailById(placeId);
+        Place place = placeDetail.getPlace();
         List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId);
         List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
 
-        return PlaceResponse.from(placeDetail, placeImages, placeAnnouncements);
+        return PlaceResponse.from(place, placeDetail, placeImages, placeAnnouncements);
     }
 
     // TODO: ExceptionHandler 등록 후 예외 변경

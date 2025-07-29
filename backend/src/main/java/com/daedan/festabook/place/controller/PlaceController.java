@@ -1,9 +1,8 @@
 package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.place.dto.EtcPlaceRequest;
-import com.daedan.festabook.place.dto.MainPlaceRequest;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
+import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
@@ -31,7 +30,7 @@ public class PlaceController {
     private final PlaceService placeService;
     private final PlacePreviewService placePreviewService;
 
-    @PostMapping("/etc")
+    @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "etc 플레이스 생성")
     @ApiResponses(value = {
@@ -39,22 +38,9 @@ public class PlaceController {
     })
     public PlaceResponse createEtcPlace(
             @Parameter(hidden = true) @OrganizationId Long organizationId,
-            @RequestBody EtcPlaceRequest request
+            @RequestBody PlaceRequest request
     ) {
-        return placeService.createEtcPlace(organizationId, request);
-    }
-
-    @PostMapping("/main")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "main 플레이스 생성")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
-    })
-    public PlaceResponse createMainPlace(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
-            @RequestBody MainPlaceRequest request
-    ) {
-        return placeService.createMainPlace(organizationId, request);
+        return placeService.createPlace(organizationId, request);
     }
 
     @GetMapping("/previews")
