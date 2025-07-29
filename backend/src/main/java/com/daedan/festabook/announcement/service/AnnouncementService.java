@@ -1,5 +1,6 @@
 package com.daedan.festabook.announcement.service;
 
+import com.daedan.festabook.announcement.controller.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
@@ -68,6 +69,11 @@ public class AnnouncementService {
     }
 
     @Transactional
+    public void updateAnnouncementPin(Long announcementId, AnnouncementPinUpdateRequest request) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        announcement.updatePinned(request.pinned());
+    }
+
     public void deleteAnnouncementByAnnouncementId(Long announcementId) {
         announcementJpaRepository.deleteById(announcementId);
     }

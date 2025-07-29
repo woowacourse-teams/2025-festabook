@@ -58,7 +58,7 @@ public class AnnouncementController {
 
     @PatchMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 공지 수정")
+    @Operation(summary = "특정 공지 내용 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -67,6 +67,19 @@ public class AnnouncementController {
             @RequestBody AnnouncementUpdateRequest request
     ) {
         return announcementService.updateAnnouncement(announcementId, request);
+    }
+
+    @PatchMapping("/{announcementId}/pin")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "특정 공지 고정 형태 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public void updateAnnouncementPin(
+            @PathVariable Long announcementId,
+            @RequestBody AnnouncementPinUpdateRequest request
+    ) {
+        announcementService.updateAnnouncementPin(announcementId, request);
     }
 
     @DeleteMapping("/{announcementId}")
