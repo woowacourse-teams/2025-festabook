@@ -11,6 +11,7 @@ public class EventFixture {
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(13, 0, 0);
     private static final String DEFAULT_TITLE = "title";
     private static final String DEFAULT_LOCATION = "location";
+    private static final EventDate DEFAULT_EVENT_DATE = EventDateFixture.create();
 
     public static Event create(
             Long id,
@@ -38,7 +39,17 @@ public class EventFixture {
                 DEFAULT_END_TIME,
                 title,
                 DEFAULT_LOCATION,
-                EventDateFixture.create()
+                DEFAULT_EVENT_DATE
+        );
+    }
+
+    public static Event create() {
+        return new Event(
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION,
+                DEFAULT_EVENT_DATE
         );
     }
 

@@ -14,6 +14,7 @@ import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.domain.EventFixture;
 import com.daedan.festabook.schedule.domain.EventStatus;
 import com.daedan.festabook.schedule.dto.EventRequest;
+import com.daedan.festabook.schedule.dto.EventRequestFixture;
 import com.daedan.festabook.schedule.dto.EventResponse;
 import com.daedan.festabook.schedule.dto.EventResponses;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
@@ -62,14 +63,8 @@ class EventServiceTest {
             // given
             setFixedClock();
 
-            EventDate eventDate = EventDateFixture.create(LocalDate.of(2025, 5, 5));
-            EventRequest request = new EventRequest(
-                    LocalTime.of(1, 0),
-                    LocalTime.of(2, 0),
-                    "title",
-                    "location",
-                    eventDate.getId()
-            );
+            EventDate eventDate = EventDateFixture.create();
+            EventRequest request = EventRequestFixture.create(eventDate.getId());
             given(eventDateJpaRepository.findById(request.eventDateId()))
                     .willReturn(Optional.of(eventDate));
 
@@ -101,13 +96,8 @@ class EventServiceTest {
         @Test
         void 예외_존재하지_않는_일정_날짜() {
             // given
-            EventRequest request = new EventRequest(
-                    LocalTime.of(1, 0),
-                    LocalTime.of(2, 0),
-                    "title",
-                    "location",
-                    1L
-            );
+            Long notExistingEventDateId = 0L;
+            EventRequest request = EventRequestFixture.create(notExistingEventDateId);
             given(eventDateJpaRepository.findById(request.eventDateId()))
                     .willReturn(Optional.empty());
 
@@ -126,9 +116,13 @@ class EventServiceTest {
             // given
             setFixedClock();
 
-            Long eventId = 1L;
             Long eventDateId = 1L;
-            EventDate eventDate = EventDateFixture.create(eventDateId, LocalDate.of(2025, 5, 5));
+            EventDate eventDate = EventDateFixture.create(
+                    eventDateId,
+                    LocalDate.of(2025, 5, 5)
+            );
+
+            Long eventId = 1L;
             Event event = EventFixture.create(
                     LocalTime.of(1, 0),
                     LocalTime.of(2, 0),
@@ -143,7 +137,7 @@ class EventServiceTest {
                     eventDate
             );
 
-            EventRequest eventRequest = new EventRequest(
+            EventRequest eventRequest = EventRequestFixture.create(
                     updatedEvent.getStartTime(),
                     updatedEvent.getEndTime(),
                     updatedEvent.getTitle(),
@@ -167,13 +161,7 @@ class EventServiceTest {
         void 예외_존재하지_않는_이벤트() {
             // given
             Long eventId = 1L;
-            EventRequest request = new EventRequest(
-                    LocalTime.of(1, 0),
-                    LocalTime.of(2, 0),
-                    "title",
-                    "location",
-                    1L
-            );
+            EventRequest request = EventRequestFixture.create();
 
             given(eventJpaRepository.findById(eventId))
                     .willReturn(Optional.empty());

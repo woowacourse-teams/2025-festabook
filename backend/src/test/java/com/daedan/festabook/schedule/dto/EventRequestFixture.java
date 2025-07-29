@@ -8,6 +8,7 @@ public class EventRequestFixture {
     private final static LocalTime DEFAULT_END_TIME = LocalTime.of(2, 0);
     private final static String DEFAULT_TITLE = "title";
     private final static String DEFAULT_LOCATION = "location";
+    private final static Long DEFAULT_EVENT_DATE_ID = 1L;
 
     public static EventRequest create(
             LocalTime startTime,
@@ -34,6 +35,16 @@ public class EventRequestFixture {
                 DEFAULT_TITLE,
                 DEFAULT_LOCATION,
                 eventDateId
+        );
+    }
+
+    public static EventRequest create() {
+        return new EventRequest(
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION,
+                DEFAULT_EVENT_DATE_ID
         );
     }
 }

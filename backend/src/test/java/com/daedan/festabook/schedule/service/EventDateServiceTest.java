@@ -14,6 +14,7 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import com.daedan.festabook.schedule.domain.EventDate;
 import com.daedan.festabook.schedule.domain.EventDateFixture;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
+import com.daedan.festabook.schedule.dto.EventDateRequestFixture;
 import com.daedan.festabook.schedule.dto.EventDateResponse;
 import com.daedan.festabook.schedule.dto.EventDateResponses;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
@@ -54,7 +55,7 @@ class EventDateServiceTest {
         @Test
         void 성공() {
             // given
-            EventDateRequest request = new EventDateRequest(LocalDate.of(2025, 7, 18));
+            EventDateRequest request = EventDateRequestFixture.create();
             EventDate eventDate = EventDateFixture.create(request.date());
             given(eventDateJpaRepository.save(any()))
                     .willReturn(eventDate);
@@ -76,9 +77,8 @@ class EventDateServiceTest {
         @Test
         void 예외_이미_존재하는_일정_날짜() {
             // given
-            LocalDate date = LocalDate.of(2025, 7, 18);
-            EventDateRequest request = new EventDateRequest(date);
-            given(eventDateJpaRepository.existsByOrganizationIdAndDate(DEFAULT_ORGANIZATION_ID, date))
+            EventDateRequest request = EventDateRequestFixture.create();
+            given(eventDateJpaRepository.existsByOrganizationIdAndDate(DEFAULT_ORGANIZATION_ID, request.date()))
                     .willReturn(true);
 
             // when & then
@@ -90,8 +90,7 @@ class EventDateServiceTest {
         @Test
         void 예외_존재하지_않는_조직() {
             // given
-            LocalDate date = LocalDate.of(2025, 7, 18);
-            EventDateRequest request = new EventDateRequest(date);
+            EventDateRequest request = EventDateRequestFixture.create();
             given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
                     .willReturn(Optional.empty());
 
