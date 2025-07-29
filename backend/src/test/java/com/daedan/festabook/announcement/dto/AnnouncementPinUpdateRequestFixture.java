@@ -1,4 +1,4 @@
-package com.daedan.festabook.announcement.controller;
+package com.daedan.festabook.announcement.dto;
 
 public class AnnouncementPinUpdateRequestFixture {
 

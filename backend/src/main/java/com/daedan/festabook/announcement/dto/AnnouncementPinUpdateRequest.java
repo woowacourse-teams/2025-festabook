@@ -1,4 +1,4 @@
-package com.daedan.festabook.announcement.controller;
+package com.daedan.festabook.announcement.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

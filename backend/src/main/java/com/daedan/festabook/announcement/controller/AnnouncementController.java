@@ -1,6 +1,7 @@
 package com.daedan.festabook.announcement.controller;
 
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
@@ -73,7 +74,7 @@ public class AnnouncementController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 공지 고정 형태 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void updateAnnouncementPin(
             @PathVariable Long announcementId,

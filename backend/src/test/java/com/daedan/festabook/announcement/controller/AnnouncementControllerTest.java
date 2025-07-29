@@ -12,10 +12,12 @@ import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementUpdateRequestFixture;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;

@@ -1,8 +1,8 @@
 package com.daedan.festabook.announcement.service;
 
-import com.daedan.festabook.announcement.controller.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;

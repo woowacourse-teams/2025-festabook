@@ -9,16 +9,16 @@ import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 
-import com.daedan.festabook.announcement.controller.AnnouncementPinUpdateRequest;
-import com.daedan.festabook.announcement.controller.AnnouncementPinUpdateRequestFixture;
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
@@ -353,7 +353,7 @@ class AnnouncementServiceTest {
         void 성공_이미_고정된_공지는_제한_검증_안함() {
             // given
             Long announcementId = 1L;
-            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create();
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
             Announcement announcement = AnnouncementFixture.create(announcementId, true);
 
             given(announcementJpaRepository.findById(announcementId))
