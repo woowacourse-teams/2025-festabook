@@ -51,7 +51,7 @@ public class EventDateController {
     public void deleteEventDate(
             @PathVariable Long eventDateId
     ) {
-        eventDateService.deleteEventDate(eventDateId);
+        eventDateService.deleteEventDateByEventDateId(eventDateId);
     }
 
     @GetMapping

@@ -35,7 +35,7 @@ public class EventDateService {
     }
 
     @Transactional
-    public void deleteEventDate(Long eventDateId) {
+    public void deleteEventDateByEventDateId(Long eventDateId) {
         eventJpaRepository.deleteAllByEventDateId(eventDateId);
         eventDateJpaRepository.deleteById(eventDateId);
     }

@@ -102,7 +102,7 @@ class EventDateServiceTest {
     }
 
     @Nested
-    class deleteEventDate {
+    class deleteEventDateByEventDateId {
 
         @Test
         void 성공() {
@@ -110,7 +110,7 @@ class EventDateServiceTest {
             Long eventDateId = 1L;
 
             // when
-            eventDateService.deleteEventDate(eventDateId);
+            eventDateService.deleteEventDateByEventDateId(eventDateId);
 
             // then
             then(eventDateJpaRepository).should()
