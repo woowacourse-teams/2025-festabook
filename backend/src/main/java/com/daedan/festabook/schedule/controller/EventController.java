@@ -63,7 +63,7 @@ public class EventController {
     public void deleteEvent(
             @PathVariable Long eventId
     ) {
-        eventService.deleteEvent(eventId);
+        eventService.deleteEventByEventId(eventId);
     }
 
     @GetMapping

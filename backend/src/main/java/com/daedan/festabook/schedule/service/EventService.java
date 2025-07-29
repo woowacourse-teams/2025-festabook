@@ -41,7 +41,7 @@ public class EventService {
         return EventResponse.from(event, clock);
     }
 
-    public void deleteEvent(Long eventId) {
+    public void deleteEventByEventId(Long eventId) {
         eventJpaRepository.deleteById(eventId);
     }
 

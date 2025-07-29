@@ -174,7 +174,7 @@ class EventServiceTest {
     }
 
     @Nested
-    class deleteEvent {
+    class deleteEventByEventId {
 
         @Test
         void 성공() {
@@ -182,7 +182,7 @@ class EventServiceTest {
             Long eventId = 1L;
 
             // when
-            eventService.deleteEvent(eventId);
+            eventService.deleteEventByEventId(eventId);
 
             // then
             then(eventJpaRepository).should()
