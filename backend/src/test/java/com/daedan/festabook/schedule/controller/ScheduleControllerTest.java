@@ -19,6 +19,7 @@ import com.daedan.festabook.schedule.domain.EventStatus;
 import com.daedan.festabook.schedule.dto.EventDateRequest;
 import com.daedan.festabook.schedule.dto.EventDateRequestFixture;
 import com.daedan.festabook.schedule.dto.EventRequest;
+import com.daedan.festabook.schedule.dto.EventRequestFixture;
 import com.daedan.festabook.schedule.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.schedule.infrastructure.EventJpaRepository;
 import io.restassured.RestAssured;
@@ -185,22 +186,16 @@ class ScheduleControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
-
             LocalDateTime dateTime = LocalDateTime.MAX;
             setFixedClock(dateTime);
+
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
 
             EventDate eventDate = EventDateFixture.create(organization);
             eventDateJpaRepository.save(eventDate);
 
-            EventRequest request = new EventRequest(
-                    LocalTime.of(1, 0),
-                    LocalTime.of(2, 0),
-                    "title",
-                    "location",
-                    eventDate.getId()
-            );
+            EventRequest request = EventRequestFixture.create(eventDate.getId());
 
             int expectedFieldSize = 6;
 
@@ -241,8 +236,9 @@ class ScheduleControllerTest {
 
             Event event = EventFixture.create(eventDate);
             eventJpaRepository.save(event);
+            Long eventId = event.getId();
 
-            EventRequest request = new EventRequest(
+            EventRequest request = EventRequestFixture.create(
                     LocalTime.of(3, 0),
                     LocalTime.of(4, 0),
                     "updated title",
@@ -259,7 +255,7 @@ class ScheduleControllerTest {
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .body(request)
                     .when()
-                    .patch("/schedules/events/{eventId}", event.getId())
+                    .patch("/schedules/events/{eventId}", eventId)
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
