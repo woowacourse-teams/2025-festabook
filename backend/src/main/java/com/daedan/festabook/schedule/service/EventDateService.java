@@ -27,7 +27,6 @@ public class EventDateService {
     private final OrganizationJpaRepository organizationJpaRepository;
 
     public EventDateResponse createEventDate(Long organizationId, EventDateRequest request) {
-        // TODO: 권한 검증 추가
         validateDuplicatedEventDate(organizationId, request.date());
 
         Organization organization = getOrganizationById(organizationId);
@@ -39,7 +38,6 @@ public class EventDateService {
 
     @Transactional
     public void deleteEventDate(Long eventDateId) {
-        // TODO: 권한 검증 추가
         eventJpaRepository.deleteAllByEventDateId(eventDateId);
         eventDateJpaRepository.deleteById(eventDateId);
     }

@@ -24,7 +24,6 @@ public class EventService {
     private final EventJpaRepository eventJpaRepository;
 
     public EventResponse createEvent(EventRequest request) {
-        // TODO: 권한 검증 추가
         EventDate eventDate = getEventDateById(request.eventDateId());
         Event event = request.toEntity(eventDate);
         Event savedEvent = eventJpaRepository.save(event);
@@ -34,7 +33,6 @@ public class EventService {
 
     @Transactional
     public EventResponse updateEvent(Long eventId, EventRequest request) {
-        // TODO: 권한 검증 추가
         Event event = getEventById(eventId);
 
         Event newEvent = request.toEntity(event.getEventDate());
@@ -44,7 +42,6 @@ public class EventService {
     }
 
     public void deleteEvent(Long eventId) {
-        // TODO: 권한 검증 추가
         eventJpaRepository.deleteById(eventId);
     }
 
