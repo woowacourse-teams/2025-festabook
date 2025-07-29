@@ -1,6 +1,5 @@
 package com.daedan.festabook.place.domain;
 
-import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -26,22 +25,16 @@ public class PlaceDetail {
     @JoinColumn(nullable = false)
     private Place place;
 
-    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false)
     private String location;
 
-    @Column(nullable = false)
     private String host;
 
-    @Column(nullable = false)
     private LocalTime startTime;
 
-    @Column(nullable = false)
     private LocalTime endTime;
 
     protected PlaceDetail(

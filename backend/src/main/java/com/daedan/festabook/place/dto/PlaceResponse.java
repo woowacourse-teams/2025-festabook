@@ -22,9 +22,9 @@ public record PlaceResponse(
         PlaceAnnouncementResponses placeAnnouncements
 ) {
 
-    public static PlaceResponse from(
+    public static PlaceResponse fromWithDetail(
             Place place,
-            PlaceDetail detail,
+            PlaceDetail placeDetail,
             List<PlaceImage> images,
             List<PlaceAnnouncement> announcements
     ) {
@@ -32,13 +32,28 @@ public record PlaceResponse(
                 place.getId(),
                 PlaceImageResponses.from(images),
                 place.getCategory(),
-                detail.getTitle(),
-                detail.getStartTime(),
-                detail.getEndTime(),
-                detail.getLocation(),
-                detail.getHost(),
-                detail.getDescription(),
+                placeDetail.getTitle(),
+                placeDetail.getStartTime(),
+                placeDetail.getEndTime(),
+                placeDetail.getLocation(),
+                placeDetail.getHost(),
+                placeDetail.getDescription(),
                 PlaceAnnouncementResponses.from(announcements)
+        );
+    }
+
+    public static PlaceResponse from(Place place) {
+        return new PlaceResponse(
+                place.getId(),
+                PlaceImageResponses.from(List.of()),
+                place.getCategory(),
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                PlaceAnnouncementResponses.from(List.of())
         );
     }
 }
