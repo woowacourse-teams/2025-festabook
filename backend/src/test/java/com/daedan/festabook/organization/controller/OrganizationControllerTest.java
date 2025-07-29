@@ -108,11 +108,11 @@ class OrganizationControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            int festivalImageSize = 2;
             FestivalImage festivalImage1 = FestivalImageFixture.create(organization);
             FestivalImage festivalImage2 = FestivalImageFixture.create(organization);
             festivalImageJpaRepository.saveAll(List.of(festivalImage1, festivalImage2));
 
+            int festivalImageSize = 2;
             int expectedFieldSize = 6;
 
             // when & then
@@ -126,15 +126,17 @@ class OrganizationControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("universityName", equalTo(organization.getUniversityName()))
                     .body("festivalImages", hasSize(festivalImageSize))
+                    .body("festivalName", equalTo(organization.getFestivalName()))
+                    .body("startDate", equalTo(organization.getStartDate().toString()))
+                    .body("endDate", equalTo(organization.getEndDate().toString()))
+
                     .body("festivalImages[0].id", equalTo(festivalImage1.getId().intValue()))
                     .body("festivalImages[0].imageUrl", equalTo(festivalImage1.getImageUrl()))
                     .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
+
                     .body("festivalImages[1].id", equalTo(festivalImage2.getId().intValue()))
                     .body("festivalImages[1].imageUrl", equalTo(festivalImage2.getImageUrl()))
-                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()))
-                    .body("festivalName", equalTo(organization.getFestivalName()))
-                    .body("startDate", equalTo(organization.getStartDate().toString()))
-                    .body("endDate", equalTo(organization.getEndDate().toString()));
+                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()));
         }
     }
 }
