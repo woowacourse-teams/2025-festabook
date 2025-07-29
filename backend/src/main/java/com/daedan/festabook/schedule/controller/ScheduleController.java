@@ -28,14 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/schedules")
-@Tag(name = "일정", description = "일정 관련 API")
+@Tag(name = "일정", description = "축제 날짜, 이벤트 관련 API")
 public class ScheduleController {
 
     private final ScheduleService scheduleService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "일정 날짜 생성")
+    @Operation(summary = "축제 날짜 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
@@ -48,7 +48,7 @@ public class ScheduleController {
 
     @DeleteMapping("/{eventDateId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "일정 날짜 삭제")
+    @Operation(summary = "축제 날짜 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
@@ -60,7 +60,7 @@ public class ScheduleController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "모든 일정 날짜 조회")
+    @Operation(summary = "축제의 모든 축제 날짜 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
@@ -72,7 +72,7 @@ public class ScheduleController {
 
     @PostMapping("/events")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "일정 생성")
+    @Operation(summary = "이벤트 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
@@ -84,7 +84,7 @@ public class ScheduleController {
 
     @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "일정 업데이트")
+    @Operation(summary = "이벤트 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
@@ -97,7 +97,7 @@ public class ScheduleController {
 
     @DeleteMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "일정 삭제")
+    @Operation(summary = "이벤트 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
@@ -109,7 +109,7 @@ public class ScheduleController {
 
     @GetMapping("/{eventDateId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 일정의 모든 이벤트 조회")
+    @Operation(summary = "축제 날짜의 모든 이벤트 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
