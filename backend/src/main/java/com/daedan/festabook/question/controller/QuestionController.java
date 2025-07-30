@@ -47,7 +47,7 @@ public class QuestionController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "모든 질문 조회")
+    @Operation(summary = "특정 조직의 모든 질문 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -72,7 +72,7 @@ public class QuestionController {
 
     @PatchMapping("/sequence")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "질문들의 순서 순서 수정")
+    @Operation(summary = "질문들의 순서 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
