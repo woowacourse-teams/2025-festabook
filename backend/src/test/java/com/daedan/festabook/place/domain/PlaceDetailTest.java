@@ -45,7 +45,7 @@ class PlaceDetailTest {
         }
 
         @Test
-        void 성공_플레이스는_변경되지_안_됨() {
+        void 성공_플레이스는_변경되지_않음() {
             // given
             PlaceDetail placeDetail = PlaceDetailFixture.create();
 
