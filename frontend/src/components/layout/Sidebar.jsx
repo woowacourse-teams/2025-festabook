@@ -20,7 +20,7 @@ const Sidebar = ({ open, setOpen }) => {
     React.useEffect(() => {
         if (open) {
             // 열 때: 사이드바 너비 변화 후 텍스트 표시
-            const timer = setTimeout(() => setTextVisible(true), 150);
+            const timer = setTimeout(() => setTextVisible(true), 300);
             return () => clearTimeout(timer);
         } else {
             // 닫을 때: 텍스트 먼저 숨기고 사이드바 축소
@@ -59,10 +59,13 @@ const Sidebar = ({ open, setOpen }) => {
                         if (sidebarOpen) {
                             onToggle();
                         } else {
-                            // 사이드바가 닫혀있으면 먼저 사이드바를 열고, 하위 메뉴도 열기
+                            // 사이드바가 닫혀있으면 먼저 사이드바를 열고, 하위 메뉴도 무조건 열기
                             setOpen(true);
                             setTimeout(() => {
-                                onToggle();
+                                // 현재 닫혀있으면 열고, 이미 열려있어도 열린 상태로 유지
+                                if (!open) {
+                                    onToggle();
+                                }
                                 // 지도에 사이드바 변화 알림
                                 window.dispatchEvent(new CustomEvent('sidebarToggle'));
                             }, 100);
