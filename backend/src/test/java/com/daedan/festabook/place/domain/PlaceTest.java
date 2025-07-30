@@ -47,16 +47,16 @@ class PlaceTest {
         void 성공() {
             // given
             Organization organization = OrganizationFixture.create();
-            PlaceCategory before = PlaceCategory.BAR;
-            Place place = PlaceFixture.create(organization, before);
+            PlaceCategory beforeCategory = PlaceCategory.BAR;
+            Place place = PlaceFixture.create(organization, beforeCategory);
 
-            PlaceCategory after = PlaceCategory.BAR;
+            PlaceCategory afterCategory = PlaceCategory.BOOTH;
 
             // when
-            place.updateCategory(after);
+            place.updateCategory(afterCategory);
 
             // then
-            assertThat(place.getCategory()).isEqualTo(after);
+            assertThat(place.getCategory()).isEqualTo(afterCategory);
         }
     }
 }
