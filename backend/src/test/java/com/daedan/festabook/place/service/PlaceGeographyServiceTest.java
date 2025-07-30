@@ -72,6 +72,28 @@ class PlaceGeographyServiceTest {
                         .isEqualTo(place2.getCoordinate().getLongitude());
             });
         }
+
+        @Test
+        void 성공_Coordinate가_없을_경우_null() {
+            // given
+            Organization organization = OrganizationFixture.create(1L);
+
+            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, null);
+
+            given(placeJpaRepository.findAllByOrganizationId(organization.getId()))
+                    .willReturn(List.of(place));
+
+            // when
+            PlaceGeographyResponses result = placeGeographyService.getAllPlaceGeographyByOrganizationId(
+                    organization.getId()
+            );
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.responses().getFirst().markerCoordinate().latitude()).isNull();
+                s.assertThat(result.responses().getFirst().markerCoordinate().longitude()).isNull();
+            });
+        }
     }
 
     @Nested
