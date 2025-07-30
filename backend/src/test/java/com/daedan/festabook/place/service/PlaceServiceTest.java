@@ -27,6 +27,7 @@ import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
+import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
@@ -55,6 +56,9 @@ class PlaceServiceTest {
 
     @Mock
     private OrganizationJpaRepository organizationJpaRepository;
+
+    @Mock
+    private PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
 
     @Mock
     private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
@@ -266,6 +270,31 @@ class PlaceServiceTest {
             assertThatThrownBy(() -> placeService.getPlaceWithDetailByPlaceId(inValidPlaceId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
+        }
+    }
+
+    @Nested
+    class deleteByPlaceId {
+
+        @Test
+        void 성공() {
+            // given
+            Long expectedPlaceId = 1L;
+
+            // when
+            placeService.deleteByPlaceId(expectedPlaceId);
+
+            // then
+            then(placeDetailJpaRepository).should()
+                    .deleteByPlaceId(expectedPlaceId);
+            then(placeImageJpaRepository).should()
+                    .deleteAllByPlaceId(expectedPlaceId);
+            then(placeAnnouncementJpaRepository).should()
+                    .deleteAllByPlaceId(expectedPlaceId);
+            then(placeFavoriteJpaRepository).should()
+                    .deleteAllByPlaceId(expectedPlaceId);
+            then(placeJpaRepository).should()
+                    .deleteById(expectedPlaceId);
         }
     }
 }

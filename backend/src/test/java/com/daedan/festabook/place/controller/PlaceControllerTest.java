@@ -1,11 +1,15 @@
 package com.daedan.festabook.place.controller;
 
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 
+import com.daedan.festabook.device.domain.Device;
+import com.daedan.festabook.device.domain.DeviceFixture;
+import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -15,6 +19,8 @@ import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceDetailFixture;
+import com.daedan.festabook.place.domain.PlaceFavorite;
+import com.daedan.festabook.place.domain.PlaceFavoriteFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
@@ -22,6 +28,7 @@ import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
+import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
@@ -58,6 +65,12 @@ class PlaceControllerTest {
 
     @Autowired
     private PlaceImageJpaRepository placeImageJpaRepository;
+
+    @Autowired
+    private PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
+
+    @Autowired
+    private DeviceJpaRepository deviceJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -466,6 +479,81 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("message", equalTo("존재하지 않는 플레이스입니다."));
+        }
+    }
+
+    @Nested
+    class deleteByPlaceId {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.save(place);
+
+            PlaceDetail placeDetail = PlaceDetailFixture.create(place);
+            placeDetailJpaRepository.save(placeDetail);
+
+            Device device1 = DeviceFixture.create();
+            Device device2 = DeviceFixture.create();
+            deviceJpaRepository.saveAll(List.of(device1, device2));
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
+
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
+
+            PlaceFavorite placeFavorite1 = PlaceFavoriteFixture.create(place, device1);
+            PlaceFavorite placeFavorite2 = PlaceFavoriteFixture.create(place, device2);
+            placeFavoriteJpaRepository.saveAll(List.of(placeFavorite1, placeFavorite2));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .delete("/places/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertSoftly(s -> {
+                s.assertThat(placeJpaRepository.findById(place.getId())).isEmpty();
+
+                s.assertThat(placeDetailJpaRepository.findById(placeDetail.getId())).isEmpty();
+
+                s.assertThat(placeImageJpaRepository.findById(placeImage1.getId())).isEmpty();
+                s.assertThat(placeImageJpaRepository.findById(placeImage2.getId())).isEmpty();
+
+                s.assertThat(placeAnnouncementJpaRepository.findById(placeAnnouncement1.getId())).isEmpty();
+                s.assertThat(placeAnnouncementJpaRepository.findById(placeAnnouncement2.getId())).isEmpty();
+
+                s.assertThat(placeFavoriteJpaRepository.findById(placeFavorite1.getId())).isEmpty();
+                s.assertThat(placeFavoriteJpaRepository.findById(placeFavorite2.getId())).isEmpty();
+            });
+        }
+
+        @Test
+        void 성공_place가_존재하지_않는_경우_204를_응답() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Long invalidPlaceId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .delete("/places/{placeId}", invalidPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }
