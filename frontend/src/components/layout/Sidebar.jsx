@@ -38,7 +38,7 @@ const Sidebar = ({ open, setOpen }) => {
             <i className={`fas ${icon} w-6 text-gray-500`}></i>
             {open && (
                 <span 
-                className={`ml-2 transition-all duration-300 ease-in-out whitespace-nowrap overflow-hidden ${textVisible ? 'opacity-100 visible' : 'opacity-0 invisible'}`}
+                className={`ml-2 transition-opacity duration-200 whitespace-nowrap overflow-hidden ${textVisible ? 'opacity-100' : 'opacity-0'}`}
                 >
                     {children}
                 </span>
@@ -56,7 +56,17 @@ const Sidebar = ({ open, setOpen }) => {
                     onClick={e => {
                         e.preventDefault();
                         e.stopPropagation(); // 중복 방지
-                        if (sidebarOpen) onToggle();
+                        if (sidebarOpen) {
+                            onToggle();
+                        } else {
+                            // 사이드바가 닫혀있으면 먼저 사이드바를 열고, 하위 메뉴도 열기
+                            setOpen(true);
+                            setTimeout(() => {
+                                onToggle();
+                                // 지도에 사이드바 변화 알림
+                                window.dispatchEvent(new CustomEvent('sidebarToggle'));
+                            }, 100);
+                        }
                     }}
                     className={`sidebar-link flex items-center justify-between py-3 px-4 rounded-lg transition duration-200 hover:bg-gray-700 hover:text-white cursor-pointer ${isActive ? 'active' : 'text-gray-600'}`}
                 >
@@ -64,7 +74,7 @@ const Sidebar = ({ open, setOpen }) => {
                         <i className={`fas ${icon} w-6 text-gray-500`}></i>
                         {sidebarOpen && (
                             <span 
-                                className={`ml-2 transition-opacity duration-200 whitespace-nowrap overflow-hidden ${textVisible ? 'opacity-100' : 'opacity-0'}`}
+                            className={`ml-2 transition-opacity duration-200 whitespace-nowrap overflow-hidden ${textVisible ? 'opacity-100' : 'opacity-0'}`}
                             >
                                 {title}
                             </span>
@@ -107,13 +117,13 @@ const Sidebar = ({ open, setOpen }) => {
     return (
         <aside
             className={
-                `${open ? 'w-64 p-6' : 'w-16 p-2'} bg-gray-50 shrink-0 flex flex-col border-r border-gray-200 h-full transition-all duration-300 relative overflow-hidden`
+                `${open ? 'w-64 p-4' : 'w-16 p-2'} bg-gray-50 shrink-0 flex flex-col border-r border-gray-200 h-full transition-all duration-300 relative overflow-hidden`
             }
             style={{ minHeight: '100vh' }}
         >
             {/* 상단: Festabook, 자물쇠, 열기/닫기 버튼을 한 줄에 배치 */}
             {open ? (
-                <div className={`flex flex-row items-center mb-4 mt-2 ml-1 shrink-0 transition-all duration-300 gap-2`}>
+                <div className={`flex flex-row items-center mb-4 mt-2 ml-2 shrink-0 transition-all duration-300 gap-2`}>
                     {/* 닫기 버튼: 항상 가장 왼쪽 */}
                     <button
                         className="text-gray-500 hover:text-gray-800 focus:outline-none flex-shrink-0"
@@ -126,7 +136,7 @@ const Sidebar = ({ open, setOpen }) => {
                             }, 100);
                         }}
                     >
-                        <i className="fas fa-angle-left text-lg" />
+                        <i className="fas fa-chevron-left text-lg" />
                     </button>
                     <div className="flex flex-row items-center ml-1 gap-2 min-w-0 max-w-full">
                         <h1
@@ -145,7 +155,7 @@ const Sidebar = ({ open, setOpen }) => {
                     </div>
                 </div>
             ) : (
-                <div className="flex flex-col items-start justify-center mb-1 mt-2 shrink-0 transition-all duration-300 pl-5" style={{height: '56px'}}>
+                <div className="flex flex-col items-start justify-center ml-2 mt-1 shrink-0 transition-all duration-300 pl-2" style={{height: '56px'}}>
                     <button
                         className="text-gray-500 hover:text-gray-800 focus:outline-none flex-shrink-0"
                         title="탭 열기"
@@ -157,7 +167,7 @@ const Sidebar = ({ open, setOpen }) => {
                             }, 100);
                         }}
                     >
-                        <i className="fas fa-angle-right text-lg" />
+                        <i className="fas fa-chevron-right text-lg" />
                     </button>
                 </div>
             )}
