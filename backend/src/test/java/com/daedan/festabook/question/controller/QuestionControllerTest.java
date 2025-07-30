@@ -268,5 +268,21 @@ class QuestionControllerTest {
 
             assertThat(questionJpaRepository.findById(question.getId())).isEmpty();
         }
+
+        @Test
+        void 성공_없는_리소스_삭제() {
+            // given
+            Long invalidQuestionId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/questions/{questionId}", invalidQuestionId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertThat(questionJpaRepository.findById(invalidQuestionId)).isEmpty();
+        }
     }
 }
