@@ -3,6 +3,7 @@ package com.daedan.festabook.place.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
@@ -135,8 +136,8 @@ class PlaceGeographyControllerTest {
                     .get("/places/geographies")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("[0].markerCoordinate.latitude", equalTo(null))
-                    .body("[0].markerCoordinate.longitude", equalTo(null));
+                    .body("[0].markerCoordinate.latitude", nullValue())
+                    .body("[0].markerCoordinate.longitude", nullValue());
         }
     }
 
