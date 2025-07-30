@@ -17,6 +17,6 @@ class DeviceRepositoryImpl(
                     deviceIdentifier = deviceIdentifier,
                     fcmToken = fcmToken,
                 ).toResult()
-        return response.map { it.id }
+        return response.mapCatching { it.id }
     }
 }
