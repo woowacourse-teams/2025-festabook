@@ -172,6 +172,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setUpBottomNavigation() {
+        binding.fabMap.post {
+            binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
+        }
         binding.bnvMenu.setOnApplyWindowInsetsListener(null)
         binding.bnvMenu.setPadding(0, 0, 0, 0)
     }
@@ -192,11 +195,14 @@ class MainActivity : AppCompatActivity() {
             when (icon.itemId) {
                 R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
                 R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
-                R.id.item_menu_map -> switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
                 R.id.item_menu_news -> switchFragment(newFragment, TAG_NEW_FRAGMENT)
                 R.id.item_menu_setting -> {}
             }
             true
+        }
+        binding.fabMap.setOnClickListener {
+            binding.bnvMenu.selectedItemId = R.id.item_menu_map
+            switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
         }
     }
 
@@ -225,6 +231,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
         private const val TAG_PLACE_LIST_FRAGMENT = "placeListFragment"
         private const val TAG_NEW_FRAGMENT = "newFragment"
+        private val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
 
         fun Fragment.newInstance(): Fragment =
             this.apply {

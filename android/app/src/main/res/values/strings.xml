@@ -48,5 +48,6 @@
     <string name="content_description_booth_image">부스 이미지</string>
     <string name="place_detail_no_notice">공지사항이 없습니다</string>
     <string name="refresh">새로고침</string>
+    <string name="content_description_floating_action_button">플로팅 지도 버튼</string>
 
 </resources>
