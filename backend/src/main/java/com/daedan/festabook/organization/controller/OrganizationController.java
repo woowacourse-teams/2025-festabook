@@ -42,7 +42,7 @@ public class OrganizationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public OrganizationResponse getFestivalByOrganizationId(
+    public OrganizationResponse getOrganizationByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return organizationService.getOrganizationByOrganizationId(organizationId);
