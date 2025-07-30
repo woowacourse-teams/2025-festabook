@@ -15,6 +15,7 @@
     <string name="place_list_title_food_truck">푸드트럭</string>
     <string name="place_list_default_description">상세 정보가 아직 없습니다</string>
     <string name="place_list_default_location">미지정</string>
+    <string name="place_list_default_title">플레이스 이름이 아직 없습니다</string>
 
     <!--플레이스 상세 화면-->
     <string name="place_detail_notice_description">최근 3개의 공지사항만 표시됩니다</string>

@@ -76,7 +76,7 @@
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toBottomOf="@id/cv_place_category"
             android:textAppearance="@style/PretendardMedium14"
-            android:text="@{place.title}"
+            android:text="@{place.title ?? @string/place_list_default_title}"
             tools:text="컴공과 주점 ‘코딩하며 한잔'" />
 
         <TextView

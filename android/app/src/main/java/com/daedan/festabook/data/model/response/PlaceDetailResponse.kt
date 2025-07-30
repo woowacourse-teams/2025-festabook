@@ -63,8 +63,8 @@ fun PlaceDetailResponse.toDomain() =
         place = toPlace(),
         notices = toNotices(),
         host = host,
-        startTime = LocalTime.parse(startTime, DateTimeFormatter.ofPattern("HH:mm")),
-        endTime = LocalTime.parse(endTime, DateTimeFormatter.ofPattern("HH:mm")),
+        startTime = startTime.toLocalTime(),
+        endTime = endTime.toLocalTime(),
         images = toPlaceDetailImages(),
     )
 
@@ -97,3 +97,8 @@ private fun PlaceDetailResponse.toPlaceDetailImages() =
             sequence = it.sequence,
         )
     }
+
+private fun String?.toLocalTime(): LocalTime? =
+    runCatching {
+        LocalTime.parse(this, DateTimeFormatter.ofPattern("HH:mm"))
+    }.getOrNull()
