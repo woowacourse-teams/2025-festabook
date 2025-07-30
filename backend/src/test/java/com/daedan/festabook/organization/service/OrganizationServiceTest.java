@@ -62,13 +62,14 @@ class OrganizationServiceTest {
         @Test
         void 예외_존재하지_않는_조직_ID로_조회시_예외_발생() {
             // given
-            Long notExistsId = 0L;
+            Long invalidOrganizationId = 0L;
 
-            given(organizationJpaRepository.findById(notExistsId))
+            given(organizationJpaRepository.findById(invalidOrganizationId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> organizationService.getOrganizationGeographyByOrganizationId(notExistsId))
+            assertThatThrownBy(
+                    () -> organizationService.getOrganizationGeographyByOrganizationId(invalidOrganizationId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("조직이 존재하지 않습니다.");
         }
@@ -102,13 +103,13 @@ class OrganizationServiceTest {
         @Test
         void 예외_존재하지_않는_조직_ID로_조회시_예외_발생() {
             // given
-            Long notExistsId = 0L;
+            Long invalidOrganizationId = 0L;
 
-            given(organizationJpaRepository.findById(notExistsId))
+            given(organizationJpaRepository.findById(invalidOrganizationId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> organizationService.getOrganizationByOrganizationId(notExistsId))
+            assertThatThrownBy(() -> organizationService.getOrganizationByOrganizationId(invalidOrganizationId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("조직이 존재하지 않습니다.");
         }
