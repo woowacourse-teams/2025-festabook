@@ -10,4 +10,6 @@ public interface PlaceImageJpaRepository extends JpaRepository<PlaceImage, Long>
     List<PlaceImage> findAllByPlaceIdOrderBySequenceAsc(Long placeId);
 
     List<PlaceImage> findAllByPlaceInAndSequence(List<Place> places, int sequence);
+
+    void deleteAllByPlaceId(Long placeId);
 }

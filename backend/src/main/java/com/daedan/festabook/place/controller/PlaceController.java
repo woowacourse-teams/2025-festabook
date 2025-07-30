@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -78,5 +79,17 @@ public class PlaceController {
             @PathVariable Long placeId
     ) {
         return placeService.getPlaceWithDetailByPlaceId(placeId);
+    }
+
+    @DeleteMapping("/{placeId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "특정 플레이스 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
+    })
+    public void deleteByPlaceId(
+            @PathVariable Long placeId
+    ) {
+        placeService.deleteByPlaceId(placeId);
     }
 }

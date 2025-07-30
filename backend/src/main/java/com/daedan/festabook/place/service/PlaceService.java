@@ -12,6 +12,7 @@ import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
+import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
@@ -28,6 +29,7 @@ public class PlaceService {
     private final PlaceImageJpaRepository placeImageJpaRepository;
     private final PlaceDetailJpaRepository placeDetailJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
+    private final PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     public PlaceResponse createPlace(Long organizationId, PlaceRequest request) {
@@ -64,6 +66,15 @@ public class PlaceService {
         List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId);
         List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
         return PlaceResponse.fromWithDetail(place, placeDetail, placeImages, placeAnnouncements);
+    }
+
+    @Transactional
+    public void deleteByPlaceId(Long placeId) {
+        placeDetailJpaRepository.deleteByPlaceId(placeId);
+        placeImageJpaRepository.deleteAllByPlaceId(placeId);
+        placeAnnouncementJpaRepository.deleteAllByPlaceId(placeId);
+        placeFavoriteJpaRepository.deleteAllByPlaceId(placeId);
+        placeJpaRepository.deleteById(placeId);
     }
 
     // TODO: ExceptionHandler 등록 후 예외 변경
