@@ -117,7 +117,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
 
     // 메인 플레이스 카테고리만 필터링
     const filteredCategories = Object.entries(placeCategories).filter(([key, value]) => {
-        return !isMainPlace(key);
+        return isMainPlace(key);
     });
     
     return (
@@ -255,6 +255,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
 // 기존 BoothModal을 CreateBoothModal과 EditBoothModal로 분리
 const BoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
     const isEditMode = !!booth;
+    console.log(booth, isEditMode);
     
     if (isEditMode) {
         return (

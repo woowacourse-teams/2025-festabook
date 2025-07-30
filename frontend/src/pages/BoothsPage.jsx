@@ -43,7 +43,7 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
                 <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${newBooth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
-                <button onClick={() => openModal('booth', { newBooth, onSave: handleSave, isMainPlace: isMainPlace(newBooth.category) })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
+                <button onClick={() => openModal('booth', { booth: newBooth, onSave: handleSave, isMainPlace: isMainPlace })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
                 <button onClick={() => openDeleteModal(newBooth)}
                     className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
             </div>
