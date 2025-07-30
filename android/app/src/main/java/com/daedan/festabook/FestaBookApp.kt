@@ -1,6 +1,7 @@
 package com.daedan.festabook
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.service.NotificationHelper
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
@@ -15,6 +16,7 @@ class FestaBookApp : Application() {
         setupNaverSdk()
         setupNotificationChannel()
         appContainer = AppContainer(this)
+        setLightTheme()
     }
 
     private fun setupNotificationChannel() {
@@ -43,5 +45,9 @@ class FestaBookApp : Application() {
     private fun setupNaverSdk() {
         NaverMapSdk.getInstance(this).client =
             NaverMapSdk.NcpKeyClient(BuildConfig.NAVER_MAP_CLIENT_ID)
+    }
+
+    private fun setLightTheme() {
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 }
