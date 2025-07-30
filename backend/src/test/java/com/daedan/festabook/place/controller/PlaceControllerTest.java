@@ -304,6 +304,30 @@ class PlaceControllerTest {
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
                     .body("[1].imageUrl", equalTo(null));
         }
+
+        @Test
+        void 성공_카테고리만_있을_경우_나머지_필드_null_반환() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, null);
+            placeJpaRepository.save(place);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places/previews")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].imageUrl", nullValue())
+                    .body("[0].category", equalTo(place.getCategory().name()))
+                    .body("[0].title", nullValue())
+                    .body("[0].description", nullValue())
+                    .body("[0].location", nullValue());
+        }
     }
 
     @Nested
