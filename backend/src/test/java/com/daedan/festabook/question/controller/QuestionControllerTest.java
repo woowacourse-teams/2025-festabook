@@ -3,7 +3,6 @@ package com.daedan.festabook.question.controller;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
@@ -58,12 +57,18 @@ class QuestionControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
+            Question question = QuestionFixture.create(organization);
+            questionJpaRepository.save(question);
+
+            Integer count = questionJpaRepository.countByOrganizationId(organization.getId());
+
             QuestionRequest request = QuestionRequestFixture.create(
                     "개도 데려갈 수 있나요?",
                     "이 서비스는 페스타북입니다."
             );
 
             int expectedFieldSize = 4;
+            int expectedSequence = count + 1;
 
             // when & then
             RestAssured
@@ -78,7 +83,7 @@ class QuestionControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("question", equalTo(request.question()))
                     .body("answer", equalTo(request.answer()))
-                    .body("sequence", notNullValue());
+                    .body("sequence", equalTo(expectedSequence));
         }
     }
 

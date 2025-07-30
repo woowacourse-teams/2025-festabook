@@ -26,9 +26,7 @@ public class QuestionService {
     public QuestionResponse createQuestion(Long organizationId, QuestionRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
-        Integer currentMaxSequence = questionJpaRepository.findTopByOrganizationIdOrderBySequenceDesc(organizationId)
-                .map(Question::getSequence)
-                .orElseGet(() -> 0);
+        Integer currentMaxSequence = questionJpaRepository.countByOrganizationId(organizationId);
         Integer nextSequence = currentMaxSequence + 1;
 
         Question question = request.toQuestion(organization, nextSequence);

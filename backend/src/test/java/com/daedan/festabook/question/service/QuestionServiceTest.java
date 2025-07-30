@@ -49,7 +49,7 @@ class QuestionServiceTest {
     class createQuestion {
 
         @Test
-        void 성공_이전_질문이_없을_경우_첫번째_sequence로_저장() {
+        void 성공() {
             // given
             Long organizationId = 1L;
             Organization organization = OrganizationFixture.create(organizationId);
@@ -57,12 +57,12 @@ class QuestionServiceTest {
                     "개도 데려갈 수 있나요?",
                     "죄송하지만 후유는 출입 금지입니다."
             );
-            int expectedSequence = 1;
+            int questionCount = 1;
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
-            given(questionJpaRepository.findTopByOrganizationIdOrderBySequenceDesc(organizationId))
-                    .willReturn(Optional.empty());
+            given(questionJpaRepository.countByOrganizationId(organizationId))
+                    .willReturn(questionCount);
             given(questionJpaRepository.save(any()))
                     .willAnswer(invocation -> invocation.getArgument(0));
 
@@ -73,36 +73,7 @@ class QuestionServiceTest {
             assertSoftly(s -> {
                 s.assertThat(result.question()).isEqualTo(request.question());
                 s.assertThat(result.answer()).isEqualTo(request.answer());
-                s.assertThat(result.sequence()).isEqualTo(expectedSequence);
-            });
-        }
-
-        @Test
-        void 성공_이전_질문이_있을_경우_다음_sequence로_저장() {
-            // given
-            Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create(organizationId);
-            QuestionRequest request = QuestionRequestFixture.create(
-                    "개도 데려갈 수 있나요?",
-                    "죄송하지만 후유는 출입 금지입니다."
-            );
-            Question latestQuestion = QuestionFixture.create(organization, "이전 질문", "이전 답변", 3);
-
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
-            given(questionJpaRepository.findTopByOrganizationIdOrderBySequenceDesc(organizationId))
-                    .willReturn(Optional.of(latestQuestion));
-            given(questionJpaRepository.save(any()))
-                    .willAnswer(invocation -> invocation.getArgument(0));
-
-            // when
-            QuestionResponse result = questionService.createQuestion(organizationId, request);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.question()).isEqualTo(request.question());
-                s.assertThat(result.answer()).isEqualTo(request.answer());
-                s.assertThat(result.sequence()).isEqualTo(latestQuestion.getSequence() + 1);
+                s.assertThat(result.sequence()).isEqualTo(questionCount + 1);
             });
         }
 
