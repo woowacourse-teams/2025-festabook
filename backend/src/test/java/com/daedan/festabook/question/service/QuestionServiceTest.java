@@ -269,7 +269,8 @@ class QuestionServiceTest {
             // given
             Long questionId = 1L;
 
-            willDoNothing().given(questionJpaRepository).deleteById(questionId);
+            willDoNothing().given(questionJpaRepository)
+                    .deleteById(questionId);
 
             // when
             questionService.deleteQuestionByQuestionId(questionId);
