@@ -26,6 +26,7 @@ import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
@@ -353,6 +354,19 @@ class PlaceServiceTest {
             // then
             then(placeDetailJpaRepository).should()
                     .save(any());
+        }
+
+        @Test
+        void 실패_플레이스가_존재하지_않는다면_예외가_발생() {
+            // given
+            Long invalidPlaceId = 0L;
+
+            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> placeService.updatePlace(invalidPlaceId, placeUpdateRequest))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 플레이스입니다.");
         }
     }
 
