@@ -1,6 +1,7 @@
 package com.daedan.festabook.event.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import java.time.Clock;
 import java.time.LocalDate;
@@ -47,10 +48,12 @@ class EventTest {
             originalEvent.updateEvent(newEvent);
 
             // then
-            assertThat(originalEvent.getStartTime()).isEqualTo(newEvent.getStartTime());
-            assertThat(originalEvent.getEndTime()).isEqualTo(newEvent.getEndTime());
-            assertThat(originalEvent.getTitle()).isEqualTo(newEvent.getTitle());
-            assertThat(originalEvent.getLocation()).isEqualTo(newEvent.getLocation());
+            assertSoftly(s -> {
+                s.assertThat(originalEvent.getStartTime()).isEqualTo(newEvent.getStartTime());
+                s.assertThat(originalEvent.getEndTime()).isEqualTo(newEvent.getEndTime());
+                s.assertThat(originalEvent.getTitle()).isEqualTo(newEvent.getTitle());
+                s.assertThat(originalEvent.getLocation()).isEqualTo(newEvent.getLocation());
+            });
         }
     }
 
