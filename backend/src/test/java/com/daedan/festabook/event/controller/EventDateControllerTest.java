@@ -88,16 +88,10 @@ class EventDateControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            EventDateRequest request = EventDateRequestFixture.create();
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
-                    .body(request)
-                    .when()
-                    .post("/event-dates")
-                    .then()
-                    .statusCode(HttpStatus.CREATED.value());
+            EventDate existingEventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(existingEventDate);
+
+            EventDateRequest request = EventDateRequestFixture.create(existingEventDate.getDate());
 
             // when & then
             RestAssured
