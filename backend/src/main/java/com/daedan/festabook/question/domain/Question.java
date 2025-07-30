@@ -83,6 +83,8 @@ public class Question {
     }
 
     public void updateQuestion(String question, String answer) {
+        validateQuestion(question);
+        validateAnswer(answer);
         this.question = question;
         this.answer = answer;
     }
