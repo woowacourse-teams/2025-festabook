@@ -80,7 +80,7 @@ const BoothsPage = () => {
     const [expandedIds, setExpandedIds] = useState([]);
     const [loading, setLoading] = useState(false);
 
-    // 1. Booth 목록 불러오기
+    // Booth 목록 불러오기 및 수정이 발생하면 재렌더링 useEffect
     useEffect(() => {
         setLoading(true);
         api.get('/places')
@@ -99,7 +99,7 @@ const BoothsPage = () => {
         );
     };
 
-    // 2. Booth 생성
+    // Booth 생성 api 요청
     const handleCreate = async (data) => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
         try {
@@ -120,7 +120,7 @@ const BoothsPage = () => {
         }
     };
 
-    // 3. Booth 삭제
+    // Booth 삭제 api 요청
     const handleDelete = async (id) => {
         try {
             setLoading(true);
@@ -139,6 +139,7 @@ const BoothsPage = () => {
         }
     };
 
+    // 플레이스를 삭제하는 Modal 렌더링
     const openDeleteModal = (booth) => {
         openModal('confirm', {
             title: '플레이스 삭제 확인',
@@ -230,7 +231,6 @@ const BoothsPage = () => {
                             </tbody>
                         </table>
                     </div>
-
 
                     <div className='text-xl font-bold ml-1 mt-10 mb-2'>
                         기타 플레이스
