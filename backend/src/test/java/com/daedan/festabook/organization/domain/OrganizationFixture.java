@@ -10,7 +10,7 @@ public class OrganizationFixture {
     private static final LocalDate DEFAULT_START_DATE = LocalDate.of(2025, 10, 15);
     private static final LocalDate DEFAULT_END_DATE = LocalDate.of(2025, 10, 17);
     private static final Integer DEFAULT_ZOOM = 16;
-    private static final Coordinate DEFAULT_CENTER_COORDINATE = new Coordinate(37.3595704, 127.105399);
+    private static final Coordinate DEFAULT_CENTER_COORDINATE = CoordinateFixture.create();
     private static final List<Coordinate> DEFAULT_POLYGON_HOLE_BOUNDARY = List.of(
             new Coordinate(37.5863397, 127.0571267),
             new Coordinate(37.5801841, 127.0562684),
