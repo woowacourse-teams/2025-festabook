@@ -2,77 +2,38 @@ import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../constants/categories';
 import api from '../utils/api';
+import { isMainPlace, getDefaultValueIfNull, defaultBooth } from '../utils/booth';
 
-const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth }) => {
+const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth, isMainPlace }) => {
 
-    const defaultBooth = (booth) => {
-        return {
-            id: booth.id,
-            category: booth.category,
-            placeImages: booth.placeImages,
-            placeAnnouncements: booth.placeAnnouncements,
-
-            title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
-            description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
-            startTime: getDefaultValueIfNull('00:00', booth.startTime),
-            endTime: getDefaultValueIfNull('00:00', booth.endTime),
-            location: getDefaultValueIfNull('미지정', booth.location),
-            host: getDefaultValueIfNull('미지정', booth.host),
-        }
-    }
-
-    const getDefaultValueIfNull = (defaultValue, nullableValue) => {
-        return nullableValue === null ? defaultValue : nullableValue;
-    }
-
-    React.useEffect(() => {
-        if (
-            booth.title === null ||
-            booth.description === null ||
-            booth.startTime === null ||
-            booth.endTime === null ||
-            booth.location === null ||
-            booth.host === null
-        ) {
-            const newBooth = defaultBooth(booth);
-            updateBooth(newBooth.id, newBooth);
-        }
-    }, [
-        booth.id,
-        booth.title,
-        booth.description,
-        booth.startTime,
-        booth.endTime,
-        booth.location,
-        booth.host,
-        updateBooth
-    ]);
+    const newBooth = defaultBooth(booth);
+    console.log(newBooth);
 
     return (
         <div className="p-6 bg-gray-50">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
                     <h4 className="font-semibold text-lg mb-2">상세 정보</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap mb-4">{booth.description}</p>
+                    <p className="text-gray-700 whitespace-pre-wrap mb-4">{newBooth.description}</p>
                     <div className="text-sm text-gray-600 space-y-1">
-                        <p><i className="fas fa-map-marker-alt w-4 mr-2"></i>위치: {booth.location}</p>
-                        <p><i className="fas fa-user-friends w-4 mr-2"></i>운영 주체: {booth.host}</p>
-                        <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {booth.startTime} - {booth.endTime}</p>
+                        <p><i className="fas fa-map-marker-alt w-4 mr-2"></i>위치: {newBooth.location}</p>
+                        <p><i className="fas fa-user-friends w-4 mr-2"></i>운영 주체: {newBooth.host}</p>
+                        <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {newBooth.startTime} - {newBooth.endTime}</p>
                     </div>
                     <h4 className="font-semibold text-lg mt-4 mb-2">공지사항</h4>
-                    {booth.notices && booth.notices.length > 0 ? (
+                    {newBooth.notices && newBooth.notices.length > 0 ? (
                         <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                            {booth.notices.map(notice => <li key={notice.id}>{notice.text}</li>)}
+                            {newBooth.notices.map(notice => <li key={notice.id}>{notice.text}</li>)}
                         </ul>
                     ) : <p className="text-sm text-gray-500">공지사항 없음</p>}
                 </div>
                 <div>
                     <h4 className="font-semibold text-lg mb-2">사진</h4>
                     <div className="grid grid-cols-2 gap-2 mb-10">
-                        {booth.images && booth.images.length > 0 ? booth.images.map((img, index) => (
+                        {newBooth.images && newBooth.images.length > 0 ? newBooth.images.map((img, index) => (
                             <div key={index} className="relative">
-                                <img src={img} alt={`${booth.title} ${index + 1}`} className="w-full h-24 object-cover rounded-md" />
-                                {index === booth.mainImageIndex && <span className="main-image-indicator">대표</span>}
+                                <img src={img} alt={`${newBooth.title} ${index + 1}`} className="w-full h-24 object-cover rounded-md" />
+                                {index === newBooth.mainImageIndex && <span className="main-image-indicator">대표</span>}
                             </div>
                         )) : (
                             <p className="text-sm text-gray-500">사진 없음</p>
@@ -81,9 +42,9 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
-                <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${booth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
-                <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
-                <button onClick={() => openDeleteModal(booth)}
+                <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${newBooth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
+                <button onClick={() => openModal('booth', { newBooth, onSave: handleSave, isMainPlace: isMainPlace(newBooth.category) })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
+                <button onClick={() => openDeleteModal(newBooth)}
                     className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
             </div>
         </div>
@@ -95,24 +56,6 @@ const BoothsPage = () => {
     const [booths, setBooths] = useState([]);
     const [expandedIds, setExpandedIds] = useState([]);
     const [loading, setLoading] = useState(false);
-
-    // defaultBooth 메서드 (유저가 만든 것 사용)
-    const getDefaultValueIfNull = (defaultValue, nullableValue) => nullableValue === null ? defaultValue : nullableValue;
-    const defaultBooth = (booth) => ({
-        id: booth.id,
-        category: booth.category,
-        placeImages: booth.placeImages,
-        placeAnnouncements: booth.placeAnnouncements,
-        // 흡연구역, 쓰레기통은 title을 category명으로 세팅
-        title: ['SMOKING', 'TRASH_CAN'].includes(booth.category)
-            ? placeCategories[booth.category]
-            : getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
-        description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
-        startTime: getDefaultValueIfNull('00:00', booth.startTime),
-        endTime: getDefaultValueIfNull('00:00', booth.endTime),
-        location: getDefaultValueIfNull('미지정', booth.location),
-        host: getDefaultValueIfNull('미지정', booth.host),
-    });
 
     // 1. Booth 목록 불러오기
     useEffect(() => {
@@ -199,10 +142,6 @@ const BoothsPage = () => {
         showToast('플레이스 정보가 수정되었습니다.');
     };
 
-    const isMainPlace = (category) => {
-        return !['SMOKING', 'TRASH_CAN'].includes(category);
-    }
-
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
@@ -256,6 +195,7 @@ const BoothsPage = () => {
                                                                 openModal={openModal}
                                                                 handleSave={handleSave}
                                                                 showToast={showToast}
+                                                                isMainPlace={isMainPlace}
                                                                 updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
                                                             />
                                                         )}
