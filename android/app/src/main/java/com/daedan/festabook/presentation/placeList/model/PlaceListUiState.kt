@@ -8,7 +8,6 @@ sealed interface PlaceListUiState<T> {
     ) : PlaceListUiState<T>
 
     data class Error<T>(
-        val message: String,
-        val throwable: Throwable? = null,
+        val throwable: Throwable,
     ) : PlaceListUiState<T>
 }

@@ -12,7 +12,6 @@ sealed interface NoticeUiState {
     ) : NoticeUiState
 
     data class Error(
-        val message: String,
-        val throwable: Throwable? = null,
+        val throwable: Throwable,
     ) : NoticeUiState
 }

@@ -64,7 +64,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
 
                 is ScheduleDatesUiState.Error -> {
                     showSkeleton(isLoading = false)
-                    Timber.tag("TAG").d("setupDate: ${scheduleDateUiModels.message}")
+                    Timber.tag("TAG").d("setupDate: ${scheduleDateUiModels.throwable.message}")
                     showErrorSnackBar(scheduleDateUiModels.throwable)
                 }
             }

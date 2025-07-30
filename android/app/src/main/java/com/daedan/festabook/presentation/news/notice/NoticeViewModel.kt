@@ -35,7 +35,7 @@ class NoticeViewModel(
                 .onSuccess { notices ->
                     _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })
                 }.onFailure {
-                    _noticeUiState.value = NoticeUiState.Error(it.message.toString())
+                    _noticeUiState.value = NoticeUiState.Error(it)
                 }
         }
     }

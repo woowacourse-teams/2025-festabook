@@ -55,7 +55,7 @@ class ScheduleViewModel(
                         ScheduleEventsUiState.Success(scheduleEventUiModels)
                 }.onFailure {
                     _scheduleEventsUiState.value =
-                        ScheduleEventsUiState.Error(it.message.toString())
+                        ScheduleEventsUiState.Error(it)
                 }
         }
     }
@@ -70,7 +70,7 @@ class ScheduleViewModel(
                     val scheduleDateUiModels = scheduleDates.map { it.toUiModel() }
                     _scheduleDatesUiState.value = ScheduleDatesUiState.Success(scheduleDateUiModels)
                 }.onFailure {
-                    _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it.message.toString())
+                    _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it)
                 }
         }
     }

@@ -71,7 +71,7 @@ class PlaceListViewModel(
                     .onSuccess {
                         _placeGeographies.value = PlaceListUiState.Success(it.map { it.toUiModel() })
                     }.onFailure {
-                        _placeGeographies.value = PlaceListUiState.Error(it.message.toString(), it)
+                        _placeGeographies.value = PlaceListUiState.Error(it)
                     }
             }
         }

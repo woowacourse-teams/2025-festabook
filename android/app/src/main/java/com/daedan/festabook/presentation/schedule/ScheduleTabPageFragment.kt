@@ -61,7 +61,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                 }
 
                 is ScheduleEventsUiState.Error -> {
-                    Timber.tag("TAG").d("setupObservers: ${schedule.message}")
+                    Timber.tag("TAG").d("setupObservers: ${schedule.throwable.message}")
                     showErrorSnackBar(schedule.throwable)
                     showSkeleton(isLoading = false)
                 }

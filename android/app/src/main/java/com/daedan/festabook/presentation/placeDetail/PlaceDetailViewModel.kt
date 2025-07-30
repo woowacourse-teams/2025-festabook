@@ -38,7 +38,7 @@ class PlaceDetailViewModel(
                             placeDetail.toUiModel(),
                         )
                 }.onFailure {
-                    _placeDetail.value = PlaceDetailUiState.Error(it.message.toString(), it)
+                    _placeDetail.value = PlaceDetailUiState.Error(it)
                 }
         }
     }
