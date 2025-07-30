@@ -3,7 +3,6 @@ package com.daedan.festabook.place.controller;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
-import static org.hamcrest.Matchers.nullValue;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
@@ -120,13 +119,15 @@ class PlaceGeographyControllerTest {
         }
 
         @Test
-        void 성공_Coordinate가_없을_경우_null() {
+        void 성공_Coordinate가_없을_경우_응답에_포함하지_않음() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
             Place place = PlaceFixture.create(organization, PlaceCategory.BAR, null);
-            placeJpaRepository.saveAll(List.of(place));
+            placeJpaRepository.save(place);
+
+            int expectedSize = 0;
 
             // when & then
             RestAssured
@@ -136,8 +137,7 @@ class PlaceGeographyControllerTest {
                     .get("/places/geographies")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("[0].markerCoordinate.latitude", nullValue())
-                    .body("[0].markerCoordinate.longitude", nullValue());
+                    .body("$", hasSize(expectedSize));
         }
     }
 
