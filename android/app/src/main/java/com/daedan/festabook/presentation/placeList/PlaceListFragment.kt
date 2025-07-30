@@ -28,6 +28,7 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -96,6 +97,7 @@ class PlaceListFragment :
                 is PlaceListUiState.Success -> placeAdapter.submitList(places.value)
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
+                    Timber.tag("TAG").d("places: ${places.throwable?.message}")
                     showErrorSnackBar(places.throwable)
                 }
             }
@@ -105,8 +107,10 @@ class PlaceListFragment :
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> mapManager.setPlaceLocation(placeGeographies.value)
-                is PlaceListUiState.Error ->
+                is PlaceListUiState.Error -> {
+                    Timber.tag("TAG").d("placeGeographies: ${placeGeographies.throwable?.message}")
                     showErrorSnackBar(placeGeographies.throwable)
+                }
             }
         }
 
