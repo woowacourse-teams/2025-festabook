@@ -23,7 +23,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class QuestionAnswer {
+public class Question {
 
     private static final int MAX_QUESTION_LENGTH = 500;
     private static final int MAX_ANSWER_LENGTH = 1000;
@@ -46,7 +46,7 @@ public class QuestionAnswer {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    protected QuestionAnswer(
+    protected Question(
             Organization organization,
             String question,
             String answer,

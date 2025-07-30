@@ -5,8 +5,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
-import com.daedan.festabook.question.domain.QuestionAnswer;
-import com.daedan.festabook.question.domain.QuestionAnswerFixture;
+import com.daedan.festabook.question.domain.Question;
+import com.daedan.festabook.question.domain.QuestionFixture;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -16,10 +16,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 @DataJpaTest
-class QuestionAnswerJpaRepositoryTest {
+class QuestionJpaRepositoryTest {
 
     @Autowired
-    private QuestionAnswerJpaRepository questionAnswerJpaRepository;
+    private QuestionJpaRepository questionJpaRepository;
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
@@ -33,31 +33,31 @@ class QuestionAnswerJpaRepositoryTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            QuestionAnswer todayQuestionAnswer = QuestionAnswerFixture.create(
+            Question todayQuestion = QuestionFixture.create(
                     organization,
                     LocalDateTime.now()
             );
-            QuestionAnswer yesterdayQuestionAnswer = QuestionAnswerFixture.create(
+            Question yesterdayQuestion = QuestionFixture.create(
                     organization,
                     LocalDateTime.now().minusDays(1)
             );
-            QuestionAnswer twoDaysAgoQuestionAnswer = QuestionAnswerFixture.create(
+            Question twoDaysAgoQuestion = QuestionFixture.create(
                     organization,
                     LocalDateTime.now().minusDays(2)
             );
-            questionAnswerJpaRepository.saveAll(List.of(
-                    twoDaysAgoQuestionAnswer,
-                    yesterdayQuestionAnswer,
-                    todayQuestionAnswer
+            questionJpaRepository.saveAll(List.of(
+                    twoDaysAgoQuestion,
+                    yesterdayQuestion,
+                    todayQuestion
             ));
 
             // when
-            List<QuestionAnswer> questionAnswers =
-                    questionAnswerJpaRepository.findByOrganizationIdOrderByCreatedAtDesc(organization.getId());
+            List<Question> questions =
+                    questionJpaRepository.findByOrganizationIdOrderByCreatedAtDesc(organization.getId());
 
             // then
-            assertThat(questionAnswers)
-                    .isSortedAccordingTo(Comparator.comparing(QuestionAnswer::getCreatedAt).reversed());
+            assertThat(questions)
+                    .isSortedAccordingTo(Comparator.comparing(Question::getCreatedAt).reversed());
         }
     }
 }

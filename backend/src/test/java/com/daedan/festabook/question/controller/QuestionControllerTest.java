@@ -6,9 +6,9 @@ import static org.hamcrest.Matchers.hasSize;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
-import com.daedan.festabook.question.domain.QuestionAnswer;
-import com.daedan.festabook.question.domain.QuestionAnswerFixture;
-import com.daedan.festabook.question.infrastructure.QuestionAnswerJpaRepository;
+import com.daedan.festabook.question.domain.Question;
+import com.daedan.festabook.question.domain.QuestionFixture;
+import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import io.restassured.RestAssured;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -33,7 +33,7 @@ class QuestionControllerTest {
     private OrganizationJpaRepository organizationJpaRepository;
 
     @Autowired
-    private QuestionAnswerJpaRepository questionAnswerJpaRepository;
+    private QuestionJpaRepository questionJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -44,7 +44,7 @@ class QuestionControllerTest {
     }
 
     @Nested
-    class getAllQuestionAnswerByOrganizationId {
+    class getAllQuestionByOrganizationId {
 
         @Test
         void 성공_응답_데이터_필드_확인() {
@@ -52,8 +52,8 @@ class QuestionControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            QuestionAnswer questionAnswer = QuestionAnswerFixture.create(organization);
-            questionAnswerJpaRepository.save(questionAnswer);
+            Question question = QuestionFixture.create(organization);
+            questionJpaRepository.save(question);
 
             int expectedSize = 1;
             int expectedFieldSize = 4;
@@ -68,9 +68,9 @@ class QuestionControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(questionAnswer.getId().intValue()))
-                    .body("[0].question", equalTo(questionAnswer.getQuestion()))
-                    .body("[0].answer", equalTo(questionAnswer.getAnswer()));
+                    .body("[0].id", equalTo(question.getId().intValue()))
+                    .body("[0].question", equalTo(question.getQuestion()))
+                    .body("[0].answer", equalTo(question.getAnswer()));
         }
 
         @Test
@@ -81,11 +81,11 @@ class QuestionControllerTest {
             organizationJpaRepository.saveAll(List.of(checkOrganization, otherOrganization));
 
             int expectedSize = 2;
-            List<QuestionAnswer> questionAnswers = QuestionAnswerFixture.createList(expectedSize, checkOrganization);
-            questionAnswerJpaRepository.saveAll(questionAnswers);
+            List<Question> questions = QuestionFixture.createList(expectedSize, checkOrganization);
+            questionJpaRepository.saveAll(questions);
             int otherSize = 3;
-            List<QuestionAnswer> otherQuestionAnswers = QuestionAnswerFixture.createList(otherSize, otherOrganization);
-            questionAnswerJpaRepository.saveAll(otherQuestionAnswers);
+            List<Question> otherQuestions = QuestionFixture.createList(otherSize, otherOrganization);
+            questionJpaRepository.saveAll(otherQuestions);
 
             // when & then
             RestAssured
@@ -109,10 +109,10 @@ class QuestionControllerTest {
                     LocalDateTime.now()
             );
 
-            List<QuestionAnswer> questionAnswers = QuestionAnswerFixture.createList(dateTimes, organization);
-            questionAnswerJpaRepository.saveAll(questionAnswers);
+            List<Question> questions = QuestionFixture.createList(dateTimes, organization);
+            questionJpaRepository.saveAll(questions);
 
-            List<QuestionAnswer> expectedQuestionAnswers = questionAnswers.stream()
+            List<Question> expectedQuestions = questions.stream()
                     .sorted((qa1, qa2) -> qa2.getCreatedAt().compareTo(qa1.getCreatedAt()))
                     .toList();
 
@@ -124,9 +124,9 @@ class QuestionControllerTest {
                     .get("/questions")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(questionAnswers.size()))
-                    .body("[0].id", equalTo(expectedQuestionAnswers.get(0).getId().intValue()))
-                    .body("[1].id", equalTo(expectedQuestionAnswers.get(1).getId().intValue()));
+                    .body("$", hasSize(questions.size()))
+                    .body("[0].id", equalTo(expectedQuestions.get(0).getId().intValue()))
+                    .body("[1].id", equalTo(expectedQuestions.get(1).getId().intValue()));
         }
     }
 }

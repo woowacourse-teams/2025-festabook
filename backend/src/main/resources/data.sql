@@ -73,9 +73,9 @@ VALUES ('페스타북 축제에 오신 것을 환영합니다!', '3일간의 즐
        ('주차 안내', '주차는 남문 주차장을 이용해 주시기 바랍니다. 주차권은 안내데스크에서 발급받으실 수 있습니다.', false, 1, '2025-07-19 08:45:00');
 
 -- ========================
--- 자주 묻는 질문 (QuestionAnswer)
+-- 자주 묻는 질문 (Question)
 -- ========================
-INSERT INTO question_answer (organization_id, question, answer, created_at)
+INSERT INTO question (organization_id, question, answer, created_at)
 VALUES (1, '차를 가져가도 될까요?', '동문 주차장을 이용하실 수 있습니다.', '2025-07-16 09:30:00'),
        (1, '부스 위치가 궁금해요.', '푸드트럭은 운동장 오른쪽 라인에 위치합니다.', '2025-07-16 09:40:00');
 

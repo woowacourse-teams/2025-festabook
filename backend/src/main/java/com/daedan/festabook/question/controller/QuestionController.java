@@ -1,8 +1,8 @@
 package com.daedan.festabook.question.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.question.dto.QuestionAnswerResponses;
-import com.daedan.festabook.question.service.QuestionAnswerService;
+import com.daedan.festabook.question.dto.QuestionResponses;
+import com.daedan.festabook.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "질문", description = "질문 관련 API")
 public class QuestionController {
 
-    private final QuestionAnswerService questionAnswerService;
+    private final QuestionService questionService;
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
@@ -29,9 +29,9 @@ public class QuestionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public QuestionAnswerResponses getAllQuestionAnswerByOrganizationId(
+    public QuestionResponses getAllQuestionByOrganizationId(
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
-        return questionAnswerService.getAllQuestionAnswerByOrganizationId(organizationId);
+        return questionService.getAllQuestionByOrganizationId(organizationId);
     }
 }

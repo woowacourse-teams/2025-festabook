@@ -12,7 +12,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class QuestionAnswerTest {
+class QuestionTest {
 
     @Nested
     class validateOrganization {
@@ -23,7 +23,7 @@ class QuestionAnswerTest {
             Organization organization = OrganizationFixture.create();
 
             // when & then
-            assertThatCode(() -> QuestionAnswerFixture.create(organization))
+            assertThatCode(() -> QuestionFixture.create(organization))
                     .doesNotThrowAnyException();
         }
 
@@ -33,7 +33,7 @@ class QuestionAnswerTest {
             Organization organization = null;
 
             // when & then
-            assertThatThrownBy(() -> QuestionAnswerFixture.create(organization))
+            assertThatThrownBy(() -> QuestionFixture.create(organization))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("Organization은 null일 수 없습니다.");
         }
@@ -49,7 +49,7 @@ class QuestionAnswerTest {
             String question = "미".repeat(maxQuestionLength);
 
             // when & then
-            assertThatCode(() -> QuestionAnswerFixture.createWithQuestion(question))
+            assertThatCode(() -> QuestionFixture.createWithQuestion(question))
                     .doesNotThrowAnyException();
         }
 
@@ -59,7 +59,7 @@ class QuestionAnswerTest {
             String question = null;
 
             // when & then
-            assertThatThrownBy(() -> QuestionAnswerFixture.createWithQuestion(question))
+            assertThatThrownBy(() -> QuestionFixture.createWithQuestion(question))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 비어 있을 수 없습니다.");
         }
@@ -70,7 +70,7 @@ class QuestionAnswerTest {
             String question = " ";
 
             // when & then
-            assertThatThrownBy(() -> QuestionAnswerFixture.createWithQuestion(question))
+            assertThatThrownBy(() -> QuestionFixture.createWithQuestion(question))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 비어 있을 수 없습니다.");
         }
@@ -82,7 +82,7 @@ class QuestionAnswerTest {
             String question = "미".repeat(maxQuestionLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> QuestionAnswerFixture.createWithQuestion(question))
+            assertThatThrownBy(() -> QuestionFixture.createWithQuestion(question))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("질문은 500자를 초과할 수 없습니다.");
         }
@@ -98,7 +98,7 @@ class QuestionAnswerTest {
             String answer = "미".repeat(maxAnswerLength);
 
             // when & then
-            assertThatCode(() -> QuestionAnswerFixture.createWithAnswer(answer))
+            assertThatCode(() -> QuestionFixture.createWithAnswer(answer))
                     .doesNotThrowAnyException();
         }
 
@@ -108,7 +108,7 @@ class QuestionAnswerTest {
             String answer = null;
 
             // when & then
-            assertThatThrownBy(() -> QuestionAnswerFixture.createWithAnswer(answer))
+            assertThatThrownBy(() -> QuestionFixture.createWithAnswer(answer))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 비어 있을 수 없습니다.");
         }
@@ -119,7 +119,7 @@ class QuestionAnswerTest {
             String answer = " ";
 
             // when & then
-            assertThatThrownBy(() -> QuestionAnswerFixture.createWithAnswer(answer))
+            assertThatThrownBy(() -> QuestionFixture.createWithAnswer(answer))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 비어 있을 수 없습니다.");
         }
@@ -131,7 +131,7 @@ class QuestionAnswerTest {
             String answer = "미".repeat(maxAnswerLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> QuestionAnswerFixture.createWithAnswer(answer))
+            assertThatThrownBy(() -> QuestionFixture.createWithAnswer(answer))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("답변은 1000자를 초과할 수 없습니다.");
         }
