@@ -66,9 +66,13 @@ class PlaceListViewModel(
             }
 
             launch {
-                placeListRepository.getPlaceGeographies().onSuccess {
-                    _placeGeographies.value = PlaceListUiState.Success(it.map { it.toUiModel() })
-                }
+                placeListRepository
+                    .getPlaceGeographies()
+                    .onSuccess {
+                        _placeGeographies.value = PlaceListUiState.Success(it.map { it.toUiModel() })
+                    }.onFailure {
+                        _placeGeographies.value = PlaceListUiState.Error(it.message.toString(), it)
+                    }
             }
         }
     }

@@ -15,6 +15,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
+import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -93,13 +94,20 @@ class PlaceListFragment :
             when (places) {
                 is PlaceListUiState.Loading -> showSkeleton()
                 is PlaceListUiState.Success -> placeAdapter.submitList(places.value)
-                is PlaceListUiState.Error -> hideSkeleton()
+                is PlaceListUiState.Error -> {
+                    hideSkeleton()
+                    showErrorSnackBar(places.throwable)
+                }
             }
         }
 
         viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
-            if (placeGeographies !is PlaceListUiState.Success) return@observe
-            mapManager.setPlaceLocation(placeGeographies.value)
+            when (placeGeographies) {
+                is PlaceListUiState.Loading -> Unit
+                is PlaceListUiState.Success -> mapManager.setPlaceLocation(placeGeographies.value)
+                is PlaceListUiState.Error ->
+                    showErrorSnackBar(placeGeographies.throwable)
+            }
         }
 
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
