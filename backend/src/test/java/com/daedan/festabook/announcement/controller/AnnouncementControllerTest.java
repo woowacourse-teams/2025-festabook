@@ -1,5 +1,6 @@
 package com.daedan.festabook.announcement.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.equalTo;
@@ -11,10 +12,12 @@ import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementUpdateRequestFixture;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import com.daedan.festabook.organization.domain.Organization;
@@ -28,6 +31,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -300,6 +305,40 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 공지입니다."));
+        }
+    }
+
+    @Nested
+    class updateAnnouncementPin {
+
+        @ParameterizedTest(name = "초기 고정 상태: {0}, 변경할 상태: {1}")
+        @CsvSource({
+                "true, false",   // 고정 해제
+                "false, true"    // 고정 설정
+        })
+        void 성공_고정_상태_변경(boolean initialPinned, boolean expectedPinned) {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Announcement announcement = AnnouncementFixture.create(initialPinned, organization);
+            announcementJpaRepository.save(announcement);
+
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(expectedPinned);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/announcements/{announcementId}/pin", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            Announcement updatedAnnouncement = announcementJpaRepository.findById(announcement.getId()).get();
+            assertThat(updatedAnnouncement.isPinned()).isEqualTo(expectedPinned);
         }
     }
 

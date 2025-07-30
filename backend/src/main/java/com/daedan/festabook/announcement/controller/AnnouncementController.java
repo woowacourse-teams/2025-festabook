@@ -1,6 +1,7 @@
 package com.daedan.festabook.announcement.controller;
 
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
@@ -58,7 +59,7 @@ public class AnnouncementController {
 
     @PatchMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 공지 수정")
+    @Operation(summary = "특정 공지 내용 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -67,6 +68,20 @@ public class AnnouncementController {
             @RequestBody AnnouncementUpdateRequest request
     ) {
         return announcementService.updateAnnouncement(announcementId, request);
+    }
+
+    @PatchMapping("/{announcementId}/pin")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "특정 공지 고정 형태 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
+    })
+    public void updateAnnouncementPin(
+            @PathVariable Long announcementId,
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @RequestBody AnnouncementPinUpdateRequest request
+    ) {
+        announcementService.updateAnnouncementPin(announcementId, organizationId, request);
     }
 
     @DeleteMapping("/{announcementId}")

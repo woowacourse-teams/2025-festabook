@@ -1,6 +1,4 @@
-package com.daedan.festabook.announcement.domain;
-
-import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+package com.daedan.festabook.announcement.dto;
 
 public class AnnouncementRequestFixture {
 

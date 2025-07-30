@@ -1,5 +1,6 @@
 package com.daedan.festabook.announcement.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
@@ -7,15 +8,18 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.never;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementRequestFixture;
-import com.daedan.festabook.announcement.domain.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
@@ -107,8 +111,9 @@ class AnnouncementServiceTest {
         void 예외_알림_전송_실패시_예외_전파() {
             // given
             Long organizationId = 1L;
-            AnnouncementRequest request = AnnouncementRequestFixture.create();
             Organization organization = OrganizationFixture.create(organizationId);
+
+            AnnouncementRequest request = AnnouncementRequestFixture.create();
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
@@ -286,6 +291,88 @@ class AnnouncementServiceTest {
             assertThatThrownBy(() -> announcementService.updateAnnouncement(invalidAnnouncementId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
+        }
+    }
+
+    @Nested
+    class updateAnnouncementPin {
+
+        @Test
+        void 성공() {
+            // given
+            Long announcementId = 1L;
+            Announcement announcement = AnnouncementFixture.create(announcementId, false);
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
+
+            given(announcementJpaRepository.findById(announcementId))
+                    .willReturn(Optional.of(announcement));
+
+            // when
+            announcementService.updateAnnouncementPin(announcementId, DEFAULT_ORGANIZATION_ID, request);
+
+            // then
+            assertThat(announcement.isPinned()).isEqualTo(request.pinned());
+        }
+
+        @Test
+        void 예외_존재하지_않는_공지사항_ID() {
+            // given
+            Long invalidAnnouncementId = 0L;
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create();
+
+            given(announcementJpaRepository.findById(invalidAnnouncementId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
+                    invalidAnnouncementId,
+                    DEFAULT_ORGANIZATION_ID,
+                    request)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 공지입니다.");
+        }
+
+        @Test
+        void 예외_고정_공지_개수_제한_초과() {
+            // given
+            Long announcementId = 1L;
+            Announcement announcement = AnnouncementFixture.create(announcementId, false);
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
+
+            given(announcementJpaRepository.findById(announcementId))
+                    .willReturn(Optional.of(announcement));
+
+            Long pinnedCountLimit = 3L;
+            given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
+                    .willReturn(pinnedCountLimit);
+
+            // when & then
+            assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
+                    announcementId,
+                    DEFAULT_ORGANIZATION_ID,
+                    request)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
+        }
+
+        @Test
+        void 성공_고정된_공지는_고정_공지_개수_제한_검증_안함() {
+            // given
+            Long announcementId = 1L;
+            Announcement announcement = AnnouncementFixture.create(announcementId, true);
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
+
+            given(announcementJpaRepository.findById(announcementId))
+                    .willReturn(Optional.of(announcement));
+
+            // when
+            announcementService.updateAnnouncementPin(announcementId, DEFAULT_ORGANIZATION_ID, request);
+
+            // then
+            then(announcementJpaRepository).should(never())
+                    .countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID);
         }
     }
 

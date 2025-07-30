@@ -2,6 +2,7 @@ package com.daedan.festabook.announcement.service;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
@@ -68,6 +69,15 @@ public class AnnouncementService {
     }
 
     @Transactional
+    public void updateAnnouncementPin(Long announcementId, Long organizationId, AnnouncementPinUpdateRequest request) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        if (announcement.isUnpinned() && request.pinned()) {
+            validatePinnedLimit(organizationId);
+        }
+
+        announcement.updatePinned(request.pinned());
+    }
+
     public void deleteAnnouncementByAnnouncementId(Long announcementId) {
         announcementJpaRepository.deleteById(announcementId);
     }
