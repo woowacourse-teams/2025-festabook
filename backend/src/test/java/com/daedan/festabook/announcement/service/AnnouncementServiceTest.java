@@ -111,8 +111,9 @@ class AnnouncementServiceTest {
         void 예외_알림_전송_실패시_예외_전파() {
             // given
             Long organizationId = 1L;
-            AnnouncementRequest request = AnnouncementRequestFixture.create();
             Organization organization = OrganizationFixture.create(organizationId);
+
+            AnnouncementRequest request = AnnouncementRequestFixture.create();
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
@@ -300,8 +301,8 @@ class AnnouncementServiceTest {
         void 성공() {
             // given
             Long announcementId = 1L;
-            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
             Announcement announcement = AnnouncementFixture.create(announcementId, false);
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
@@ -336,8 +337,8 @@ class AnnouncementServiceTest {
         void 예외_고정_공지_개수_제한_초과() {
             // given
             Long announcementId = 1L;
-            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
             Announcement announcement = AnnouncementFixture.create(announcementId, false);
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
@@ -360,8 +361,8 @@ class AnnouncementServiceTest {
         void 성공_고정된_공지는_고정_공지_개수_제한_검증_안함() {
             // given
             Long announcementId = 1L;
-            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
             Announcement announcement = AnnouncementFixture.create(announcementId, true);
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
