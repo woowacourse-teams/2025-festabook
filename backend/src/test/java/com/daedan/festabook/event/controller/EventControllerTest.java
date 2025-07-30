@@ -71,8 +71,7 @@ class EventControllerTest {
         @Test
         void 성공() {
             // given
-            LocalDateTime dateTime = LocalDateTime.MAX;
-            setFixedClock(dateTime);
+            setFixedClock(LocalDateTime.now());
 
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -104,8 +103,7 @@ class EventControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            LocalDateTime dateTime = LocalDateTime.MAX;
-            setFixedClock(dateTime);
+            setFixedClock(LocalDateTime.now());
 
             EventDate eventDate = EventDateFixture.create(organization);
             eventDateJpaRepository.save(eventDate);
