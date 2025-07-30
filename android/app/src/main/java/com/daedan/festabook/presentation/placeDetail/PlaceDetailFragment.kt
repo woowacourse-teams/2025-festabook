@@ -53,9 +53,11 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
                     showErrorSnackBar(result.throwable)
                 }
                 is PlaceDetailUiState.Loading -> {
+                    showSkeleton()
                     Timber.tag("PlaceDetailFragment").d("Loading")
                 }
                 is PlaceDetailUiState.Success -> {
+                    hideSkeleton()
                     loadPlaceDetail(result.placeDetail)
                 }
             }
@@ -79,6 +81,18 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         } else {
             placeNoticeAdapter.submitList(placeDetail.notices)
         }
+    }
+
+    private fun showSkeleton() {
+        binding.layoutContent.visibility = View.GONE
+        binding.sflScheduleSkeleton.visibility = View.VISIBLE
+        binding.sflScheduleSkeleton.startShimmer()
+    }
+
+    private fun hideSkeleton() {
+        binding.layoutContent.visibility = View.VISIBLE
+        binding.sflScheduleSkeleton.visibility = View.GONE
+        binding.sflScheduleSkeleton.stopShimmer()
     }
 
     companion object {

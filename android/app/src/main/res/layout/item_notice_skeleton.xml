@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
+    <View
         android:background="@drawable/bg_gray300_radius_10dp"
         android:layout_width="match_parent"
         android:layout_height="70dp"

@@ -5,8 +5,8 @@
     android:layout_marginHorizontal="16dp"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <TextView
-        android:id="@+id/tv_item_place_list_image_skeleton"
+    <View
+        android:id="@+id/view_item_place_list_image_skeleton"
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:background="@drawable/bg_gray300_radius_10dp"
@@ -15,44 +15,44 @@
         android:layout_marginVertical="8dp"
         />
 
-    <TextView
-        android:id="@+id/tv_item_place_list_category"
+    <View
+        android:id="@+id/view_item_place_list_category"
         android:layout_width="40dp"
         android:layout_height="12dp"
         android:background="@color/gray300"
-        app:layout_constraintTop_toTopOf="@id/tv_item_place_list_image_skeleton"
-        app:layout_constraintStart_toEndOf="@id/tv_item_place_list_image_skeleton"
+        app:layout_constraintTop_toTopOf="@id/view_item_place_list_image_skeleton"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
         />
 
-    <TextView
-        android:id="@+id/tv_item_place_list_title"
+    <View
+        android:id="@+id/view_item_place_list_title"
         android:layout_width="260dp"
         android:layout_height="12dp"
         android:background="@color/gray300"
-        app:layout_constraintTop_toBottomOf="@id/tv_item_place_list_category"
-        app:layout_constraintStart_toEndOf="@id/tv_item_place_list_image_skeleton"
+        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_category"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
         android:layout_marginTop="6dp"
         />
 
-    <TextView
-        android:id="@+id/tv_item_place_list_description"
+    <View
+        android:id="@+id/view_item_place_list_description"
         android:layout_width="260dp"
         android:layout_height="12dp"
         android:background="@color/gray300"
-        app:layout_constraintTop_toBottomOf="@id/tv_item_place_list_title"
-        app:layout_constraintStart_toEndOf="@id/tv_item_place_list_image_skeleton"
+        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_title"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
         android:layout_marginTop="6dp"
         />
 
-    <TextView
+    <View
         android:layout_width="60dp"
         android:layout_height="12dp"
         android:background="@color/gray300"
-        app:layout_constraintTop_toBottomOf="@id/tv_item_place_list_description"
-        app:layout_constraintStart_toEndOf="@id/tv_item_place_list_image_skeleton"
+        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_description"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
         android:layout_marginTop="6dp"
         />
