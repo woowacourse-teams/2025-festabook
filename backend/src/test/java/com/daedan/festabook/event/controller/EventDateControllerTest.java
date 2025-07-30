@@ -114,7 +114,7 @@ class EventDateControllerTest {
     }
 
     @Nested
-    class deleteEventDate {
+    class deleteEventDateByEventDateId {
 
         @Test
         void 성공() {

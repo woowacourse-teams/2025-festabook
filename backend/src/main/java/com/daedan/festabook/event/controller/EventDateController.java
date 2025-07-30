@@ -47,7 +47,7 @@ public class EventDateController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
-    public void deleteEventDate(
+    public void deleteEventDateByEventDateId(
             @PathVariable Long eventDateId
     ) {
         eventDateService.deleteEventDateByEventDateId(eventDateId);

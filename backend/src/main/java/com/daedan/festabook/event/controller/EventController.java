@@ -58,7 +58,7 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
-    public void deleteEvent(
+    public void deleteEventByEventId(
             @PathVariable Long eventId
     ) {
         eventService.deleteEventByEventId(eventId);

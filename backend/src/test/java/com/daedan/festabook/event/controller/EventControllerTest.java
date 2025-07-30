@@ -136,7 +136,7 @@ class EventControllerTest {
     }
 
     @Nested
-    class deleteEvent {
+    class deleteEventByEventId {
 
         @Test
         void 성공() {
