@@ -6,11 +6,30 @@ import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventDateTest {
+
+    @Nested
+    class updateDate {
+
+        @Test
+        void 성공() {
+            // given
+            LocalDate initialDate = LocalDate.of(2025, 5, 1);
+            EventDate eventDate = EventDateFixture.create(initialDate);
+            LocalDate newDate = LocalDate.of(2025, 6, 1);
+
+            // when
+            eventDate.updateDate(newDate);
+
+            // then
+            assertThat(eventDate.getDate()).isEqualTo(newDate);
+        }
+    }
 
     @Nested
     class compareTo {

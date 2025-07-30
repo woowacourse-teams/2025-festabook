@@ -36,6 +36,12 @@ public class EventDateService {
     }
 
     @Transactional
+    public void updateEventDate(Long eventDateId, EventDateRequest request) {
+        EventDate eventDate = getEventDateById(eventDateId);
+        eventDate.updateDate(request.date());
+    }
+
+    @Transactional
     public void deleteEventDateByEventDateId(Long eventDateId) {
         eventJpaRepository.deleteAllByEventDateId(eventDateId);
         eventDateJpaRepository.deleteById(eventDateId);
@@ -51,6 +57,11 @@ public class EventDateService {
     private Organization getOrganizationById(Long organizationId) {
         return organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private EventDate getEventDateById(Long eventDateId) {
+        return eventDateJpaRepository.findById(eventDateId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 일정 날짜입니다.", HttpStatus.BAD_REQUEST));
     }
 
     private void validateDuplicatedEventDate(Long organizationId, LocalDate date) {

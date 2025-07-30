@@ -114,6 +114,60 @@ class EventDateControllerTest {
     }
 
     @Nested
+    class updateEventDate {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            EventDate eventDate = EventDateFixture.create(organization);
+            eventDateJpaRepository.save(eventDate);
+
+            EventDateRequest request = EventDateRequestFixture.create(eventDate.getDate().plusDays(1));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .body(request)
+                    .when()
+                    .patch("/event-dates/{eventDateId}", eventDate.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertSoftly(s -> {
+                EventDate updatedEventDate = eventDateJpaRepository.findById(eventDate.getId()).orElseThrow();
+                s.assertThat(updatedEventDate.getDate()).isEqualTo(request.date());
+            });
+        }
+
+        @Test
+        void 성공_존재하지_않는_일정_날짜_ID_204_응답() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Long notExistingEventDateId = 0L;
+            EventDateRequest request = EventDateRequestFixture.create();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .body(request)
+                    .when()
+                    .patch("/event-dates/{eventDateId}", notExistingEventDateId)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("존재하지 않는 일정 날짜입니다."));
+        }
+    }
+
+    @Nested
     class deleteEventDateByEventDateId {
 
         @Test

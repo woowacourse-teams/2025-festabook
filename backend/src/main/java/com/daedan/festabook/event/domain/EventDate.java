@@ -51,6 +51,10 @@ public class EventDate implements Comparable<EventDate> {
         );
     }
 
+    public void updateDate(LocalDate date) {
+        this.date = date;
+    }
+
     @Override
     public int compareTo(EventDate otherEventDate) {
         return this.date.compareTo(otherEventDate.date);

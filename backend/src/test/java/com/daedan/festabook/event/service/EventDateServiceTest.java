@@ -7,10 +7,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.domain.EventDateFixture;
 import com.daedan.festabook.event.dto.EventDateRequest;
@@ -19,6 +15,10 @@ import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -98,6 +98,26 @@ class EventDateServiceTest {
             assertThatThrownBy(() -> eventDateService.createEventDate(DEFAULT_ORGANIZATION_ID, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
+        }
+    }
+
+    @Nested
+    class updateEventDate {
+
+        @Test
+        void 성공() {
+            // given
+            Long eventDateId = 1L;
+            EventDateRequest request = EventDateRequestFixture.create();
+            EventDate eventDate = EventDateFixture.create(request.date());
+            given(eventDateJpaRepository.findById(eventDateId))
+                    .willReturn(Optional.of(eventDate));
+
+            // when
+            eventDateService.updateEventDate(eventDateId, request);
+
+            // then
+            assertThat(eventDate.getDate()).isEqualTo(request.date());
         }
     }
 
