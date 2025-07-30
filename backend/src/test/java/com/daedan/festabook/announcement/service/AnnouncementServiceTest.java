@@ -1,5 +1,6 @@
 package com.daedan.festabook.announcement.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
@@ -309,7 +310,7 @@ class AnnouncementServiceTest {
             announcementService.updateAnnouncementPin(announcementId, DEFAULT_ORGANIZATION_ID, request);
 
             // then
-            assertSoftly(s -> s.assertThat(announcement.isPinned()).isEqualTo(request.pinned()));
+            assertThat(announcement.isPinned()).isEqualTo(request.pinned());
         }
 
         @Test
@@ -322,9 +323,10 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(
-                    () -> announcementService.updateAnnouncementPin(invalidAnnouncementId, DEFAULT_ORGANIZATION_ID,
-                            request))
+            assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
+                    invalidAnnouncementId,
+                    DEFAULT_ORGANIZATION_ID,
+                    request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
         }
@@ -339,18 +341,21 @@ class AnnouncementServiceTest {
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
 
+            Long pinnedCountLimit = 3L;
             given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(3L);
+                    .willReturn(pinnedCountLimit);
 
             // when & then
-            assertThatThrownBy(
-                    () -> announcementService.updateAnnouncementPin(announcementId, DEFAULT_ORGANIZATION_ID, request))
+            assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
+                    announcementId,
+                    DEFAULT_ORGANIZATION_ID,
+                    request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
         }
 
         @Test
-        void 성공_이미_고정된_공지는_제한_검증_안함() {
+        void 성공_고정된_공지는_고정_공지_개수_제한_검증_안함() {
             // given
             Long announcementId = 1L;
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
