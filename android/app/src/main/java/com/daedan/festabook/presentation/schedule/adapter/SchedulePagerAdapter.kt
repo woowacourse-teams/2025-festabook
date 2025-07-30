@@ -20,7 +20,6 @@ class SchedulePagerAdapter(
     fun submitList(newItems: List<ScheduleDateUiModel>) {
         items.clear()
         items.addAll(newItems)
-        val lastIndex: Int = newItems.size - 1
-        notifyItemRangeChanged(FIRST_INDEX, lastIndex)
+        notifyItemRangeChanged(FIRST_INDEX, itemCount)
     }
 }
