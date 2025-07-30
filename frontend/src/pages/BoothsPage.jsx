@@ -300,22 +300,6 @@ const BoothsPage = () => {
                                                     </div>
                                                 </td>
                                             </tr>
-                                            <tr>
-                                                <td colSpan="3" className="p-0">
-                                                    <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
-                                                        {expandedIds.includes(booth.id) && (
-                                                            <BoothDetails
-                                                                booth={booth}
-                                                                openDeleteModal={openDeleteModal}
-                                                                openModal={openModal}
-                                                                handleSave={handleSave}
-                                                                showToast={showToast}
-                                                                updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
-                                                            />
-                                                        )}
-                                                    </div>
-                                                </td>
-                                            </tr>
                                         </React.Fragment> : <></>
                                 ))}
                             </tbody>
