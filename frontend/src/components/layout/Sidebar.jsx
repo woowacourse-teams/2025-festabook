@@ -117,7 +117,7 @@ const Sidebar = ({ open, setOpen }) => {
                     <div className="flex flex-row items-center gap-2 min-w-0">
                         <h1
                             className={`text-xl font-bold cursor-pointer transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis ${textVisible ? 'opacity-100' : 'opacity-0'}`}
-                            onClick={() => setPage('dashboard')}
+                            onClick={() => setPage('home')}
                         >
                             Festabook
                         </h1>
@@ -163,7 +163,7 @@ const Sidebar = ({ open, setOpen }) => {
             )}
             <div className={`w-full h-px bg-gray-300 ${open ? '' : 'hidden'}`} />
             <nav className="flex flex-col space-y-2 mt-4">
-                <NavLink target="dashboard" icon="fa-tachometer-alt" open={open}>대시보드</NavLink>
+
                 <NavLink target="home" icon="fa-home" open={open}>홈</NavLink>
                 <NavLink target="schedule" icon="fa-calendar-alt" open={open}>일정</NavLink>
                 <SubMenu icon="fa-map-marked-alt" title="지도" links={[{ target: 'booths', title: '플레이스 관리' }, { target: 'map-settings', title: '지도 설정' }]} open={openMenus[0]} onToggle={() => handleSubMenuToggle(0)} sidebarOpen={open} />
