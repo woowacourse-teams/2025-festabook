@@ -244,8 +244,10 @@ class QuestionControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].id", equalTo(question1.getId().intValue()))
                     .body("[0].sequence", equalTo(changedQuestion1Sequence))
+
                     .body("[1].id", equalTo(question2.getId().intValue()))
                     .body("[1].sequence", equalTo(changedQuestion2Sequence))
+
                     .body("[2].id", equalTo(question3.getId().intValue()))
                     .body("[2].sequence", equalTo(changedQuestion3Sequence));
         }
