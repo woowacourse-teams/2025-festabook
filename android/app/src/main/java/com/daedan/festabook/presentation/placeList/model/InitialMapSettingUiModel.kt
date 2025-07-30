@@ -6,7 +6,6 @@ data class InitialMapSettingUiModel(
     val zoom: Int,
     val initialCenter: CoordinateUiModel,
     val border: List<CoordinateUiModel>,
-    val placeCoordinates: List<PlaceCoordinateUiModel> = emptyList<PlaceCoordinateUiModel>(),
 )
 
 fun OrganizationGeography.toUiModel() =

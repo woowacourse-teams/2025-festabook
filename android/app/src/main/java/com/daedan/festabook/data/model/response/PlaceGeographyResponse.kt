@@ -22,15 +22,34 @@ data class PlaceGeographyResponse(
         @SerialName("longitude")
         val longitude: Double,
     )
+
+    enum class PlaceCategory {
+        FOOD_TRUCK,
+        BOOTH,
+        BAR,
+        TRASH_CAN,
+        TOILET,
+        SMOKING,
+    }
 }
 
 fun PlaceGeographyResponse.toDomain() =
     PlaceGeography(
         id = id,
-        category = category,
+        category = category.toDomain(),
         markerCoordinate =
             Coordinate(
                 latitude = markerCoordinate.latitude,
                 longitude = markerCoordinate.longitude,
             ),
     )
+
+fun PlaceGeographyResponse.PlaceCategory.toDomain() =
+    when (this) {
+        PlaceGeographyResponse.PlaceCategory.BOOTH -> PlaceCategory.BOOTH
+        PlaceGeographyResponse.PlaceCategory.BAR -> PlaceCategory.BAR
+        PlaceGeographyResponse.PlaceCategory.FOOD_TRUCK -> PlaceCategory.FOOD_TRUCK
+        PlaceGeographyResponse.PlaceCategory.SMOKING -> PlaceCategory.SMOKING_AREA
+        PlaceGeographyResponse.PlaceCategory.TOILET -> PlaceCategory.TOILET
+        PlaceGeographyResponse.PlaceCategory.TRASH_CAN -> PlaceCategory.TRASH_CAN
+    }
