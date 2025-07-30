@@ -326,7 +326,8 @@ class AnnouncementServiceTest {
             assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
                     invalidAnnouncementId,
                     DEFAULT_ORGANIZATION_ID,
-                    request))
+                    request)
+            )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
         }
@@ -349,7 +350,8 @@ class AnnouncementServiceTest {
             assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
                     announcementId,
                     DEFAULT_ORGANIZATION_ID,
-                    request))
+                    request)
+            )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
         }
