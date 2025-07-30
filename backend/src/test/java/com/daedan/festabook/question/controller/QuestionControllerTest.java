@@ -13,6 +13,7 @@ import com.daedan.festabook.question.domain.QuestionFixture;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionRequestFixture;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
+import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequestFixture;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -213,15 +214,15 @@ class QuestionControllerTest {
             int changedQuestion1Sequence = 2;
             int changedQuestion2Sequence = 3;
             int changedQuestion3Sequence = 1;
-            QuestionSequenceUpdateRequest request1 = new QuestionSequenceUpdateRequest(
+            QuestionSequenceUpdateRequest request1 = QuestionSequenceUpdateRequestFixture.create(
                     question1.getId(),
                     changedQuestion1Sequence
             );
-            QuestionSequenceUpdateRequest request2 = new QuestionSequenceUpdateRequest(
+            QuestionSequenceUpdateRequest request2 = QuestionSequenceUpdateRequestFixture.create(
                     question2.getId(),
                     changedQuestion2Sequence
             );
-            QuestionSequenceUpdateRequest request3 = new QuestionSequenceUpdateRequest(
+            QuestionSequenceUpdateRequest request3 = QuestionSequenceUpdateRequestFixture.create(
                     question3.getId(),
                     changedQuestion3Sequence
             );
