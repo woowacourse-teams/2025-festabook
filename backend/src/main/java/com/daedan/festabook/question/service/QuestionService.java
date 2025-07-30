@@ -29,7 +29,7 @@ public class QuestionService {
         Integer currentMaxSequence = questionJpaRepository.countByOrganizationId(organizationId);
         Integer nextSequence = currentMaxSequence + 1;
 
-        Question question = request.toQuestion(organization, nextSequence);
+        Question question = new Question(organization, request.question(), request.answer(), nextSequence);
         Question savedQuestion = questionJpaRepository.save(question);
 
         return QuestionResponse.from(savedQuestion);
