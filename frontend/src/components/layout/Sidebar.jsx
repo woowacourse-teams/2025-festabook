@@ -94,7 +94,7 @@ const Sidebar = ({ open, setOpen }) => {
                                     e.stopPropagation();
                                     handleNav(link.target);
                                 }}
-                                className={`sidebar-link sub-link block py-2 px-2 rounded-lg transition duration-200 hover:bg-indigo-500 hover:text-white ${page === link.target ? 'active' : 'text-gray-500'}`}
+                                className={`sidebar-link sub-link block py-2 px-2 rounded-lg transition duration-200 hover:bg-indigo-500 hover:text-white ${page === link.target ? 'active' : 'text-gray-500'} whitespace-nowrap overflow-hidden text-ellipsis`}
                             >
                                 {link.title}
                             </a>
@@ -107,14 +107,28 @@ const Sidebar = ({ open, setOpen }) => {
     return (
         <aside
             className={
-                `${open ? 'w-64 p-6' : 'w-16 p-2'} bg-gray-50 shrink-0 flex flex-col border-r border-gray-200 h-full transition-all duration-300 relative`
+                `${open ? 'w-64 p-6' : 'w-16 p-2'} bg-gray-50 shrink-0 flex flex-col border-r border-gray-200 h-full transition-all duration-300 relative overflow-hidden`
             }
             style={{ minHeight: '100vh' }}
         >
             {/* 상단: Festabook, 자물쇠, 열기/닫기 버튼을 한 줄에 배치 */}
             {open ? (
-                <div className={`flex flex-row items-center mb-4 mt-2 shrink-0 transition-all duration-300 justify-between gap-2`}>
-                    <div className="flex flex-row items-center gap-2 min-w-0">
+                <div className={`flex flex-row items-center mb-4 mt-2 ml-1 shrink-0 transition-all duration-300 gap-2`}>
+                    {/* 닫기 버튼: 항상 가장 왼쪽 */}
+                    <button
+                        className="text-gray-500 hover:text-gray-800 focus:outline-none flex-shrink-0"
+                        title="탭 닫기"
+                        onClick={() => {
+                            setOpen(false);
+                            // 지도에 사이드바 변화 알림
+                            setTimeout(() => {
+                                window.dispatchEvent(new CustomEvent('sidebarToggle'));
+                            }, 100);
+                        }}
+                    >
+                        <i className="fas fa-angle-left text-lg" />
+                    </button>
+                    <div className="flex flex-row items-center ml-1 gap-2 min-w-0 max-w-full">
                         <h1
                             className={`text-xl font-bold cursor-pointer transition-all duration-300 whitespace-nowrap overflow-hidden text-ellipsis ${textVisible ? 'opacity-100' : 'opacity-0'}`}
                             onClick={() => setPage('home')}
@@ -129,23 +143,9 @@ const Sidebar = ({ open, setOpen }) => {
                             <i className="fas fa-lock text-lg" />
                         </button>
                     </div>
-                    {/* 열기/닫기 버튼: 항상 가장 오른쪽 */}
-                    <button
-                        className="text-gray-500 hover:text-gray-800 focus:outline-none flex-shrink-0"
-                        title="탭 닫기"
-                        onClick={() => {
-                            setOpen(false);
-                            // 지도에 사이드바 변화 알림
-                            setTimeout(() => {
-                                window.dispatchEvent(new CustomEvent('sidebarToggle'));
-                            }, 100);
-                        }}
-                    >
-                        <i className="fas fa-angle-left text-lg" />
-                    </button>
                 </div>
             ) : (
-                <div className="flex flex-col items-center justify-center mb-4 mt-2 shrink-0 transition-all duration-300" style={{height: '56px'}}>
+                <div className="flex flex-col items-start justify-center mb-1 mt-2 shrink-0 transition-all duration-300 pl-5" style={{height: '56px'}}>
                     <button
                         className="text-gray-500 hover:text-gray-800 focus:outline-none flex-shrink-0"
                         title="탭 열기"
@@ -161,7 +161,7 @@ const Sidebar = ({ open, setOpen }) => {
                     </button>
                 </div>
             )}
-            <div className={`w-full h-px bg-gray-300 ${open ? '' : 'hidden'}`} />
+            <div className={`w-full h-px bg-gray-300`} />
             <nav className="flex flex-col space-y-2 mt-4">
 
                 <NavLink target="home" icon="fa-home" open={open}>홈</NavLink>
