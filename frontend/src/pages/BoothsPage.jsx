@@ -83,8 +83,8 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
             <div className="flex items-center gap-4 justify-end mt-2">
                 <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${booth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
                 <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
-                <button onClick={() => openDeleteModal(booth)} 
-                className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
+                <button onClick={() => openDeleteModal(booth)}
+                    className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
             </div>
         </div>
     );
@@ -176,7 +176,15 @@ const BoothsPage = () => {
     const openDeleteModal = (booth) => {
         openModal('confirm', {
             title: '플레이스 삭제 확인',
-            message: `'${booth.title}' 플레이스를 정말 삭제하시겠습니까?`,
+            message: (
+                <>
+                    {booth.title} 플레이스를 정말 삭제하시겠습니까?
+                    <br /> 
+                    <div className="font-bold text-red-500 text-xs">
+                        플레이스의 즐겨찾기 정보, 이미지, 세부 정보, 세부 공지사항도 모두 삭제됩니다.
+                    </div>
+                </>
+            ),
             onConfirm: () => {
                 handleDelete(booth.id);
             }
@@ -208,8 +216,8 @@ const BoothsPage = () => {
             ) : (
                 <div>
                     <div className='text-xl font-bold ml-1 mt-10 mb-2'>
-                            메인 플레이스
-                        </div>
+                        메인 플레이스
+                    </div>
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
                         <table className="min-w-full w-full">
                             <thead className="table-header">
@@ -222,41 +230,41 @@ const BoothsPage = () => {
                             <tbody>
                                 {booths.map(booth => (
                                     isMainPlace(booth.category) ?
-                                    <React.Fragment key={booth.id}>
-                                        <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                                            <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
-                                            <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
-                                            <td className="p-4 align-middle text-right min-w-[180px]">
-                                                <div className="flex items-center justify-end space-x-4 flex-wrap">
-                                                    <button
-                                                        onClick={() => !['SMOKING', 'TRASH_CAN'].includes(booth.category) && toggleExpand(booth.id)}
-                                                        className={`text-gray-600 hover:text-gray-900 text-sm font-semibold ${['SMOKING', 'TRASH_CAN'].includes(booth.category) ? 'invisible' : ''}`}
-                                                        tabIndex={['SMOKING', 'TRASH_CAN'].includes(booth.category) ? -1 : 0}
-                                                        disabled={['SMOKING', 'TRASH_CAN'].includes(booth.category)}
-                                                    >
-                                                        <i className={`fas ${expandedIds.includes(booth.id) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
-                                                        상세보기
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colSpan="3" className="p-0">
-                                                <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
-                                                    {expandedIds.includes(booth.id) && (
-                                                        <BoothDetails
-                                                            booth={booth}
-                                                            openDeleteModal={openDeleteModal}
-                                                            openModal={openModal}
-                                                            handleSave={handleSave}
-                                                            showToast={showToast}
-                                                            updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
-                                                        />
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </React.Fragment> : <></>
+                                        <React.Fragment key={booth.id}>
+                                            <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+                                                <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
+                                                <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
+                                                <td className="p-4 align-middle text-right min-w-[180px]">
+                                                    <div className="flex items-center justify-end space-x-4 flex-wrap">
+                                                        <button
+                                                            onClick={() => !['SMOKING', 'TRASH_CAN'].includes(booth.category) && toggleExpand(booth.id)}
+                                                            className={`text-gray-600 hover:text-gray-900 text-sm font-semibold ${['SMOKING', 'TRASH_CAN'].includes(booth.category) ? 'invisible' : ''}`}
+                                                            tabIndex={['SMOKING', 'TRASH_CAN'].includes(booth.category) ? -1 : 0}
+                                                            disabled={['SMOKING', 'TRASH_CAN'].includes(booth.category)}
+                                                        >
+                                                            <i className={`fas ${expandedIds.includes(booth.id) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
+                                                            상세보기
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="3" className="p-0">
+                                                    <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
+                                                        {expandedIds.includes(booth.id) && (
+                                                            <BoothDetails
+                                                                booth={booth}
+                                                                openDeleteModal={openDeleteModal}
+                                                                openModal={openModal}
+                                                                handleSave={handleSave}
+                                                                showToast={showToast}
+                                                                updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </React.Fragment> : <></>
                                 ))}
                             </tbody>
                         </table>
@@ -264,8 +272,8 @@ const BoothsPage = () => {
 
 
                     <div className='text-xl font-bold ml-1 mt-10 mb-2'>
-                            기타 플레이스
-                        </div>
+                        기타 플레이스
+                    </div>
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto ">
                         <table className="min-w-full w-full">
                             <thead className="table-header">
@@ -277,38 +285,38 @@ const BoothsPage = () => {
                             </thead>
                             <tbody>
                                 {booths.map(booth => (
-                                    !isMainPlace(booth.category) ? 
-                                    <React.Fragment key={booth.id}>
-                                        <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                                            <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
-                                            <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
-                                            <td className="p-4 align-middle text-right min-w-[180px]">
-                                                <div className="flex items-center justify-end space-x-4 flex-wrap">
-                                                    <button
-                                                        onClick={() => openDeleteModal(booth)}
-                                                        className="text-red-600 hover:text-red-800 text-sm font-semibold">
-                                                        삭제
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colSpan="3" className="p-0">
-                                                <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
-                                                    {expandedIds.includes(booth.id) && (
-                                                        <BoothDetails
-                                                            booth={booth}
-                                                            openDeleteModal={openDeleteModal}
-                                                            openModal={openModal}
-                                                            handleSave={handleSave}
-                                                            showToast={showToast}
-                                                            updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
-                                                        />
-                                                    )}
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    </React.Fragment> : <></>
+                                    !isMainPlace(booth.category) ?
+                                        <React.Fragment key={booth.id}>
+                                            <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+                                                <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
+                                                <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
+                                                <td className="p-4 align-middle text-right min-w-[180px]">
+                                                    <div className="flex items-center justify-end space-x-4 flex-wrap">
+                                                        <button
+                                                            onClick={() => openDeleteModal(booth)}
+                                                            className="text-red-600 hover:text-red-800 text-sm font-semibold">
+                                                            삭제
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colSpan="3" className="p-0">
+                                                    <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
+                                                        {expandedIds.includes(booth.id) && (
+                                                            <BoothDetails
+                                                                booth={booth}
+                                                                openDeleteModal={openDeleteModal}
+                                                                openModal={openModal}
+                                                                handleSave={handleSave}
+                                                                showToast={showToast}
+                                                                updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
+                                                            />
+                                                        )}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </React.Fragment> : <></>
                                 ))}
                             </tbody>
                         </table>
