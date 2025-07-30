@@ -90,8 +90,11 @@ class PlaceListFragment :
 
     private fun setUpObserver() {
         viewModel.places.observe(viewLifecycleOwner) { places ->
-            if (places !is PlaceListUiState.Success) return@observe
-            placeAdapter.submitList(places.value)
+            when (places) {
+                is PlaceListUiState.Loading -> showSkeleton()
+                is PlaceListUiState.Success -> placeAdapter.submitList(places.value)
+                is PlaceListUiState.Error -> hideSkeleton()
+            }
         }
 
         viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
@@ -154,6 +157,16 @@ class PlaceListFragment :
         }
 
         return fragmentContainer[selectedPlace]
+    }
+
+    private fun showSkeleton() {
+        binding.sflScheduleSkeleton.visibility = View.VISIBLE
+        binding.sflScheduleSkeleton.startShimmer()
+    }
+
+    private fun hideSkeleton() {
+        binding.sflScheduleSkeleton.visibility = View.GONE
+        binding.sflScheduleSkeleton.stopShimmer()
     }
 
     companion object {

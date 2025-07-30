@@ -43,11 +43,11 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
             when (noticeState) {
                 is NoticeUiState.InitialLoading -> {
                     binding.srlNoticeList.isRefreshing = true
-                    showLoadingView()
+                    showSkeleton()
                 }
 
                 is NoticeUiState.Error -> {
-                    hideLoadingView()
+                    hideSkeleton()
                     binding.srlNoticeList.isRefreshing = false
                 }
 
@@ -56,7 +56,7 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
                 }
 
                 is NoticeUiState.Success -> {
-                    hideLoadingView()
+                    hideSkeleton()
                     noticeAdapter.submitList(noticeState.notices)
                     binding.srlNoticeList.isRefreshing = false
                 }
@@ -64,13 +64,13 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         }
     }
 
-    private fun showLoadingView() {
+    private fun showSkeleton() {
         binding.sflScheduleSkeleton.visibility = View.VISIBLE
         binding.rvNoticeList.visibility = View.INVISIBLE
         binding.sflScheduleSkeleton.startShimmer()
     }
 
-    private fun hideLoadingView() {
+    private fun hideSkeleton() {
         binding.sflScheduleSkeleton.visibility = View.GONE
         binding.rvNoticeList.visibility = View.VISIBLE
         binding.sflScheduleSkeleton.stopShimmer()
