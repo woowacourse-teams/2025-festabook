@@ -9,7 +9,7 @@ import { ModalContext } from './contexts/ModalContext';
 import Sidebar from './components/layout/Sidebar';
 
 // Pages
-import Dashboard from './pages/Dashboard';
+
 import GenericPage from './pages/GenericPage';
 import SchedulePage from './pages/SchedulePage';
 import BoothsPage from './pages/BoothsPage';
@@ -35,7 +35,7 @@ import Toast from './components/common/Toast';
 import OrganizationPage from "./pages/OrganizationPage.jsx";
 
 function App() {
-    const [page, setPage] = useState('dashboard');
+    const [page, setPage] = useState('home');
     const [modalState, setModalState] = useState({ type: null, props: {} });
     const [toasts, setToasts] = useState([]);
     const [sidebarOpen, setSidebarOpen] = useState(true); // 사이드바 열림/닫힘 상태 추가
@@ -50,7 +50,7 @@ function App() {
 
     const renderPage = () => {
         switch (page) {
-            case 'dashboard': return <Dashboard />;
+
             case 'home': return <GenericPage title="홈" />;
             case 'schedule': return <SchedulePage />;
             case 'booths': return <BoothsPage />;
@@ -58,7 +58,7 @@ function App() {
             case 'notices': return <NoticesPage />;
             case 'lost-found': return <LostFoundPage />;
             case 'qna': return <QnaPage />;
-            default: return <Dashboard />;
+            default: return <GenericPage title="홈" />;
         }
     };
 
