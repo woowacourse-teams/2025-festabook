@@ -539,7 +539,7 @@ class PlaceControllerTest {
         }
 
         @Test
-        void 성공_place가_존재하지_않는_경우_204를_응답한다() {
+        void 성공_place가_존재하지_않는_경우_204를_응답() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
