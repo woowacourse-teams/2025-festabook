@@ -12,6 +12,7 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+      checks: write
 
     steps:
       - name: Repository Checkout
@@ -39,3 +40,12 @@ jobs:
       - name: Run Gradle Test
         run: ./gradlew clean test
         working-directory: backend
+
+      - name: Publish Unit Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: backend/build/test-results/test/TEST-*.xml
+          check_name: '테스트 결과 🛠️'
+          check_run_annotations: 'none'
+          comment_mode: 'off'
