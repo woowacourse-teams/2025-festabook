@@ -115,6 +115,7 @@ class PlacePreviewServiceTest {
 
         @Test
         void 성공_카테고리만_있을_경우_나머지_필드_null_반환() {
+            // given
             Long organizationId = 1L;
             Organization organization = OrganizationFixture.create(organizationId);
 
