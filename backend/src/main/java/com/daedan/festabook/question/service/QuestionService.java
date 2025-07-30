@@ -38,7 +38,7 @@ public class QuestionService {
     }
 
     public QuestionResponses getAllQuestionByOrganizationId(Long organizationId) {
-        List<Question> questions = questionJpaRepository.findByOrganizationIdOrderByCreatedAtDesc(organizationId);
+        List<Question> questions = questionJpaRepository.findByOrganizationIdOrderBySequenceDesc(organizationId);
         return QuestionResponses.from(questions);
     }
 

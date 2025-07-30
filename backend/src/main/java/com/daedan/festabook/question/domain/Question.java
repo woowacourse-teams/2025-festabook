@@ -11,11 +11,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.HttpStatus;
 
@@ -45,26 +43,22 @@ public class Question {
     @Column(nullable = false)
     private Integer sequence;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
     protected Question(
+            Long id,
             Organization organization,
             String question,
             String answer,
-            Integer sequence,
-            LocalDateTime createdAt
+            Integer sequence
     ) {
         validateOrganization(organization);
         validateQuestion(question);
         validateAnswer(answer);
 
+        this.id = id;
         this.organization = organization;
         this.question = question;
         this.answer = answer;
         this.sequence = sequence;
-        this.createdAt = createdAt;
     }
 
     public Question(
@@ -74,11 +68,11 @@ public class Question {
             Integer sequence
     ) {
         this(
+                null,
                 organization,
                 question,
                 answer,
-                sequence,
-                null
+                sequence
         );
     }
 

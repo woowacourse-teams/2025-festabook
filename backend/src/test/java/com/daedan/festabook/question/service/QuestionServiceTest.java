@@ -21,7 +21,6 @@ import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequestFixture;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -129,7 +128,7 @@ class QuestionServiceTest {
             int expected = 3;
             Long organizationId = 1L;
             List<Question> questions = QuestionFixture.createList(expected);
-            given(questionJpaRepository.findByOrganizationIdOrderByCreatedAtDesc(organizationId))
+            given(questionJpaRepository.findByOrganizationIdOrderBySequenceDesc(organizationId))
                     .willReturn(questions);
 
             // when
@@ -142,23 +141,21 @@ class QuestionServiceTest {
         }
 
         @Test
-        void 성공_내림차순_정렬() {
+        void 성공_Sequence_내림차순_정렬() {
             // given
             Long organizationId = 1L;
-            List<Question> questions = List.of(
-                    QuestionFixture.create(LocalDateTime.now()),
-                    QuestionFixture.create(LocalDateTime.now().minusDays(1))
-            );
-            given(questionJpaRepository.findByOrganizationIdOrderByCreatedAtDesc(organizationId))
-                    .willReturn(questions);
+            Question question2 = QuestionFixture.create(2);
+            Question question1 = QuestionFixture.create(1);
+
+            given(questionJpaRepository.findByOrganizationIdOrderBySequenceDesc(organizationId))
+                    .willReturn(List.of(question1, question2));
 
             // when
-            QuestionResponses questionResponses = questionService.getAllQuestionByOrganizationId(organizationId);
+            QuestionResponses result = questionService.getAllQuestionByOrganizationId(organizationId);
 
             // then
-            boolean result = questionResponses.responses().getFirst().createdAt()
-                    .isAfter(questionResponses.responses().getLast().createdAt());
-            assertThat(result).isTrue();
+            assertThat(result.responses().getFirst().sequence()).isEqualTo(question1.getSequence());
+            assertThat(result.responses().getLast().sequence()).isEqualTo(question2.getSequence());
         }
     }
 

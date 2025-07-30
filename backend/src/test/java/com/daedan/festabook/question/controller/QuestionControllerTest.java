@@ -16,7 +16,6 @@ import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -63,7 +62,7 @@ class QuestionControllerTest {
                     "이 서비스는 페스타북입니다."
             );
 
-            int expectedFieldSize = 5;
+            int expectedFieldSize = 4;
 
             // when & then
             RestAssured
@@ -78,8 +77,7 @@ class QuestionControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("question", equalTo(request.question()))
                     .body("answer", equalTo(request.answer()))
-                    .body("sequence", notNullValue())
-                    .body("createdAt", notNullValue());
+                    .body("sequence", notNullValue());
         }
     }
 
@@ -96,7 +94,7 @@ class QuestionControllerTest {
             questionJpaRepository.save(question);
 
             int expectedSize = 1;
-            int expectedFieldSize = 5;
+            int expectedFieldSize = 4;
 
             // when & then
             RestAssured
@@ -140,22 +138,16 @@ class QuestionControllerTest {
         }
 
         @Test
-        void 성공_날짜_내림차순_데이터() {
+        void 성공_Sequence_내림차순_정렬() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<LocalDateTime> dateTimes = List.of(
-                    LocalDateTime.now().minusDays(1),
-                    LocalDateTime.now()
-            );
+            Question question2 = QuestionFixture.create(organization, 2);
+            Question question1 = QuestionFixture.create(organization, 1);
+            questionJpaRepository.saveAll(List.of(question2, question1));
 
-            List<Question> questions = QuestionFixture.createList(dateTimes, organization);
-            questionJpaRepository.saveAll(questions);
-
-            List<Question> expectedQuestions = questions.stream()
-                    .sorted((qa1, qa2) -> qa2.getCreatedAt().compareTo(qa1.getCreatedAt()))
-                    .toList();
+            int expectedSize = 2;
 
             // when & then
             RestAssured
@@ -165,9 +157,9 @@ class QuestionControllerTest {
                     .get("/questions")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(questions.size()))
-                    .body("[0].id", equalTo(expectedQuestions.get(0).getId().intValue()))
-                    .body("[1].id", equalTo(expectedQuestions.get(1).getId().intValue()));
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].id", equalTo(question2.getId().intValue()))
+                    .body("[1].id", equalTo(question1.getId().intValue()));
         }
     }
 

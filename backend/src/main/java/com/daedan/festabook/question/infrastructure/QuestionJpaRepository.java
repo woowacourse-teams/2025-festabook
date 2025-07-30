@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QuestionJpaRepository extends JpaRepository<Question, Long> {
 
-    List<Question> findByOrganizationIdOrderByCreatedAtDesc(Long organizationId);
+    List<Question> findByOrganizationIdOrderBySequenceDesc(Long organizationId);
 
     Optional<Question> findTopByOrganizationIdOrderBySequenceDesc(Long organizationId);
 }
