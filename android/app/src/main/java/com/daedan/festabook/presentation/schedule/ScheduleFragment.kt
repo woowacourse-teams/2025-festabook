@@ -2,7 +2,6 @@ package com.daedan.festabook.presentation.schedule
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import androidx.fragment.app.viewModels
@@ -10,8 +9,10 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.databinding.ItemScheduleTabBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
+import timber.log.Timber
 
 class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule) {
     private val adapter: SchedulePagerAdapter by lazy {
@@ -63,7 +64,8 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
 
                 is ScheduleDatesUiState.Error -> {
                     showSkeleton(isLoading = false)
-                    Log.d("TAG", "setupDate: ${scheduleDateUiModels.message}")
+                    Timber.tag("TAG").d("setupDate: ${scheduleDateUiModels.message}")
+                    showErrorSnackBar(scheduleDateUiModels.throwable)
                 }
             }
         }

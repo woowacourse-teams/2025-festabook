@@ -11,5 +11,6 @@ sealed interface ScheduleDatesUiState {
 
     data class Error(
         val message: String,
+        val throwable: Throwable? = null,
     ) : ScheduleDatesUiState
 }
