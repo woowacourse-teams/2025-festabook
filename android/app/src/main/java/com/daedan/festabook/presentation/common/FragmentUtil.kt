@@ -9,8 +9,12 @@ import android.view.View
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import com.daedan.festabook.R
+import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior
+import com.google.android.material.snackbar.Snackbar
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
     if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
@@ -44,3 +48,49 @@ fun View.getSystemBarHeightCompat() =
     } else {
         rootWindowInsets.systemWindowInsetBottom
     }
+
+fun Fragment.showErrorSnackBar(msg: String) {
+    val context = requireContext()
+    val snackBar = Snackbar.make(requireView().rootView, msg, Snackbar.LENGTH_SHORT)
+    snackBar
+        .setAction(
+            context.getString(R.string.fail_snackbar_confirm),
+        ) {
+            snackBar.dismiss()
+        }.setActionTextColor(context.getColor(R.color.blue400))
+        .show()
+}
+
+fun Fragment.showErrorSnackBar(exception: Throwable?) {
+    when (exception) {
+        is ApiResultException.ClientException -> {
+            showErrorSnackBar(
+                getString(R.string.error_client_exception),
+            )
+        }
+
+        is ApiResultException.ServerException -> {
+            showErrorSnackBar(
+                getString(R.string.error_server_exception),
+            )
+        }
+
+        is ApiResultException.NetworkException -> {
+            showErrorSnackBar(
+                getString(R.string.error_network_exception),
+            )
+        }
+
+        is ApiResultException.UnknownException -> {
+            showErrorSnackBar(
+                getString(R.string.error_unknown_exception),
+            )
+        }
+
+        else -> {
+            showErrorSnackBar(
+                exception?.message ?: getString(R.string.error_unknown_exception),
+            )
+        }
+    }
+}

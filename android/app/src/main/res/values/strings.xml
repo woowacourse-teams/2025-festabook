@@ -49,4 +49,11 @@
     <string name="place_detail_no_notice">공지사항이 없습니다</string>
     <string name="refresh">새로고침</string>
 
+    <!--실패 시 출력 -->
+    <string name="fail_snackbar_confirm">확인</string>
+    <string name="error_server_exception">서버 요청에 실패했습니다. 잠시 후 다시 시도해주세요</string>
+    <string name="error_client_exception">잘못된 요청입니다</string>
+    <string name="error_network_exception">현재 연결이 불안정합니다. 잠시 후 다시 시도해주세요</string>
+    <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
+
 </resources>
