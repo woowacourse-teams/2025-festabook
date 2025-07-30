@@ -42,18 +42,33 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         viewModel.noticeUiState.observe(viewLifecycleOwner) { noticeState ->
             when (noticeState) {
                 is NoticeUiState.Error -> {
+                    hideLoadingView()
                     binding.srlNoticeList.isRefreshing = false
                 }
 
                 is NoticeUiState.Loading -> {
                     binding.srlNoticeList.isRefreshing = true
+                    showLoadingView()
                 }
 
                 is NoticeUiState.Success -> {
+                    hideLoadingView()
                     noticeAdapter.submitList(noticeState.notices)
                     binding.srlNoticeList.isRefreshing = false
                 }
             }
         }
+    }
+
+    private fun showLoadingView() {
+        binding.sflScheduleSkeleton.visibility = View.VISIBLE
+        binding.rvNoticeList.visibility = View.INVISIBLE
+        binding.sflScheduleSkeleton.startShimmer()
+    }
+
+    private fun hideLoadingView() {
+        binding.sflScheduleSkeleton.visibility = View.GONE
+        binding.rvNoticeList.visibility = View.VISIBLE
+        binding.sflScheduleSkeleton.stopShimmer()
     }
 }
