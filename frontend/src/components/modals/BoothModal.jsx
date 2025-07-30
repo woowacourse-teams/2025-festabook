@@ -79,38 +79,6 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
         });
     };
 
-    const handleSetMainImage = (index) => {
-        setForm(prev => ({ ...prev, mainImageIndex: index }));
-    };
-
-    const handleStartEditNotice = (notice) => {
-        setEditingNotice({ id: notice.id, text: notice.text });
-    };
-
-    const handleCancelEditNotice = () => {
-        setEditingNotice({ id: null, text: '' });
-    };
-
-    const handleSaveNoticeEdit = () => {
-        const newNotices = form.notices.map(n =>
-            n.id === editingNotice.id ? { ...n, text: editingNotice.text } : n
-        );
-        setForm(prev => ({ ...prev, notices: newNotices }));
-        handleCancelEditNotice();
-    };
-
-    const handleDeleteNotice = (id, text) => {
-        openModal('confirm', {
-            title: '공지 삭제 확인',
-            message: `'${text}' 공지를 정말 삭제하시겠습니까?`,
-            onConfirm: () => {
-                const newNotices = form.notices.filter(n => n.id !== id);
-                setForm(prev => ({ ...prev, notices: newNotices }));
-                showToast('공지가 삭제되었습니다.');
-            }
-        });
-    };
-
     // form이 수정된 값
     const handleSave = () => {
         onSave(form);
