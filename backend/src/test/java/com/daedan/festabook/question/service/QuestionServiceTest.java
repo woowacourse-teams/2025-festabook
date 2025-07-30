@@ -57,7 +57,7 @@ class QuestionServiceTest {
                     "개도 데려갈 수 있나요?",
                     "죄송하지만 후유는 출입 금지입니다."
             );
-            int sequence = 1;
+            int expectedSequence = 1;
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
@@ -73,7 +73,7 @@ class QuestionServiceTest {
             assertSoftly(s -> {
                 s.assertThat(result.question()).isEqualTo(request.question());
                 s.assertThat(result.answer()).isEqualTo(request.answer());
-                s.assertThat(result.sequence()).isEqualTo(sequence);
+                s.assertThat(result.sequence()).isEqualTo(expectedSequence);
             });
         }
 
