@@ -90,7 +90,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                 val viewTop = layoutManager.getDecoratedTop(view)
                 val viewHeight = view.height
                 val parentHeight = recyclerView.height
-                val dy = viewTop - (parentHeight / HALF - viewHeight / HALF)
+                val dy = viewTop - ((parentHeight - viewHeight) / HALF)
 
                 recyclerView.smoothScrollBy(NO_OFFSET, dy)
             }
