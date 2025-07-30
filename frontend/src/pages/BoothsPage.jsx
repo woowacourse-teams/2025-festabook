@@ -237,10 +237,8 @@ const BoothsPage = () => {
                                                 <td className="p-4 align-middle text-right min-w-[180px]">
                                                     <div className="flex items-center justify-end space-x-4 flex-wrap">
                                                         <button
-                                                            onClick={() => !['SMOKING', 'TRASH_CAN'].includes(booth.category) && toggleExpand(booth.id)}
-                                                            className={`text-gray-600 hover:text-gray-900 text-sm font-semibold ${['SMOKING', 'TRASH_CAN'].includes(booth.category) ? 'invisible' : ''}`}
-                                                            tabIndex={['SMOKING', 'TRASH_CAN'].includes(booth.category) ? -1 : 0}
-                                                            disabled={['SMOKING', 'TRASH_CAN'].includes(booth.category)}
+                                                            onClick={() => toggleExpand(booth.id)}
+                                                            className={`text-gray-600 hover:text-gray-900 text-sm font-semibold`}
                                                         >
                                                             <i className={`fas ${expandedIds.includes(booth.id) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
                                                             상세보기
