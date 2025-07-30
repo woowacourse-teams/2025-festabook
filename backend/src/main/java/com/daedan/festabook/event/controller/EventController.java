@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/event-dates")
-@Tag(name = "행사", description = "행사 관련 API")
+@Tag(name = "일정", description = "일정 관련 API")
 public class EventController {
 
     private final EventService eventService;
 
     @PostMapping("/events")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "행사 생성")
+    @Operation(summary = "일정 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
@@ -41,7 +41,7 @@ public class EventController {
 
     @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "행사 수정")
+    @Operation(summary = "일정 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
@@ -54,7 +54,7 @@ public class EventController {
 
     @DeleteMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "행사 삭제")
+    @Operation(summary = "일정 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
@@ -66,7 +66,7 @@ public class EventController {
 
     @GetMapping("{eventDateId}/events")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 행사 날짜의 모든 행사 조회")
+    @Operation(summary = "특정 일정 날짜의 모든 일정 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
