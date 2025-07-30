@@ -251,7 +251,8 @@ class EventDateControllerTest {
 
             int expectedSize = 4;
             List<EventDate> eventDates = EventDateFixture.createList(expectedSize, organization);
-            List<EventDate> otherEventDates = EventDateFixture.createList(5, otherOrganization);
+            int otherSize = 5;
+            List<EventDate> otherEventDates = EventDateFixture.createList(otherSize, otherOrganization);
             eventDateJpaRepository.saveAll(eventDates);
             eventDateJpaRepository.saveAll(otherEventDates);
 
