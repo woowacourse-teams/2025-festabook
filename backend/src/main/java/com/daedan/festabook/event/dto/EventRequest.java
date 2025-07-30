@@ -7,19 +7,19 @@ import java.time.LocalTime;
 
 public record EventRequest(
 
-        @Schema(description = "이벤트 시작 시간", example = "01:00")
+        @Schema(description = "일정 시작 시간", example = "01:00")
         LocalTime startTime,
 
-        @Schema(description = "이벤트 종료 시간", example = "02:00")
+        @Schema(description = "일정 종료 시간", example = "02:00")
         LocalTime endTime,
 
-        @Schema(description = "이벤트 제목", example = "미소가 알려주는 고급 알고리즘 컨퍼런스")
+        @Schema(description = "일정 제목", example = "미소가 알려주는 고급 알고리즘 컨퍼런스")
         String title,
 
-        @Schema(description = "간략한 이벤트 진행 위치", example = "알고리즘 밸리 정문")
+        @Schema(description = "간략한 일정 진행 위치", example = "알고리즘 밸리 정문")
         String location,
 
-        @Schema(description = "행사 날짜 ID", example = "1")
+        @Schema(description = "일정 날짜 ID", example = "1")
         Long eventDateId
 ) {
 
