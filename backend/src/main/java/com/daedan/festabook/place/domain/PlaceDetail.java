@@ -77,4 +77,13 @@ public class PlaceDetail {
                 endTime
         );
     }
+
+    public void update(PlaceDetail newPlaceDetail) {
+        this.title = newPlaceDetail.getTitle();
+        this.description = newPlaceDetail.getDescription();
+        this.location = newPlaceDetail.getLocation();
+        this.host = newPlaceDetail.getHost();
+        this.startTime = newPlaceDetail.getStartTime();
+        this.endTime = newPlaceDetail.getEndTime();
+    }
 }

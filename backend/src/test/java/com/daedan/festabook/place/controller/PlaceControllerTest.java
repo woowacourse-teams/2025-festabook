@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
@@ -26,6 +27,8 @@ import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
@@ -33,6 +36,7 @@ import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -479,6 +483,83 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.NOT_FOUND.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("message", equalTo("존재하지 않는 플레이스입니다."));
+        }
+    }
+
+    @Nested
+    class updatePlace {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            PlaceCategory before = PlaceCategory.BAR;
+            Place place = PlaceFixture.create(organization, before);
+            placeJpaRepository.save(place);
+
+            PlaceDetail placeDetail = PlaceDetailFixture.create(place);
+            placeDetailJpaRepository.save(placeDetail);
+
+            PlaceUpdateRequest placeUpdateRequest = new PlaceUpdateRequest(
+                    PlaceCategory.BOOTH,
+                    "새로운 이름",
+                    "새로운 설명",
+                    "새로운 위치",
+                    "새로운 호스트",
+                    LocalTime.of(22, 00),
+                    LocalTime.of(23, 00)
+            );
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(placeUpdateRequest)
+                    .when()
+                    .put("/places/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertSoftly(s -> {
+                Place updatedPlace = placeJpaRepository.findById(place.getId()).orElseThrow();
+                s.assertThat(updatedPlace.getCategory()).isEqualTo(placeUpdateRequest.placeCategory());
+
+                PlaceDetail updatedPlaceDetail = placeDetailJpaRepository.findById(placeDetail.getId()).orElseThrow();
+                s.assertThat(updatedPlaceDetail.getTitle()).isEqualTo(placeUpdateRequest.title());
+                s.assertThat(updatedPlaceDetail.getDescription()).isEqualTo(placeUpdateRequest.description());
+                s.assertThat(updatedPlaceDetail.getLocation()).isEqualTo(placeUpdateRequest.location());
+                s.assertThat(updatedPlaceDetail.getHost()).isEqualTo(placeUpdateRequest.host());
+                s.assertThat(updatedPlaceDetail.getStartTime()).isEqualTo(placeUpdateRequest.startTime());
+                s.assertThat(updatedPlaceDetail.getEndTime()).isEqualTo(placeUpdateRequest.endTime());
+            });
+        }
+
+        @Test
+        void 성공_placeDetail이_없다면_새로_생성() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Place place = PlaceFixture.create(organization);
+            placeJpaRepository.save(place);
+
+            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(placeUpdateRequest)
+                    .when()
+                    .put("/places/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertThat(placeDetailJpaRepository.findByPlaceId(place.getId())).isNotEmpty();
         }
     }
 

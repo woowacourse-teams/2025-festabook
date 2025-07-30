@@ -8,6 +8,7 @@ import com.daedan.festabook.organization.domain.OrganizationFixture;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 
@@ -36,6 +37,26 @@ class PlaceTest {
 
             // then
             assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class updateCategory {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            PlaceCategory before = PlaceCategory.BAR;
+            Place place = PlaceFixture.create(organization, before);
+
+            PlaceCategory after = PlaceCategory.BAR;
+
+            // when
+            place.updateCategory(after);
+
+            // then
+            assertThat(place.getCategory()).isEqualTo(after);
         }
     }
 }

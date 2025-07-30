@@ -25,11 +25,13 @@ import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -270,6 +272,87 @@ class PlaceServiceTest {
             assertThatThrownBy(() -> placeService.getPlaceWithDetailByPlaceId(inValidPlaceId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
+        }
+    }
+
+    @Nested
+    class updatePlace {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeId = 1L;
+            PlaceCategory before = PlaceCategory.BAR;
+            Place place = PlaceFixture.create(placeId, before);
+            PlaceDetail placeDetail = new PlaceDetail(
+                    place,
+                    "이름",
+                    "설명",
+                    "위치",
+                    "호스트",
+                    LocalTime.of(10, 30),
+                    LocalTime.of(10, 30)
+            );
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+            given(placeDetailJpaRepository.findByPlaceId(placeId))
+                    .willReturn(Optional.of(placeDetail));
+
+            PlaceUpdateRequest placeUpdateRequest = new PlaceUpdateRequest(
+                    PlaceCategory.FOOD_TRUCK,
+                    "새로운 이름",
+                    "새로운 설명",
+                    "새로운 위치",
+                    "새로운 호스트",
+                    LocalTime.of(12, 30),
+                    LocalTime.of(13, 00)
+            );
+
+            // when
+            placeService.updatePlace(placeId, placeUpdateRequest);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(place.getCategory()).isEqualTo(placeUpdateRequest.placeCategory());
+
+                s.assertThat(placeDetail.getTitle()).isEqualTo(placeUpdateRequest.title());
+                s.assertThat(placeDetail.getDescription()).isEqualTo(placeUpdateRequest.description());
+                s.assertThat(placeDetail.getLocation()).isEqualTo(placeUpdateRequest.location());
+                s.assertThat(placeDetail.getHost()).isEqualTo(placeUpdateRequest.host());
+                s.assertThat(placeDetail.getStartTime()).isEqualTo(placeUpdateRequest.startTime());
+                s.assertThat(placeDetail.getEndTime()).isEqualTo(placeUpdateRequest.endTime());
+            });
+        }
+
+        @Test
+        void 성공_PlaceDetail_없다면_새로_저장() {
+            // given
+            Long placeId = 1L;
+            PlaceCategory before = PlaceCategory.BAR;
+            Place place = PlaceFixture.create(placeId, before);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+            given(placeDetailJpaRepository.findByPlaceId(placeId))
+                    .willReturn(Optional.empty());
+
+            PlaceUpdateRequest placeUpdateRequest = new PlaceUpdateRequest(
+                    PlaceCategory.FOOD_TRUCK,
+                    "새로운 이름",
+                    "새로운 설명",
+                    "새로운 위치",
+                    "새로운 호스트",
+                    LocalTime.of(12, 30),
+                    LocalTime.of(13, 00)
+            );
+
+            // when
+            placeService.updatePlace(placeId, placeUpdateRequest);
+
+            // then
+            then(placeDetailJpaRepository).should()
+                    .save(any());
         }
     }
 
