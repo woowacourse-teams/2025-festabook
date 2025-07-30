@@ -1,5 +1,6 @@
 package com.daedan.festabook.question.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -271,6 +272,8 @@ class QuestionControllerTest {
                     .delete("/questions/{questionId}", question.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertThat(questionJpaRepository.findById(question.getId())).isEmpty();
         }
     }
 }
