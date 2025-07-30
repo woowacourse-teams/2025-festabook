@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -27,7 +28,6 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
 
         binding.lifecycleOwner = viewLifecycleOwner
         setupObservers()
-
         onSwipeRefreshScheduleByDateListener()
     }
 
@@ -56,6 +56,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
 
                 is ScheduleEventsUiState.Success -> {
                     adapter.submitList(schedule.events)
+                    scrollToCenterOfCurrentEvent(schedule.currentEventPosition)
                     showSkeleton(isLoading = false)
                 }
 
@@ -78,8 +79,28 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         binding.srlScheduleEvent.isRefreshing = isLoading
     }
 
+    private fun scrollToCenterOfCurrentEvent(position: Int) {
+        val recyclerView = binding.rvScheduleEvent
+        val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+        layoutManager.scrollToPositionWithOffset(position, NO_OFFSET)
+
+        recyclerView.post {
+            val view = layoutManager.findViewByPosition(position)
+            if (view != null) {
+                val viewTop = layoutManager.getDecoratedTop(view)
+                val viewHeight = view.height
+                val parentHeight = recyclerView.height
+                val dy = viewTop - ((parentHeight - viewHeight) / HALF)
+
+                recyclerView.smoothScrollBy(NO_OFFSET, dy)
+            }
+        }
+    }
+
     companion object {
         private const val KEY_DATE_ID = "dateId"
+        private const val NO_OFFSET: Int = 0
+        private const val HALF: Int = 2
 
         fun newInstance(dateId: Long): ScheduleTabPageFragment {
             val fragment = ScheduleTabPageFragment()

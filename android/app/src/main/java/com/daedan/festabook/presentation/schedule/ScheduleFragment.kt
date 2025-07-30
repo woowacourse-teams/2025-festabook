@@ -26,11 +26,10 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
     ) {
         binding.vpSchedule.adapter = adapter
         setupObservers()
-        setupScheduleTabLayout()
     }
 
     @SuppressLint("WrongConstant")
-    private fun setupScheduleTabLayout() {
+    private fun setupScheduleTabLayout(initialCurrentDateIndex: Int) {
         binding.vpSchedule.offscreenPageLimit = PRELOAD_PAGE_COUNT
 
         TabLayoutMediator(binding.tlSchedule, binding.vpSchedule) { tab, position ->
@@ -44,26 +43,27 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
             itemScheduleTabBinding.tvScheduleTabItem.text =
                 viewModel.scheduleDatesUiState.value
                     .let { (it as? ScheduleDatesUiState.Success)?.dates?.get(position)?.date ?: "" }
+            binding.vpSchedule.setCurrentItem(initialCurrentDateIndex, false)
         }.attach()
     }
 
     private fun setupObservers() {
-        viewModel.scheduleDatesUiState.observe(viewLifecycleOwner) { scheduleDateUiModels ->
+        viewModel.scheduleDatesUiState.observe(viewLifecycleOwner) { scheduleDatesUiState ->
 
-            when (scheduleDateUiModels) {
+            when (scheduleDatesUiState) {
                 is ScheduleDatesUiState.Loading -> {
                     showSkeleton(isLoading = true)
                 }
 
                 is ScheduleDatesUiState.Success -> {
                     showSkeleton(isLoading = false)
-                    setupScheduleTabLayout()
-                    adapter.submitList(scheduleDateUiModels.dates.map { it.id })
+                    setupScheduleTabLayout(scheduleDatesUiState.initialCurrentDateIndex)
+                    adapter.submitList(scheduleDatesUiState.dates)
                 }
 
                 is ScheduleDatesUiState.Error -> {
                     showSkeleton(isLoading = false)
-                    Log.d("TAG", "setupDate: ${scheduleDateUiModels.message}")
+                    Log.d("TAG", "setupDate: ${scheduleDatesUiState.message}")
                 }
             }
         }
