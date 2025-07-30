@@ -1,16 +1,25 @@
 package com.daedan.festabook.question.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.question.dto.QuestionRequest;
+import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
+import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,6 +32,19 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "특정 조직의 질문 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
+    })
+    public QuestionResponse createQuestion(
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @RequestBody QuestionRequest request
+    ) {
+        return questionService.createQuestion(organizationId, request);
+    }
+
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "모든 질문 조회")
@@ -33,5 +55,42 @@ public class QuestionController {
             @Parameter(hidden = true) @OrganizationId Long organizationId
     ) {
         return questionService.getAllQuestionByOrganizationId(organizationId);
+    }
+
+    @PatchMapping("/{questionId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 질문 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public QuestionResponse updateQuestionAndAnswer(
+            @PathVariable Long questionId,
+            @RequestBody QuestionRequest request
+    ) {
+        return questionService.updateQuestionAndAnswer(questionId, request);
+    }
+
+    @PatchMapping("/sequence")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "질문들의 순서 순서 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public QuestionResponses updateSequence(
+            @RequestBody List<QuestionSequenceUpdateRequest> requests
+    ) {
+        return questionService.updateSequence(requests);
+    }
+
+    @DeleteMapping("/{questionId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "특정 질문 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
+    })
+    public void deleteQuestionByQuestionId(
+            @PathVariable Long questionId
+    ) {
+        questionService.deleteQuestionByQuestionId(questionId);
     }
 }

@@ -7,6 +7,7 @@ public record QuestionResponse(
         Long id,
         String question,
         String answer,
+        Integer sequence,
         LocalDateTime createdAt
 ) {
 
@@ -15,6 +16,7 @@ public record QuestionResponse(
                 question.getId(),
                 question.getQuestion(),
                 question.getAnswer(),
+                question.getSequence(),
                 question.getCreatedAt()
         );
     }

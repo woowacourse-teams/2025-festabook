@@ -42,6 +42,9 @@ public class Question {
     @Column(nullable = false)
     private String answer;
 
+    @Column(nullable = false)
+    private Integer sequence;
+
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -50,6 +53,7 @@ public class Question {
             Organization organization,
             String question,
             String answer,
+            Integer sequence,
             LocalDateTime createdAt
     ) {
         validateOrganization(organization);
@@ -59,7 +63,32 @@ public class Question {
         this.organization = organization;
         this.question = question;
         this.answer = answer;
+        this.sequence = sequence;
         this.createdAt = createdAt;
+    }
+
+    public Question(
+            Organization organization,
+            String question,
+            String answer,
+            Integer sequence
+    ) {
+        this(
+                organization,
+                question,
+                answer,
+                sequence,
+                null
+        );
+    }
+
+    public void updateQuestion(String question, String answer) {
+        this.question = question;
+        this.answer = answer;
+    }
+
+    public void updateSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     private void validateOrganization(Organization organization) {
