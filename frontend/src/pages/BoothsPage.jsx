@@ -7,12 +7,35 @@ import { isMainPlace, getDefaultValueIfNull, defaultBooth } from '../utils/booth
 const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth, isMainPlace }) => {
 
     const newBooth = defaultBooth(booth);
-    console.log(newBooth);
+
+    const renderAnnouncement = (announcement) => {
+        // const maxTitle = 20;
+        let content = announcement.content;
+
+        // TODO 글자수 제한을 두려면 수정할 것
+        // if (announcement.content.length > maxTitle) {
+        //     content = announcement.content.substring(0, maxTitle);
+        // }
+
+        return <li key={announcement.id}>{announcement.title} - {content}</li>
+    }
+
+    const renderImage = (mainIdx, title, image, idx) => {
+        const alt = `${title} ${idx + 1}`;
+        const isMainImage = (image.id === mainIdx);
+
+
+        return <div key={image.imageUrl} className="relative">
+            <img src={image.imageUrl} alt={alt} className="w-full h-24 object-cover rounded-md" />
+            {isMainImage && <span className="main-image-indicator">대표</span>}
+        </div>
+    }
 
     return (
         <div className="p-6 bg-gray-50">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="md:col-span-2">
+
                     <h4 className="font-semibold text-lg mb-2">상세 정보</h4>
                     <p className="text-gray-700 whitespace-pre-wrap mb-4">{newBooth.description}</p>
                     <div className="text-sm text-gray-600 space-y-1">
@@ -20,24 +43,24 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
                         <p><i className="fas fa-user-friends w-4 mr-2"></i>운영 주체: {newBooth.host}</p>
                         <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {newBooth.startTime} - {newBooth.endTime}</p>
                     </div>
+
                     <h4 className="font-semibold text-lg mt-4 mb-2">공지사항</h4>
-                    {newBooth.notices && newBooth.notices.length > 0 ? (
+                    {newBooth.placeAnnouncements && newBooth.placeAnnouncements.length > 0 ? (
                         <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                            {newBooth.notices.map(notice => <li key={notice.id}>{notice.text}</li>)}
+                            {newBooth.placeAnnouncements.map(announcement => renderAnnouncement(announcement))}
                         </ul>
                     ) : <p className="text-sm text-gray-500">공지사항 없음</p>}
                 </div>
                 <div>
+
                     <h4 className="font-semibold text-lg mb-2">사진</h4>
                     <div className="grid grid-cols-2 gap-2 mb-10">
-                        {newBooth.images && newBooth.images.length > 0 ? newBooth.images.map((img, index) => (
-                            <div key={index} className="relative">
-                                <img src={img} alt={`${newBooth.title} ${index + 1}`} className="w-full h-24 object-cover rounded-md" />
-                                {index === newBooth.mainImageIndex && <span className="main-image-indicator">대표</span>}
-                            </div>
+                        {newBooth.placeImages && newBooth.placeImages.length > 0 ? newBooth.placeImages.map((image, idx) => (
+                            renderImage(newBooth.placeImages[0].id, newBooth.title, image, idx)
                         )) : (
                             <p className="text-sm text-gray-500">사진 없음</p>
                         )}
+
                     </div>
                 </div>
             </div>
@@ -122,7 +145,7 @@ const BoothsPage = () => {
             message: (
                 <>
                     {booth.title} 플레이스를 정말 삭제하시겠습니까?
-                    <br /> 
+                    <br />
                     <div className="font-bold text-red-500 text-xs">
                         플레이스의 즐겨찾기 정보, 이미지, 세부 정보, 세부 공지사항도 모두 삭제됩니다.
                     </div>
