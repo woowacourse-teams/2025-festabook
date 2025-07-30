@@ -40,10 +40,10 @@ public class EventController {
     }
 
     @PatchMapping("/events/{eventId}")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "일정 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
     public void updateEvent(
             @PathVariable Long eventId,

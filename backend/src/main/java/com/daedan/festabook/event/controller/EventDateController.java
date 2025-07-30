@@ -49,7 +49,6 @@ public class EventDateController {
     })
     public void deleteEventDate(
             @PathVariable Long eventDateId
-
     ) {
         eventDateService.deleteEventDateByEventDateId(eventDateId);
     }

@@ -131,7 +131,7 @@ class EventControllerTest {
                     .when()
                     .patch("/event-dates/events/{eventId}", eventId)
                     .then()
-                    .statusCode(HttpStatus.OK.value());
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 
