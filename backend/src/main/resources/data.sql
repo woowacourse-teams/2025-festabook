@@ -1,8 +1,16 @@
 -- ========================
--- 1. 조직 (Organization)
+-- 조직 (Organization)
 -- ========================
-INSERT INTO organization (name, zoom, latitude, longitude)
-VALUES ('서울시립대학교', 15, 37.583585, 127.0588862);
+INSERT INTO organization (university_name, festival_name, start_date, end_date, zoom, latitude, longitude)
+VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', '2025-10-15', '2025-10-17', 15, 37.583585, 127.0588862);
+
+-- ========================
+-- 축제 이미지 (FestivalImage)
+-- ========================
+INSERT INTO festival_image (organization_id, image_url, sequence)
+VALUES (1, 'https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=800&q=80', 1),
+       (1, 'https://images.unsplash.com/photo-1542273917363-3b1817f69a2d?auto=format&fit=crop&w=800&q=80', 2),
+       (1, 'https://images.unsplash.com/photo-1508921912186-1d1a45ebb3c1?auto=format&fit=crop&w=800&q=80', 3);
 
 INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
 VALUES (1, 37.5850814, 127.0593583),
@@ -14,7 +22,7 @@ VALUES (1, 37.5850814, 127.0593583),
        (1, 37.5853875, 127.0619761);
 
 -- ========================
--- 2. 일정 날짜 (EventDate)
+-- 일정 날짜 (EventDate)
 -- ========================
 INSERT INTO event_date (organization_id, date)
 VALUES (1, CURRENT_DATE() - 1),
@@ -22,7 +30,7 @@ VALUES (1, CURRENT_DATE() - 1),
        (1, CURRENT_DATE() + 1);
 
 -- ========================
--- 3. 타임라인 (Event)
+-- 타임라인 (Event)
 -- ========================
 
 INSERT INTO event (start_time, end_time, title, location, event_date_id)
@@ -55,7 +63,7 @@ VALUES ('09:30:00', '10:30:00', '플리마켓', '체육관 앞', 3),
        ('21:00:00', '22:00:00', '아티스트 엔딩 무대', '운동장', 3);
 
 -- ========================
--- 4. 전체 공지사항 (Announcement)
+-- 전체 공지사항 (Announcement)
 -- ========================
 INSERT INTO announcement (title, content, is_pinned, organization_id, created_at)
 VALUES ('페스타북 축제에 오신 것을 환영합니다!', '3일간의 즐거움을 함께하세요!', true, 1, '2025-07-16 10:00:00'),
@@ -65,14 +73,14 @@ VALUES ('페스타북 축제에 오신 것을 환영합니다!', '3일간의 즐
        ('주차 안내', '주차는 남문 주차장을 이용해 주시기 바랍니다. 주차권은 안내데스크에서 발급받으실 수 있습니다.', false, 1, '2025-07-19 08:45:00');
 
 -- ========================
--- 5. 자주 묻는 질문 (QuestionAnswer)
+-- 자주 묻는 질문 (QuestionAnswer)
 -- ========================
 INSERT INTO question_answer (organization_id, question, answer, created_at)
 VALUES (1, '차를 가져가도 될까요?', '동문 주차장을 이용하실 수 있습니다.', '2025-07-16 09:30:00'),
        (1, '부스 위치가 궁금해요.', '푸드트럭은 운동장 오른쪽 라인에 위치합니다.', '2025-07-16 09:40:00');
 
 -- ========================
--- 6. 플레이스 (Place)
+-- 플레이스 (Place)
 -- ========================
 INSERT INTO place (organization_id, category, latitude, longitude)
 VALUES (1, 'FOOD_TRUCK', 37.5837, 127.0592),
@@ -96,7 +104,7 @@ VALUES (1, '핫도그 푸드트럭', '즉석에서 튀긴 바삭한 핫도그', 
        (8, 'VR 게임존', 'VR 체험 부스', '체험존 B', '게임동아리', '10:00:00', '20:00:00');
 
 -- ========================
--- 7. 플레이스 공지사항 (PlaceAnnouncement)
+-- 플레이스 공지사항 (PlaceAnnouncement)
 -- ========================
 INSERT INTO place_announcement (place_id, title, content, created_at)
 VALUES (1, '이벤트 참여 방법', '줄서기 및 거리두기를 지켜주세요.', '2025-07-16 12:01:00'),
@@ -118,7 +126,7 @@ VALUES (1, '이벤트 참여 방법', '줄서기 및 거리두기를 지켜주�
        (8, '물품 소진 안내', '더운 날씨로 인한 잠시 휴식이 예정되어 있습니다.', '2025-07-16 12:24:00');
 
 -- ========================
--- 8. 플레이스 이미지 (PlaceImage)
+-- 플레이스 이미지 (PlaceImage)
 -- ========================
 INSERT INTO place_image (place_id, image_url, sequence)
 VALUES (1, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=500&q=80', 1),
@@ -144,14 +152,14 @@ VALUES (1, 'https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=fo
        (8, 'https://images.unsplash.com/photo-1519710164239-da123dc03ef4?auto=format&fit=crop&w=500&q=80', 5);
 
 -- ========================
--- 9. 디바이스 (Device)
+-- 디바이스 (Device)
 -- ========================
 INSERT INTO device (device_identifier, fcm_token)
 VALUES ('android-uuid-1234', 'fcm-token-1234'),
        ('android-uuid-5678', 'fcm-token-5678');
 
 -- ========================
--- 10. 플레이스 즐겨찾기 (PlaceFavorite)
+-- 플레이스 즐겨찾기 (PlaceFavorite)
 -- ========================
 INSERT INTO place_favorite (place_id, device_id)
 VALUES (1, 1),
@@ -160,7 +168,7 @@ VALUES (1, 1),
        (4, 2);
 
 -- ========================
--- 11. 조직 알림 (OrganizationNotification)
+-- 조직 알림 (OrganizationNotification)
 -- ========================
 INSERT INTO organization_notification (organization_id, device_id)
 VALUES (1, 1),

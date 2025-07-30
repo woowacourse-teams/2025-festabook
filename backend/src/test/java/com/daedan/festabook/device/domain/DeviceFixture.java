@@ -12,6 +12,24 @@ public class DeviceFixture {
         );
     }
 
+    public static Device createWithDeviceIdentifier(
+            String deviceIdentifier
+    ) {
+        return new Device(
+                deviceIdentifier,
+                DEFAULT_FCM_TOKEN
+        );
+    }
+
+    public static Device createWithFcmToken(
+            String fcmToken
+    ) {
+        return new Device(
+                DEFAULT_DEVICE_IDENTIFIER,
+                fcmToken
+        );
+    }
+
     public static Device create(
             Long id
     ) {

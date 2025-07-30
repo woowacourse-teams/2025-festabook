@@ -1,14 +1,19 @@
 package com.daedan.festabook.organization.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 
+import com.daedan.festabook.organization.domain.FestivalImage;
+import com.daedan.festabook.organization.domain.FestivalImageFixture;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.config.JsonPathConfig;
+import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,6 +35,9 @@ class OrganizationControllerTest {
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
+
+    @Autowired
+    private FestivalImageJpaRepository festivalImageJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -88,6 +96,71 @@ class OrganizationControllerTest {
                             equalTo(organization.getPolygonHoleBoundary().get(2).getLatitude()))
                     .body("polygonHoleBoundary[2].longitude",
                             equalTo(organization.getPolygonHoleBoundary().get(2).getLongitude()));
+        }
+    }
+
+    @Nested
+    class getOrganizationByOrganizationId {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
+            FestivalImage festivalImage2 = FestivalImageFixture.create(organization, 2);
+            festivalImageJpaRepository.saveAll(List.of(festivalImage1, festivalImage2));
+
+            int festivalImageSize = 2;
+            int expectedFieldSize = 6;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/organizations")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("universityName", equalTo(organization.getUniversityName()))
+                    .body("festivalImages", hasSize(festivalImageSize))
+                    .body("festivalName", equalTo(organization.getFestivalName()))
+                    .body("startDate", equalTo(organization.getStartDate().toString()))
+                    .body("endDate", equalTo(organization.getEndDate().toString()))
+
+                    .body("festivalImages[0].id", equalTo(festivalImage1.getId().intValue()))
+                    .body("festivalImages[0].imageUrl", equalTo(festivalImage1.getImageUrl()))
+                    .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
+
+                    .body("festivalImages[1].id", equalTo(festivalImage2.getId().intValue()))
+                    .body("festivalImages[1].imageUrl", equalTo(festivalImage2.getImageUrl()))
+                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()));
+        }
+
+        @Test
+        void 성공_이미지_오름차순_정렬() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            FestivalImage festivalImage3 = FestivalImageFixture.create(organization, 3);
+            FestivalImage festivalImage2 = FestivalImageFixture.create(organization, 2);
+            FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
+            festivalImageJpaRepository.saveAll(List.of(festivalImage3, festivalImage2, festivalImage1));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/organizations")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
+                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()))
+                    .body("festivalImages[2].sequence", equalTo(festivalImage3.getSequence()));
         }
     }
 }
