@@ -173,8 +173,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setUpBottomNavigation() {
         binding.fabMap.post {
-            binding.fabMap.elevation = FLOATING_ACTION_BUTTON_ELEVATION * resources.displayMetrics.density
-            binding.fabMap.translationY = 0f
+            binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
         }
         binding.bnvMenu.setOnApplyWindowInsetsListener(null)
         binding.bnvMenu.setPadding(0, 0, 0, 0)
@@ -232,7 +231,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
         private const val TAG_PLACE_LIST_FRAGMENT = "placeListFragment"
         private const val TAG_NEW_FRAGMENT = "newFragment"
-        private val FLOATING_ACTION_BUTTON_ELEVATION = 8f
+        private val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
 
         fun Fragment.newInstance(): Fragment =
             this.apply {
