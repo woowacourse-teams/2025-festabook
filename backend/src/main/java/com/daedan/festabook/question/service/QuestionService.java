@@ -45,7 +45,7 @@ public class QuestionService {
     @Transactional
     public QuestionResponse updateQuestionAndAnswer(Long questionId, QuestionRequest request) {
         Question question = getQuestionById(questionId);
-        question.updateQuestion(request.question(), request.answer());
+        question.updateQuestionAndAnswer(request.question(), request.answer());
         return QuestionResponse.from(question);
     }
 
