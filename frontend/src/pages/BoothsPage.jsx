@@ -3,7 +3,7 @@ import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../constants/categories';
 import api from '../utils/api';
 
-const BoothDetails = ({ booth, openModal, handleSave, showToast, updateBooth }) => {
+const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth }) => {
 
     const defaultBooth = (booth) => {
         return {
@@ -83,16 +83,8 @@ const BoothDetails = ({ booth, openModal, handleSave, showToast, updateBooth }) 
             <div className="flex items-center gap-4 justify-end mt-2">
                 <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${booth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
                 <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
-                <button onClick={() => {
-                    openModal('confirm', {
-                        title: '플레이스 삭제 확인',
-                        message: `'${booth.title}' 플레이스를 정말 삭제하시겠습니까?`,
-                        onConfirm: () => {
-                            updateBooth(booth.id, { ...booth, _delete: true });
-                            showToast('플레이스가 삭제되었습니다.');
-                        }
-                    });
-                }} className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
+                <button onClick={() => openDeleteModal(booth)} 
+                className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
             </div>
         </div>
     );
@@ -162,6 +154,35 @@ const BoothsPage = () => {
         }
     };
 
+    // 3. Booth 삭제
+    const handleDelete = async (id) => {
+        try {
+            setLoading(true);
+            const res = await api.delete(`/places/${id}`);
+            // 201 응답이면 성공 처리, 응답 구조 반영
+            if (res.status === 204) {
+                setBooths(prevBooths => prevBooths.filter(booth => booth.id !== id));
+                showToast('성공적으로 플레이스가 삭제되었습니다.');
+            } else {
+                showToast('플레이스 삭제에 실패했습니다.');
+            }
+        } catch (e) {
+            showToast('플레이스 삭제에 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const openDeleteModal = (booth) => {
+        openModal('confirm', {
+            title: '플레이스 삭제 확인',
+            message: `'${booth.title}' 플레이스를 정말 삭제하시겠습니까?`,
+            onConfirm: () => {
+                handleDelete(booth.id);
+            }
+        });
+    }
+
     // 기존 handleSave는 수정만 담당
     const handleSave = (data) => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
@@ -169,6 +190,10 @@ const BoothsPage = () => {
         setBooths(prev => prev.map(b => b.id === data.id ? { ...b, ...data } : b));
         showToast('플레이스 정보가 수정되었습니다.');
     };
+
+    const isMainPlace = (category) => {
+        return !['SMOKING', 'TRASH_CAN'].includes(category);
+    }
 
     return (
         <div>
@@ -178,59 +203,119 @@ const BoothsPage = () => {
                     <i className="fas fa-plus mr-2"></i> 새 플레이스 추가
                 </button>
             </div>
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-                {loading ? (
-                    <div className="p-8 text-center text-gray-500">로딩 중...</div>
-                ) : (
-                <table className="min-w-full w-full">
-                    <thead className="table-header">
-                        <tr>
-                            <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스명</th>
-                            <th className="p-4 text-center font-semibold min-w-[100px] w-1/6">카테고리</th>
-                            <th className="p-4 text-right font-semibold min-w-[180px] w-1/4">관리</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {booths.map(booth => (
-                            <React.Fragment key={booth.id}>
-                                <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                                    <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
-                                    <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
-                                    <td className="p-4 align-middle text-right min-w-[180px]">
-                                        <div className="flex items-center justify-end space-x-4 flex-wrap">
-                                            <button
-                                                onClick={() => !['SMOKING', 'TRASH_CAN'].includes(booth.category) && toggleExpand(booth.id)}
-                                                className={`text-gray-600 hover:text-gray-900 text-sm font-semibold ${['SMOKING', 'TRASH_CAN'].includes(booth.category) ? 'invisible' : ''}`}
-                                                tabIndex={['SMOKING', 'TRASH_CAN'].includes(booth.category) ? -1 : 0}
-                                                disabled={['SMOKING', 'TRASH_CAN'].includes(booth.category)}
-                                            >
-                                                <i className={`fas ${expandedIds.includes(booth.id) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
-                                                상세보기
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
+            {loading ? (
+                <div className="p-8 text-center text-gray-500">로딩 중...</div>
+            ) : (
+                <div>
+                    <div className='text-xl font-bold ml-1 mt-10 mb-2'>
+                            메인 플레이스
+                        </div>
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
+                        <table className="min-w-full w-full">
+                            <thead className="table-header">
                                 <tr>
-                                    <td colSpan="3" className="p-0">
-                                        <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
-                                            {expandedIds.includes(booth.id) && (
-                                                <BoothDetails
-                                                    booth={booth}
-                                                    openModal={openModal}
-                                                    handleSave={handleSave}
-                                                    showToast={showToast}
-                                                    updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
-                                                />
-                                            )}
-                                        </div>
-                                    </td>
+                                    <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스명</th>
+                                    <th className="p-4 text-center font-semibold min-w-[100px] w-1/6">카테고리</th>
+                                    <th className="p-4 text-right font-semibold min-w-[180px] w-1/4">관리</th>
                                 </tr>
-                            </React.Fragment>
-                        ))}
-                    </tbody>
-                </table>
-                )}
-            </div>
+                            </thead>
+                            <tbody>
+                                {booths.map(booth => (
+                                    isMainPlace(booth.category) ?
+                                    <React.Fragment key={booth.id}>
+                                        <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+                                            <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
+                                            <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
+                                            <td className="p-4 align-middle text-right min-w-[180px]">
+                                                <div className="flex items-center justify-end space-x-4 flex-wrap">
+                                                    <button
+                                                        onClick={() => !['SMOKING', 'TRASH_CAN'].includes(booth.category) && toggleExpand(booth.id)}
+                                                        className={`text-gray-600 hover:text-gray-900 text-sm font-semibold ${['SMOKING', 'TRASH_CAN'].includes(booth.category) ? 'invisible' : ''}`}
+                                                        tabIndex={['SMOKING', 'TRASH_CAN'].includes(booth.category) ? -1 : 0}
+                                                        disabled={['SMOKING', 'TRASH_CAN'].includes(booth.category)}
+                                                    >
+                                                        <i className={`fas ${expandedIds.includes(booth.id) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
+                                                        상세보기
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan="3" className="p-0">
+                                                <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
+                                                    {expandedIds.includes(booth.id) && (
+                                                        <BoothDetails
+                                                            booth={booth}
+                                                            openDeleteModal={openDeleteModal}
+                                                            openModal={openModal}
+                                                            handleSave={handleSave}
+                                                            showToast={showToast}
+                                                            updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </React.Fragment> : <></>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
+
+                    <div className='text-xl font-bold ml-1 mt-10 mb-2'>
+                            기타 플레이스
+                        </div>
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto ">
+                        <table className="min-w-full w-full">
+                            <thead className="table-header">
+                                <tr>
+                                    <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스명</th>
+                                    <th className="p-4 text-center font-semibold min-w-[100px] w-1/6">카테고리</th>
+                                    <th className="p-4 text-right font-semibold min-w-[180px] w-1/4">관리</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {booths.map(booth => (
+                                    !isMainPlace(booth.category) ? 
+                                    <React.Fragment key={booth.id}>
+                                        <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
+                                            <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
+                                            <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
+                                            <td className="p-4 align-middle text-right min-w-[180px]">
+                                                <div className="flex items-center justify-end space-x-4 flex-wrap">
+                                                    <button
+                                                        onClick={() => openDeleteModal(booth)}
+                                                        className="text-red-600 hover:text-red-800 text-sm font-semibold">
+                                                        삭제
+                                                    </button>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td colSpan="3" className="p-0">
+                                                <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
+                                                    {expandedIds.includes(booth.id) && (
+                                                        <BoothDetails
+                                                            booth={booth}
+                                                            openDeleteModal={openDeleteModal}
+                                                            openModal={openModal}
+                                                            handleSave={handleSave}
+                                                            showToast={showToast}
+                                                            updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
+                                                        />
+                                                    )}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </React.Fragment> : <></>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            )}
+
         </div>
     );
 };

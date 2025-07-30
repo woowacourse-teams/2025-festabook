@@ -1,7 +1,7 @@
 // src/utils/api.js
 import axios from 'axios';
 
-const API_HOST = 'http://festabook.woowacourse.com';
+const API_HOST = 'http://localhost:8080';
 
 const api = axios.create({
   baseURL: API_HOST,
