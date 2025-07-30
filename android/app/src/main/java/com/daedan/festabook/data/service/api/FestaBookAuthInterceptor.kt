@@ -7,6 +7,7 @@ class FestaBookAuthInterceptor(
     private val organizationId: String,
 ) : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
+        Thread.sleep(2000)
         val originalRequest = chain.request()
         val requestWithHeader =
             originalRequest

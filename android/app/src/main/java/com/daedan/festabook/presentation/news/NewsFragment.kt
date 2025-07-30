@@ -41,6 +41,11 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
     private fun setupObserver() {
         viewModel.noticeUiState.observe(viewLifecycleOwner) { noticeState ->
             when (noticeState) {
+                is NoticeUiState.InitialLoading -> {
+                    binding.srlNoticeList.isRefreshing = true
+                    showLoadingView()
+                }
+
                 is NoticeUiState.Error -> {
                     hideLoadingView()
                     binding.srlNoticeList.isRefreshing = false
@@ -48,7 +53,6 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
 
                 is NoticeUiState.Loading -> {
                     binding.srlNoticeList.isRefreshing = true
-                    showLoadingView()
                 }
 
                 is NoticeUiState.Success -> {
