@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../utils/api';
+import { getCategoryIcon } from '../../data/categories';
+import { useModal } from '../../hooks/useModal';
 
 type MapSelectorProps = {
   placeId: number;
@@ -37,9 +39,11 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
   const [center, setCenter] = useState<{ lat: number; lng: number } | null>(null);
   const [zoom, setZoom] = useState<number | null>(null);
   const [existingMarkers, setExistingMarkers] = useState<any[]>([]); // 모든 부스 마커
+  const [currentPlace, setCurrentPlace] = useState<any>(null); // 현재 편집 중인 플레이스 정보
   const existingMarkerRefs = useRef<any[]>([]);
   const [holeBoundary, setHoleBoundary] = useState<any[]>([]); // 폴리곤 홀
   const polygonRef = useRef<any>(null);
+  const { openModal, showToast } = useModal();
 
   // GET /organizations/geography로 폴리곤 홀도 받아오기
   useEffect(() => {
@@ -90,14 +94,19 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
   useEffect(() => {
     async function fetchMarkers() {
       try {
-        const res = await api.get('/places/geographies');
-        setExistingMarkers(res.data || []);
+        const [markersRes, placeRes] = await Promise.all([
+          api.get('/places/geographies'),
+          api.get(`/places/${placeId}`)
+        ]);
+        setExistingMarkers(markersRes.data || []);
+        setCurrentPlace(placeRes.data);
       } catch (e) {
         setExistingMarkers([]);
+        setCurrentPlace(null);
       }
     }
     fetchMarkers();
-  }, []);
+  }, [placeId]);
 
   // 지도 및 클릭 이벤트 초기화
   useEffect(() => {
@@ -108,6 +117,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
       center: new naver.maps.LatLng(center.lat, center.lng),
       zoom: zoom + 1,
       gl: true,
+      customStyleId: '4b934c2a-71f5-4506-ab90-4e6aa14c0820',
       logoControl: false,
       mapDataControl: false,
       scaleControl: false,
@@ -135,25 +145,26 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
         strokeWeight: 3
       });
     }
-    // 기존 부스 마커 표시
+    // 기존 부스 마커 표시 (좌표가 있는 경우만)
     existingMarkerRefs.current.forEach(m => m.setMap(null));
     existingMarkerRefs.current = [];
     existingMarkers.forEach(marker => {
-      if (marker.markerCoordinate) {
+      if (marker.markerCoordinate && marker.markerCoordinate.latitude && marker.markerCoordinate.longitude) {
         const isCurrent = marker.id === placeId;
         const m = new naver.maps.Marker({
           position: new naver.maps.LatLng(marker.markerCoordinate.latitude, marker.markerCoordinate.longitude),
           map: mapInstance,
           title: marker.category,
           icon: {
-            content: `
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 58" width="25" height="40">
-                  <path d="M20 0C9 0 0 9 0 20c0 11 20 38 20 38s20-27 20-38C40 9 31 0 20 0z" fill="${isCurrent ? '#ff3b30' : '#007aff'}"/>
-                  <circle cx="20" cy="20" r="8" fill="#ffffff"/>
+            content: isCurrent ? `
+                <svg width="30" height="40" viewBox="0 0 24 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M4 21L12.0711 14.0002L20 21L12.7344 27.5448C12.3565 27.8852 11.7833 27.8877 11.4024 27.5507L4 21Z" fill="#C3C3C3"/>
+                  <circle cx="12" cy="12" r="11.5" fill="#FF4B3E" stroke="white"/>
+                  <path fill-rule="evenodd" clip-rule="evenodd" d="M18.3634 7.40738C18.5508 7.59491 18.6562 7.84921 18.6562 8.11438C18.6562 8.37954 18.5508 8.63385 18.3634 8.82138L10.868 16.3167C10.769 16.4158 10.6514 16.4944 10.522 16.548C10.3925 16.6016 10.2538 16.6292 10.1137 16.6292C9.9736 16.6292 9.83488 16.6016 9.70545 16.548C9.57602 16.4944 9.45842 16.4158 9.35937 16.3167L5.63537 12.5934C5.53986 12.5011 5.46367 12.3908 5.41126 12.2688C5.35886 12.1468 5.33127 12.0156 5.33012 11.8828C5.32896 11.75 5.35426 11.6183 5.40454 11.4954C5.45483 11.3725 5.52908 11.2609 5.62297 11.167C5.71686 11.0731 5.82852 10.9988 5.95141 10.9486C6.07431 10.8983 6.20599 10.873 6.33877 10.8741C6.47155 10.8753 6.60277 10.9029 6.72477 10.9553C6.84677 11.0077 6.95712 11.0839 7.04937 11.1794L10.1134 14.2434L16.9487 7.40738C17.0416 7.31445 17.1518 7.24073 17.2732 7.19044C17.3946 7.14014 17.5247 7.11426 17.656 7.11426C17.7874 7.11426 17.9175 7.14014 18.0389 7.19044C18.1602 7.24073 18.2705 7.31445 18.3634 7.40738Z" fill="white"/>
                 </svg>
-          `,
-          size: new naver.maps.Size(36, 48),
-          anchor: new naver.maps.Point(18, 48)
+            ` : getCategoryIcon(marker.category, false),
+            size: new naver.maps.Size(30, 40),
+            anchor: new naver.maps.Point(15, 40)
           }
         });
         existingMarkerRefs.current.push(m);
@@ -173,18 +184,19 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
       if (markerRef.current) {
         markerRef.current.setMap(null);
       }
-      const newMarker = new naver.maps.Marker({
+            const newMarker = new naver.maps.Marker({
         position: new naver.maps.LatLng(lat, lng),
         map: mapInstance,
         icon: {
           content: `
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 58" width="25" height="40">
-                <path d="M20 0C9 0 0 9 0 20c0 11 20 38 20 38s20-27 20-38C40 9 31 0 20 0z" fill='#ff3b30'/>
-                <circle cx="20" cy="20" r="8" fill="#ffffff"/>
+              <svg width="30" height="40" viewBox="0 0 24 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 21L12.0711 14.0002L20 21L12.7344 27.5448C12.3565 27.8852 11.7833 27.8877 11.4024 27.5507L4 21Z" fill="#C3C3C3"/>
+                <circle cx="12" cy="12" r="11.5" fill="#FF4B3E" stroke="white"/>
+                <path fill-rule="evenodd" clip-rule="evenodd" d="M18.3634 7.40738C18.5508 7.59491 18.6562 7.84921 18.6562 8.11438C18.6562 8.37954 18.5508 8.63385 18.3634 8.82138L10.868 16.3167C10.769 16.4158 10.6514 16.4944 10.522 16.548C10.3925 16.6016 10.2538 16.6292 10.1137 16.6292C9.9736 16.6292 9.83488 16.6016 9.70545 16.548C9.57602 16.4944 9.45842 16.4158 9.35937 16.3167L5.63537 12.5934C5.53986 12.5011 5.46367 12.3908 5.41126 12.2688C5.35886 12.1468 5.33127 12.0156 5.33012 11.8828C5.32896 11.75 5.35426 11.6183 5.40454 11.4954C5.45483 11.3725 5.52908 11.2609 5.62297 11.167C5.71686 11.0731 5.82852 10.9988 5.95141 10.9486C6.07431 10.8983 6.20599 10.873 6.33877 10.8741C6.47155 10.8753 6.60277 10.9029 6.72477 10.9553C6.84677 11.0077 6.95712 11.0839 7.04937 11.1794L10.1134 14.2434L16.9487 7.40738C17.0416 7.31445 17.1518 7.24073 17.2732 7.19044C17.3946 7.14014 17.5247 7.11426 17.656 7.11426C17.7874 7.11426 17.9175 7.14014 18.0389 7.19044C18.1602 7.24073 18.2705 7.31445 18.3634 7.40738Z" fill="white"/>
               </svg>
         `,
-        size: new naver.maps.Size(36, 48),
-        anchor: new naver.maps.Point(18, 48)
+          size: new naver.maps.Size(30, 40),
+          anchor: new naver.maps.Point(15, 40)
         }
       });
       markerRef.current = newMarker;
@@ -213,11 +225,18 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
         latitude: coords.lat,
         longitude: coords.lng,
       });
-      // PATCH 응답은 coordinate로 옴
-      onSaved && onSaved({ ...res.data, markerCoordinate: res.data.coordinate });
-      alert('좌표가 저장되었습니다!');
+      // PATCH 응답 데이터를 명확하게 전달
+      const markerData = {
+        id: placeId,
+        category: currentPlace?.category,
+        coordinate: res.data.coordinate,
+        markerCoordinate: res.data.coordinate,
+        ...res.data
+      };
+      onSaved && onSaved(markerData);
+      showToast('좌표가 저장되었습니다.');
     } catch (e: any) {
-      alert(e.message);
+      showToast('좌표 저장에 실패했습니다.');
     } finally {
       setSaving(false);
     }
