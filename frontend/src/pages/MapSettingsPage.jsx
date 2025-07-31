@@ -90,6 +90,7 @@ const MapSettingsPage = () => {
       center: new naver.maps.LatLng(center.lat, center.lng),
       zoom: zoom + 2,
       gl: true,
+      customStyleId: '4b934c2a-71f5-4506-ab90-4e6aa14c0820',
       logoControl: false,
       mapDataControl: false,
       scaleControl: false,
