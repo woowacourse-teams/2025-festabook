@@ -4,7 +4,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 
 class PosterAdapter(
-    private val posters: List<Int>,
+    private val posters: List<String>,
 ) : RecyclerView.Adapter<PosterItemViewHolder>() {
     override fun onCreateViewHolder(
         parent: ViewGroup,
