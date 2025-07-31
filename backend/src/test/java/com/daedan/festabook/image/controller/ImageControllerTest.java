@@ -53,7 +53,6 @@ class ImageControllerTest {
             RestAssured
                     .given()
                     .multiPart(multipartName, fileName, imageByteValue, mimeType)
-                    .body(imageByteValue)
                     .post("/images")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
