@@ -57,7 +57,7 @@ const MapSettingsPage = () => {
     async function fetchAll() {
       try {
         const [boothsRes, geoRes, markersRes] = await Promise.all([
-          api.get('/places'),
+          api.get('/places/previews'),
           api.get('/organizations/geography'),
           api.get('/places/geographies')
         ]);
