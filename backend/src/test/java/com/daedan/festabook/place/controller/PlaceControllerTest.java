@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.nullValue;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
+import com.daedan.festabook.organization.domain.Coordinate;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -311,7 +312,8 @@ class PlaceControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, null);
+            Coordinate coordinate = null;
+            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, coordinate);
             placeJpaRepository.save(place);
 
             // when & then

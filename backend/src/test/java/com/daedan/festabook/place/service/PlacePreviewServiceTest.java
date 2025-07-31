@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.organization.domain.Coordinate;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.place.domain.Place;
@@ -120,7 +121,8 @@ class PlacePreviewServiceTest {
             Organization organization = OrganizationFixture.create(organizationId);
 
             PlaceCategory placeCategory = PlaceCategory.BAR;
-            Place place = PlaceFixture.create(organization, placeCategory, null);
+            Coordinate coordinate = null;
+            Place place = PlaceFixture.create(organization, placeCategory, coordinate);
 
             given(placeJpaRepository.findAllByOrganizationId(organization.getId()))
                     .willReturn(List.of(place));
