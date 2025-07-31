@@ -8,6 +8,10 @@
     <string name="menu_news_title">소식</string>
     <string name="menu_setting_title">설정</string>
 
+
+    <!-- 홈 화면 -->
+    <string name="home_poster_image">poster_image</string>
+
     <!--한 눈에 보기 화면 -->
     <string name="place_list_title">한 눈에 보기</string>
     <string name="place_list_title_booth">부스</string>
