@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeDetail
 
 import android.os.Bundle
 import android.view.View
+import android.widget.TextView
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailBinding
@@ -43,13 +44,15 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         binding.lifecycleOwner = viewLifecycleOwner
         binding.rvPlaceNotice.adapter = placeNoticeAdapter
         binding.vpPlaceImages.adapter = placeImageAdapter
+        binding.tvLocation.setExpandedWhenClicked()
+        binding.tvHost.setExpandedWhenClicked()
     }
 
     private fun setUpObserver() {
         viewModel.placeDetail.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is PlaceDetailUiState.Error -> {
-                    Timber.tag("PlaceDetailFragment").d("PlaceDetail: ${result.throwable?.message}")
+                    Timber.tag("PlaceDetailFragment").d("PlaceDetail: ${result.throwable.message}")
                     showErrorSnackBar(result.throwable)
                 }
                 is PlaceDetailUiState.Loading -> {
@@ -95,7 +98,19 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         binding.sflScheduleSkeleton.stopShimmer()
     }
 
+    private fun TextView.setExpandedWhenClicked() {
+        setOnClickListener {
+            maxLines =
+                if (maxLines == DEFAULT_MAX_LINES) {
+                    Integer.MAX_VALUE
+                } else {
+                    DEFAULT_MAX_LINES
+                }
+        }
+    }
+
     companion object {
+        private const val DEFAULT_MAX_LINES = 1
         private const val TAG_PLACE_DETAIL_FRAGMENT = "placeDetailFragment"
 
         fun newInstance(place: PlaceUiModel): PlaceDetailFragment =
