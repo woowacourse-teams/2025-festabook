@@ -24,7 +24,8 @@ class PlaceListAdapter(
         holder: PlaceListViewHolder,
         position: Int,
     ) {
-        holder.bind(getItem(position))
+        if (position == POSITION_HEADER) return
+        holder.bind(getItem(position - 1))
     }
 
     override fun getItemViewType(position: Int): Int =
@@ -33,6 +34,8 @@ class PlaceListAdapter(
         } else {
             PlaceViewHolder.VIEW_TYPE
         }
+
+    override fun getItemCount(): Int = super.getItemCount() + 1
 
     companion object {
         private const val POSITION_HEADER = 0

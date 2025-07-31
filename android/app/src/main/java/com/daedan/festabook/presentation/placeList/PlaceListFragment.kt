@@ -94,7 +94,10 @@ class PlaceListFragment :
         viewModel.places.observe(viewLifecycleOwner) { places ->
             when (places) {
                 is PlaceListUiState.Loading -> showSkeleton()
-                is PlaceListUiState.Success -> placeAdapter.submitList(places.value)
+                is PlaceListUiState.Success -> {
+                    hideSkeleton()
+                    placeAdapter.submitList(places.value)
+                }
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
@@ -107,7 +110,10 @@ class PlaceListFragment :
         viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
-                is PlaceListUiState.Success -> mapManager.setPlaceLocation(placeGeographies.value)
+                is PlaceListUiState.Success -> {
+                    hideSkeleton()
+                    mapManager.setPlaceLocation(placeGeographies.value)
+                }
                 is PlaceListUiState.Error -> {
                     Timber.tag("TAG").d("placeGeographies: ${placeGeographies.throwable.message}")
                     showErrorSnackBar(placeGeographies.throwable)
