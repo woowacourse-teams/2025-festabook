@@ -35,7 +35,10 @@ class PlaceListAdapter(
             PlaceViewHolder.VIEW_TYPE
         }
 
-    override fun getItemCount(): Int = super.getItemCount() + 1
+    override fun getItemCount(): Int {
+        val itemCount = super.getItemCount()
+        return if (itemCount > 0) itemCount + 1 else itemCount
+    }
 
     companion object {
         private const val POSITION_HEADER = 0
