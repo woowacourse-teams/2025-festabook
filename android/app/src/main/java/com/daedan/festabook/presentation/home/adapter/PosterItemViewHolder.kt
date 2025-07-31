@@ -3,14 +3,15 @@ package com.daedan.festabook.presentation.home.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemHomePosterBinding
 
 class PosterItemViewHolder(
     val binding: ItemHomePosterBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(poster: Int) {
-        binding.ivHomePoster.setImageResource(poster)
+    fun bind(url: String) {
+        binding.ivHomePoster.load(url)
         binding.motionLayout.progress = 0f
         binding.motionLayout.transitionToState(R.id.collapsed)
     }
