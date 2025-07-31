@@ -12,6 +12,8 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.marginBottom
+import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import com.daedan.festabook.FestaBookApp
@@ -174,7 +176,12 @@ class MainActivity : AppCompatActivity() {
     private fun setUpBottomNavigation() {
         binding.fabMap.post {
             binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
+            binding.fcvFragmentContainer.updatePadding(
+                bottom = binding.babMenu.height + binding.babMenu.marginBottom,
+            )
         }
+        binding.babMenu.setOnApplyWindowInsetsListener(null)
+        binding.babMenu.setPadding(0, 0, 0, 0)
         binding.bnvMenu.setOnApplyWindowInsetsListener(null)
         binding.bnvMenu.setPadding(0, 0, 0, 0)
     }
