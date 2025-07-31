@@ -19,6 +19,7 @@ import androidx.fragment.app.commit
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
@@ -28,7 +29,6 @@ import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.google.firebase.messaging.FirebaseMessaging
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
@@ -72,7 +72,8 @@ class MainActivity : AppCompatActivity() {
         requestNotificationPermission()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
-        onClickBottomNavigationBarItem()
+        onMenuItemClick()
+        onMenuItemReClick()
     }
 
     override fun onRequestPermissionsResult(
@@ -194,22 +195,34 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onClickBottomNavigationBarItem() {
+    private fun onMenuItemClick() {
         binding.bnvMenu.setOnItemSelectedListener { icon ->
-            if (binding.bnvMenu.selectedItemId == icon.itemId) {
-                return@setOnItemSelectedListener false
-            }
             when (icon.itemId) {
                 R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
                 R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
                 R.id.item_menu_news -> switchFragment(newFragment, TAG_NEW_FRAGMENT)
-                R.id.item_menu_setting -> {}
+                R.id.item_menu_setting -> Unit
             }
             true
         }
         binding.fabMap.setOnClickListener {
             binding.bnvMenu.selectedItemId = R.id.item_menu_map
             switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
+        }
+    }
+
+    private fun onMenuItemReClick() {
+        binding.bnvMenu.setOnItemReselectedListener { icon ->
+            when (icon.itemId) {
+                R.id.item_menu_home -> Unit
+                R.id.item_menu_schedule -> {
+                    val fragment = supportFragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT)
+                    if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
+                }
+
+                R.id.item_menu_news -> Unit
+                R.id.item_menu_setting -> Unit
+            }
         }
     }
 
@@ -238,7 +251,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
         private const val TAG_PLACE_LIST_FRAGMENT = "placeListFragment"
         private const val TAG_NEW_FRAGMENT = "newFragment"
-        private val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
+        private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
 
         fun Fragment.newInstance(): Fragment =
             this.apply {

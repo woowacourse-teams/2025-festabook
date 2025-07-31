@@ -29,7 +29,7 @@ class ScheduleViewModel(
     val scheduleDatesUiState: LiveData<ScheduleDatesUiState> get() = _scheduleDatesUiState
 
     init {
-        loadAllScheduleDates()
+        loadAllDates()
         if (dateId != INVALID_ID) loadScheduleByDate()
     }
 
@@ -46,6 +46,7 @@ class ScheduleViewModel(
     }
 
     fun loadScheduleByDate() {
+        if (dateId == INVALID_ID) return
         viewModelScope.launch {
             _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
 
@@ -55,14 +56,11 @@ class ScheduleViewModel(
                     val scheduleEventUiModels = scheduleEvents.map { it.toUiModel() }
                     val currentEventPosition =
                         scheduleEventUiModels
-                            .indexOfFirst { it.status == ScheduleEventUiStatus.ONGOING }
-                            .let { if (it == INVALID_INDEX) FIRST_INDEX else it }
+                            .indexOfFirst { scheduleEvent -> scheduleEvent.status == ScheduleEventUiStatus.ONGOING }
+                            .let { currentIndex -> if (currentIndex == INVALID_INDEX) FIRST_INDEX else currentIndex }
 
                     _scheduleEventsUiState.value =
-                        ScheduleEventsUiState.Success(
-                            scheduleEventUiModels,
-                            currentEventPosition,
-                        )
+                        ScheduleEventsUiState.Success(scheduleEventUiModels, currentEventPosition)
                 }.onFailure {
                     _scheduleEventsUiState.value =
                         ScheduleEventsUiState.Error(it.message.toString())
@@ -70,7 +68,7 @@ class ScheduleViewModel(
         }
     }
 
-    private fun loadAllScheduleDates() {
+    private fun loadAllDates() {
         viewModelScope.launch {
             _scheduleDatesUiState.value = ScheduleDatesUiState.Loading
 
@@ -80,13 +78,13 @@ class ScheduleViewModel(
                     val scheduleDateUiModels = scheduleDates.map { it.toUiModel() }
                     val today = LocalDate.now()
 
-                    val currentDateIndex =
+                    val currentDatePosition =
                         scheduleDates
                             .indexOfFirst { !it.date.isBefore(today) }
-                            .let { if (it == INVALID_INDEX) FIRST_INDEX else it }
+                            .let { currentIndex -> if (currentIndex == INVALID_INDEX) FIRST_INDEX else currentIndex }
 
                     _scheduleDatesUiState.value =
-                        ScheduleDatesUiState.Success(scheduleDateUiModels, currentDateIndex)
+                        ScheduleDatesUiState.Success(scheduleDateUiModels, currentDatePosition)
                 }.onFailure {
                     _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it.message.toString())
                 }
@@ -105,11 +103,11 @@ class ScheduleViewModel(
     }
 
     companion object {
-        private const val INVALID_ID: Long = -1L
+        const val INVALID_ID: Long = -1L
+        private const val FIRST_INDEX: Int = 0
         private const val INVALID_INDEX: Int = -1
-        const val FIRST_INDEX: Int = 0
 
-        fun Factory(dateId: Long = INVALID_ID): ViewModelProvider.Factory =
+        fun factory(dateId: Long = INVALID_ID): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     val scheduleRepository =

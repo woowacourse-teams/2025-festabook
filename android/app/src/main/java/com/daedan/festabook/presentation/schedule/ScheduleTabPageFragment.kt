@@ -9,14 +9,20 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.INVALID_ID
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
-import java.lang.IllegalArgumentException
 
-class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
-    private lateinit var adapter: ScheduleAdapter
+class ScheduleTabPageFragment :
+    BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page),
+    ScheduleTabPageUpdater {
     private val viewModel: ScheduleViewModel by viewModels {
-        val dateId: Long = arguments?.getLong(KEY_DATE_ID) ?: throw IllegalArgumentException()
-        ScheduleViewModel.Factory(dateId)
+        val dateId: Long = arguments?.getLong(KEY_DATE_ID, INVALID_ID) ?: INVALID_ID
+        ScheduleViewModel.factory(dateId)
+    }
+    private val adapter: ScheduleAdapter by lazy {
+        ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
+            viewModel.updateBookmark(scheduleEventId)
+        })
     }
 
     override fun onViewCreated(
@@ -24,21 +30,22 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        setupObservers()
         setupScheduleEventRecyclerView()
 
         binding.lifecycleOwner = viewLifecycleOwner
-        setupObservers()
         onSwipeRefreshScheduleByDateListener()
     }
 
+    override fun updateScheduleTabPage() {
+        viewModel.loadScheduleByDate()
+    }
+
     private fun setupScheduleEventRecyclerView() {
-        adapter =
-            ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
-                viewModel.updateBookmark(scheduleEventId)
-            })
         binding.rvScheduleEvent.adapter = adapter
         (binding.rvScheduleEvent.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
             false
+        viewModel.loadScheduleByDate()
     }
 
     private fun onSwipeRefreshScheduleByDateListener() {
@@ -98,7 +105,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
     }
 
     companion object {
-        private const val KEY_DATE_ID = "dateId"
+        const val KEY_DATE_ID = "dateId"
         private const val NO_OFFSET: Int = 0
         private const val HALF: Int = 2
 
