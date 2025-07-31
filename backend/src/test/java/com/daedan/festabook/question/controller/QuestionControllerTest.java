@@ -239,7 +239,7 @@ class QuestionControllerTest {
                     .contentType(ContentType.JSON)
                     .body(requests)
                     .when()
-                    .patch("/questions/sequence")
+                    .patch("/questions/sequences")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].questionId", equalTo(question1.getId().intValue()))

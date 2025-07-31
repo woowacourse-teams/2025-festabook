@@ -70,7 +70,7 @@ public class QuestionController {
         return questionService.updateQuestionAndAnswer(questionId, request);
     }
 
-    @PatchMapping("/sequence")
+    @PatchMapping("/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "질문들의 순서 수정")
     @ApiResponses(value = {
