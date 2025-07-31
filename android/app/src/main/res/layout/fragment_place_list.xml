@@ -13,6 +13,7 @@
             android:layout_height="match_parent"
             android:name="com.naver.maps.map.MapFragment" />
 
+
         <com.naver.maps.map.widget.LocationButtonView
             android:id="@+id/lbv_current_location"
             android:layout_width="wrap_content"
@@ -23,6 +24,132 @@
             app:layout_constraintBottom_toTopOf="@id/rv_places"
             app:layout_constraintStart_toStartOf="parent"
             />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp"
+                app:singleLine="true">
+
+                <com.google.android.material.chip.Chip
+                    android:text="전체"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    android:checked="true"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    tools:checked="true"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:text="주점"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipIconSize="18dp"
+                    app:chipIconEnabled="true"
+                    app:chipIcon="@drawable/ic_map_category_bar"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:text="푸드트럭"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipIconSize="18dp"
+                    app:chipIconEnabled="true"
+                    app:chipIcon="@drawable/ic_map_category_food_truck"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:text="부스"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipIconSize="18dp"
+                    app:chipIcon="@drawable/ic_map_category_booth"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    app:chipIconEnabled="true"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:text="흡연구역"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:text="화장실"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:text="쓰레기통"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+            </com.google.android.material.chip.ChipGroup>
+
+        </HorizontalScrollView>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_place_list"
