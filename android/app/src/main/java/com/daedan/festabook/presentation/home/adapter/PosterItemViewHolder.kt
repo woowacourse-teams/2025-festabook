@@ -12,4 +12,12 @@ class PosterItemViewHolder(
         binding.motionLayout.progress = 0f
         binding.motionLayout.transitionToState(R.id.collapsed)
     }
+
+    fun transitionToExpanded() {
+        binding.motionLayout.transitionToState(R.id.expanded)
+    }
+
+    fun transitionToCollapsed() {
+        binding.motionLayout.transitionToState(R.id.collapsed)
+    }
 }

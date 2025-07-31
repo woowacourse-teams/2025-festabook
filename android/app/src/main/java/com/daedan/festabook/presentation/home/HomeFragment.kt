@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.PagerSnapHelper
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
@@ -44,16 +45,22 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     }
 
     private fun scrollToInitialPosition() {
-        val initialPosition = Int.MAX_VALUE / START_POSITION_CENTER
-        val offset = initialPosition % posters.size
-        binding.rvHomePoster.scrollToPosition(initialPosition - offset)
+        val safeMaxValue = Int.MAX_VALUE / INFINITE_SCROLL_SAFETY_FACTOR
+        val initialPosition = safeMaxValue - (safeMaxValue % posters.size)
+
+        binding.rvHomePoster.scrollToPosition(initialPosition)
     }
 
     private fun addScrollEffectListener() {
         binding.rvHomePoster.addOnScrollListener(CenterItemMotionEnlarger())
     }
 
+    override fun onDestroyView() {
+        binding.rvHomePoster.clearOnScrollListeners()
+        super.onDestroyView()
+    }
+
     companion object {
-        private const val START_POSITION_CENTER = 2
+        private const val INFINITE_SCROLL_SAFETY_FACTOR = 4
     }
 }
