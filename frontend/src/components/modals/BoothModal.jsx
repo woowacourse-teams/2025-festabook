@@ -54,6 +54,16 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
         setForm(booth || { title: '', category: Object.keys(placeCategories)[0], notices: [], images: [], mainImageIndex: -1 });
     }, [booth]);
 
+    const category = form.category;
+    const title = form.title;
+    const startTime = form.startTime;
+    const endTime = form.endTime;
+    const location = form.location;
+    const host = form.host;
+    const description = form.description;
+    const placeAnnouncements = form.placeAnnouncements;
+    const placeImages = form.placeImages;
+
     const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
     const handlePhotoChange = (e) => {
@@ -78,7 +88,6 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
             }));
         });
     };
-
     // form이 수정된 값
     const handleSave = () => {
         onSave(form);
@@ -119,13 +128,13 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
                     <select
                         name="category"
-                        value={form.category || ''}
+                        value={category || ''}
                         onChange={handleChange}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
                     >
-                        {filteredCategories.map(([key, value]) => (
+                        {filteredCategories && filteredCategories.length > 0 ? filteredCategories.map(([key, value]) => (
                             <option key={key} value={key}>{value}</option>
-                        ))}
+                        )) : <></>}
                     </select>
                 </div>
                 <div>
@@ -133,7 +142,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                     <input
                         name="title"
                         type="text"
-                        value={form.title || ''}
+                        value={title || ''}
                         onChange={handleChange}
                         placeholder="플레이스 이름을 입력해주세요."
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
@@ -143,7 +152,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
                     <textarea
                         name="description"
-                        value={form.description || ''}
+                        value={description || ''}
                         onChange={handleChange}
                         rows="3"
                         placeholder="플레이스에 대한 상세 설명을 입력해주세요."
@@ -155,7 +164,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                     <input
                         name="location"
                         type="text"
-                        value={form.location || ''}
+                        value={location || ''}
                         onChange={handleChange}
                         placeholder="예: 학생회관 앞"
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
@@ -166,7 +175,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                     <input
                         name="host"
                         type="text"
-                        value={form.host || ''}
+                        value={host || ''}
                         onChange={handleChange}
                         placeholder="예: 컴퓨터공학과 학생회"
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
@@ -178,7 +187,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                         <input
                             name="startTime"
                             type="time"
-                            value={form.startTime || ''}
+                            value={startTime || ''}
                             onChange={handleChange}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                         />
@@ -188,7 +197,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                         <input
                             name="endTime"
                             type="time"
-                            value={form.endTime || ''}
+                            value={endTime || ''}
                             onChange={handleChange}
                             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
                         />
@@ -197,8 +206,8 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                 <div>
                     <label className="block text-sm font-medium text-gray-700">사진 (클릭하여 대표 사진 변경)</label>
                     <div className="mt-2 grid grid-cols-3 gap-4">
-                        {form.placeImages && form.placeImages.map((img, index) => (
-                            renderImage(form.placeImages[0].id, form.title, img, index)
+                        {placeImages && placeImages.map((img, index) => (
+                            renderImage(placeImages[0].id, title, img, index)
                         ))}
                     </div>
                     <input type="file" accept="image/*" multiple onChange={handlePhotoChange} className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
@@ -206,7 +215,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">개별 공지사항</label>
                     <ul className="list-disc list-inside text-sm mt-2 space-y-1">
-                        {form.placeAnnouncements.map(announcement => renderAnnouncement(announcement))}
+                        {placeAnnouncements && placeAnnouncements.length > 0 ? placeAnnouncements.map(announcement => renderAnnouncement(announcement)) : <></>}
                     </ul>
                 </div>
             </div>

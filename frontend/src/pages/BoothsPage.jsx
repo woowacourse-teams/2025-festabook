@@ -4,9 +4,19 @@ import { placeCategories } from '../constants/categories';
 import api from '../utils/api';
 import { isMainPlace, getDefaultValueIfNull, defaultBooth } from '../utils/booth';
 
-const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth, isMainPlace }) => {
+// 플레이스 상세 정보
+const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, isMainPlace }) => {
 
     const newBooth = defaultBooth(booth);
+
+    const title = newBooth.title;
+    const startTime = newBooth.startTime;
+    const endTime = newBooth.endTime;
+    const location = newBooth.location;
+    const host = newBooth.host;
+    const description = newBooth.description;
+    const placeAnnouncements = newBooth.placeAnnouncements;
+    const placeImages = newBooth.placeImages;
 
     const renderAnnouncement = (announcement) => {
         // const maxTitle = 20;
@@ -37,17 +47,17 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
                 <div className="md:col-span-2">
 
                     <h4 className="font-semibold text-lg mb-2">상세 정보</h4>
-                    <p className="text-gray-700 whitespace-pre-wrap mb-4">{newBooth.description}</p>
+                    <p className="text-gray-700 whitespace-pre-wrap mb-4">{description}</p>
                     <div className="text-sm text-gray-600 space-y-1">
-                        <p><i className="fas fa-map-marker-alt w-4 mr-2"></i>위치: {newBooth.location}</p>
-                        <p><i className="fas fa-user-friends w-4 mr-2"></i>운영 주체: {newBooth.host}</p>
-                        <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {newBooth.startTime} - {newBooth.endTime}</p>
+                        <p><i className="fas fa-map-marker-alt w-4 mr-2"></i>위치: {location}</p>
+                        <p><i className="fas fa-user-friends w-4 mr-2"></i>운영 주체: {host}</p>
+                        <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {startTime} - {endTime}</p>
                     </div>
 
                     <h4 className="font-semibold text-lg mt-4 mb-2">공지사항</h4>
-                    {newBooth.placeAnnouncements && newBooth.placeAnnouncements.length > 0 ? (
+                    {placeAnnouncements && placeAnnouncements.length > 0 ? (
                         <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                            {newBooth.placeAnnouncements.map(announcement => renderAnnouncement(announcement))}
+                            {placeAnnouncements.map(announcement => renderAnnouncement(announcement))}
                         </ul>
                     ) : <p className="text-sm text-gray-500">공지사항 없음</p>}
                 </div>
@@ -55,17 +65,18 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
 
                     <h4 className="font-semibold text-lg mb-2">사진</h4>
                     <div className="grid grid-cols-2 gap-2 mb-10">
-                        {newBooth.placeImages && newBooth.placeImages.length > 0 ? newBooth.placeImages.map((image, idx) => (
-                            renderImage(newBooth.placeImages[0].id, newBooth.title, image, idx)
-                        )) : (
-                            <p className="text-sm text-gray-500">사진 없음</p>
-                        )}
-
+                        {placeImages && placeImages.length > 0 ?
+                            placeImages.map((image, idx) => (renderImage(placeImages[0].id, title, image, idx)))
+                            : (<p className="text-sm text-gray-500">사진 없음</p>)}
                     </div>
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
-                <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${newBooth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
+
+                <button onClick={() => openModal('copyLink', {
+                    // 이 링크는 부스 운영자가 받을 링크임
+                    link: `https://example.com/edit?key=${newBooth.editKey}`
+                })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
                 <button onClick={() => openModal('booth', { booth: newBooth, onSave: handleSave, isMainPlace: isMainPlace })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
                 <button onClick={() => openDeleteModal(newBooth)}
                     className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
@@ -218,7 +229,6 @@ const BoothsPage = () => {
                                                                 openDeleteModal={openDeleteModal}
                                                                 openModal={openModal}
                                                                 handleSave={handleSave}
-                                                                showToast={showToast}
                                                                 isMainPlace={isMainPlace}
                                                                 updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
                                                             />
