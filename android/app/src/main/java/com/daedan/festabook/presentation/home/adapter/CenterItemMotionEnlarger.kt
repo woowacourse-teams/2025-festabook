@@ -11,18 +11,28 @@ class CenterItemMotionEnlarger(
         dx: Int,
         dy: Int,
     ) {
-        val centerThresholdPx =
-            (centerThresholdDp * rv.context.resources.displayMetrics.density).toInt()
-        val center = rv.width / 2
+        val thresholdPx = (centerThresholdDp * rv.context.resources.displayMetrics.density).toInt()
+        updateChildAnimations(rv, thresholdPx)
+    }
 
-        for (i in 0 until rv.childCount) {
-            val child = rv.getChildAt(i)
-            val holder = rv.getChildViewHolder(child) as? PosterItemViewHolder ?: continue
+    fun expandCenterItem(recyclerView: RecyclerView) {
+        val thresholdPx = (centerThresholdDp * recyclerView.context.resources.displayMetrics.density).toInt()
+        updateChildAnimations(recyclerView, thresholdPx)
+    }
+
+    private fun updateChildAnimations(
+        recyclerView: RecyclerView,
+        thresholdPx: Int,
+    ) {
+        val center = recyclerView.width / 2
+        for (i in 0 until recyclerView.childCount) {
+            val child = recyclerView.getChildAt(i)
+            val holder = recyclerView.getChildViewHolder(child) as? PosterItemViewHolder ?: continue
 
             val childCenter = (child.left + child.right) / 2
             val distanceFromCenter = abs(center - childCenter)
 
-            if (distanceFromCenter < centerThresholdPx) {
+            if (distanceFromCenter < thresholdPx) {
                 holder.transitionToExpanded()
             } else {
                 holder.transitionToCollapsed()
