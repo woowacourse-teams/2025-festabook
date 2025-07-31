@@ -14,12 +14,14 @@ import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
+import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionRequestFixture;
 import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequestFixture;
+import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.List;
 import java.util.Optional;
@@ -148,7 +150,7 @@ class QuestionServiceTest {
             );
 
             // when
-            QuestionResponse result = questionService.updateQuestionAndAnswer(questionId, request);
+            QuestionAndAnswerUpdateResponse result = questionService.updateQuestionAndAnswer(questionId, request);
 
             // then
             assertSoftly(s -> {
@@ -210,7 +212,7 @@ class QuestionServiceTest {
             List<QuestionSequenceUpdateRequest> requests = List.of(request1, request2, request3);
 
             // when
-            QuestionResponses result = questionService.updateSequence(requests);
+            QuestionSequenceUpdateResponses result = questionService.updateSequence(requests);
 
             // then
             assertSoftly(s -> {

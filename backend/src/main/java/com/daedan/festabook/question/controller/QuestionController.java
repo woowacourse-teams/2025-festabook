@@ -1,10 +1,12 @@
 package com.daedan.festabook.question.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
+import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
 import com.daedan.festabook.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -63,7 +65,7 @@ public class QuestionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public QuestionResponse updateQuestionAndAnswer(
+    public QuestionAndAnswerUpdateResponse updateQuestionAndAnswer(
             @PathVariable Long questionId,
             @RequestBody QuestionRequest request
     ) {
@@ -76,7 +78,7 @@ public class QuestionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public QuestionResponses updateSequence(
+    public QuestionSequenceUpdateResponses updateSequence(
             @RequestBody List<QuestionSequenceUpdateRequest> requests
     ) {
         return questionService.updateSequence(requests);

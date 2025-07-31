@@ -4,10 +4,12 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.question.domain.Question;
+import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
+import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,14 +43,14 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionResponse updateQuestionAndAnswer(Long questionId, QuestionRequest request) {
+    public QuestionAndAnswerUpdateResponse updateQuestionAndAnswer(Long questionId, QuestionRequest request) {
         Question question = getQuestionById(questionId);
         question.updateQuestionAndAnswer(request.question(), request.answer());
-        return QuestionResponse.from(question);
+        return QuestionAndAnswerUpdateResponse.from(question);
     }
 
     @Transactional
-    public QuestionResponses updateSequence(List<QuestionSequenceUpdateRequest> requests) {
+    public QuestionSequenceUpdateResponses updateSequence(List<QuestionSequenceUpdateRequest> requests) {
         List<Question> questions = new ArrayList<>();
 
         for (QuestionSequenceUpdateRequest request : requests) {
@@ -57,7 +59,7 @@ public class QuestionService {
             questions.add(question);
         }
 
-        return QuestionResponses.from(questions);
+        return QuestionSequenceUpdateResponses.from(questions);
     }
 
     public void deleteQuestionByQuestionId(Long questionId) {

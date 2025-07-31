@@ -197,8 +197,7 @@ class QuestionControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("questionId", equalTo(question.getId().intValue()))
                     .body("question", equalTo(request.question()))
-                    .body("answer", equalTo(request.answer()))
-                    .body("sequence", equalTo(question.getSequence()));
+                    .body("answer", equalTo(request.answer()));
         }
     }
 
