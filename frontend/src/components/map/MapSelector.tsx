@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../utils/api';
 import { getCategoryIcon } from '../../constants/categories';
+import { useModal } from '../../hooks/useModal';
 
 type MapSelectorProps = {
   placeId: number;
@@ -41,6 +42,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
   const existingMarkerRefs = useRef<any[]>([]);
   const [holeBoundary, setHoleBoundary] = useState<any[]>([]); // 폴리곤 홀
   const polygonRef = useRef<any>(null);
+  const { openModal, showToast } = useModal();
 
   // GET /organizations/geography로 폴리곤 홀도 받아오기
   useEffect(() => {
@@ -109,6 +111,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
       center: new naver.maps.LatLng(center.lat, center.lng),
       zoom: zoom + 1,
       gl: true,
+      customStyleId: '4b934c2a-71f5-4506-ab90-4e6aa14c0820',
       logoControl: false,
       mapDataControl: false,
       scaleControl: false,
@@ -218,9 +221,9 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
       });
       // PATCH 응답은 coordinate로 옴
       onSaved && onSaved({ ...res.data, markerCoordinate: res.data.coordinate });
-      alert('좌표가 저장되었습니다!');
+      showToast('좌표가 저장되었습니다.');
     } catch (e: any) {
-      alert(e.message);
+      showToast('좌표 저장에 실패했습니다.');
     } finally {
       setSaving(false);
     }
