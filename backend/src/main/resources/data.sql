@@ -25,9 +25,9 @@ VALUES (1, 37.5850814, 127.0593583),
 -- 일정 날짜 (EventDate)
 -- ========================
 INSERT INTO event_date (organization_id, date)
-VALUES (1, CURRENT_DATE() - 1),
-       (1, CURRENT_DATE()),
-       (1, CURRENT_DATE() + 1);
+VALUES (1, ADDDATE(CURDATE(), -1)),
+       (1, CURDATE()),
+       (1, ADDDATE(CURDATE(), 1));
 
 -- ========================
 -- 타임라인 (Event)
