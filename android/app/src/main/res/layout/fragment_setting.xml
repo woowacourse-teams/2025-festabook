@@ -54,6 +54,8 @@
             app:layout_constraintBottom_toBottomOf="@id/tv_setting_current_university_notice"
             app:layout_constraintEnd_toEndOf="@id/tv_setting_current_university_notice"
             app:layout_constraintTop_toTopOf="@id/tv_setting_current_university_notice"
+            app:trackDecorationTint="@color/selector_setting_notice_bg_color"
+            app:trackTint="@color/selector_setting_notice_bg_color"
             tools:layout_editor_absoluteX="0dp"
             tools:layout_editor_absoluteY="0dp" />
 
