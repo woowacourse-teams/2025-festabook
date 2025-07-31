@@ -307,7 +307,7 @@ class PlaceControllerTest {
         }
 
         @Test
-        void 성공_카테고리만_있을_경우_나머지_필드_null_반환() {
+        void 성공_Coordinate가_없는_경우_나머지_필드_null_반환() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
