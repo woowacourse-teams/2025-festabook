@@ -18,7 +18,7 @@ public record PlacePreviewResponse(
         if (placeDetail == null) {
             return new PlacePreviewResponse(
                     place.getId(),
-                    null,
+                    placeImage != null ? placeImage.getImageUrl() : null,
                     place.getCategory(),
                     null,
                     null,
