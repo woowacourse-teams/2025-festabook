@@ -13,16 +13,18 @@ class PlaceListRepositoryImpl(
 ) : PlaceListRepository {
     override suspend fun getPlaces(): Result<List<Place>> {
         val response = placeDataSource.fetchPlaces().toResult()
-        return response.map { places -> places.map { it.toDomain() } }
+        return response.mapCatching { places -> places.map { it.toDomain() } }
     }
 
     override suspend fun getOrganizationGeography(): Result<OrganizationGeography> {
         val response = placeDataSource.fetchOrganizationGeography().toResult()
-        return response.map { it.toDomain() }
+        return response.mapCatching { it.toDomain() }
     }
 
     override suspend fun getPlaceGeographies(): Result<List<PlaceGeography>> {
         val response = placeDataSource.fetchPlaceGeographies().toResult()
-        return response.map { placeGeographies -> placeGeographies.map { it.toDomain() } }
+        return response.mapCatching { placeGeographies ->
+            placeGeographies.map { it.toDomain() }
+        }
     }
 }

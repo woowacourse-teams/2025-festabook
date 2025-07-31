@@ -1,7 +1,6 @@
 package com.daedan.festabook.presentation.schedule
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -9,8 +8,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.INVALID_ID
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
+import timber.log.Timber
+import java.lang.IllegalArgumentException
 
 class ScheduleTabPageFragment :
     BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page),
@@ -68,7 +70,8 @@ class ScheduleTabPageFragment :
                 }
 
                 is ScheduleEventsUiState.Error -> {
-                    Log.d("TAG", "setupObservers: ${schedule.message}")
+                    Timber.tag("TAG").d("setupObservers: ${schedule.throwable.message}")
+                    showErrorSnackBar(schedule.throwable)
                     showSkeleton(isLoading = false)
                 }
             }

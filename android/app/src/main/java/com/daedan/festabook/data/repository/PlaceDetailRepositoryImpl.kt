@@ -11,6 +11,6 @@ class PlaceDetailRepositoryImpl(
 ) : PlaceDetailRepository {
     override suspend fun getPlaceDetail(placeId: Long): Result<PlaceDetail> {
         val response = placeDataSource.fetchPlaceDetail(placeId).toResult()
-        return response.map { it.toDomain() }
+        return response.mapCatching { it.toDomain() }
     }
 }

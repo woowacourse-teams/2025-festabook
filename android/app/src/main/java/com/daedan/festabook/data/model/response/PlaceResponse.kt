@@ -10,7 +10,7 @@ data class PlaceResponse(
     @SerialName("id")
     val id: Long,
     @SerialName("title")
-    val title: String,
+    val title: String?,
     @SerialName("category")
     val category: PlaceCategory,
     @SerialName("description")

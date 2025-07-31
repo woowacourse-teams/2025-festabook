@@ -11,7 +11,7 @@ class NoticeRepositoryImpl(
 ) : NoticeRepository {
     override suspend fun fetchNotices(): Result<List<Notice>> {
         val response = noticeDataSource.fetchNotices().toResult()
-        return response.map { noticeListResponse ->
+        return response.mapCatching { noticeListResponse ->
             val pinned = noticeListResponse.pinned.map { it.toDomain() }
             val unpinned = noticeListResponse.unpinned.map { it.toDomain() }
             pinned + unpinned

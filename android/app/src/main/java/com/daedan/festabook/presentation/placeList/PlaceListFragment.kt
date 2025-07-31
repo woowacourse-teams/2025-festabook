@@ -15,6 +15,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
+import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -27,6 +28,7 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
@@ -90,13 +92,33 @@ class PlaceListFragment :
 
     private fun setUpObserver() {
         viewModel.places.observe(viewLifecycleOwner) { places ->
-            if (places !is PlaceListUiState.Success) return@observe
-            placeAdapter.submitList(places.value)
+            when (places) {
+                is PlaceListUiState.Loading -> showSkeleton()
+                is PlaceListUiState.Success -> {
+                    hideSkeleton()
+                    placeAdapter.submitList(places.value)
+                }
+                is PlaceListUiState.Error -> {
+                    hideSkeleton()
+                    binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
+                    Timber.d("places: ${places.throwable.message}")
+                    showErrorSnackBar(places.throwable)
+                }
+            }
         }
 
         viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
-            if (placeGeographies !is PlaceListUiState.Success) return@observe
-            mapManager.setPlaceLocation(placeGeographies.value)
+            when (placeGeographies) {
+                is PlaceListUiState.Loading -> Unit
+                is PlaceListUiState.Success -> {
+                    hideSkeleton()
+                    mapManager.setPlaceLocation(placeGeographies.value)
+                }
+                is PlaceListUiState.Error -> {
+                    Timber.d("placeGeographies: ${placeGeographies.throwable.message}")
+                    showErrorSnackBar(placeGeographies.throwable)
+                }
+            }
         }
 
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
@@ -154,6 +176,17 @@ class PlaceListFragment :
         }
 
         return fragmentContainer[selectedPlace]
+    }
+
+    private fun showSkeleton() {
+        binding.tvErrorToLoadPlaceInfo.visibility = View.GONE
+        binding.sflScheduleSkeleton.visibility = View.VISIBLE
+        binding.sflScheduleSkeleton.startShimmer()
+    }
+
+    private fun hideSkeleton() {
+        binding.sflScheduleSkeleton.visibility = View.GONE
+        binding.sflScheduleSkeleton.stopShimmer()
     }
 
     companion object {

@@ -63,7 +63,7 @@ class ScheduleViewModel(
                         ScheduleEventsUiState.Success(scheduleEventUiModels, currentEventPosition)
                 }.onFailure {
                     _scheduleEventsUiState.value =
-                        ScheduleEventsUiState.Error(it.message.toString())
+                        ScheduleEventsUiState.Error(it)
                 }
         }
     }
@@ -86,7 +86,7 @@ class ScheduleViewModel(
                     _scheduleDatesUiState.value =
                         ScheduleDatesUiState.Success(scheduleDateUiModels, currentDatePosition)
                 }.onFailure {
-                    _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it.message.toString())
+                    _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it)
                 }
         }
     }

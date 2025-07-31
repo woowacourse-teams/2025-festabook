@@ -22,12 +22,12 @@ class NoticeViewModel(
     val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
 
     init {
-        fetchNotices()
+        fetchNotices(NoticeUiState.InitialLoading)
     }
 
-    fun fetchNotices() {
+    fun fetchNotices(state: NoticeUiState = NoticeUiState.Loading) {
         viewModelScope.launch {
-            _noticeUiState.value = NoticeUiState.Loading
+            _noticeUiState.value = state
 
             val result = noticeRepository.fetchNotices()
             Timber.d("result: $result")
@@ -35,7 +35,7 @@ class NoticeViewModel(
                 .onSuccess { notices ->
                     _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })
                 }.onFailure {
-                    _noticeUiState.value = NoticeUiState.Error(it.message.toString())
+                    _noticeUiState.value = NoticeUiState.Error(it)
                 }
         }
     }
@@ -57,7 +57,7 @@ class NoticeViewModel(
         _noticeUiState.value =
             when (currentState) {
                 is NoticeUiState.Success -> currentState.copy(notices = onUpdate(currentState.notices))
-                is NoticeUiState.Error, NoticeUiState.Loading -> currentState
+                is NoticeUiState.Error, NoticeUiState.Loading, NoticeUiState.InitialLoading -> currentState
             }
     }
 

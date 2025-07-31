@@ -8,6 +8,6 @@ sealed interface PlaceDetailUiState {
     ) : PlaceDetailUiState
 
     data class Error(
-        val message: String,
+        val throwable: Throwable,
     ) : PlaceDetailUiState
 }
