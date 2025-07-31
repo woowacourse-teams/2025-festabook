@@ -38,6 +38,35 @@ public class PlaceDetailTest {
         }
 
         @Test
+        void 성공_길이_경계값() {
+            // given
+            Place place = PlaceFixture.create();
+
+            int maxTitleLength = 20;
+            int maxDescriptionLength = 100;
+            int maxLocationLength = 100;
+            int maxHostLength = 100;
+
+            String title = "m".repeat(maxTitleLength);
+            String description = "m".repeat(maxDescriptionLength);
+            String location = "m".repeat(maxLocationLength);
+            String host = "m".repeat(maxHostLength);
+
+            // when & then
+            assertThatCode(() -> {
+                new PlaceDetail(
+                        place,
+                        title,
+                        description,
+                        location,
+                        host,
+                        LocalTime.of(12, 30),
+                        LocalTime.of(13, 0)
+                );
+            }).doesNotThrowAnyException();
+        }
+
+        @Test
         void 성공_null은_허용() {
             // given
             Place place = PlaceFixture.create();
