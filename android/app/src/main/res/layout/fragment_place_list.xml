@@ -37,7 +37,7 @@
                 app:singleLine="true">
 
                 <com.google.android.material.chip.Chip
-                    android:text="전체"
+                    android:text="@string/map_category_all"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
                     android:layout_width="wrap_content"
@@ -54,7 +54,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
-                    android:text="주점"
+                    android:text="@string/map_category_bar"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
                     android:layout_width="wrap_content"
@@ -72,7 +72,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
-                    android:text="푸드트럭"
+                    android:text="@string/map_category_food_truck"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
                     android:layout_width="wrap_content"
@@ -89,7 +89,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
-                    android:text="부스"
+                    android:text="@string/map_category_booth"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
                     android:layout_width="wrap_content"
@@ -106,7 +106,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
-                    android:text="흡연구역"
+                    android:text="@string/map_category_smoking_area"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
                     android:layout_width="wrap_content"
@@ -120,7 +120,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
-                    android:text="화장실"
+                    android:text="@string/map_category_toilet"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
                     android:layout_width="wrap_content"
@@ -134,7 +134,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
-                    android:text="쓰레기통"
+                    android:text="@string/map_category_trash"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
                     android:layout_width="wrap_content"

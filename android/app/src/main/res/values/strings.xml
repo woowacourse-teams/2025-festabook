@@ -37,6 +37,14 @@
 
     <!--지도 화면-->
     <string name="map_request_location_permission_message">현재 위치를 확인하시려면 위치 권한이 필요합니다</string>"
+    <string name="map_category_all">전체</string>
+    <string name="map_category_bar">주점</string>
+    <string name="map_category_food_truck">푸드트럭</string>
+    <string name="map_category_booth">부스</string>
+    <string name="map_category_smoking_area">흡연구역</string>
+    <string name="map_category_toilet">화장실</string>
+    <string name="map_category_trash">쓰레기통</string>
+
 
     <!-- 아이콘 contentDescription   -->
     <string name="schedule_location">위치</string>
