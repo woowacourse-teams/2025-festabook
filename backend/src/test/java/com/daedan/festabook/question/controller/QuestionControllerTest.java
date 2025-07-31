@@ -112,7 +112,7 @@ class QuestionControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(question.getId().intValue()))
+                    .body("[0].questionId", equalTo(question.getId().intValue()))
                     .body("[0].question", equalTo(question.getQuestion()))
                     .body("[0].answer", equalTo(question.getAnswer()))
                     .body("[0].sequence", equalTo(question.getSequence()));
@@ -164,8 +164,8 @@ class QuestionControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
-                    .body("[0].id", equalTo(question2.getId().intValue()))
-                    .body("[1].id", equalTo(question1.getId().intValue()));
+                    .body("[0].questionId", equalTo(question2.getId().intValue()))
+                    .body("[1].questionId", equalTo(question1.getId().intValue()));
         }
     }
 
@@ -195,7 +195,7 @@ class QuestionControllerTest {
                     .patch("/questions/{questionId}", question.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("id", equalTo(question.getId().intValue()))
+                    .body("questionId", equalTo(question.getId().intValue()))
                     .body("question", equalTo(request.question()))
                     .body("answer", equalTo(request.answer()))
                     .body("sequence", equalTo(question.getSequence()));
@@ -242,13 +242,13 @@ class QuestionControllerTest {
                     .patch("/questions/sequence")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("[0].id", equalTo(question1.getId().intValue()))
+                    .body("[0].questionId", equalTo(question1.getId().intValue()))
                     .body("[0].sequence", equalTo(changedQuestion1Sequence))
 
-                    .body("[1].id", equalTo(question2.getId().intValue()))
+                    .body("[1].questionId", equalTo(question2.getId().intValue()))
                     .body("[1].sequence", equalTo(changedQuestion2Sequence))
 
-                    .body("[2].id", equalTo(question3.getId().intValue()))
+                    .body("[2].questionId", equalTo(question3.getId().intValue()))
                     .body("[2].sequence", equalTo(changedQuestion3Sequence));
         }
     }

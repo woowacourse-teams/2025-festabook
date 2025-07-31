@@ -52,7 +52,7 @@ public class QuestionService {
         List<Question> questions = new ArrayList<>();
 
         for (QuestionSequenceUpdateRequest request : requests) {
-            Question question = getQuestionById(request.id());
+            Question question = getQuestionById(request.questionId());
             question.updateSequence(request.sequence());
             questions.add(question);
         }

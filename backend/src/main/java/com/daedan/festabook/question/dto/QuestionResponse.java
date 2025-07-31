@@ -3,7 +3,7 @@ package com.daedan.festabook.question.dto;
 import com.daedan.festabook.question.domain.Question;
 
 public record QuestionResponse(
-        Long id,
+        Long questionId,
         String question,
         String answer,
         Integer sequence
