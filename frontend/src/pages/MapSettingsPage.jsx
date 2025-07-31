@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { placeCategories } from '../constants/categories';
+import { placeCategories, getCategoryIcon } from '../constants/categories';
 import Modal from '../components/common/Modal';
 import MapSelector from '../components/map/MapSelector';
 import api from '../utils/api';
@@ -57,7 +57,7 @@ const MapSettingsPage = () => {
     async function fetchAll() {
       try {
         const [boothsRes, geoRes, markersRes] = await Promise.all([
-          api.get('/places/previews'),
+          api.get('/places'),
           api.get('/organizations/geography'),
           api.get('/places/geographies')
         ]);
@@ -123,24 +123,25 @@ const MapSettingsPage = () => {
     const naver = window.naver;
     const map = mapInstanceRef.current;
 
-    markerRefs.current.forEach(m => m.setMap(null));
+    // 기존 마커들을 완전히 제거
+    markerRefs.current.forEach(m => {
+      if (m && m.setMap) {
+        m.setMap(null);
+      }
+    });
     markerRefs.current = [];
 
+    // 새로운 마커들 생성
     markers.forEach(marker => {
-      if (!marker.markerCoordinate) return;
+      if (!marker.markerCoordinate || !marker.markerCoordinate.latitude || !marker.markerCoordinate.longitude) return;
       const m = new naver.maps.Marker({
         position: new naver.maps.LatLng(marker.markerCoordinate.latitude, marker.markerCoordinate.longitude),
         map,
         title: marker.category,
         icon: {
-          content: `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 40 58" width="25" height="40">
-              <path d="M20 0C9 0 0 9 0 20c0 11 20 38 20 38s20-27 20-38C40 9 31 0 20 0z" fill='#007aff'/>
-              <circle cx="20" cy="20" r="8" fill="#ffffff"/>
-            </svg>
-          `,
-          size: new naver.maps.Size(36, 48),
-          anchor: new naver.maps.Point(18, 48)
+          content: getCategoryIcon(marker.category, false),
+          size: new naver.maps.Size(30, 40),
+          anchor: new naver.maps.Point(15, 40)
         }
       });
       naver.maps.Event.addListener(m, 'click', () => setSelectedPlaceId(marker.id));
@@ -212,27 +213,44 @@ const MapSettingsPage = () => {
         <div className="w-full lg:max-w-[420px]" style={{ height: '100%' }}>
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 overflow-x-auto" style={{ height: '100%', overflowY: 'auto' }}>
             <h3 className="text-xl font-bold mb-4">플레이스 목록</h3>
+
             <div className="space-y-2">
-              {booths.map(booth => (
-                <div
-                  key={booth.id}
-                  className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
-                >
-                  <div>
-                    <p className="font-semibold">{booth.title}</p>
-                    <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
-                  </div>
-                  <button
-                    className="font-bold py-2 px-4 rounded-lg text-sm bg-gray-200 hover:bg-gray-300 text-gray-800"
-                    onClick={() => {
-                      setSelectedPlace(booth);
-                      setModalOpen(true);
-                    }}
+              {booths.map(booth => {
+                const matchedMarker = markers.find(m => m.id === booth.id);
+                const hasCoordinates = matchedMarker?.markerCoordinate?.latitude != null && matchedMarker?.markerCoordinate?.longitude != null;
+
+                return (
+                  <div
+                    key={booth.id}
+                    className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
                   >
-                    좌표 설정
-                  </button>
-                </div>
-              ))}
+                    <div>
+                      <p className="font-semibold">
+                        {booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.'}
+                      </p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
+                        {!hasCoordinates && (
+                          <p className="text-xs text-red-500">좌표 미설정</p>
+                        )}
+                      </div>
+                    </div>
+                    <button
+                      className={`font-bold py-2 px-4 rounded-lg text-sm ${
+                        hasCoordinates 
+                          ? 'bg-blue-200 hover:bg-blue-300 text-blue-800' 
+                          : 'bg-red-200 hover:bg-red-300 text-red-800'
+                      }`}
+                      onClick={() => {
+                        setSelectedPlace(booth);
+                        setModalOpen(true);
+                      }}
+                    >
+                      {hasCoordinates ? '좌표 수정' : '좌표 설정'}
+                    </button>
+                  </div>
+                );
+              })}
             </div>
           </div>
         </div>
@@ -246,6 +264,12 @@ const MapSettingsPage = () => {
               setModalOpen(false);
               if (newMarker && newMarker.coordinate) {
                 setMarkers(prev => prev.map(m => m.id === newMarker.id ? { ...newMarker, markerCoordinate: newMarker.coordinate } : m));
+                // 마커 업데이트 후 지도 리사이즈 트리거
+                setTimeout(() => {
+                  if (mapInstanceRef.current && window.naver) {
+                    window.naver.maps.Event.trigger(mapInstanceRef.current, 'resize');
+                  }
+                }, 100);
               }
             }}
           />
