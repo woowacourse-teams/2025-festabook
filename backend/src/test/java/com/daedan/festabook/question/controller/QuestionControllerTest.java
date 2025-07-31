@@ -144,7 +144,7 @@ class QuestionControllerTest {
         }
 
         @Test
-        void 성공_Sequence_내림차순_정렬() {
+        void 성공_Sequence_오름차순_정렬() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -164,8 +164,8 @@ class QuestionControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
-                    .body("[0].questionId", equalTo(question2.getId().intValue()))
-                    .body("[1].questionId", equalTo(question1.getId().intValue()));
+                    .body("[0].questionId", equalTo(question1.getId().intValue()))
+                    .body("[1].questionId", equalTo(question2.getId().intValue()));
         }
     }
 

@@ -101,7 +101,7 @@ class QuestionServiceTest {
             int expected = 3;
             Long organizationId = 1L;
             List<Question> questions = QuestionFixture.createList(expected);
-            given(questionJpaRepository.findByOrganizationIdOrderBySequenceDesc(organizationId))
+            given(questionJpaRepository.findByOrganizationIdOrderBySequenceAsc(organizationId))
                     .willReturn(questions);
 
             // when
@@ -114,13 +114,13 @@ class QuestionServiceTest {
         }
 
         @Test
-        void 성공_Sequence_내림차순_정렬() {
+        void 성공_Sequence_오름차순_정렬() {
             // given
             Long organizationId = 1L;
             Question question2 = QuestionFixture.create(2);
             Question question1 = QuestionFixture.create(1);
 
-            given(questionJpaRepository.findByOrganizationIdOrderBySequenceDesc(organizationId))
+            given(questionJpaRepository.findByOrganizationIdOrderBySequenceAsc(organizationId))
                     .willReturn(List.of(question1, question2));
 
             // when

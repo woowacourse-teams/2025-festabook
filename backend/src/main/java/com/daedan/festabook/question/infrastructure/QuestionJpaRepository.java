@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface QuestionJpaRepository extends JpaRepository<Question, Long> {
 
-    List<Question> findByOrganizationIdOrderBySequenceDesc(Long organizationId);
+    List<Question> findByOrganizationIdOrderBySequenceAsc(Long organizationId);
 
     Integer countByOrganizationId(Long organizationId);
 }
