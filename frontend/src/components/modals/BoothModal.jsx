@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useModal } from '../../hooks/useModal';
 import Modal from '../common/Modal';
 import { placeCategories } from '../../constants/categories';
-// import api from '../utils/api';
 import { isMainPlace, getDefaultValueIfNull } from '../../utils/booth';
+import api from '/src/utils/api.js';
 
 // 새 플레이스 생성용 모달 (카테고리만 선택)
 const CreateBoothModal = ({ onSave, onClose }) => {
@@ -44,81 +44,115 @@ const CreateBoothModal = ({ onSave, onClose }) => {
     );
 };
 
-// 기존 플레이스 수정용 모달 (모든 필드 편집 가능)
 const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
     const { openModal, showToast } = useModal();
     const [form, setForm] = useState({});
-    const [editingNotice, setEditingNotice] = useState({ id: null, text: '' });
 
     useEffect(() => {
-        setForm(booth || { title: '', category: Object.keys(placeCategories)[0], notices: [], images: [], mainImageIndex: -1 });
+        // booth가 없으면 초기값 설정
+        setForm(
+            booth || {
+                title: '',
+                category: Object.keys(placeCategories)[0],
+                placeAnnouncements: [],
+                placeImages: [],
+                mainImageIndex: -1,
+                startTime: '',
+                endTime: '',
+                location: '',
+                host: '',
+                description: '',
+            }
+        );
     }, [booth]);
 
-    const category = form.category;
-    const title = form.title;
-    const startTime = form.startTime;
-    const endTime = form.endTime;
-    const location = form.location;
-    const host = form.host;
-    const description = form.description;
-    const placeAnnouncements = form.placeAnnouncements;
-    const placeImages = form.placeImages;
+    // form 필드 분해
+    const {
+        category,
+        title,
+        startTime,
+        endTime,
+        location,
+        host,
+        description,
+        placeAnnouncements = [],
+        images = [],
+        mainImageIndex,
+    } = form;
 
     const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
 
-    const handlePhotoChange = (e) => {
-        const files = Array.from(e.target.files);
+    const handlePhotoChange = async (e) => {
+        const files = extractFiles(e);
         if (files.length === 0) return;
 
-        const fileReadPromises = files.map(file => {
-            return new Promise((resolve, reject) => {
-                const reader = new FileReader();
-                reader.onloadend = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(file);
-            });
-        });
+        try {
+            const formData = buildFormData(files);
+            const uploadedImageUrl = await uploadImage(formData);
+            updateFormWithImage(uploadedImageUrl);
+        } catch (error) {
+            console.error('Image upload failed', error);
+            showToast('이미지 업로드에 실패했습니다.');
+        }
+    };
 
-        Promise.all(fileReadPromises).then(newImages => {
-            const updatedImages = [...(form.images || []), ...newImages];
-            setForm(prev => ({
+    const extractFiles = (e) => Array.from(e.target.files);
+
+    const buildFormData = (files) => {
+        const formData = new FormData();
+        files.forEach(file => formData.append('image', file));
+        return formData;
+    };
+
+    const uploadImage = async (formData) => {
+        const response = await api.post('/images', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return response.data.imageUrl;
+    };
+
+    // 상태 업데이트 시 placeImages에 객체 추가
+    const updateFormWithImage = (imageUrl) => {
+        setForm(prev => {
+            const newImage = {
+                id: Date.now(), // 임시 id 생성 (실제 저장시 서버에서 받아야 함)
+                imageUrl,
+                sequence: prev.placeImages.length,
+            };
+            const updatedImages = [...(prev.placeImages || []), newImage];
+            return {
                 ...prev,
-                images: updatedImages,
-                mainImageIndex: prev.mainImageIndex === -1 && updatedImages.length > 0 ? 0 : prev.mainImageIndex
-            }));
+                placeImages: updatedImages,
+                mainImageIndex: prev.mainImageIndex === -1 && updatedImages.length > 0 ? 0 : prev.mainImageIndex,
+            };
         });
     };
-    // form이 수정된 값
+
     const handleSave = () => {
         onSave(form);
-
-        // 모달 닫기
         onClose();
     };
 
-    // 메인 플레이스 카테고리만 필터링
-    const filteredCategories = Object.entries(placeCategories).filter(([key, value]) => {
-        return isMainPlace(key);
-    });
+    const filteredCategories = Object.entries(placeCategories).filter(([key]) => isMainPlace(key));
 
     // 이미지 렌더링
     const renderImage = (mainIdx, title, image, idx) => {
         const alt = `${title} ${idx + 1}`;
-        const isMainImage = (image.id === mainIdx);
+        // 대표 이미지 여부 판단, 예: mainImageIndex === idx 혹은 image.id === mainImageId
+        const isMainImage = (idx === mainIdx);
 
+        return (
+            <div key={image.id || idx} className="relative">
+                <img src={image.imageUrl} alt={alt} className="w-full h-24 object-cover rounded-md" />
+                {isMainImage && <span className="main-image-indicator">대표</span>}
+            </div>
+        );
+    };
 
-        return <div key={image.imageUrl} className="relative">
-            <img src={image.imageUrl} alt={alt} className="w-full h-24 object-cover rounded-md" />
-            {isMainImage && <span className="main-image-indicator">대표</span>}
-        </div>
-    }
-
-    // 공지 렌더링
     const renderAnnouncement = (announcement) => {
         let content = announcement.content;
-
-        return <li key={announcement.id}>{announcement.title} - {content}</li>
-    }
+        return <li key={announcement.id}>{announcement.title} - {content}</li>;
+    };
 
     return (
         <Modal isOpen={true} onClose={onClose} maxWidth="max-w-2xl">
@@ -132,9 +166,11 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                         onChange={handleChange}
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 bg-white"
                     >
-                        {filteredCategories && filteredCategories.length > 0 ? filteredCategories.map(([key, value]) => (
-                            <option key={key} value={key}>{value}</option>
-                        )) : <></>}
+                        {filteredCategories.length > 0
+                            ? filteredCategories.map(([key, value]) => (
+                                <option key={key} value={key}>{value}</option>
+                            ))
+                            : null}
                     </select>
                 </div>
                 <div>
@@ -206,16 +242,25 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
                 <div>
                     <label className="block text-sm font-medium text-gray-700">사진 (클릭하여 대표 사진 변경)</label>
                     <div className="mt-2 grid grid-cols-3 gap-4">
-                        {placeImages && placeImages.map((img, index) => (
-                            renderImage(placeImages[0].id, title, img, index)
-                        ))}
+                        {form.placeImages && form.placeImages.length > 0
+                            ? form.placeImages.map((img, idx) => renderImage(form.mainImageIndex, form.title, img, idx))
+                            : <p className="text-sm text-gray-500">사진 없음</p>
+                        }
                     </div>
-                    <input type="file" accept="image/*" multiple onChange={handlePhotoChange} className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100" />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        multiple
+                        onChange={handlePhotoChange}
+                        className="mt-2 block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 "
+                    />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">개별 공지사항</label>
                     <ul className="list-disc list-inside text-sm mt-2 space-y-1">
-                        {placeAnnouncements && placeAnnouncements.length > 0 ? placeAnnouncements.map(announcement => renderAnnouncement(announcement)) : <></>}
+                        {placeAnnouncements.length > 0
+                            ? placeAnnouncements.map(announcement => renderAnnouncement(announcement))
+                            : <p className="text-sm text-gray-500">공지사항 없음</p>}
                     </ul>
                 </div>
             </div>
@@ -228,6 +273,7 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
         </Modal>
     );
 };
+
 
 // 기존 BoothModal을 CreateBoothModal과 EditBoothModal로 분리
 const BoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
