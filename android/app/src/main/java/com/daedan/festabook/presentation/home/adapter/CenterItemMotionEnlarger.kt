@@ -4,7 +4,7 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlin.math.abs
 
 class CenterItemMotionEnlarger(
-    private val centerThresholdDp: Int = 10,
+    private val centerThresholdDp: Int = DEFAULT_CENTER_THRESHOLD_DP,
 ) : RecyclerView.OnScrollListener() {
     override fun onScrolled(
         rv: RecyclerView,
@@ -28,5 +28,9 @@ class CenterItemMotionEnlarger(
                 holder.transitionToCollapsed()
             }
         }
+    }
+
+    companion object {
+        const val DEFAULT_CENTER_THRESHOLD_DP = 10
     }
 }
