@@ -186,7 +186,7 @@ public class PlaceDetailTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 이름의 길이는 20자를 초과할 수 없습니다.");
+                    .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
 
         @Test
@@ -210,7 +210,7 @@ public class PlaceDetailTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 설명의 길이는 100자를 초과할 수 없습니다.");
+                    .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
 
         @Test
@@ -234,7 +234,7 @@ public class PlaceDetailTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 위치의 길이는 100자를 초과할 수 없습니다.");
+                    .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
 
         @Test
@@ -258,7 +258,7 @@ public class PlaceDetailTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 호스트의 길이는 100자를 초과할 수 없습니다.");
+                    .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
     }
 }
