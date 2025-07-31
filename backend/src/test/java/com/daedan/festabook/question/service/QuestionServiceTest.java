@@ -176,15 +176,15 @@ class QuestionServiceTest {
     class updateSequence {
 
         @Test
-        void 성공() {
+        void 성공_수정_후에도_오름차순으로_재정렬() {
             // given
             Long question1Id = 1L;
             Long question2Id = 2L;
             Long question3Id = 3L;
 
-            Question question1 = QuestionFixture.create(1);
-            Question question2 = QuestionFixture.create(2);
-            Question question3 = QuestionFixture.create(3);
+            Question question1 = QuestionFixture.create(question1Id, 1);
+            Question question2 = QuestionFixture.create(question2Id, 2);
+            Question question3 = QuestionFixture.create(question3Id, 3);
 
             given(questionJpaRepository.findById(question1Id))
                     .willReturn(Optional.of(question1));
@@ -193,22 +193,9 @@ class QuestionServiceTest {
             given(questionJpaRepository.findById(question3Id))
                     .willReturn(Optional.of(question3));
 
-            int changedQuestion1Sequence = 2;
-            int changedQuestion2Sequence = 3;
-            int changedQuestion3Sequence = 1;
-
-            QuestionSequenceUpdateRequest request1 = QuestionSequenceUpdateRequestFixture.create(
-                    question1Id,
-                    changedQuestion1Sequence
-            );
-            QuestionSequenceUpdateRequest request2 = QuestionSequenceUpdateRequestFixture.create(
-                    question2Id,
-                    changedQuestion2Sequence
-            );
-            QuestionSequenceUpdateRequest request3 = QuestionSequenceUpdateRequestFixture.create(
-                    question3Id,
-                    changedQuestion3Sequence
-            );
+            QuestionSequenceUpdateRequest request1 = QuestionSequenceUpdateRequestFixture.create(question1Id, 2);
+            QuestionSequenceUpdateRequest request2 = QuestionSequenceUpdateRequestFixture.create(question2Id, 3);
+            QuestionSequenceUpdateRequest request3 = QuestionSequenceUpdateRequestFixture.create(question3Id, 1);
             List<QuestionSequenceUpdateRequest> requests = List.of(request1, request2, request3);
 
             // when
@@ -216,9 +203,14 @@ class QuestionServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.responses().get(0).sequence()).isEqualTo(changedQuestion1Sequence);
-                s.assertThat(result.responses().get(1).sequence()).isEqualTo(changedQuestion2Sequence);
-                s.assertThat(result.responses().get(2).sequence()).isEqualTo(changedQuestion3Sequence);
+                s.assertThat(result.responses().get(0).questionId()).isEqualTo(question3Id);
+                s.assertThat(result.responses().get(0).sequence()).isEqualTo(1);
+
+                s.assertThat(result.responses().get(1).questionId()).isEqualTo(question1Id);
+                s.assertThat(result.responses().get(1).sequence()).isEqualTo(2);
+
+                s.assertThat(result.responses().get(2).questionId()).isEqualTo(question2Id);
+                s.assertThat(result.responses().get(2).sequence()).isEqualTo(3);
             });
         }
 

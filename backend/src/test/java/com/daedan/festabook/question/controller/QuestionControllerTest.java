@@ -205,7 +205,7 @@ class QuestionControllerTest {
     class updateSequence {
 
         @Test
-        void 성공() {
+        void 성공_수정_후에도_오름차순으로_재정렬() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -215,21 +215,9 @@ class QuestionControllerTest {
             Question question3 = QuestionFixture.create(organization, 3);
             questionJpaRepository.saveAll(List.of(question1, question2, question3));
 
-            int changedQuestion1Sequence = 2;
-            int changedQuestion2Sequence = 3;
-            int changedQuestion3Sequence = 1;
-            QuestionSequenceUpdateRequest request1 = QuestionSequenceUpdateRequestFixture.create(
-                    question1.getId(),
-                    changedQuestion1Sequence
-            );
-            QuestionSequenceUpdateRequest request2 = QuestionSequenceUpdateRequestFixture.create(
-                    question2.getId(),
-                    changedQuestion2Sequence
-            );
-            QuestionSequenceUpdateRequest request3 = QuestionSequenceUpdateRequestFixture.create(
-                    question3.getId(),
-                    changedQuestion3Sequence
-            );
+            QuestionSequenceUpdateRequest request1 = QuestionSequenceUpdateRequestFixture.create(question1.getId(), 2);
+            QuestionSequenceUpdateRequest request2 = QuestionSequenceUpdateRequestFixture.create(question2.getId(), 3);
+            QuestionSequenceUpdateRequest request3 = QuestionSequenceUpdateRequestFixture.create(question3.getId(), 1);
             List<QuestionSequenceUpdateRequest> requests = List.of(request1, request2, request3);
 
             // when & then
@@ -241,14 +229,14 @@ class QuestionControllerTest {
                     .patch("/questions/sequences")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("[0].questionId", equalTo(question1.getId().intValue()))
-                    .body("[0].sequence", equalTo(changedQuestion1Sequence))
+                    .body("[0].questionId", equalTo(question3.getId().intValue()))
+                    .body("[0].sequence", equalTo(1))
 
-                    .body("[1].questionId", equalTo(question2.getId().intValue()))
-                    .body("[1].sequence", equalTo(changedQuestion2Sequence))
+                    .body("[1].questionId", equalTo(question1.getId().intValue()))
+                    .body("[1].sequence", equalTo(2))
 
-                    .body("[2].questionId", equalTo(question3.getId().intValue()))
-                    .body("[2].sequence", equalTo(changedQuestion3Sequence));
+                    .body("[2].questionId", equalTo(question2.getId().intValue()))
+                    .body("[2].sequence", equalTo(3));
         }
     }
 

@@ -117,6 +117,19 @@ public class QuestionFixture {
         );
     }
 
+    public static Question create(
+            Long id,
+            Integer sequence
+    ) {
+        return new Question(
+                id,
+                DEFAULT_ORGANIZATION,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                sequence
+        );
+    }
+
     public static List<Question> createList(int size, Organization organization) {
         return IntStream.range(0, size)
                 .mapToObj(i -> create(organization))
