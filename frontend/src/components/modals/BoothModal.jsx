@@ -138,16 +138,30 @@ const EditBoothModal = ({ booth, onSave, onClose, isMainPlace }) => {
     // 이미지 렌더링
     const renderImage = (mainIdx, title, image, idx) => {
         const alt = `${title} ${idx + 1}`;
-        // 대표 이미지 여부 판단, 예: mainImageIndex === idx 혹은 image.id === mainImageId
-        const isMainImage = (idx === mainIdx);
+        const isMainImage = (image.id === mainIdx);
+        const defaultImage = 'https://image.tmdb.org/t/p/w1280/ndDYIa9VXFbWpC2pWj9j5OaZsfE.jpg';
+
+        const src = image.imageUrl && image.imageUrl.trim() !== '' ? image.imageUrl : defaultImage;
+
+        const handleImgError = (e) => {
+            console.log(e)
+            e.target.onerror = null; // 무한 루프 방지
+            e.target.src = defaultImage;
+        };
 
         return (
             <div key={image.id || idx} className="relative">
-                <img src={image.imageUrl} alt={alt} className="w-full h-24 object-cover rounded-md" />
+                <img
+                    src={src}
+                    alt={alt}
+                    className="w-full h-24 object-cover rounded-md"
+                    onError={handleImgError}
+                />
                 {isMainImage && <span className="main-image-indicator">대표</span>}
             </div>
         );
     };
+
 
     const renderAnnouncement = (announcement) => {
         let content = announcement.content;

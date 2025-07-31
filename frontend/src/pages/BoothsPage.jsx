@@ -33,13 +33,28 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, isMainPla
     const renderImage = (mainIdx, title, image, idx) => {
         const alt = `${title} ${idx + 1}`;
         const isMainImage = (image.id === mainIdx);
+        const defaultImage = 'https://image.tmdb.org/t/p/w1280/ndDYIa9VXFbWpC2pWj9j5OaZsfE.jpg';
 
+        const src = image.imageUrl && image.imageUrl.trim() !== '' ? image.imageUrl : defaultImage;
 
-        return <div key={image.imageUrl} className="relative">
-            <img src={image.imageUrl} alt={alt} className="w-full h-24 object-cover rounded-md" />
-            {isMainImage && <span className="main-image-indicator">대표</span>}
-        </div>
-    }
+        const handleImgError = (e) => {
+            console.log(e)
+            e.target.onerror = null; // 무한 루프 방지
+            e.target.src = defaultImage;
+        };
+
+        return (
+            <div key={image.id || idx} className="relative">
+                <img
+                    src={src}
+                    alt={alt}
+                    className="w-full h-24 object-cover rounded-md"
+                    onError={handleImgError}
+                />
+                {isMainImage && <span className="main-image-indicator">대표</span>}
+            </div>
+        );
+    };
 
     return (
         <div className="p-6 bg-gray-50">
