@@ -49,12 +49,12 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         viewModel.placeDetail.observe(viewLifecycleOwner) { result ->
             when (result) {
                 is PlaceDetailUiState.Error -> {
-                    Timber.tag("PlaceDetailFragment").d("PlaceDetail: ${result.throwable?.message}")
+                    Timber.d("PlaceDetail: ${result.throwable?.message}")
                     showErrorSnackBar(result.throwable)
                 }
                 is PlaceDetailUiState.Loading -> {
                     showSkeleton()
-                    Timber.tag("PlaceDetailFragment").d("Loading")
+                    Timber.d("Loading")
                 }
                 is PlaceDetailUiState.Success -> {
                     hideSkeleton()
