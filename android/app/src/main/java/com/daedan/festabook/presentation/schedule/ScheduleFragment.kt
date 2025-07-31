@@ -10,9 +10,8 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.databinding.ItemScheduleTabBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.schedule.ScheduleTabPageFragment.Companion.KEY_DATE_ID
-import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.INVALID_ID
 import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
 class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule) {
@@ -20,7 +19,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         SchedulePagerAdapter(this)
     }
 
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
+    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.factory() }
 
     override fun onViewCreated(
         view: View,
@@ -32,12 +31,11 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
 
     fun updateCurrentScheduleTabPageFragment() {
         val currentScheduleTabPageFragmentPosition = binding.vpSchedule.currentItem
-        val tag = "f$currentScheduleTabPageFragmentPosition"
+        val tag = getTagByFragmentPosition(currentScheduleTabPageFragmentPosition)
         val scheduleTabPageFragment = childFragmentManager.findFragmentByTag(tag)
-        val dateId = scheduleTabPageFragment?.arguments?.getLong(KEY_DATE_ID) ?: INVALID_ID
 
         if (scheduleTabPageFragment is ScheduleTabPageFragment) {
-            scheduleTabPageFragment.update(dateId)
+            scheduleTabPageFragment.updateScheduleByDate()
         }
     }
 
@@ -46,18 +44,29 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         binding.vpSchedule.offscreenPageLimit = PRELOAD_PAGE_COUNT
 
         TabLayoutMediator(binding.tlSchedule, binding.vpSchedule) { tab, position ->
-            val itemScheduleTabBinding =
-                ItemScheduleTabBinding.inflate(
-                    LayoutInflater.from(requireContext()),
-                    binding.tlSchedule,
-                    false,
-                )
-            tab.customView = itemScheduleTabBinding.root
-            itemScheduleTabBinding.tvScheduleTabItem.text =
-                viewModel.scheduleDatesUiState.value
-                    .let { (it as? ScheduleDatesUiState.Success)?.dates?.get(position)?.date ?: "" }
+            setupScheduleTabView(tab, position)
             binding.vpSchedule.setCurrentItem(initialCurrentDateIndex, false)
         }.attach()
+    }
+
+    private fun setupScheduleTabView(
+        tab: TabLayout.Tab,
+        position: Int,
+    ) {
+        val itemScheduleTabBinding =
+            ItemScheduleTabBinding.inflate(
+                LayoutInflater.from(requireContext()),
+                binding.tlSchedule,
+                false,
+            )
+        tab.customView = itemScheduleTabBinding.root
+
+        itemScheduleTabBinding.tvScheduleTabItem.text =
+            viewModel.scheduleDatesUiState.value
+                .let {
+                    (it as? ScheduleDatesUiState.Success)?.dates?.get(position)?.date
+                        ?: EMPTY_DATE_TEXT
+                }
     }
 
     private fun setupObservers() {
@@ -70,7 +79,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
 
                 is ScheduleDatesUiState.Success -> {
                     showSkeleton(isLoading = false)
-                    setupScheduleTabLayout(scheduleDatesUiState.initialCurrentDateIndex)
+                    setupScheduleTabLayout(scheduleDatesUiState.initialDatePosition)
                     adapter.submitList(scheduleDatesUiState.dates)
                 }
 
@@ -97,5 +106,8 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
 
     companion object {
         private const val PRELOAD_PAGE_COUNT: Int = 2
+        private const val EMPTY_DATE_TEXT: String = ""
+
+        private fun getTagByFragmentPosition(position: Int): String = "f$position"
     }
 }

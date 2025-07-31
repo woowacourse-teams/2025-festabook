@@ -3,7 +3,6 @@ package com.daedan.festabook.presentation.schedule.adapter
 import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.daedan.festabook.presentation.schedule.ScheduleTabPageFragment
-import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.FIRST_INDEX
 import com.daedan.festabook.presentation.schedule.model.ScheduleDateUiModel
 
 class SchedulePagerAdapter(
@@ -21,5 +20,9 @@ class SchedulePagerAdapter(
         items.clear()
         items.addAll(newItems)
         notifyItemRangeChanged(FIRST_INDEX, itemCount)
+    }
+
+    companion object {
+        private const val FIRST_INDEX: Int = 0
     }
 }
