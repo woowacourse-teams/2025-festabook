@@ -2,25 +2,22 @@ package com.daedan.festabook.presentation.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.lifecycle.lifecycleScope
-import com.daedan.festabook.FestaBookApp
+import androidx.recyclerview.widget.PagerSnapHelper
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
-import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.showToast
-import kotlinx.coroutines.launch
-import timber.log.Timber
+import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
+import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
-    private val prefsManager by lazy {
-        (requireActivity().application as FestaBookApp).appContainer.preferencesManager
-    }
-    private var bookmarkedID: Long? = null
-
-    private val bookmarkRepository: BookmarkRepository by lazy {
-        (requireActivity().application as FestaBookApp).appContainer.bookmarkRepository
-    }
+    private lateinit var adapter: PosterAdapter
+    private val posters =
+        listOf(
+            R.drawable.sample_poster,
+            R.drawable.sample_poster2,
+            R.drawable.sample_poster3,
+            R.drawable.sample_poster4,
+        )
 
     override fun onViewCreated(
         view: View,
@@ -28,52 +25,42 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     ) {
         super.onViewCreated(view, savedInstanceState)
 
-        bookmarkedID = prefsManager.getBookmarkId()
-        Timber.d("불러온 북마크 ID: $bookmarkedID")
-
-        setupSubscriptionButtons()
+        setupPosterRecyclerView()
     }
 
-    private fun setupSubscriptionButtons() {
-        binding.btnSub.setOnClickListener {
-            lifecycleScope.launch {
-                val result =
-                    bookmarkRepository.saveOrganizationBookmark(
-                        organizationId = 1L,
-                        deviceId = prefsManager.getDeviceId(),
-                    )
+    private fun setupPosterRecyclerView() {
+        setupAdapter()
+        attachSnapHelper()
+        scrollToInitialPosition()
+        addScrollEffectListener()
+    }
 
-                result
-                    .onSuccess { bookmarkId ->
-                        bookmarkedID = bookmarkId
-                        prefsManager.saveBookmarkId(bookmarkId)
-                        Timber.d("✅ 북마크 등록 성공: $bookmarkId")
-                        requireContext().showToast("북마크 등록 성공")
-                    }.onFailure {
-                        Timber.e("❌ 북마크 등록 실패: ${it.message}")
-                        requireContext().showToast("북마크 등록 실패")
-                    }
-            }
-        }
+    private fun setupAdapter() {
+        adapter = PosterAdapter(posters)
+        binding.rvHomePoster.adapter = adapter
+    }
 
-        binding.btnUnsub.setOnClickListener {
-            lifecycleScope.launch {
-                Timber.d("$bookmarkedID")
-                val bookmarkId = bookmarkedID ?: return@launch
+    private fun attachSnapHelper() {
+        PagerSnapHelper().attachToRecyclerView(binding.rvHomePoster)
+    }
 
-                val result = bookmarkRepository.deleteOrganizationBookmark(bookmarkId)
+    private fun scrollToInitialPosition() {
+        val safeMaxValue = Int.MAX_VALUE / INFINITE_SCROLL_SAFETY_FACTOR
+        val initialPosition = safeMaxValue - (safeMaxValue % posters.size)
 
-                result
-                    .onSuccess {
-                        bookmarkedID = null
-                        prefsManager.clearBookmarkId()
-                        Timber.d("✅ 북마크 삭제 성공")
-                        requireContext().showToast("북마크 삭제 성공")
-                    }.onFailure {
-                        Timber.e("❌ 북마크 삭제 실패: ${it.message}")
-                        requireContext().showToast("북마크 삭제 실패")
-                    }
-            }
-        }
+        binding.rvHomePoster.scrollToPosition(initialPosition)
+    }
+
+    private fun addScrollEffectListener() {
+        binding.rvHomePoster.addOnScrollListener(CenterItemMotionEnlarger())
+    }
+
+    override fun onDestroyView() {
+        binding.rvHomePoster.clearOnScrollListeners()
+        super.onDestroyView()
+    }
+
+    companion object {
+        private const val INFINITE_SCROLL_SAFETY_FACTOR = 4
     }
 }

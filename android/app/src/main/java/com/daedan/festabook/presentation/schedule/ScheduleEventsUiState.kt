@@ -7,6 +7,7 @@ sealed interface ScheduleEventsUiState {
 
     data class Success(
         val events: List<ScheduleEventUiModel>,
+        val currentEventPosition: Int,
     ) : ScheduleEventsUiState
 
     data class Error(

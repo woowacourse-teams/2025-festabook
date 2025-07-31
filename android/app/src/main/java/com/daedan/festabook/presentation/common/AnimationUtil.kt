@@ -8,7 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
-import com.google.android.material.card.MaterialCardView
+import com.google.android.material.bottomappbar.BottomAppBar
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 
 fun ViewGroup.scrollAnimation(limitedTranslationY: Float) {
     animate()
@@ -20,7 +21,7 @@ fun ViewGroup.scrollAnimation(limitedTranslationY: Float) {
 
 fun RecyclerView.canScrollUp(): Boolean = this.canScrollVertically(-1)
 
-fun MaterialCardView.animateHideBottomNavigationView() {
+fun View.animateHideBottomNavigationView() {
     clearAnimation()
     animate()
         .translationY(height.toFloat())
@@ -30,12 +31,13 @@ fun MaterialCardView.animateHideBottomNavigationView() {
         }.start()
 }
 
-fun MaterialCardView.animateShowBottomNavigationView() {
+fun View.animateShowBottomNavigationView() {
     clearAnimation()
-    visibility = View.VISIBLE
     animate()
-        .translationY(0f)
-        .setDuration(100)
+        .withStartAction {
+            visibility = View.VISIBLE
+        }.translationY(0f)
+        .setDuration(200)
         .start()
 }
 
@@ -47,8 +49,14 @@ val bottomNavigationViewAnimationCallback =
         ) {
             f
                 .requireActivity()
-                .findViewById<MaterialCardView>(R.id.cv_bnv_wrapper)
+                .findViewById<FloatingActionButton>(R.id.fab_map)
                 ?.animateShowBottomNavigationView()
+
+            f
+                .requireActivity()
+                .findViewById<BottomAppBar>(R.id.bab_menu)
+                ?.animateShowBottomNavigationView()
+
             super.onFragmentStopped(fm, f)
         }
 
@@ -59,7 +67,12 @@ val bottomNavigationViewAnimationCallback =
         ) {
             f
                 .requireActivity()
-                .findViewById<MaterialCardView>(R.id.cv_bnv_wrapper)
+                .findViewById<BottomAppBar>(R.id.bab_menu)
+                ?.animateHideBottomNavigationView()
+
+            f
+                .requireActivity()
+                .findViewById<FloatingActionButton>(R.id.fab_map)
                 ?.animateHideBottomNavigationView()
             super.onFragmentAttached(fm, f, context)
         }
