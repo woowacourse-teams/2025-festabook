@@ -97,7 +97,8 @@ class PlaceListFragment :
                 is PlaceListUiState.Success -> placeAdapter.submitList(places.value)
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
-                    Timber.tag("TAG").d("places: ${places.throwable?.message}")
+                    binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
+                    Timber.tag("TAG").d("places: ${places.throwable.message}")
                     showErrorSnackBar(places.throwable)
                 }
             }
@@ -108,7 +109,7 @@ class PlaceListFragment :
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> mapManager.setPlaceLocation(placeGeographies.value)
                 is PlaceListUiState.Error -> {
-                    Timber.tag("TAG").d("placeGeographies: ${placeGeographies.throwable?.message}")
+                    Timber.tag("TAG").d("placeGeographies: ${placeGeographies.throwable.message}")
                     showErrorSnackBar(placeGeographies.throwable)
                 }
             }
@@ -172,6 +173,7 @@ class PlaceListFragment :
     }
 
     private fun showSkeleton() {
+        binding.tvErrorToLoadPlaceInfo.visibility = View.GONE
         binding.sflScheduleSkeleton.visibility = View.VISIBLE
         binding.sflScheduleSkeleton.startShimmer()
     }

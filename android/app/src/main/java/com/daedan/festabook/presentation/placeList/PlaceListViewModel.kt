@@ -53,7 +53,9 @@ class PlaceListViewModel(
                         PlaceListUiState.Success(
                             placeUiModels,
                         )
-                }.onFailure {}
+                }.onFailure {
+                    _places.value = PlaceListUiState.Error(it)
+                }
         }
     }
 
