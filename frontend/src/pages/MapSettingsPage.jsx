@@ -59,7 +59,7 @@ const MapSettingsPage = () => {
     async function fetchAll() {
       try {
         const [boothsRes, geoRes, markersRes] = await Promise.all([
-          api.get('/places/previews'),
+          api.get('/places'),
           api.get('/organizations/geography'),
           api.get('/places/geographies')
         ]);
@@ -286,14 +286,29 @@ const MapSettingsPage = () => {
             placeId={selectedPlace.id}
             onSaved={(newMarker) => {
               setModalOpen(false);
-              if (newMarker && newMarker.coordinate) {
-                setMarkers(prev => prev.map(m => m.id === newMarker.id ? { ...newMarker, markerCoordinate: newMarker.coordinate } : m));
-                // 마커 업데이트 후 지도 리사이즈 트리거
-                setTimeout(() => {
-                  if (mapInstanceRef.current && window.naver) {
-                    window.naver.maps.Event.trigger(mapInstanceRef.current, 'resize');
-                  }
-                }, 100);
+              if (newMarker) {
+                // API 응답에서 좌표 정보 추출
+                const coordinate = newMarker.coordinate || newMarker.markerCoordinate;
+                if (coordinate) {
+                  setMarkers(prev => {
+                    const existingIndex = prev.findIndex(m => m.id === newMarker.id);
+                    if (existingIndex >= 0) {
+                      // 기존 마커 업데이트
+                      const updated = [...prev];
+                      updated[existingIndex] = { ...newMarker, markerCoordinate: coordinate };
+                      return updated;
+                    } else {
+                      // 새 마커 추가
+                      return [...prev, { ...newMarker, markerCoordinate: coordinate }];
+                    }
+                  });
+                  // 마커 업데이트 후 지도 리사이즈 트리거
+                  setTimeout(() => {
+                    if (mapInstanceRef.current && window.naver) {
+                      window.naver.maps.Event.trigger(mapInstanceRef.current, 'resize');
+                    }
+                  }, 100);
+                }
               }
             }}
           />
