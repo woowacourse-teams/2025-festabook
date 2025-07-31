@@ -11,11 +11,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.HttpStatus;
 
@@ -23,7 +21,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class QuestionAnswer {
+public class Question {
 
     private static final int MAX_QUESTION_LENGTH = 500;
     private static final int MAX_ANSWER_LENGTH = 1000;
@@ -42,24 +40,51 @@ public class QuestionAnswer {
     @Column(nullable = false)
     private String answer;
 
-    @CreatedDate
     @Column(nullable = false)
-    private LocalDateTime createdAt;
+    private Integer sequence;
 
-    protected QuestionAnswer(
+    protected Question(
+            Long id,
             Organization organization,
             String question,
             String answer,
-            LocalDateTime createdAt
+            Integer sequence
     ) {
         validateOrganization(organization);
         validateQuestion(question);
         validateAnswer(answer);
 
+        this.id = id;
         this.organization = organization;
         this.question = question;
         this.answer = answer;
-        this.createdAt = createdAt;
+        this.sequence = sequence;
+    }
+
+    public Question(
+            Organization organization,
+            String question,
+            String answer,
+            Integer sequence
+    ) {
+        this(
+                null,
+                organization,
+                question,
+                answer,
+                sequence
+        );
+    }
+
+    public void updateQuestionAndAnswer(String question, String answer) {
+        validateQuestion(question);
+        validateAnswer(answer);
+        this.question = question;
+        this.answer = answer;
+    }
+
+    public void updateSequence(Integer sequence) {
+        this.sequence = sequence;
     }
 
     private void validateOrganization(Organization organization) {
