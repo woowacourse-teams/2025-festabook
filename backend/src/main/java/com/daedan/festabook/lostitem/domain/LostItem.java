@@ -4,6 +4,8 @@ import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -28,10 +30,11 @@ public class LostItem {
     @Column(nullable = false)
     private String imageUrl;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 20)
     private String storageLocation;
 
     @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
     private ClaimStatus claimStatus;
 
     @CreatedDate
