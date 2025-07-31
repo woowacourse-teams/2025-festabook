@@ -137,7 +137,7 @@ class QuestionServiceTest {
         void 성공() {
             // given
             Long questionId = 1L;
-            Question question = QuestionFixture.create();
+            Question question = QuestionFixture.create(questionId);
 
             given(questionJpaRepository.findById(questionId))
                     .willReturn(Optional.of(question));
