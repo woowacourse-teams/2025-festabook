@@ -10,11 +10,4 @@ data class PlaceDetail(
     val startTime: LocalTime?,
     val endTime: LocalTime?,
     val images: List<PlaceDetailImage>,
-) {
-    init {
-        host?.let {
-            require(it.length <= 100)
-        }
-        require((startTime == null) == (endTime == null))
-    }
-}
+)
