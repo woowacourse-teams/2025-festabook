@@ -72,10 +72,6 @@ class PlaceListFragment :
         startPlaceDetailFragment()
     }
 
-    override fun onBookmarkClicked(place: PlaceUiModel) {
-        viewModel.updateBookmark(place)
-    }
-
     private suspend fun setUpMapManager() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
         naverMap = mapFragment.getMap()
