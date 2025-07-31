@@ -9,17 +9,21 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.databinding.ItemScheduleTabBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
+import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import timber.log.Timber
 
-class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule) {
+class ScheduleFragment :
+    BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule),
+    OnMenuItemReClickListener {
     private val adapter: SchedulePagerAdapter by lazy {
         SchedulePagerAdapter(this)
     }
 
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory() }
+    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.factory() }
 
     override fun onViewCreated(
         view: View,
@@ -27,45 +31,66 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
     ) {
         binding.vpSchedule.adapter = adapter
         setupObservers()
-        setupScheduleTabLayout()
+    }
+
+    override fun onMenuItemReClick() {
+        val currentScheduleTabPageFragmentPosition = binding.vpSchedule.currentItem
+        val tag = getTagByFragmentPosition(currentScheduleTabPageFragmentPosition)
+        val scheduleTabPageFragment = childFragmentManager.findFragmentByTag(tag)
+
+        if (scheduleTabPageFragment is ScheduleTabPageUpdater) {
+            scheduleTabPageFragment.updateScheduleTabPage()
+        }
     }
 
     @SuppressLint("WrongConstant")
-    private fun setupScheduleTabLayout() {
+    private fun setupScheduleTabLayout(initialCurrentDateIndex: Int) {
         binding.vpSchedule.offscreenPageLimit = PRELOAD_PAGE_COUNT
 
         TabLayoutMediator(binding.tlSchedule, binding.vpSchedule) { tab, position ->
-            val itemScheduleTabBinding =
-                ItemScheduleTabBinding.inflate(
-                    LayoutInflater.from(requireContext()),
-                    binding.tlSchedule,
-                    false,
-                )
-            tab.customView = itemScheduleTabBinding.root
-            itemScheduleTabBinding.tvScheduleTabItem.text =
-                viewModel.scheduleDatesUiState.value
-                    .let { (it as? ScheduleDatesUiState.Success)?.dates?.get(position)?.date ?: "" }
+            setupScheduleTabView(tab, position)
+            binding.vpSchedule.setCurrentItem(initialCurrentDateIndex, false)
         }.attach()
     }
 
-    private fun setupObservers() {
-        viewModel.scheduleDatesUiState.observe(viewLifecycleOwner) { scheduleDateUiModels ->
+    private fun setupScheduleTabView(
+        tab: TabLayout.Tab,
+        position: Int,
+    ) {
+        val itemScheduleTabBinding =
+            ItemScheduleTabBinding.inflate(
+                LayoutInflater.from(requireContext()),
+                binding.tlSchedule,
+                false,
+            )
+        tab.customView = itemScheduleTabBinding.root
 
-            when (scheduleDateUiModels) {
+        itemScheduleTabBinding.tvScheduleTabItem.text =
+            viewModel.scheduleDatesUiState.value
+                .let {
+                    (it as? ScheduleDatesUiState.Success)?.dates?.get(position)?.date
+                        ?: EMPTY_DATE_TEXT
+                }
+    }
+
+    private fun setupObservers() {
+        viewModel.scheduleDatesUiState.observe(viewLifecycleOwner) { scheduleDatesUiState ->
+
+            when (scheduleDatesUiState) {
                 is ScheduleDatesUiState.Loading -> {
                     showSkeleton(isLoading = true)
                 }
 
                 is ScheduleDatesUiState.Success -> {
                     showSkeleton(isLoading = false)
-                    setupScheduleTabLayout()
-                    adapter.submitList(scheduleDateUiModels.dates.map { it.id })
+                    setupScheduleTabLayout(scheduleDatesUiState.initialDatePosition)
+                    adapter.submitList(scheduleDatesUiState.dates)
                 }
 
                 is ScheduleDatesUiState.Error -> {
                     showSkeleton(isLoading = false)
-                    Timber.tag("TAG").d("setupDate: ${scheduleDateUiModels.throwable.message}")
-                    showErrorSnackBar(scheduleDateUiModels.throwable)
+                    Timber.tag("TAG").d("setupDate: ${scheduleDatesUiState.throwable.message}")
+                    showErrorSnackBar(scheduleDatesUiState.throwable)
                 }
             }
         }
@@ -86,5 +111,8 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
 
     companion object {
         private const val PRELOAD_PAGE_COUNT: Int = 2
+        private const val EMPTY_DATE_TEXT: String = ""
+
+        private fun getTagByFragmentPosition(position: Int): String = "f$position"
     }
 }

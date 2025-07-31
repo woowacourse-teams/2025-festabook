@@ -11,8 +11,10 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.ScheduleRepository
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
+import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
 import com.daedan.festabook.presentation.schedule.model.toUiModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository,
@@ -27,12 +29,12 @@ class ScheduleViewModel(
     val scheduleDatesUiState: LiveData<ScheduleDatesUiState> get() = _scheduleDatesUiState
 
     init {
-        loadAllScheduleDates()
-        if (dateId != INVALID_DATE_ID) loadScheduleByDate()
+        loadAllDates()
+        if (dateId != INVALID_ID) loadScheduleByDate()
     }
 
     fun updateBookmark(scheduleEventId: Long) {
-        updateScheduleEventsUiState { scheduleEvents ->
+        updateScheduleEvents { scheduleEvents ->
             scheduleEvents.map { scheduleEvent ->
                 if (scheduleEvent.id == scheduleEventId) {
                     scheduleEvent.copy(isBookmarked = !scheduleEvent.isBookmarked)
@@ -44,6 +46,7 @@ class ScheduleViewModel(
     }
 
     fun loadScheduleByDate() {
+        if (dateId == INVALID_ID) return
         viewModelScope.launch {
             _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
 
@@ -51,8 +54,13 @@ class ScheduleViewModel(
             result
                 .onSuccess { scheduleEvents ->
                     val scheduleEventUiModels = scheduleEvents.map { it.toUiModel() }
+                    val currentEventPosition =
+                        scheduleEventUiModels
+                            .indexOfFirst { scheduleEvent -> scheduleEvent.status == ScheduleEventUiStatus.ONGOING }
+                            .let { currentIndex -> if (currentIndex == INVALID_INDEX) FIRST_INDEX else currentIndex }
+
                     _scheduleEventsUiState.value =
-                        ScheduleEventsUiState.Success(scheduleEventUiModels)
+                        ScheduleEventsUiState.Success(scheduleEventUiModels, currentEventPosition)
                 }.onFailure {
                     _scheduleEventsUiState.value =
                         ScheduleEventsUiState.Error(it)
@@ -60,7 +68,7 @@ class ScheduleViewModel(
         }
     }
 
-    private fun loadAllScheduleDates() {
+    private fun loadAllDates() {
         viewModelScope.launch {
             _scheduleDatesUiState.value = ScheduleDatesUiState.Loading
 
@@ -68,14 +76,22 @@ class ScheduleViewModel(
             result
                 .onSuccess { scheduleDates ->
                     val scheduleDateUiModels = scheduleDates.map { it.toUiModel() }
-                    _scheduleDatesUiState.value = ScheduleDatesUiState.Success(scheduleDateUiModels)
+                    val today = LocalDate.now()
+
+                    val currentDatePosition =
+                        scheduleDates
+                            .indexOfFirst { !it.date.isBefore(today) }
+                            .let { currentIndex -> if (currentIndex == INVALID_INDEX) FIRST_INDEX else currentIndex }
+
+                    _scheduleDatesUiState.value =
+                        ScheduleDatesUiState.Success(scheduleDateUiModels, currentDatePosition)
                 }.onFailure {
                     _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it)
                 }
         }
     }
 
-    private fun updateScheduleEventsUiState(onUpdate: (List<ScheduleEventUiModel>) -> List<ScheduleEventUiModel>) {
+    private fun updateScheduleEvents(onUpdate: (List<ScheduleEventUiModel>) -> List<ScheduleEventUiModel>) {
         val currentState = _scheduleEventsUiState.value ?: return
         _scheduleEventsUiState.value =
             when (currentState) {
@@ -87,9 +103,11 @@ class ScheduleViewModel(
     }
 
     companion object {
-        private const val INVALID_DATE_ID: Long = -1L
+        const val INVALID_ID: Long = -1L
+        private const val FIRST_INDEX: Int = 0
+        private const val INVALID_INDEX: Int = -1
 
-        fun Factory(dateId: Long = INVALID_DATE_ID): ViewModelProvider.Factory =
+        fun factory(dateId: Long = INVALID_ID): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     val scheduleRepository =

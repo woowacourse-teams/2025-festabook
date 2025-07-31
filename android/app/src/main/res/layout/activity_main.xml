@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.coordinatorlayout.widget.CoordinatorLayout
         android:id="@+id/main"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -12,32 +12,47 @@
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fcv_fragment_container"
             android:layout_width="match_parent"
-            android:layout_height="0dp"
-            app:layout_constraintBottom_toTopOf="@id/cv_bnv_wrapper"
-            app:layout_constraintTop_toTopOf="parent" />
+            android:layout_height="match_parent" />
 
-        <com.google.android.material.card.MaterialCardView
-            android:id="@+id/cv_bnv_wrapper"
+        <com.google.android.material.bottomappbar.BottomAppBar
+            android:id="@+id/bab_menu"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:cardCornerRadius="0dp"
-            app:cardElevation="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:strokeWidth="0dp">
+            android:layout_height="70dp"
+            android:layout_gravity="bottom"
+            app:backgroundTint="@color/gray050"
+            app:addElevationShadow="true"
+            app:elevation="3dp"
+            app:fabAlignmentMode="center">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
                 android:id="@+id/bnv_menu"
                 android:layout_width="match_parent"
                 android:layout_height="70dp"
-                android:background="@color/gray050"
+                android:background="@android:color/transparent"
                 app:itemActiveIndicatorStyle="@style/NoActiveIndicator"
                 app:itemIconTint="@color/menu_bottom_navigation_color"
                 app:itemTextColor="@color/menu_bottom_navigation_color"
                 app:labelVisibilityMode="labeled"
                 app:menu="@menu/menu_bottom_navigation" />
 
-        </com.google.android.material.card.MaterialCardView>
-    </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.bottomappbar.BottomAppBar>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/content_description_floating_action_button"
+            android:src="@drawable/ic_map"
+            android:layout_marginBottom="24dp"
+            app:tint="@color/gray050"
+            app:fabCustomSize="60dp"
+            app:layout_anchor="@id/bab_menu"
+            app:backgroundTint="@color/black400"
+            app:maxImageSize="30dp"
+            app:pressedTranslationZ="0dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Full"
+/>
+
+    </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

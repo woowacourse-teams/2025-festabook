@@ -108,7 +108,7 @@ fun setTimeLineCircle(
             view.addValueCallback(
                 KeyPath("innerWave", "**", "Fill 1"),
                 LottieProperty.OPACITY,
-            ) { 0 }
+            ) { 100 }
         }
 
         ScheduleEventUiStatus.ONGOING -> {

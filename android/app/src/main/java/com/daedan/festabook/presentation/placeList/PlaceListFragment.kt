@@ -97,7 +97,7 @@ class PlaceListFragment :
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
-                    Timber.tag("TAG").d("places: ${places.throwable.message}")
+                    Timber.d("places: ${places.throwable.message}")
                     showErrorSnackBar(places.throwable)
                 }
             }
@@ -111,7 +111,7 @@ class PlaceListFragment :
                     mapManager.setPlaceLocation(placeGeographies.value)
                 }
                 is PlaceListUiState.Error -> {
-                    Timber.tag("TAG").d("placeGeographies: ${placeGeographies.throwable.message}")
+                    Timber.d("placeGeographies: ${placeGeographies.throwable.message}")
                     showErrorSnackBar(placeGeographies.throwable)
                 }
             }

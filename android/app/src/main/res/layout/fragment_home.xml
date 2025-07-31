@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
@@ -13,26 +12,61 @@
         android:layout_height="match_parent"
         tools:context=".presentation.home.HomeFragment">
 
+        <TextView
+            android:id="@+id/tv_home_organization_title"
+            style="@style/PretendardBold24"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="40dp"
+            android:text="가천대학교"
+            android:textColor="@color/gray900"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <Button
-            android:id="@+id/btn_sub"
-            app:layout_constraintBottom_toBottomOf="parent"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_home_poster"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="조직 구독" />
+            app:layout_constraintTop_toBottomOf="@id/tv_home_organization_title"
+            tools:listitem="@layout/item_home_poster" />
 
-        <Button
-            android:id="@+id/btn_unsub"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/btn_sub"
-            android:layout_width="wrap_content"
+        <TextView
+            android:id="@+id/tv_home_festival_title"
+            style="@style/PretendardBold20"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="조직 구독 취소" />
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:text="2025 가천 Water Festival\n: AQUA WAVE"
+            android:textColor="@color/gray900"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/rv_home_poster" />
 
+        <TextView
+            android:id="@+id/tv_home_festival_date"
+            style="@style/PretendardMedium14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:text="2025년 10월 15일 - 10월 17일"
+            android:textColor="@color/gray500"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_title" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/view_divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            app:dividerColor="@color/gray200"
+            app:dividerThickness="1dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_date" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

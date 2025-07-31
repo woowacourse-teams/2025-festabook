@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     >
 
     <data>
+
         <variable
             name="placeDetail"
             type="com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel" />
@@ -64,7 +66,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
-                    android:text="@{placeDetail.place.title}"
+                    android:text="@{placeDetail.place.title ?? @string/place_list_default_title}"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
                     app:layout_constraintStart_toStartOf="@id/cv_place_category"

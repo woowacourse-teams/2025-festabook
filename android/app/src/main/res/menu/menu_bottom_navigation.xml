@@ -10,8 +10,9 @@
         android:title="@string/menu_schedule_title" />
     <item
         android:id="@+id/item_menu_map"
-        android:icon="@drawable/ic_map"
-        android:title="@string/menu_map_title" />
+        android:title=""
+        android:enabled="false"
+        />
     <item
         android:id="@+id/item_menu_news"
         android:icon="@drawable/ic_news"
