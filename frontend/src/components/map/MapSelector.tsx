@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import api from '../../utils/api';
-import { getCategoryIcon } from '../../constants/categories';
+import { getCategoryIcon } from '../../data/categories';
 import { useModal } from '../../hooks/useModal';
 
 type MapSelectorProps = {

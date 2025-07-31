@@ -7,9 +7,7 @@ export const placeCategories = {
 };
 
 // 카테고리별 아이콘 SVG 생성 함수
-export const getCategoryIcon = (category, isSelected = false) => {
-  const baseColor = isSelected ? '#ff3b30' : '#007aff';
-  
+export const getCategoryIcon = (category) => {
   switch (category) {
     case 'SMOKING':
       return `

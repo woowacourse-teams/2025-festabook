@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { placeCategories, getCategoryIcon } from '../constants/categories';
+import { placeCategories, getCategoryIcon } from '../data/categories';
 import Modal from '../components/common/Modal';
 import MapSelector from '../components/map/MapSelector';
 import api from '../utils/api';

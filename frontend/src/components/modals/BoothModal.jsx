@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useModal } from '../../hooks/useModal';
 import Modal from '../common/Modal';
-import { placeCategories } from '../../constants/categories';
+import { placeCategories } from '../../data/categories';
 
 const BoothModal = ({ booth, onSave, onClose }) => {
     const { openModal, showToast } = useModal();

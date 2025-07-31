@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
-import { placeCategories } from '../constants/categories';
+import { placeCategories } from '../data/categories';
 import api from '../utils/api';
 
 const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth }) => {
