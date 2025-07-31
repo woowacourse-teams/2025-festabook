@@ -10,6 +10,7 @@ import static org.hamcrest.Matchers.nullValue;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
+import com.daedan.festabook.organization.domain.Coordinate;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
@@ -303,6 +304,31 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
                     .body("[1].imageUrl", equalTo(null));
+        }
+
+        @Test
+        void 성공_Detail이_없는_경우_나머지_필드_null_반환() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Coordinate coordinate = null;
+            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, coordinate);
+            placeJpaRepository.save(place);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/places/previews")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].imageUrl", nullValue())
+                    .body("[0].category", equalTo(place.getCategory().name()))
+                    .body("[0].title", nullValue())
+                    .body("[0].description", nullValue())
+                    .body("[0].location", nullValue());
         }
     }
 

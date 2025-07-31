@@ -4,7 +4,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.organization.domain.Coordinate;
+import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
@@ -107,6 +111,32 @@ class PlacePreviewServiceTest {
             assertSoftly(s -> {
                 s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
                 s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(null);
+            });
+        }
+
+        @Test
+        void 성공_Detail이_없는_경우_나머지_필드_null_반환() {
+            // given
+            Long organizationId = 1L;
+            Organization organization = OrganizationFixture.create(organizationId);
+
+            PlaceCategory placeCategory = PlaceCategory.BAR;
+            Coordinate coordinate = null;
+            Place place = PlaceFixture.create(organization, placeCategory, coordinate);
+
+            given(placeJpaRepository.findAllByOrganizationId(organization.getId()))
+                    .willReturn(List.of(place));
+
+            // when
+            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByOrganizationId(organizationId);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.responses().getFirst().imageUrl()).isNull();
+                s.assertThat(result.responses().getFirst().category()).isEqualTo(placeCategory);
+                s.assertThat(result.responses().getFirst().title()).isNull();
+                s.assertThat(result.responses().getFirst().description()).isNull();
+                s.assertThat(result.responses().getFirst().location()).isNull();
             });
         }
     }

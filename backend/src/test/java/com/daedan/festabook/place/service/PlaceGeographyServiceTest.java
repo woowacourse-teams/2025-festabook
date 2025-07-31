@@ -1,6 +1,7 @@
 package com.daedan.festabook.place.service;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
@@ -74,7 +75,7 @@ class PlaceGeographyServiceTest {
         }
 
         @Test
-        void 성공_Coordinate가_없을_경우_null() {
+        void 성공_Coordinate가_없을_경우_응답에_포함하지_않음() {
             // given
             Organization organization = OrganizationFixture.create(1L);
 
@@ -89,10 +90,7 @@ class PlaceGeographyServiceTest {
             );
 
             // then
-            assertSoftly(s -> {
-                s.assertThat(result.responses().getFirst().markerCoordinate().latitude()).isNull();
-                s.assertThat(result.responses().getFirst().markerCoordinate().longitude()).isNull();
-            });
+            assertThat(result.responses()).isEmpty();
         }
     }
 

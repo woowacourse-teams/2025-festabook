@@ -11,6 +11,7 @@ public record PlaceGeographyResponses(
     public static PlaceGeographyResponses from(List<Place> places) {
         return new PlaceGeographyResponses(
                 places.stream()
+                        .filter(place -> place.getCoordinate() != null)
                         .map(PlaceGeographyResponse::from)
                         .toList()
         );
