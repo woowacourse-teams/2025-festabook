@@ -31,6 +31,8 @@ const MapSettingsPage = () => {
   const mapInstanceRef = useRef(null);
   const polygonRef = useRef(null);
   const markerRefs = useRef([]);
+  const placeListRef = useRef(null);
+  const placeItemRefs = useRef({});
 
   // 1. 스크립트 로드
   useEffect(() => {
@@ -145,7 +147,19 @@ const MapSettingsPage = () => {
           anchor: new naver.maps.Point(15, 40)
         }
       });
-      naver.maps.Event.addListener(m, 'click', () => setSelectedPlaceId(marker.id));
+      naver.maps.Event.addListener(m, 'click', () => {
+        setSelectedPlaceId(marker.id);
+        // 해당 플레이스로 스크롤
+        setTimeout(() => {
+          const placeItem = placeItemRefs.current[marker.id];
+          if (placeItem && placeListRef.current) {
+            placeItem.scrollIntoView({ 
+              behavior: 'smooth', 
+              block: 'center' 
+            });
+          }
+        }, 100);
+      });
       markerRefs.current.push(m);
     });
   }, [markers]);
@@ -212,7 +226,11 @@ const MapSettingsPage = () => {
         </div>
         {/* 플레이스 목록 */}
         <div className="w-full lg:max-w-[420px]" style={{ height: '100%' }}>
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 overflow-x-auto" style={{ height: '100%', overflowY: 'auto' }}>
+          <div 
+            ref={placeListRef}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 overflow-x-auto" 
+            style={{ height: '100%', overflowY: 'auto' }}
+          >
             <h3 className="text-xl font-bold mb-4">플레이스 목록</h3>
 
             <div className="space-y-2">
@@ -223,6 +241,11 @@ const MapSettingsPage = () => {
                 return (
                   <div
                     key={booth.id}
+                    ref={(el) => {
+                      if (el) {
+                        placeItemRefs.current[booth.id] = el;
+                      }
+                    }}
                     className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
                   >
                     <div>
