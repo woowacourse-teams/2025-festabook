@@ -17,6 +17,7 @@
             android:id="@+id/iv_home_poster"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:contentDescription="@string/home_poster_image"
             android:scaleType="centerCrop"
             android:src="@drawable/sample_poster"
             app:layout_constraintDimensionRatio="3:4"
