@@ -18,7 +18,7 @@ import java.time.LocalDate
 
 class ScheduleViewModel(
     private val scheduleRepository: ScheduleRepository,
-    private val dateId: Long,
+//    private val dateId: Long,
 ) : ViewModel() {
     private val _scheduleEventsUiState: MutableLiveData<ScheduleEventsUiState> =
         MutableLiveData<ScheduleEventsUiState>()
@@ -30,7 +30,7 @@ class ScheduleViewModel(
 
     init {
         loadAllScheduleDates()
-        if (dateId != INVALID_ID) loadScheduleByDate()
+//        if (dateId != INVALID_ID) loadScheduleByDate()
     }
 
     fun updateBookmark(scheduleEventId: Long) {
@@ -45,7 +45,8 @@ class ScheduleViewModel(
         }
     }
 
-    fun loadScheduleByDate() {
+    fun loadScheduleByDate(dateId: Long) {
+        if (dateId == -1L) return
         viewModelScope.launch {
             _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
 
@@ -105,17 +106,17 @@ class ScheduleViewModel(
     }
 
     companion object {
-        private const val INVALID_ID: Long = -1L
-        private const val INVALID_INDEX: Int = -1
         const val FIRST_INDEX: Int = 0
+        const val INVALID_ID: Long = -1L
+        private const val INVALID_INDEX: Int = -1
 
-        fun Factory(dateId: Long = INVALID_ID): ViewModelProvider.Factory =
+        val Factory: ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
                     val scheduleRepository =
                         (this[APPLICATION_KEY] as FestaBookApp).appContainer.scheduleRepository
 
-                    ScheduleViewModel(scheduleRepository, dateId)
+                    ScheduleViewModel(scheduleRepository)
                 }
             }
     }

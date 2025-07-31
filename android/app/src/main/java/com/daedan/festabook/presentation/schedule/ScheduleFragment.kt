@@ -10,6 +10,8 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.databinding.ItemScheduleTabBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.schedule.ScheduleTabPageFragment.Companion.KEY_DATE_ID
+import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.INVALID_ID
 import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -18,7 +20,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         SchedulePagerAdapter(this)
     }
 
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory() }
+    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.Factory }
 
     override fun onViewCreated(
         view: View,
@@ -26,6 +28,17 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
     ) {
         binding.vpSchedule.adapter = adapter
         setupObservers()
+    }
+
+    fun updateCurrentScheduleTabPageFragment() {
+        val currentScheduleTabPageFragmentPosition = binding.vpSchedule.currentItem
+        val tag = "f$currentScheduleTabPageFragmentPosition"
+        val scheduleTabPageFragment = childFragmentManager.findFragmentByTag(tag)
+        val dateId = scheduleTabPageFragment?.arguments?.getLong(KEY_DATE_ID) ?: INVALID_ID
+
+        if (scheduleTabPageFragment is ScheduleTabPageFragment) {
+            scheduleTabPageFragment.update(dateId)
+        }
     }
 
     @SuppressLint("WrongConstant")
