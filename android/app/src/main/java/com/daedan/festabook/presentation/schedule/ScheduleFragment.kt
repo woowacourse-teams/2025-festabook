@@ -37,8 +37,8 @@ class ScheduleFragment :
         val tag = getTagByFragmentPosition(currentScheduleTabPageFragmentPosition)
         val scheduleTabPageFragment = childFragmentManager.findFragmentByTag(tag)
 
-        if (scheduleTabPageFragment is ScheduleTabPageFragment) {
-            scheduleTabPageFragment.updateScheduleByDate()
+        if (scheduleTabPageFragment is ScheduleTabPageUpdater) {
+            scheduleTabPageFragment.updateScheduleTabPage()
         }
     }
 

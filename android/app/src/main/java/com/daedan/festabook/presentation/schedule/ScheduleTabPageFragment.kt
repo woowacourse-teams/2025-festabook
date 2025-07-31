@@ -12,11 +12,17 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.INVALID_ID
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
 
-class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
-    private lateinit var adapter: ScheduleAdapter
+class ScheduleTabPageFragment :
+    BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page),
+    ScheduleTabPageUpdater {
     private val viewModel: ScheduleViewModel by viewModels {
         val dateId: Long = arguments?.getLong(KEY_DATE_ID, INVALID_ID) ?: INVALID_ID
         ScheduleViewModel.factory(dateId)
+    }
+    private val adapter: ScheduleAdapter by lazy {
+        ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
+            viewModel.updateBookmark(scheduleEventId)
+        })
     }
 
     override fun onViewCreated(
@@ -24,31 +30,27 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        setupObservers()
         setupScheduleEventRecyclerView()
 
         binding.lifecycleOwner = viewLifecycleOwner
-        setupObservers()
         onSwipeRefreshScheduleByDateListener()
     }
 
-    fun updateScheduleByDate() {
+    override fun updateScheduleTabPage() {
         viewModel.loadScheduleByDate()
     }
 
     private fun setupScheduleEventRecyclerView() {
-        adapter =
-            ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
-                viewModel.updateBookmark(scheduleEventId)
-            })
         binding.rvScheduleEvent.adapter = adapter
         (binding.rvScheduleEvent.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
             false
-        updateScheduleByDate()
+        viewModel.loadScheduleByDate()
     }
 
     private fun onSwipeRefreshScheduleByDateListener() {
         binding.srlScheduleEvent.setOnRefreshListener {
-            updateScheduleByDate()
+            viewModel.loadScheduleByDate()
         }
     }
 
