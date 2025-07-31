@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.MenuItem
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
@@ -18,6 +17,7 @@ import androidx.fragment.app.commit
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
@@ -70,7 +70,8 @@ class MainActivity : AppCompatActivity() {
         requestNotificationPermission()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
-        onClickBottomNavigationBarItem()
+        onMenuItemClick()
+        onMenuItemReClick()
     }
 
     override fun onRequestPermissionsResult(
@@ -187,15 +188,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun onClickBottomNavigationBarItem() {
+    private fun onMenuItemClick() {
         binding.bnvMenu.setOnItemSelectedListener { icon ->
-            handleMenuItemReClick(icon)
-
             when (icon.itemId) {
                 R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
                 R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
                 R.id.item_menu_news -> switchFragment(newFragment, TAG_NEW_FRAGMENT)
-                R.id.item_menu_setting -> {}
+                R.id.item_menu_setting -> Unit
             }
             true
         }
@@ -205,13 +204,13 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun handleMenuItemReClick(icon: MenuItem) {
-        if (binding.bnvMenu.selectedItemId == icon.itemId) {
+    private fun onMenuItemReClick() {
+        binding.bnvMenu.setOnItemReselectedListener { icon ->
             when (icon.itemId) {
                 R.id.item_menu_home -> Unit
                 R.id.item_menu_schedule -> {
                     val fragment = supportFragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT)
-                    if (fragment is ScheduleFragment) fragment.updateCurrentScheduleTabPageFragment()
+                    if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
                 }
 
                 R.id.item_menu_news -> Unit

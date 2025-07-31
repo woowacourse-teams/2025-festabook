@@ -10,11 +10,14 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.databinding.ItemScheduleTabBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 
-class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule) {
+class ScheduleFragment :
+    BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule),
+    OnMenuItemReClickListener {
     private val adapter: SchedulePagerAdapter by lazy {
         SchedulePagerAdapter(this)
     }
@@ -29,7 +32,7 @@ class ScheduleFragment : BaseFragment<FragmentScheduleBinding>(R.layout.fragment
         setupObservers()
     }
 
-    fun updateCurrentScheduleTabPageFragment() {
+    override fun onMenuItemReClick() {
         val currentScheduleTabPageFragmentPosition = binding.vpSchedule.currentItem
         val tag = getTagByFragmentPosition(currentScheduleTabPageFragmentPosition)
         val scheduleTabPageFragment = childFragmentManager.findFragmentByTag(tag)
