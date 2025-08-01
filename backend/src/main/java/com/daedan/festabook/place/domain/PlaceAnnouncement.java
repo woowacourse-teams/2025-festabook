@@ -64,8 +64,8 @@ public class PlaceAnnouncement {
         }
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new BusinessException(
-                    String.format("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH)
-                    , HttpStatus.BAD_REQUEST
+                    String.format("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH),
+                    HttpStatus.BAD_REQUEST
             );
         }
     }
@@ -76,8 +76,8 @@ public class PlaceAnnouncement {
         }
         if (content.length() > MAX_CONTENT_LENGTH) {
             throw new BusinessException(
-                    String.format("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", MAX_CONTENT_LENGTH)
-                    , HttpStatus.BAD_REQUEST
+                    String.format("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", MAX_CONTENT_LENGTH),
+                    HttpStatus.BAD_REQUEST
             );
         }
     }
