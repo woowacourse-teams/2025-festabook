@@ -22,10 +22,12 @@ class PlaceAnnouncementTest {
 
         @Test
         void 성공() {
-            // given & when & then
-            assertThatCode(() ->
-                    PlaceAnnouncementFixture.create("플레이스 공지 제목", "플레이스 공지 내용")
-            )
+            // given
+            String title = "플레이스 공지 제목";
+            String content = "플레이스 공지 내용";
+
+            // when & then
+            assertThatCode(() -> PlaceAnnouncementFixture.create(title, content))
                     .doesNotThrowAnyException();
         }
     }

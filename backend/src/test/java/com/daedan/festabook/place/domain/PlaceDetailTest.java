@@ -26,15 +26,23 @@ public class PlaceDetailTest {
 
         @Test
         void 성공() {
-            // given & when & then
+            // given
+            String title = "플레이스 이름";
+            String content = "플레이스 내용";
+            String location = "플레이스 위치";
+            String host = "플레이스 호스트";
+            LocalTime startTime = LocalTime.of(12, 30);
+            LocalTime endTime = LocalTime.of(13, 0);
+
+            // when & then
             assertThatCode(() -> {
                 PlaceDetailFixture.create(
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
+                        title,
+                        content,
+                        location,
+                        host,
+                        startTime,
+                        endTime
                 );
             })
                     .doesNotThrowAnyException();
