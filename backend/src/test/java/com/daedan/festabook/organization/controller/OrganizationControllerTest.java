@@ -120,10 +120,10 @@ class OrganizationControllerTest {
             FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
             festivalImageJpaRepository.saveAll(List.of(festivalImage2, festivalImage1));
 
-            EventDate thirdEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 3));
-            EventDate secondEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 2));
-            EventDate firstEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
-            eventDateJpaRepository.saveAll(List.of(thirdEventDate, secondEventDate, firstEventDate));
+            EventDate eventDate3 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 3));
+            EventDate eventDate2 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 2));
+            EventDate eventDate1 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
+            eventDateJpaRepository.saveAll(List.of(eventDate3, eventDate2, eventDate1));
 
             int festivalImageSize = 2;
             int expectedFieldSize = 6;
@@ -140,8 +140,8 @@ class OrganizationControllerTest {
                     .body("universityName", equalTo(organization.getUniversityName()))
                     .body("festivalImages", hasSize(festivalImageSize))
                     .body("festivalName", equalTo(organization.getFestivalName()))
-                    .body("startDate", equalTo(firstEventDate.getDate().toString()))
-                    .body("endDate", equalTo(thirdEventDate.getDate().toString()))
+                    .body("startDate", equalTo(eventDate1.getDate().toString()))
+                    .body("endDate", equalTo(eventDate3.getDate().toString()))
 
                     .body("festivalImages[0].id", equalTo(festivalImage1.getId().intValue()))
                     .body("festivalImages[0].imageUrl", equalTo(festivalImage1.getImageUrl()))
@@ -158,11 +158,11 @@ class OrganizationControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            EventDate firstEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
-            EventDate secondEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 4));
-            EventDate thirdEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 5));
-            EventDate fourthEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 6));
-            eventDateJpaRepository.saveAll(List.of(fourthEventDate, thirdEventDate, secondEventDate, firstEventDate));
+            EventDate eventDate1 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
+            EventDate eventDate2 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 4));
+            EventDate eventDate3 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 5));
+            EventDate eventDate4 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 6));
+            eventDateJpaRepository.saveAll(List.of(eventDate4, eventDate3, eventDate2, eventDate1));
 
             // when & then
             RestAssured
@@ -172,8 +172,8 @@ class OrganizationControllerTest {
                     .get("/organizations")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("startDate", equalTo(firstEventDate.getDate().toString()))
-                    .body("endDate", equalTo(fourthEventDate.getDate().toString()));
+                    .body("startDate", equalTo(eventDate1.getDate().toString()))
+                    .body("endDate", equalTo(eventDate4.getDate().toString()));
         }
 
         @Test

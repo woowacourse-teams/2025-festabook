@@ -123,11 +123,11 @@ class OrganizationServiceTest {
             Long organizationId = 1L;
             Organization organization = OrganizationFixture.create(organizationId);
 
-            EventDate firstEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
-            EventDate secondEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 4));
-            EventDate thirdEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 5));
-            EventDate fourthEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 6));
-            List<EventDate> eventDates = List.of(firstEventDate, secondEventDate, thirdEventDate, fourthEventDate);
+            EventDate eventDate1 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
+            EventDate eventDate2 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 4));
+            EventDate eventDate3 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 5));
+            EventDate eventDate4 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 6));
+            List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3, eventDate4);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
@@ -139,8 +139,8 @@ class OrganizationServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.startDate()).isEqualTo(firstEventDate.getDate());
-                s.assertThat(result.endDate()).isEqualTo(fourthEventDate.getDate());
+                s.assertThat(result.startDate()).isEqualTo(eventDate1.getDate());
+                s.assertThat(result.endDate()).isEqualTo(eventDate4.getDate());
             });
         }
 
