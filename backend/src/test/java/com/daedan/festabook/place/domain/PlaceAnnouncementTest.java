@@ -16,7 +16,7 @@ class PlaceAnnouncementTest {
     private static final int MAX_CONTENT_LENGTH = 250;
 
     @Nested
-    class validate {
+    class validateAnnouncement {
 
         @Test
         void 성공() {
@@ -32,7 +32,7 @@ class PlaceAnnouncementTest {
     class validateTitle {
 
         @Test
-        void 예외_플레이스_공지_제목_경계값() {
+        void 성공_플레이스_공지_제목_경계값() {
             // given
             String title = "m".repeat(MAX_TITLE_LENGTH);
 
@@ -53,7 +53,7 @@ class PlaceAnnouncementTest {
         }
 
         @Test
-        void 예외_플레이스_공지_제목_최대_길이() {
+        void 예외_플레이스_공지_제목_최대_길이_초과() {
             // given
             String title = "m".repeat(MAX_TITLE_LENGTH + 1);
 
@@ -79,7 +79,7 @@ class PlaceAnnouncementTest {
     class validateContent {
 
         @Test
-        void 예외_플레이스_공지_내용_경계값() {
+        void 성공_플레이스_공지_내용_경계값() {
             // given
             String content = "m".repeat(MAX_CONTENT_LENGTH);
 
@@ -100,7 +100,7 @@ class PlaceAnnouncementTest {
         }
 
         @Test
-        void 예외_플레이스_공지_내용_최대_길이() {
+        void 예외_플레이스_공지_내용_최대_길이_초과() {
             // given
             String content = "m".repeat(MAX_CONTENT_LENGTH + 1);
 

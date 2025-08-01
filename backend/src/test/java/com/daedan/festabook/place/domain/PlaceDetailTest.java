@@ -21,7 +21,7 @@ public class PlaceDetailTest {
     private static final int MAX_HOST_LENGTH = 100;
 
     @Nested
-    class validate {
+    class validatePlaceDetail {
 
         @Test
         void 성공() {
@@ -44,7 +44,7 @@ public class PlaceDetailTest {
     class validatePlace {
 
         @Test
-        void 예외_null일_수_없음() {
+        void 예외_플레이스는_null일_수_없음() {
             // given
             Place place = null;
 
@@ -59,7 +59,7 @@ public class PlaceDetailTest {
     class validateTitle {
 
         @Test
-        void 성공_null_허용() {
+        void 성공_플레이스_이름_null() {
             // given
             String title = null;
 
@@ -69,7 +69,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 성공_길이_경계값() {
+        void 성공_플레이스_이름_길이_경계값() {
             // given
             String title = "m".repeat(MAX_TITLE_LENGTH);
 
@@ -90,7 +90,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 예외_플레이스_이름_최대_길이() {
+        void 예외_플레이스_이름_최대_길이_초과() {
             // given
             String title = "m".repeat(MAX_TITLE_LENGTH + 1);
 
@@ -105,7 +105,7 @@ public class PlaceDetailTest {
     class validateDescription {
 
         @Test
-        void 성공_null_허용() {
+        void 성공_플레이스_설명_null() {
             // given
             String description = null;
 
@@ -115,7 +115,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 성공_길이_경계값() {
+        void 성공_플레이스_설명_길이_경계값() {
             // given
             String description = "m".repeat(MAX_DESCRIPTION_LENGTH);
 
@@ -136,7 +136,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 예외_플레이스_설명_최대_길이() {
+        void 예외_플레이스_설명_최대_길이_초과() {
             // given
             String description = "m".repeat(MAX_DESCRIPTION_LENGTH + 1);
 
@@ -151,7 +151,7 @@ public class PlaceDetailTest {
     class validateLocation {
 
         @Test
-        void 성공_null_허용() {
+        void 성공_플레이스_위치_null() {
             // given
             String location = null;
 
@@ -161,7 +161,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 성공_길이_경계값() {
+        void 성공_플레이스_위치_길이_경계값() {
             // given
             String location = "m".repeat(MAX_LOCATION_LENGTH);
 
@@ -182,7 +182,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 예외_플레이스_위치_최대_길이() {
+        void 예외_플레이스_위치_최대_길이_초과() {
             // given
             String location = "m".repeat(MAX_LOCATION_LENGTH + 1);
 
@@ -197,7 +197,7 @@ public class PlaceDetailTest {
     class validateHost {
 
         @Test
-        void 성공_null_허용() {
+        void 성공_null() {
             // given
             String host = null;
 
@@ -207,7 +207,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 성공_길이_경계값() {
+        void 성공_플레이스_호스트_길이_경계값() {
             // given
             String host = "m".repeat(MAX_HOST_LENGTH);
 
@@ -228,7 +228,7 @@ public class PlaceDetailTest {
         }
 
         @Test
-        void 예외_플레이스_호스트_최대_길이() {
+        void 예외_플레이스_호스트_최대_길이_초과() {
             // given
             String host = "m".repeat(MAX_HOST_LENGTH + 1);
 
@@ -243,7 +243,7 @@ public class PlaceDetailTest {
     class validateTime {
 
         @Test
-        void 성공_동시에_null_허용() {
+        void 성공_동시에_null() {
             // given
             LocalTime startTime = null;
             LocalTime endTime = null;
