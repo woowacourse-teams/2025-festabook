@@ -85,28 +85,6 @@ public class PlaceDetailTest {
             }).doesNotThrowAnyException();
         }
 
-        @Test
-        void 플레이스_시작시간_종료시간이_모두_null은_가능() {
-            // given
-            Place place = PlaceFixture.create();
-
-            LocalTime startTime = null;
-            LocalTime endTime = null;
-
-            // when & then
-            assertThatCode(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        startTime,
-                        endTime
-                );
-            }).doesNotThrowAnyException();
-        }
-
         @ParameterizedTest
         @CsvSource({
                 "' ',설명,위치,호스트",
@@ -136,6 +114,144 @@ public class PlaceDetailTest {
                 );
             }).isInstanceOf(BusinessException.class);
         }
+    }
+
+    @Nested
+    class validateTitle {
+
+        @Test
+        void 예외_플레이스_이름_최대_길이() {
+            // given
+            Place place = PlaceFixture.create();
+
+            int maxLength = 20;
+            String title = "m".repeat(maxLength + 1);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                new PlaceDetail(
+                        place,
+                        title,
+                        "플레이스 설명",
+                        "플레이스 위치",
+                        "플레이스 호스트",
+                        LocalTime.of(12, 30),
+                        LocalTime.of(13, 0)
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+        }
+    }
+
+    @Nested
+    class validateDescription {
+
+        @Test
+        void 예외_플레이스_설명_최대_길이() {
+            // given
+            Place place = PlaceFixture.create();
+
+            int maxLength = 100;
+            String description = "m".repeat(maxLength + 1);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                new PlaceDetail(
+                        place,
+                        "플레이스 이름",
+                        description,
+                        "플레이스 위치",
+                        "플레이스 호스트",
+                        LocalTime.of(12, 30),
+                        LocalTime.of(13, 0)
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+        }
+    }
+
+    @Nested
+    class validateLocation {
+
+        @Test
+        void 예외_플레이스_위치_최대_길이() {
+            // given
+            Place place = PlaceFixture.create();
+
+            int maxLength = 100;
+            String location = "m".repeat(maxLength + 1);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                new PlaceDetail(
+                        place,
+                        "플레이스 이름",
+                        "플레이스 설명",
+                        location,
+                        "플레이스 호스트",
+                        LocalTime.of(12, 30),
+                        LocalTime.of(13, 0)
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+        }
+    }
+
+    @Nested
+    class validateHost {
+
+        @Test
+        void 예외_플레이스_호스트_최대_길이() {
+            // given
+            Place place = PlaceFixture.create();
+
+            int maxLength = 100;
+            String host = "m".repeat(maxLength + 1);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                new PlaceDetail(
+                        place,
+                        "플레이스 이름",
+                        "플레이스 설명",
+                        "플레이스 위치",
+                        host,
+                        LocalTime.of(12, 30),
+                        LocalTime.of(13, 0)
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+        }
+    }
+
+    @Nested
+    class validateTime {
+
+        @Test
+        void 플레이스_시작시간_종료시간이_모두_null은_가능() {
+            // given
+            Place place = PlaceFixture.create();
+
+            LocalTime startTime = null;
+            LocalTime endTime = null;
+
+            // when & then
+            assertThatCode(() -> {
+                new PlaceDetail(
+                        place,
+                        "플레이스 이름",
+                        "플레이스 설명",
+                        "플레이스 위치",
+                        "플레이스 호스트",
+                        startTime,
+                        endTime
+                );
+            }).doesNotThrowAnyException();
+        }
 
         @ParameterizedTest
         @CsvSource({
@@ -163,102 +279,6 @@ public class PlaceDetailTest {
             })
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스의 시작, 종료 날짜를 모두 정해야합니다.");
-        }
-
-        @Test
-        void 예외_플레이스_이름_최대_길이() {
-            // given
-            Place place = PlaceFixture.create();
-
-            int maxLength = 20;
-            String title = "m".repeat(maxLength + 1);
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        title,
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", maxLength);
-        }
-
-        @Test
-        void 예외_플레이스_설명_최대_길이() {
-            // given
-            Place place = PlaceFixture.create();
-
-            int maxLength = 100;
-            String description = "m".repeat(maxLength + 1);
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        description,
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", maxLength);
-        }
-
-        @Test
-        void 예외_플레이스_위치_최대_길이() {
-            // given
-            Place place = PlaceFixture.create();
-
-            int maxLength = 100;
-            String location = "m".repeat(maxLength + 1);
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        location,
-                        "플레이스 호스트",
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", maxLength);
-        }
-
-        @Test
-        void 예외_플레이스_호스트_최대_길이() {
-            // given
-            Place place = PlaceFixture.create();
-
-            int maxLength = 100;
-            String host = "m".repeat(maxLength + 1);
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        host,
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
     }
 }
