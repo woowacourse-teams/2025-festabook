@@ -2,7 +2,11 @@ package com.daedan.festabook.organization.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.nullValue;
 
+import com.daedan.festabook.event.domain.EventDate;
+import com.daedan.festabook.event.domain.EventDateFixture;
+import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.FestivalImageFixture;
 import com.daedan.festabook.organization.domain.Organization;
@@ -13,6 +17,7 @@ import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.path.json.config.JsonPathConfig;
+import java.time.LocalDate;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -38,6 +43,9 @@ class OrganizationControllerTest {
 
     @Autowired
     private FestivalImageJpaRepository festivalImageJpaRepository;
+
+    @Autowired
+    private EventDateJpaRepository eventDateJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -108,9 +116,14 @@ class OrganizationControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
             FestivalImage festivalImage2 = FestivalImageFixture.create(organization, 2);
-            festivalImageJpaRepository.saveAll(List.of(festivalImage1, festivalImage2));
+            FestivalImage festivalImage1 = FestivalImageFixture.create(organization, 1);
+            festivalImageJpaRepository.saveAll(List.of(festivalImage2, festivalImage1));
+
+            EventDate thirdEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 3));
+            EventDate secondEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 2));
+            EventDate firstEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
+            eventDateJpaRepository.saveAll(List.of(thirdEventDate, secondEventDate, firstEventDate));
 
             int festivalImageSize = 2;
             int expectedFieldSize = 6;
@@ -127,8 +140,8 @@ class OrganizationControllerTest {
                     .body("universityName", equalTo(organization.getUniversityName()))
                     .body("festivalImages", hasSize(festivalImageSize))
                     .body("festivalName", equalTo(organization.getFestivalName()))
-                    .body("startDate", equalTo(organization.getStartDate().toString()))
-                    .body("endDate", equalTo(organization.getEndDate().toString()))
+                    .body("startDate", equalTo(firstEventDate.getDate().toString()))
+                    .body("endDate", equalTo(thirdEventDate.getDate().toString()))
 
                     .body("festivalImages[0].id", equalTo(festivalImage1.getId().intValue()))
                     .body("festivalImages[0].imageUrl", equalTo(festivalImage1.getImageUrl()))
@@ -137,6 +150,51 @@ class OrganizationControllerTest {
                     .body("festivalImages[1].id", equalTo(festivalImage2.getId().intValue()))
                     .body("festivalImages[1].imageUrl", equalTo(festivalImage2.getImageUrl()))
                     .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()));
+        }
+
+        @Test
+        void 성공_축제_날짜_중_가장_빠른_날짜와_가장_늦은_날짜가_응답됨() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            EventDate firstEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
+            EventDate secondEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 4));
+            EventDate thirdEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 5));
+            EventDate fourthEventDate = EventDateFixture.create(organization, LocalDate.of(2025, 8, 6));
+            eventDateJpaRepository.saveAll(List.of(fourthEventDate, thirdEventDate, secondEventDate, firstEventDate));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/organizations")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("startDate", equalTo(firstEventDate.getDate().toString()))
+                    .body("endDate", equalTo(fourthEventDate.getDate().toString()));
+        }
+
+        @Test
+        void 성공_축제_날짜는_null_가능() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/organizations")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("universityName", equalTo(organization.getUniversityName()))
+                    .body("festivalImages", hasSize(0))
+                    .body("festivalName", equalTo(organization.getFestivalName()))
+                    .body("startDate", nullValue())
+                    .body("endDate", nullValue());
         }
 
         @Test
