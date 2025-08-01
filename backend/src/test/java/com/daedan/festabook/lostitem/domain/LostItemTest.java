@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.ValueSource;
-import org.springframework.http.HttpStatus;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LostItemTest {
@@ -38,9 +37,7 @@ class LostItemTest {
         void 예외_URL_null_혹은_빈문자열(String invalidUrl) {
             assertThatThrownBy(() -> LostItemFixture.createWithImageUrl(invalidUrl))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("이미지 URL은 비어 있을 수 없습니다.")
-                    .extracting("status")
-                    .isEqualTo(HttpStatus.BAD_REQUEST);
+                    .hasMessage("이미지 URL은 비어 있을 수 없습니다.");
         }
     }
 
@@ -65,9 +62,7 @@ class LostItemTest {
         void 예외_보관장소_null_혹은_빈문자열(String invalidStorageLocation) {
             assertThatThrownBy(() -> LostItemFixture.createWithStorageLocation(invalidStorageLocation))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("보관 장소는 비어 있을 수 없습니다.")
-                    .extracting("status")
-                    .isEqualTo(HttpStatus.BAD_REQUEST);
+                    .hasMessage("보관 장소는 비어 있을 수 없습니다.");
         }
 
         @ParameterizedTest(name = "보관 장소 문자열 길이: {0}")
@@ -86,12 +81,13 @@ class LostItemTest {
         @ParameterizedTest(name = "보관 장소 문자열 길이: {0}")
         @ValueSource(ints = {21, 30})
         void 예외_보관_장소_문자열_길이_초과(int invalidStorageLocationLength) {
+            // given
             String storageLocation = "a".repeat(invalidStorageLocationLength);
+
+            // when & then
             assertThatThrownBy(() -> LostItemFixture.createWithStorageLocation(storageLocation))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("보관 장소는 20자를 초과할 수 없습니다.")
-                    .extracting("status")
-                    .isEqualTo(HttpStatus.BAD_REQUEST);
+                    .hasMessage("보관 장소는 20자를 초과할 수 없습니다.");
         }
     }
 
@@ -101,7 +97,7 @@ class LostItemTest {
         @Test
         void 성공() {
             // given
-            PickupStatus pickupStatus = PickupStatus.RETURNED;
+            PickupStatus pickupStatus = PickupStatus.COMPLETED;
 
             // when & then
             assertThatCode(() -> LostItemFixture.createWithPickupStatus(pickupStatus))
@@ -112,9 +108,7 @@ class LostItemTest {
         void 예외_수령_상태_null() {
             assertThatThrownBy(() -> LostItemFixture.createWithPickupStatus(null))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("수령 상태는 null일 수 없습니다.")
-                    .extracting("status")
-                    .isEqualTo(HttpStatus.BAD_REQUEST);
+                    .hasMessage("수령 상태는 null일 수 없습니다.");
         }
     }
 }

@@ -4,7 +4,7 @@ public class LostItemFixture {
 
     private static final String DEFAULT_IMAGE_URL = "http://example.com/image.png";
     private static final String DEFAULT_STORAGE_LOCATION = "창고A";
-    private static final PickupStatus DEFAULT_PICK_UP_STATUS = PickupStatus.STORED;
+    private static final PickupStatus DEFAULT_PICK_UP_STATUS = PickupStatus.PENDING;
 
     public static LostItem createWithImageUrl(
             String imageUrl
