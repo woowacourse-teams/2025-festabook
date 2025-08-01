@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -59,7 +60,7 @@ public class PlaceAnnouncement {
     }
 
     private void validateTitle(String title) {
-        if (title == null || title.trim().isEmpty()) {
+        if (!StringUtils.hasText(title)) {
             throw new BusinessException("플레이스 공지의 제목은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (title.length() > MAX_TITLE_LENGTH) {
