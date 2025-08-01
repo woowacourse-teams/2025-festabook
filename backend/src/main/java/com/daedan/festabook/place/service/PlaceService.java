@@ -10,6 +10,7 @@ import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
@@ -75,6 +76,26 @@ public class PlaceService {
         placeAnnouncementJpaRepository.deleteAllByPlaceId(placeId);
         placeFavoriteJpaRepository.deleteAllByPlaceId(placeId);
         placeJpaRepository.deleteById(placeId);
+    }
+
+    @Transactional
+    public void updatePlace(Long placeId, PlaceUpdateRequest request) {
+        Place place = getPlaceByPlaceId(placeId);
+        place.updateCategory(request.placeCategory());
+
+        PlaceDetail newPlaceDetail = request.toPlaceDetail(place);
+        PlaceDetail existingDetail = placeDetailJpaRepository.findByPlaceId(placeId).orElse(null);
+
+        updatePlaceDetail(existingDetail, newPlaceDetail);
+    }
+
+    private void updatePlaceDetail(PlaceDetail existingDetail, PlaceDetail newPlaceDetail) {
+        if (existingDetail == null) {
+            placeDetailJpaRepository.save(newPlaceDetail);
+            return;
+        }
+
+        existingDetail.update(newPlaceDetail);
     }
 
     // TODO: ExceptionHandler 등록 후 예외 변경

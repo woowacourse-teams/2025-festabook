@@ -89,6 +89,18 @@ public class PlaceFixture {
         );
     }
 
+    public static Place create(
+            Long placeId,
+            PlaceCategory category
+    ) {
+        return new Place(
+                placeId,
+                DEFAULT_ORGANIZATION,
+                category,
+                DEFAULT_COORDINATE
+        );
+    }
+
     public static Place createWithNullDefaults(
             Long id,
             Organization organization,

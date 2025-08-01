@@ -69,4 +69,8 @@ public class Place {
     public void updateCoordinate(Coordinate coordinate) {
         this.coordinate = coordinate;
     }
+
+    public void updateCategory(PlaceCategory placeCategory) {
+        this.category = placeCategory;
+    }
 }
