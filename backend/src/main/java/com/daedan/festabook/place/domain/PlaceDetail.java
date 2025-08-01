@@ -164,7 +164,7 @@ public class PlaceDetail {
 
     private void validateTime(LocalTime startTime, LocalTime endTime) {
         if ((startTime == null && endTime != null) || (startTime != null && endTime == null)) {
-            throw new BusinessException("플레이스의 시작, 종료 날짜 둘 중 하나만 비어있을 수 없습니다. 둘다 비어있거나 둘다 정해져 있어야 합니다.",
+            throw new BusinessException("플레이스의 시작, 종료 시간 둘 중 하나만 비어있을 수 없습니다. 둘다 비어있거나 둘다 정해져 있어야 합니다.",
                     HttpStatus.BAD_REQUEST);
         }
     }

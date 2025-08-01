@@ -264,7 +264,7 @@ public class PlaceDetailTest {
             // given & when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithTime(startTime, endTime))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 시작, 종료 날짜 둘 중 하나만 비어있을 수 없습니다. 둘다 비어있거나 둘다 정해져 있어야 합니다.");
+                    .hasMessage("플레이스의 시작, 종료 시간 둘 중 하나만 비어있을 수 없습니다. 둘다 비어있거나 둘다 정해져 있어야 합니다.");
         }
     }
 }
