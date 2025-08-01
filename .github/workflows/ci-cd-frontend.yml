@@ -1,6 +1,9 @@
 name: Frontend Deploy
 
 on:
+  pull_request:
+    branches:
+      - frontend
   push:
     branches:
       - frontend
