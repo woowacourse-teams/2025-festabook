@@ -29,22 +29,13 @@ class MapManager(
             PlaceCategoryUiModel.iconResources + listOf(R.drawable.ic_cluster_marker),
         )
 
-    private val clusterManager =
-        ClusterManager(
-            map,
-            overlayImageManager,
-        )
-
     private val context = map.context
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
-        clusterManager.buildCluster {
-            markers =
-                coordinates.mapIndexed { idx, place ->
-                    put(idx, place)
-                    Marker().generate(place)
-                }
-        }
+        markers =
+            coordinates.mapIndexed { idx, place ->
+                Marker().generate(place)
+            }
     }
 
     fun filterPlace(categories: List<PlaceCategoryUiModel>) {
@@ -55,14 +46,12 @@ class MapManager(
             }.forEach {
                 it.isVisible = false
             }
-        clusterManager.filterPlaceCluster(categories)
     }
 
     fun clearFilter() {
         markers.forEach {
             it.isVisible = true
         }
-        clusterManager.clearFilter()
     }
 
     fun setupMap(settingUiModel: InitialMapSettingUiModel) {
@@ -135,7 +124,6 @@ class MapManager(
         width = Marker.SIZE_AUTO
         height = Marker.SIZE_AUTO
         position = place.coordinate.toLatLng()
-        minZoom = CLUSTER_ZOOM_THRESHOLD
         map = this@MapManager.map
         overlayImageManager.setIcon(this, place.category)
         tag = place.category
@@ -143,10 +131,6 @@ class MapManager(
     }
 
     companion object {
-        // 아이템 마커와 클러스터링 마커가 전환되는 줌 레벨의 경계.
-        // 이 값보다 줌 레벨이 높거나 같아지면 (즉, 지도를 확대할수록)
-        // 개별 아이템 마커가 지도에 표시되기 시작합니다.
-        private const val CLUSTER_ZOOM_THRESHOLD = 17.0
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
 
