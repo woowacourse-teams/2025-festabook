@@ -82,7 +82,7 @@ class MapManager(
             16.toPx(context),
             0,
             0,
-            context.getCenterPixel() - 110.toPx(context),
+            context.getCenterPixel() - 120.toPx(context),
         )
     }
 
