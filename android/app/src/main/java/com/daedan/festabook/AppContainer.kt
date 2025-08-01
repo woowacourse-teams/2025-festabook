@@ -8,8 +8,8 @@ import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.OrganizationDataSource
-import com.daedan.festabook.data.datasource.remote.OrganizationDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSource
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
