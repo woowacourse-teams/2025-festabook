@@ -12,6 +12,9 @@ import org.junit.jupiter.api.Test;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceAnnouncementTest {
 
+    private static final int MAX_TITLE_LENGTH = 20;
+    private static final int MAX_CONTENT_LENGTH = 250;
+
     @Nested
     class validate {
 
@@ -31,8 +34,7 @@ class PlaceAnnouncementTest {
         @Test
         void 예외_플레이스_공지_제목_경계값() {
             // given
-            int maxLength = 20;
-            String title = "m".repeat(maxLength);
+            String title = "m".repeat(MAX_TITLE_LENGTH);
 
             // when & then
             assertThatCode(() -> PlaceAnnouncementFixture.createWithTitle(title))
@@ -53,13 +55,12 @@ class PlaceAnnouncementTest {
         @Test
         void 예외_플레이스_공지_제목_최대_길이() {
             // given
-            int maxLength = 20;
-            String title = "m".repeat(maxLength + 1);
+            String title = "m".repeat(MAX_TITLE_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+                    .hasMessage("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH);
         }
 
         @Test
@@ -80,8 +81,7 @@ class PlaceAnnouncementTest {
         @Test
         void 예외_플레이스_공지_내용_경계값() {
             // given
-            int maxLength = 250;
-            String content = "m".repeat(maxLength);
+            String content = "m".repeat(MAX_CONTENT_LENGTH);
 
             // when & then
             assertThatCode(() -> PlaceAnnouncementFixture.createWithContent(content))
@@ -102,13 +102,12 @@ class PlaceAnnouncementTest {
         @Test
         void 예외_플레이스_공지_내용_최대_길이() {
             // given
-            int maxLength = 250;
-            String content = "m".repeat(maxLength + 1);
+            String content = "m".repeat(MAX_CONTENT_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithContent(content))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+                    .hasMessage("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", MAX_CONTENT_LENGTH);
         }
     }
 }

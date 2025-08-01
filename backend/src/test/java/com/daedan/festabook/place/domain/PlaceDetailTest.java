@@ -15,6 +15,11 @@ import org.junit.jupiter.params.provider.CsvSource;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class PlaceDetailTest {
 
+    private static final int MAX_TITLE_LENGTH = 20;
+    private static final int MAX_DESCRIPTION_LENGTH = 100;
+    private static final int MAX_LOCATION_LENGTH = 100;
+    private static final int MAX_HOST_LENGTH = 100;
+
     @Nested
     class validate {
 
@@ -65,8 +70,7 @@ public class PlaceDetailTest {
         @Test
         void 성공_길이_경계값() {
             // given
-            int maxTitleLength = 20;
-            String title = "m".repeat(maxTitleLength);
+            String title = "m".repeat(MAX_TITLE_LENGTH);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithTitle(title))
@@ -87,13 +91,12 @@ public class PlaceDetailTest {
         @Test
         void 예외_플레이스_이름_최대_길이() {
             // given
-            int maxLength = 20;
-            String title = "m".repeat(maxLength + 1);
+            String title = "m".repeat(MAX_TITLE_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+                    .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH);
         }
     }
 
@@ -113,8 +116,7 @@ public class PlaceDetailTest {
         @Test
         void 성공_길이_경계값() {
             // given
-            int maxDescriptionLength = 100;
-            String description = "m".repeat(maxDescriptionLength);
+            String description = "m".repeat(MAX_DESCRIPTION_LENGTH);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithDescription(description))
@@ -135,13 +137,12 @@ public class PlaceDetailTest {
         @Test
         void 예외_플레이스_설명_최대_길이() {
             // given
-            int maxLength = 100;
-            String description = "m".repeat(maxLength + 1);
+            String description = "m".repeat(MAX_DESCRIPTION_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithDescription(description))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+                    .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", MAX_DESCRIPTION_LENGTH);
         }
     }
 
@@ -161,8 +162,7 @@ public class PlaceDetailTest {
         @Test
         void 성공_길이_경계값() {
             // given
-            int maxLocationLength = 100;
-            String location = "m".repeat(maxLocationLength);
+            String location = "m".repeat(MAX_LOCATION_LENGTH);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithLocation(location))
@@ -183,13 +183,12 @@ public class PlaceDetailTest {
         @Test
         void 예외_플레이스_위치_최대_길이() {
             // given
-            int maxLength = 100;
-            String location = "m".repeat(maxLength + 1);
+            String location = "m".repeat(MAX_LOCATION_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithLocation(location))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+                    .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", MAX_LOCATION_LENGTH);
         }
     }
 
@@ -209,8 +208,7 @@ public class PlaceDetailTest {
         @Test
         void 성공_길이_경계값() {
             // given
-            int maxHostLength = 100;
-            String host = "m".repeat(maxHostLength);
+            String host = "m".repeat(MAX_HOST_LENGTH);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithHost(host))
@@ -231,13 +229,12 @@ public class PlaceDetailTest {
         @Test
         void 예외_플레이스_호스트_최대_길이() {
             // given
-            int maxLength = 100;
-            String host = "m".repeat(maxLength + 1);
+            String host = "m".repeat(MAX_HOST_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithHost(host))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", maxLength);
+                    .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", MAX_HOST_LENGTH);
         }
     }
 
