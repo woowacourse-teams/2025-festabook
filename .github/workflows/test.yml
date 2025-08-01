@@ -1,0 +1,19 @@
+name: test
+
+on:
+  pull_request:
+    branches:
+      - main
+      - backend
+
+jobs:
+  Run-PR-Test:
+    runs-on: self-hosted
+    permissions:
+      contents: read
+      checks: write
+
+      - name: test
+        run: |
+          echo ls
+
