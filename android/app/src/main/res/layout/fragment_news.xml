@@ -19,67 +19,29 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/news_title"
+            app:layout_constraintBottom_toTopOf="@id/tl_news"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
-            android:id="@+id/srl_notice_list"
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tl_news"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:background="@color/gray050"
+            app:layout_constraintBottom_toTopOf="@id/vp_news"
+            app:layout_constraintTop_toBottomOf="@id/tv_news_title"
+            app:tabIndicatorColor="@color/gray900"
+            app:tabIndicatorFullWidth="true"
+            app:tabRippleColor="@android:color/transparent"
+            app:tabTextColor="@color/selector_news_tab_text_color" />
+
+        <androidx.viewpager2.widget.ViewPager2
+            android:id="@+id/vp_news"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_news_title">
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_notice_list"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginTop="20dp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/tv_news_title"
-                tools:listitem="@layout/item_notice" />
-
-        </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
-
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/sfl_schedule_skeleton"
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:importantForAccessibility="no"
-            android:layout_marginTop="20dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_news_title"
-
-            app:shimmer_auto_start="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-            </LinearLayout>
-        </com.facebook.shimmer.ShimmerFrameLayout>
-
-
+            app:layout_constraintTop_toBottomOf="@id/tl_news"
+            tools:layout_editor_absoluteX="0dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
