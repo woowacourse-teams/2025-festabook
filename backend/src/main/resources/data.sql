@@ -1,8 +1,8 @@
 -- ========================
 -- 조직 (Organization)
 -- ========================
-INSERT INTO organization (university_name, festival_name, start_date, end_date, zoom, latitude, longitude)
-VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', '2025-10-15', '2025-10-17', 15, 37.583585, 127.0588862);
+INSERT INTO organization (university_name, festival_name, zoom, latitude, longitude)
+VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', 15, 37.583585, 127.0588862);
 
 -- ========================
 -- 축제 이미지 (FestivalImage)
@@ -14,6 +14,9 @@ VALUES (1, 'https://www.themoviedb.org/t/p/w1280/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg
        (1, 'https://image.tmdb.org/t/p/original/uxSb5N9S1vtUTeAyQQxiQ6CFGrc.jpg', 4),
        (1, 'https://www.themoviedb.org/t/p/w1280/fwch4T5aUDPuJ6zUzkub8prfhtI.jpg', 5);
 
+-- ========================
+-- 조직 폴리곤 구멍 경계 (OrganizationPolygonHoleBoundary)
+-- ========================
 INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
 VALUES (1, 37.5863631, 127.0564018),
        (1, 37.5862823, 127.0562999),
@@ -112,7 +115,6 @@ VALUES (1, '2025-07-31'),
 -- ========================
 -- 타임라인 (Event)
 -- ========================
-
 INSERT INTO event (start_time, end_time, title, location, event_date_id)
 VALUES ('10:00:00', '11:30:00', '개막식', '운동장', 1),
        ('13:00:00', '14:00:00', '한소래', '학생회관 앞 자주터', 1),
@@ -121,10 +123,8 @@ VALUES ('10:00:00', '11:30:00', '개막식', '운동장', 1),
        ('18:00:00', '19:00:00', '새벽을알리는소리', '학생회관 앞 자주터', 1),
        ('19:30:00', '20:30:00', '연예인 공연: 프로미스 나인', '학생회관 앞 자주터', 1),
        ('20:30:00', '21:00:00', '연예인 공연: YB', '학생회관 앞 자주터', 1),
-       ('21:00:00', '22:00:00', '연예인 공연: 잔나비', '학생회관 앞 자주터', 1);
-
-INSERT INTO event (start_time, end_time, title, location, event_date_id)
-VALUES ('10:00:00', '11:00:00', '전체 학생 총회', '중앙무대', 2),
+       ('21:00:00', '22:00:00', '연예인 공연: 잔나비', '학생회관 앞 자주터', 1),
+       ('10:00:00', '11:00:00', '전체 학생 총회', '중앙무대', 2),
        ('11:00:00', '12:00:00', '바운스', '중앙무대', 2),
        ('12:30:00', '13:30:00', '새물결', '중앙무대', 2),
        ('14:00:00', '15:30:00', '제퍼나이어', '중앙무대', 2),
@@ -132,10 +132,8 @@ VALUES ('10:00:00', '11:00:00', '전체 학생 총회', '중앙무대', 2),
        ('17:30:00', '18:30:00', '한소래X새물결', '중앙무대', 2),
        ('19:30:00', '20:30:00', '연예인 공연: 백예린', '중앙무대', 2),
        ('20:30:00', '21:00:00', '연예인 공연: ITZY', '중앙무대', 2),
-       ('21:00:00', '22:00:00', '연예인 공연: 에스파', '중앙무대', 2);
-
-INSERT INTO event (start_time, end_time, title, location, event_date_id)
-VALUES ('09:30:00', '10:30:00', 'Tru-Hz', '운동장', 3),
+       ('21:00:00', '22:00:00', '연예인 공연: 에스파', '중앙무대', 2),
+       ('09:30:00', '10:30:00', 'Tru-Hz', '운동장', 3),
        ('11:00:00', '12:00:00', 'Jane', '운동장', 3),
        ('12:30:00', '13:30:00', '발광', '운동장', 3),
        ('14:00:00', '15:00:00', '발라드림', '운동장', 3),
@@ -254,6 +252,9 @@ VALUES (1, 'BAR', 37.5848056, 127.0600224),
        (1, 'TRASH_CAN', 37.5844988, 127.0612147),
        (1, 'TRASH_CAN', 37.5833199, 127.0595985);
 
+-- ========================
+-- 플레이스 세부 정보 (PlaceDetail)
+-- ========================
 INSERT INTO place_detail (place_id, title, description, location, host, start_time, end_time)
 VALUES (1, '루프탑 칵테일 바', '아름다운 야경과 특별한 칵테일', 'BAR 존 A-1', '스카이 블리스', '18:00:00', '00:00:00'),
        (2, '크래프트 비어 탭룸', '다양한 수제 맥주를 맛볼 수 있는 공간', 'BAR 존 A-2', '홉앤몰트', '17:00:00', '23:00:00'),

@@ -11,7 +11,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import lombok.AccessLevel;
@@ -40,12 +39,6 @@ public class Organization {
     private String festivalName;
 
     @Column(nullable = false)
-    private LocalDate startDate;
-
-    @Column(nullable = false)
-    private LocalDate endDate;
-
-    @Column(nullable = false)
     private Integer zoom;
 
     @Embedded
@@ -63,8 +56,6 @@ public class Organization {
             Long id,
             String universityName,
             String festivalName,
-            LocalDate startDate,
-            LocalDate endDate,
             Integer zoom,
             Coordinate centerCoordinate,
             List<Coordinate> polygonHoleBoundary
@@ -77,8 +68,6 @@ public class Organization {
         this.id = id;
         this.universityName = universityName;
         this.festivalName = festivalName;
-        this.startDate = startDate;
-        this.endDate = endDate;
         this.zoom = zoom;
         this.centerCoordinate = centerCoordinate;
         this.polygonHoleBoundary = polygonHoleBoundary;
@@ -87,8 +76,6 @@ public class Organization {
     public Organization(
             String universityName,
             String festivalName,
-            LocalDate startDate,
-            LocalDate endDate,
             Integer zoom,
             Coordinate centerCoordinate,
             List<Coordinate> polygonHoleBoundary
@@ -97,8 +84,6 @@ public class Organization {
                 null,
                 universityName,
                 festivalName,
-                startDate,
-                endDate,
                 zoom,
                 centerCoordinate,
                 polygonHoleBoundary
