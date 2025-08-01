@@ -44,8 +44,11 @@
     <string name="all_book_mark">북마크</string>
     <string name="schedule_circle">원</string>
 
-    <!-- News Screen -->
+    <!-- 소식 화면 -->
     <string name="news_title">소식</string>
+    <string name="tab_notice">공지</string>
+    <string name="tab_faq">Q&amp;A</string>
+    <string name="tab_lost_item">분실물</string>
 
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>

@@ -13,8 +13,6 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         NewsPagerAdapter(this)
     }
 
-    private val tabTitle = listOf("공지", "Q&A", "분실물")
-
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -25,18 +23,8 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         binding.vpNews.adapter = newsPagerAdapter
 
         TabLayoutMediator(binding.tlNews, binding.vpNews) { tab, position ->
-            tab.text = tabTitle[position]
+            val tabNameRes = NewsTab.entries[position].tabNameRes
+            tab.text = getString(tabNameRes)
         }.attach()
-        hideSkeleton()
-    }
-
-    private fun showSkeleton() {
-        binding.sflScheduleSkeleton.visibility = View.VISIBLE
-        binding.sflScheduleSkeleton.startShimmer()
-    }
-
-    private fun hideSkeleton() {
-        binding.sflScheduleSkeleton.visibility = View.GONE
-        binding.sflScheduleSkeleton.stopShimmer()
     }
 }
