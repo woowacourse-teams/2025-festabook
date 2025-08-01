@@ -57,4 +57,3 @@ jobs:
           passphrase: ${{ secrets.SSH_PASSPHRASE }}
           source: "frontend/dist"
           target: "/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/static"
-
