@@ -19,6 +19,7 @@ import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListItemDecoration
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
@@ -120,6 +121,7 @@ class PlaceListFragment :
 
     private fun setUpPlaceAdapter() {
         binding.rvPlaces.adapter = placeAdapter
+        binding.rvPlaces.addItemDecoration(PlaceListItemDecoration(placeAdapter))
         (binding.rvPlaces.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
     }
 

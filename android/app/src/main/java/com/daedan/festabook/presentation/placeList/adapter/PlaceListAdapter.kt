@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.placeList.adapter
 
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -24,7 +25,10 @@ class PlaceListAdapter(
         holder: PlaceListViewHolder,
         position: Int,
     ) {
-        if (position == POSITION_HEADER) return
+        if (position == POSITION_HEADER) {
+            holder.itemView.visibility = View.INVISIBLE
+            return
+        }
         holder.bind(getItem(position - 1))
     }
 
