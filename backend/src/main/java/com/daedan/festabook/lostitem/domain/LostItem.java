@@ -13,6 +13,7 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.HttpStatus;
@@ -95,7 +96,7 @@ public class LostItem {
     }
 
     private void validatePickupStatus(PickupStatus pickupStatus) {
-        if (pickupStatus == null) {
+        if (ObjectUtils.isEmpty(pickupStatus)) {
             throw new BusinessException("수령 상태는 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
