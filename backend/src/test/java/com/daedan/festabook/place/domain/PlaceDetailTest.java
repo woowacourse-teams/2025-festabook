@@ -132,7 +132,7 @@ public class PlaceDetailTest {
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithDescription(description))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 설명은 공백이 될 수 없습니다.");
+                    .hasMessage("플레이스의 설명은 공백일 수 없습니다.");
         }
 
         @Test
@@ -178,7 +178,7 @@ public class PlaceDetailTest {
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithLocation(location))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 위치는 공백이 될 수 없습니다.");
+                    .hasMessage("플레이스의 위치는 공백일 수 없습니다.");
         }
 
         @Test
@@ -224,7 +224,7 @@ public class PlaceDetailTest {
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithHost(host))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 호스트는 공백이 될 수 없습니다.");
+                    .hasMessage("플레이스의 호스트는 공백일 수 없습니다.");
         }
 
         @Test

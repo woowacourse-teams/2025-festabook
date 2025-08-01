@@ -104,7 +104,7 @@ public class PlaceDetail {
         }
 
         if (title.trim().isEmpty()) {
-            throw new BusinessException("플레이스의 이름은 공백이 될 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스의 이름은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new BusinessException(
@@ -120,7 +120,7 @@ public class PlaceDetail {
         }
 
         if (description.trim().isEmpty()) {
-            throw new BusinessException("플레이스의 설명은 공백이 될 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스의 설명은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new BusinessException(
@@ -136,7 +136,7 @@ public class PlaceDetail {
         }
 
         if (location.trim().isEmpty()) {
-            throw new BusinessException("플레이스의 위치는 공백이 될 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스의 위치는 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (location.length() > MAX_LOCATION_LENGTH) {
             throw new BusinessException(
@@ -152,7 +152,7 @@ public class PlaceDetail {
         }
 
         if (host.trim().isEmpty()) {
-            throw new BusinessException("플레이스의 호스트는 공백이 될 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스의 호스트는 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (host.length() > MAX_HOST_LENGTH) {
             throw new BusinessException(
