@@ -20,13 +20,9 @@ public class PlaceDetailTest {
 
         @Test
         void 성공() {
-            // given
-            Place place = PlaceFixture.create();
-
-            // when & then
+            // given & when & then
             assertThatCode(() -> {
-                new PlaceDetail(
-                        place,
+                PlaceDetailFixture.create(
                         "플레이스 이름",
                         "플레이스 설명",
                         "플레이스 위치",
@@ -36,83 +32,20 @@ public class PlaceDetailTest {
                 );
             }).doesNotThrowAnyException();
         }
+    }
+
+    @Nested
+    class validatePlace {
 
         @Test
-        void 성공_길이_경계값() {
+        void 예외_null일_수_없음() {
             // given
-            Place place = PlaceFixture.create();
-
-            int maxTitleLength = 20;
-            int maxDescriptionLength = 100;
-            int maxLocationLength = 100;
-            int maxHostLength = 100;
-
-            String title = "m".repeat(maxTitleLength);
-            String description = "m".repeat(maxDescriptionLength);
-            String location = "m".repeat(maxLocationLength);
-            String host = "m".repeat(maxHostLength);
+            Place place = null;
 
             // when & then
-            assertThatCode(() -> {
-                new PlaceDetail(
-                        place,
-                        title,
-                        description,
-                        location,
-                        host,
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            }).doesNotThrowAnyException();
-        }
-
-        @Test
-        void 성공_null은_허용() {
-            // given
-            Place place = PlaceFixture.create();
-
-            // when & then
-            assertThatCode(() -> {
-                new PlaceDetail(
-                        place,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null,
-                        null
-                );
-            }).doesNotThrowAnyException();
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-                "' ',설명,위치,호스트",
-                "이름,' ',위치,호스트",
-                "이름,설명,' ',호스트",
-                "이름,설명,위치,' '"
-        })
-        void 예외_공백이_존재하면_예외가_발생(
-                String title,
-                String description,
-                String location,
-                String host
-        ) {
-            // given
-            Place place = PlaceFixture.create();
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        title,
-                        description,
-                        location,
-                        host,
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            }).isInstanceOf(BusinessException.class);
+            assertThatThrownBy(() -> PlaceDetailFixture.create(place))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스는 null일 수 없습니다.");
         }
     }
 
@@ -120,25 +53,45 @@ public class PlaceDetailTest {
     class validateTitle {
 
         @Test
+        void 성공_null_허용() {
+            // given
+            String title = null;
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithTitle(title))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 성공_길이_경계값() {
+            // given
+            int maxTitleLength = 20;
+            String title = "m".repeat(maxTitleLength);
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithTitle(title))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_이름_공백() {
+            // given
+            String title = " ";
+
+            // when & then
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithTitle(title))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 이름은 공백이 될 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_이름_최대_길이() {
             // given
-            Place place = PlaceFixture.create();
-
             int maxLength = 20;
             String title = "m".repeat(maxLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        title,
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
@@ -148,25 +101,45 @@ public class PlaceDetailTest {
     class validateDescription {
 
         @Test
+        void 성공_null_허용() {
+            // given
+            String description = null;
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithDescription(description))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 성공_길이_경계값() {
+            // given
+            int maxDescriptionLength = 100;
+            String description = "m".repeat(maxDescriptionLength);
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithDescription(description))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_설명_공백() {
+            // given
+            String description = " ";
+
+            // when & then
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithDescription(description))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 설명은 공백이 될 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_설명_최대_길이() {
             // given
-            Place place = PlaceFixture.create();
-
             int maxLength = 100;
             String description = "m".repeat(maxLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        description,
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithDescription(description))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
@@ -176,25 +149,45 @@ public class PlaceDetailTest {
     class validateLocation {
 
         @Test
+        void 성공_null_허용() {
+            // given
+            String location = null;
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithLocation(location))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 성공_길이_경계값() {
+            // given
+            int maxLocationLength = 100;
+            String location = "m".repeat(maxLocationLength);
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithLocation(location))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_위치_공백() {
+            // given
+            String location = " ";
+
+            // when & then
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithLocation(location))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 위치는 공백이 될 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_위치_최대_길이() {
             // given
-            Place place = PlaceFixture.create();
-
             int maxLength = 100;
             String location = "m".repeat(maxLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        location,
-                        "플레이스 호스트",
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithLocation(location))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
@@ -204,25 +197,45 @@ public class PlaceDetailTest {
     class validateHost {
 
         @Test
+        void 성공_null_허용() {
+            // given
+            String host = null;
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithHost(host))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 성공_길이_경계값() {
+            // given
+            int maxHostLength = 100;
+            String host = "m".repeat(maxHostLength);
+
+            // when & then
+            assertThatCode(() -> PlaceDetailFixture.createWithHost(host))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_호스트_공백() {
+            // given
+            String host = " ";
+
+            // when & then
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithHost(host))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 호스트는 공백이 될 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_호스트_최대_길이() {
             // given
-            Place place = PlaceFixture.create();
-
             int maxLength = 100;
             String host = "m".repeat(maxLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        host,
-                        LocalTime.of(12, 30),
-                        LocalTime.of(13, 0)
-                );
-            })
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithHost(host))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
@@ -232,25 +245,14 @@ public class PlaceDetailTest {
     class validateTime {
 
         @Test
-        void 플레이스_시작시간_종료시간이_모두_null은_가능() {
+        void 성공_동시에_null_허용() {
             // given
-            Place place = PlaceFixture.create();
-
             LocalTime startTime = null;
             LocalTime endTime = null;
 
             // when & then
-            assertThatCode(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        startTime,
-                        endTime
-                );
-            }).doesNotThrowAnyException();
+            assertThatCode(() -> PlaceDetailFixture.createWithTime(startTime, endTime))
+                    .doesNotThrowAnyException();
         }
 
         @ParameterizedTest
@@ -262,21 +264,8 @@ public class PlaceDetailTest {
                 LocalTime startTime,
                 LocalTime endTime
         ) {
-            // given
-            Place place = PlaceFixture.create();
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceDetail(
-                        place,
-                        "플레이스 이름",
-                        "플레이스 설명",
-                        "플레이스 위치",
-                        "플레이스 호스트",
-                        startTime,
-                        endTime
-                );
-            })
+            // given & when & then
+            assertThatThrownBy(() -> PlaceDetailFixture.createWithTime(startTime, endTime))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스의 시작, 종료 날짜 둘 중 하나만 비어있을 수 없습니다. 둘다 비어있거나 둘다 정해져 있어야 합니다.");
         }

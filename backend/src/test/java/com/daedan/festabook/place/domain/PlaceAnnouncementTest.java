@@ -8,8 +8,6 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceAnnouncementTest {
@@ -19,57 +17,11 @@ class PlaceAnnouncementTest {
 
         @Test
         void 성공() {
-            // given
-            Place place = PlaceFixture.create();
-
-            // when & then
-            assertThatCode(() -> {
-                new PlaceAnnouncement(
-                        place,
-                        "플레이스 공지 제목",
-                        "플레이스 공지 내용"
-                );
-            }).doesNotThrowAnyException();
-        }
-
-        @Test
-        void 성공_길이_경계값() {
-            // given
-            Place place = PlaceFixture.create();
-
-            int maxTitleLength = 20;
-            int maxContentLength = 250;
-            String title = "m".repeat(maxTitleLength);
-            String content = "m".repeat(maxContentLength);
-
-            // when & then
-            assertThatCode(() -> {
-                new PlaceAnnouncement(
-                        place,
-                        title,
-                        content
-                );
-            }).doesNotThrowAnyException();
-        }
-
-        @ParameterizedTest
-        @CsvSource({
-                ",공지내용",
-                "공지제목,"
-        })
-        void 예외_null이_존재하면_예외가_발생(
-                String title,
-                String content
-        ) {
-            // given
-            Place place = PlaceFixture.create();
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceAnnouncement(place, title, content);
-            })
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("null");
+            // given & when & then
+            assertThatCode(() ->
+                    PlaceAnnouncementFixture.create("플레이스 공지 제목", "플레이스 공지 내용")
+            )
+                    .doesNotThrowAnyException();
         }
     }
 
@@ -77,17 +29,35 @@ class PlaceAnnouncementTest {
     class validateTitle {
 
         @Test
+        void 예외_플레이스_공지_제목_경계값() {
+            // given
+            int maxLength = 20;
+            String title = "m".repeat(maxLength);
+
+            // when & then
+            assertThatCode(() -> PlaceAnnouncementFixture.createWithTitle(title))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_공지_제목_null() {
+            // given
+            String title = null;
+
+            // when & then
+            assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 공지의 제목은 공백이거나 null이 될 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_공지_제목_최대_길이() {
             // given
-            Place place = PlaceFixture.create();
-
             int maxLength = 20;
             String title = "m".repeat(maxLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> {
-                new PlaceAnnouncement(place, title, "공지내용");
-            })
+            assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
@@ -95,14 +65,10 @@ class PlaceAnnouncementTest {
         @Test
         void 예외_플레이스_공지_제목_공백() {
             // given
-            Place place = PlaceFixture.create();
-
             String title = " ";
 
             // when & then
-            assertThatThrownBy(() -> {
-                new PlaceAnnouncement(place, title, "공지내용");
-            })
+            assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지의 제목은 공백이거나 null이 될 수 없습니다.");
         }
@@ -112,17 +78,35 @@ class PlaceAnnouncementTest {
     class validateContent {
 
         @Test
+        void 예외_플레이스_공지_내용_경계값() {
+            // given
+            int maxLength = 250;
+            String content = "m".repeat(maxLength);
+
+            // when & then
+            assertThatCode(() -> PlaceAnnouncementFixture.createWithContent(content))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_공지_내용_최대_null() {
+            // given
+            String content = null;
+
+            // when & then
+            assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithContent(content))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 공지 내용은 null이 될 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_공지_내용_최대_길이() {
             // given
-            Place place = PlaceFixture.create();
-
             int maxLength = 250;
             String content = "m".repeat(maxLength + 1);
 
             // when & then
-            assertThatThrownBy(() -> {
-                new PlaceAnnouncement(place, "공지제목", content);
-            })
+            assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithContent(content))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }

@@ -54,6 +54,7 @@ public class PlaceDetail {
             LocalTime startTime,
             LocalTime endTime
     ) {
+        validatePlace(place);
         validateTitle(title);
         validateDescription(description);
         validateLocation(location);
@@ -89,6 +90,12 @@ public class PlaceDetail {
                 startTime,
                 endTime
         );
+    }
+
+    private void validatePlace(Place place) {
+        if (place == null) {
+            throw new BusinessException("플레이스는 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private void validateTitle(String title) {
