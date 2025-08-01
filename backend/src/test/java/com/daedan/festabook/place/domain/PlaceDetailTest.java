@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class PlaceDetailTest {
@@ -68,10 +69,11 @@ public class PlaceDetailTest {
                     .doesNotThrowAnyException();
         }
 
-        @Test
-        void 성공_플레이스_이름_길이_경계값() {
+        @ParameterizedTest
+        @ValueSource(ints = {1, 5, 10, MAX_TITLE_LENGTH})
+        void 성공_플레이스_이름_길이_경계값(int length) {
             // given
-            String title = "m".repeat(MAX_TITLE_LENGTH);
+            String title = "m".repeat(length);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithTitle(title))
@@ -114,10 +116,11 @@ public class PlaceDetailTest {
                     .doesNotThrowAnyException();
         }
 
-        @Test
-        void 성공_플레이스_설명_길이_경계값() {
+        @ParameterizedTest
+        @ValueSource(ints = {1, 40, 80, MAX_DESCRIPTION_LENGTH})
+        void 성공_플레이스_설명_길이_경계값(int length) {
             // given
-            String description = "m".repeat(MAX_DESCRIPTION_LENGTH);
+            String description = "m".repeat(length);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithDescription(description))
@@ -160,10 +163,11 @@ public class PlaceDetailTest {
                     .doesNotThrowAnyException();
         }
 
-        @Test
-        void 성공_플레이스_위치_길이_경계값() {
+        @ParameterizedTest
+        @ValueSource(ints = {1, 40, 80, MAX_LOCATION_LENGTH})
+        void 성공_플레이스_위치_길이_경계값(int length) {
             // given
-            String location = "m".repeat(MAX_LOCATION_LENGTH);
+            String location = "m".repeat(length);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithLocation(location))
@@ -206,10 +210,11 @@ public class PlaceDetailTest {
                     .doesNotThrowAnyException();
         }
 
-        @Test
-        void 성공_플레이스_호스트_길이_경계값() {
+        @ParameterizedTest
+        @ValueSource(ints = {1, 40, 80, MAX_HOST_LENGTH})
+        void 성공_플레이스_호스트_길이_경계값(int length) {
             // given
-            String host = "m".repeat(MAX_HOST_LENGTH);
+            String host = "m".repeat(length);
 
             // when & then
             assertThatCode(() -> PlaceDetailFixture.createWithHost(host))

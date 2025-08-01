@@ -82,7 +82,7 @@ class PlaceAnnouncementTest {
     class validateContent {
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 100, 200, MAX_TITLE_LENGTH})
+        @ValueSource(ints = {1, 100, 200, MAX_CONTENT_LENGTH})
         void 성공_플레이스_공지_내용_경계값(int length) {
             // given
             String content = "m".repeat(length);
