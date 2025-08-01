@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { DataContext } from './DataContext';
 import { initialData } from '../data/initialData';
 import { getCurrentDate } from '../utils/date';
-import { scheduleAPI } from '../utils/api';
+import { scheduleAPI, qnaAPI } from '../utils/api';
 
 export const DataProvider = ({ children }) => {
     const [data, setData] = useState(initialData);
     const [eventDates, setEventDates] = useState([]); // 서버에서 가져온 축제 날짜들
     const [isLoadingDates, setIsLoadingDates] = useState(false);
     const [isLoadingEvents, setIsLoadingEvents] = useState(false);
+    const [isLoadingQna, setIsLoadingQna] = useState(false);
     
     const fetchEventDates = async () => {
         try {
@@ -28,7 +29,6 @@ export const DataProvider = ({ children }) => {
                 schedule: scheduleFromServer
             }));
         } catch (error) {
-            console.error('Failed to fetch event dates:', error);
             // 초기 로드 실패 시 빈 배열로 설정
             setEventDates([]);
             setData(prev => ({
@@ -39,10 +39,30 @@ export const DataProvider = ({ children }) => {
             setIsLoadingDates(false);
         }
     };
+
+    const fetchQnaItems = async () => {
+        try {
+            setIsLoadingQna(true);
+            const questions = await qnaAPI.getQuestions();
+            setData(prev => ({
+                ...prev,
+                qnaItems: questions
+            }));
+        } catch (error) {
+            // 초기 로드 실패 시 빈 배열로 설정
+            setData(prev => ({
+                ...prev,
+                qnaItems: []
+            }));
+        } finally {
+            setIsLoadingQna(false);
+        }
+    };
     
-    // 컴포넌트 마운트 시 축제 날짜 목록 조회
+    // 컴포넌트 마운트 시 축제 날짜 목록과 QnA 조회
     useEffect(() => {
         fetchEventDates();
+        fetchQnaItems();
     }, []);
 
     const getNextId = (arr) => (arr.length > 0 ? Math.max(...arr.map(item => item.id)) + 1 : 1);
@@ -70,10 +90,80 @@ export const DataProvider = ({ children }) => {
             })}));
             showToast(`상태가 [${newStatus}]으로 변경되었습니다.`);
         },
-        setQnaItems: (newItems) => setData(d => ({ ...d, qnaItems: newItems })),
-        addQnaItem: (item) => setData(d => ({ ...d, qnaItems: [...d.qnaItems, { id: getNextId(d.qnaItems), ...item }] })),
-        updateQnaItem: (id, updated) => setData(d => ({...d, qnaItems: d.qnaItems.map(q => q.id === id ? {...q, ...updated} : q)})),
-        deleteQnaItem: (id) => setData(d => ({ ...d, qnaItems: d.qnaItems.filter(q => q.id !== id) })),
+        // QnA 관련 액션들 (서버 연동)
+        addQnaItem: async (item, showToast) => {
+            try {
+                setIsLoadingQna(true);
+                const newQuestions = await qnaAPI.createQuestion(item);
+                
+                // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
+                const questions = await qnaAPI.getQuestions();
+                
+                setData(prev => ({
+                    ...prev,
+                    qnaItems: questions
+                }));
+                showToast('새 QnA가 등록되었습니다.');
+            } catch (error) {
+                showToast(error.message || 'QnA 추가에 실패했습니다.');
+            } finally {
+                setIsLoadingQna(false);
+            }
+        },
+        
+        updateQnaItem: async (id, updated, showToast) => {
+            try {
+                setIsLoadingQna(true);
+                await qnaAPI.updateQuestion(id, updated);
+                
+                // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
+                const questions = await qnaAPI.getQuestions();
+                
+                setData(prev => ({
+                    ...prev,
+                    qnaItems: questions
+                }));
+                showToast('QnA가 수정되었습니다.');
+            } catch (error) {
+                showToast(error.message || 'QnA 수정에 실패했습니다.');
+            } finally {
+                setIsLoadingQna(false);
+            }
+        },
+        
+        deleteQnaItem: async (id, showToast) => {
+            try {
+                setIsLoadingQna(true);
+                await qnaAPI.deleteQuestion(id);
+                setData(prev => ({
+                    ...prev,
+                    qnaItems: prev.qnaItems.filter(q => q.questionId !== id)
+                }));
+                showToast('QnA가 삭제되었습니다.');
+            } catch (error) {
+                showToast(error.message || 'QnA 삭제에 실패했습니다.');
+            } finally {
+                setIsLoadingQna(false);
+            }
+        },
+
+        updateQnaSequences: async (sequences, showToast) => {
+            try {
+                setIsLoadingQna(true);
+                const updatedSequences = await qnaAPI.updateQuestionSequences(sequences);
+                // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
+                const questions = await qnaAPI.getQuestions();
+                setData(prev => ({
+                    ...prev,
+                    qnaItems: questions
+                }));
+                showToast('QnA 순서가 저장되었습니다.');
+            } catch (error) {
+                showToast(error.message || 'QnA 순서 변경에 실패했습니다.');
+            } finally {
+                setIsLoadingQna(false);
+            }
+        },
         
         // 서버 연동 축제 날짜 관리 액션들
         addScheduleDate: async (date, showToast) => {
@@ -101,7 +191,6 @@ export const DataProvider = ({ children }) => {
                 
                 showToast('새로운 날짜가 추가되었습니다.');
             } catch (error) {
-                console.error('Failed to add event date:', error);
                 showToast(error.message || '날짜 추가에 실패했습니다.');
             } finally {
                 setIsLoadingDates(false);
@@ -140,7 +229,6 @@ export const DataProvider = ({ children }) => {
                 
                 showToast('날짜가 삭제되었습니다.');
             } catch (error) {
-                console.error('Failed to delete event date:', error);
                 showToast(error.message || '날짜 삭제에 실패했습니다.');
             } finally {
                 setIsLoadingDates(false);
@@ -149,15 +237,12 @@ export const DataProvider = ({ children }) => {
         
         // 기존 이벤트 관리 액션들 (서버 연동으로 변경)
         loadEventsForDate: async (date, showToast) => {
-            console.log('loadEventsForDate called for:', date); // 디버깅용
             try {
                 setIsLoadingEvents(true);
                 const eventDateObj = eventDates.find(ed => ed.date === date);
-                console.log('Found eventDateObj:', eventDateObj); // 디버깅용
                 if (!eventDateObj) return;
                 
                 const events = await scheduleAPI.getEventsByDateId(eventDateObj.id);
-                console.log('Loaded events:', events); // 디버깅용
                 
                 setData(prev => ({
                     ...prev,
@@ -167,7 +252,6 @@ export const DataProvider = ({ children }) => {
                     }
                 }));
             } catch (error) {
-                console.error('Failed to load events:', error);
                 if (showToast) showToast(error.message || '일정 조회에 실패했습니다.');
             } finally {
                 setIsLoadingEvents(false);
@@ -205,7 +289,6 @@ export const DataProvider = ({ children }) => {
                 
                 showToast('새 이벤트가 추가되었습니다.');
             } catch (error) {
-                console.error('Failed to add event:', error);
                 showToast(error.message || '일정 추가에 실패했습니다.');
             } finally {
                 setIsLoadingEvents(false);
@@ -243,7 +326,6 @@ export const DataProvider = ({ children }) => {
                 
                 showToast('이벤트가 수정되었습니다.');
             } catch (error) {
-                console.error('Failed to update event:', error);
                 showToast(error.message || '일정 수정에 실패했습니다.');
             } finally {
                 setIsLoadingEvents(false);
@@ -273,7 +355,6 @@ export const DataProvider = ({ children }) => {
                 
                 showToast('이벤트가 삭제되었습니다.');
             } catch (error) {
-                console.error('Failed to delete event:', error);
                 showToast(error.message || '일정 삭제에 실패했습니다.');
             } finally {
                 setIsLoadingEvents(false);
@@ -286,8 +367,10 @@ export const DataProvider = ({ children }) => {
         
         // 새로운 상태 제공
         fetchEventDates,
+        fetchQnaItems,
         isLoadingDates,
         isLoadingEvents,
+        isLoadingQna,
         eventDates
     };
 
