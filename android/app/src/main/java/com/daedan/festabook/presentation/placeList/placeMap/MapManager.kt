@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList.placeMap
 
 import android.content.Context
 import androidx.core.content.ContextCompat
+import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
@@ -60,6 +61,7 @@ class MapManager(
             symbolScale = SYMBOL_SIZE_WEIGHT
             uiSettings.isZoomControlEnabled = false
             uiSettings.isScaleBarEnabled = false
+            customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
             moveToInitialPosition(settingUiModel)
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
