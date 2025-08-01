@@ -4,7 +4,7 @@ public class LostItemFixture {
 
     private static final String DEFAULT_IMAGE_URL = "http://example.com/image.png";
     private static final String DEFAULT_STORAGE_LOCATION = "창고A";
-    private static final ClaimStatus DEFAULT_CLAIM_STATUS = ClaimStatus.UNCLAIMED;
+    private static final PickupStatus DEFAULT_PICK_UP_STATUS = PickupStatus.STORED;
 
     public static LostItem createWithImageUrl(
             String imageUrl
@@ -12,7 +12,7 @@ public class LostItemFixture {
         return new LostItem(
                 imageUrl,
                 DEFAULT_STORAGE_LOCATION,
-                DEFAULT_CLAIM_STATUS
+                DEFAULT_PICK_UP_STATUS
         );
     }
 
@@ -22,17 +22,17 @@ public class LostItemFixture {
         return new LostItem(
                 DEFAULT_IMAGE_URL,
                 storageLocation,
-                DEFAULT_CLAIM_STATUS
+                DEFAULT_PICK_UP_STATUS
         );
     }
 
-    public static LostItem createWithClaimStatus(
-            ClaimStatus claimStatus
+    public static LostItem createWithPickupStatus(
+            PickupStatus pickupStatus
     ) {
         return new LostItem(
                 DEFAULT_IMAGE_URL,
                 DEFAULT_STORAGE_LOCATION,
-                claimStatus
+                pickupStatus
         );
     }
 }

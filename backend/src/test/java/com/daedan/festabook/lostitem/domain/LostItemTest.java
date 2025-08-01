@@ -22,7 +22,11 @@ class LostItemTest {
 
         @Test
         void 성공() {
-            assertThatCode(() -> LostItemFixture.createWithImageUrl("https://www.test.com/image.png"))
+            // given
+            String imageUrl = "https://www.test.com/image.png";
+
+            // when & then
+            assertThatCode(() -> LostItemFixture.createWithImageUrl(imageUrl))
                     .doesNotThrowAnyException();
         }
 
@@ -45,7 +49,11 @@ class LostItemTest {
 
         @Test
         void 성공() {
-            assertThatCode(() -> LostItemFixture.createWithStorageLocation("총학생회 사무실"))
+            // given
+            String storageLocation = "총학생회 사무실";
+
+            // when & then
+            assertThatCode(() -> LostItemFixture.createWithStorageLocation(storageLocation))
                     .doesNotThrowAnyException();
         }
 
@@ -64,7 +72,7 @@ class LostItemTest {
 
         @ParameterizedTest(name = "보관 장소 문자열 길이: {0}")
         @ValueSource(ints = {10, 20})
-        void 성공_보관_장소_20자_이하(int storageLocationLength) {
+        void 성공_보관_장소_문자열_길이_이하(int storageLocationLength) {
             // given
             String storageLocation = "a".repeat(storageLocationLength);
 
@@ -77,7 +85,7 @@ class LostItemTest {
 
         @ParameterizedTest(name = "보관 장소 문자열 길이: {0}")
         @ValueSource(ints = {21, 30})
-        void 예외_보관_장소_20자_초과(int invalidStorageLocationLength) {
+        void 예외_보관_장소_문자열_길이_초과(int invalidStorageLocationLength) {
             String storageLocation = "a".repeat(invalidStorageLocationLength);
             assertThatThrownBy(() -> LostItemFixture.createWithStorageLocation(storageLocation))
                     .isInstanceOf(BusinessException.class)
@@ -88,17 +96,21 @@ class LostItemTest {
     }
 
     @Nested
-    class validateClaimStatus {
+    class validatePickupStatus {
 
         @Test
         void 성공() {
-            assertThatCode(() -> LostItemFixture.createWithClaimStatus(ClaimStatus.CLAIMED))
+            // given
+            PickupStatus pickupStatus = PickupStatus.RETURNED;
+
+            // when & then
+            assertThatCode(() -> LostItemFixture.createWithPickupStatus(pickupStatus))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 예외_수령_상태_null() {
-            assertThatThrownBy(() -> LostItemFixture.createWithClaimStatus(null))
+            assertThatThrownBy(() -> LostItemFixture.createWithPickupStatus(null))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("수령 상태는 null일 수 없습니다.")
                     .extracting("status")
