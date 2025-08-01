@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.service
 
 import com.daedan.festabook.data.model.request.OrganizationBookmarkRequest
-import com.daedan.festabook.data.model.response.OrganizationBookmarkResponse
+import com.daedan.festabook.data.model.response.organization.OrganizationBookmarkResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

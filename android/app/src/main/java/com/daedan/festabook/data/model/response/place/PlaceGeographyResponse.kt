@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.model.response
+package com.daedan.festabook.data.model.response.place
 
 import com.daedan.festabook.domain.model.Coordinate
 import com.daedan.festabook.domain.model.PlaceCategory
