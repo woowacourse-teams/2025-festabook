@@ -49,7 +49,7 @@ class PlaceAnnouncementTest {
             // when & then
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지의 제목은 공백이거나 null이 될 수 없습니다.");
+                    .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
         }
 
         @Test
@@ -71,7 +71,7 @@ class PlaceAnnouncementTest {
             // when & then
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지의 제목은 공백이거나 null이 될 수 없습니다.");
+                    .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
         }
     }
 

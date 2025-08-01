@@ -35,7 +35,8 @@ public class PlaceDetailTest {
                         LocalTime.of(12, 30),
                         LocalTime.of(13, 0)
                 );
-            }).doesNotThrowAnyException();
+            })
+                    .doesNotThrowAnyException();
         }
     }
 

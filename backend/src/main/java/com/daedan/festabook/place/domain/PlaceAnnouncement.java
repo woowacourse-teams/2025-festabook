@@ -60,7 +60,7 @@ public class PlaceAnnouncement {
 
     private void validateTitle(String title) {
         if (title == null || title.trim().isEmpty()) {
-            throw new BusinessException("플레이스 공지의 제목은 공백이거나 null이 될 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스 공지의 제목은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new BusinessException(
