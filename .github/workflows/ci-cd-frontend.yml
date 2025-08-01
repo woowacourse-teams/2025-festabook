@@ -49,18 +49,6 @@ jobs:
             mkdir -p "${REMOTE_APP_DIR}"
             rm -rf "${REMOTE_APP_DIR}"
 
-      # 빌드 파일 서버로 전송
-      - name: SCP build files to remote server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          passphrase: ${{ secrets.SSH_PASSPHRASE }}
-          source: "frontend/dist"
-          target: "/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/static"
-
       # 3. aws-actions/configure-aws-credentials 액션을 사용하여 AWS 자격 증명 설정
       - name: Configure AWS credentials from EC2 Role
         uses: aws-actions/configure-aws-credentials@v4
