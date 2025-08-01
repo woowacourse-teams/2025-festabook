@@ -10,12 +10,22 @@ const QnaModal = ({ qna, onSave, onClose }) => {
     }, [qna]);
     const handleSave = () => { onSave({ question, answer }); onClose(); };
     
-    const handleKeyPress = (e) => {
-        if (e.key === 'Enter' && !e.shiftKey) {
-            e.preventDefault();
-            handleSave();
-        }
-    };
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSave();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [question, answer, onClose]);
 
     return (
         <Modal isOpen={true} onClose={onClose}>
@@ -27,8 +37,7 @@ const QnaModal = ({ qna, onSave, onClose }) => {
                         type="text" 
                         value={question} 
                         onChange={e => setQuestion(e.target.value)} 
-                        onKeyPress={handleKeyPress}
-                        placeholder="[20자 이내로 작성해주세요]" 
+                        placeholder="질문을 작성해 주세요" 
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
@@ -37,9 +46,8 @@ const QnaModal = ({ qna, onSave, onClose }) => {
                     <textarea 
                         value={answer} 
                         onChange={e => setAnswer(e.target.value)} 
-                        onKeyPress={handleKeyPress}
                         rows="4" 
-                        placeholder="사용자가 이해하기 쉽게 친절한 답변을 작성해주세요." 
+                        placeholder="답변을 작성해 주세요" 
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
