@@ -35,4 +35,16 @@ public class LostItemFixture {
                 pickupStatus
         );
     }
+
+    public static LostItem create(
+            String imageUrl,
+            String storageLocation,
+            PickupStatus pickupStatus
+    ) {
+        return new LostItem(
+                imageUrl,
+                storageLocation,
+                pickupStatus
+        );
+    }
 }

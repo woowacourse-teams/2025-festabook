@@ -87,6 +87,7 @@ public class LostItem {
         if (!StringUtils.hasText(storageLocation)) {
             throw new BusinessException("보관 장소는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+        
         if (storageLocation.length() > MAX_STORAGE_LOCATION_LENGTH) {
             throw new BusinessException(
                     String.format("보관 장소는 %d자를 초과할 수 없습니다.", MAX_STORAGE_LOCATION_LENGTH),
