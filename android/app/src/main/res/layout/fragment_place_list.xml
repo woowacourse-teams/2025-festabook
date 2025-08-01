@@ -254,5 +254,131 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/layout_selected_place"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_place_list"
+            android:elevation="8dp"
+            android:clickable="true"
+            android:focusable="true"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+            app:behavior_skipCollapsed="false"
+            app:behavior_peekHeight="200dp"
+            android:visibility="visible"
+            android:paddingHorizontal="16dp">
+
+            <TextView
+                android:id="@+id/tv_place_category"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintBottom_toTopOf="@id/tv_title_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                style="@style/PretendardRegular10"
+                android:textColor="@color/gray050"
+                android:background="@drawable/bg_gray900_radius_20dp"
+                android:paddingHorizontal="8dp"
+                android:paddingVertical="2dp"
+                android:layout_marginBottom="8dp"
+                tools:text="푸드트럭"/>
+
+            <TextView
+                android:id="@+id/tv_title_place"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="60dp"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                android:textAppearance="@style/PretendardBold20"
+                android:textColor="@color/gray900"
+                tools:text="컴공과 주점 코딩하며 한잔" />
+
+            <ImageView
+                android:id="@+id/iv_time"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="16dp"
+                android:contentDescription="운영 시간"
+                android:src="@drawable/ic_place_detail_clock"
+                app:layout_constraintStart_toStartOf="@id/tv_title_place"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_place" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textAppearance="@style/PretendardRegular14"
+                android:textColor="@color/gray500"
+                app:layout_constraintBottom_toBottomOf="@id/iv_time"
+                app:layout_constraintStart_toEndOf="@id/iv_time"
+                app:layout_constraintTop_toTopOf="@id/iv_time"
+                tools:text="09:00 ~ 18:00" />
+
+            <ImageView
+                android:id="@+id/iv_location"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="4dp"
+                android:contentDescription="위치"
+                android:src="@drawable/ic_location"
+                app:layout_constraintStart_toStartOf="@id/iv_time"
+                app:layout_constraintTop_toBottomOf="@id/iv_time" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textAppearance="@style/PretendardRegular14"
+                android:textColor="@color/gray500"
+                app:layout_constraintBottom_toBottomOf="@id/iv_location"
+                app:layout_constraintStart_toEndOf="@id/iv_location"
+                app:layout_constraintTop_toTopOf="@id/iv_location"
+                tools:text="공학관 앞" />
+
+            <ImageView
+                android:id="@+id/iv_host"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginTop="4dp"
+                android:contentDescription="운영자"
+                android:src="@drawable/ic_place_detail_host"
+                app:layout_constraintStart_toStartOf="@id/iv_location"
+                app:layout_constraintTop_toBottomOf="@id/iv_location" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:textAppearance="@style/PretendardRegular14"
+                android:textColor="@color/gray500"
+                app:layout_constraintBottom_toBottomOf="@id/iv_host"
+                app:layout_constraintStart_toEndOf="@id/iv_host"
+                app:layout_constraintTop_toTopOf="@id/iv_host"
+                tools:text="C블C블" />
+
+            <TextView
+                android:id="@+id/tv_place_description"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:textAppearance="@style/PretendardRegular14"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@id/iv_host"
+                app:layout_constraintTop_toBottomOf="@id/iv_host"
+                tools:text="시원한 맥주와 맛있는 파전" />
+
+            <ImageView
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:layout_constraintWidth_percent="0.35"
+                app:layout_constraintDimensionRatio="1:1"
+                tools:src="@drawable/sample_poster"
+                android:scaleType="centerCrop"
+                app:layout_constraintTop_toTopOf="@id/tv_title_place"
+                app:layout_constraintEnd_toEndOf="parent"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
