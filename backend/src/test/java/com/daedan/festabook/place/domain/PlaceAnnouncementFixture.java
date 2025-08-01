@@ -35,4 +35,35 @@ public class PlaceAnnouncementFixture {
                 content
         );
     }
+
+    public static PlaceAnnouncement create(
+            String title,
+            String content
+    ) {
+        return new PlaceAnnouncement(
+                DEFAULT_PLACE,
+                title,
+                content
+        );
+    }
+
+    public static PlaceAnnouncement createWithTitle(
+            String title
+    ) {
+        return new PlaceAnnouncement(
+                DEFAULT_PLACE,
+                title,
+                DEFAULT_CONTENT
+        );
+    }
+
+    public static PlaceAnnouncement createWithContent(
+            String content
+    ) {
+        return new PlaceAnnouncement(
+                DEFAULT_PLACE,
+                DEFAULT_TITLE,
+                content
+        );
+    }
 }
