@@ -91,8 +91,10 @@ class PlaceListFragment :
 
             if (selectedCategories.isEmpty()) {
                 viewModel.clearPlacesFilter()
+                mapManager.clearFilter()
             } else {
                 viewModel.filterPlaces(selectedCategories)
+                mapManager.filterPlace(selectedCategories)
             }
         }
         setUpChipCategoryAllListener()

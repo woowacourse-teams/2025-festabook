@@ -21,6 +21,9 @@ class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
 ) {
+    var markers: List<Marker> = emptyList()
+        private set
+
     private val overlayImageManager =
         OverlayImageManager(
             PlaceCategoryUiModel.iconResources + listOf(R.drawable.ic_cluster_marker),
@@ -36,20 +39,30 @@ class MapManager(
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         clusterManager.buildCluster {
-            coordinates.forEachIndexed { idx, place ->
-                Marker().generate(place)
-                put(idx, place)
-            }
+            markers =
+                coordinates.mapIndexed { idx, place ->
+                    put(idx, place)
+                    Marker().generate(place)
+                }
         }
     }
 
-    private fun Marker.generate(place: PlaceCoordinateUiModel) {
-        width = Marker.SIZE_AUTO
-        height = Marker.SIZE_AUTO
-        position = place.coordinate.toLatLng()
-        minZoom = CLUSTER_ZOOM_THRESHOLD
-        map = this@MapManager.map
-        overlayImageManager.setIcon(this, place.category)
+    fun filterPlace(categories: List<PlaceCategoryUiModel>) {
+        clearFilter()
+        markers
+            .filter {
+                it.tag as? PlaceCategoryUiModel !in categories
+            }.forEach {
+                it.isVisible = false
+            }
+        clusterManager.filterPlaceCluster(categories)
+    }
+
+    fun clearFilter() {
+        markers.forEach {
+            it.isVisible = true
+        }
+        clusterManager.clearFilter()
     }
 
     fun setupMap(settingUiModel: InitialMapSettingUiModel) {
@@ -117,6 +130,17 @@ class MapManager(
     }
 
     private fun Context.getCenterPixel() = context.resources.displayMetrics.heightPixels / 2
+
+    private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
+        width = Marker.SIZE_AUTO
+        height = Marker.SIZE_AUTO
+        position = place.coordinate.toLatLng()
+        minZoom = CLUSTER_ZOOM_THRESHOLD
+        map = this@MapManager.map
+        overlayImageManager.setIcon(this, place.category)
+        tag = place.category
+        return this
+    }
 
     companion object {
         // 아이템 마커와 클러스터링 마커가 전환되는 줌 레벨의 경계.
