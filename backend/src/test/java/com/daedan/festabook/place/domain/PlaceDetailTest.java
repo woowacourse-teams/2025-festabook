@@ -86,7 +86,7 @@ public class PlaceDetailTest {
             // when & then
             assertThatThrownBy(() -> PlaceDetailFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 이름은 공백이 될 수 없습니다.");
+                    .hasMessage("플레이스의 이름은 공백일 수 없습니다.");
         }
 
         @Test
