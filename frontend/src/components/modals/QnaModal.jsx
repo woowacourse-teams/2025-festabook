@@ -9,6 +9,23 @@ const QnaModal = ({ qna, onSave, onClose }) => {
         setAnswer(qna?.answer || '');
     }, [qna]);
     const handleSave = () => { onSave({ question, answer }); onClose(); };
+    
+    useEffect(() => {
+        const handleKeyPress = (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleSave();
+            } else if (e.key === 'Escape') {
+                e.preventDefault();
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleKeyPress);
+        return () => {
+            document.removeEventListener('keydown', handleKeyPress);
+        };
+    }, [question, answer, onClose]);
 
     return (
         <Modal isOpen={true} onClose={onClose}>
@@ -16,11 +33,23 @@ const QnaModal = ({ qna, onSave, onClose }) => {
             <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">질문</label>
-                    <input type="text" value={question} onChange={e => setQuestion(e.target.value)} placeholder="[20자 이내로 작성해주세요]" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" />
+                    <input 
+                        type="text" 
+                        value={question} 
+                        onChange={e => setQuestion(e.target.value)} 
+                        placeholder="질문을 작성해 주세요" 
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
+                    />
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">답변</label>
-                    <textarea value={answer} onChange={e => setAnswer(e.target.value)} rows="4" placeholder="사용자가 이해하기 쉽게 친절한 답변을 작성해주세요." className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" />
+                    <textarea 
+                        value={answer} 
+                        onChange={e => setAnswer(e.target.value)} 
+                        rows="4" 
+                        placeholder="답변을 작성해 주세요" 
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
+                    />
                 </div>
             </div>
             <div className="mt-6 flex justify-between w-full">

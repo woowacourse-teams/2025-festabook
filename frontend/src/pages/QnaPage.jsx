@@ -1,22 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import FlipMove from 'react-flip-move';
 import { useData } from '../hooks/useData';
 import { useModal } from '../hooks/useModal';
 
 const QnaPage = () => {
-    const { qnaItems, setQnaItems, addQnaItem, updateQnaItem, deleteQnaItem } = useData();
+    const { qnaItems, addQnaItem, updateQnaItem, deleteQnaItem, updateQnaSequences, fetchQnaItems } = useData();
     const { openModal, showToast } = useModal();
     const [isEditingOrder, setIsEditingOrder] = useState(false);
-    const [tempItems, setTempItems] = useState(qnaItems);
+    const [tempItems, setTempItems] = useState(qnaItems || []);
 
-    const handleSave = (id, data) => {
+    // qnaItems가 변경될 때 tempItems도 업데이트
+    useEffect(() => {
+        setTempItems(qnaItems || []);
+    }, [qnaItems]);
+
+    // 컴포넌트 마운트 시 QnA 데이터 새로 조회
+    useEffect(() => {
+        fetchQnaItems();
+    }, []);
+
+    const handleSave = async (id, data) => {
         if (!data.question || !data.answer) { showToast('질문과 답변을 모두 입력해주세요.'); return; }
-        if (id) {
-            updateQnaItem(id, data);
-            showToast('QnA가 수정되었습니다.');
-        } else {
-            addQnaItem(data);
-            showToast('새 QnA가 등록되었습니다.');
+        try {
+            if (id) {
+                await updateQnaItem(id, data, showToast);
+            } else {
+                await addQnaItem(data, showToast);
+            }
+        } catch (error) {
+            showToast('QnA 저장 중 오류가 발생했습니다.');
         }
     };
 
@@ -28,14 +40,17 @@ const QnaPage = () => {
         setTempItems(newItems);
     };
 
-    const handleSaveOrder = () => {
-        setQnaItems(tempItems);
+    const handleSaveOrder = async () => {
+        const sequences = tempItems.map((item, index) => ({
+            questionId: item.questionId,
+            sequence: index + 1
+        }));
+        await updateQnaSequences(sequences, showToast);
         setIsEditingOrder(false);
-        showToast('QnA 순서가 저장되었습니다.');
     };
 
     const handleCancelOrder = () => {
-        setTempItems(qnaItems);
+        setTempItems(qnaItems || []);
         setIsEditingOrder(false);
     };
 
@@ -58,8 +73,8 @@ const QnaPage = () => {
                 </div>
             </div>
             <FlipMove className="space-y-4">
-                {(isEditingOrder ? tempItems : qnaItems).map((item, index) => (
-                    <div key={item.id} data-id={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                {(isEditingOrder ? tempItems : qnaItems || []).map((item, index) => (
+                    <div key={item.questionId} data-id={item.questionId} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <p className="font-semibold flex-1 truncate" title={item.question}><span className="text-blue-600 mr-2">Q.</span>{item.question}</p>
                             <div className="flex items-center space-x-3 ml-0 sm:ml-4 flex-wrap">
@@ -70,14 +85,13 @@ const QnaPage = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={() => openModal('qna', { qna: item, onSave: (data) => handleSave(item.id, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
+                                        <button onClick={() => openModal('qna', { qna: item, onSave: (data) => handleSave(item.questionId, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
                                         <button onClick={() => {
                                             openModal('confirm', {
                                                 title: 'QnA 삭제 확인',
                                                 message: `정말로 삭제하시겠습니까?`,
-                                                onConfirm: () => {
-                                                    deleteQnaItem(item.id);
-                                                    showToast('QnA가 삭제되었습니다.');
+                                                onConfirm: async () => {
+                                                    await deleteQnaItem(item.questionId, showToast);
                                                 }
                                             });
                                         }} className="text-red-600 hover:text-red-800 font-bold">삭제</button>
