@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+    <data>
+        <import type="com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel"/>
+    </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -31,12 +34,16 @@
             android:scrollbars="none">
 
             <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cg_categories"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:paddingHorizontal="16dp"
+                android:paddingVertical="4dp"
                 app:singleLine="true">
 
                 <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_category_all"
+                    android:tag="ALL"
                     android:text="@string/map_category_all"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
@@ -54,6 +61,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.BAR}"
                     android:text="@string/map_category_bar"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
@@ -72,6 +80,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.FOOD_TRUCK}"
                     android:text="@string/map_category_food_truck"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
@@ -89,6 +98,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.BOOTH}"
                     android:text="@string/map_category_booth"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
@@ -106,6 +116,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.SMOKING_AREA}"
                     android:text="@string/map_category_smoking_area"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
@@ -120,6 +131,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.TOILET}"
                     android:text="@string/map_category_toilet"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
@@ -134,6 +146,7 @@
                     />
 
                 <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.TRASH_CAN}"
                     android:text="@string/map_category_trash"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
@@ -160,8 +173,7 @@
             app:initialY="390dp"
             app:minimumY="168dp"
             app:recyclerView="@id/rv_places"
-            app:companionView="@id/lbv_current_location"
-            >
+            app:companionView="@id/lbv_current_location">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_places"

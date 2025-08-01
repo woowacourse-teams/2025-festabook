@@ -9,8 +9,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
@@ -23,6 +25,8 @@ class PlaceListViewModel(
     private val _selectedPlace: MutableLiveData<PlaceUiModel> = MutableLiveData()
     val selectedPlace: LiveData<PlaceUiModel> = _selectedPlace
 
+    private var _cachedPlaces = listOf<PlaceUiModel>()
+
     private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
         MutableLiveData(PlaceListUiState.Loading())
     val places: LiveData<PlaceListUiState<List<PlaceUiModel>>> = _places
@@ -31,8 +35,10 @@ class PlaceListViewModel(
         MutableLiveData()
     val initialMapSetting: LiveData<PlaceListUiState<InitialMapSettingUiModel>> = _initialMapSetting
 
-    private val _placeGeographies: MutableLiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> = MutableLiveData()
-    val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> = _placeGeographies
+    private val _placeGeographies: MutableLiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
+        MutableLiveData()
+    val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
+        _placeGeographies
 
     init {
         loadAllPlaces()
@@ -53,6 +59,7 @@ class PlaceListViewModel(
                         PlaceListUiState.Success(
                             placeUiModels,
                         )
+                    _cachedPlaces = placeUiModels
                 }.onFailure {
                     _places.value = PlaceListUiState.Error(it)
                 }
@@ -71,7 +78,8 @@ class PlaceListViewModel(
                 placeListRepository
                     .getPlaceGeographies()
                     .onSuccess {
-                        _placeGeographies.value = PlaceListUiState.Success(it.map { it.toUiModel() })
+                        _placeGeographies.value =
+                            PlaceListUiState.Success(it.map { it.toUiModel() })
                     }.onFailure {
                         _placeGeographies.value = PlaceListUiState.Error(it)
                     }
@@ -93,6 +101,29 @@ class PlaceListViewModel(
                 }
             _places.value = PlaceListUiState.Success(updatedPlaces)
         }
+    }
+
+    fun filterPlaces(category: List<PlaceCategoryUiModel>) {
+        val secondary =
+            PlaceCategory.SECONDARY_CATEGORIES.map {
+                it.toUiModel()
+            }
+
+        if ((category - secondary).isEmpty()) {
+            clearPlacesFilter()
+            return
+        }
+
+        val filteredPlaces =
+            _cachedPlaces.filter { place ->
+                place.category in category
+            }
+
+        _places.value = PlaceListUiState.Success(filteredPlaces)
+    }
+
+    fun clearPlacesFilter() {
+        _places.value = PlaceListUiState.Success(_cachedPlaces)
     }
 
     companion object {

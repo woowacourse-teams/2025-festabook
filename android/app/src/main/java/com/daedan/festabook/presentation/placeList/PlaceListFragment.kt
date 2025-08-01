@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -19,11 +20,13 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
 import com.daedan.festabook.presentation.placeList.placeMap.getMap
+import com.google.android.material.chip.Chip
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
@@ -64,6 +67,7 @@ class PlaceListFragment :
             setUpPlaceAdapter()
             setUpMapManager()
             setUpObserver()
+            setUpBinding()
         }
     }
 
@@ -74,6 +78,33 @@ class PlaceListFragment :
 
     override fun onBookmarkClicked(place: PlaceUiModel) {
         viewModel.updateBookmark(place)
+    }
+
+    private fun setUpBinding() {
+        binding.cgCategories.setOnCheckedStateChangeListener { group, checkedIds ->
+            val selectedCategories =
+                checkedIds.mapNotNull {
+                    val category = group.findViewById<Chip>(it).tag
+                    category as? PlaceCategoryUiModel
+                }
+            binding.chipCategoryAll.isChecked = selectedCategories.isEmpty()
+
+            if (selectedCategories.isEmpty()) {
+                viewModel.clearPlacesFilter()
+            } else {
+                viewModel.filterPlaces(selectedCategories)
+            }
+        }
+        setUpChipCategoryAllListener()
+    }
+
+    private fun setUpChipCategoryAllListener() {
+        binding.chipCategoryAll.setOnClickListener {
+            binding.cgCategories.children.forEach {
+                val chip = (it as? Chip) ?: return@forEach
+                chip.isChecked = chip.id == binding.chipCategoryAll.id
+            }
+        }
     }
 
     private suspend fun setUpMapManager() {
@@ -96,8 +127,12 @@ class PlaceListFragment :
                 is PlaceListUiState.Loading -> showSkeleton()
                 is PlaceListUiState.Success -> {
                     hideSkeleton()
-                    placeAdapter.submitList(places.value)
+                    placeAdapter.submitList(places.value) {
+                        binding.rvPlaces.itemAnimator = null
+                        binding.rvPlaces.scrollToPosition(0)
+                    }
                 }
+
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
@@ -114,6 +149,7 @@ class PlaceListFragment :
                     hideSkeleton()
                     mapManager.setPlaceLocation(placeGeographies.value)
                 }
+
                 is PlaceListUiState.Error -> {
                     Timber.d("placeGeographies: ${placeGeographies.throwable.message}")
                     showErrorSnackBar(placeGeographies.throwable)

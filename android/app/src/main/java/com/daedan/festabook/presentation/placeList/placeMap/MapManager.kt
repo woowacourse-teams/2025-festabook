@@ -1,7 +1,9 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
+import android.content.Context
 import androidx.core.content.ContextCompat
 import com.daedan.festabook.R
+import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
@@ -30,6 +32,8 @@ class MapManager(
             overlayImageManager,
         )
 
+    private val context = map.context
+
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         clusterManager.buildCluster {
             coordinates.forEachIndexed { idx, place ->
@@ -57,7 +61,7 @@ class MapManager(
             moveToInitialPosition(settingUiModel)
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
-            setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
+            setLogoMarginBottom()
         }
     }
 
@@ -71,12 +75,12 @@ class MapManager(
         )
     }
 
-    private fun setLogoMarginBottom(height: Int) {
+    private fun setLogoMarginBottom() {
         map.uiSettings.setLogoMargin(
-            16,
+            16.toPx(context),
             0,
             0,
-            height,
+            context.getCenterPixel() - 104.toPx(context),
         )
     }
 
@@ -112,13 +116,14 @@ class MapManager(
         }
     }
 
+    private fun Context.getCenterPixel() = context.resources.displayMetrics.heightPixels / 2
+
     companion object {
         // 아이템 마커와 클러스터링 마커가 전환되는 줌 레벨의 경계.
         // 이 값보다 줌 레벨이 높거나 같아지면 (즉, 지도를 확대할수록)
         // 개별 아이템 마커가 지도에 표시되기 시작합니다.
         private const val CLUSTER_ZOOM_THRESHOLD = 17.0
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
-        private const val LOGO_MARGIN_TOP_PX = 75
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다
