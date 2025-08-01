@@ -5,7 +5,7 @@ const ScheduleModal = ({ event, onSave, onClose }) => {
     const [form, setForm] = useState({ title: '', startTime: '', endTime: '', location: '' });
     useEffect(() => { setForm(event || { title: '', startTime: '', endTime: '', location: '' }); }, [event]);
     const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    const handleSave = () => { onSave(form); onClose(); };
+    const handleSave = () => { onSave(form, onClose); }; // onClose 콜백 전달
 
     return (
         <Modal isOpen={true} onClose={onClose}>
