@@ -43,42 +43,5 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tl_news"
             tools:layout_editor_absoluteX="0dp" />
-
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/sfl_news_skeleton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:importantForAccessibility="no"
-            app:layout_constraintTop_toBottomOf="@id/tl_news"
-            app:shimmer_auto_start="true">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:paddingTop="8dp">
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-                <include layout="@layout/item_notice_skeleton" />
-
-            </LinearLayout>
-        </com.facebook.shimmer.ShimmerFrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

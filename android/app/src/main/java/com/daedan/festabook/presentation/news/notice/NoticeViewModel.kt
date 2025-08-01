@@ -13,7 +13,6 @@ import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 
 class NoticeViewModel(
     private val noticeRepository: NoticeRepository,
@@ -30,7 +29,6 @@ class NoticeViewModel(
             _noticeUiState.value = state
 
             val result = noticeRepository.fetchNotices()
-            Timber.d("result: $result")
             result
                 .onSuccess { notices ->
                     _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })

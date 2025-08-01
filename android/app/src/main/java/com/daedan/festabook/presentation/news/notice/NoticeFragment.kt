@@ -41,24 +41,38 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
         viewModel.noticeUiState.observe(viewLifecycleOwner) { noticeState ->
             when (noticeState) {
                 is NoticeUiState.InitialLoading -> {
-                    binding.srlNoticeList.isRefreshing = true
+                    binding.srlNoticeList.isRefreshing = false
+                    showSkeleton()
                 }
 
                 is NoticeUiState.Error -> {
                     showErrorSnackBar(noticeState.throwable)
                     binding.srlNoticeList.isRefreshing = false
+                    hideSkeleton()
                 }
 
                 is NoticeUiState.Loading -> {
                     binding.srlNoticeList.isRefreshing = true
+                    showSkeleton()
                 }
 
                 is NoticeUiState.Success -> {
                     noticeAdapter.submitList(noticeState.notices)
                     binding.srlNoticeList.isRefreshing = false
+                    hideSkeleton()
                 }
             }
         }
+    }
+
+    private fun showSkeleton() {
+        binding.sflNoticeSkeleton.visibility = View.VISIBLE
+        binding.sflNoticeSkeleton.startShimmer()
+    }
+
+    private fun hideSkeleton() {
+        binding.sflNoticeSkeleton.visibility = View.GONE
+        binding.sflNoticeSkeleton.stopShimmer()
     }
 
     companion object {
