@@ -72,7 +72,7 @@ public class PlaceAnnouncement {
 
     private void validateContent(String content) {
         if (content == null) {
-            throw new BusinessException("플레이스 공지 내용은 null이 될 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스 공지 내용은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (content.length() > MAX_CONTENT_LENGTH) {
             throw new BusinessException(

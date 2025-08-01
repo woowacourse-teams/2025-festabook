@@ -96,7 +96,7 @@ class PlaceAnnouncementTest {
             // when & then
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithContent(content))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지 내용은 null이 될 수 없습니다.");
+                    .hasMessage("플레이스 공지 내용은 null일 수 없습니다.");
         }
 
         @Test
