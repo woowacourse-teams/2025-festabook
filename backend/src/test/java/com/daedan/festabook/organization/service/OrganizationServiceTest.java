@@ -2,6 +2,7 @@ package com.daedan.festabook.organization.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.event.domain.EventDate;
@@ -104,14 +105,16 @@ class OrganizationServiceTest {
             OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
 
             // then
-            assertThat(result.universityName()).isEqualTo(organization.getUniversityName());
-            assertThat(result.festivalImages().responses().get(0).imageUrl()).isEqualTo(
-                    festivalImages.get(0).getImageUrl());
-            assertThat(result.festivalImages().responses().get(1).imageUrl()).isEqualTo(
-                    festivalImages.get(1).getImageUrl());
-            assertThat(result.festivalName()).isEqualTo(organization.getFestivalName());
-            assertThat(result.startDate()).isEqualTo(eventDates.getFirst().getDate());
-            assertThat(result.endDate()).isEqualTo(eventDates.getLast().getDate());
+            assertSoftly(s -> {
+                s.assertThat(result.universityName()).isEqualTo(organization.getUniversityName());
+                s.assertThat(result.festivalImages().responses().get(0).imageUrl())
+                        .isEqualTo(festivalImages.get(0).getImageUrl());
+                s.assertThat(result.festivalImages().responses().get(1).imageUrl())
+                        .isEqualTo(festivalImages.get(1).getImageUrl());
+                s.assertThat(result.festivalName()).isEqualTo(organization.getFestivalName());
+                s.assertThat(result.startDate()).isEqualTo(eventDates.getFirst().getDate());
+                s.assertThat(result.endDate()).isEqualTo(eventDates.getLast().getDate());
+            });
         }
 
         @Test
@@ -135,8 +138,10 @@ class OrganizationServiceTest {
             OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
 
             // then
-            assertThat(result.startDate()).isEqualTo(firstEventDate.getDate());
-            assertThat(result.endDate()).isEqualTo(fourthEventDate.getDate());
+            assertSoftly(s -> {
+                s.assertThat(result.startDate()).isEqualTo(firstEventDate.getDate());
+                s.assertThat(result.endDate()).isEqualTo(fourthEventDate.getDate());
+            });
         }
 
         @Test
@@ -152,11 +157,13 @@ class OrganizationServiceTest {
             OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
 
             // then
-            assertThat(result.universityName()).isEqualTo(organization.getUniversityName());
-            assertThat(result.festivalImages().responses()).isEqualTo(List.of());
-            assertThat(result.festivalName()).isEqualTo(organization.getFestivalName());
-            assertThat(result.startDate()).isNull();
-            assertThat(result.endDate()).isNull();
+            assertSoftly(s -> {
+                s.assertThat(result.universityName()).isEqualTo(organization.getUniversityName());
+                s.assertThat(result.festivalImages().responses()).isEqualTo(List.of());
+                s.assertThat(result.festivalName()).isEqualTo(organization.getFestivalName());
+                s.assertThat(result.startDate()).isNull();
+                s.assertThat(result.endDate()).isNull();
+            });
         }
 
         @Test
