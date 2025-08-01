@@ -19,9 +19,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="40dp"
-            android:text="가천대학교"
             android:textColor="@color/gray900"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="가천대학교" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rv_home_poster"
@@ -42,10 +42,10 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="16dp"
-            android:text="2025 가천 Water Festival\n: AQUA WAVE"
             android:textColor="@color/gray900"
             android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/rv_home_poster" />
+            app:layout_constraintTop_toBottomOf="@id/rv_home_poster"
+            tools:text="2025 가천 Water Festival\n: AQUA WAVE" />
 
         <TextView
             android:id="@+id/tv_home_festival_date"
@@ -54,9 +54,9 @@
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginTop="8dp"
-            android:text="2025년 10월 15일 - 10월 17일"
             android:textColor="@color/gray500"
-            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_title" />
+            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_title"
+            tools:text="2025년 10월 15일 - 10월 17일" />
 
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/view_divider"

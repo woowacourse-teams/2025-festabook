@@ -8,12 +8,15 @@ import com.daedan.festabook.data.datasource.remote.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
 import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSource
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
+import com.daedan.festabook.data.repository.FestivalRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.data.repository.PlaceDetailRepositoryImpl
 import com.daedan.festabook.data.repository.PlaceListRepositoryImpl
@@ -26,6 +29,7 @@ import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.domain.repository.DeviceRepository
+import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
@@ -58,6 +62,10 @@ class AppContainer(
         PlaceDataSourceImpl(placeService, organizationService)
     }
 
+    private val organizationDataSource: OrganizationDataSource by lazy {
+        OrganizationDataSourceImpl(organizationService)
+    }
+
     val placeDetailRepository: PlaceDetailRepository by lazy {
         PlaceDetailRepositoryImpl(placeDetailDataSource)
     }
@@ -77,6 +85,9 @@ class AppContainer(
     }
     val bookmarkRepository: BookmarkRepository by lazy {
         BookmarkRepositoryImpl(organizationBookmarkDataSource)
+    }
+    val festivalRepository: FestivalRepository by lazy {
+        FestivalRepositoryImpl(organizationDataSource)
     }
 
     init {
