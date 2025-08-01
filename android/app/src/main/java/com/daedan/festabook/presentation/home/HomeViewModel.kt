@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.home
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
@@ -15,7 +16,11 @@ class HomeViewModel(
     private val festivalRepository: FestivalRepository,
 ) : ViewModel() {
     private val _festivalUiState = MutableLiveData<FestivalUiState>()
-    val festivalUiState: MutableLiveData<FestivalUiState> get() = _festivalUiState
+    val festivalUiState: LiveData<FestivalUiState> get() = _festivalUiState
+
+    init {
+        loadFestival()
+    }
 
     fun loadFestival() {
         viewModelScope.launch {

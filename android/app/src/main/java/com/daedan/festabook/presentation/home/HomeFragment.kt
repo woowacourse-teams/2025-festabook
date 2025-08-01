@@ -25,8 +25,6 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     ) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
-        viewModel.loadFestival()
-
         setupObservers()
     }
 
@@ -34,27 +32,28 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
         viewModel.festivalUiState.observe(viewLifecycleOwner) { festivalUiState ->
             when (festivalUiState) {
                 is FestivalUiState.Loading -> {}
-                is FestivalUiState.Success -> {
-                    binding.tvHomeOrganizationTitle.text =
-                        festivalUiState.organization.universityName
-                    binding.tvHomeFestivalTitle.text =
-                        festivalUiState.organization.festival.festivalName
-                    binding.tvHomeFestivalDate.text =
-                        formatFestivalPeriod(
-                            festivalUiState.organization.festival.startDate,
-                            festivalUiState.organization.festival.endDate,
-                        )
-
-                    val posterUrls =
-                        festivalUiState.organization.festival.festivalImages
-                            .sortedBy { it.sequence }
-                            .map { it.imageUrl }
-                    setupAdapter(posterUrls)
-                }
-
+                is FestivalUiState.Success -> handleSuccessState(festivalUiState)
                 is FestivalUiState.Error -> {}
             }
         }
+    }
+
+    private fun handleSuccessState(festivalUiState: FestivalUiState.Success) {
+        binding.tvHomeOrganizationTitle.text =
+            festivalUiState.organization.universityName
+        binding.tvHomeFestivalTitle.text =
+            festivalUiState.organization.festival.festivalName
+        binding.tvHomeFestivalDate.text =
+            formatFestivalPeriod(
+                festivalUiState.organization.festival.startDate,
+                festivalUiState.organization.festival.endDate,
+            )
+
+        val posterUrls =
+            festivalUiState.organization.festival.festivalImages
+                .sortedBy { it.sequence }
+                .map { it.imageUrl }
+        setupAdapter(posterUrls)
     }
 
     private fun setupAdapter(posters: List<String> = emptyList()) {
