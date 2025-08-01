@@ -106,6 +106,7 @@ public class PlaceDetail {
         if (title.trim().isEmpty()) {
             throw new BusinessException("플레이스의 이름은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new BusinessException(
                     String.format("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH),
@@ -122,6 +123,7 @@ public class PlaceDetail {
         if (description.trim().isEmpty()) {
             throw new BusinessException("플레이스의 설명은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
         if (description.length() > MAX_DESCRIPTION_LENGTH) {
             throw new BusinessException(
                     String.format("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", MAX_DESCRIPTION_LENGTH),
@@ -138,6 +140,7 @@ public class PlaceDetail {
         if (location.trim().isEmpty()) {
             throw new BusinessException("플레이스의 위치는 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
         if (location.length() > MAX_LOCATION_LENGTH) {
             throw new BusinessException(
                     String.format("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", MAX_LOCATION_LENGTH),
@@ -154,6 +157,7 @@ public class PlaceDetail {
         if (host.trim().isEmpty()) {
             throw new BusinessException("플레이스의 호스트는 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
         if (host.length() > MAX_HOST_LENGTH) {
             throw new BusinessException(
                     String.format("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", MAX_HOST_LENGTH),

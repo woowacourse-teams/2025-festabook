@@ -63,6 +63,7 @@ public class PlaceAnnouncement {
         if (!StringUtils.hasText(title)) {
             throw new BusinessException("플레이스 공지의 제목은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new BusinessException(
                     String.format("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH),
@@ -75,6 +76,7 @@ public class PlaceAnnouncement {
         if (content == null) {
             throw new BusinessException("플레이스 공지 내용은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+
         if (content.length() > MAX_CONTENT_LENGTH) {
             throw new BusinessException(
                     String.format("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", MAX_CONTENT_LENGTH),
