@@ -75,5 +75,6 @@
     <string name="error_network_exception">현재 연결이 불안정합니다. 잠시 후 다시 시도해주세요</string>
     <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
     <string name="error_fail_to_load_place_info">정보를 불러오는데 실패했습니다</string>
+    <string name="faq_expand">답변 펼치기</string>
 
 </resources>
