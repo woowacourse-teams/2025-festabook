@@ -8,6 +8,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceAnnouncementTest {
@@ -31,10 +33,11 @@ class PlaceAnnouncementTest {
     @Nested
     class validateTitle {
 
-        @Test
-        void 성공_플레이스_공지_제목_경계값() {
+        @ParameterizedTest
+        @ValueSource(ints = {1, 5, 10, MAX_TITLE_LENGTH})
+        void 성공_플레이스_공지_제목_경계값(int length) {
             // given
-            String title = "m".repeat(MAX_TITLE_LENGTH);
+            String title = "m".repeat(length);
 
             // when & then
             assertThatCode(() -> PlaceAnnouncementFixture.createWithTitle(title))
@@ -78,10 +81,11 @@ class PlaceAnnouncementTest {
     @Nested
     class validateContent {
 
-        @Test
-        void 성공_플레이스_공지_내용_경계값() {
+        @ParameterizedTest
+        @ValueSource(ints = {1, 100, 200, MAX_TITLE_LENGTH})
+        void 성공_플레이스_공지_내용_경계값(int length) {
             // given
-            String content = "m".repeat(MAX_CONTENT_LENGTH);
+            String content = "m".repeat(length);
 
             // when & then
             assertThatCode(() -> PlaceAnnouncementFixture.createWithContent(content))
