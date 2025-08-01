@@ -18,10 +18,12 @@ class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.vpNews.adapter = newsPagerAdapter
+        setupNewsTabLayout()
+    }
 
+    private fun setupNewsTabLayout() {
+        binding.vpNews.adapter = newsPagerAdapter
         TabLayoutMediator(binding.tlNews, binding.vpNews) { tab, position ->
             val tabNameRes = NewsTab.entries[position].tabNameRes
             tab.text = getString(tabNameRes)
