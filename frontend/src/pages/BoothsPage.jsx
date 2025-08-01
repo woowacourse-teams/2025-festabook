@@ -206,7 +206,7 @@ const BoothsPage = () => {
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold">플레이스</h2>
+                <h2 className="text-3xl font-bold">플레이스 대시보드</h2>
                 <button onClick={() => openModal('booth', { onSave: handleCreate })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center">
                     <i className="fas fa-plus mr-2"></i> 새 플레이스 추가
                 </button>
