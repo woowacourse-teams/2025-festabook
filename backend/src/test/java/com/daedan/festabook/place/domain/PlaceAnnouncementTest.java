@@ -71,21 +71,10 @@ class PlaceAnnouncementTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessageContaining("null");
         }
+    }
 
-        @Test
-        void 예외_플레이스_공지_제목_공백() {
-            // given
-            Place place = PlaceFixture.create();
-
-            String title = " ";
-
-            // when & then
-            assertThatThrownBy(() -> {
-                new PlaceAnnouncement(place, title, "공지내용");
-            })
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지의 제목은 공백이거나 null이 될 수 없습니다.");
-        }
+    @Nested
+    class validateTitle {
 
         @Test
         void 예외_플레이스_공지_제목_최대_길이() {
@@ -102,6 +91,25 @@ class PlaceAnnouncementTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", maxLength);
         }
+
+        @Test
+        void 예외_플레이스_공지_제목_공백() {
+            // given
+            Place place = PlaceFixture.create();
+
+            String title = " ";
+
+            // when & then
+            assertThatThrownBy(() -> {
+                new PlaceAnnouncement(place, title, "공지내용");
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 공지의 제목은 공백이거나 null이 될 수 없습니다.");
+        }
+    }
+
+    @Nested
+    class validateContent {
 
         @Test
         void 예외_플레이스_공지_내용_최대_길이() {
