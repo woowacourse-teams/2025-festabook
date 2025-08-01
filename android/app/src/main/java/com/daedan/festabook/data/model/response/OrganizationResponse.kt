@@ -3,6 +3,7 @@ package com.daedan.festabook.data.model.response
 import com.daedan.festabook.domain.model.Festival
 import com.daedan.festabook.domain.model.Organization
 import com.daedan.festabook.domain.model.Poster
+import com.daedan.festabook.domain.model.toLocalDate
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -40,8 +41,8 @@ fun OrganizationResponse.toDomain() =
             Festival(
                 festivalImages = festivalImages.map { it.toDomain() },
                 festivalName = festivalName,
-                startDate = startDate,
-                endDate = endDate,
+                startDate = startDate.toLocalDate(),
+                endDate = endDate.toLocalDate(),
             ),
     )
 
