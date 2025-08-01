@@ -87,7 +87,7 @@ class LostItemTest {
         }
 
         @ParameterizedTest(name = "보관 장소 문자열 길이: {0}")
-        @ValueSource(ints = {10, 20})
+        @ValueSource(ints = {10, MAX_STORAGE_LOCATION_LENGTH})
         void 성공_보관_장소_문자열_길이_이하(int storageLocationLength) {
             // given
             String storageLocation = "a".repeat(storageLocationLength);
@@ -98,7 +98,7 @@ class LostItemTest {
         }
 
         @ParameterizedTest(name = "보관 장소 문자열 길이: {0}")
-        @ValueSource(ints = {21, 30})
+        @ValueSource(ints = {MAX_STORAGE_LOCATION_LENGTH + 1, 30})
         void 예외_보관_장소_문자열_길이_초과(int invalidStorageLocationLength) {
             // given
             String storageLocation = "a".repeat(invalidStorageLocationLength);
