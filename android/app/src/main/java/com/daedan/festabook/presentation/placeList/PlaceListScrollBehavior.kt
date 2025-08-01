@@ -23,7 +23,7 @@ class PlaceListScrollBehavior(
     private lateinit var attribute: Attribute
     private lateinit var state: BehaviorState
     private var isInitialized: Boolean = false
-    private var minHeight: Int = 0
+    private lateinit var minimumHeightView: View
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
@@ -36,11 +36,11 @@ class PlaceListScrollBehavior(
         child: ConstraintLayout,
         layoutDirection: Int,
     ): Boolean {
+        minimumHeightView = parent.findViewById<ChipGroup>(R.id.cg_categories)
         if (!isInitialized) {
             val recyclerView: RecyclerView? = parent.findViewById(attribute.recyclerViewId)
             val companionView: View? = parent.findViewById(attribute.companionViewId)
             isInitialized = true
-            minHeight = parent.findViewById<ChipGroup>(R.id.cg_categories).height
 
             // 기기 높이 - 시스템 바 높이
             val rootViewHeight = child.rootView.height - child.getSystemBarHeightCompat()
@@ -149,12 +149,12 @@ class PlaceListScrollBehavior(
             val newTranslationY = getNewTranslationY(requestedTranslationY, maxHeight)
 
             // 외부 레이아웃이 스크롤이 되었을 때만 스크롤 리스너 적용
-            if (requestedTranslationY in minHeight.toFloat()..maxHeight) {
+            if (requestedTranslationY in minimumHeightView.height.toFloat()..maxHeight) {
                 state.onScrollListener?.invoke(dy.toFloat())
             }
             translationY = newTranslationY
             scrollAnimation(newTranslationY)
-            if (newTranslationY.toInt() == minHeight) {
+            if (newTranslationY.toInt() == minimumHeightView.height) {
                 consumed[1] = 0
             } else {
                 consumed[1] = newTranslationY.toInt()
@@ -165,7 +165,7 @@ class PlaceListScrollBehavior(
     private fun ViewGroup.getNewTranslationY(
         requestedTranslationY: Float,
         maxHeight: Float,
-    ): Float = requestedTranslationY.coerceIn(minHeight.toFloat(), maxHeight)
+    ): Float = requestedTranslationY.coerceIn(minimumHeightView.height.toFloat(), maxHeight)
 
     private fun ViewGroup.consumeIfRecyclerViewCanScrollUp(
         dy: Int,
