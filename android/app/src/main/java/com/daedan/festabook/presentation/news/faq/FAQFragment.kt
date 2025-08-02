@@ -7,8 +7,8 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentFAQBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.faq.adapter.FAQAdapter
-import com.daedan.festabook.presentation.news.notice.NewsViewModel
 
 class FAQFragment : BaseFragment<FragmentFAQBinding>(R.layout.fragment_f_a_q) {
     private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }

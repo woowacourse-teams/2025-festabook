@@ -7,6 +7,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNoticeBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 
 class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_notice) {
