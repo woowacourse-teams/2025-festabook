@@ -7,7 +7,7 @@
 
         <variable
             name="listener"
-            type="com.daedan.festabook.presentation.news.notice.adapter.OnNoticeClickListener" />
+            type="com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener" />
 
         <variable
             name="notice"
