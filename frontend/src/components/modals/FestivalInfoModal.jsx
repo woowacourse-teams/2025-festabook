@@ -1,0 +1,137 @@
+import React, { useState } from 'react';
+import Modal from '../common/Modal';
+
+const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
+    const [formData, setFormData] = useState({
+        festivalName: organization?.festivalName || '',
+        startDate: organization?.startDate ? organization.startDate.split('T')[0] : '',
+        endDate: organization?.endDate ? organization.endDate.split('T')[0] : '',
+        isActive: true // 기본값은 활성화
+    });
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        try {
+            // TODO: API 호출로 축제 정보 업데이트
+            // const response = await api.put('/organizations', formData);
+            
+            showToast('축제 정보가 성공적으로 수정되었습니다.');
+            onClose();
+        } catch (error) {
+            showToast('축제 정보 수정에 실패했습니다.');
+        }
+    };
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({
+            ...prev,
+            [name]: value
+        }));
+    };
+
+    return (
+        <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-md">
+            <form onSubmit={handleSubmit}>
+                <h2 className="text-2xl font-bold mb-6 text-center">축제 정보 수정</h2>
+                
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            축제명
+                        </label>
+                        <input
+                            type="text"
+                            name="festivalName"
+                            value={formData.festivalName}
+                            onChange={handleChange}
+                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
+                            placeholder="축제명을 입력하세요"
+                            required
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            시작일
+                        </label>
+                        <input
+                            type="date"
+                            name="startDate"
+                            value={formData.startDate}
+                            onChange={handleChange}
+                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
+                            required
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            종료일
+                        </label>
+                        <input
+                            type="date"
+                            name="endDate"
+                            value={formData.endDate}
+                            onChange={handleChange}
+                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
+                            required
+                        />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            축제 상태
+                        </label>
+                        <div className="flex items-center space-x-4">
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="isActive"
+                                    value="true"
+                                    checked={formData.isActive === true}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
+                                    className="mr-2 text-black focus:ring-black"
+                                />
+                                <span className="text-sm text-gray-700">활성화</span>
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="isActive"
+                                    value="false"
+                                    checked={formData.isActive === false}
+                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
+                                    className="mr-2 text-black focus:ring-black"
+                                />
+                                <span className="text-sm text-gray-700">비활성화</span>
+                            </label>
+                        </div>
+                        <p className="text-xs text-gray-500 mt-1">
+                            비활성화 시 학생 앱에서 축제 정보가 숨겨집니다
+                        </p>
+                    </div>
+                </div>
+                
+                <div className="flex space-x-3 mt-6">
+                    <button
+                        type="button"
+                        onClick={onClose}
+                        className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors duration-200"
+                    >
+                        취소
+                    </button>
+                    <button
+                        type="submit"
+                        className="flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200"
+                    >
+                        수정
+                    </button>
+                </div>
+            </form>
+        </Modal>
+    );
+};
+
+export default FestivalInfoModal; 
