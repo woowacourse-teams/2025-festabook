@@ -1,12 +1,18 @@
 package com.daedan.festabook.presentation.placeDetail
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.view.View
 import android.widget.TextView
-import androidx.fragment.app.viewModels
+import androidx.activity.enableEdgeToEdge
+import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.databinding.DataBindingUtil
 import com.daedan.festabook.R
-import com.daedan.festabook.databinding.FragmentPlaceDetailBinding
-import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
@@ -17,7 +23,7 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import timber.log.Timber
 
-class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fragment_place_detail) {
+class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
     private val placeNoticeAdapter by lazy {
         PlaceNoticeAdapter()
     }
@@ -26,22 +32,36 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
         PlaceImageViewPagerAdapter()
     }
 
+    private lateinit var binding: ActivityPlaceDetailBinding
     private lateinit var place: PlaceUiModel
 
     private val viewModel by viewModels<PlaceDetailViewModel> { PlaceDetailViewModel.factory(place) }
 
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        place = arguments?.getObject<PlaceUiModel>(TAG_PLACE_DETAIL_FRAGMENT) ?: return
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        binding =
+            DataBindingUtil.inflate<ActivityPlaceDetailBinding>(
+                layoutInflater,
+                R.layout.activity_place_detail,
+                null,
+                false,
+            )
+        enableEdgeToEdge()
+        setContentView(binding.root)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.ncvRoot) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
+        place =
+            intent?.getObject<PlaceUiModel>(PLACE_DETAIL_ACTIVITY) ?: return
         setUpBinding()
         setUpObserver()
     }
 
     private fun setUpBinding() {
-        binding.lifecycleOwner = viewLifecycleOwner
+        binding.lifecycleOwner = this
         binding.rvPlaceNotice.adapter = placeNoticeAdapter
         binding.vpPlaceImages.adapter = placeImageAdapter
         binding.tvLocation.setExpandedWhenClicked()
@@ -49,16 +69,18 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
     }
 
     private fun setUpObserver() {
-        viewModel.placeDetail.observe(viewLifecycleOwner) { result ->
+        viewModel.placeDetail.observe(this) { result ->
             when (result) {
                 is PlaceDetailUiState.Error -> {
-                    Timber.d("PlaceDetail: ${result.throwable?.message}")
+                    Timber.d("PlaceDetail: ${result.throwable.message}")
                     showErrorSnackBar(result.throwable)
                 }
+
                 is PlaceDetailUiState.Loading -> {
                     showSkeleton()
                     Timber.d("Loading")
                 }
+
                 is PlaceDetailUiState.Success -> {
                     hideSkeleton()
                     loadPlaceDetail(result.placeDetail)
@@ -111,14 +133,13 @@ class PlaceDetailFragment : BaseFragment<FragmentPlaceDetailBinding>(R.layout.fr
 
     companion object {
         private const val DEFAULT_MAX_LINES = 1
-        private const val TAG_PLACE_DETAIL_FRAGMENT = "placeDetailFragment"
+        private const val PLACE_DETAIL_ACTIVITY = "placeDetailFragment"
 
-        fun newInstance(place: PlaceUiModel): PlaceDetailFragment =
-            PlaceDetailFragment().apply {
-                arguments =
-                    Bundle().apply {
-                        putParcelable(TAG_PLACE_DETAIL_FRAGMENT, place)
-                    }
-            }
+        fun newIntent(
+            context: Context,
+            place: PlaceUiModel,
+        ) = Intent(context, PlaceDetailActivity::class.java).apply {
+            putExtra(PLACE_DETAIL_ACTIVITY, place)
+        }
     }
 }

@@ -33,6 +33,13 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".presentation.placeDetail.PlaceDetailActivity"
+            android:exported="true"
+            android:screenOrientation="portrait"
+            tools:ignore="DiscouragedApi, LockedOrientationActivity">
+        </activity>
+
         <service
             android:name=".service.MyFirebaseMessagingService"
             android:exported="false">
