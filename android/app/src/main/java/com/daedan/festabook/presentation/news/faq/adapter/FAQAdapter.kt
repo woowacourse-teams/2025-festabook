@@ -15,7 +15,7 @@ class FAQAdapter : ListAdapter<FAQItemUiModel, FAQViewHolder>(FAQItemDiffCallbac
         holder: FAQViewHolder,
         position: Int,
     ) {
-        holder.bind()
+        holder.bind(getItem(position))
     }
 
     companion object {

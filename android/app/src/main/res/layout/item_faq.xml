@@ -5,6 +5,10 @@
 
     <data>
 
+        <variable
+            name="fAQItem"
+            type="com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -19,6 +23,7 @@
             style="@style/PretendardBold14"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:text="@{fAQItem.question}"
             tools:text="Q. 주차 어디에다가 해요?" />
 
         <ImageView

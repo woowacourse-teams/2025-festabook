@@ -10,7 +10,7 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 
 class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_notice) {
-    private val viewModel: NoticeViewModel by viewModels { NoticeViewModel.Factory }
+    private val viewModel: NewsViewModel by viewModels { NewsViewModel.Factory }
 
     private val noticeAdapter: NoticeAdapter by lazy {
         NoticeAdapter { notice ->
@@ -33,7 +33,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
 
     private fun onSwipeRefreshNoticesListener() {
         binding.srlNoticeList.setOnRefreshListener {
-            viewModel.fetchNotices()
+            viewModel.loadAllNotices()
         }
     }
 
