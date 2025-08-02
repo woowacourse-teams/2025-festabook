@@ -7,6 +7,7 @@ data class FAQItemUiModel(
     val question: String,
     val answer: String,
     val sequence: Int,
+    val isExpanded: Boolean = false,
 )
 
 fun FAQItem.toUiModel(): FAQItemUiModel =
