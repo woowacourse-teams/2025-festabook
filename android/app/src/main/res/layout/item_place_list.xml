@@ -19,13 +19,13 @@
         android:onClick="@{()->handler.onPlaceClicked(place)}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
         android:paddingBottom="12dp">
 
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cv_place_image"
             android:layout_width="80dp"
             android:layout_height="80dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="8dp"
             app:cardBackgroundColor="@color/gray300"
             app:cardCornerRadius="8dp"
@@ -46,8 +46,8 @@
             android:id="@+id/cv_place_category"
             android:layout_width="50dp"
             android:layout_height="17dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="0dp"
+            android:layout_marginStart="16dp"
             app:cardBackgroundColor="@color/gray900"
             app:cardCornerRadius="6dp"
             app:layout_constraintStart_toEndOf="@id/cv_place_image"
@@ -69,11 +69,12 @@
 
         <TextView
             android:id="@+id/tv_title_place"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
             android:textColor="@color/gray900"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toBottomOf="@id/cv_place_category"
             android:textAppearance="@style/PretendardMedium14"
             android:text="@{place.title ?? @string/place_list_default_title}"
@@ -87,7 +88,7 @@
             android:textColor="@color/gray500"
             android:maxLines="1"
             android:ellipsize="end"
-            app:layout_constraintEnd_toEndOf="@id/view_divider"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toBottomOf="@id/tv_title_place"
             android:textAppearance="@style/PretendardRegular12"
@@ -108,7 +109,7 @@
 
         <TextView
             android:id="@+id/tv_location"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="1dp"
             android:layout_marginTop="2dp"
@@ -118,19 +119,16 @@
             android:maxEms="10"
             app:layout_constraintStart_toEndOf="@id/iv_location"
             app:layout_constraintTop_toBottomOf="@id/tv_title_description"
+            app:layout_constraintEnd_toEndOf="parent"
             android:textAppearance="@style/PretendardRegular12"
             android:text="@{place.location ?? @string/place_list_default_location}"
             tools:text="위치위치위치위치위치위치위치위치" />
-
-
 
         <View
             android:id="@+id/view_divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_marginStart="16dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:background="@color/gray300"
             app:layout_constraintTop_toBottomOf="@id/cv_place_image" />
     </androidx.constraintlayout.widget.ConstraintLayout>
