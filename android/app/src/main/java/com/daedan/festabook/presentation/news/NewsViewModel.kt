@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.news.notice
+package com.daedan.festabook.presentation.news
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
@@ -13,6 +13,7 @@ import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
+import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import kotlinx.coroutines.launch
