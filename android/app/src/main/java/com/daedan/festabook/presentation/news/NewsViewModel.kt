@@ -12,6 +12,7 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.news.faq.FAQUiState
+import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
@@ -47,6 +48,30 @@ class NewsViewModel(
         }
     }
 
+    fun toggleNoticeExpanded(notice: NoticeUiModel) {
+        updateNoticeUiState { notices ->
+            notices.map { updatedNotice ->
+                if (notice.id == updatedNotice.id) {
+                    updatedNotice.copy(isExpanded = !updatedNotice.isExpanded)
+                } else {
+                    updatedNotice
+                }
+            }
+        }
+    }
+
+    fun toggleFAQExpanded(faqItem: FAQItemUiModel) {
+        updateFAQUiState { faqItems ->
+            faqItems.map { updatedFAQItem ->
+                if (faqItem.questionId == updatedFAQItem.questionId) {
+                    updatedFAQItem.copy(isExpanded = !updatedFAQItem.isExpanded)
+                } else {
+                    updatedFAQItem
+                }
+            }
+        }
+    }
+
     private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {
         viewModelScope.launch {
             _faqUiState.value = state
@@ -61,24 +86,21 @@ class NewsViewModel(
         }
     }
 
-    fun toggleNoticeExpanded(notice: NoticeUiModel) {
-        updateNoticeUiState { notices ->
-            notices.map { updatedNotice ->
-                if (notice.id == updatedNotice.id) {
-                    updatedNotice.copy(isExpanded = !updatedNotice.isExpanded)
-                } else {
-                    updatedNotice
-                }
-            }
-        }
-    }
-
     private fun updateNoticeUiState(onUpdate: (List<NoticeUiModel>) -> List<NoticeUiModel>) {
         val currentState = _noticeUiState.value ?: return
         _noticeUiState.value =
             when (currentState) {
                 is NoticeUiState.Success -> currentState.copy(notices = onUpdate(currentState.notices))
-                is NoticeUiState.Error, NoticeUiState.Loading, NoticeUiState.InitialLoading -> currentState
+                else -> currentState
+            }
+    }
+
+    private fun updateFAQUiState(onUpdate: (List<FAQItemUiModel>) -> List<FAQItemUiModel>) {
+        val currentState = _faqUiState.value ?: return
+        _faqUiState.value =
+            when (currentState) {
+                is FAQUiState.Success -> currentState.copy(faqs = onUpdate(currentState.faqs))
+                else -> currentState
             }
     }
 
