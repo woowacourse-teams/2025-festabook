@@ -3,20 +3,20 @@ package com.daedan.festabook.presentation.news.notice
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNoticeBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
+import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
 class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_notice) {
-    private val viewModel: NewsViewModel by viewModels { NewsViewModel.Factory }
+    private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
 
     private val noticeAdapter: NoticeAdapter by lazy {
-        NoticeAdapter { notice ->
-            viewModel.toggleNoticeExpanded(notice)
-        }
+        NoticeAdapter(requireParentFragment() as OnNewsClickListener)
     }
 
     override fun onViewCreated(
@@ -27,6 +27,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
 
         binding.lifecycleOwner = viewLifecycleOwner
         binding.rvNoticeList.adapter = noticeAdapter
+        (binding.rvNoticeList.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
 
         setupObserver()
         onSwipeRefreshNoticesListener()
