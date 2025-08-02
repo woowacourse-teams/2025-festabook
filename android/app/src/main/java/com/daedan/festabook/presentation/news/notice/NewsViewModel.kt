@@ -9,22 +9,30 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
+import com.daedan.festabook.presentation.news.faq.FAQUiState
+import com.daedan.festabook.presentation.news.faq.model.toUiModel
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import kotlinx.coroutines.launch
 
-class NoticeViewModel(
+class NewsViewModel(
     private val noticeRepository: NoticeRepository,
+    private val faqRepository: FAQRepository,
 ) : ViewModel() {
     private val _noticeUiState: MutableLiveData<NoticeUiState> = MutableLiveData<NoticeUiState>()
     val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
 
+    private val _faqUiState: MutableLiveData<FAQUiState> = MutableLiveData()
+    val faqUiState: LiveData<FAQUiState> get() = _faqUiState
+
     init {
-        fetchNotices(NoticeUiState.InitialLoading)
+        loadAllNotices(NoticeUiState.InitialLoading)
+        loadAllFAQs()
     }
 
-    fun fetchNotices(state: NoticeUiState = NoticeUiState.Loading) {
+    fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
         viewModelScope.launch {
             _noticeUiState.value = state
 
@@ -34,6 +42,20 @@ class NoticeViewModel(
                     _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })
                 }.onFailure {
                     _noticeUiState.value = NoticeUiState.Error(it)
+                }
+        }
+    }
+
+    private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {
+        viewModelScope.launch {
+            _faqUiState.value = state
+
+            val result = faqRepository.getAllFAQ()
+            result
+                .onSuccess { fAQItems ->
+                    _faqUiState.value = FAQUiState.Success(fAQItems.map { it.toUiModel() })
+                }.onFailure {
+                    _faqUiState.value = FAQUiState.Error(it)
                 }
         }
     }
@@ -63,9 +85,11 @@ class NoticeViewModel(
         val Factory: ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
+                    val festaBookApp = this[APPLICATION_KEY] as FestaBookApp
                     val noticeRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.noticeRepository
-                    NoticeViewModel(noticeRepository)
+                        festaBookApp.appContainer.noticeRepository
+                    val faqRepository = festaBookApp.appContainer.faqRepository
+                    NewsViewModel(noticeRepository, faqRepository)
                 }
             }
     }
