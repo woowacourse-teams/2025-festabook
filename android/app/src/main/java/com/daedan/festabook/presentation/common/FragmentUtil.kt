@@ -1,6 +1,8 @@
 package com.daedan.festabook.presentation.common
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
@@ -21,6 +23,13 @@ inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
         getParcelable(key, T::class.java)
     } else {
         getParcelable(key)
+    }
+
+inline fun <reified T : Parcelable> Intent.getObject(key: String): T? =
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        getParcelableExtra(key, T::class.java)
+    } else {
+        getParcelableExtra(key)
     }
 
 fun ConstraintLayout.placeListScrollBehavior(): PlaceListScrollBehavior? {
@@ -50,18 +59,25 @@ fun View.getSystemBarHeightCompat() =
     }
 
 fun Fragment.showErrorSnackBar(msg: String) {
-    val context = requireContext()
-    val snackBar = Snackbar.make(requireView().rootView, msg, Snackbar.LENGTH_SHORT)
-    snackBar
-        .setAction(
-            context.getString(R.string.fail_snackbar_confirm),
-        ) {
-            snackBar.dismiss()
-        }.setActionTextColor(context.getColor(R.color.blue400))
-        .show()
+    requireActivity().showErrorSnackBar(msg)
 }
 
 fun Fragment.showErrorSnackBar(exception: Throwable?) {
+    requireActivity().showErrorSnackBar(exception)
+}
+
+fun Activity.showErrorSnackBar(msg: String) {
+    val snackBar = Snackbar.make(window.decorView.rootView, msg, Snackbar.LENGTH_SHORT)
+    snackBar
+        .setAction(
+            getString(R.string.fail_snackbar_confirm),
+        ) {
+            snackBar.dismiss()
+        }.setActionTextColor(getColor(R.color.blue400))
+        .show()
+}
+
+fun Activity.showErrorSnackBar(exception: Throwable?) {
     when (exception) {
         is ApiResultException.ClientException -> {
             showErrorSnackBar(

@@ -2,21 +2,17 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
+import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
-import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
+import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
@@ -44,8 +40,6 @@ class PlaceListFragment :
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
-
-    private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
 
     private lateinit var mapManager: MapManager
 
@@ -136,42 +130,11 @@ class PlaceListFragment :
     }
 
     private fun startPlaceDetailFragment() {
-        parentFragmentManager.registerFragmentLifecycleCallbacks(
-            bottomNavigationViewAnimationCallback,
-            false,
-        )
-        parentFragmentManager.commitWithSavedFragment {
-            setCustomAnimations(
-                R.anim.anim_fade_in_left,
-                R.anim.anim_fade_out,
-                R.anim.anim_fade_in_right,
-                R.anim.anim_fade_out,
-            )
+        viewModel.selectedPlace.value?.let {
+            startActivity(PlaceDetailActivity.newIntent(requireContext(), it))
+        } ?: run {
+            showErrorSnackBar(ApiResultException.UnknownException(""))
         }
-    }
-
-    private fun FragmentManager.commitWithSavedFragment(block: FragmentTransaction.() -> Unit) {
-        val placeDetailFragment = getPlaceDetailFragment() ?: return
-
-        commit {
-            block()
-            add(
-                R.id.fcv_fragment_container,
-                placeDetailFragment,
-            )
-            hide(this@PlaceListFragment)
-            addToBackStack(null)
-        }
-    }
-
-    private fun getPlaceDetailFragment(): Fragment? {
-        val selectedPlace = viewModel.selectedPlace.value ?: return null
-        fragmentContainer[selectedPlace] ?: run {
-            fragmentContainer[selectedPlace] =
-                PlaceDetailFragment.newInstance(selectedPlace)
-        }
-
-        return fragmentContainer[selectedPlace]
     }
 
     private fun showSkeleton() {
