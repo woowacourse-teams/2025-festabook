@@ -1,0 +1,36 @@
+name: Release Drafter
+
+on:
+  push:
+    branches:
+      - release/*
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  update_release_draft:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Update Draft Release
+        if: startsWith(github.ref, 'refs/heads/release/')
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: template/release-drafter.yml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish Release
+        if: github.ref == 'refs/heads/main'
+        id: drafter
+        uses: release-drafter/release-drafter@v6
+        with:
+          config-name: template/release-drafter.yml
+          publish: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
