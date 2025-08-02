@@ -61,11 +61,11 @@ fun PlaceDetailResponse.toDomain() =
     PlaceDetail(
         id = id,
         place = toPlace(),
-        notices = toNotices(),
+        _notices = toNotices(),
         host = host,
         startTime = startTime.toLocalTime(),
         endTime = endTime.toLocalTime(),
-        images = toPlaceDetailImages(),
+        _images = toPlaceDetailImages(),
     )
 
 private fun PlaceDetailResponse.toPlace() =
