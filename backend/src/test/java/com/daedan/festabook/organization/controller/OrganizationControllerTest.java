@@ -306,6 +306,7 @@ class OrganizationControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(requests)
                     .when()
@@ -320,11 +321,15 @@ class OrganizationControllerTest {
         @Test
         void 성공_없는_리소스_삭제() {
             // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+            
             List<FestivalImageDeleteRequest> requests = FestivalImageDeleteRequestFixture.createList(3);
 
             // when & then
             RestAssured
                     .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
                     .body(requests)
                     .when()

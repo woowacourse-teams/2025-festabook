@@ -108,9 +108,8 @@ public class OrganizationController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void removeFestivalImages(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody List<FestivalImageDeleteRequest> requests
     ) {
-        festivalImageService.removeFestivalImages(organizationId, requests);
+        festivalImageService.removeFestivalImages(requests);
     }
 }
