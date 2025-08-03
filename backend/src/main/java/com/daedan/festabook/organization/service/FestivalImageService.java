@@ -25,10 +25,12 @@ public class FestivalImageService {
     private final OrganizationJpaRepository organizationJpaRepository;
     private final FestivalImageJpaRepository festivalImageJpaRepository;
 
+    @Transactional
     public FestivalImageResponse addFestivalImage(Long organizationId, FestivalImageRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
-        Integer currentMaxSequence = festivalImageJpaRepository.countByOrganizationId(organizationId);
+        Integer currentMaxSequence = festivalImageJpaRepository.findMaxSequenceByOrganizationId(organizationId)
+                .orElseGet(() -> 0);
         Integer nextSequence = currentMaxSequence + 1;
 
         FestivalImage festivalImage = new FestivalImage(organization, request.imageUrl(), nextSequence);

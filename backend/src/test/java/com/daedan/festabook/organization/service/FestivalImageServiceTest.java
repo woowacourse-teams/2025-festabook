@@ -58,8 +58,8 @@ class FestivalImageServiceTest {
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
-            given(festivalImageJpaRepository.countByOrganizationId(organizationId))
-                    .willReturn(currentSequence);
+            given(festivalImageJpaRepository.findMaxSequenceByOrganizationId(organizationId))
+                    .willReturn(Optional.of(currentSequence));
             given(festivalImageJpaRepository.save(any()))
                     .willAnswer(invocation -> invocation.getArgument(0));
 
