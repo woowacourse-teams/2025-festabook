@@ -10,7 +10,7 @@ import Sidebar from './components/layout/Sidebar';
 
 // Pages
 
-import GenericPage from './pages/GenericPage';
+import HomePage from './pages/HomePage';
 import SchedulePage from './pages/SchedulePage';
 import BoothsPage from './pages/BoothsPage';
 import MapSettingsPage from './pages/MapSettingsPage';
@@ -26,6 +26,9 @@ import ScheduleModal from './components/modals/ScheduleModal';
 import DatePromptModal from './components/modals/DatePromptModal';
 import BoothModal from './components/modals/BoothModal';
 import CopyLinkModal from './components/modals/CopyLinkModal';
+import FestivalInfoModal from './components/modals/FestivalInfoModal';
+import FestivalImagesModal from './components/modals/FestivalImagesModal';
+import AddImageModal from './components/modals/AddImageModal';
 import ConfirmModal from './components/common/ConfirmModal';
 import Modal from './components/common/Modal';
 import { NoticeDetailModal } from './components/modals/NoticeModal';
@@ -51,20 +54,20 @@ function App() {
     const renderPage = () => {
         switch (page) {
 
-            case 'home': return <GenericPage title="홈" />;
+            case 'home': return <HomePage />;
             case 'schedule': return <SchedulePage />;
             case 'booths': return <BoothsPage />;
             case 'map-settings': return <MapSettingsPage />;
             case 'notices': return <NoticesPage />;
             case 'lost-found': return <LostFoundPage />;
             case 'qna': return <QnaPage />;
-            default: return <GenericPage title="홈" />;
+            default: return <HomePage />;
         }
     };
 
     const renderModal = () => {
         const { type, props } = modalState;
-        const allProps = { ...props, onClose: closeModal, showToast };
+        const allProps = { ...props, onClose: closeModal, showToast, openModal };
         switch (type) {
             case 'notice': return <NoticeModal {...allProps} />;
             case 'notice-detail': return <NoticeDetailModal {...allProps} />;
@@ -74,6 +77,8 @@ function App() {
             case 'datePrompt': return <DatePromptModal {...allProps} />;
             case 'booth': return <BoothModal {...allProps} />;
             case 'copyLink': return <CopyLinkModal {...allProps} />;
+            case 'festival-info': return <FestivalInfoModal isOpen={true} {...allProps} />;
+            case 'festival-images': return <FestivalImagesModal isOpen={true} {...allProps} />;
             case 'confirm': return <ConfirmModal {...allProps} onConfirm={() => { props.onConfirm(); closeModal(); }} onCancel={closeModal} />;
             case 'image': return <Modal isOpen={true} onClose={closeModal} maxWidth="max-w-4xl"><div className="relative"><img src={props.src} className="max-w-full max-h-[80vh] rounded-lg mx-auto" alt="상세 이미지" /><button onClick={closeModal} className="absolute top-2 right-2 text-white text-3xl bg-black bg-opacity-50 rounded-full w-8 h-8 flex items-center justify-center">&times;</button></div></Modal>;
             case 'organization':
