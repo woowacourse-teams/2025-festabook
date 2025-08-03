@@ -40,6 +40,7 @@ public class FestivalImageService {
     @Transactional
     public FestivalImageResponses updateFestivalImagesSequence(Long organizationId,
                                                                List<FestivalImageSequenceUpdateRequest> requests) {
+        // TODO: sequence DTO 값 검증 추가
         List<FestivalImage> existsFestivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
         List<FestivalImage> festivalImages = new ArrayList<>();
 
@@ -55,6 +56,7 @@ public class FestivalImageService {
         return FestivalImageResponses.from(festivalImages);
     }
 
+    @Transactional
     public void removeFestivalImages(List<FestivalImageDeleteRequest> requests) {
         List<Long> festivalImageIds = requests.stream()
                 .map(FestivalImageDeleteRequest::festivalImageId)
