@@ -11,6 +11,4 @@ public interface FestivalImageJpaRepository extends JpaRepository<FestivalImage,
     List<FestivalImage> findAllByOrganizationId(Long organizationId);
 
     Integer countByOrganizationId(Long organizationId);
-
-    void deleteAllById(Iterable<? extends Long> ids);
 }
