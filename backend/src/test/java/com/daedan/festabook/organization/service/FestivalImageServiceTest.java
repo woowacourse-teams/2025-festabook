@@ -23,7 +23,6 @@ import com.daedan.festabook.organization.infrastructure.FestivalImageJpaReposito
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -117,7 +116,7 @@ class FestivalImageServiceTest {
             given(festivalImageJpaRepository.findById(festivalImage3Id))
                     .willReturn(Optional.of(festivalImage3));
             given(festivalImageJpaRepository.findAllByOrganizationId(organization.getId()))
-                    .willReturn(Set.of(festivalImage1, festivalImage2, festivalImage3));
+                    .willReturn(List.of(festivalImage1, festivalImage2, festivalImage3));  // ✅ 추가
 
             // when
             FestivalImageResponses result = festivalImageService.updateFestivalImagesSequence(
@@ -152,7 +151,7 @@ class FestivalImageServiceTest {
             );
 
             given(festivalImageJpaRepository.findAllByOrganizationId(organization.getId()))
-                    .willReturn(Set.of());
+                    .willReturn(List.of());
             given(festivalImageJpaRepository.findById(unauthorizedImageId))
                     .willReturn(Optional.of(unauthorizedImage));
 
