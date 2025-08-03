@@ -257,7 +257,7 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
                         </svg>
                         <p className="text-gray-500 mb-4">축제 이미지가 없습니다</p>
                         <button 
-                            onClick={() => showToast('이미지 업로드 기능은 준비 중입니다.')}
+                            onClick={handleAddImageClick}
                             className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                         >
                             첫 번째 이미지 추가
