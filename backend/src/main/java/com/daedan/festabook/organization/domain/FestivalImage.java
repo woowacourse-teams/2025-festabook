@@ -55,4 +55,8 @@ public class FestivalImage {
                 sequence
         );
     }
+
+    public void updateSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
 }

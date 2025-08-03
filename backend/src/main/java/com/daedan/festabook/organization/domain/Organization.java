@@ -105,6 +105,13 @@ public class Organization {
         );
     }
 
+    public void updateOrganizationInformation(String festivalName, LocalDate startDate, LocalDate endDate) {
+        // TODO: 검증 추가
+        this.festivalName = festivalName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+    }
+
     private void validateName(String name) {
         if (name == null || name.trim().isEmpty()) {
             throw new BusinessException("조직 이름은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);

@@ -3,7 +3,7 @@ package com.daedan.festabook.organization.dto;
 import com.daedan.festabook.organization.domain.FestivalImage;
 
 public record FestivalImageResponse(
-        Long id,
+        Long festivalImageId,
         String imageUrl,
         Integer sequence
 ) {
