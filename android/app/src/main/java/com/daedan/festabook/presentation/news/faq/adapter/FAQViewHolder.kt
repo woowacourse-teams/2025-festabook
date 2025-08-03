@@ -14,8 +14,11 @@ class FAQViewHolder(
     private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(item: FAQItemUiModel) {
-        binding.faqItem = item
-        binding.onNoticeClickListener = onNewsClickListener
+        binding.clFaqItem.setOnClickListener {
+            onNewsClickListener.onFAQClick(item)
+        }
+        binding.tvFaqQuestion.text = item.question
+        binding.tvFaqAnswer.text = item.answer
         binding.ivFaqExpand.setImageResource(if (item.isExpanded) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down)
         binding.tvFaqAnswer.visibility = if (item.isExpanded) View.VISIBLE else View.GONE
     }
