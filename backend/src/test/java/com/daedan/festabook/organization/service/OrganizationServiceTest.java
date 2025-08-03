@@ -11,9 +11,13 @@ import com.daedan.festabook.organization.domain.FestivalImageFixture;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
+import com.daedan.festabook.organization.dto.OrganizationInformationResponse;
+import com.daedan.festabook.organization.dto.OrganizationInformationUpdateRequest;
+import com.daedan.festabook.organization.dto.OrganizationInformationUpdateRequestFixture;
 import com.daedan.festabook.organization.dto.OrganizationResponse;
 import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -72,7 +76,7 @@ class OrganizationServiceTest {
             assertThatThrownBy(
                     () -> organizationService.getOrganizationGeographyByOrganizationId(invalidOrganizationId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("조직이 존재하지 않습니다.");
+                    .hasMessage("존재하지 않는 조직입니다.");
         }
     }
 
@@ -118,7 +122,52 @@ class OrganizationServiceTest {
             // when & then
             assertThatThrownBy(() -> organizationService.getOrganizationByOrganizationId(invalidOrganizationId))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("조직이 존재하지 않습니다.");
+                    .hasMessage("존재하지 않는 조직입니다.");
+        }
+    }
+
+    @Nested
+    class updateOrganizationInformation {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+
+            given(organizationJpaRepository.findById(organization.getId()))
+                    .willReturn(Optional.of(organization));
+
+            OrganizationInformationUpdateRequest request = OrganizationInformationUpdateRequestFixture.create(
+                    "수정 후 제목",
+                    LocalDate.of(2025, 10, 1),
+                    LocalDate.of(2025, 10, 2)
+            );
+
+            // when
+            OrganizationInformationResponse result = organizationService.updateOrganizationInformation(
+                    organization.getId(),
+                    request
+            );
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.festivalName()).isEqualTo(request.festivalName());
+                s.assertThat(result.startDate()).isEqualTo(request.startDate());
+                s.assertThat(result.endDate()).isEqualTo(request.endDate());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_조직() {
+            // given
+            Long invalidOrganizationId = 0L;
+
+            OrganizationInformationUpdateRequest request = OrganizationInformationUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> organizationService.updateOrganizationInformation(invalidOrganizationId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 조직입니다.");
         }
     }
 }
