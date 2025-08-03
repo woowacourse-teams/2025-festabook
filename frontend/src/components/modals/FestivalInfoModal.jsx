@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
 const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
@@ -31,6 +31,21 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
         }));
     };
 
+    // ESC 키 이벤트 리스너
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscKey);
+
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [onClose]);
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-md">
             <form onSubmit={handleSubmit}>
@@ -41,12 +56,17 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             축제명
                         </label>
-                        <input
-                            type="text"
+                        <textarea
                             name="festivalName"
                             value={formData.festivalName}
                             onChange={handleChange}
-                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    handleSubmit(e);
+                                }
+                            }}
+                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black resize-none"
                             placeholder="축제명을 입력하세요"
                             required
                         />

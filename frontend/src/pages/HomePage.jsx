@@ -121,7 +121,7 @@ const HomePage = () => {
             {/* 축제 기본 정보 */}
             <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
                 <div className="flex justify-between items-start mb-4">
-                    <h3 className="text-lg font-semibold text-gray-900">축제 정보 설정</h3>
+                    <h3 className="text-lg font-semibold text-gray-900">축제 정보</h3>
                     <button 
                         onClick={() => openModal('festival-info', { organization })}
                         className="text-black hover:text-gray-700 text-sm font-medium"

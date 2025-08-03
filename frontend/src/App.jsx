@@ -28,6 +28,7 @@ import BoothModal from './components/modals/BoothModal';
 import CopyLinkModal from './components/modals/CopyLinkModal';
 import FestivalInfoModal from './components/modals/FestivalInfoModal';
 import FestivalImagesModal from './components/modals/FestivalImagesModal';
+import AddImageModal from './components/modals/AddImageModal';
 import ConfirmModal from './components/common/ConfirmModal';
 import Modal from './components/common/Modal';
 import { NoticeDetailModal } from './components/modals/NoticeModal';
@@ -66,7 +67,7 @@ function App() {
 
     const renderModal = () => {
         const { type, props } = modalState;
-        const allProps = { ...props, onClose: closeModal, showToast };
+        const allProps = { ...props, onClose: closeModal, showToast, openModal };
         switch (type) {
             case 'notice': return <NoticeModal {...allProps} />;
             case 'notice-detail': return <NoticeDetailModal {...allProps} />;
