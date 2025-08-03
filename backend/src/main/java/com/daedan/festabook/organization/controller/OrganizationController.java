@@ -95,9 +95,10 @@ public class OrganizationController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public FestivalImageResponses updateFestivalImagesSequence(
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody List<FestivalImageSequenceUpdateRequest> requests
     ) {
-        return festivalImageService.updateFestivalImagesSequence(requests);
+        return festivalImageService.updateFestivalImagesSequence(organizationId, requests);
     }
 
     @DeleteMapping("/images")
@@ -107,6 +108,7 @@ public class OrganizationController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void removeFestivalImages(
+            @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody List<FestivalImageDeleteRequest> requests
     ) {
         festivalImageService.removeFestivalImages(requests);

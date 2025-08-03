@@ -38,11 +38,14 @@ public class FestivalImageService {
     }
 
     @Transactional
-    public FestivalImageResponses updateFestivalImagesSequence(List<FestivalImageSequenceUpdateRequest> requests) {
+    public FestivalImageResponses updateFestivalImagesSequence(Long organizationId,
+                                                               List<FestivalImageSequenceUpdateRequest> requests) {
+        List<FestivalImage> existsFestivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
         List<FestivalImage> festivalImages = new ArrayList<>();
 
         for (FestivalImageSequenceUpdateRequest request : requests) {
             FestivalImage festivalImage = getFestivalImageById(request.festivalImageId());
+            validateFestivalImageOwner(existsFestivalImages, festivalImage);
             festivalImage.updateSequence(request.sequence());
             festivalImages.add(festivalImage);
         }
@@ -58,6 +61,12 @@ public class FestivalImageService {
                 .toList();
 
         festivalImageJpaRepository.deleteAllById(festivalImageIds);
+    }
+
+    private void validateFestivalImageOwner(List<FestivalImage> existsFestivalImages, FestivalImage festivalImage) {
+        if (!existsFestivalImages.contains(festivalImage)) {
+            throw new BusinessException("권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
     }
 
     private Organization getOrganizationById(Long organizationId) {

@@ -117,7 +117,10 @@ class FestivalImageServiceTest {
                     .willReturn(Optional.of(festivalImage3));
 
             // when
-            FestivalImageResponses result = festivalImageService.updateFestivalImagesSequence(requests);
+            FestivalImageResponses result = festivalImageService.updateFestivalImagesSequence(
+                    organization.getId(),
+                    requests
+            );
 
             // then
             assertSoftly(s -> {
@@ -133,12 +136,37 @@ class FestivalImageServiceTest {
         }
 
         @Test
+        void 예외_권한이_없는_축제_이미지() {
+            // given
+            Organization organization = OrganizationFixture.create(1L);
+            Organization anotherOrganization = OrganizationFixture.create(2L);
+
+            Long unauthorizedImageId = 1L;
+            FestivalImage unauthorizedImage = FestivalImageFixture.create(unauthorizedImageId, anotherOrganization, 1);
+
+            List<FestivalImageSequenceUpdateRequest> requests = List.of(
+                    FestivalImageSequenceUpdateRequestFixture.create(unauthorizedImageId, 1)
+            );
+
+            given(festivalImageJpaRepository.findAllByOrganizationId(organization.getId()))
+                    .willReturn(List.of());
+            given(festivalImageJpaRepository.findById(unauthorizedImageId))
+                    .willReturn(Optional.of(unauthorizedImage));
+
+            // when & then
+            assertThatThrownBy(() -> festivalImageService.updateFestivalImagesSequence(organization.getId(), requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("권한이 없습니다.");
+        }
+
+        @Test
         void 예외_존재하지_않는_축제_이미지() {
             // given
+            Long organizationId = 1L;
             List<FestivalImageSequenceUpdateRequest> requests = FestivalImageSequenceUpdateRequestFixture.createList(3);
 
             // when & then
-            assertThatThrownBy(() -> festivalImageService.updateFestivalImagesSequence(requests))
+            assertThatThrownBy(() -> festivalImageService.updateFestivalImagesSequence(organizationId, requests))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제 이미지입니다.");
         }
