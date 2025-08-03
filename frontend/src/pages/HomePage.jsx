@@ -23,22 +23,9 @@ const HomePage = () => {
                 showToast('Organization ID가 설정되지 않았습니다.');
                 return;
             }
-
-            console.log('API 호출 시작:', `/organizations`, 'Organization ID:', orgId);
-            
             const response = await api.get('/organizations');
-            console.log('API 응답:', response.data);
-            
             setOrganization(response.data);
         } catch (error) {
-            console.error('Organization 데이터 로딩 실패:', error);
-            console.error('에러 상세:', {
-                message: error.message,
-                status: error.response?.status,
-                statusText: error.response?.statusText,
-                data: error.response?.data
-            });
-            
             if (error.response?.status === 404) {
                 showToast('조직 정보를 찾을 수 없습니다. Organization ID를 확인해주세요.');
             } else if (error.response?.status === 401) {
@@ -182,7 +169,6 @@ const HomePage = () => {
                                         src={image.imageUrl}
                                         alt={`축제 이미지 ${index + 1}`}
                                         className="w-full h-full object-cover block pointer-events-none"
-                                        onError={() => console.error(`이미지 로딩 실패: ${image.imageUrl}`)}
                                     />
                                     <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
                                         {index + 1}
