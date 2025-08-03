@@ -178,6 +178,8 @@ class FestivalImageServiceTest {
         @Test
         void 성공() {
             // given
+            Long organizationId = 1L;
+
             Long festivalImageId1 = 1L;
             Long festivalImageId2 = 2L;
             Long festivalImageId3 = 3L;
@@ -188,11 +190,33 @@ class FestivalImageServiceTest {
             List<FestivalImageDeleteRequest> requests = List.of(request1, request2, request3);
 
             // when
-            festivalImageService.removeFestivalImages(requests);
+            festivalImageService.removeFestivalImages(organizationId, requests);
 
             // then
             then(festivalImageJpaRepository).should()
                     .deleteAllById(List.of(festivalImageId1, festivalImageId2, festivalImageId3));
+        }
+
+        @Test
+        void 예외_권한이_없는_축제_이미지() {
+            // given
+            Long organizationId = 1L;
+            Long anotherOrganizationId = 999L;
+            Organization organization = OrganizationFixture.create(organizationId);
+            FestivalImage festivalImage = FestivalImageFixture.create(organization);
+
+            given(festivalImageJpaRepository.findAllByOrganizationId(organizationId))
+                    .willReturn(List.of(festivalImage));
+
+            List<FestivalImageDeleteRequest> requests = List.of(
+                    FestivalImageDeleteRequestFixture.create(organizationId),
+                    FestivalImageDeleteRequestFixture.create(anotherOrganizationId)
+            );
+
+            // when & then
+            assertThatThrownBy(() -> festivalImageService.removeFestivalImages(organizationId, requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("권한이 없습니다.");
         }
     }
 }

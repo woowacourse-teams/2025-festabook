@@ -12,6 +12,7 @@ import com.daedan.festabook.organization.infrastructure.FestivalImageJpaReposito
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -55,16 +56,28 @@ public class FestivalImageService {
         return FestivalImageResponses.from(festivalImages);
     }
 
-    public void removeFestivalImages(List<FestivalImageDeleteRequest> requests) {
+    public void removeFestivalImages(Long organizationId, List<FestivalImageDeleteRequest> requests) {
+        List<Long> existsFestivalImageIds = festivalImageJpaRepository.findAllByOrganizationId(organizationId).stream()
+                .map(FestivalImage::getId)
+                .toList();
+
         List<Long> festivalImageIds = requests.stream()
                 .map(FestivalImageDeleteRequest::festivalImageId)
                 .toList();
+
+        validateFestivalImageOwner(existsFestivalImageIds, festivalImageIds);
 
         festivalImageJpaRepository.deleteAllById(festivalImageIds);
     }
 
     private void validateFestivalImageOwner(List<FestivalImage> existsFestivalImages, FestivalImage festivalImage) {
         if (!existsFestivalImages.contains(festivalImage)) {
+            throw new BusinessException("권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validateFestivalImageOwner(List<Long> existsFestivalImageIds, List<Long> festivalImageIds) {
+        if (!new HashSet<>(existsFestivalImageIds).containsAll(festivalImageIds)) {
             throw new BusinessException("권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
     }

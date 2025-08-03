@@ -111,6 +111,6 @@ public class OrganizationController {
             @Parameter(hidden = true) @OrganizationId Long organizationId,
             @RequestBody List<FestivalImageDeleteRequest> requests
     ) {
-        festivalImageService.removeFestivalImages(requests);
+        festivalImageService.removeFestivalImages(organizationId, requests);
     }
 }
