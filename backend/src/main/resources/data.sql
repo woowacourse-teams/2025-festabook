@@ -1,8 +1,8 @@
 -- ========================
 -- 조직 (Organization)
 -- ========================
-INSERT INTO organization (university_name, festival_name, zoom, latitude, longitude)
-VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', 15, 37.583585, 127.0588862);
+INSERT INTO organization (university_name, festival_name, start_date, end_date, zoom, latitude, longitude)
+VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', '2025-08-04', '2025-08-06', 15, 37.583585, 127.0588862);
 
 -- ========================
 -- 축제 이미지 (FestivalImage)
@@ -105,9 +105,9 @@ VALUES (1, 37.5863631, 127.0564018),
 -- 일정 날짜 (EventDate)
 -- ========================
 INSERT INTO event_date (organization_id, date)
-VALUES (1, '2025-07-31'),
-       (1, '2025-08-01'),
-       (1, '2025-08-02');
+VALUES (1, '2025-08-04'),
+       (1, '2025-08-05'),
+       (1, '2025-08-06');
 -- VALUES (1, ADDDATE(CURDATE(), -1)),
 --        (1, CURDATE()),
 --        (1, ADDDATE(CURDATE(), 1));

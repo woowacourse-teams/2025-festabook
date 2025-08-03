@@ -1,11 +1,8 @@
 package com.daedan.festabook.organization.service;
 
-import com.daedan.festabook.event.domain.EventDate;
-import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.dto.FestivalImageResponses;
 import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.dto.OrganizationResponse;
 import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
@@ -21,7 +18,6 @@ public class OrganizationService {
 
     private final OrganizationJpaRepository organizationJpaRepository;
     private final FestivalImageJpaRepository festivalImageJpaRepository;
-    private final EventDateJpaRepository eventDateJpaRepository;
 
     public OrganizationGeographyResponse getOrganizationGeographyByOrganizationId(Long organizationId) {
         Organization organization = getOrganizationById(organizationId);
@@ -33,16 +29,8 @@ public class OrganizationService {
         Organization organization = getOrganizationById(organizationId);
         List<FestivalImage> festivalImages =
                 festivalImageJpaRepository.findAllByOrganizationIdOrderBySequenceAsc(organizationId);
-        List<EventDate> eventDates = eventDateJpaRepository.findAllByOrganizationIdOrderByDateAsc(organizationId);
 
-        return new OrganizationResponse(
-                organization.getId(),
-                organization.getUniversityName(),
-                FestivalImageResponses.from(festivalImages),
-                organization.getFestivalName(),
-                eventDates.isEmpty() ? null : eventDates.getFirst().getDate(),
-                eventDates.isEmpty() ? null : eventDates.getLast().getDate()
-        );
+        return OrganizationResponse.from(organization, festivalImages);
     }
 
     private Organization getOrganizationById(Long organizationId) {
