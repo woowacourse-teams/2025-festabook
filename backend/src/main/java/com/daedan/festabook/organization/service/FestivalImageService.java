@@ -13,6 +13,7 @@ import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepositor
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class FestivalImageService {
     public FestivalImageResponses updateFestivalImagesSequence(Long organizationId,
                                                                List<FestivalImageSequenceUpdateRequest> requests) {
         // TODO: sequence DTO 값 검증 추가
-        List<FestivalImage> existsFestivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
+        Set<FestivalImage> existsFestivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
         List<FestivalImage> festivalImages = new ArrayList<>();
 
         for (FestivalImageSequenceUpdateRequest request : requests) {
@@ -67,7 +68,7 @@ public class FestivalImageService {
         festivalImageJpaRepository.deleteAllById(festivalImageIds);
     }
 
-    private void validateFestivalImageOwner(List<FestivalImage> existsFestivalImages, FestivalImage festivalImage) {
+    private void validateFestivalImageOwner(Set<FestivalImage> existsFestivalImages, FestivalImage festivalImage) {
         if (!existsFestivalImages.contains(festivalImage)) {
             throw new BusinessException("권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
