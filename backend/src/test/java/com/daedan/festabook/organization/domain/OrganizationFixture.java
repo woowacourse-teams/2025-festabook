@@ -1,11 +1,14 @@
 package com.daedan.festabook.organization.domain;
 
+import java.time.LocalDate;
 import java.util.List;
 
 public class OrganizationFixture {
 
     private static final String DEFAULT_UNIVERSITY_NAME = "서울시립대학교";
     private static final String DEFAULT_FESTIVAL_NAME = "2025 시립 Water Festival: AQUA WAVE";
+    private static final LocalDate DEFAULT_START_DATE = LocalDate.of(2025, 10, 15);
+    private static final LocalDate DEFAULT_END_DATE = LocalDate.of(2025, 10, 17);
     private static final Integer DEFAULT_ZOOM = 16;
     private static final Coordinate DEFAULT_CENTER_COORDINATE = CoordinateFixture.create();
     private static final List<Coordinate> DEFAULT_POLYGON_HOLE_BOUNDARY = List.of(
@@ -18,6 +21,8 @@ public class OrganizationFixture {
         return new Organization(
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -30,6 +35,8 @@ public class OrganizationFixture {
         return new Organization(
                 universityName,
                 DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -42,6 +49,8 @@ public class OrganizationFixture {
         return new Organization(
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
                 zoom,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -54,6 +63,8 @@ public class OrganizationFixture {
         return new Organization(
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
                 DEFAULT_ZOOM,
                 centerCoordinate,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -66,6 +77,8 @@ public class OrganizationFixture {
         return new Organization(
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 polygonHoleBoundary
@@ -79,6 +92,8 @@ public class OrganizationFixture {
                 id,
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY

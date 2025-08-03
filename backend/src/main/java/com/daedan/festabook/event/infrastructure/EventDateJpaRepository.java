@@ -9,7 +9,5 @@ public interface EventDateJpaRepository extends JpaRepository<EventDate, Long> {
 
     List<EventDate> findAllByOrganizationId(Long organizationId);
 
-    List<EventDate> findAllByOrganizationIdOrderByDateAsc(Long organizationId);
-
     boolean existsByOrganizationIdAndDate(Long organizationId, LocalDate date);
 }

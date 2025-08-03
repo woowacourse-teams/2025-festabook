@@ -5,9 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
-import com.daedan.festabook.event.domain.EventDate;
-import com.daedan.festabook.event.domain.EventDateFixture;
-import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.FestivalImageFixture;
@@ -17,7 +14,6 @@ import com.daedan.festabook.organization.dto.OrganizationGeographyResponse;
 import com.daedan.festabook.organization.dto.OrganizationResponse;
 import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -38,9 +34,6 @@ class OrganizationServiceTest {
 
     @Mock
     private FestivalImageJpaRepository festivalImageJpaRepository;
-
-    @Mock
-    private EventDateJpaRepository eventDateJpaRepository;
 
     @InjectMocks
     private OrganizationService organizationService;
@@ -92,14 +85,11 @@ class OrganizationServiceTest {
             Long organizationId = 1L;
             Organization organization = OrganizationFixture.create(organizationId);
             List<FestivalImage> festivalImages = FestivalImageFixture.createList(2, organization);
-            List<EventDate> eventDates = EventDateFixture.createList(3, organization);
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
             given(festivalImageJpaRepository.findAllByOrganizationIdOrderBySequenceAsc(organizationId))
                     .willReturn(festivalImages);
-            given(eventDateJpaRepository.findAllByOrganizationIdOrderByDateAsc(organizationId))
-                    .willReturn(eventDates);
 
             // when
             OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
@@ -112,57 +102,8 @@ class OrganizationServiceTest {
                 s.assertThat(result.festivalImages().responses().get(1).imageUrl())
                         .isEqualTo(festivalImages.get(1).getImageUrl());
                 s.assertThat(result.festivalName()).isEqualTo(organization.getFestivalName());
-                s.assertThat(result.startDate()).isEqualTo(eventDates.getFirst().getDate());
-                s.assertThat(result.endDate()).isEqualTo(eventDates.getLast().getDate());
-            });
-        }
-
-        @Test
-        void 성공_축제_날짜_중_가장_빠른_날짜와_가장_늦은_날짜가_응답됨() {
-            // given
-            Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create(organizationId);
-
-            EventDate eventDate1 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 1));
-            EventDate eventDate2 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 4));
-            EventDate eventDate3 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 5));
-            EventDate eventDate4 = EventDateFixture.create(organization, LocalDate.of(2025, 8, 6));
-            List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3, eventDate4);
-
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
-            given(eventDateJpaRepository.findAllByOrganizationIdOrderByDateAsc(organizationId))
-                    .willReturn(eventDates);
-
-            // when
-            OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.startDate()).isEqualTo(eventDate1.getDate());
-                s.assertThat(result.endDate()).isEqualTo(eventDate4.getDate());
-            });
-        }
-
-        @Test
-        void 성공_축제_날짜는_null_가능() {
-            // given
-            Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create(organizationId);
-
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
-
-            // when
-            OrganizationResponse result = organizationService.getOrganizationByOrganizationId(organizationId);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.universityName()).isEqualTo(organization.getUniversityName());
-                s.assertThat(result.festivalImages().responses()).isEqualTo(List.of());
-                s.assertThat(result.festivalName()).isEqualTo(organization.getFestivalName());
-                s.assertThat(result.startDate()).isNull();
-                s.assertThat(result.endDate()).isNull();
+                s.assertThat(result.startDate()).isEqualTo(organization.getStartDate());
+                s.assertThat(result.endDate()).isEqualTo(organization.getEndDate());
             });
         }
 
