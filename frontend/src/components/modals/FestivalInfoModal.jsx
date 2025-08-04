@@ -45,6 +45,22 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
         };
     }, [onClose]);
 
+    // 모달 전체에서 엔터 키 감지
+    useEffect(() => {
+        const handleGlobalKeyDown = (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleSubmit(event);
+            }
+        };
+
+        document.addEventListener('keydown', handleGlobalKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleGlobalKeyDown);
+        };
+    }, [formData]); // formData가 변경될 때마다 이벤트 리스너 재등록
+
     return (
         <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-md">
             <form onSubmit={handleSubmit}>
