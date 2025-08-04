@@ -13,6 +13,7 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
     useEffect(() => { 
         if (event) {
             setForm({ 
+                id: event.id, // 수정 시 ID 포함
                 title: event.title || '', 
                 startTime: event.startTime || '', 
                 endTime: event.endTime || '', 
@@ -48,8 +49,8 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
     const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
     
     const handleSave = () => { 
-        // 날짜가 선택되지 않은 경우 저장하지 않음
-        if (!form.date) {
+        // 새 이벤트 추가 시에만 날짜 검증
+        if (!event && !form.date) {
             alert('날짜를 선택해주세요.');
             return;
         }
