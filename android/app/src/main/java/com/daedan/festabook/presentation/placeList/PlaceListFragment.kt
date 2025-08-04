@@ -71,8 +71,7 @@ class PlaceListFragment :
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
-        viewModel.setPlace(place)
-        startPlaceDetailFragment()
+        startPlaceDetailFragment(place)
     }
 
     override fun onBookmarkClicked(place: PlaceUiModel) {
@@ -169,12 +168,12 @@ class PlaceListFragment :
         mapManager.setupMap(initialMapSetting.value)
     }
 
-    private fun startPlaceDetailFragment() {
+    private fun startPlaceDetailFragment(place: PlaceUiModel) {
         parentFragmentManager.registerFragmentLifecycleCallbacks(
             bottomNavigationViewAnimationCallback,
             false,
         )
-        parentFragmentManager.commitWithSavedFragment {
+        parentFragmentManager.commitWithSavedFragment(place) {
             setCustomAnimations(
                 R.anim.anim_fade_in_left,
                 R.anim.anim_fade_out,
@@ -184,8 +183,11 @@ class PlaceListFragment :
         }
     }
 
-    private fun FragmentManager.commitWithSavedFragment(block: FragmentTransaction.() -> Unit) {
-        val placeDetailFragment = getPlaceDetailFragment() ?: return
+    private fun FragmentManager.commitWithSavedFragment(
+        place: PlaceUiModel,
+        block: FragmentTransaction.() -> Unit,
+    ) {
+        val placeDetailFragment = getPlaceDetailFragment(place) ?: return
 
         commit {
             block()
@@ -198,14 +200,13 @@ class PlaceListFragment :
         }
     }
 
-    private fun getPlaceDetailFragment(): Fragment? {
-        val selectedPlace = viewModel.selectedPlace.value ?: return null
-        fragmentContainer[selectedPlace] ?: run {
-            fragmentContainer[selectedPlace] =
-                PlaceDetailFragment.newInstance(selectedPlace)
+    private fun getPlaceDetailFragment(place: PlaceUiModel): Fragment? {
+        fragmentContainer[place] ?: run {
+            fragmentContainer[place] =
+                PlaceDetailFragment.newInstance(place)
         }
 
-        return fragmentContainer[selectedPlace]
+        return fragmentContainer[place]
     }
 
     private fun showSkeleton() {

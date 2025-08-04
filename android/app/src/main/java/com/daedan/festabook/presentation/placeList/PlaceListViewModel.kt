@@ -45,48 +45,6 @@ class PlaceListViewModel(
         loadOrganizationGeography()
     }
 
-    fun setPlace(place: PlaceUiModel) {
-        _selectedPlace.value = place
-    }
-
-    private fun loadAllPlaces() {
-        viewModelScope.launch {
-            val result = placeListRepository.getPlaces()
-            result
-                .onSuccess { places ->
-                    val placeUiModels = places.map { it.toUiModel() }
-                    _places.value =
-                        PlaceListUiState.Success(
-                            placeUiModels,
-                        )
-                    _cachedPlaces = placeUiModels
-                }.onFailure {
-                    _places.value = PlaceListUiState.Error(it)
-                }
-        }
-    }
-
-    fun loadOrganizationGeography() {
-        viewModelScope.launch {
-            launch {
-                placeListRepository.getOrganizationGeography().onSuccess {
-                    _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
-                }
-            }
-
-            launch {
-                placeListRepository
-                    .getPlaceGeographies()
-                    .onSuccess {
-                        _placeGeographies.value =
-                            PlaceListUiState.Success(it.map { it.toUiModel() })
-                    }.onFailure {
-                        _placeGeographies.value = PlaceListUiState.Error(it)
-                    }
-            }
-        }
-    }
-
     fun updateBookmark(place: PlaceUiModel) {
         val currentUiState = _places.value
         if (currentUiState is PlaceListUiState.Success<List<PlaceUiModel>>) {
@@ -125,6 +83,44 @@ class PlaceListViewModel(
 
     fun clearPlacesFilter() {
         _places.value = PlaceListUiState.Success(_cachedPlaces)
+    }
+
+    private fun loadAllPlaces() {
+        viewModelScope.launch {
+            val result = placeListRepository.getPlaces()
+            result
+                .onSuccess { places ->
+                    val placeUiModels = places.map { it.toUiModel() }
+                    _places.value =
+                        PlaceListUiState.Success(
+                            placeUiModels,
+                        )
+                    _cachedPlaces = placeUiModels
+                }.onFailure {
+                    _places.value = PlaceListUiState.Error(it)
+                }
+        }
+    }
+
+    private fun loadOrganizationGeography() {
+        viewModelScope.launch {
+            launch {
+                placeListRepository.getOrganizationGeography().onSuccess {
+                    _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
+                }
+            }
+
+            launch {
+                placeListRepository
+                    .getPlaceGeographies()
+                    .onSuccess {
+                        _placeGeographies.value =
+                            PlaceListUiState.Success(it.map { it.toUiModel() })
+                    }.onFailure {
+                        _placeGeographies.value = PlaceListUiState.Error(it)
+                    }
+            }
+        }
     }
 
     companion object {
