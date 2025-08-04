@@ -68,6 +68,46 @@ class PlaceListBottomSheetBehavior<V : View>(
         return super.onInterceptTouchEvent(parent, child, event)
     }
 
+    override fun onNestedScroll(
+        coordinatorLayout: CoordinatorLayout,
+        child: V,
+        target: View,
+        dxConsumed: Int,
+        dyConsumed: Int,
+        dxUnconsumed: Int,
+        dyUnconsumed: Int,
+        type: Int,
+        consumed: IntArray,
+    ) {
+        super.onNestedScroll(
+            coordinatorLayout,
+            child,
+            target,
+            dxConsumed,
+            dyConsumed,
+            dxUnconsumed,
+            dyUnconsumed,
+            type,
+            consumed,
+        )
+        if (!recyclerView.canScrollVertically(-1)) {
+            state = STATE_HALF_EXPANDED
+        }
+    }
+
+    override fun onStopNestedScroll(
+        coordinatorLayout: CoordinatorLayout,
+        child: V,
+        target: View,
+        type: Int,
+    ) {
+        super.onStopNestedScroll(coordinatorLayout, child, target, type)
+
+        if (!recyclerView.canScrollVertically(-1) && state == STATE_EXPANDED) {
+            state = STATE_HALF_EXPANDED
+        }
+    }
+
     companion object {
         private const val HEADER_POSITION = 0
     }
