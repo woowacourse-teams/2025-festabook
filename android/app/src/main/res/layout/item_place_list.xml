@@ -5,12 +5,18 @@
 
         <variable
             name="place"
-            type="com.daedan.festabook.presentation.placeList.uimodel.Place" />
+            type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
+
+        <variable
+            name="handler"
+            type="com.daedan.festabook.presentation.placeList.PlaceClickListener" />
+
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
+        android:onClick="@{()->handler.onPlaceClicked(place)}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="12dp">
@@ -70,29 +76,32 @@
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toBottomOf="@id/cv_place_category"
             android:textAppearance="@style/PretendardMedium14"
-            android:text="@{place.title}"
-            tools:text="컴공과 주점 ‘코딩하며 한잔'" />
+            android:text="@{place.title ?? @string/place_list_default_title}"
+            tools:text="테스트테스트테스트테스트테스트테스트테스" />
 
         <TextView
             android:id="@+id/tv_title_description"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="2dp"
             android:textColor="@color/gray500"
+            android:maxLines="1"
+            android:ellipsize="end"
+            app:layout_constraintEnd_toEndOf="@id/view_divider"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toBottomOf="@id/tv_title_place"
             android:textAppearance="@style/PretendardRegular12"
-            android:text="@{place.description}"
+            android:text="@{place.description ?? @string/place_list_default_description}"
 
-            tools:text="시원한 맥주와 맛있는 파전!" />
+            tools:text="시원한 맥주와 맛있는 파전! 시원한 맥주와 맛있는 파전! 시원한 맥주와 맛있는 파전!" />
 
         <ImageView
             android:id="@+id/iv_location"
             android:layout_width="14dp"
             android:layout_height="14dp"
             android:layout_marginTop="2dp"
-            android:src="@drawable/ic_place_list_location"
             android:contentDescription="@string/content_description_iv_location"
+            android:src="@drawable/ic_location"
             app:layout_constraintBottom_toBottomOf="@id/tv_location"
             app:layout_constraintStart_toStartOf="@id/cv_place_category"
             app:layout_constraintTop_toTopOf="@id/tv_location" />
@@ -104,23 +113,16 @@
             android:layout_marginStart="1dp"
             android:layout_marginTop="2dp"
             android:textColor="@color/gray500"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:maxEms="10"
             app:layout_constraintStart_toEndOf="@id/iv_location"
             app:layout_constraintTop_toBottomOf="@id/tv_title_description"
             android:textAppearance="@style/PretendardRegular12"
-            android:text="@{place.location}"
-            tools:text="공학관 앞" />
+            android:text="@{place.location ?? @string/place_list_default_location}"
+            tools:text="위치위치위치위치위치위치위치위치" />
 
-        <ImageButton
-            android:id="@+id/iv_bookmark"
-            android:onClick="@{(v)->v.setSelected(!v.isSelected)}"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="16dp"
-            android:clickable="true"
-            android:background="@android:color/transparent"
-            android:src="@drawable/btn_bookmark"
-            app:layout_constraintBottom_toBottomOf="@id/tv_location"
-            app:layout_constraintEnd_toEndOf="parent" />
+
 
         <View
             android:id="@+id/view_divider"

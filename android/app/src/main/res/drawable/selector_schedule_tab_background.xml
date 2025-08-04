@@ -1,4 +1,0 @@
-<selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@drawable/schedule_bg_gray900_radius_20dp"  android:state_selected="true" />
-    <item android:drawable="@android:color/transparent" />
-</selector>

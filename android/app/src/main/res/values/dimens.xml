@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="schedule_tab_item_end_margin">12dp</dimen>
+    <dimen name="poster_item_width">300dp</dimen>
+
+</resources>

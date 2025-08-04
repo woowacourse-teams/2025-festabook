@@ -27,6 +27,10 @@ public class Announcement {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Organization organization;
+
     @Column(nullable = false)
     private String title;
 
@@ -36,23 +40,45 @@ public class Announcement {
     @Column(nullable = false)
     private boolean isPinned;
 
-    @JoinColumn(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Organization organization;
-
     @CreatedDate
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public Announcement(
+    protected Announcement(
+            Long id,
             String title,
             String content,
-            Boolean isPinned,
-            Organization organization
+            boolean isPinned,
+            Organization organization,
+            LocalDateTime createdAt
     ) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.isPinned = isPinned;
         this.organization = organization;
+        this.createdAt = createdAt;
+    }
+
+    public Announcement(
+            String title,
+            String content,
+            boolean isPinned,
+            Organization organization
+    ) {
+        this(null, title, content, isPinned, organization, null);
+    }
+
+    public boolean isUnpinned() {
+        return !isPinned;
+    }
+
+    public void updateTitleAndContent(String title, String content) {
+        this.title = title;
+        this.content = content;
+    }
+
+    public void updatePinned(boolean isPinned) {
+        this.isPinned = isPinned;
     }
 }
