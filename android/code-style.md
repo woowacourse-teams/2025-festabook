@@ -6,7 +6,10 @@
 
 # 📝 안드로이드 개발 컨벤션 가이드라인
 
-본 컨벤션 문서는 [PRNDcompany/android-style-guide](https://github.com/PRNDcompany/android-style-guide)의 [Kotlin.md](https://github.com/PRNDcompany/android-style-guide/blob/main/Kotlin.md) 및 [Resource.md](https://github.com/PRNDcompany/android-style-guide/blob/main/Resource.md)를 기반으로 작성되었습니다.
+본 컨벤션 문서는 [PRNDcompany/android-style-guide](https://github.com/PRNDcompany/android-style-guide)
+의 [Kotlin.md](https://github.com/PRNDcompany/android-style-guide/blob/main/Kotlin.md)
+및 [Resource.md](https://github.com/PRNDcompany/android-style-guide/blob/main/Resource.md)를 기반으로
+작성되었습니다.
 
 ## 1. 일반 원칙
 
@@ -25,7 +28,8 @@
 
 - *행동(Action)**을 나타내는 개념이라면 `function`으로 정의합니다.
 - *상태나 값 등 정보(State/Value)**를 가져오는 개념이라면 `custom accessor`(속성)로 정의합니다.
-    - 참조: [Kotlin: should I define Function or Property?](https://www.google.com/search?q=https://kotlinlang.org/docs/coding-conventions.html%23functions-vs-properties)
+    -
+    참조: [Kotlin: should I define Function or Property?](https://www.google.com/search?q=https://kotlinlang.org/docs/coding-conventions.html%23functions-vs-properties)
 
 ### 2.4. Naming Rules
 
@@ -42,7 +46,8 @@
 ### 2.4.2. LiveData 변수명
 
 - XML에서 클릭 이벤트 시 사용되는 `LiveData`의 변수명은 `xxxEvent`로 선언합니다.
-    - 참조: [Google Android Jetpack Compose samples (Blueprint)](https://www.google.com/search?q=https://github.com/android/architecture-samples/blob/dev-dagger/app/src/main/java/com/example/android/architecture.samples/tasks/TasksViewModel.kt%23L106)
+    -
+    참조: [Google Android Jetpack Compose samples (Blueprint)](https://www.google.com/search?q=https://github.com/android/architecture-samples/blob/dev-dagger/app/src/main/java/com/example/android/architecture.samples/tasks/TasksViewModel.kt%23L106)
 
 ### 2.4.3. 함수 이름
 
@@ -60,7 +65,7 @@
     - `getBrands()` // O
     - `getBrandList()` // X
 - **Raw 값으로부터 `enum`을 찾을 때 함수 이름은 `find()`로 합니다.**
-    
+
     ```kotlin
     enum class Color {
         RED, BLUE, GREEN;
@@ -73,7 +78,6 @@
         }
     }
     ```
-    
 
 ### 2.5. Listener Naming
 
@@ -86,7 +90,8 @@
 
 - **Publisher(이벤트 발생 주체)가 이벤트만 전달하고 Listener가 전적인 책임을 처리할 때 사용합니다.**
 - 이벤트를 `handle`하는 주체가 `listen`하고 있는 곳일 때 사용합니다.
-    - 예시: `fun onClick()`, `fun onFocusChange()`, `fun onScrollChange()`, `fun onAnimationStart()`, `fun onTextChange()`
+    - 예시: `fun onClick()`, `fun onFocusChange()`, `fun onScrollChange()`, `fun onAnimationStart()`,
+      `fun onTextChange()`
 
 ### 2.5.3. `on[명사][동사 과거형]()`
 
@@ -110,16 +115,16 @@
 ### 2.6.2. `When` Statement
 
 - 한 줄에 들어가는 `when` 분기는 중괄호(`{}`)를 사용하지 않습니다.
-    
+
     ```kotlin
     when (value) {
         0 -> return
         // ...
     }
     ```
-    
+
 - 여러 개의 조건을 동시에 사용하는 경우 `>`를 포함한 블록은 다음 줄로 내려서 작성합니다.
-    
+
     ```kotlin
     when (value) {
         foo -> // ...
@@ -127,7 +132,6 @@
         baz     -> return
     }
     ```
-    
 
 ---
 
@@ -137,14 +141,15 @@
 
 ### 3.1.1. Layout 파일 이름 (`<WHAT>_<WHERE>`)
 
-| WHAT Prefix | 설명 |
-| --- | --- |
-| `activity_` | `Activity`에서 쓰이는 layout |
-| `fragment_` | `Fragment`에서 쓰이는 layout |
-| `dialog_` | `Dialog`에서 쓰이는 layout |
-| `view_` | `CustomView`에서 쓰이는 layout |
-| `item_` | `RecyclerView`, `GridView`, `ListView` 등 `ViewHolder`에 쓰이는 layout |
-| `layout_` | `<include/>`로 재사용되는 공통의 layout |
+| WHAT Prefix | 설명                                                                |
+|-------------|-------------------------------------------------------------------|
+| `activity_` | `Activity`에서 쓰이는 layout                                           |
+| `fragment_` | `Fragment`에서 쓰이는 layout                                           |
+| `dialog_`   | `Dialog`에서 쓰이는 layout                                             |
+| `view_`     | `CustomView`에서 쓰이는 layout                                         |
+| `item_`     | `RecyclerView`, `GridView`, `ListView` 등 `ViewHolder`에 쓰이는 layout |
+| `layout_`   | `<include/>`로 재사용되는 공통의 layout                                    |
+
 - **예시**:
     - `activity_main.xml`: `MainActivity`의 layout
     - `fragment_request.xml`: `RequestFragment`의 layout
@@ -165,8 +170,7 @@
         - 예시: `MyCustomView` -> `my_custom_view`
         - (만약 1개의 xml에 같은 여러 `CustomView`가 존재한다면 `<WHAT>_<DESCRIPTION>`의 형태로 정합니다.)
     - 아래 표에 해당 View의 Prefix가 정의되어 있지 않다면 팀에서 상의하여 이름을 정한 뒤 추가합니다.
-        
-        
+
         | View | Prefix |
         | --- | --- |
         | `TextView` | `tv_` |
@@ -183,6 +187,7 @@
         | `Abcdef` | `abcdef_` |
         | `MyCustomView` | `my_custom_view` |
         | `YourView` | `your_view` |
+
 - **기타**:
     - 해당 View를 특정 기능과 상관없이 `VISIBLE`/`GONE` 등의 View의 용도로 사용한다면 `view_xxx`로 사용하는 것도 허용합니다.
     - 버튼 기능을 위한 View는 `ImageView`, `TextView`로만 사용합니다. (`Button`, `ImageButton`은 존재의 의미가 없음)
@@ -199,22 +204,22 @@
 - 이미지가 여러 군데에서 활용될 경우, `<WHERE>`는 생략 가능합니다.
 - 이미지의 크기가 1개밖에 없는 경우, `<SIZE>`는 생략 가능합니다.
 
-| What Prefix | 설명 |
-| --- | --- |
-| `ic_` | 버튼이 아닌 화면에 보여지는 이미지 (아이콘 형태) |
-| `bg_` | 버튼이 아닌 화면에 보여지는 이미지 (배경 형태) |
-| `img_` | 실제 사진이거나 아이콘 형태가 아닌 일러스트 형태의 이미지 |
-| `div_` | `divider`로 활용되는 이미지 |
+| What Prefix | 설명                               |
+|-------------|----------------------------------|
+| `ic_`       | 버튼이 아닌 화면에 보여지는 이미지 (아이콘 형태)     |
+| `bg_`       | 버튼이 아닌 화면에 보여지는 이미지 (배경 형태)      |
+| `img_`      | 실제 사진이거나 아이콘 형태가 아닌 일러스트 형태의 이미지 |
+| `div_`      | `divider`로 활용되는 이미지              |
 
 ### 3.2.2. Selector 이름
 
 - 배경이나 버튼에서 View의 상태에 따라 drawable이 변해야 하는 경우의 이름은 아래와 같습니다.
 
-| 상태 Suffix | 설명 |
-| --- | --- |
-| `_normal` | Normal 상태 |
-| `_pressed` | Pressed 상태 |
-| `_focused` | Focused 상태 |
+| 상태 Suffix   | 설명          |
+|-------------|-------------|
+| `_normal`   | Normal 상태   |
+| `_pressed`  | Pressed 상태  |
+| `_focused`  | Focused 상태  |
 | `_disabled` | Disabled 상태 |
 | `_selected` | Selected 상태 |
 
@@ -237,7 +242,7 @@
 
 ### 3.3. Dimension
 
-3.3.1. Dimension 이름 
+3.3.1. Dimension 이름
 
 - 여러 군데에서 재사용되는 개념이라면 변수로 정의하여 `@dimen/xxx`와 같이 사용합니다.
 - 그렇지 않다면 명시적으로 `16dp`와 같이 XML 코드에 직접 작성합니다.
@@ -280,13 +285,12 @@
 ### 3.4.2. 문단
 
 - 문단 형태의 긴 문자열로 개행(`\n`)이 필요한 경우, `\n`을 다음 줄의 앞에 씁니다.
-    
+
     ```kotlin
     <string name="sample">문단 첫번째줄
         \\n문단 두번째줄
         \\n문단 세번째줄</string>
     ```
-    
 
 ### 3.5. Theme/Style
 
@@ -299,21 +303,21 @@
 ### 3.5.2. Naming
 
 - `style`의 이름은 `parent`의 이름 패턴과 맞춥니다.
-    
+
     ```kotlin
     <style name="Widget.HeyDealer.Button" parent="@style/Widget.AppCompat.Button">
     </style>
     ```
-    
+
 - `parent`에서 일부 내용만 수정하고자 하는 경우, `parent` 이름 뒤에 달라진 내용의 내용을 추가해줍니다.
-    
+
     ```kotlin
     <style name="Theme.HeyDealer.Transparent" parent="Theme.HeyDealer">
     </style>
     ```
-    
+
 - `Base Style`과 `Theme`의 경우는 앞에 `Base`를 붙입니다.XML
-    
+
     ```kotlin
     <style name="Base.Theme" parent="..." />
     <style name="Base.Theme.Transparent">...</style>
@@ -326,25 +330,24 @@
     <style name="TextAppearance.HeyDealer.Headline1" parent="Base.TextAppearance.HeyDealer.Headline">...</style>
     <style name="TextAppearance.HeyDealer.Headline2" parent="Base.TextAppearance.HeyDealer.Headline">...</style>
     ```
-    
 
 ### 3.5.3. Attribute
 
 - Attribute 이름은 **camelCase**로 합니다.XML
-    
+
     ```kotlin
     <attr name="numStars" format="integer" />
     ```
-    
+
 - 기존에 정의되어 있는 `android:xxx`와 같은 동작을 유도하는 경우, 이 태그를 재사용합니다.XML
-    
+
     ```kotlin
     <declare-styleable name="SpannedGridLayoutManager">
         <attr name="android:orientation" />
         </declare-styleable>
     ```
-    
 
 ### 3.6. 기타 Resource 규칙
 
-- `android:xxxLeft`/`android:xxxRight` 대신 **`android:xxxStart`/`android:xxxEnd`*를 사용합니다. (모든 Left/Right 사용 부분에 적용)
+- `android:xxxLeft`/`android:xxxRight` 대신 **`android:xxxStart`/`android:xxxEnd`*를 사용합니다. (모든
+  Left/Right 사용 부분에 적용)

@@ -25,28 +25,28 @@
 ### 4. 어노테이션 순서
 
 1. 컨트롤러는 예외 사항이 존재하기 때문에 컨트롤러 섹션을 참고한다.
-2. 어노테이션의 순서는 상단에서 하단으로 어노테이션 길이가 짧은 순서대로 배치한다. 
+2. 어노테이션의 순서는 상단에서 하단으로 어노테이션 길이가 짧은 순서대로 배치한다.
     - 피라미드 구조
-    
+
     ```java
     @Slf4j
     @RestController
     @RequiredArgsConstructor
     @RequestMapping("/api/places")
     ```
-    
+
 
 ### 5. 파라미터 순서
 
 1. 실제 사용 순서대로 파라미터 순서를 정렬한다.
-    
+
     ```java
     public PlaceResponse a(String b, String c){
     		System.out.println(b);
     		System.out.println(c);
     }
     ```
-    
+
 
 ### 6. Bean 주입 방식
 
@@ -59,9 +59,9 @@
 3. 한 줄에는 한개의 점만 올 수 있도록 2번째 점부터 개행한다.
 4. **`Stream()`** 은 예외적으로 3번을 회피할 수 있고 **`Stream()`** 다음에는 첫 줄을 개행한다.
 5. 아래 상황과 같은 닫는 괄호는 개행한다.
-    
-    아래 상황의 경우 아래 규칙으로 개행한다.
-    
+
+   아래 상황의 경우 아래 규칙으로 개행한다.
+
     ```java
     // 이렇게 개행하지 않는다.
     return new EventDayResponses(
@@ -76,7 +76,7 @@
                             .toList()
                     );
     ```
-    
+
 6. 인터페이스에 내용이 있다면 첫 줄을 개행한다.
 
 ### 8. 래퍼 타입 vs 원시 타입
@@ -118,7 +118,7 @@ festival
 ### 3. 메서드 파라미터 선언부 줄바꿈
 
 1. 파라미터가 없는 경우 개행하지 않고 파라미터가 있는 경우 반드시 파라미터 선언부부터 개행한다.
-    
+
     ```java
     // 파라미터 없는 경우
     @GetMapping("/search")
@@ -133,7 +133,7 @@ festival
     ) {
     }
     ```
-    
+
 
 ### 4. 어노테이션 순서
 
@@ -141,7 +141,7 @@ festival
 2. **메서드의 경우** 컨트롤러 관련 어노테이션에 대해 아래 두 가지의 컨벤션을 지키면서 작성한다.
     - GetMapping()이 가장 상단에 작성한다.
     - ResponseStatus()을 그 하단에 작성한다.
-        
+
         ```java
         @GetMapping("/{placeId}/announcements")
         @ResponseStatus(HttpStatus.OK)
@@ -150,8 +150,8 @@ festival
                 @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
         })
         ```
-        
-3. 위의 두 가지 컨벤션에 해당하지 않는다면 **1. 글로벌 코드 컨벤션**을 지켜서 짧은 순서대로 작성한다. 
+
+3. 위의 두 가지 컨벤션에 해당하지 않는다면 **1. 글로벌 코드 컨벤션**을 지켜서 짧은 순서대로 작성한다.
 
 # 3. API 문서 컨벤션
 
@@ -190,12 +190,12 @@ festival
 1. **createdAt**는 필드의 가장 마지막에 작성한다.
 2. id는 항상 래퍼타입을 사용한다.
 3. 연관관계는 id만 작성하지 않고 entity의 연관관계를 매핑하는 정보까지 작성한다.
-    
+
     ```java
     private Long organizationId // x
     private Organization organization // o
     ```
-    
+
 
 ### 2. EqualsHashCode 여부
 
@@ -207,7 +207,7 @@ festival
 2. id 없는 생성자를 직접 만들어서 사용한다.
 3. 모든 매개변수를 개행하여 작성한다.
     - 컨트롤러와 동일하게 작성한다.
-        
+
         ```java
         public Place(
                 String title, 
@@ -227,7 +227,7 @@ festival
             this.endTime = endTime;
         }
         ```
-        
+
 
 ### 4. DB 컬럼 타입
 
@@ -266,7 +266,7 @@ festival
 12. dto 필드를 검증할 때, 필드의 수 검증도 작성한다.
 13. 컬렉션의 사이즈 검증은 `$`  + `hasSize()` 로 검증을 작성한다.
 14. 아래 방식으로 작성한다.
-    
+
     ```
     // X
         Organization organization = organizationJpaRepository.save(
@@ -293,13 +293,13 @@ festival
         );
         organizationJpaRepository.save(checkOrganization);
     ```
-    
+
 
 ### 3. 개행
 
 1. **Mockito.give()**뒤 ****첫 점부터 개행한다.
 2. **`assertThat()`**은 다음의 규칙으로 개행한다.
-    
+
     ```java
     // 기본적으로 하나의 체이닝은 개행하지 않는다.
     assertThat(responses.eventDays()).hasSize(2);
@@ -313,9 +313,9 @@ festival
     		.hasSize()
     		.hasEmpty();
     ```
-    
+
 3. given() 앞에서 개행한다.
-    
+
     ```java
     // X
     RestAssured.given()
@@ -324,7 +324,7 @@ festival
     RestAssured
         .given()
     ```
-    
+
 
 ### 4. Test Fixture
 
