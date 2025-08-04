@@ -2,12 +2,12 @@ package com.daedan.festabook
 
 import android.app.Application
 import com.daedan.festabook.data.datasource.local.AppPreferencesManager
-import com.daedan.festabook.data.datasource.remote.DeviceDataSource
-import com.daedan.festabook.data.datasource.remote.DeviceDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.NoticeDataSource
-import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
-import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
+import com.daedan.festabook.data.datasource.remote.device.DeviceDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSource
+import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationBookmarkDataSource
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationBookmarkDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSource
 import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource

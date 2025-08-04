@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.model.response
+package com.daedan.festabook.data.model.response.organization
 
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable

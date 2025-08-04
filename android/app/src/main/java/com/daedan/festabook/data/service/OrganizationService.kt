@@ -1,6 +1,6 @@
 package com.daedan.festabook.data.service
 
-import com.daedan.festabook.data.model.response.OrganizationGeographyResponse
+import com.daedan.festabook.data.model.response.organization.OrganizationGeographyResponse
 import com.daedan.festabook.data.model.response.OrganizationResponse
 import retrofit2.Response
 import retrofit2.http.GET

@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.service
 
-import com.daedan.festabook.data.model.response.ScheduleDateResponse
-import com.daedan.festabook.data.model.response.ScheduleEventResponse
+import com.daedan.festabook.data.model.response.schedule.ScheduleDateResponse
+import com.daedan.festabook.data.model.response.schedule.ScheduleEventResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

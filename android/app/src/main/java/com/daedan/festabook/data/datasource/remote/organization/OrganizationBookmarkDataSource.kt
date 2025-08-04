@@ -1,6 +1,7 @@
-package com.daedan.festabook.data.datasource.remote
+package com.daedan.festabook.data.datasource.remote.organization
 
-import com.daedan.festabook.data.model.response.OrganizationBookmarkResponse
+import com.daedan.festabook.data.datasource.remote.ApiResult
+import com.daedan.festabook.data.model.response.organization.OrganizationBookmarkResponse
 
 interface OrganizationBookmarkDataSource {
     suspend fun saveOrganizationBookmark(
