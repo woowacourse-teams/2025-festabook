@@ -71,7 +71,7 @@ const LostFoundPage = () => {
                 </button>
             </div>
             
-                        <FlipMove className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
+            <FlipMove className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(270px,1fr))]">
                 {sortedItems.length > 0 ? (
                     sortedItems.map(item => (
                         <div key={item.id} data-id={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col">
@@ -90,15 +90,7 @@ const LostFoundPage = () => {
                                             e.target.onerror = null;
                                             e.target.src = 'https://placehold.co/200x200/e0e0e0/757575?text=Error';
                                             }}
-                                            className="w-57 h-57 object-cover rounded-lg transition-opacity duration-200 select-none"
-                                            style={{
-                                                userSelect: 'none',
-                                                WebkitUserSelect: 'none',
-                                                MozUserSelect: 'none',
-                                                msUserSelect: 'none'
-                                            }}
-                                            draggable="false"
-                                            onDragStart={(e) => e.preventDefault()}
+                                            className="w-57 h-57 object-cover rounded-lg transition-opacity duration-200"
                                             alt="분실물 이미지"
                                         />
 
@@ -196,36 +188,33 @@ const LostFoundPage = () => {
 
             {/* 이미지 상세 보기 오버레이 */}
             {selectedImage && (
-                <div 
-                    className="fixed inset-0 flex items-center justify-center z-50"
-                    onClick={handleCloseDetail}
-                >
-                    <div 
-                        className="relative"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                                                    <div 
+                      className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+                  >
+                      <div 
+                          className="relative pointer-events-auto"
+                          onClick={(e) => e.stopPropagation()}
+                      >
                         <img
                             src={selectedImage}
                             alt="상세 이미지"
-                            className="max-w-full max-h-[95vh] rounded-lg shadow-2xl select-none"
+                            className="rounded-lg shadow-2xl"
                             style={{
+                                maxWidth: '100vw',
+                                maxHeight: '95vh',
                                 width: 'auto',
                                 height: 'auto',
-                                display: 'block',
-                                userSelect: 'none',
-                                WebkitUserSelect: 'none',
-                                MozUserSelect: 'none',
-                                msUserSelect: 'none',
-                                pointerEvents: 'none'
+                                display: 'block'
                             }}
-                            draggable="false"
-                            onDragStart={(e) => e.preventDefault()}
                         />
+                        {/* 닫기 버튼 */}
                         <button 
                             onClick={handleCloseDetail}
-                            className="absolute top-4 right-4 text-white text-2xl bg-black bg-opacity-60 rounded-full w-10 h-10 flex items-center justify-center hover:bg-opacity-80 transition-colors"
+                            className="absolute top-4 right-4 bg-black bg-opacity-60 text-white p-2 rounded-full hover:bg-opacity-80 transition-colors"
                         >
-                            &times;
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
                         </button>
                     </div>
                 </div>
