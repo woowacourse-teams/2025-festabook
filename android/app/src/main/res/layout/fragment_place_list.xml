@@ -70,7 +70,7 @@
 
             <TextView
                 android:id="@+id/tv_error_to_load_place_info"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="100dp"
                 android:text="@string/error_fail_to_load_place_info"

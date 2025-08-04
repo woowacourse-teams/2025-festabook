@@ -19,7 +19,7 @@
         android:layout_height="match_parent"
         android:fillViewport="true">
 
-        <androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
@@ -29,10 +29,28 @@
                 android:layout_height="match_parent"
                 app:layout_constraintTop_toTopOf="parent">
 
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/start_guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layout_constraintGuide_begin="16dp" />
+
+                <androidx.constraintlayout.widget.Guideline
+                    android:id="@+id/end_guideline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginEnd="16dp"
+                    app:layout_constraintGuide_end="16dp" />
+
+
                 <androidx.viewpager2.widget.ViewPager2
                     android:id="@+id/vp_place_images"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"
+                    android:layout_marginHorizontal="-16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -41,12 +59,11 @@
                     android:id="@+id/cv_place_category"
                     android:layout_width="50dp"
                     android:layout_height="17dp"
-                    android:layout_marginStart="16dp"
                     android:layout_marginTop="24dp"
                     app:cardBackgroundColor="@color/gray900"
                     app:cardCornerRadius="6dp"
                     app:category="@{placeDetail.place.category}"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
                     app:layout_constraintTop_toBottomOf="@id/vp_place_images"
                     app:strokeWidth="0dp">
 
@@ -63,12 +80,13 @@
 
                 <TextView
                     android:id="@+id/tv_title_place"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:text="@{placeDetail.place.title ?? @string/place_list_default_title}"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/cv_place_category"
                     app:layout_constraintTop_toBottomOf="@id/cv_place_category"
                     tools:text="컴공과 주점 코딩하며 한잔" />
@@ -83,12 +101,13 @@
                     app:layout_constraintTop_toBottomOf="@id/tv_title_place" />
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:textAppearance="@style/PretendardRegular14"
                     android:textColor="@color/gray500"
                     app:endTime="@{placeDetail.endTime}"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintBottom_toBottomOf="@id/iv_time"
                     app:layout_constraintStart_toEndOf="@id/iv_time"
                     app:layout_constraintTop_toTopOf="@id/iv_time"
@@ -106,8 +125,8 @@
 
                 <TextView
                     android:id="@+id/tv_location"
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="@{placeDetail.place.location ?? @string/place_list_default_location}"
                     android:textAppearance="@style/PretendardRegular14"
@@ -115,6 +134,7 @@
                     android:maxLines="1"
                     android:maxEms="10"
                     android:ellipsize="end"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toEndOf="@id/iv_location"
                     app:layout_constraintTop_toTopOf="@id/iv_location"
                     tools:text="공학관 앞공학관 앞공학관 앞공학관 앞공학관 앞" />
@@ -130,7 +150,7 @@
 
                 <TextView
                     android:id="@+id/tv_host"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
                     android:text="@{placeDetail.host ?? @string/place_detail_default_host}"
@@ -140,6 +160,7 @@
                     android:maxEms="10"
                     android:ellipsize="end"
                     app:layout_constraintStart_toEndOf="@id/iv_host"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintTop_toTopOf="@id/iv_host"
                     tools:text="C블C블C블C블C블C블C블C블C블C블C블C블C블C블" />
 
@@ -148,11 +169,10 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
                     android:text="@{placeDetail.place.description ?? @string/place_list_default_description}"
                     android:textAppearance="@style/PretendardRegular14"
                     app:layout_constraintStart_toStartOf="@id/iv_host"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintTop_toBottomOf="@id/tv_host"
                     tools:text="시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전" />
 
@@ -160,31 +180,33 @@
                     android:id="@+id/view_divider"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:layout_marginStart="16dp"
                     android:layout_marginTop="20dp"
-                    android:layout_marginEnd="16dp"
                     android:background="@color/gray300"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintTop_toBottomOf="@id/tv_place_description" />
 
                 <TextView
                     android:id="@+id/tv_notice_title"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="@string/place_detail_notice_title"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
-                    app:layout_constraintStart_toStartOf="@id/view_divider"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintTop_toBottomOf="@id/view_divider" />
 
                 <TextView
                     android:id="@+id/tv_notice_description"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:text="@string/place_detail_notice_description"
                     android:textAppearance="@style/PretendardRegular12"
                     android:textColor="@color/gray500"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/tv_notice_title"
                     app:layout_constraintTop_toBottomOf="@id/tv_notice_title" />
 
@@ -203,11 +225,12 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_place_notice"
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginHorizontal="16dp"
                     android:layout_marginTop="20dp"
                     android:nestedScrollingEnabled="false"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintTop_toBottomOf="@id/tv_notice_description"
                     tools:itemCount="2"
