@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import FlipMove from 'react-flip-move';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 
@@ -145,7 +144,7 @@ const NoticesPage = () => {
                         <i className="fas fa-thumbtack text-yellow-500 mr-2"></i>
                         고정된 공지사항
                     </h3>
-                    <FlipMove className="space-y-4">
+                    <div className="space-y-4">
                         {pinned.map((notice) => (
                             <div key={notice.id} data-id={notice.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
@@ -195,14 +194,14 @@ const NoticesPage = () => {
                                 </div>
                             </div>
                         ))}
-                    </FlipMove>
+                    </div>
                 </div>
             )}
             
             {/* 일반 공지사항 */}
             <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">일반 공지사항</h3>
-                <FlipMove className="space-y-4">
+                <div className="space-y-4">
                     {unpinned.map((notice) => (
                         <div key={notice.id} data-id={notice.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
@@ -252,7 +251,7 @@ const NoticesPage = () => {
                             </div>
                         </div>
                     ))}
-                </FlipMove>
+                </div>
                 
                 {/* 공지사항이 없을 때 */}
                 {pinned.length === 0 && unpinned.length === 0 && (

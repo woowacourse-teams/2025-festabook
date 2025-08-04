@@ -116,7 +116,7 @@ const SchedulePage = () => {
                         로딩 중...
                     </div>
                 )}
-                {Object.keys(schedule).sort().map(dateStr => {
+                {!isLoadingDates && Object.keys(schedule).length > 0 && Object.keys(schedule).sort().map(dateStr => {
                     const dateObj = new Date(dateStr);
                     const formattedDate = `${dateObj.getMonth() + 1}/${dateObj.getDate()}(${dayNames[dateObj.getDay()]})`;
                     return (
@@ -196,9 +196,32 @@ const SchedulePage = () => {
                     </div>
                 )}
                 
-                 {(!activeDate || (!isLoadingEvents && schedule[activeDate] !== undefined && schedule[activeDate]?.length === 0)) && (
-                    <div className="text-center py-10 text-gray-500">
-                        {!activeDate ? '날짜를 선택하거나 새 날짜를 추가하여 이벤트를 관리하세요.' : '등록된 이벤트가 없습니다.'}
+                {/* 빈 상태 UI - 로딩이 끝나고 데이터가 없을 때 또는 날짜가 없을 때 */}
+                {(!isLoadingEvents && (!activeDate || (schedule[activeDate] !== undefined && (!schedule[activeDate] || schedule[activeDate].length === 0)))) && (
+                    <div className="text-center py-12">
+                        {!activeDate ? (
+                            <>
+                                <i className="fas fa-calendar-plus text-4xl text-gray-400 mb-4"></i>
+                                <p className="text-gray-500 mb-4">날짜를 선택하거나 새 날짜를 추가하여 이벤트를 관리하세요.</p>
+                                <button
+                                    onClick={() => openModal('datePrompt', { onSave: handleAddDate, defaultDate: getNextDefaultDate() })}
+                                    className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                                >
+                                    첫 번째 날짜 추가
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <i className="fas fa-calendar-day text-4xl text-gray-400 mb-4"></i>
+                                <p className="text-gray-500 mb-4">등록된 이벤트가 없습니다</p>
+                                <button
+                                    onClick={() => openModal('schedule', { onSave: handleSave, activeDate, availableDates: Object.keys(schedule) })}
+                                    className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                                >
+                                    첫 번째 이벤트 추가
+                                </button>
+                            </>
+                        )}
                     </div>
                 )}
             </div>
