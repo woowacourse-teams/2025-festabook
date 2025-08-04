@@ -74,10 +74,6 @@ class PlaceListFragment :
         startPlaceDetailFragment(place)
     }
 
-    override fun onBookmarkClicked(place: PlaceUiModel) {
-        viewModel.updateBookmark(place)
-    }
-
     private fun setUpBinding() {
         binding.cgCategories.setOnCheckedStateChangeListener { group, checkedIds ->
             val selectedCategories =

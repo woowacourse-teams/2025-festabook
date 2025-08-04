@@ -12,7 +12,6 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.INVALID_ID
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
 import timber.log.Timber
-import java.lang.IllegalArgumentException
 
 class ScheduleTabPageFragment :
     BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page),

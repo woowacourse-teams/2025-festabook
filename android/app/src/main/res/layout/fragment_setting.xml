@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:id="@+id/tv_setting_title"
+            style="@style/PretendardBold24"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="12dp"
+            android:text="@string/setting_title"
+            android:textColor="@color/gray900"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_notice_title"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_setting_notice_title"
+            style="@style/PretendardRegular14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="12dp"
+            android:text="@string/setting_notice_title"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_current_university_notice"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_title" />
+
+        <TextView
+            android:id="@+id/tv_setting_current_university_notice"
+            style="@style/PretendardMedium18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="12dp"
+            android:text="@string/setting_current_university_notice"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_notice_detail"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_notice_title"
+            tools:layout_editor_absoluteX="20dp" />
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/btn_notice_allow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/tv_setting_current_university_notice"
+            app:layout_constraintEnd_toEndOf="@id/tv_setting_current_university_notice"
+            app:layout_constraintTop_toTopOf="@id/tv_setting_current_university_notice"
+            app:trackDecorationTint="@color/selector_setting_notice_bg_color"
+            app:trackTint="@color/selector_setting_notice_bg_color"
+            tools:layout_editor_absoluteX="0dp"
+            tools:layout_editor_absoluteY="0dp" />
+
+        <TextView
+            android:id="@+id/tv_setting_notice_detail"
+            style="@style/PretendardMedium18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="12dp"
+            android:text="@string/setting_notice_detail"
+            app:layout_constraintBottom_toTopOf="@id/view_divider"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_current_university_notice" />
+
+        <View
+            android:id="@+id/view_divider"
+            android:layout_width="match_parent"
+            android:layout_height="8dp"
+            android:layout_marginVertical="20dp"
+            android:background="@color/gray100"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_app_info_title"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_notice_detail" />
+
+        <TextView
+            android:id="@+id/tv_setting_app_info_title"
+            style="@style/PretendardRegular14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="12dp"
+            android:text="@string/setting_app_info_title"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_app_version_text"
+            app:layout_constraintTop_toBottomOf="@id/view_divider" />
+
+        <TextView
+            android:id="@+id/tv_setting_app_version_text"
+            style="@style/PretendardMedium18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="12dp"
+            android:text="@string/setting_app_version"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_service_policy"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_app_info_title" />
+
+        <TextView
+            android:id="@+id/tv_setting_app_version_number"
+            style="@style/PretendardRegular14"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="@id/tv_setting_app_version_text"
+            app:layout_constraintEnd_toEndOf="@id/tv_setting_app_version_text"
+            app:layout_constraintTop_toTopOf="@id/tv_setting_app_version_text"
+            tools:text="v 1.01.1" />
+
+        <TextView
+            android:id="@+id/tv_setting_service_policy"
+            style="@style/PretendardMedium18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="12dp"
+            android:text="@string/setting_service_policy"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_contact_us"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_app_version_text" />
+
+        <ImageView
+            android:id="@+id/iv_setting_service_policy"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/move"
+            android:src="@drawable/ic_arrow_forward_right"
+            app:layout_constraintBottom_toBottomOf="@id/tv_setting_service_policy"
+            app:layout_constraintEnd_toEndOf="@id/tv_setting_service_policy"
+            app:layout_constraintTop_toTopOf="@id/tv_setting_service_policy" />
+
+        <TextView
+            android:id="@+id/tv_setting_contact_us"
+            style="@style/PretendardMedium18"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="12dp"
+            android:text="@string/setting_contact_us"
+            app:layout_constraintBottom_toTopOf="@id/tv_setting_service_policy"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_service_policy" />
+
+        <ImageView
+            android:id="@+id/iv_setting_contact_us"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/move"
+            android:src="@drawable/ic_arrow_forward_right"
+            app:layout_constraintBottom_toBottomOf="@id/tv_setting_contact_us"
+            app:layout_constraintEnd_toEndOf="@id/tv_setting_contact_us"
+            app:layout_constraintTop_toTopOf="@id/tv_setting_contact_us" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.repository
 
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
-import com.daedan.festabook.data.model.response.toDomain
+import com.daedan.festabook.data.model.response.place.toDomain
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.PlaceDetail
 import com.daedan.festabook.domain.repository.PlaceDetailRepository

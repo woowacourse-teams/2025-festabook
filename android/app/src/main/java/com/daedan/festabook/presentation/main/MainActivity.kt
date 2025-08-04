@@ -28,6 +28,7 @@ import com.daedan.festabook.presentation.home.HomeFragment
 import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
+import com.daedan.festabook.presentation.setting.SettingFragment
 import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 
@@ -49,6 +50,10 @@ class MainActivity : AppCompatActivity() {
 
     private val newFragment by lazy {
         NewsFragment().newInstance()
+    }
+
+    private val settingFragment by lazy {
+        SettingFragment.newInstance()
     }
 
     private val requestPermissionLauncher =
@@ -201,7 +206,7 @@ class MainActivity : AppCompatActivity() {
                 R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
                 R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
                 R.id.item_menu_news -> switchFragment(newFragment, TAG_NEW_FRAGMENT)
-                R.id.item_menu_setting -> Unit
+                R.id.item_menu_setting -> switchFragment(settingFragment, TAG_SETTING_FRAGMENT)
             }
             true
         }
@@ -251,6 +256,7 @@ class MainActivity : AppCompatActivity() {
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
         private const val TAG_PLACE_LIST_FRAGMENT = "placeListFragment"
         private const val TAG_NEW_FRAGMENT = "newFragment"
+        private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
 
         fun Fragment.newInstance(): Fragment =

@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.repository
 
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
-import com.daedan.festabook.data.model.response.toDomain
+import com.daedan.festabook.data.model.response.schedule.toDomain
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.ScheduleDate
 import com.daedan.festabook.domain.model.ScheduleEvent

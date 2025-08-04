@@ -1,7 +1,9 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.organization.domain.Coordinate;
 import com.daedan.festabook.organization.domain.Organization;
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -11,7 +13,6 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -30,43 +31,42 @@ public class Place {
     private Organization organization;
 
     @Column(nullable = false)
-    private String title;
-
-    @Column(nullable = false)
-    private String description;
-
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private PlaceCategory category;
 
-    @Column(nullable = false)
-    private String location;
+    @Embedded
+    private Coordinate coordinate;
 
-    private String host;
-
-    @Column(nullable = false)
-    private LocalTime startTime;
-
-    @Column(nullable = false)
-    private LocalTime endTime;
+    protected Place(
+            Long id,
+            Organization organization,
+            PlaceCategory category,
+            Coordinate coordinate
+    ) {
+        this.id = id;
+        this.organization = organization;
+        this.category = category;
+        this.coordinate = coordinate;
+    }
 
     public Place(
             Organization organization,
-            String title,
-            String description,
             PlaceCategory category,
-            String location,
-            String host,
-            LocalTime startTime,
-            LocalTime endTime
+            Coordinate coordinate
     ) {
-        this.organization = organization;
-        this.title = title;
-        this.description = description;
-        this.category = category;
-        this.location = location;
-        this.host = host;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this(
+                null,
+                organization,
+                category,
+                coordinate
+        );
+    }
+
+    public boolean hasDetail() {
+        return category.isServiceLocation();
+    }
+
+    public void updateCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
     }
 }

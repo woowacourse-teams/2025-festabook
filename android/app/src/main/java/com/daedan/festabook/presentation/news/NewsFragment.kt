@@ -6,75 +6,43 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNewsBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.showErrorSnackBar
-import com.daedan.festabook.presentation.news.notice.NoticeUiState
-import com.daedan.festabook.presentation.news.notice.NoticeViewModel
-import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
+import com.daedan.festabook.presentation.news.adapter.NewsPagerAdapter
+import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
+import com.google.android.material.tabs.TabLayoutMediator
 
-class NewsFragment : BaseFragment<FragmentNewsBinding>(R.layout.fragment_news) {
-    private val viewModel: NoticeViewModel by viewModels { NoticeViewModel.Factory }
-
-    private val noticeAdapter: NoticeAdapter by lazy {
-        NoticeAdapter { notice ->
-            viewModel.toggleNoticeExpanded(notice)
-        }
+class NewsFragment :
+    BaseFragment<FragmentNewsBinding>(R.layout.fragment_news),
+    OnNewsClickListener {
+    private val newsPagerAdapter by lazy {
+        NewsPagerAdapter(this)
     }
+
+    private val viewModel: NewsViewModel by viewModels { NewsViewModel.Factory }
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-
         binding.lifecycleOwner = viewLifecycleOwner
-        binding.rvNoticeList.adapter = noticeAdapter
-
-        setupObserver()
-        onSwipeRefreshNoticesListener()
+        setupNewsTabLayout()
     }
 
-    private fun onSwipeRefreshNoticesListener() {
-        binding.srlNoticeList.setOnRefreshListener {
-            viewModel.fetchNotices()
-        }
+    override fun onNoticeClick(notice: NoticeUiModel) {
+        viewModel.toggleNoticeExpanded(notice)
     }
 
-    private fun setupObserver() {
-        viewModel.noticeUiState.observe(viewLifecycleOwner) { noticeState ->
-            when (noticeState) {
-                is NoticeUiState.InitialLoading -> {
-                    binding.srlNoticeList.isRefreshing = true
-                    showSkeleton()
-                }
-
-                is NoticeUiState.Error -> {
-                    hideSkeleton()
-                    showErrorSnackBar(noticeState.throwable)
-                    binding.srlNoticeList.isRefreshing = false
-                }
-
-                is NoticeUiState.Loading -> {
-                    binding.srlNoticeList.isRefreshing = true
-                }
-
-                is NoticeUiState.Success -> {
-                    hideSkeleton()
-                    noticeAdapter.submitList(noticeState.notices)
-                    binding.srlNoticeList.isRefreshing = false
-                }
-            }
-        }
+    override fun onFAQClick(faqItem: FAQItemUiModel) {
+        viewModel.toggleFAQExpanded(faqItem)
     }
 
-    private fun showSkeleton() {
-        binding.sflScheduleSkeleton.visibility = View.VISIBLE
-        binding.rvNoticeList.visibility = View.INVISIBLE
-        binding.sflScheduleSkeleton.startShimmer()
-    }
-
-    private fun hideSkeleton() {
-        binding.sflScheduleSkeleton.visibility = View.GONE
-        binding.rvNoticeList.visibility = View.VISIBLE
-        binding.sflScheduleSkeleton.stopShimmer()
+    private fun setupNewsTabLayout() {
+        binding.vpNews.adapter = newsPagerAdapter
+        TabLayoutMediator(binding.tlNews, binding.vpNews) { tab, position ->
+            val tabNameRes = NewsTab.entries[position].tabNameRes
+            tab.text = getString(tabNameRes)
+        }.attach()
     }
 }

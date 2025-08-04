@@ -45,22 +45,6 @@ class PlaceListViewModel(
         loadOrganizationGeography()
     }
 
-    fun updateBookmark(place: PlaceUiModel) {
-        val currentUiState = _places.value
-        if (currentUiState is PlaceListUiState.Success<List<PlaceUiModel>>) {
-            val currentPlaces = currentUiState.value
-            val updatedPlaces =
-                currentPlaces.map {
-                    if (it.id == place.id) {
-                        it.copy(isBookmarked = !it.isBookmarked)
-                    } else {
-                        it
-                    }
-                }
-            _places.value = PlaceListUiState.Success(updatedPlaces)
-        }
-    }
-
     fun filterPlaces(category: List<PlaceCategoryUiModel>) {
         val secondaryCategories =
             PlaceCategory.SECONDARY_CATEGORIES.map {

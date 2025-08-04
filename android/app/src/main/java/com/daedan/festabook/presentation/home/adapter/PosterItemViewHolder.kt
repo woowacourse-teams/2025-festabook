@@ -1,16 +1,29 @@
 package com.daedan.festabook.presentation.home.adapter
 
+import android.graphics.Color
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.graphics.drawable.toDrawable
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
+import coil3.request.CachePolicy
+import coil3.request.crossfade
+import coil3.request.placeholder
+import coil3.request.transformations
+import coil3.transform.RoundedCornersTransformation
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemHomePosterBinding
 
 class PosterItemViewHolder(
     val binding: ItemHomePosterBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(poster: Int) {
-        binding.ivHomePoster.setImageResource(poster)
+    fun bind(url: String) {
+        binding.ivHomePoster.load(url) {
+            crossfade(true)
+            placeholder(Color.LTGRAY.toDrawable())
+            transformations(RoundedCornersTransformation(20f))
+            memoryCachePolicy(CachePolicy.ENABLED)
+        }
         binding.motionLayout.progress = 0f
         binding.motionLayout.transitionToState(R.id.collapsed)
     }

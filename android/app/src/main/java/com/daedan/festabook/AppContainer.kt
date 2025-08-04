@@ -2,23 +2,30 @@ package com.daedan.festabook
 
 import android.app.Application
 import com.daedan.festabook.data.datasource.local.AppPreferencesManager
-import com.daedan.festabook.data.datasource.remote.DeviceDataSource
-import com.daedan.festabook.data.datasource.remote.DeviceDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.NoticeDataSource
-import com.daedan.festabook.data.datasource.remote.NoticeDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSource
-import com.daedan.festabook.data.datasource.remote.OrganizationBookmarkDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
+import com.daedan.festabook.data.datasource.remote.device.DeviceDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.faq.FAQDataSource
+import com.daedan.festabook.data.datasource.remote.faq.FAQDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSource
+import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationBookmarkDataSource
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationBookmarkDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSource
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
+import com.daedan.festabook.data.repository.FestivalRepositoryImpl
+import com.daedan.festabook.data.repository.FAQRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.data.repository.PlaceDetailRepositoryImpl
 import com.daedan.festabook.data.repository.PlaceListRepositoryImpl
 import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
 import com.daedan.festabook.data.service.api.ApiClient.deviceService
+import com.daedan.festabook.data.service.api.ApiClient.faqService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.organizationBookmarkService
 import com.daedan.festabook.data.service.api.ApiClient.organizationService
@@ -26,6 +33,8 @@ import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.domain.repository.DeviceRepository
+import com.daedan.festabook.domain.repository.FestivalRepository
+import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
@@ -57,6 +66,13 @@ class AppContainer(
     private val placeDetailDataSource: PlaceDataSource by lazy {
         PlaceDataSourceImpl(placeService, organizationService)
     }
+    private val faqDataSource: FAQDataSource by lazy {
+        FAQDataSourceImpl(faqService)
+    }
+
+    private val organizationDataSource: OrganizationDataSource by lazy {
+        OrganizationDataSourceImpl(organizationService)
+    }
 
     val placeDetailRepository: PlaceDetailRepository by lazy {
         PlaceDetailRepositoryImpl(placeDetailDataSource)
@@ -77,6 +93,12 @@ class AppContainer(
     }
     val bookmarkRepository: BookmarkRepository by lazy {
         BookmarkRepositoryImpl(organizationBookmarkDataSource)
+    }
+    val festivalRepository: FestivalRepository by lazy {
+        FestivalRepositoryImpl(organizationDataSource)
+    }
+    val faqRepository: FAQRepository by lazy {
+        FAQRepositoryImpl(faqDataSource)
     }
 
     init {

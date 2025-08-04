@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.placeDetail.adapter
 
+import android.text.TextUtils
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -11,9 +12,18 @@ class PlaceNoticeViewHolder private constructor(
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(noticeUiModel: NoticeUiModel) {
         binding.notice = noticeUiModel
+        binding.layoutNoticeItem.setOnClickListener {
+            binding.root.isSelected = !binding.root.isSelected
+            binding.tvNoticeDescription.maxLines =
+                if (binding.root.isSelected) Integer.MAX_VALUE else DEFAULT_LINE_COUNT
+            binding.tvNoticeDescription.ellipsize =
+                if (binding.root.isSelected) null else TextUtils.TruncateAt.END
+        }
     }
 
     companion object {
+        private const val DEFAULT_LINE_COUNT = 1
+
         fun from(parent: ViewGroup): PlaceNoticeViewHolder =
             PlaceNoticeViewHolder(
                 ItemNoticeBinding.inflate(
