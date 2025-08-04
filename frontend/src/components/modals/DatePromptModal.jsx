@@ -31,6 +31,22 @@ const DatePromptModal = ({ onSave, onClose, defaultDate }) => {
             handleSave();
         }
     };
+
+    // 모달 전체에서 엔터 키 감지
+    useEffect(() => {
+        const handleGlobalKeyDown = (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleSave();
+            }
+        };
+
+        document.addEventListener('keydown', handleGlobalKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleGlobalKeyDown);
+        };
+    }, [date]); // date가 변경될 때마다 이벤트 리스너 재등록
     return (
         <Modal isOpen={true} onClose={onClose} maxWidth="max-w-sm">
             <h3 className="text-lg font-bold mb-4">새 날짜 추가</h3>

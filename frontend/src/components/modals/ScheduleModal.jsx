@@ -63,6 +63,22 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
         }
     };
 
+    // 모달 전체에서 엔터 키 감지
+    useEffect(() => {
+        const handleGlobalKeyDown = (event) => {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                handleSave();
+            }
+        };
+
+        document.addEventListener('keydown', handleGlobalKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleGlobalKeyDown);
+        };
+    }, [form]); // form이 변경될 때마다 이벤트 리스너 재등록
+
     return (
         <Modal isOpen={true} onClose={onClose}>
             <h3 className="text-xl font-bold mb-6">{event ? '이벤트 수정' : '새 이벤트'}</h3>
