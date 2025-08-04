@@ -17,7 +17,8 @@ class FAQViewHolder(
         binding.clFaqItem.setOnClickListener {
             onNewsClickListener.onFAQClick(item)
         }
-        binding.tvFaqQuestion.text = item.question
+        binding.tvFaqQuestion.text =
+            binding.tvFaqQuestion.context.getString(R.string.tab_faq_question, item.question)
         binding.tvFaqAnswer.text = item.answer
         binding.ivFaqExpand.setImageResource(if (item.isExpanded) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down)
         binding.tvFaqAnswer.visibility = if (item.isExpanded) View.VISIBLE else View.GONE

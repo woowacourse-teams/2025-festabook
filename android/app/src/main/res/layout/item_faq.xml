@@ -2,7 +2,7 @@
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
-    
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_faq_item"
         android:layout_width="match_parent"
@@ -14,11 +14,12 @@
         <TextView
             android:id="@+id/tv_faq_question"
             style="@style/PretendardBold14"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toTopOf="@id/tv_faq_answer"
+            app:layout_constraintEnd_toStartOf="@id/iv_faq_expand"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:layout_editor_absoluteX="16dp"
             tools:text="Q. 주차 어디에다가 해요?" />
 
         <ImageView
@@ -26,9 +27,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:contentDescription="@string/faq_expand"
-            app:layout_constraintBottom_toBottomOf="@id/tv_faq_question"
-            app:layout_constraintEnd_toEndOf="@id/tv_faq_question"
-            app:layout_constraintTop_toTopOf="@id/tv_faq_question" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_faq_answer"

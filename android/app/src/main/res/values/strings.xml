@@ -49,6 +49,7 @@
     <string name="tab_notice">공지</string>
     <string name="tab_faq">Q&amp;A</string>
     <string name="tab_lost_item">분실물</string>
+    <string name="tab_faq_question">Q. %1$s</string>
 
     <!--    설정 화면-->
     <string name="setting_title">설정</string>
