@@ -2,14 +2,21 @@ name: Android CI
 
 on:
   push:
-    branches: ['android/**']
+    branches:
+      - 'android'
   pull_request:
-    branches: ['android/**']
+    branches:
+      - 'android'
+
 
 jobs:
   build:
 
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: android
 
     steps:
       - uses: actions/checkout@v4
@@ -20,9 +27,31 @@ jobs:
           distribution: 'temurin'
           cache: gradle
 
-      - name: Grant execute permission for gradlew
-        run: chmod +x gradlew
-      - name: Build with Gradle
-        run: ./gradlew build
+      - name: Create local.properties with BASE_URL
+        run: |
+          echo BASE_URL=\"${{ secrets.BASE_URL }}\" > local.properties
+          echo NAVER_MAP_CLIENT_ID=\"${{ secrets.NAVER_MAP_CLIENT_ID }}\" >> local.properties
+          echo NAVER_MAP_STYLE_ID=\"${{ secrets.NAVER_MAP_STYLE_ID }}\" >> local.properties
+
+      - name: Load Google Service file
+        env:
+          DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: echo "$DATA" > app/google-services.json
+
+      - name: Check local.properties content
+        run:  cat local.properties
+
+      - name: Echo env var
+        run: echo "${{ secrets.BASE_URL }}"
+
+      - name: Clean Project
+        run: ./gradlew clean
+
       - name: Run ktlint
         run: ./gradlew ktlintCheck
+        
+      - name: Run Unit Test
+        run: ./gradlew test
+
+      - name: Build with Gradle
+        run: ./gradlew build

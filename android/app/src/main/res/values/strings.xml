@@ -8,15 +8,24 @@
     <string name="menu_news_title">소식</string>
     <string name="menu_setting_title">설정</string>
 
+
+    <!-- 홈 화면 -->
+    <string name="home_poster_image">poster_image</string>
+
     <!--한 눈에 보기 화면 -->
     <string name="place_list_title">한 눈에 보기</string>
     <string name="place_list_title_booth">부스</string>
     <string name="place_list_title_bar">주점</string>
     <string name="place_list_title_food_truck">푸드트럭</string>
+    <string name="place_list_default_description">상세 정보가 아직 없습니다</string>
+    <string name="place_list_default_location">미지정</string>
+    <string name="place_list_default_title">플레이스 이름이 아직 없습니다</string>
 
     <!--플레이스 상세 화면-->
     <string name="place_detail_notice_description">최근 3개의 공지사항만 표시됩니다</string>
     <string name="place_detail_notice_title">공지사항</string>
+    <string name="place_detail_default_time">미지정</string>
+    <string name="place_detail_default_host">미지정</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
@@ -26,18 +35,45 @@
     <string name="schedule_status_ongoing">진행중</string>
     <string name="schedule_status_completed">종료</string>
 
+    <!--지도 화면-->
+    <string name="map_request_location_permission_message">현재 위치를 확인하시려면 위치 권한이 필요합니다</string>"
+
     <!-- 아이콘 contentDescription   -->
     <string name="schedule_location">위치</string>
     <string name="schedule_time">시간</string>
     <string name="all_book_mark">북마크</string>
     <string name="schedule_circle">원</string>
 
-    <!-- News Screen -->
+    <!-- 소식 화면 -->
     <string name="news_title">소식</string>
+    <string name="tab_notice">공지</string>
+    <string name="tab_faq">Q&amp;A</string>
+    <string name="tab_lost_item">분실물</string>
 
+    <!--    설정 화면-->
+    <string name="setting_title">설정</string>
+    <string name="setting_notice_title">알림</string>
+    <string name="setting_current_university_notice">현재 접속 중인 대학 알림</string>
+    <string name="setting_notice_detail">앱 알림 세부 설정</string>
+    <string name="setting_app_info_title">앱 정보</string>
+    <string name="setting_app_version">앱 버전</string>
+    <string name="setting_service_policy">약관 및 정책</string>
+    <string name="setting_contact_us">문의하기</string>
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
     <string name="content_description_iv_location">위치 아이콘</string>
     <string name="content_description_booth_image">부스 이미지</string>
+    <string name="place_detail_no_notice">공지사항이 없습니다</string>
+    <string name="refresh">새로고침</string>
+    <string name="content_description_floating_action_button">플로팅 지도 버튼</string>
+    <string name="move">이동</string>
+
+    <!--실패 시 출력 -->
+    <string name="fail_snackbar_confirm">확인</string>
+    <string name="error_server_exception">서버 요청에 실패했습니다. 잠시 후 다시 시도해주세요</string>
+    <string name="error_client_exception">잘못된 요청입니다</string>
+    <string name="error_network_exception">현재 연결이 불안정합니다. 잠시 후 다시 시도해주세요</string>
+    <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
+    <string name="error_fail_to_load_place_info">정보를 불러오는데 실패했습니다</string>
 
 </resources>

@@ -1,14 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".HomeFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:text="@string/hello_blank_fragment" />
+        tools:context=".presentation.home.HomeFragment">
 
-</FrameLayout>
+        <TextView
+            android:id="@+id/tv_home_organization_title"
+            style="@style/PretendardBold24"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="40dp"
+            android:textColor="@color/gray900"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="가천대학교" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_home_poster"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_organization_title"
+            tools:listitem="@layout/item_home_poster" />
+
+        <TextView
+            android:id="@+id/tv_home_festival_title"
+            style="@style/PretendardBold20"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="16dp"
+            android:textColor="@color/gray900"
+            android:textStyle="bold"
+            app:layout_constraintTop_toBottomOf="@id/rv_home_poster"
+            tools:text="2025 가천 Water Festival\n: AQUA WAVE" />
+
+        <TextView
+            android:id="@+id/tv_home_festival_date"
+            style="@style/PretendardMedium14"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginTop="8dp"
+            android:textColor="@color/gray500"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_title"
+            tools:text="2025년 10월 15일 - 10월 17일" />
+
+        <com.google.android.material.divider.MaterialDivider
+            android:id="@+id/view_divider"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="16dp"
+            app:dividerColor="@color/gray200"
+            app:dividerThickness="1dp"
+            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_date" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

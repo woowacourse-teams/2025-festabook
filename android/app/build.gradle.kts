@@ -1,12 +1,38 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.serialization)
     id("kotlin-kapt")
+    id("kotlin-parcelize")
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.daedan.festabook"
     compileSdk = 36
+
+    val localProperties =
+        gradle.rootProject
+            .file("local.properties")
+            .inputStream()
+            .use { Properties().apply { load(it) } }
+
+    val baseUrl =
+        checkNotNull(localProperties["BASE_URL"] as? String) {
+            "BASE_URL is missing or not a String in local.properties"
+        }
+
+    val naverMapClientId =
+        checkNotNull(localProperties["NAVER_MAP_CLIENT_ID"] as? String) {
+            "NAVER_MAP_CLIENT_ID is missing or not a String in local.properties"
+        }
+
+    val naverMapStyleId =
+        checkNotNull(localProperties["NAVER_MAP_STYLE_ID"] as? String) {
+            "NAVER_MAP_STYLE_ID is missing or not a String in local.properties"
+        }
 
     defaultConfig {
         applicationId = "com.daedan.festabook"
@@ -20,7 +46,19 @@ android {
         buildConfigField(
             "String",
             "FESTABOOK_URL",
-            "\"http://festabook.woowacourse.com/\"",
+            baseUrl,
+        )
+
+        buildConfigField(
+            "String",
+            "NAVER_MAP_CLIENT_ID",
+            naverMapClientId,
+        )
+
+        buildConfigField(
+            "String",
+            "NAVER_MAP_STYLE_ID",
+            naverMapStyleId,
         )
     }
 
@@ -43,11 +81,13 @@ android {
     buildFeatures {
         buildConfig = true
         dataBinding = true
+        viewBinding = true
     }
 }
 
 dependencies {
-
+    implementation(libs.map.sdk)
+    implementation(libs.play.services.location)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.fragment.ktx)
     implementation(libs.androidx.appcompat)
@@ -60,7 +100,17 @@ dependencies {
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.viewpager2)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.messaging)
+    implementation(libs.androidx.swiperefreshlayout)
+    implementation(libs.shimmer)
+    implementation(libs.timber)
+    implementation(libs.lottie)
     testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.androidx.core.testing)
+    testImplementation(libs.kotlinx.coroutines.test)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

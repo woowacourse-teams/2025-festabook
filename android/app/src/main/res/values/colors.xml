@@ -14,6 +14,7 @@
 
     <!--black-->
     <color name="black400">#FF1B1B1B</color>
+    <color name="black400_alpha30">#4D1B1B1B</color>
 
     <!--red-->
     <color name="red400">#FFFF4B3E</color>
@@ -23,4 +24,7 @@
 
     <!--green-->
     <color name="green400">#00AB40</color>
+
+    <!--    transparent-->
+    <color name="transparent">#00000000</color>
 </resources>
