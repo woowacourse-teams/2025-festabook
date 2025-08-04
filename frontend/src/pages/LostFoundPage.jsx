@@ -3,6 +3,12 @@ import FlipMove from 'react-flip-move';
 import { useData } from '../hooks/useData';
 import { useModal } from '../hooks/useModal';
 
+/**
+ * 날짜 문자열을 "YYYY-MM-DD HH:mm" 형식으로 변환합니다.
+ * 입력값이 없거나 유효하지 않으면 빈 문자열을 반환합니다.
+ * @param {string} dateString - 변환할 날짜 문자열
+ * @return {string} 변환된 날짜 및 시간 문자열
+ */
 function formatDate(dateString) {
     if (!dateString) return '';
     const d = new Date(dateString);
