@@ -5,8 +5,12 @@ export const initialData = {
         { id: 3, title: '푸드트럭 존 운영 시간 변경 안내', content: '금일 우천 예보로 인해 푸드트럭 존 운영이 1시간 단축됩니다.', date: '2025-07-18', pinned: false },
     ],
     lostItems: [
-        { id: 1, name: '검정색 카드지갑', location: '대운동장 스탠드', date: '2025-07-18', photo: 'https://placehold.co/100x100/e0e0e0/757575?text=Photo', status: '보관중' },
-        { id: 2, name: '에어팟 프로', location: '본관 화장실', date: '2025-07-17', photo: 'https://placehold.co/100x100/e2e8f0/4a5568?text=Photo', status: '인계완료' },
+        { id: 1, storageLocation: '대운동장 스탠드', createdAt: '2025-07-20', imageUrl: 'https://img1.daumcdn.net/thumb/R720x0.q80/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F1576494B4EE4AB8320', pickupStatus: 'PENDING' },
+        { id: 2, storageLocation: '본관 화장실', createdAt: '2025-07-17', imageUrl: 'https://media.themoviedb.org/t/p/w500/fpDesSzDRMFGIJbcuC2WVCveC2P.jpg', pickupStatus: 'COMPLETED' },
+        { id: 3, storageLocation: '대운동장 스탠드', createdAt: '2025-07-18', imageUrl: 'https://image.tmdb.org/t/p/w1280/ndDYIa9VXFbWpC2pWj9j5OaZsfE.jpg', pickupStatus: 'PENDING' },
+        { id: 4, storageLocation: '본관 화장실', createdAt: '2025-07-17', imageUrl: 'https://image.tving.com/ntgs/contents/CTC/caip/CAIP0900/ko/20230303/P001700944.jpg/dims/resize/480', pickupStatus: 'COMPLETED' },
+        { id: 5, storageLocation: '대운동장 스탠드', createdAt: '2025-07-21', imageUrl: 'https://image.tmdb.org/t/p/original/5AijOLYBqFbkAsmYM1Mv8D3i63F.jpg', pickupStatus: 'PENDING' },
+        { id: 6, storageLocation: '본관 화장실', createdAt: '2025-07-22', imageUrl: 'https://www.themoviedb.org/t/p/w1280/wwuFdCsFbcOGPdt1UEcadHxA1Gd.jpg', pickupStatus: 'COMPLETED' },
     ],
     schedule: {
         "2025-07-18": [

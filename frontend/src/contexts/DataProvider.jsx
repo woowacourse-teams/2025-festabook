@@ -79,16 +79,19 @@ export const DataProvider = ({ children }) => {
             setData(d => ({ ...d, notices: d.notices.map(n => n.id === id ? { ...n, pinned: !n.pinned } : n)}));
             showToast(notice.pinned ? '공지사항 고정이 해제되었습니다.' : '공지사항이 고정되었습니다.');
         },
-        addLostItem: (item) => setData(d => ({ ...d, lostItems: [{ id: getNextId(d.lostItems), ...item, status: '보관중' }, ...d.lostItems] })),
+        addLostItem: (item) => setData(d => ({ ...d, lostItems: [{ id: getNextId(d.lostItems), ...item, pickupStatus: 'PENDING', createdAt: new Date().toISOString() }, ...d.lostItems] })),
         updateLostItem: (id, updated) => setData(d => ({ ...d, lostItems: d.lostItems.map(i => i.id === id ? { ...i, ...updated } : i) })),
         deleteLostItem: (id) => setData(d => ({ ...d, lostItems: d.lostItems.filter(i => i.id !== id) })),
         toggleLostItemStatus: (id, showToast) => {
             let newStatus = '';
             setData(d => ({ ...d, lostItems: d.lostItems.map(i => {
-                if (i.id === id) { newStatus = i.status === '보관중' ? '인계완료' : '보관중'; return { ...i, status: newStatus }; }
+                if (i.id === id) { 
+                    newStatus = i.pickupStatus === 'PENDING' ? 'COMPLETED' : 'PENDING'; 
+                    return { ...i, pickupStatus: newStatus }; 
+                }
                 return i;
             })}));
-            showToast(`상태가 [${newStatus}]으로 변경되었습니다.`);
+            showToast(`상태가 [${newStatus === 'PENDING' ? '보관중' : '수령완료'}]으로 변경되었습니다.`);
         },
         // QnA 관련 액션들 (서버 연동)
         addQnaItem: async (item, showToast) => {
