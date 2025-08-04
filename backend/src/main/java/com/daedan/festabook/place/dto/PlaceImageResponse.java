@@ -4,13 +4,15 @@ import com.daedan.festabook.place.domain.PlaceImage;
 
 public record PlaceImageResponse(
         Long id,
-        String imageUrl
+        String imageUrl,
+        Integer sequence
 ) {
 
     public static PlaceImageResponse from(PlaceImage placeImage) {
         return new PlaceImageResponse(
                 placeImage.getId(),
-                placeImage.getImageUrl()
+                placeImage.getImageUrl(),
+                placeImage.getSequence()
         );
     }
 }

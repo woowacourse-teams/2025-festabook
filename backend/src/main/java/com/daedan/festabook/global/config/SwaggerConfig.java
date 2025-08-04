@@ -21,10 +21,13 @@ public class SwaggerConfig {
 
     private static final String ORGANIZATION_SCHEME_NAME = "조직(Organization) ID 값";
     private static final List<String[]> API_GROUPS = List.of(
-            new String[]{"일정 API", "/schedules/**"},
+            new String[]{"전체", "/**"},
+            new String[]{"일정 API", "/event-dates/**"},
             new String[]{"플레이스 API", "/places/**"},
             new String[]{"공지 API", "/announcements/**"},
-            new String[]{"질문 API", "/questions/**"}
+            new String[]{"질문 API", "/questions/**"},
+            new String[]{"조직 API", "/organizations/**"},
+            new String[]{"디바이스 API", "/devices/**"}
     );
 
     private final BuildProperties buildProperties;

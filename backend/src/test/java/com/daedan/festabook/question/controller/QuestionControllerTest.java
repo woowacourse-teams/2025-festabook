@@ -1,16 +1,21 @@
 package com.daedan.festabook.question.controller;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
-import com.daedan.festabook.question.domain.QuestionAnswer;
-import com.daedan.festabook.question.domain.QuestionAnswerFixture;
-import com.daedan.festabook.question.infrastructure.QuestionAnswerJpaRepository;
+import com.daedan.festabook.question.domain.Question;
+import com.daedan.festabook.question.domain.QuestionFixture;
+import com.daedan.festabook.question.dto.QuestionRequest;
+import com.daedan.festabook.question.dto.QuestionRequestFixture;
+import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
+import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequestFixture;
+import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import io.restassured.RestAssured;
-import java.time.LocalDateTime;
+import io.restassured.http.ContentType;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -33,7 +38,7 @@ class QuestionControllerTest {
     private OrganizationJpaRepository organizationJpaRepository;
 
     @Autowired
-    private QuestionAnswerJpaRepository questionAnswerJpaRepository;
+    private QuestionJpaRepository questionJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -44,7 +49,46 @@ class QuestionControllerTest {
     }
 
     @Nested
-    class getAllQuestionAnswerByOrganizationId {
+    class createQuestion {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Question question = QuestionFixture.create(organization);
+            questionJpaRepository.save(question);
+
+            Integer count = questionJpaRepository.countByOrganizationId(organization.getId());
+
+            QuestionRequest request = QuestionRequestFixture.create(
+                    "개도 데려갈 수 있나요?",
+                    "이 서비스는 페스타북입니다."
+            );
+
+            int expectedFieldSize = 4;
+            int expectedSequence = count + 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/questions")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("question", equalTo(request.question()))
+                    .body("answer", equalTo(request.answer()))
+                    .body("sequence", equalTo(expectedSequence));
+        }
+    }
+
+    @Nested
+    class getAllQuestionByOrganizationId {
 
         @Test
         void 성공_응답_데이터_필드_확인() {
@@ -52,11 +96,11 @@ class QuestionControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            QuestionAnswer questionAnswer = QuestionAnswerFixture.create(organization);
-            questionAnswerJpaRepository.save(questionAnswer);
+            Question question = QuestionFixture.create(organization);
+            questionJpaRepository.save(question);
 
             int expectedSize = 1;
-            int expectedFieldSize = 5;
+            int expectedFieldSize = 4;
 
             // when & then
             RestAssured
@@ -68,10 +112,10 @@ class QuestionControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(questionAnswer.getId().intValue()))
-                    .body("[0].title", equalTo(questionAnswer.getTitle()))
-                    .body("[0].question", equalTo(questionAnswer.getQuestion()))
-                    .body("[0].answer", equalTo(questionAnswer.getAnswer()));
+                    .body("[0].questionId", equalTo(question.getId().intValue()))
+                    .body("[0].question", equalTo(question.getQuestion()))
+                    .body("[0].answer", equalTo(question.getAnswer()))
+                    .body("[0].sequence", equalTo(question.getSequence()));
         }
 
         @Test
@@ -82,11 +126,11 @@ class QuestionControllerTest {
             organizationJpaRepository.saveAll(List.of(checkOrganization, otherOrganization));
 
             int expectedSize = 2;
-            List<QuestionAnswer> questionAnswers = QuestionAnswerFixture.createList(expectedSize, checkOrganization);
-            questionAnswerJpaRepository.saveAll(questionAnswers);
+            List<Question> questions = QuestionFixture.createList(expectedSize, checkOrganization);
+            questionJpaRepository.saveAll(questions);
             int otherSize = 3;
-            List<QuestionAnswer> otherQuestionAnswers = QuestionAnswerFixture.createList(otherSize, otherOrganization);
-            questionAnswerJpaRepository.saveAll(otherQuestionAnswers);
+            List<Question> otherQuestions = QuestionFixture.createList(otherSize, otherOrganization);
+            questionJpaRepository.saveAll(otherQuestions);
 
             // when & then
             RestAssured
@@ -100,22 +144,16 @@ class QuestionControllerTest {
         }
 
         @Test
-        void 성공_날짜_내림차순_데이터() {
+        void 성공_Sequence_오름차순_정렬() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<LocalDateTime> dateTimes = List.of(
-                    LocalDateTime.now().minusDays(1),
-                    LocalDateTime.now()
-            );
+            Question question2 = QuestionFixture.create(organization, 2);
+            Question question1 = QuestionFixture.create(organization, 1);
+            questionJpaRepository.saveAll(List.of(question2, question1));
 
-            List<QuestionAnswer> questionAnswers = QuestionAnswerFixture.createList(dateTimes, organization);
-            questionAnswerJpaRepository.saveAll(questionAnswers);
-
-            List<QuestionAnswer> expectedQuestionAnswers = questionAnswers.stream()
-                    .sorted((qa1, qa2) -> qa2.getCreatedAt().compareTo(qa1.getCreatedAt()))
-                    .toList();
+            int expectedSize = 2;
 
             // when & then
             RestAssured
@@ -125,9 +163,120 @@ class QuestionControllerTest {
                     .get("/questions")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(questionAnswers.size()))
-                    .body("[0].id", equalTo(expectedQuestionAnswers.get(0).getId().intValue()))
-                    .body("[1].id", equalTo(expectedQuestionAnswers.get(1).getId().intValue()));
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].questionId", equalTo(question1.getId().intValue()))
+                    .body("[1].questionId", equalTo(question2.getId().intValue()));
+        }
+    }
+
+    @Nested
+    class updateQuestionAndAnswer {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Question question = QuestionFixture.create(organization);
+            questionJpaRepository.save(question);
+
+            QuestionRequest request = QuestionRequestFixture.create(
+                    "수정 후 질문입니다.",
+                    "수정 후 답변입니다."
+            );
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/questions/{questionId}", question.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("questionId", equalTo(question.getId().intValue()))
+                    .body("question", equalTo(request.question()))
+                    .body("answer", equalTo(request.answer()));
+        }
+    }
+
+    @Nested
+    class updateSequence {
+
+        @Test
+        void 성공_수정_후에도_오름차순으로_재정렬() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Question question1 = QuestionFixture.create(organization, 1);
+            Question question2 = QuestionFixture.create(organization, 2);
+            Question question3 = QuestionFixture.create(organization, 3);
+            questionJpaRepository.saveAll(List.of(question1, question2, question3));
+
+            QuestionSequenceUpdateRequest request1 = QuestionSequenceUpdateRequestFixture.create(question1.getId(), 2);
+            QuestionSequenceUpdateRequest request2 = QuestionSequenceUpdateRequestFixture.create(question2.getId(), 3);
+            QuestionSequenceUpdateRequest request3 = QuestionSequenceUpdateRequestFixture.create(question3.getId(), 1);
+            List<QuestionSequenceUpdateRequest> requests = List.of(request1, request2, request3);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(requests)
+                    .when()
+                    .patch("/questions/sequences")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].questionId", equalTo(question3.getId().intValue()))
+                    .body("[0].sequence", equalTo(1))
+
+                    .body("[1].questionId", equalTo(question1.getId().intValue()))
+                    .body("[1].sequence", equalTo(2))
+
+                    .body("[2].questionId", equalTo(question2.getId().intValue()))
+                    .body("[2].sequence", equalTo(3));
+        }
+    }
+
+    @Nested
+    class deleteQuestionByQuestionId {
+
+        @Test
+        void 성공() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            Question question = QuestionFixture.create(organization);
+            questionJpaRepository.save(question);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/questions/{questionId}", question.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertThat(questionJpaRepository.findById(question.getId())).isEmpty();
+        }
+
+        @Test
+        void 성공_없는_리소스_삭제() {
+            // given
+            Long invalidQuestionId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/questions/{questionId}", invalidQuestionId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertThat(questionJpaRepository.findById(invalidQuestionId)).isEmpty();
         }
     }
 }
