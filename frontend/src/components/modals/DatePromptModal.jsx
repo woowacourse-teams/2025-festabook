@@ -20,9 +20,13 @@ const DatePromptModal = ({ onSave, onClose, defaultDate }) => {
         };
     }, [onClose]);
 
-    const handleSave = () => {
-        onSave(date);
-        onClose();
+    const handleSave = async () => {
+        try {
+            await onSave(date);
+            onClose();
+        } catch (error) {
+            onClose();
+        }
     };
 
     const handleKeyDown = (e) => {

@@ -195,6 +195,7 @@ export const DataProvider = ({ children }) => {
                 showToast('새로운 날짜가 추가되었습니다.');
             } catch (error) {
                 showToast(error.message || '날짜 추가에 실패했습니다.');
+                throw error; // 에러를 다시 던져서 호출자에서 처리
             } finally {
                 setIsLoadingDates(false);
             }

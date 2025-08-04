@@ -57,12 +57,19 @@ const SchedulePage = () => {
 
     const handleAddDate = async (date) => {
         if (date && !schedule[date]) {
-            await addScheduleDate(date, showToast);
-            setActiveDate(date);
+            try {
+                await addScheduleDate(date, showToast);
+                setActiveDate(date);
+            } catch (error) {
+                // API 실패 시에도 UI는 유지
+                throw error; // 에러를 다시 던져서 DatePromptModal에서 처리
+            }
         } else if (schedule[date]) {
             showToast('이미 존재하는 날짜입니다.');
+            throw new Error('이미 존재하는 날짜입니다.');
         } else {
             showToast('유효하지 않은 날짜입니다.');
+            throw new Error('유효하지 않은 날짜입니다.');
         }
     };
 
