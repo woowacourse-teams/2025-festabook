@@ -125,16 +125,6 @@ const HomePage = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
                         <p className="text-gray-900">{formatDate(organization.startDate)} - {formatDate(organization.endDate)}</p>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
-                        <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${
-                            organization.isActive !== false 
-                                ? 'bg-black text-white' 
-                                : 'bg-gray-300 text-gray-700'
-                        }`}>
-                            {organization.isActive !== false ? '활성' : '비활성'}
-                        </span>
-                    </div>
                 </div>
             </div>
 
