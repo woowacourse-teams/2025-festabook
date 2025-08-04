@@ -3,9 +3,38 @@ import Modal from '../common/Modal';
 
 const ScheduleModal = ({ event, onSave, onClose }) => {
     const [form, setForm] = useState({ title: '', startTime: '', endTime: '', location: '' });
-    useEffect(() => { setForm(event || { title: '', startTime: '', endTime: '', location: '' }); }, [event]);
+    
+    useEffect(() => { 
+        setForm(event || { title: '', startTime: '', endTime: '', location: '' }); 
+    }, [event]);
+
+    // ESC 키 이벤트 리스너
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscKey);
+
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [onClose]);
+
     const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    const handleSave = () => { onSave(form, onClose); }; // onClose 콜백 전달
+    
+    const handleSave = () => { 
+        onSave(form, onClose); 
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSave();
+        }
+    };
 
     return (
         <Modal isOpen={true} onClose={onClose}>
@@ -13,21 +42,51 @@ const ScheduleModal = ({ event, onSave, onClose }) => {
             <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">이벤트명</label>
-                    <input name="title" type="text" value={form.title} onChange={handleChange} placeholder="예: 동아리 버스킹 공연" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" />
+                    <input 
+                        name="title" 
+                        type="text" 
+                        value={form.title} 
+                        onChange={handleChange} 
+                        onKeyDown={handleKeyDown}
+                        placeholder="예: 동아리 버스킹 공연" 
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
+                    />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">시작 시간</label>
-                        <input name="startTime" type="time" value={form.startTime} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" />
+                        <input 
+                            name="startTime" 
+                            type="time" 
+                            value={form.startTime} 
+                            onChange={handleChange} 
+                            onKeyDown={handleKeyDown}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
+                        />
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">종료 시간</label>
-                        <input name="endTime" type="time" value={form.endTime} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" />
+                        <input 
+                            name="endTime" 
+                            type="time" 
+                            value={form.endTime} 
+                            onChange={handleChange} 
+                            onKeyDown={handleKeyDown}
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
+                        />
                     </div>
                 </div>
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">장소</label>
-                    <input name="location" type="text" value={form.location} onChange={handleChange} placeholder="예: 학생회관 앞" className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" />
+                    <input 
+                        name="location" 
+                        type="text" 
+                        value={form.location} 
+                        onChange={handleChange} 
+                        onKeyDown={handleKeyDown}
+                        placeholder="예: 학생회관 앞" 
+                        className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
+                    />
                 </div>
             </div>
             <div className="mt-6 flex justify-between w-full">
