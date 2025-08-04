@@ -21,6 +21,7 @@ class PlaceListBottomSheetBehavior<V : View>(
     private var headerRange: IntRange = 0..0
 
     init {
+        state = STATE_HALF_EXPANDED
         addBottomSheetCallback(
             object : BottomSheetCallback() {
                 override fun onStateChanged(
