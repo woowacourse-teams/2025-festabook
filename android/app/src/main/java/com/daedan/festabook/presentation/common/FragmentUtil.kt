@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
-import com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior
+import com.daedan.festabook.presentation.placeList.behavior.PlaceListScrollBehavior
 import com.google.android.material.snackbar.Snackbar
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =

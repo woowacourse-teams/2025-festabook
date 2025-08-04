@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.placeList
+package com.daedan.festabook.presentation.placeList.behavior
 
 import android.content.Context
 import android.content.res.TypedArray

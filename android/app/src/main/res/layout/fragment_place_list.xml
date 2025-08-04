@@ -22,11 +22,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginBottom="400dp"
-            android:layout_gravity="start|bottom"
-            app:layout_constraintBottom_toTopOf="@id/rv_places"
-            app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior"
+            android:layout_gravity="start|bottom" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -169,7 +166,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@drawable/bg_place_list"
-            app:layout_behavior=".presentation.placeList.PlaceListBottomSheetBehavior"
+            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetBehavior"
             app:behavior_fitToContents="false"
             app:behavior_halfExpandedRatio="0.375"
             app:behavior_peekHeight="80dp"
