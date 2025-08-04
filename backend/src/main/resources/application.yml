@@ -14,6 +14,7 @@ springdoc:
   swagger-ui:
     path: /api-docs
     persist-authorization: true
+    operations-sorter: method
 
 firebase:
   adminsdk:
