@@ -3,11 +3,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-    <data>
-
-    </data>
-
     <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_faq_item"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="12dp"
@@ -17,18 +14,30 @@
         <TextView
             android:id="@+id/tv_faq_question"
             style="@style/PretendardBold14"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="4dp"
+            app:layout_constraintBottom_toTopOf="@id/tv_faq_answer"
+            app:layout_constraintEnd_toStartOf="@id/iv_faq_expand"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
             tools:text="Q. 주차 어디에다가 해요?" />
 
         <ImageView
             android:id="@+id/iv_faq_expand"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:contentDescription="@string/faq_expand"
-            android:src="@drawable/ic_chevron_down"
-            app:layout_constraintBottom_toBottomOf="@id/tv_faq_question"
-            app:layout_constraintEnd_toEndOf="@id/tv_faq_question"
-            app:layout_constraintTop_toTopOf="@id/tv_faq_question" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_faq_answer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_faq_question"
+            tools:text="주차 지원은 없습니다 !!대중교통을 타고 오세요 !!!!!" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
