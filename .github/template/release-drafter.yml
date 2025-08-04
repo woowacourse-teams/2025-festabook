@@ -44,4 +44,4 @@ template: |
   $CHANGES
 
   ## 📦 전체 변경 이력
-  [$PREVIOUS_TAG...v$RESOLVED_VERSION](https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION)
+  [$PREVIOUS_TAG ~ v$RESOLVED_VERSION](https://github.com/$OWNER/$REPOSITORY/compare/$PREVIOUS_TAG...v$RESOLVED_VERSION)
