@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import FlipMove from 'react-flip-move';
 import { useModal } from '../hooks/useModal';
 import api from '../utils/api';
 
@@ -20,8 +21,12 @@ const NoticesPage = () => {
 
     useEffect(() => {
         api.get('/announcements').then(res => {
-            setPinned(res.data.pinned || []);
-            setUnpinned(res.data.unpinned || []);
+            // 고정된 공지사항과 일반 공지사항을 모두 작성 시간 순서대로 정렬 (최신순)
+            const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            setPinned(pinnedNotices);
+            setUnpinned(unpinnedNotices);
         });
     }, []);
 
@@ -32,8 +37,11 @@ const NoticesPage = () => {
                 await api.patch(`/announcements/${id}`, data);
                 // 공지 수정 후 목록 재로딩
                 const res = await api.get('/announcements');
-                setPinned(res.data.pinned || []);
-                setUnpinned(res.data.unpinned || []);
+                const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                setPinned(pinnedNotices);
+                setUnpinned(unpinnedNotices);
                 showToast('공지사항이 수정되었습니다.');
             } catch {
                 showToast('공지사항 수정에 실패했습니다.');
@@ -43,8 +51,11 @@ const NoticesPage = () => {
                 await api.post('/announcements', data);
                 // 공지 추가 후 목록 재로딩
                 const res = await api.get('/announcements');
-                setPinned(res.data.pinned || []);
-                setUnpinned(res.data.unpinned || []);
+                const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                
+                setPinned(pinnedNotices);
+                setUnpinned(unpinnedNotices);
                 showToast('새 공지사항이 등록되었습니다.');
             } catch {
                 showToast('공지사항 등록에 실패했습니다.');
@@ -57,8 +68,11 @@ const NoticesPage = () => {
             await api.delete(`/announcements/${id}`);
             // 공지 삭제 후 목록 재로딩
             const res = await api.get('/announcements');
-            setPinned(res.data.pinned || []);
-            setUnpinned(res.data.unpinned || []);
+            const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            
+            setPinned(pinnedNotices);
+            setUnpinned(unpinnedNotices);
             showToast('공지사항이 삭제되었습니다.');
         } catch {
             showToast('공지사항 삭제에 실패했습니다.');
@@ -81,15 +95,25 @@ const NoticesPage = () => {
             if (response.status === 204) {
                 // 클라이언트 상태 업데이트
                 if (currentIsPinned) {
-                    // 고정 해제: pinned -> unpinned
+                    // 고정 해제: pinned -> unpinned (작성 순서대로 정렬)
                     const notice = pinned.find(n => n.id === noticeId);
                     setPinned(prev => prev.filter(n => n.id !== noticeId));
-                    setUnpinned(prev => [{ ...notice, isPinned: false }, ...prev]);
+                    
+                    // 기존 unpinned에 추가하고 createdAt 기준으로 정렬 (최신순)
+                    setUnpinned(prev => {
+                        const newUnpinned = [...prev, { ...notice, isPinned: false }];
+                        return newUnpinned.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    });
                 } else {
-                    // 고정 등록: unpinned -> pinned  
+                    // 고정 등록: unpinned -> pinned (작성 순서대로 정렬)
                     const notice = unpinned.find(n => n.id === noticeId);
                     setUnpinned(prev => prev.filter(n => n.id !== noticeId));
-                    setPinned(prev => [...prev, { ...notice, isPinned: true }]);
+                    
+                    // 기존 pinned에 추가하고 createdAt 기준으로 정렬 (최신순)
+                    setPinned(prev => {
+                        const newPinned = [...prev, { ...notice, isPinned: true }];
+                        return newPinned.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                    });
                 }
                 
                 showToast(currentIsPinned ? '공지사항 고정이 해제되었습니다.' : '공지사항이 고정되었습니다.');
@@ -102,73 +126,55 @@ const NoticesPage = () => {
     
     return (
         <div>
-            <style>{`
-                /* 고정핀 버튼 스타일 */
-                .pin-button {
-                    cursor: pointer;
-                    border: none;
-                    background: none;
-                    padding: 4px;
-                    border-radius: 4px;
-                }
-                
-                .pin-button:hover {
-                    background-color: #f3f4f6;
-                }
-                
-                .pin-icon { 
-                    color: #d1d5db; 
-                    transition: all 0.2s ease-in-out;
-                    font-size: 16px;
-                }
-                
-                .pin-icon.pinned { 
-                    color: #f59e0b; 
-                    transform: rotate(45deg);
-                }
-                
-                .pin-icon:hover {
-                    color: #9ca3af;
-                }
-                
-                .pin-icon.pinned:hover {
-                    color: #d97706;
-                }
-            `}</style>
-            <div className="flex justify-between items-center mb-6"><h2 className="text-3xl font-bold">공지사항</h2><button onClick={() => openModal('notice', { onSave: (data) => handleSave(null, data) })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> 새 공지사항</button></div>
-            <p className="text-sm text-gray-500 mb-2">※ 고정은 최대 3개만 가능합니다.</p>
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-                <table className="min-w-full w-full">
-                    <thead className="table-header">
-                        <tr>
-                            <th className="p-4 text-center font-semibold min-w-[60px] w-20">고정</th>
-                            <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">제목</th>
-                            <th className="p-4 text-left font-semibold min-w-[180px] w-1/3">내용</th>
-                            <th className="p-4 text-left font-semibold min-w-[100px] w-1/6">작성일</th>
-                            <th className="p-4 text-left font-semibold min-w-[120px] w-1/6">관리</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {/* 고정 공지 */}
-                        {pinned.map(notice => (
-                            <React.Fragment key={notice.id}>
-                                <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                                    <td className="p-4 text-center align-top">
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold">공지사항 관리</h2>
+                <button 
+                    onClick={() => openModal('notice', { onSave: (data) => handleSave(null, data) })} 
+                    className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"
+                >
+                    <i className="fas fa-plus mr-2"></i> 공지사항 등록
+                </button>
+            </div>
+            
+            <p className="text-sm text-gray-500 mb-4">※ 고정은 최대 3개만 가능합니다.</p>
+            
+            {/* 고정된 공지사항 */}
+            {pinned.length > 0 && (
+                <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-gray-700 mb-3 flex items-center">
+                        <i className="fas fa-thumbtack text-yellow-500 mr-2"></i>
+                        고정된 공지사항
+                    </h3>
+                    <FlipMove className="space-y-4">
+                        {pinned.map((notice) => (
+                            <div key={notice.id} data-id={notice.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                                    <div className="flex-1 flex items-start gap-3">
                                         <button 
                                             onClick={() => handleTogglePin(notice.id, notice.isPinned)} 
-                                            title="고정 토글"
-                                            className="pin-button hover:scale-110 transition-transform duration-200"
+                                            title="고정 해제"
+                                            className="text-yellow-500 hover:text-yellow-600 transition-colors mt-1 flex-shrink-0"
                                         >
-                                            <i className={`fas fa-thumbtack pin-icon ${notice.isPinned ? 'pinned' : ''}`}></i>
+                                            <i className="fas fa-thumbtack text-lg"></i>
                                         </button>
-                                    </td>
-                                    <td className="p-4 align-top max-w-xs truncate" title={notice.title}>{notice.title}</td>
-                                    <td className="p-4 align-top text-gray-800 max-w-xs truncate" style={{maxWidth: '320px'}} title={notice.content}>{notice.content}</td>
-                                    <td className="p-4 text-gray-600 align-top">{formatDate(notice.createdAt)}</td>
-                                    <td className="p-4 align-top min-w-[120px]">
-                                        <div className="flex flex-row items-center space-x-6 flex-wrap">
-                                            <button onClick={() => openModal('notice', { notice, onSave: (data) => handleSave(notice.id, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
-                                            <button onClick={() => {
+                                        <div className="flex-1 min-w-0">
+                                            <p className="font-semibold text-lg truncate" title={notice.title}>
+                                                {notice.title}
+                                            </p>
+                                            <p className="text-sm text-gray-500 mt-1">
+                                                {formatDate(notice.createdAt)}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center space-x-3 ml-0 sm:ml-4 flex-wrap">
+                                        <button 
+                                            onClick={() => openModal('notice', { notice, onSave: (data) => handleSave(notice.id, data) })} 
+                                            className="text-blue-600 hover:text-blue-800 font-bold"
+                                        >
+                                            수정
+                                        </button>
+                                        <button 
+                                            onClick={() => {
                                                 openModal('confirm', {
                                                     title: '공지사항 삭제 확인',
                                                     message: `'${notice.title}' 공지사항을 정말 삭제하시겠습니까?`,
@@ -176,47 +182,91 @@ const NoticesPage = () => {
                                                         handleDelete(notice.id);
                                                     }
                                                 });
-                                            }} className="text-red-600 hover:text-red-800 font-bold">삭제</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </React.Fragment>
-                        ))}
-                        {/* 일반 공지 */}
-                        {unpinned.map(notice => (
-                            <React.Fragment key={notice.id}>
-                                <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                                    <td className="p-4 text-center align-top">
-                                        <button 
-                                            onClick={() => handleTogglePin(notice.id, notice.isPinned)} 
-                                            title="고정 토글"
-                                            className="pin-button hover:scale-110 transition-transform duration-200"
+                                            }} 
+                                            className="text-red-600 hover:text-red-800 font-bold"
                                         >
-                                            <i className={`fas fa-thumbtack pin-icon ${notice.isPinned ? 'pinned' : ''}`}></i>
+                                            삭제
                                         </button>
-                                    </td>
-                                    <td className="p-4 align-top max-w-xs truncate" title={notice.title}>{notice.title}</td>
-                                    <td className="p-4 align-top text-gray-800 max-w-xs truncate" style={{maxWidth: '320px'}} title={notice.content}>{notice.content}</td>
-                                    <td className="p-4 text-gray-600 align-top">{formatDate(notice.createdAt)}</td>
-                                    <td className="p-4 align-top min-w-[120px]">
-                                        <div className="flex flex-row items-center space-x-6 flex-wrap">
-                                            <button onClick={() => openModal('notice', { notice, onSave: (data) => handleSave(notice.id, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
-                                            <button onClick={() => {
-                                                openModal('confirm', {
-                                                    title: '공지사항 삭제 확인',
-                                                    message: `'${notice.title}' 공지사항을 정말 삭제하시겠습니까?`,
-                                                    onConfirm: () => {
-                                                        handleDelete(notice.id);
-                                                    }
-                                                });
-                                            }} className="text-red-600 hover:text-red-800 font-bold">삭제</button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            </React.Fragment>
+                                    </div>
+                                </div>
+                                
+                                <div className="mt-4 pl-4 border-l-4 border-yellow-400 bg-yellow-50 p-3 rounded-r-lg">
+                                    <p className="text-gray-700 whitespace-pre-wrap">{notice.content}</p>
+                                </div>
+                            </div>
                         ))}
-                    </tbody>
-                </table>
+                    </FlipMove>
+                </div>
+            )}
+            
+            {/* 일반 공지사항 */}
+            <div>
+                <h3 className="text-lg font-semibold text-gray-700 mb-3">일반 공지사항</h3>
+                <FlipMove className="space-y-4">
+                    {unpinned.map((notice) => (
+                        <div key={notice.id} data-id={notice.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
+                                <div className="flex-1 flex items-start gap-3">
+                                    <button 
+                                        onClick={() => handleTogglePin(notice.id, notice.isPinned)} 
+                                        title="고정하기"
+                                        className="text-gray-400 hover:text-gray-600 transition-colors mt-1 flex-shrink-0"
+                                    >
+                                        <i className="fas fa-thumbtack text-lg"></i>
+                                    </button>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-semibold text-lg truncate" title={notice.title}>
+                                            {notice.title}
+                                        </p>
+                                        <p className="text-sm text-gray-500 mt-1">
+                                            {formatDate(notice.createdAt)}
+                                        </p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center space-x-3 ml-0 sm:ml-4 flex-wrap">
+                                    <button 
+                                        onClick={() => openModal('notice', { notice, onSave: (data) => handleSave(notice.id, data) })} 
+                                        className="text-blue-600 hover:text-blue-800 font-bold"
+                                    >
+                                        수정
+                                    </button>
+                                    <button 
+                                        onClick={() => {
+                                            openModal('confirm', {
+                                                title: '공지사항 삭제 확인',
+                                                message: `'${notice.title}' 공지사항을 정말 삭제하시겠습니까?`,
+                                                onConfirm: () => {
+                                                    handleDelete(notice.id);
+                                                }
+                                            });
+                                        }} 
+                                        className="text-red-600 hover:text-red-800 font-bold"
+                                    >
+                                        삭제
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <div className="mt-4 pl-4 border-l-4 border-gray-200 bg-gray-50 p-3 rounded-r-lg">
+                                <p className="text-gray-700 whitespace-pre-wrap">{notice.content}</p>
+                            </div>
+                        </div>
+                    ))}
+                </FlipMove>
+                
+                {/* 공지사항이 없을 때 */}
+                {pinned.length === 0 && unpinned.length === 0 && (
+                    <div className="text-center py-12">
+                        <i className="fas fa-bullhorn text-4xl text-gray-400 mb-4"></i>
+                        <p className="text-gray-500 mb-4">등록된 공지사항이 없습니다</p>
+                        <button
+                            onClick={() => openModal('notice', { onSave: (data) => handleSave(null, data) })}
+                            className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                        >
+                            첫 번째 공지사항 등록
+                        </button>
+                    </div>
+                )}
             </div>
         </div>
     );
