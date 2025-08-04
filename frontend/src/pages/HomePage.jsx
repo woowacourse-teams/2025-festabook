@@ -81,10 +81,11 @@ const HomePage = () => {
     if (!organization) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">조직 정보를 불러올 수 없습니다.</p>
+                <i className="fas fa-exclamation-triangle text-4xl text-gray-400 mb-4"></i>
+                <p className="text-gray-500 mb-4">조직 정보를 불러올 수 없습니다</p>
                 <button 
                     onClick={fetchOrganizationData}
-                    className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                    className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
                 >
                     다시 시도
                 </button>
@@ -116,16 +117,30 @@ const HomePage = () => {
                         수정
                     </button>
                 </div>
-                <div className="space-y-4">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">축제명</label>
-                        <p className="text-lg font-semibold text-gray-900">{organization.festivalName}</p>
+                
+                {organization.festivalName && organization.startDate && organization.endDate ? (
+                    <div className="space-y-4">
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">축제명</label>
+                            <p className="text-lg font-semibold text-gray-900">{organization.festivalName}</p>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
+                            <p className="text-gray-900">{formatDate(organization.startDate)} - {formatDate(organization.endDate)}</p>
+                        </div>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
-                        <p className="text-gray-900">{formatDate(organization.startDate)} - {formatDate(organization.endDate)}</p>
+                ) : (
+                    <div className="text-center py-8">
+                        <i className="fas fa-calendar-alt text-4xl text-gray-400 mb-4"></i>
+                        <p className="text-gray-500 mb-4">축제 정보가 설정되지 않았습니다</p>
+                        <button
+                            onClick={() => openModal('festival-info', { organization })}
+                            className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                        >
+                            축제 정보 설정
+                        </button>
                     </div>
-                </div>
+                )}
             </div>
 
             {/* 축제 이미지 갤러리 */}
@@ -175,8 +190,8 @@ const HomePage = () => {
                         </svg>
                         <p className="text-gray-500 mb-4">축제 이미지가 없습니다</p>
                         <button
-                            onClick={() => showToast('이미지 업로드 기능은 준비 중입니다.')}
-                            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                            onClick={() => openModal('festival-images', { organization })}
+                            className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
                         >
                             첫 번째 이미지 추가
                         </button>
