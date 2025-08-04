@@ -1,8 +1,8 @@
 package com.daedan.festabook.data.service
 
-import com.daedan.festabook.data.model.response.PlaceDetailResponse
-import com.daedan.festabook.data.model.response.PlaceGeographyResponse
-import com.daedan.festabook.data.model.response.PlaceResponse
+import com.daedan.festabook.data.model.response.place.PlaceDetailResponse
+import com.daedan.festabook.data.model.response.place.PlaceGeographyResponse
+import com.daedan.festabook.data.model.response.place.PlaceResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path

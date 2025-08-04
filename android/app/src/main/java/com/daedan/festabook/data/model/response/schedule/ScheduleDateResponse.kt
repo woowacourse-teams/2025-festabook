@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.model.response
+package com.daedan.festabook.data.model.response.schedule
 
 import com.daedan.festabook.domain.model.ScheduleDate
 import com.daedan.festabook.domain.model.toLocalDate

@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.model.response
+package com.daedan.festabook.data.model.response.organization
 
 import com.daedan.festabook.domain.model.OrganizationGeography
 import kotlinx.serialization.SerialName

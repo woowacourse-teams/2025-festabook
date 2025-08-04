@@ -1,5 +1,6 @@
-package com.daedan.festabook.data.datasource.remote
+package com.daedan.festabook.data.datasource.remote.device
 
+import com.daedan.festabook.data.datasource.remote.ApiResult
 import com.daedan.festabook.data.model.request.DeviceRegisterRequest
 import com.daedan.festabook.data.model.response.DeviceRegisterResponse
 import com.daedan.festabook.data.service.DeviceService
