@@ -242,6 +242,22 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
     }
   };
 
+  // 전역 엔터 키 감지
+  useEffect(() => {
+    const handleGlobalKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Enter' && coords && !saving) {
+        event.preventDefault();
+        handleSave();
+      }
+    };
+
+    document.addEventListener('keydown', handleGlobalKeyDown);
+
+    return () => {
+      document.removeEventListener('keydown', handleGlobalKeyDown);
+    };
+  }, [coords, saving]); // coords와 saving 상태가 변경될 때마다 이벤트 리스너 재등록
+
   return (
     <div>
       {loading || !center || !zoom || !mapReady ? <div>지도를 불러오는 중입니다...</div> : null}
