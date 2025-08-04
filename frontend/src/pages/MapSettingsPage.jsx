@@ -137,16 +137,21 @@ const MapSettingsPage = () => {
     // 새로운 마커들 생성
     markers.forEach(marker => {
       if (!marker.markerCoordinate || !marker.markerCoordinate.latitude || !marker.markerCoordinate.longitude) return;
+      
+      // 선택된 마커인지 확인
+      const isSelected = selectedPlaceId === marker.id;
+      
       const m = new naver.maps.Marker({
         position: new naver.maps.LatLng(marker.markerCoordinate.latitude, marker.markerCoordinate.longitude),
         map,
         title: marker.category,
         icon: {
-          content: getCategoryIcon(marker.category, false),
-          size: new naver.maps.Size(30, 40),
-          anchor: new naver.maps.Point(15, 40)
+          content: getCategoryIcon(marker.category, isSelected), // 선택된 마커는 강조 표시
+          size: new naver.maps.Size(isSelected ? 40 : 30, isSelected ? 50 : 40), // 선택된 마커는 크게
+          anchor: new naver.maps.Point(isSelected ? 20 : 15, isSelected ? 50 : 35)
         }
       });
+      
       naver.maps.Event.addListener(m, 'click', () => {
         setSelectedPlaceId(marker.id);
         // 해당 플레이스로 스크롤
@@ -160,9 +165,10 @@ const MapSettingsPage = () => {
           }
         }, 100);
       });
+      
       markerRefs.current.push(m);
     });
-  }, [markers]);
+  }, [markers, selectedPlaceId]); // selectedPlaceId가 변경될 때도 마커 다시 그리기
 
   // 5. 반응형 높이
   useEffect(() => {
@@ -246,7 +252,19 @@ const MapSettingsPage = () => {
                         placeItemRefs.current[booth.id] = el;
                       }
                     }}
-                    className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
+                    className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 cursor-pointer hover:bg-gray-100 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
+                    onClick={() => {
+                      setSelectedPlaceId(booth.id);
+                      // 해당 마커로 지도 이동 및 강조 표시
+                      if (matchedMarker?.markerCoordinate) {
+                        const lat = matchedMarker.markerCoordinate.latitude;
+                        const lng = matchedMarker.markerCoordinate.longitude;
+                        if (mapInstanceRef.current) {
+                          mapInstanceRef.current.setCenter(new window.naver.maps.LatLng(lat, lng));
+                          mapInstanceRef.current.setZoom(18); // 확대
+                        }
+                      }
+                    }}
                   >
                     <div>
                       <p className="font-semibold">
