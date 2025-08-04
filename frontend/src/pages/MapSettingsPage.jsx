@@ -3,6 +3,7 @@ import { placeCategories, getCategoryIcon } from '../data/categories';
 import Modal from '../components/common/Modal';
 import MapSelector from '../components/map/MapSelector';
 import api from '../utils/api';
+import { usePage } from '../hooks/usePage';
 
 const NAVER_MAP_CLIENT_ID = '09h8qpimmp';
 const KOREA_BOUNDARY = [
@@ -13,6 +14,7 @@ const KOREA_BOUNDARY = [
 ];
 
 const MapSettingsPage = () => {
+  const { setPage } = usePage();
   const [booths, setBooths] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -33,6 +35,21 @@ const MapSettingsPage = () => {
   const markerRefs = useRef([]);
   const placeListRef = useRef(null);
   const placeItemRefs = useRef({});
+
+  // 플레이스 이름이 null이거나 빈 문자열인 경우 카테고리 이름으로 표시
+  const getDisplayName = (place) => {
+    if (place.title && place.title.trim()) {
+      return place.title;
+    }
+    
+    // 부스, 푸드트럭, 바는 이름이 없으면 "플레이스 이름을 지정하여 주십시오." 표시
+    if (['BOOTH', 'FOOD_TRUCK', 'BAR'].includes(place.category)) {
+      return '플레이스 이름을 지정하여 주십시오.';
+    }
+    
+    // 기타 카테고리(쓰레기통, 흡연소, 화장실)는 카테고리 이름으로 표시
+    return placeCategories[place.category] || '알 수 없는 장소';
+  };
 
   // 1. 스크립트 로드
   useEffect(() => {
@@ -137,16 +154,21 @@ const MapSettingsPage = () => {
     // 새로운 마커들 생성
     markers.forEach(marker => {
       if (!marker.markerCoordinate || !marker.markerCoordinate.latitude || !marker.markerCoordinate.longitude) return;
+      
+      // 선택된 마커인지 확인
+      const isSelected = selectedPlaceId === marker.id;
+      
       const m = new naver.maps.Marker({
         position: new naver.maps.LatLng(marker.markerCoordinate.latitude, marker.markerCoordinate.longitude),
         map,
         title: marker.category,
         icon: {
-          content: getCategoryIcon(marker.category, false),
-          size: new naver.maps.Size(30, 40),
-          anchor: new naver.maps.Point(15, 40)
+          content: getCategoryIcon(marker.category, isSelected), // 선택된 마커는 강조 표시
+          size: new naver.maps.Size(isSelected ? 40 : 30, isSelected ? 50 : 40), // 선택된 마커는 크게
+          anchor: new naver.maps.Point(isSelected ? 20 : 15, isSelected ? 50 : 35)
         }
       });
+      
       naver.maps.Event.addListener(m, 'click', () => {
         setSelectedPlaceId(marker.id);
         // 해당 플레이스로 스크롤
@@ -160,9 +182,10 @@ const MapSettingsPage = () => {
           }
         }, 100);
       });
+      
       markerRefs.current.push(m);
     });
-  }, [markers]);
+  }, [markers, selectedPlaceId]); // selectedPlaceId가 변경될 때도 마커 다시 그리기
 
   // 5. 반응형 높이
   useEffect(() => {
@@ -234,54 +257,79 @@ const MapSettingsPage = () => {
             <h3 className="text-xl font-bold mb-4">플레이스 목록</h3>
 
             <div className="space-y-2">
-              {booths.map(booth => {
-                const matchedMarker = markers.find(m => m.id === booth.id);
-                const hasCoordinates = matchedMarker?.markerCoordinate?.latitude != null && matchedMarker?.markerCoordinate?.longitude != null;
+              {booths.length > 0 ? (
+                booths.map(booth => {
+                  const matchedMarker = markers.find(m => m.id === booth.id);
+                  const hasCoordinates = matchedMarker?.markerCoordinate?.latitude != null && matchedMarker?.markerCoordinate?.longitude != null;
 
-                return (
-                  <div
-                    key={booth.id}
-                    ref={(el) => {
-                      if (el) {
-                        placeItemRefs.current[booth.id] = el;
-                      }
-                    }}
-                    className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
-                  >
-                    <div>
-                      <p className="font-semibold">
-                        {booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.'}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
-                        {!hasCoordinates && (
-                          <p className="text-xs text-red-500">좌표 미설정</p>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      className={`font-bold py-2 px-4 rounded-lg text-sm ${
-                        hasCoordinates 
-                          ? 'bg-blue-200 hover:bg-blue-300 text-blue-800' 
-                          : 'bg-red-200 hover:bg-red-300 text-red-800'
-                      }`}
+                  return (
+                    <div
+                      key={booth.id}
+                      ref={(el) => {
+                        if (el) {
+                          placeItemRefs.current[booth.id] = el;
+                        }
+                      }}
+                      className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 cursor-pointer hover:bg-gray-100 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
                       onClick={() => {
-                        setSelectedPlace(booth);
-                        setModalOpen(true);
+                        setSelectedPlaceId(booth.id);
+                        // 해당 마커로 지도 이동 및 강조 표시
+                        if (matchedMarker?.markerCoordinate) {
+                          const lat = matchedMarker.markerCoordinate.latitude;
+                          const lng = matchedMarker.markerCoordinate.longitude;
+                          if (mapInstanceRef.current) {
+                            mapInstanceRef.current.setCenter(new window.naver.maps.LatLng(lat, lng));
+                            mapInstanceRef.current.setZoom(18); // 확대
+                          }
+                        }
                       }}
                     >
-                      {hasCoordinates ? '좌표 수정' : '좌표 설정'}
-                    </button>
-                  </div>
-                );
-              })}
+                      <div>
+                        <p className="font-semibold">
+                          {getDisplayName(booth)}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
+                          {!hasCoordinates && (
+                            <p className="text-xs text-red-500">좌표 미설정</p>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        className={`font-bold py-2 px-4 rounded-lg text-sm ${
+                          hasCoordinates 
+                            ? 'bg-blue-200 hover:bg-blue-300 text-blue-800' 
+                            : 'bg-red-200 hover:bg-red-300 text-red-800'
+                        }`}
+                        onClick={() => {
+                          setSelectedPlace(booth);
+                          setModalOpen(true);
+                        }}
+                      >
+                        {hasCoordinates ? '좌표 수정' : '좌표 설정'}
+                      </button>
+                    </div>
+                  );
+                })
+              ) : (
+                <div className="text-center py-12">
+                  <i className="fas fa-map-marker-alt text-4xl text-gray-400 mb-4"></i>
+                  <p className="text-gray-500 mb-4">등록된 플레이스가 없습니다</p>
+                  <button
+                    onClick={() => setPage('booths')}
+                    className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                  >
+                    플레이스 관리로 이동
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
       {modalOpen && selectedPlace && (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} maxWidth="max-w-2xl">
-          <h3 className="text-xl font-bold mb-4">{selectedPlace.title} 좌표 설정</h3>
+          <h3 className="text-xl font-bold mb-4">{getDisplayName(selectedPlace)} 좌표 설정</h3>
           <MapSelector
             placeId={selectedPlace.id}
             onSaved={(newMarker) => {

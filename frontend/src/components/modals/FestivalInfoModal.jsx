@@ -5,8 +5,7 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
     const [formData, setFormData] = useState({
         festivalName: organization?.festivalName || '',
         startDate: organization?.startDate ? organization.startDate.split('T')[0] : '',
-        endDate: organization?.endDate ? organization.endDate.split('T')[0] : '',
-        isActive: true // 기본값은 활성화
+        endDate: organization?.endDate ? organization.endDate.split('T')[0] : ''
     });
 
     const handleSubmit = async (e) => {
@@ -45,6 +44,22 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
             document.removeEventListener('keydown', handleEscKey);
         };
     }, [onClose]);
+
+    // 모달 전체에서 엔터 키 감지
+    useEffect(() => {
+        const handleGlobalKeyDown = (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                handleSubmit(event);
+            }
+        };
+
+        document.addEventListener('keydown', handleGlobalKeyDown);
+
+        return () => {
+            document.removeEventListener('keydown', handleGlobalKeyDown);
+        };
+    }, [formData]); // formData가 변경될 때마다 이벤트 리스너 재등록
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-md">
@@ -98,39 +113,6 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
                             className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
                             required
                         />
-                    </div>
-                    
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            축제 상태
-                        </label>
-                        <div className="flex items-center space-x-4">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="isActive"
-                                    value="true"
-                                    checked={formData.isActive === true}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
-                                    className="mr-2 text-black focus:ring-black"
-                                />
-                                <span className="text-sm text-gray-700">활성화</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="isActive"
-                                    value="false"
-                                    checked={formData.isActive === false}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
-                                    className="mr-2 text-black focus:ring-black"
-                                />
-                                <span className="text-sm text-gray-700">비활성화</span>
-                            </label>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">
-                            비활성화 시 학생 앱에서 축제 정보가 숨겨집니다
-                        </p>
                     </div>
                 </div>
                 

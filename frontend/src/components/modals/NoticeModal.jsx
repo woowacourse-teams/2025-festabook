@@ -14,6 +14,26 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
     onSave({ title, content, isPinned });
     onClose();
   };
+
+  // 전역 Enter 키와 ESC 키 처리
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      } else if (event.key === 'Enter' && !event.shiftKey) {
+        // Shift+Enter가 아닌 Enter만 처리 (textarea에서 줄바꿈 방지)
+        event.preventDefault();
+        handleSave();
+      }
+    };
+
+    // 전역 이벤트 리스너 추가 (capture phase 사용)
+    document.addEventListener('keydown', handleKeyDown, true);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, [title, content, isPinned]); // 의존성 배열에 form 데이터 추가
   return (
     <Modal isOpen={true} onClose={onClose}>
       <h3 className="text-xl font-bold mb-6">
@@ -111,27 +131,44 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
 };
 
 // 공지사항 상세보기 모달
-export const NoticeDetailModal = ({ notice, onClose }) => (
-  <Modal isOpen={true} onClose={onClose}>
-    <h3 className="text-xl font-bold mb-6">공지사항 상세</h3>
-    <div className="space-y-4">
-      <div>
-        <div className="text-lg font-semibold mb-2">{notice.title}</div>
-        <div className="text-gray-500 text-sm mb-4">{notice.date}</div>
-        <div className="whitespace-pre-line text-gray-800">
-          {notice.content}
+export const NoticeDetailModal = ({ notice, onClose }) => {
+  // ESC 키 처리
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown, true);
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown, true);
+    };
+  }, []);
+
+  return (
+    <Modal isOpen={true} onClose={onClose}>
+      <h3 className="text-xl font-bold mb-6">공지사항 상세</h3>
+      <div className="space-y-4">
+        <div>
+          <div className="text-lg font-semibold mb-2">{notice.title}</div>
+          <div className="text-gray-500 text-sm mb-4">{notice.date}</div>
+          <div className="whitespace-pre-line text-gray-800">
+            {notice.content}
+          </div>
         </div>
       </div>
-    </div>
-    <div className="mt-6 flex justify-end w-full">
-      <button
-        onClick={onClose}
-        className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg"
-      >
-        닫기
-      </button>
-    </div>
-  </Modal>
-);
+      <div className="mt-6 flex justify-end w-full">
+        <button
+          onClick={onClose}
+          className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg"
+        >
+          닫기
+        </button>
+      </div>
+    </Modal>
+  );
+};
 
 export default NoticeModal;

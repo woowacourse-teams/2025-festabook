@@ -102,6 +102,20 @@ const QnaPage = () => {
                         <div className="mt-4 pl-8 border-l-2 border-gray-200 ml-1"><p className="text-gray-700"><span className="font-bold text-gray-500 mr-2">A.</span>{item.answer}</p></div>
                     </div>
                 ))}
+                
+                {/* QnA가 없을 때 */}
+                {(!isEditingOrder && (!qnaItems || qnaItems.length === 0)) && (
+                    <div className="text-center py-12">
+                        <i className="fas fa-question-circle text-4xl text-gray-400 mb-4"></i>
+                        <p className="text-gray-500 mb-4">등록된 QnA가 없습니다</p>
+                        <button
+                            onClick={() => openModal('qna', { onSave: (data) => handleSave(null, data) })}
+                            className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                        >
+                            첫 번째 QnA 등록
+                        </button>
+                    </div>
+                )}
             </FlipMove>
         </div>
     );
