@@ -1,3 +1,7 @@
+server:
+  # Graceful Shutdown 활성화
+  shutdown: graceful
+
 spring:
   application:
     name: festabook
@@ -8,6 +12,9 @@ spring:
     defer-datasource-initialization: true
   profiles:
     include: secret
+  lifecycle:
+    # WAS 종료 대기 시간 15초로 설정
+    timeout-per-shutdown-phase: 15s 
 
 # Swagger
 springdoc:
