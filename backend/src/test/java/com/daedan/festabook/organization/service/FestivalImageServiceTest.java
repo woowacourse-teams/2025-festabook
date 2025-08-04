@@ -116,7 +116,7 @@ class FestivalImageServiceTest {
             given(festivalImageJpaRepository.findById(festivalImage3Id))
                     .willReturn(Optional.of(festivalImage3));
             given(festivalImageJpaRepository.findAllByOrganizationId(organization.getId()))
-                    .willReturn(List.of(festivalImage1, festivalImage2, festivalImage3));  // ✅ 추가
+                    .willReturn(List.of(festivalImage1, festivalImage2, festivalImage3));
 
             // when
             FestivalImageResponses result = festivalImageService.updateFestivalImagesSequence(
