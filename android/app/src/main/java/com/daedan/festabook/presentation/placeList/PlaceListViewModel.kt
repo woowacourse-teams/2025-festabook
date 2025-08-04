@@ -104,12 +104,13 @@ class PlaceListViewModel(
     }
 
     fun filterPlaces(category: List<PlaceCategoryUiModel>) {
-        val secondary =
+        val secondaryCategories =
             PlaceCategory.SECONDARY_CATEGORIES.map {
                 it.toUiModel()
             }
+        val primaryCategoriesSelected = category.any { it !in secondaryCategories }
 
-        if ((category - secondary).isEmpty()) {
+        if (!primaryCategoriesSelected) {
             clearPlacesFilter()
             return
         }

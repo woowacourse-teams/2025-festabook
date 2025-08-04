@@ -41,12 +41,9 @@ class MapManager(
 
     fun filterPlace(categories: List<PlaceCategoryUiModel>) {
         clearFilter()
-        markers
-            .filter {
-                it.tag as? PlaceCategoryUiModel !in categories
-            }.forEach {
-                it.isVisible = false
-            }
+        markers.forEach { marker ->
+            marker.isVisible = (marker.tag as? PlaceCategoryUiModel) in categories
+        }
     }
 
     fun clearFilter() {

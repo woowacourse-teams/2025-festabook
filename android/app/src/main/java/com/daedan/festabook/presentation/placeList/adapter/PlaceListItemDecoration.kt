@@ -6,10 +6,13 @@ import androidx.core.graphics.withTranslation
 import androidx.core.view.isEmpty
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.presentation.common.toPx
+import com.daedan.festabook.presentation.placeList.adapter.PlaceListViewHolder.Header
 
 class PlaceListItemDecoration(
     private val adapter: PlaceListAdapter,
 ) : RecyclerView.ItemDecoration() {
+    private var headerView: Header? = null
+
     override fun onDrawOver(
         c: Canvas,
         parent: RecyclerView,
@@ -20,7 +23,12 @@ class PlaceListItemDecoration(
             return
         }
 
-        val headerViewHolder = adapter.onCreateViewHolder(parent, adapter.getItemViewType(HEADER_INDEX))
+        val headerViewHolder =
+            headerView ?: run {
+                val headerView = adapter.onCreateViewHolder(parent, adapter.getItemViewType(HEADER_INDEX))
+                this.headerView = headerView as? Header
+                headerView
+            }
         adapter.onBindViewHolder(headerViewHolder, HEADER_INDEX)
 
         val headerView = headerViewHolder.itemView

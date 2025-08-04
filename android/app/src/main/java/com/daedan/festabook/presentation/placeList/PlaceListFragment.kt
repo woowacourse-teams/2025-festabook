@@ -47,6 +47,10 @@ class PlaceListFragment :
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
+    private val placeListItemDecoration by lazy {
+        PlaceListItemDecoration(placeAdapter)
+    }
+
     private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
 
     private lateinit var mapManager: MapManager
@@ -114,7 +118,7 @@ class PlaceListFragment :
 
     private fun setUpPlaceAdapter() {
         binding.rvPlaces.adapter = placeAdapter
-        binding.rvPlaces.addItemDecoration(PlaceListItemDecoration(placeAdapter))
+        binding.rvPlaces.addItemDecoration(placeListItemDecoration)
         (binding.rvPlaces.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
     }
 
