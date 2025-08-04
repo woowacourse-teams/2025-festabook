@@ -34,6 +34,21 @@ const MapSettingsPage = () => {
   const placeListRef = useRef(null);
   const placeItemRefs = useRef({});
 
+  // 플레이스 이름이 null이거나 빈 문자열인 경우 카테고리 이름으로 표시
+  const getDisplayName = (place) => {
+    if (place.title && place.title.trim()) {
+      return place.title;
+    }
+    
+    // 부스, 푸드트럭, 바는 이름이 없으면 "플레이스 이름을 지정하여 주십시오." 표시
+    if (['BOOTH', 'FOOD_TRUCK', 'BAR'].includes(place.category)) {
+      return '플레이스 이름을 지정하여 주십시오.';
+    }
+    
+    // 기타 카테고리(쓰레기통, 흡연소, 화장실)는 카테고리 이름으로 표시
+    return placeCategories[place.category] || '알 수 없는 장소';
+  };
+
   // 1. 스크립트 로드
   useEffect(() => {
     if (window.naver && window.naver.maps) {
@@ -268,7 +283,7 @@ const MapSettingsPage = () => {
                   >
                     <div>
                       <p className="font-semibold">
-                        {booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.'}
+                        {getDisplayName(booth)}
                       </p>
                       <div className="flex items-center gap-2">
                         <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
@@ -299,7 +314,7 @@ const MapSettingsPage = () => {
       </div>
       {modalOpen && selectedPlace && (
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} maxWidth="max-w-2xl">
-          <h3 className="text-xl font-bold mb-4">{selectedPlace.title} 좌표 설정</h3>
+          <h3 className="text-xl font-bold mb-4">{getDisplayName(selectedPlace)} 좌표 설정</h3>
           <MapSelector
             placeId={selectedPlace.id}
             onSaved={(newMarker) => {
