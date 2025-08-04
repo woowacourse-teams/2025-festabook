@@ -2,5 +2,6 @@
 <resources>
     <dimen name="schedule_tab_item_end_margin">12dp</dimen>
     <dimen name="poster_item_width">300dp</dimen>
+    <dimen name="lost_item_spacing_16dp">16dp</dimen>
 
 </resources>

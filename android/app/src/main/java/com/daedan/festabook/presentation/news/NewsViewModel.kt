@@ -10,10 +10,13 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.FAQRepository
+import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
+import com.daedan.festabook.presentation.news.lost.LostItemUiState
+import com.daedan.festabook.presentation.news.lost.model.toUiModel
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
@@ -22,6 +25,7 @@ import kotlinx.coroutines.launch
 class NewsViewModel(
     private val noticeRepository: NoticeRepository,
     private val faqRepository: FAQRepository,
+    private val lostItemRepository: LostItemRepository,
 ) : ViewModel() {
     private val _noticeUiState: MutableLiveData<NoticeUiState> = MutableLiveData<NoticeUiState>()
     val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
@@ -29,9 +33,13 @@ class NewsViewModel(
     private val _faqUiState: MutableLiveData<FAQUiState> = MutableLiveData()
     val faqUiState: LiveData<FAQUiState> get() = _faqUiState
 
+    private val _lostItemUiState: MutableLiveData<LostItemUiState> = MutableLiveData()
+    val lostItemUiState: LiveData<LostItemUiState> get() = _lostItemUiState
+
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
+        loadAllLostItems()
     }
 
     fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
@@ -70,6 +78,12 @@ class NewsViewModel(
                 }
             }
         }
+    }
+
+    private fun loadAllLostItems(state: NoticeUiState = NoticeUiState.Loading) {
+        val lostItems = lostItemRepository.getAllLostItems()
+
+        _lostItemUiState.value = LostItemUiState.Success(lostItems.map { it.toUiModel() })
     }
 
     private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {
@@ -112,7 +126,8 @@ class NewsViewModel(
                     val noticeRepository =
                         festaBookApp.appContainer.noticeRepository
                     val faqRepository = festaBookApp.appContainer.faqRepository
-                    NewsViewModel(noticeRepository, faqRepository)
+                    val lostItemRepository = festaBookApp.appContainer.lostItemRepository
+                    NewsViewModel(noticeRepository, faqRepository, lostItemRepository)
                 }
             }
     }
