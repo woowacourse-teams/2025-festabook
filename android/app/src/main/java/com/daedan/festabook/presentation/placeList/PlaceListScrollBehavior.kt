@@ -16,6 +16,15 @@ import com.daedan.festabook.presentation.common.getSystemBarHeightCompat
 import com.daedan.festabook.presentation.common.scrollAnimation
 import com.google.android.material.chip.ChipGroup
 
+/**
+ * @deprecated
+ * @see
+ *  이 클래스는 더 이상 사용되지 않으며, 향후 버전에서 제거될 예정입니다.
+ *  대안으로 현재 PlaceListBottomSheetBehavior이 사용되고 있습니다
+ *  네이버 지도 검색 UI를 본딴 동작을 수행합니다
+ *  자세한 내용은 해당 링크를 참조해주세요
+ * "https://github.com/woowacourse-teams/2025-festabook/pull/174"
+ */
 class PlaceListScrollBehavior(
     context: Context,
     attrs: AttributeSet,
