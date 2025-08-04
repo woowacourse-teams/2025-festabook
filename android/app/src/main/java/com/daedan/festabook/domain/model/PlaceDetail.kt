@@ -5,15 +5,15 @@ import java.time.LocalTime
 data class PlaceDetail(
     val id: Long,
     val place: Place,
-    private val _notices: List<Notice>,
+    private val notices: List<Notice>,
     val host: String?,
     val startTime: LocalTime?,
     val endTime: LocalTime?,
-    private val _images: List<PlaceDetailImage>,
+    private val images: List<PlaceDetailImage>,
 ) {
-    val notices: List<Notice> =
-        _notices
+    val sortedNotices: List<Notice> =
+        notices
             .sortedByDescending { it.createdAt }
             .take(3)
-    val images: List<PlaceDetailImage> = _images.sortedBy { it.sequence }
+    val sortedImages: List<PlaceDetailImage> = images.sortedBy { it.sequence }
 }

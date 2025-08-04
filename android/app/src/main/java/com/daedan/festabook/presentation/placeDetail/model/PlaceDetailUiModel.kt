@@ -23,11 +23,11 @@ data class PlaceDetailUiModel(
 fun PlaceDetail.toUiModel() =
     PlaceDetailUiModel(
         place = place.toUiModel(),
-        notices = notices.map { it.toUiModel() },
+        notices = sortedNotices.map { it.toUiModel() },
         host = host,
         startTime = startTime.toFormattedString(),
         endTime = endTime.toFormattedString(),
-        images = images.map { it.toUiModel() },
+        images = sortedImages.map { it.toUiModel() },
     )
 
 private fun LocalTime?.toFormattedString(): String? =
