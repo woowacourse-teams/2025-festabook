@@ -59,9 +59,9 @@ jobs:
         echo "JAR_FILE_PATH=${JAR_FILE}" >> $GITHUB_OUTPUT
         echo "JAR_FILE_NAME=$(basename ${JAR_FILE})" >> $GITHUB_OUTPUT
 
-    # 서버의 예전 jar 서버 종료 및 jar 파일 삭제
-    - name: Ubuntu close old server and delete old Jar
-      uses: appleboy/ssh-action@master # SSH를 통해 원격 서버에 명령 실행 및 파일 전송
+    # Spring WAS 종료 및 jar 파일 삭제
+    - name: Ubuntu close Spring WAS and delete old Jar file
+      uses: appleboy/ssh-action@master
       with:
         host: ${{ secrets.SSH_HOST }}
         port: ${{ secrets.SSH_PORT }}
@@ -69,30 +69,40 @@ jobs:
         key: ${{ secrets.SSH_PRIVATE_KEY }}
         passphrase: ${{ secrets.SSH_PASSPHRASE }}
         script: |
-          # 서버에 배포될 경로 설정
+          # Ubuntu Jar 파일 경로 설정 및 생성
           REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
+          mkdir -p "${REMOTE_APP_DIR}"
           REMOTE_JAR_PATH="${REMOTE_APP_DIR}/${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
-          
           echo "Deploying to ${REMOTE_JAR_PATH}"
           
-          # 원격 디렉토리 생성 (없을 경우)
-          mkdir -p "${REMOTE_APP_DIR}"
-          
-          # 8080 포트를 사용하는 프로세스 종료
-          # lsof 명령어를 사용하여 8080 포트를 점유하고 있는 프로세스의 PID를 찾습니다.
+          # Spring WAS (:8080) 종료
           PID=$(lsof -t -i:8080 || true)
           if [ -n "$PID" ]; then
-            echo "Killing process with PID: $PID that is using port 8080"
-            kill -9 $PID
-            sleep 5 # 프로세스 종료 대기
+            echo "Found running process with PID: $PID. Sending SIGTERM for graceful shutdown."
+            kill -SIGTERM $PID
+            
+            # 프로세스 종료 대기
+            for i in $(seq 1 20); do
+              if ! kill -0 $PID 2>/dev/null; then # `kill -0 $PID` 프로세스 살아있으면 true 응답. !가 존재하니 프로세스가 살아있으면 false가 됨.
+                echo "Process $PID has terminated."
+                break
+              fi
+              echo "Waiting for process $PID to terminate... ($i/20)"
+              sleep 1
+            done
+
+            # SIGTERM 종료 명령 후 프로세스 생존시 강제 종료
+            if kill -0 $PID 2>/dev/null; then
+              echo "Process $PID did not terminate gracefully. Forcing shutdown with SIGKILL."
+              kill -9 $PID
+            fi
           else
             echo "No process found using port 8080."
           fi
           
-          # 이전 JAR 파일 삭제 (선택 사항이지만 권장)
+          # Old JAR 파일 삭제
           rm -f "${REMOTE_APP_DIR}/*.jar"
-
-          echo "Preparation on remote server complete."
+          echo "Old server stopped and old JAR files deleted from ${REMOTE_APP_DIR}."
 
     # scp-action 실행 전, 전송할 파일의 경로와 대상 경로 확인
     - name: Debug print file transfer path info
