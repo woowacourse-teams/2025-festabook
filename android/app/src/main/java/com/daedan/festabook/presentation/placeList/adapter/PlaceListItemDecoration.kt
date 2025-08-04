@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.graphics.withTranslation
 import androidx.core.view.isEmpty
 import androidx.recyclerview.widget.RecyclerView
+import com.daedan.festabook.presentation.common.toPx
 
 class PlaceListItemDecoration(
     private val adapter: PlaceListAdapter,
@@ -29,7 +30,7 @@ class PlaceListItemDecoration(
         )
         headerView.layout(START_POINT, START_POINT, parent.width, headerView.measuredHeight)
 
-        c.withTranslation(START_POINT.toFloat(), START_POINT.toFloat()) {
+        c.withTranslation(START_POINT.toFloat(), START_POINT.toFloat() - 4.toPx(parent.context)) {
             headerView.draw(this)
         }
     }
