@@ -24,11 +24,19 @@ const SchedulePage = () => {
             return; // 모달을 닫지 않음
         }
         
+        // 새 이벤트 추가 시 날짜 검증
+        if (!eventData.id && !eventData.date) {
+            showToast('날짜를 선택해주세요.');
+            return;
+        }
+        
         try {
             if (eventData.id) {
+                // 기존 이벤트 수정
                 await updateScheduleEvent(activeDate, eventData.id, eventData, showToast);
             } else {
-                await addScheduleEvent(activeDate, eventData, showToast);
+                // 새 이벤트 추가 - 선택된 날짜에 추가
+                await addScheduleEvent(eventData.date, eventData, showToast);
             }
             onClose(); // 성공시에만 모달 닫기
         } catch (error) {
@@ -90,9 +98,13 @@ const SchedulePage = () => {
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold">일정 관리</h2>
                 <button 
-                    onClick={() => openModal('schedule', { onSave: handleSave, activeDate })} 
+                    onClick={() => openModal('schedule', { 
+                        onSave: handleSave, 
+                        activeDate,
+                        availableDates: Object.keys(schedule).sort()
+                    })} 
                     className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center font-bold disabled:opacity-50 disabled:cursor-not-allowed" 
-                    disabled={!activeDate || isLoadingDates || isLoadingEvents}
+                    disabled={Object.keys(schedule).length === 0 || isLoadingDates || isLoadingEvents}
                 >
                     <i className="fas fa-plus mr-2"></i> 새 이벤트 추가
                 </button>
