@@ -139,6 +139,7 @@ class PlaceListFragment :
 
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
+                    binding.viewItemHeader.visibility = View.VISIBLE
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
                     Timber.d("places: ${places.throwable.message}")
                     showErrorSnackBar(places.throwable)

@@ -210,6 +210,15 @@
                 </LinearLayout>
             </com.facebook.shimmer.ShimmerFrameLayout>
 
+           <LinearLayout
+               android:id="@+id/view_item_header"
+               android:layout_width="match_parent"
+               android:layout_height="wrap_content"
+               android:visibility="gone"
+               app:layout_constraintTop_toTopOf="parent">
+               <include
+                   layout="@layout/item_place_list_header"/>
+           </LinearLayout>
             <TextView
                 android:id="@+id/tv_error_to_load_place_info"
                 android:layout_width="wrap_content"
@@ -221,7 +230,7 @@
                 android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/rv_places" />
+                app:layout_constraintTop_toBottomOf="@id/view_item_header" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
