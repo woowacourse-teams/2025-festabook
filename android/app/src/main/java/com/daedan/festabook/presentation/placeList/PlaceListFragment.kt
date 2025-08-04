@@ -15,7 +15,6 @@ import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.initialPadding
-import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
@@ -25,7 +24,6 @@ import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
-import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
 import com.daedan.festabook.presentation.placeList.placeMap.getMap
 import com.google.android.material.chip.Chip
 import com.naver.maps.map.MapFragment
@@ -52,10 +50,6 @@ class PlaceListFragment :
     private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
 
     private lateinit var mapManager: MapManager
-
-    private val mapScrollManager by lazy {
-        MapScrollManager(naverMap)
-    }
 
     private lateinit var naverMap: NaverMap
 
@@ -116,7 +110,6 @@ class PlaceListFragment :
         binding.lbvCurrentLocation.map = naverMap
         naverMap.locationSource = locationSource
         mapManager = MapManager(naverMap, binding.initialPadding())
-        setPlaceListScrollListener()
     }
 
     private fun setUpPlaceAdapter() {
@@ -170,14 +163,6 @@ class PlaceListFragment :
 
     private fun setUpMap(initialMapSetting: PlaceListUiState.Success<InitialMapSettingUiModel>) {
         mapManager.setupMap(initialMapSetting.value)
-        setPlaceListScrollListener()
-    }
-
-    private fun setPlaceListScrollListener() {
-        val behavior = binding.layoutPlaceList.placeListScrollBehavior()
-        behavior?.setOnScrollListener { dy ->
-            mapScrollManager.cameraScroll(dy)
-        }
     }
 
     private fun startPlaceDetailFragment() {
