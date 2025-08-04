@@ -32,7 +32,7 @@ data class PlaceDetailResponse(
     @SerialName("placeImages")
     val placeImages: List<PlaceImage>,
     @SerialName("title")
-    val title: String,
+    val title: String?,
 ) {
     @Serializable
     data class PlaceAnnouncement(

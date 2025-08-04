@@ -2,6 +2,8 @@ package com.daedan.festabook
 
 import android.app.Application
 import com.daedan.festabook.data.datasource.local.AppPreferencesManager
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSource
+import com.daedan.festabook.data.datasource.remote.organization.OrganizationDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.faq.FAQDataSource
@@ -16,6 +18,7 @@ import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
+import com.daedan.festabook.data.repository.FestivalRepositoryImpl
 import com.daedan.festabook.data.repository.FAQRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.data.repository.PlaceDetailRepositoryImpl
@@ -30,6 +33,7 @@ import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.domain.repository.DeviceRepository
+import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
@@ -66,6 +70,10 @@ class AppContainer(
         FAQDataSourceImpl(faqService)
     }
 
+    private val organizationDataSource: OrganizationDataSource by lazy {
+        OrganizationDataSourceImpl(organizationService)
+    }
+
     val placeDetailRepository: PlaceDetailRepository by lazy {
         PlaceDetailRepositoryImpl(placeDetailDataSource)
     }
@@ -85,6 +93,9 @@ class AppContainer(
     }
     val bookmarkRepository: BookmarkRepository by lazy {
         BookmarkRepositoryImpl(organizationBookmarkDataSource)
+    }
+    val festivalRepository: FestivalRepository by lazy {
+        FestivalRepositoryImpl(organizationDataSource)
     }
     val faqRepository: FAQRepository by lazy {
         FAQRepositoryImpl(faqDataSource)
