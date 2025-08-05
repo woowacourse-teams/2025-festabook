@@ -8,14 +8,11 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.TypedValue
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
-import com.daedan.festabook.presentation.placeList.behavior.PlaceListScrollBehavior
 import com.google.android.material.snackbar.Snackbar
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
@@ -25,20 +22,7 @@ inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
         getParcelable(key)
     }
 
-inline fun <reified T : Parcelable> Intent.getObject(key: String): T? =
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
-        getParcelableExtra(key, T::class.java)
-    } else {
-        getParcelableExtra(key)
-    }
-
-fun ConstraintLayout.placeListScrollBehavior(): PlaceListScrollBehavior? {
-    val layoutParams = layoutParams as? CoordinatorLayout.LayoutParams
-    val behavior = layoutParams?.behavior as? PlaceListScrollBehavior
-    return behavior
-}
-
-fun FragmentPlaceListBinding.initialPadding() = layoutPlaceList.height / 2
+fun FragmentPlaceListBinding.initialPadding() = layoutPlaceList.height / 3
 
 fun Int.toPx(context: Context) =
     TypedValue
