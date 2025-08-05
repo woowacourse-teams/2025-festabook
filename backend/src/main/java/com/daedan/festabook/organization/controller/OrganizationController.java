@@ -75,7 +75,7 @@ public class OrganizationController {
         return organizationService.getOrganizationByOrganizationId(organizationId);
     }
 
-    @PatchMapping
+    @PatchMapping("/information")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 조직의 축제 정보 수정")
     @ApiResponses(value = {
