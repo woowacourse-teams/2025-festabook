@@ -17,8 +17,8 @@ public class FestivalImageSequenceUpdateRequestFixture {
     }
 
     public static List<FestivalImageSequenceUpdateRequest> createList(int size) {
-        return IntStream.range(0, size)
-                .mapToObj(i -> create((long) (i + 1), i + 1))
+        return IntStream.range(1, size + 1)
+                .mapToObj(i -> create((long) i, i))
                 .collect(Collectors.toList());
     }
 }
