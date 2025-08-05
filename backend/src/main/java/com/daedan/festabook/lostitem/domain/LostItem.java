@@ -1,14 +1,18 @@
 package com.daedan.festabook.lostitem.domain;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.organization.domain.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,6 +35,10 @@ public class LostItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Organization organization;
+
     @Column(nullable = false)
     private String imageUrl;
 
@@ -47,6 +55,7 @@ public class LostItem {
 
     protected LostItem(
             Long id,
+            Organization organization,
             String imageUrl,
             String storageLocation,
             PickupStatus status,
@@ -57,6 +66,7 @@ public class LostItem {
         validatePickupStatus(status);
 
         this.id = id;
+        this.organization = organization;
         this.imageUrl = imageUrl;
         this.storageLocation = storageLocation;
         this.status = status;
@@ -64,12 +74,14 @@ public class LostItem {
     }
 
     public LostItem(
+            Organization organization,
             String imageUrl,
             String storageLocation,
             PickupStatus status
     ) {
         this(
                 null,
+                organization,
                 imageUrl,
                 storageLocation,
                 status,
