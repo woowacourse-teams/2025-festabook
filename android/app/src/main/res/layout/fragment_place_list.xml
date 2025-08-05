@@ -265,7 +265,7 @@
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
             app:behavior_skipCollapsed="false"
             app:behavior_peekHeight="200dp"
-            android:visibility="visible"
+            android:visibility="gone"
             android:paddingHorizontal="16dp">
 
             <TextView

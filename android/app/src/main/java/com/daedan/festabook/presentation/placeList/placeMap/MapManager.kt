@@ -21,6 +21,7 @@ import com.naver.maps.map.overlay.PolygonOverlay
 class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
+    private val onMarkerClickListener: OnMarkerClickListener,
 ) {
     var markers: List<Marker> = emptyList()
         private set
@@ -126,6 +127,11 @@ class MapManager(
         map = this@MapManager.map
         overlayImageManager.setIcon(this, place.category)
         tag = place.category
+
+        setOnClickListener {
+            onMarkerClickListener.onMarkerListener(place.placeId, place.category)
+            true
+        }
         return this
     }
 

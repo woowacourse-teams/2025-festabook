@@ -96,7 +96,14 @@ class PlaceListFragment :
         naverMap = mapFragment.getMap()
         binding.lbvCurrentLocation.map = naverMap
         naverMap.locationSource = locationSource
-        mapManager = MapManager(naverMap, binding.initialPadding())
+        mapManager =
+            MapManager(
+                naverMap,
+                binding.initialPadding(),
+                onMarkerClickListener = { placeId, category ->
+                    Timber.d("marker clicked $placeId $category")
+                },
+            )
     }
 
     private fun setUpPlaceAdapter() {
