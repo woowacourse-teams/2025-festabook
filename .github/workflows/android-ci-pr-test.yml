@@ -1,30 +1,38 @@
 name: Android CI Pull-Request Gradle Test
 
 on:
-  push:
-    branches:
-      - 'android'
   pull_request:
     branches:
-      - 'android'
+      - main
+      - android
 
 jobs:
-  build:
-
+  Run-PR-Test:
     runs-on: ubuntu-latest
-
     defaults:
       run:
         working-directory: android
 
     steps:
-      - uses: actions/checkout@v4
-      - name: set up JDK 17
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
-          cache: gradle
+
+      - name: Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            ~/.android/build-cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('android/**/build.gradle.kts', 'android/**/settings.gradle.kts', 'android/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
 
       - name: Create local.properties with BASE_URL
         run: |
@@ -37,12 +45,6 @@ jobs:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo "$DATA" > app/google-services.json
 
-      - name: Check local.properties content
-        run:  cat local.properties
-
-      - name: Echo env var
-        run: echo "${{ secrets.BASE_URL }}"
-
       - name: Clean Project
         run: ./gradlew clean
 
@@ -51,6 +53,3 @@ jobs:
         
       - name: Run Unit Test
         run: ./gradlew test
-
-      - name: Build with Gradle
-        run: ./gradlew build
