@@ -25,14 +25,14 @@ class LostItemTest {
             // given
             String imageUri = "https://www.test.com/image.png";
             String storageLocation = "총학생회 사무실";
-            PickupStatus pickupStatus = PickupStatus.COMPLETED;
+            PickupStatus status = PickupStatus.COMPLETED;
 
             // when & then
             assertThatCode(() ->
                     LostItemFixture.create(
                             imageUri,
                             storageLocation,
-                            pickupStatus
+                            status
                     )).doesNotThrowAnyException();
         }
     }
@@ -116,20 +116,20 @@ class LostItemTest {
         @Test
         void 성공() {
             // given
-            PickupStatus pickupStatus = PickupStatus.COMPLETED;
+            PickupStatus status = PickupStatus.COMPLETED;
 
             // when & then
-            assertThatCode(() -> LostItemFixture.createWithPickupStatus(pickupStatus))
+            assertThatCode(() -> LostItemFixture.createWithPickupStatus(status))
                     .doesNotThrowAnyException();
         }
 
         @Test
         void 예외_수령_상태_null() {
             // given
-            PickupStatus pickupStatus = null;
+            PickupStatus status = null;
 
             // when & then
-            assertThatThrownBy(() -> LostItemFixture.createWithPickupStatus(pickupStatus))
+            assertThatThrownBy(() -> LostItemFixture.createWithPickupStatus(status))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("수령 상태는 null일 수 없습니다.");
         }
