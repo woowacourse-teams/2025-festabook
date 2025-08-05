@@ -8,11 +8,14 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
+import com.daedan.festabook.presentation.news.lost.LostItemModalDialogFragment.Companion.TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT
 import com.daedan.festabook.presentation.news.lost.adapter.LostItemAdapter
+import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
 class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment_lost_item) {
     private val adapter by lazy {
-        LostItemAdapter()
+        LostItemAdapter(requireParentFragment() as OnNewsClickListener)
     }
 
     private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) {
@@ -49,6 +52,18 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
                 is LostItemUiState.Error -> {}
             }
         }
+
+        viewModel.lostItemClickEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { lostItem ->
+                showLostItemModalDialog(lostItem)
+            }
+        }
+    }
+
+    private fun showLostItemModalDialog(lostItem: LostItemUiModel) {
+        LostItemModalDialogFragment
+            .newInstance(lostItem)
+            .show(childFragmentManager, TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT)
     }
 
     companion object {

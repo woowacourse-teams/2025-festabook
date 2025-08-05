@@ -12,10 +12,12 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
+import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
 import com.daedan.festabook.presentation.news.lost.LostItemUiState
+import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.toUiModel
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
@@ -35,6 +37,9 @@ class NewsViewModel(
 
     private val _lostItemUiState: MutableLiveData<LostItemUiState> = MutableLiveData()
     val lostItemUiState: LiveData<LostItemUiState> get() = _lostItemUiState
+
+    private val _lostItemClickEvent: MutableLiveData<Event<LostItemUiModel>> = MutableLiveData()
+    val lostItemClickEvent: LiveData<Event<LostItemUiModel>> get() = _lostItemClickEvent
 
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
@@ -78,6 +83,10 @@ class NewsViewModel(
                 }
             }
         }
+    }
+
+    fun lostItemClick(lostItem: LostItemUiModel) {
+        _lostItemClickEvent.value = Event(lostItem)
     }
 
     private fun loadAllLostItems(state: NoticeUiState = NoticeUiState.Loading) {

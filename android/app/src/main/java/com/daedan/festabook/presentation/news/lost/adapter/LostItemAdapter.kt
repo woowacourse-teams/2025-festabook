@@ -4,9 +4,11 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
-class LostItemAdapter :
-    ListAdapter<LostItemUiModel, LostItemViewHolder>(
+class LostItemAdapter(
+    private val onNewsClickListener: OnNewsClickListener,
+) : ListAdapter<LostItemUiModel, LostItemViewHolder>(
         object :
             DiffUtil.ItemCallback<LostItemUiModel>() {
             override fun areItemsTheSame(
@@ -23,7 +25,7 @@ class LostItemAdapter :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): LostItemViewHolder = LostItemViewHolder.from(parent)
+    ): LostItemViewHolder = LostItemViewHolder.from(parent, onNewsClickListener)
 
     override fun onBindViewHolder(
         holder: LostItemViewHolder,
