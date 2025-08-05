@@ -1,7 +1,10 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
+import android.content.Context
 import androidx.core.content.ContextCompat
+import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
+import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
@@ -19,33 +22,34 @@ class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
 ) {
+    var markers: List<Marker> = emptyList()
+        private set
+
     private val overlayImageManager =
         OverlayImageManager(
             PlaceCategoryUiModel.iconResources + listOf(R.drawable.ic_cluster_marker),
         )
 
-    private val clusterManager =
-        ClusterManager(
-            map,
-            overlayImageManager,
-        )
+    private val context = map.context
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
-        clusterManager.buildCluster {
-            coordinates.forEachIndexed { idx, place ->
+        markers =
+            coordinates.mapIndexed { idx, place ->
                 Marker().generate(place)
-                put(idx, place)
             }
+    }
+
+    fun filterPlace(categories: List<PlaceCategoryUiModel>) {
+        clearFilter()
+        markers.forEach { marker ->
+            marker.isVisible = (marker.tag as? PlaceCategoryUiModel) in categories
         }
     }
 
-    private fun Marker.generate(place: PlaceCoordinateUiModel) {
-        width = Marker.SIZE_AUTO
-        height = Marker.SIZE_AUTO
-        position = place.coordinate.toLatLng()
-        minZoom = CLUSTER_ZOOM_THRESHOLD
-        map = this@MapManager.map
-        overlayImageManager.setIcon(this, place.category)
+    fun clearFilter() {
+        markers.forEach {
+            it.isVisible = true
+        }
     }
 
     fun setupMap(settingUiModel: InitialMapSettingUiModel) {
@@ -54,10 +58,11 @@ class MapManager(
             symbolScale = SYMBOL_SIZE_WEIGHT
             uiSettings.isZoomControlEnabled = false
             uiSettings.isScaleBarEnabled = false
+            customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
             moveToInitialPosition(settingUiModel)
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
-            setLogoMarginBottom(initialPadding - LOGO_MARGIN_TOP_PX)
+            setLogoMarginBottom()
         }
     }
 
@@ -71,12 +76,12 @@ class MapManager(
         )
     }
 
-    private fun setLogoMarginBottom(height: Int) {
+    private fun setLogoMarginBottom() {
         map.uiSettings.setLogoMargin(
-            16,
+            16.toPx(context),
             0,
             0,
-            height,
+            context.getCenterPixel() - 120.toPx(context),
         )
     }
 
@@ -112,13 +117,20 @@ class MapManager(
         }
     }
 
+    private fun Context.getCenterPixel() = context.resources.displayMetrics.heightPixels / 2
+
+    private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
+        width = Marker.SIZE_AUTO
+        height = Marker.SIZE_AUTO
+        position = place.coordinate.toLatLng()
+        map = this@MapManager.map
+        overlayImageManager.setIcon(this, place.category)
+        tag = place.category
+        return this
+    }
+
     companion object {
-        // 아이템 마커와 클러스터링 마커가 전환되는 줌 레벨의 경계.
-        // 이 값보다 줌 레벨이 높거나 같아지면 (즉, 지도를 확대할수록)
-        // 개별 아이템 마커가 지도에 표시되기 시작합니다.
-        private const val CLUSTER_ZOOM_THRESHOLD = 17.0
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
-        private const val LOGO_MARGIN_TOP_PX = 75
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다

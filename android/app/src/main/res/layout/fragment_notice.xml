@@ -15,14 +15,15 @@
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/srl_notice_list"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            tools:layout_editor_absoluteX="0dp">
+            android:layout_height="match_parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_notice_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:fadingEdgeLength="16dp"
                 android:paddingTop="20dp"
+                android:requiresFadingEdge="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_notice" />
 

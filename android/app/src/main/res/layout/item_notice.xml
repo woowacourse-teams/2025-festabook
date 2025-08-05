@@ -6,10 +6,6 @@
     <data>
 
         <variable
-            name="listener"
-            type="com.daedan.festabook.presentation.news.notice.adapter.OnNoticeClickListener" />
-
-        <variable
             name="notice"
             type="com.daedan.festabook.presentation.news.notice.model.NoticeUiModel" />
 
@@ -21,7 +17,6 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:background="@drawable/bg_stroke_gray400_radius_10dp"
-        android:onClick="@{() -> listener.onNoticeClick(notice)}"
         android:paddingVertical="16dp">
 
         <ImageView

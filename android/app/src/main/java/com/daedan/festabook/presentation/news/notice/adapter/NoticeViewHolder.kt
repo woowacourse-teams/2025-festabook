@@ -10,15 +10,14 @@ import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 class NoticeViewHolder(
     private val binding: ItemNoticeBinding,
-    noticeItemClickListener: OnNoticeClickListener,
+    private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
-    init {
-        binding.listener = noticeItemClickListener
-    }
-
     fun bind(notice: NoticeUiModel) {
         binding.notice = notice
 
+        binding.layoutNoticeItem.setOnClickListener {
+            onNewsClickListener.onNoticeClick(notice)
+        }
         if (notice.isPinned) {
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_pin)
             binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_gray100_stroke_gray400_radius_10dp)
@@ -38,7 +37,7 @@ class NoticeViewHolder(
 
         fun from(
             parent: ViewGroup,
-            listener: OnNoticeClickListener,
+            listener: OnNewsClickListener,
         ): NoticeViewHolder {
             val binding =
                 ItemNoticeBinding.inflate(LayoutInflater.from(parent.context), parent, false)

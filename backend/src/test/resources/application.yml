@@ -1,0 +1,16 @@
+spring:
+  application:
+    name: festabook
+  jpa:
+    open-in-view: false
+    defer-datasource-initialization: true
+  datasource:
+    driver-class-name: org.h2.Driver
+  profiles:
+    active: test
+
+# Swagger
+springdoc:
+  swagger-ui:
+    path: /api-docs
+    persist-authorization: true

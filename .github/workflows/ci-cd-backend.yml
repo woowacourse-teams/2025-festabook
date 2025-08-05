@@ -3,8 +3,9 @@ name: Backend CI/CD
 on:
   push:
     branches:
-      # main 브랜치에 푸시될(코드 변화) 때 트리거
+      # main 또는 backend 브랜치에 푸시될(코드 변화) 때 트리거
       - main
+      - backend
     paths:
       # backend 디렉토리 내의 파일 변경 시 트리거
       - 'backend/**'
@@ -29,6 +30,21 @@ jobs:
     # 러너가 받은 프로젝트 레포지토리에서 gradlew 실행 권한 부여하기
     - name: Grant execute permission for gradlew
       run: chmod +x backend/gradlew
+
+    # 러너에서 받은 프로젝트 레포지토리에 github secret 데이터를 application-secret.yml 파일로 생성
+    - name: Create application-secret.yml
+      run: |
+        mkdir -p backend/src/main/resources # 디렉토리가 없을 경우 생성
+        echo "starting to create application-secret.yml file"
+        echo "${{ secrets.SECRET_YML }}" > backend/src/main/resources/application-secret.yml
+        echo "application-secret.yml file created successfully"
+
+    # Firebase Admin SDK 인증을 위한 JSON 키 파일 생성
+    # GitHub Secret에 저장된 키 값을 복호화하여 리소스 디렉토리에 파일로 생성
+    - name: Create firebase-adminsdk-account.json
+      run: |
+        mkdir -p backend/src/main/resources/firebase
+        echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
 
     # 러너에서 gradlew 빌드
     - name: Build with Gradle

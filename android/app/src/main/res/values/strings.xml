@@ -37,6 +37,14 @@
 
     <!--지도 화면-->
     <string name="map_request_location_permission_message">현재 위치를 확인하시려면 위치 권한이 필요합니다</string>"
+    <string name="map_category_all">전체</string>
+    <string name="map_category_bar">주점</string>
+    <string name="map_category_food_truck">푸드트럭</string>
+    <string name="map_category_booth">부스</string>
+    <string name="map_category_smoking_area">흡연구역</string>
+    <string name="map_category_toilet">화장실</string>
+    <string name="map_category_trash">쓰레기통</string>
+
 
     <!-- 아이콘 contentDescription   -->
     <string name="schedule_location">위치</string>
@@ -49,6 +57,7 @@
     <string name="tab_notice">공지</string>
     <string name="tab_faq">Q&amp;A</string>
     <string name="tab_lost_item">분실물</string>
+    <string name="tab_faq_question">Q. %1$s</string>
 
     <!--    설정 화면-->
     <string name="setting_title">설정</string>
@@ -75,5 +84,6 @@
     <string name="error_network_exception">현재 연결이 불안정합니다. 잠시 후 다시 시도해주세요</string>
     <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
     <string name="error_fail_to_load_place_info">정보를 불러오는데 실패했습니다</string>
+    <string name="faq_expand">답변 펼치기</string>
 
 </resources>

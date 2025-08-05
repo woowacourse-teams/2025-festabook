@@ -9,8 +9,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
@@ -20,8 +22,7 @@ import kotlinx.coroutines.launch
 class PlaceListViewModel(
     private val placeListRepository: PlaceListRepository,
 ) : ViewModel() {
-    private val _selectedPlace: MutableLiveData<PlaceUiModel> = MutableLiveData()
-    val selectedPlace: LiveData<PlaceUiModel> = _selectedPlace
+    private var _cachedPlaces = listOf<PlaceUiModel>()
 
     private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
         MutableLiveData(PlaceListUiState.Loading())
@@ -31,16 +32,38 @@ class PlaceListViewModel(
         MutableLiveData()
     val initialMapSetting: LiveData<PlaceListUiState<InitialMapSettingUiModel>> = _initialMapSetting
 
-    private val _placeGeographies: MutableLiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> = MutableLiveData()
-    val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> = _placeGeographies
+    private val _placeGeographies: MutableLiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
+        MutableLiveData()
+    val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
+        _placeGeographies
 
     init {
         loadAllPlaces()
         loadOrganizationGeography()
     }
 
-    fun setPlace(place: PlaceUiModel) {
-        _selectedPlace.value = place
+    fun filterPlaces(category: List<PlaceCategoryUiModel>) {
+        val secondaryCategories =
+            PlaceCategory.SECONDARY_CATEGORIES.map {
+                it.toUiModel()
+            }
+        val primaryCategoriesSelected = category.any { it !in secondaryCategories }
+
+        if (!primaryCategoriesSelected) {
+            clearPlacesFilter()
+            return
+        }
+
+        val filteredPlaces =
+            _cachedPlaces.filter { place ->
+                place.category in category
+            }
+
+        _places.value = PlaceListUiState.Success(filteredPlaces)
+    }
+
+    fun clearPlacesFilter() {
+        _places.value = PlaceListUiState.Success(_cachedPlaces)
     }
 
     private fun loadAllPlaces() {
@@ -53,13 +76,14 @@ class PlaceListViewModel(
                         PlaceListUiState.Success(
                             placeUiModels,
                         )
+                    _cachedPlaces = placeUiModels
                 }.onFailure {
                     _places.value = PlaceListUiState.Error(it)
                 }
         }
     }
 
-    fun loadOrganizationGeography() {
+    private fun loadOrganizationGeography() {
         viewModelScope.launch {
             launch {
                 placeListRepository.getOrganizationGeography().onSuccess {
@@ -71,7 +95,8 @@ class PlaceListViewModel(
                 placeListRepository
                     .getPlaceGeographies()
                     .onSuccess {
-                        _placeGeographies.value = PlaceListUiState.Success(it.map { it.toUiModel() })
+                        _placeGeographies.value =
+                            PlaceListUiState.Success(it.map { it.toUiModel() })
                     }.onFailure {
                         _placeGeographies.value = PlaceListUiState.Error(it)
                     }

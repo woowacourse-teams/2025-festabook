@@ -1,6 +1,6 @@
 package com.daedan.festabook.data.repository
 
-import com.daedan.festabook.data.datasource.remote.DeviceDataSource
+import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.repository.DeviceRepository
 

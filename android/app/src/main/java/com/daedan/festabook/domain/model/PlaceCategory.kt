@@ -7,4 +7,14 @@ enum class PlaceCategory {
     TRASH_CAN,
     TOILET,
     SMOKING_AREA,
+    ;
+
+    companion object {
+        val SECONDARY_CATEGORIES =
+            listOf(
+                TRASH_CAN,
+                TOILET,
+                SMOKING_AREA,
+            )
+    }
 }

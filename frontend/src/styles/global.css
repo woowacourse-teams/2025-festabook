@@ -1,0 +1,66 @@
+@import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+body { font-family: 'Inter', 'Pretendard', sans-serif; }
+a.sidebar-link.active { background-color: #111827; color: white; }
+a.sidebar-link.active i { color: white; }
+a.sidebar-link.sub-link.active { background-color: #4f46e5; color: white; font-weight: 600; }
+.table-header { background-color: #f9fafb; }
+
+/* 토스트 알림 스타일 (위치: 우측 하단) */
+.toast-container {
+    position: fixed;
+    bottom: 1.25rem;
+    right: 1.25rem;
+    z-index: 105;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    align-items: flex-end;
+}
+.toast {
+    background-color: #111827;
+    color: white;
+    padding: 12px 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.21, 1.02, 0.73, 1);
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+/* 모달 전환 효과 */
+.modal-backdrop { transition: opacity 0.3s ease-in-out; }
+.modal-content { 
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out; 
+}
+.modal-content-start {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.95);
+    transition: none;
+}
+.modal-content-end {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    transition: transform 0.3s ease-out, opacity 0.3s ease-out;
+}
+
+
+/* 타임라인 애니메이션 */
+.timeline-dot-COMPLETED { background-color: #d1d5db; }
+.timeline-dot-UPCOMING { background-color: #22c55e; animation: pulse-green 2s infinite; }
+.timeline-dot-ONGOING { background-color: #3b82f6; animation: pulse-blue 2s infinite; }
+@keyframes pulse-blue { 0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(59, 130, 246, 0); } 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); } }
+@keyframes pulse-green { 0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(34, 197, 94, 0); } 100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); } }
+
+.details-row-container {
+  transition: max-height 0.4s ease-in-out;
+  max-height: 0;
+  overflow: hidden;
+}
+.details-row-container.open {
+  max-height: 500px; /* Adjust as needed */
+}
+.main-image-indicator { position: absolute; top: 4px; left: 4px; background-color: rgba(0,0,0,0.6); color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
