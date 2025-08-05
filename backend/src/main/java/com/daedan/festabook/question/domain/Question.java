@@ -21,7 +21,7 @@ import org.springframework.http.HttpStatus;
 @Getter
 @EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Question {
+public class Question implements Comparable<Question> {
 
     private static final int MAX_QUESTION_LENGTH = 500;
     private static final int MAX_ANSWER_LENGTH = 1000;
@@ -115,5 +115,10 @@ public class Question {
                     HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    @Override
+    public int compareTo(Question otherQuestion) {
+        return sequence.compareTo(otherQuestion.sequence);
     }
 }

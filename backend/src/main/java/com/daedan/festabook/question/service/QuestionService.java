@@ -12,7 +12,6 @@ import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -60,7 +59,7 @@ public class QuestionService {
             questions.add(question);
         }
 
-        questions.sort(sequenceAscending());
+        questions.sort(Question::compareTo);
 
         return QuestionSequenceUpdateResponses.from(questions);
     }
@@ -77,9 +76,5 @@ public class QuestionService {
     private Organization getOrganizationById(Long organizationId) {
         return organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
-    }
-
-    private Comparator<Question> sequenceAscending() {
-        return Comparator.comparing(Question::getSequence);
     }
 }
