@@ -95,25 +95,25 @@ class FestivalImageServiceTest {
             // given
             Organization organization = OrganizationFixture.create();
 
-            Long festivalImage1Id = 1L;
-            Long festivalImage2Id = 2L;
-            Long festivalImage3Id = 3L;
+            Long festivalImageId1 = 1L;
+            Long festivalImageId2 = 2L;
+            Long festivalImageId3 = 3L;
 
-            FestivalImage festivalImage1 = FestivalImageFixture.create(festivalImage1Id, organization, 1);
-            FestivalImage festivalImage2 = FestivalImageFixture.create(festivalImage2Id, organization, 2);
-            FestivalImage festivalImage3 = FestivalImageFixture.create(festivalImage3Id, organization, 3);
+            FestivalImage festivalImage1 = FestivalImageFixture.create(festivalImageId1, organization, 1);
+            FestivalImage festivalImage2 = FestivalImageFixture.create(festivalImageId2, organization, 2);
+            FestivalImage festivalImage3 = FestivalImageFixture.create(festivalImageId3, organization, 3);
 
             List<FestivalImageSequenceUpdateRequest> requests = List.of(
-                    FestivalImageSequenceUpdateRequestFixture.create(festivalImage1Id, 2),
-                    FestivalImageSequenceUpdateRequestFixture.create(festivalImage2Id, 3),
-                    FestivalImageSequenceUpdateRequestFixture.create(festivalImage3Id, 1)
+                    FestivalImageSequenceUpdateRequestFixture.create(festivalImageId1, 2),
+                    FestivalImageSequenceUpdateRequestFixture.create(festivalImageId2, 3),
+                    FestivalImageSequenceUpdateRequestFixture.create(festivalImageId3, 1)
             );
 
-            given(festivalImageJpaRepository.findById(festivalImage1Id))
+            given(festivalImageJpaRepository.findById(festivalImageId1))
                     .willReturn(Optional.of(festivalImage1));
-            given(festivalImageJpaRepository.findById(festivalImage2Id))
+            given(festivalImageJpaRepository.findById(festivalImageId2))
                     .willReturn(Optional.of(festivalImage2));
-            given(festivalImageJpaRepository.findById(festivalImage3Id))
+            given(festivalImageJpaRepository.findById(festivalImageId3))
                     .willReturn(Optional.of(festivalImage3));
             given(festivalImageJpaRepository.findAllByOrganizationId(organization.getId()))
                     .willReturn(List.of(festivalImage1, festivalImage2, festivalImage3));
@@ -126,13 +126,13 @@ class FestivalImageServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.responses().get(0).festivalImageId()).isEqualTo(festivalImage3Id);
+                s.assertThat(result.responses().get(0).festivalImageId()).isEqualTo(festivalImageId3);
                 s.assertThat(result.responses().get(0).sequence()).isEqualTo(1);
 
-                s.assertThat(result.responses().get(1).festivalImageId()).isEqualTo(festivalImage1Id);
+                s.assertThat(result.responses().get(1).festivalImageId()).isEqualTo(festivalImageId1);
                 s.assertThat(result.responses().get(1).sequence()).isEqualTo(2);
 
-                s.assertThat(result.responses().get(2).festivalImageId()).isEqualTo(festivalImage2Id);
+                s.assertThat(result.responses().get(2).festivalImageId()).isEqualTo(festivalImageId2);
                 s.assertThat(result.responses().get(2).sequence()).isEqualTo(3);
             });
         }
