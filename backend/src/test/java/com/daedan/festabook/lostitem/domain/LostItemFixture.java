@@ -64,4 +64,18 @@ public class LostItemFixture {
                 status
         );
     }
+
+    public static LostItem create(
+            Organization organization,
+            String imageUrl,
+            String storageLocation,
+            PickupStatus status
+    ) {
+        return new LostItem(
+                organization,
+                imageUrl,
+                storageLocation,
+                status
+        );
+    }
 }
