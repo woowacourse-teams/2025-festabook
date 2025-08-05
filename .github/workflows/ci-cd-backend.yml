@@ -90,10 +90,14 @@ jobs:
           else
             echo "No process found using port 8080."
           fi
-          
+
           # Old jar 파일 삭제
-          rm -f "${REMOTE_APP_DIR}/*.jar"
-          echo "Old server stopped and old JAR files deleted from ${REMOTE_APP_DIR}."
+          if [ -d "${REMOTE_APP_DIR}" ]; then
+              find "${REMOTE_APP_DIR}" -maxdepth 1 -name "*.jar" -delete
+              echo "Old server stopped and old jar files deleted from ${REMOTE_APP_DIR}."
+          else
+              echo "Deployment directory not found: ${REMOTE_APP_DIR}. Skipping old jar file deletion."
+          fi
 
     # 전송 경로 문제를 해결하기 위해 프로젝트 루트로 JAR 파일 복사
     # scp source에  ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }} 사용시
