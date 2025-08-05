@@ -212,6 +212,8 @@ class MainActivity : AppCompatActivity() {
         }
         binding.fabMap.setOnClickListener {
             binding.bnvMenu.selectedItemId = R.id.item_menu_map
+            val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_LIST_FRAGMENT)
+            if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
             switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
         }
     }
@@ -224,7 +226,6 @@ class MainActivity : AppCompatActivity() {
                     val fragment = supportFragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT)
                     if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
                 }
-
                 R.id.item_menu_news -> Unit
                 R.id.item_menu_setting -> Unit
             }

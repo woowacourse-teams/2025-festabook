@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -9,6 +10,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
@@ -19,6 +21,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.getMap
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -30,7 +33,8 @@ class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
         R.layout.fragment_place_list,
     ),
-    PlaceClickListener {
+    PlaceClickListener,
+    OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
 
     private val placeAdapter by lazy {
@@ -60,6 +64,12 @@ class PlaceListFragment :
 
     override fun onPlaceClicked(place: PlaceUiModel) {
         startPlaceDetailActivity(place)
+    }
+
+    override fun onMenuItemReClick() {
+        val layoutParams = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
+        val behavior = layoutParams?.behavior as? BottomSheetBehavior
+        behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }
 
     private fun setUpBinding() {
