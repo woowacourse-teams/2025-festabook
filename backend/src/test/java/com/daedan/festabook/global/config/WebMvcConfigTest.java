@@ -3,10 +3,10 @@ package com.daedan.festabook.global.config;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -30,10 +30,10 @@ import org.springframework.web.bind.annotation.RestController;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class WebMvcConfigTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -49,18 +49,18 @@ class WebMvcConfigTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             // when && then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/test/addArgumentResolvers")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(String.valueOf(organization.getId())));
+                    .body(equalTo(String.valueOf(festival.getId())));
         }
     }
 
@@ -218,7 +218,7 @@ class WebMvcConfigTest {
             RestAssured
                     .given()
                     .header("Access-Control-Request-Method", "POST")
-                    .header("Access-Control-Request-Headers", "Content-Type,organization")
+                    .header("Access-Control-Request-Headers", "Content-Type,festival")
                     .when()
                     .options("/test/addCorsMappings")
                     .then()
@@ -252,8 +252,8 @@ class WebMvcConfigTest {
 
         @GetMapping("/test/addArgumentResolvers")
         @ResponseStatus(HttpStatus.OK)
-        public Long test(@OrganizationId Long organizationId) {
-            return organizationId;
+        public Long test(@FestivalId Long festivalId) {
+            return festivalId;
         }
 
         @PostMapping("/test/addCorsMappings")

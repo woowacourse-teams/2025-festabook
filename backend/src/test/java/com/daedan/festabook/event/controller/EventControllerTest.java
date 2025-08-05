@@ -14,9 +14,9 @@ import com.daedan.festabook.event.dto.EventRequest;
 import com.daedan.festabook.event.dto.EventRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -43,7 +43,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
     private EventDateJpaRepository eventDateJpaRepository;
@@ -52,7 +52,7 @@ class EventControllerTest {
     private EventJpaRepository eventJpaRepository;
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @MockitoBean
     private Clock clock;
@@ -73,10 +73,10 @@ class EventControllerTest {
             // given
             setFixedClock(LocalDateTime.now());
 
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate eventDate = EventDateFixture.create(organization);
+            EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             EventRequest request = EventRequestFixture.create(eventDate.getId());
@@ -85,7 +85,7 @@ class EventControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .post("/event-dates/events")
@@ -100,12 +100,12 @@ class EventControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             setFixedClock(LocalDateTime.now());
 
-            EventDate eventDate = EventDateFixture.create(organization);
+            EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             Event event = EventFixture.create(eventDate);
@@ -124,7 +124,7 @@ class EventControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .patch("/event-dates/events/{eventId}", eventId)
@@ -139,10 +139,10 @@ class EventControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate eventDate = EventDateFixture.create(organization);
+            EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             Event event = EventFixture.create(eventDate);
@@ -151,7 +151,7 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/events/{eventId}", event.getId())
                     .then()
@@ -162,15 +162,15 @@ class EventControllerTest {
         @Test
         void 성공_존재하지_않는_일정_ID() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Long invalidEventId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/events/{eventId}", invalidEventId)
                     .then()
@@ -185,13 +185,13 @@ class EventControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             LocalDateTime dateTime = LocalDateTime.of(2025, 5, 20, 15, 0);
             setFixedClock(dateTime);
 
-            EventDate eventDate = EventDateFixture.create(organization, dateTime.toLocalDate());
+            EventDate eventDate = EventDateFixture.create(festival, dateTime.toLocalDate());
             eventDateJpaRepository.save(eventDate);
 
             Event event = EventFixture.create(
@@ -224,11 +224,11 @@ class EventControllerTest {
         @Test
         void 성공_특정_날짜_ID_기반() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate eventDate = EventDateFixture.create(organization, LocalDate.now());
-            EventDate otherEventDate = EventDateFixture.create(organization, LocalDate.now().plusDays(1));
+            EventDate eventDate = EventDateFixture.create(festival, LocalDate.now());
+            EventDate otherEventDate = EventDateFixture.create(festival, LocalDate.now().plusDays(1));
             eventDateJpaRepository.saveAll(List.of(eventDate, otherEventDate));
 
             setFixedClock(LocalDateTime.now());
@@ -252,10 +252,10 @@ class EventControllerTest {
         @Test
         void 성공_시작_시간_오름차순() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate eventDate = EventDateFixture.create(organization);
+            EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             setFixedClock(LocalDateTime.now());
@@ -289,13 +289,13 @@ class EventControllerTest {
         })
         void 성공_이벤트_상태_기반(LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus status) {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             LocalDateTime dateTime = LocalDateTime.of(2025, 5, 5, 15, 0);
             setFixedClock(dateTime);
 
-            EventDate eventDate = EventDateFixture.create(organization, date);
+            EventDate eventDate = EventDateFixture.create(festival, date);
             eventDateJpaRepository.save(eventDate);
 
             Event event = EventFixture.create(

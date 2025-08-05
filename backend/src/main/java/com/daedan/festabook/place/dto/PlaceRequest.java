@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.dto;
 
-import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -11,9 +11,9 @@ public record PlaceRequest(
         PlaceCategory placeCategory
 ) {
 
-    public Place toPlace(Organization organization) {
+    public Place toPlace(Festival festival) {
         return new Place(
-                organization,
+                festival,
                 placeCategory,
                 null
         );

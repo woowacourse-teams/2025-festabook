@@ -1,8 +1,8 @@
 package com.daedan.festabook.place.service;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceDetail;
@@ -28,23 +28,23 @@ public class PlaceService {
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
     private final PlaceDetailJpaRepository placeDetailJpaRepository;
-    private final OrganizationJpaRepository organizationJpaRepository;
+    private final FestivalJpaRepository festivalJpaRepository;
     private final PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
-    public PlaceResponse createPlace(Long organizationId, PlaceRequest request) {
-        Organization organization = getOrganizationById(organizationId);
+    public PlaceResponse createPlace(Long festivalId, PlaceRequest request) {
+        Festival festival = getFestivalById(festivalId);
 
-        Place notSavedPlace = request.toPlace(organization);
+        Place notSavedPlace = request.toPlace(festival);
         Place savedPlace = placeJpaRepository.save(notSavedPlace);
 
         return PlaceResponse.from(savedPlace);
     }
 
     @Transactional(readOnly = true)
-    public PlaceResponses getAllPlaceByOrganizationId(Long organizationId) {
+    public PlaceResponses getAllPlaceByFestivalId(Long festivalId) {
         return PlaceResponses.from(
-                placeJpaRepository.findAllByOrganizationId(organizationId).stream()
+                placeJpaRepository.findAllByFestivalId(festivalId).stream()
                         .map(this::convertPlaceResponse)
                         .toList()
         );
@@ -88,8 +88,8 @@ public class PlaceService {
                 .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스 세부 정보입니다.", HttpStatus.NOT_FOUND));
     }
 
-    private Organization getOrganizationById(Long organizationId) {
-        return organizationJpaRepository.findById(organizationId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
+    private Festival getFestivalById(Long festivalId) {
+        return festivalJpaRepository.findById(festivalId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
     }
 }

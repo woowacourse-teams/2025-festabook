@@ -1,6 +1,6 @@
 package com.daedan.festabook.global.config;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationIdArgumentResolver;
+import com.daedan.festabook.global.argumentresolver.FestivalIdArgumentResolver;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @RequiredArgsConstructor
 public class WebMvcConfig implements WebMvcConfigurer {
 
-    private final OrganizationIdArgumentResolver organizationIdArgumentResolver;
+    private final FestivalIdArgumentResolver festivalIdArgumentResolver;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
@@ -25,6 +25,6 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
     @Override
     public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-        resolvers.add(organizationIdArgumentResolver);
+        resolvers.add(festivalIdArgumentResolver);
     }
 }

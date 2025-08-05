@@ -1,6 +1,6 @@
 package com.daedan.festabook.announcement.domain;
 
-import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.festival.domain.Festival;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -29,7 +29,7 @@ public class Announcement {
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Organization organization;
+    private Festival festival;
 
     @Column(nullable = false)
     private String title;
@@ -49,14 +49,14 @@ public class Announcement {
             String title,
             String content,
             boolean isPinned,
-            Organization organization,
+            Festival festival,
             LocalDateTime createdAt
     ) {
         this.id = id;
         this.title = title;
         this.content = content;
         this.isPinned = isPinned;
-        this.organization = organization;
+        this.festival = festival;
         this.createdAt = createdAt;
     }
 
@@ -64,9 +64,9 @@ public class Announcement {
             String title,
             String content,
             boolean isPinned,
-            Organization organization
+            Festival festival
     ) {
-        this(null, title, content, isPinned, organization, null);
+        this(null, title, content, isPinned, festival, null);
     }
 
     public boolean isUnpinned() {

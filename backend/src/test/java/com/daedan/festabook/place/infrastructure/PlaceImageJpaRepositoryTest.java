@@ -2,9 +2,9 @@ package com.daedan.festabook.place.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
@@ -19,7 +19,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 class PlaceImageJpaRepositoryTest {
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @Autowired
     private PlaceJpaRepository placeJpaRepository;
@@ -33,10 +33,10 @@ class PlaceImageJpaRepositoryTest {
         @Test
         void 성공_오름차순_정렬() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceImage image3 = PlaceImageFixture.create(place, 3);

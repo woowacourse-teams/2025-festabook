@@ -4,8 +4,8 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -15,27 +15,27 @@ import org.junit.jupiter.api.Test;
 class QuestionTest {
 
     @Nested
-    class validateOrganization {
+    class validateFestival {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
+            Festival festival = FestivalFixture.create();
 
             // when & then
-            assertThatCode(() -> QuestionFixture.create(organization))
+            assertThatCode(() -> QuestionFixture.create(festival))
                     .doesNotThrowAnyException();
         }
 
         @Test
-        void 예외_조직_null() {
+        void 예외_축제_null() {
             // given
-            Organization organization = null;
+            Festival festival = null;
 
             // when & then
-            assertThatThrownBy(() -> QuestionFixture.create(organization))
+            assertThatThrownBy(() -> QuestionFixture.create(festival))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("Organization은 null일 수 없습니다.");
+                    .hasMessage("Festival은 null일 수 없습니다.");
         }
     }
 

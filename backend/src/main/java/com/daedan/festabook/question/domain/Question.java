@@ -1,7 +1,7 @@
 package com.daedan.festabook.question.domain;
 
+import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -32,7 +32,7 @@ public class Question implements Comparable<Question> {
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Organization organization;
+    private Festival festival;
 
     @Column(nullable = false)
     private String question;
@@ -45,31 +45,31 @@ public class Question implements Comparable<Question> {
 
     protected Question(
             Long id,
-            Organization organization,
+            Festival festival,
             String question,
             String answer,
             Integer sequence
     ) {
-        validateOrganization(organization);
+        validateFestival(festival);
         validateQuestion(question);
         validateAnswer(answer);
 
         this.id = id;
-        this.organization = organization;
+        this.festival = festival;
         this.question = question;
         this.answer = answer;
         this.sequence = sequence;
     }
 
     public Question(
-            Organization organization,
+            Festival festival,
             String question,
             String answer,
             Integer sequence
     ) {
         this(
                 null,
-                organization,
+                festival,
                 question,
                 answer,
                 sequence
@@ -92,9 +92,9 @@ public class Question implements Comparable<Question> {
         return sequence.compareTo(otherQuestion.sequence);
     }
 
-    private void validateOrganization(Organization organization) {
-        if (organization == null) {
-            throw new BusinessException("Organization은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+    private void validateFestival(Festival festival) {
+        if (festival == null) {
+            throw new BusinessException("Festival은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 

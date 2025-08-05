@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PlaceJpaRepository extends JpaRepository<Place, Long> {
 
-    List<Place> findAllByOrganizationId(Long organizationId);
+    List<Place> findAllByFestivalId(Long festivalId);
 }
