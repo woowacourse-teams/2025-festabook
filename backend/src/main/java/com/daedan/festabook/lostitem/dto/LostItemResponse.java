@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 public record LostItemResponse(
         Long id,
         String imageUrl,
-        String storgeLocation,
+        String storageLocation,
         PickupStatus status,
         LocalDateTime createdAt
 ) {
