@@ -87,6 +87,11 @@ public class Question implements Comparable<Question> {
         this.sequence = sequence;
     }
 
+    @Override
+    public int compareTo(Question otherQuestion) {
+        return sequence.compareTo(otherQuestion.sequence);
+    }
+
     private void validateOrganization(Organization organization) {
         if (organization == null) {
             throw new BusinessException("Organization은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
@@ -115,10 +120,5 @@ public class Question implements Comparable<Question> {
                     HttpStatus.BAD_REQUEST
             );
         }
-    }
-
-    @Override
-    public int compareTo(Question otherQuestion) {
-        return sequence.compareTo(otherQuestion.sequence);
     }
 }
