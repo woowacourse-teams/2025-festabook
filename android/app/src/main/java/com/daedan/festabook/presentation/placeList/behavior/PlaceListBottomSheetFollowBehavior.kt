@@ -13,6 +13,7 @@ class PlaceListBottomSheetFollowBehavior(
         context,
         attrs,
     ) {
+    private var currentBehavior: BottomSheetBehavior<*>? = null
     private lateinit var callback: BottomSheetFollowCallback
 
     override fun layoutDependsOn(
@@ -33,12 +34,22 @@ class PlaceListBottomSheetFollowBehavior(
         child.translationY = bottomSheetTopY
 
         val behavior = (dependency.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior as? BottomSheetBehavior<*>
-        if (!::callback.isInitialized) {
-            callback = BottomSheetFollowCallback(child)
+        if (behavior != null && behavior !== currentBehavior) {
+            currentBehavior?.removeBottomSheetCallback(callback)
+            if (!::callback.isInitialized) {
+                callback = BottomSheetFollowCallback(child)
+            }
+            behavior.addBottomSheetCallback(callback)
+            currentBehavior = behavior
         }
-        behavior?.addBottomSheetCallback(callback)
 
         return true
+    }
+
+    override fun onDetachedFromLayoutParams() {
+        super.onDetachedFromLayoutParams()
+        currentBehavior?.removeBottomSheetCallback(callback)
+        currentBehavior = null
     }
 
     private class BottomSheetFollowCallback(
