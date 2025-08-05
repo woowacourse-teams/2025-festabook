@@ -3,6 +3,7 @@ package com.daedan.festabook.organization.controller;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.FestivalImageFixture;
@@ -94,6 +95,7 @@ class OrganizationControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
+                    .body("festivalImageId", notNullValue())
                     .body("imageUrl", equalTo(request.imageUrl()))
                     .body("sequence", equalTo(1));
         }
@@ -323,7 +325,7 @@ class OrganizationControllerTest {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
-            
+
             List<FestivalImageDeleteRequest> requests = FestivalImageDeleteRequestFixture.createList(3);
 
             // when & then
