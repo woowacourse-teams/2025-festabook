@@ -8,20 +8,7 @@ import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
 class LostItemAdapter(
     private val onNewsClickListener: OnNewsClickListener,
-) : ListAdapter<LostItemUiModel, LostItemViewHolder>(
-        object :
-            DiffUtil.ItemCallback<LostItemUiModel>() {
-            override fun areItemsTheSame(
-                oldItem: LostItemUiModel,
-                newItem: LostItemUiModel,
-            ): Boolean = oldItem == newItem
-
-            override fun areContentsTheSame(
-                oldItem: LostItemUiModel,
-                newItem: LostItemUiModel,
-            ): Boolean = oldItem.imageId == newItem.imageId
-        },
-    ) {
+) : ListAdapter<LostItemUiModel, LostItemViewHolder>(lostItemDiffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -32,5 +19,21 @@ class LostItemAdapter(
         position: Int,
     ) {
         holder.bind(getItem(position))
+    }
+
+    companion object {
+        private val lostItemDiffCallback =
+            object :
+                DiffUtil.ItemCallback<LostItemUiModel>() {
+                override fun areItemsTheSame(
+                    oldItem: LostItemUiModel,
+                    newItem: LostItemUiModel,
+                ): Boolean = oldItem.imageId == newItem.imageId
+
+                override fun areContentsTheSame(
+                    oldItem: LostItemUiModel,
+                    newItem: LostItemUiModel,
+                ): Boolean = oldItem == newItem
+            }
     }
 }
