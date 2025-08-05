@@ -248,7 +248,7 @@ class OrganizationControllerTest {
     class updateFestivalImagesSequence {
 
         @Test
-        void 성공_수정_후에도_오름차순으로_재정렬() {
+        void 성공_수정_후_응답값_오름차순_정렬() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);

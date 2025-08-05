@@ -91,7 +91,7 @@ class FestivalImageServiceTest {
     class updateFestivalImagesSequence {
 
         @Test
-        void 성공() {
+        void 성공_수정_후_응답값_오름차순_정렬() {
             // given
             Organization organization = OrganizationFixture.create();
 
