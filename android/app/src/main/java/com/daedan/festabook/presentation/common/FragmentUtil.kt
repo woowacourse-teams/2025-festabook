@@ -22,6 +22,13 @@ inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
         getParcelable(key)
     }
 
+inline fun <reified T : Parcelable> Intent.getObject(key: String): T? =
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        getParcelableExtra(key, T::class.java)
+    } else {
+        getParcelableExtra(key)
+    }
+
 fun FragmentPlaceListBinding.initialPadding() = layoutPlaceList.height / 3
 
 fun Int.toPx(context: Context) =

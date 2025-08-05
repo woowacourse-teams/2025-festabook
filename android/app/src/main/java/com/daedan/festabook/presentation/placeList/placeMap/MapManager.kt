@@ -88,6 +88,15 @@ class MapManager(
         }
     }
 
+    fun moveToInitialPosition() {
+        val initialCenterCoordinate =
+            CameraUpdate
+                .scrollTo(
+                    settingUiModel.initialCenter.toLatLng(),
+                ).animate(Easing)
+        map.moveCamera(initialCenterCoordinate)
+    }
+
     private fun setContentPaddingBottom(height: Int) {
         map.setContentPadding(
             0,
@@ -105,15 +114,6 @@ class MapManager(
             0,
             context.getRootPixel() - 410.toPx(context),
         )
-    }
-
-    fun moveToInitialPosition() {
-        val initialCenterCoordinate =
-            CameraUpdate
-                .scrollTo(
-                    settingUiModel.initialCenter.toLatLng(),
-                ).animate(Easing)
-        map.moveCamera(initialCenterCoordinate)
     }
 
     private fun setCameraInitialPosition() {
