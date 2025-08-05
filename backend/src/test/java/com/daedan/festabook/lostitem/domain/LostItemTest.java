@@ -119,7 +119,7 @@ class LostItemTest {
             PickupStatus status = PickupStatus.COMPLETED;
 
             // when & then
-            assertThatCode(() -> LostItemFixture.createWithPickupStatus(status))
+            assertThatCode(() -> LostItemFixture.create(status))
                     .doesNotThrowAnyException();
         }
 
@@ -129,7 +129,7 @@ class LostItemTest {
             PickupStatus status = null;
 
             // when & then
-            assertThatThrownBy(() -> LostItemFixture.createWithPickupStatus(status))
+            assertThatThrownBy(() -> LostItemFixture.create(status))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("수령 상태는 null일 수 없습니다.");
         }

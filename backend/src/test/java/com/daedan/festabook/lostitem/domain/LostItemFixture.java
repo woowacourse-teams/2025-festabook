@@ -10,6 +10,15 @@ public class LostItemFixture {
     private static final String DEFAULT_STORAGE_LOCATION = "창고A";
     private static final PickupStatus DEFAULT_PICK_UP_STATUS = PickupStatus.PENDING;
 
+    public static LostItem create() {
+        return new LostItem(
+                DEFAULT_ORGANIZATION,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_STORAGE_LOCATION,
+                DEFAULT_PICK_UP_STATUS
+        );
+    }
+
     public static LostItem createWithImageUrl(
             String imageUrl
     ) {
@@ -32,7 +41,7 @@ public class LostItemFixture {
         );
     }
 
-    public static LostItem createWithPickupStatus(
+    public static LostItem create(
             PickupStatus status
     ) {
         return new LostItem(
