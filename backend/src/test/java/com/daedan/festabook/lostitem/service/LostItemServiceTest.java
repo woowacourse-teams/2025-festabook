@@ -64,7 +64,7 @@ class LostItemServiceTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(result.imageUrl()).isEqualTo(request.imageUrl());
-                s.assertThat(result.storgeLocation()).isEqualTo(request.storageLocation());
+                s.assertThat(result.storageLocation()).isEqualTo(request.storageLocation());
             });
         }
 
