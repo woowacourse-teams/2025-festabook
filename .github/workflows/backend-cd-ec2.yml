@@ -11,8 +11,6 @@ on:
 jobs:
   build-and-deploy:
     runs-on: self-hosted
-    env:
-      DEPLOY_DIR: /home/ubuntu/${{ github.event.repository.name }}/backend
 
     steps:
       - name: Checkout project repository
@@ -83,18 +81,19 @@ jobs:
           fi
 
           # 2. 이전 JAR 파일 삭제 및 빌드 JAR 파일 복사
-          echo "Deleting old JAR files from ${{ env.DEPLOY_DIR }}..."
-          mkdir -p "${{ env.DEPLOY_DIR }}"
-          find "${{ env.DEPLOY_DIR }}" -maxdepth 1 -name "*.jar" -delete
+          DEPLOY_DIRECTORY="/home/ubuntu/${{ github.event.repository.name }}/backend"
+          echo "Deleting old JAR files from ${DEPLOY_DIRECTORY}..."
+          mkdir -p "${DEPLOY_DIRECTORY}"
+          find "${DEPLOY_DIRECTORY}" -maxdepth 1 -name "*.jar" -delete
 
           BUILD_JAR_PATH="${{ steps.get_build_jar.outputs.BUILD_JAR_PATH }}"
           BUILD_JAR_NAME="${{ steps.get_build_jar.outputs.BUILD_JAR_NAME }}"
-          DEPLOY_JAR_PATH="${{ env.DEPLOY_DIR }}/${BUILD_JAR_NAME}"
+          DEPLOY_JAR_PATH="${DEPLOY_DIRECTORY}/${BUILD_JAR_NAME}"
           cp "${BUILD_JAR_PATH}" "${DEPLOY_JAR_PATH}"
           echo "New JAR file copied to ${DEPLOY_JAR_PATH}"
 
           # 3. 새로운 WAS 실행
           echo "Starting new Spring WAS..."
-          LOG_PATH="${{ env.DEPLOY_DIR }}/application.log"
+          LOG_PATH="${DEPLOY_DIRECTORY}/application.log"
           nohup java -jar "${DEPLOY_JAR_PATH}" > "${LOG_PATH}" 2>&1 &
           echo "Application started."
