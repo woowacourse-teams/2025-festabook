@@ -68,7 +68,6 @@ jobs:
           if [ -n "$PID" ]; then
             echo "Found running process with PID: $PID. Sending SIGTERM."
             kill -SIGTERM $PID
-            
             # 프로세스 종료 대기
             for i in $(seq 1 20); do
               if ! kill -0 $PID 2>/dev/null; then
@@ -78,7 +77,6 @@ jobs:
               echo "Waiting for process $PID to terminate... ($i/20)"
               sleep 1
             done
-
             if kill -0 $PID 2>/dev/null; then
               echo "Process $PID did not terminate gracefully. Forcing shutdown with SIGKILL."
               kill -9 $PID
@@ -91,7 +89,6 @@ jobs:
           echo "Deleting old JAR files from ${{ env.DEPLOY_DIR }}..."
           mkdir -p "${{ env.DEPLOY_DIR }}"
           find "${{ env.DEPLOY_DIR }}" -maxdepth 1 -name "*.jar" -delete
-          
           DEPLOY_JAR_PATH="${{ env.DEPLOY_DIR }}/${{ env.BUILD_JAR_NAME }}"
           cp "${{ env.BUILD_JAR_PATH }}" "${DEPLOY_JAR_PATH}"
           echo "New JAR file copied to ${DEPLOY_JAR_PATH}"
