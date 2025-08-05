@@ -11,7 +11,6 @@ import com.daedan.festabook.organization.dto.FestivalImageSequenceUpdateRequest;
 import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -50,7 +49,7 @@ public class FestivalImageService {
             festivalImages.add(festivalImage);
         }
 
-        festivalImages.sort(sequenceAscending());
+        festivalImages.sort(FestivalImage::compareTo);
 
         return FestivalImageResponses.from(festivalImages);
     }
@@ -72,9 +71,5 @@ public class FestivalImageService {
     private FestivalImage getFestivalImageById(Long festivalImageId) {
         return festivalImageJpaRepository.findById(festivalImageId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 축제 이미지입니다.", HttpStatus.NOT_FOUND));
-    }
-
-    private Comparator<FestivalImage> sequenceAscending() {
-        return Comparator.comparing(FestivalImage::getSequence);
     }
 }
