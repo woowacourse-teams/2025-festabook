@@ -1,4 +1,4 @@
-package com.daedan.festabook.lostitem.controller;
+package com.daedan.festabook.lostitem.dto;
 
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
