@@ -40,7 +40,7 @@ public class OrganizationService {
     public OrganizationInformationResponse updateOrganizationInformation(Long organizationId,
                                                                          OrganizationInformationUpdateRequest request) {
         Organization organization = getOrganizationById(organizationId);
-        organization.updateOrganizationInformation(request.festivalName(), request.startDate(), request.endDate());
+        organization.updateOrganization(request.festivalName(), request.startDate(), request.endDate());
         return OrganizationInformationResponse.from(organization);
     }
 

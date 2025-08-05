@@ -105,7 +105,7 @@ public class Organization {
         );
     }
 
-    public void updateOrganizationInformation(String festivalName, LocalDate startDate, LocalDate endDate) {
+    public void updateOrganization(String festivalName, LocalDate startDate, LocalDate endDate) {
         // TODO: 검증 추가
         this.festivalName = festivalName;
         this.startDate = startDate;
