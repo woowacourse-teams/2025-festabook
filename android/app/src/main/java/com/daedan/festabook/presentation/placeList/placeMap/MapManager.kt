@@ -13,14 +13,17 @@ import com.daedan.festabook.presentation.placeList.model.iconResources
 import com.daedan.festabook.presentation.placeList.model.setIcon
 import com.daedan.festabook.presentation.placeList.model.toLatLng
 import com.naver.maps.geometry.LatLng
+import com.naver.maps.map.CameraAnimation.Easing
 import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PolygonOverlay
+import kotlin.math.pow
 
 class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
+    private val settingUiModel: InitialMapSettingUiModel,
 ) {
     var markers: List<Marker> = emptyList()
         private set
@@ -52,17 +55,36 @@ class MapManager(
         }
     }
 
-    fun setupMap(settingUiModel: InitialMapSettingUiModel) {
+    fun setupMap() {
         map.apply {
             isIndoorEnabled = true
             symbolScale = SYMBOL_SIZE_WEIGHT
             uiSettings.isZoomControlEnabled = false
             uiSettings.isScaleBarEnabled = false
             customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
-            moveToInitialPosition(settingUiModel)
+            setCameraInitialPosition()
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
             setLogoMarginBottom()
+        }
+    }
+
+    fun setupBackToInitialPosition(
+        settingUiModel: InitialMapSettingUiModel,
+        block: (Boolean) -> Unit,
+    ) {
+        map.addOnCameraChangeListener { _, _ ->
+            val initialCenter = settingUiModel.initialCenter.toLatLng()
+            val maxLength =
+                settingUiModel.border.maxOf {
+                    initialCenter.distanceTo(it.toLatLng())
+                }
+
+            val currentPosition = map.cameraPosition.target
+            val zoomWeight = map.cameraPosition.zoom.zoomWeight()
+            block(
+                currentPosition.distanceTo(initialCenter) > maxLength * zoomWeight,
+            )
         }
     }
 
@@ -81,23 +103,32 @@ class MapManager(
             16.toPx(context),
             0,
             0,
-            context.getCenterPixel() - 120.toPx(context),
+            context.getRootPixel() - 410.toPx(context),
         )
     }
 
-    private fun NaverMap.moveToInitialPosition(settingUiModel: InitialMapSettingUiModel) {
+    fun moveToInitialPosition() {
+        val initialCenterCoordinate =
+            CameraUpdate
+                .scrollTo(
+                    settingUiModel.initialCenter.toLatLng(),
+                ).animate(Easing)
+        map.moveCamera(initialCenterCoordinate)
+    }
+
+    private fun setCameraInitialPosition() {
         val initialCenterCoordinate =
             CameraUpdate
                 .scrollTo(
                     settingUiModel.initialCenter.toLatLng(),
                 )
-
         val initialZoomLevelCoordinate =
-            CameraUpdate.zoomTo(
-                settingUiModel.zoom.toDouble(),
-            )
-        moveCamera(initialCenterCoordinate)
-        moveCamera(initialZoomLevelCoordinate)
+            CameraUpdate
+                .zoomTo(
+                    settingUiModel.zoom.toDouble(),
+                )
+        map.moveCamera(initialZoomLevelCoordinate)
+        map.moveCamera(initialCenterCoordinate)
     }
 
     // 생성자로 입력받은 초기 위치 경계를 설정합니다
@@ -117,7 +148,7 @@ class MapManager(
         }
     }
 
-    private fun Context.getCenterPixel() = context.resources.displayMetrics.heightPixels / 2
+    private fun Context.getRootPixel() = context.resources.displayMetrics.heightPixels
 
     private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
         width = Marker.SIZE_AUTO
@@ -129,9 +160,15 @@ class MapManager(
         return this
     }
 
+    private fun Double.zoomWeight() =
+        2.0.pow(
+            DEFAULT_ZOOM_LEVEL - this,
+        )
+
     companion object {
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
+        private const val DEFAULT_ZOOM_LEVEL = 15
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다
         private val EDGE_COORS =
