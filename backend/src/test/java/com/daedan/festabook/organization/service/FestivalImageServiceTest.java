@@ -55,6 +55,7 @@ class FestivalImageServiceTest {
             Organization organization = OrganizationFixture.create(organizationId);
             FestivalImageRequest request = FestivalImageRequestFixture.create();
             int currentSequence = 3;
+            int expectedSequence = currentSequence + 1;
 
             given(organizationJpaRepository.findById(organizationId))
                     .willReturn(Optional.of(organization));
@@ -69,7 +70,7 @@ class FestivalImageServiceTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(result.imageUrl()).isEqualTo(request.imageUrl());
-                s.assertThat(result.sequence()).isEqualTo(currentSequence + 1);
+                s.assertThat(result.sequence()).isEqualTo(expectedSequence);
             });
         }
 
@@ -135,7 +136,7 @@ class FestivalImageServiceTest {
         @Test
         void 예외_존재하지_않는_축제_이미지() {
             // given
-            List<FestivalImageSequenceUpdateRequest> requests = FestivalImageSequenceUpdateRequestFixture.createList(3);
+            List<FestivalImageSequenceUpdateRequest> requests = FestivalImageSequenceUpdateRequestFixture.createList(1);
 
             // when & then
             assertThatThrownBy(() -> festivalImageService.updateFestivalImagesSequence(requests))
