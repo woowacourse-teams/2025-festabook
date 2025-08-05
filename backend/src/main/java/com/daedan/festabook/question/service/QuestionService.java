@@ -29,9 +29,9 @@ public class QuestionService {
         Organization organization = getOrganizationById(organizationId);
 
         Integer currentMaxSequence = questionJpaRepository.countByOrganizationId(organizationId);
-        Integer nextSequence = currentMaxSequence + 1;
+        Integer newSequence = currentMaxSequence + 1;
 
-        Question question = new Question(organization, request.question(), request.answer(), nextSequence);
+        Question question = new Question(organization, request.question(), request.answer(), newSequence);
         Question savedQuestion = questionJpaRepository.save(question);
 
         return QuestionResponse.from(savedQuestion);

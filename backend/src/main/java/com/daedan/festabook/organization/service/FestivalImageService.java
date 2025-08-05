@@ -30,9 +30,9 @@ public class FestivalImageService {
 
         Integer currentMaxSequence = festivalImageJpaRepository.findMaxSequenceByOrganizationId(organizationId)
                 .orElseGet(() -> 0);
-        Integer nextSequence = currentMaxSequence + 1;
+        Integer newSequence = currentMaxSequence + 1;
 
-        FestivalImage festivalImage = new FestivalImage(organization, request.imageUrl(), nextSequence);
+        FestivalImage festivalImage = new FestivalImage(organization, request.imageUrl(), newSequence);
         FestivalImage savedFestivalImage = festivalImageJpaRepository.save(festivalImage);
 
         return FestivalImageResponse.from(savedFestivalImage);
