@@ -3,20 +3,15 @@ package com.daedan.festabook.presentation.placeList
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.children
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.FragmentTransaction
-import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.showErrorSnackBar
-import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
+import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
@@ -46,8 +41,6 @@ class PlaceListFragment :
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
-    private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
-
     private lateinit var mapManager: MapManager
 
     private lateinit var naverMap: NaverMap
@@ -66,7 +59,7 @@ class PlaceListFragment :
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
-        startPlaceDetailFragment(place)
+        startPlaceDetailActivity(place)
     }
 
     private fun setUpBinding() {
@@ -157,45 +150,8 @@ class PlaceListFragment :
         mapManager.setupMap(initialMapSetting.value)
     }
 
-    private fun startPlaceDetailFragment(place: PlaceUiModel) {
-        parentFragmentManager.registerFragmentLifecycleCallbacks(
-            bottomNavigationViewAnimationCallback,
-            false,
-        )
-        parentFragmentManager.commitWithSavedFragment(place) {
-            setCustomAnimations(
-                R.anim.anim_fade_in_left,
-                R.anim.anim_fade_out,
-                R.anim.anim_fade_in_right,
-                R.anim.anim_fade_out,
-            )
-        }
-    }
-
-    private fun FragmentManager.commitWithSavedFragment(
-        place: PlaceUiModel,
-        block: FragmentTransaction.() -> Unit,
-    ) {
-        val placeDetailFragment = getPlaceDetailFragment(place) ?: return
-
-        commit {
-            block()
-            add(
-                R.id.fcv_fragment_container,
-                placeDetailFragment,
-            )
-            hide(this@PlaceListFragment)
-            addToBackStack(null)
-        }
-    }
-
-    private fun getPlaceDetailFragment(place: PlaceUiModel): Fragment? {
-        fragmentContainer[place] ?: run {
-            fragmentContainer[place] =
-                PlaceDetailFragment.newInstance(place)
-        }
-
-        return fragmentContainer[place]
+    private fun startPlaceDetailActivity(place: PlaceUiModel) {
+        startActivity(PlaceDetailActivity.newIntent(requireContext(), place))
     }
 
     private fun showSkeleton() {

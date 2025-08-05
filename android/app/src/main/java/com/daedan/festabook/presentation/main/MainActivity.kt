@@ -20,7 +20,6 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
-import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
@@ -236,9 +235,6 @@ class MainActivity : AppCompatActivity() {
         fragment: Fragment,
         tag: String,
     ) {
-        supportFragmentManager.unregisterFragmentLifecycleCallbacks(
-            bottomNavigationViewAnimationCallback,
-        )
         supportFragmentManager.commit {
             supportFragmentManager.fragments.forEach { fragment -> hide(fragment) }
 
