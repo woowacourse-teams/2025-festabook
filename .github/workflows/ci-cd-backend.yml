@@ -63,14 +63,13 @@ jobs:
     - name: Ubuntu close Spring WAS and delete old Jar file
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.SSH_HOST }}
-        port: ${{ secrets.SSH_PORT }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        host: ${{ secrets.FUYU_SSH_HOST }}
+        port: ${{ secrets.FUYU_SSH_PORT }}
+        username: ${{ secrets.FUYU_SSH_USERNAME }}
+        key: ${{ secrets.FUYU_SSH_PRIVATE_KEY }}
         script: |
           # Ubuntu Jar 파일 경로 설정 및 생성
-          REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
+          REMOTE_APP_DIR="/home/${{ secrets.FUYU_SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
           mkdir -p "${REMOTE_APP_DIR}"
           REMOTE_JAR_PATH="${REMOTE_APP_DIR}/${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
           echo "Deploying to ${REMOTE_JAR_PATH}"
@@ -110,7 +109,7 @@ jobs:
         echo "--- Debugging Info for File Transfer ---"
         echo "Source Path on Runner: ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }}"
         echo "Root Source Path on Runner: ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
-        echo "Target Directory on Server: /home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
+        echo "Target Directory on Server: /home/${{ secrets.FUYU_SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
 
     # 전송 경로 문제를 해결하기 위해 프로젝트 루트로 JAR 파일 복사
     # scp source에  ${{ steps.get_jar_name.outputs.JAR_FILE_PATH }} 사용시
@@ -122,25 +121,23 @@ jobs:
     - name: Transfer JAR file to Ubuntu Server
       uses: appleboy/scp-action@master # SCP를 통해 파일 전송
       with:
-        host: ${{ secrets.SSH_HOST }}
-        port: ${{ secrets.SSH_PORT }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        host: ${{ secrets.FUYU_SSH_HOST }}
+        port: ${{ secrets.FUYU_SSH_PORT }}
+        username: ${{ secrets.FUYU_SSH_USERNAME }}
+        key: ${{ secrets.FUYU_SSH_PRIVATE_KEY }}
         source: ./${{ steps.get_jar_name.outputs.JAR_FILE_NAME }} # GitHub Actions runner의 JAR 파일 경로
-        target: /home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend # Ubuntu 서버의 대상 디렉토리
+        target: /home/${{ secrets.FUYU_SSH_USERNAME }}/${{ github.event.repository.name }}/backend # Ubuntu 서버의 대상 디렉토리
 
     # 우분투에서 jar 파일 실행
     - name: Run Spring Boot Application
       uses: appleboy/ssh-action@master
       with:
-        host: ${{ secrets.SSH_HOST }}
-        port: ${{ secrets.SSH_PORT }}
-        username: ${{ secrets.SSH_USERNAME }}
-        key: ${{ secrets.SSH_PRIVATE_KEY }}
-        passphrase: ${{ secrets.SSH_PASSPHRASE }}
+        host: ${{ secrets.FUYU_SSH_HOST }}
+        port: ${{ secrets.FUYU_SSH_PORT }}
+        username: ${{ secrets.FUYU_SSH_USERNAME }}
+        key: ${{ secrets.FUYU_SSH_PRIVATE_KEY }}
         script: |
-          REMOTE_APP_DIR="/home/${{ secrets.SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
+          REMOTE_APP_DIR="/home/${{ secrets.FUYU_SSH_USERNAME }}/${{ github.event.repository.name }}/backend"
           JAR_FILE_NAME="${{ steps.get_jar_name.outputs.JAR_FILE_NAME }}"
           JAR_PATH="${REMOTE_APP_DIR}/${JAR_FILE_NAME}"
 
