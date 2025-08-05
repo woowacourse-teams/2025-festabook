@@ -58,9 +58,6 @@ jobs:
           echo "BUILD_JAR_NAME=$(basename ${BUILD_JAR_PATH})" >> $GITHUB_OUTPUT
 
       - name: Deploy to EC2
-        env:
-          BUILD_JAR_PATH: ${{ steps.get_build_jar.outputs.BUILD_JAR_PATH }}
-          BUILD_JAR_NAME: ${{ steps.get_build_jar.outputs.BUILD_JAR_NAME }}
         run: |
           # 1. 이전 WAS 종료 (Graceful Shutdown)
           echo "Stopping old Spring WAS..."
@@ -89,8 +86,11 @@ jobs:
           echo "Deleting old JAR files from ${{ env.DEPLOY_DIR }}..."
           mkdir -p "${{ env.DEPLOY_DIR }}"
           find "${{ env.DEPLOY_DIR }}" -maxdepth 1 -name "*.jar" -delete
-          DEPLOY_JAR_PATH="${{ env.DEPLOY_DIR }}/${{ env.BUILD_JAR_NAME }}"
-          cp "${{ env.BUILD_JAR_PATH }}" "${DEPLOY_JAR_PATH}"
+
+          BUILD_JAR_PATH="${{ steps.get_build_jar.outputs.BUILD_JAR_PATH }}"
+          BUILD_JAR_NAME="${{ steps.get_build_jar.outputs.BUILD_JAR_NAME }}"
+          DEPLOY_JAR_PATH="${{ env.DEPLOY_DIR }}/${BUILD_JAR_NAME}"
+          cp "${BUILD_JAR_PATH}" "${DEPLOY_JAR_PATH}"
           echo "New JAR file copied to ${DEPLOY_JAR_PATH}"
 
           # 3. 새로운 WAS 실행
