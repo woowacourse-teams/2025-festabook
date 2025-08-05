@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.content.withStyledAttributes
+import com.daedan.festabook.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class PlaceListBottomSheetFollowBehavior(
@@ -15,6 +17,14 @@ class PlaceListBottomSheetFollowBehavior(
     ) {
     private var currentBehavior: BottomSheetBehavior<*>? = null
     private lateinit var callback: BottomSheetFollowCallback
+    private var changeVisibility: Boolean = true
+
+    init {
+        context.withStyledAttributes(attrs, R.styleable.PlaceListBottomSheetFollowBehavior) {
+            changeVisibility =
+                getBoolean(R.styleable.PlaceListBottomSheetFollowBehavior_changeVisibility, true)
+        }
+    }
 
     override fun layoutDependsOn(
         parent: CoordinatorLayout,
@@ -33,11 +43,12 @@ class PlaceListBottomSheetFollowBehavior(
         val bottomSheetTopY = dependency.y - dependency.height
         child.translationY = bottomSheetTopY
 
-        val behavior = (dependency.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior as? BottomSheetBehavior<*>
+        val behavior =
+            (dependency.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior as? BottomSheetBehavior<*>
         if (behavior != null && behavior !== currentBehavior) {
             currentBehavior?.removeBottomSheetCallback(callback)
             if (!::callback.isInitialized) {
-                callback = BottomSheetFollowCallback(child)
+                callback = BottomSheetFollowCallback(child, changeVisibility)
             }
             behavior.addBottomSheetCallback(callback)
             currentBehavior = behavior
@@ -54,6 +65,7 @@ class PlaceListBottomSheetFollowBehavior(
 
     private class BottomSheetFollowCallback(
         private val child: View,
+        private val changeVisibility: Boolean = true,
     ) : BottomSheetBehavior.BottomSheetCallback() {
         override fun onStateChanged(
             bottomSheet: View,
@@ -61,7 +73,9 @@ class PlaceListBottomSheetFollowBehavior(
         ) {
             if (newState == BottomSheetBehavior.STATE_EXPANDED) {
                 child.visibility = View.GONE
-            } else {
+                return
+            }
+            if (changeVisibility) {
                 child.visibility = View.VISIBLE
             }
         }
