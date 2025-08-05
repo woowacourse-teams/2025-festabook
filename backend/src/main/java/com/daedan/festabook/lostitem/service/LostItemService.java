@@ -8,6 +8,7 @@ import com.daedan.festabook.lostitem.dto.LostItemResponses;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -20,13 +21,14 @@ public class LostItemService {
     private final LostItemJpaRepository lostItemJpaRepository;
     private final OrganizationJpaRepository organizationJpaRepository;
 
+    @Transactional
     public LostItemResponse createLostItem(Long organizationId, LostItemRequest request) {
         Organization organization = getOrganizationById(organizationId);
 
-        LostItem newLostItem = request.toLostItem(organization);
-        lostItemJpaRepository.save(newLostItem);
+        LostItem lostItem = request.toLostItem(organization);
+        lostItemJpaRepository.save(lostItem);
 
-        return LostItemResponse.from(newLostItem);
+        return LostItemResponse.from(lostItem);
     }
 
     public LostItemResponses getAllLostItemByOrganizationId(Long organizationId) {
