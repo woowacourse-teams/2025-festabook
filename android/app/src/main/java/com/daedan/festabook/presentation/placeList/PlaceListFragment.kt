@@ -18,7 +18,6 @@ import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
-import com.daedan.festabook.presentation.placeList.adapter.PlaceListItemDecoration
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
@@ -45,10 +44,6 @@ class PlaceListFragment :
 
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-    }
-
-    private val placeListItemDecoration by lazy {
-        PlaceListItemDecoration(placeAdapter)
     }
 
     private val fragmentContainer = mutableMapOf<PlaceUiModel, PlaceDetailFragment>()
@@ -113,7 +108,6 @@ class PlaceListFragment :
 
     private fun setUpPlaceAdapter() {
         binding.rvPlaces.adapter = placeAdapter
-        binding.rvPlaces.addItemDecoration(placeListItemDecoration)
         (binding.rvPlaces.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
     }
 
@@ -131,7 +125,6 @@ class PlaceListFragment :
 
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
-                    binding.viewItemHeader.visibility = View.VISIBLE
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
                     Timber.d("places: ${places.throwable.message}")
                     showErrorSnackBar(places.throwable)
