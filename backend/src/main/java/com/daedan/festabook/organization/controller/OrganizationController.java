@@ -106,7 +106,7 @@ public class OrganizationController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
-    public void removeFestivalImages(
+    public void removeFestivalImage(
             @PathVariable Long festivalImageId
     ) {
         festivalImageService.removeFestivalImage(festivalImageId);
