@@ -27,24 +27,24 @@ public class LostItemFixture {
     }
 
     public static LostItem createWithPickupStatus(
-            PickupStatus pickupStatus
+            PickupStatus status
     ) {
         return new LostItem(
                 DEFAULT_IMAGE_URL,
                 DEFAULT_STORAGE_LOCATION,
-                pickupStatus
+                status
         );
     }
 
     public static LostItem create(
             String imageUrl,
             String storageLocation,
-            PickupStatus pickupStatus
+            PickupStatus status
     ) {
         return new LostItem(
                 imageUrl,
                 storageLocation,
-                pickupStatus
+                status
         );
     }
 }
