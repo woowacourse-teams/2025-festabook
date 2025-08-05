@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FestivalImage {
+public class FestivalImage implements Comparable<FestivalImage> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,5 +54,14 @@ public class FestivalImage {
                 imageUrl,
                 sequence
         );
+    }
+
+    public void updateSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
+
+    @Override
+    public int compareTo(FestivalImage otherFestivalImage) {
+        return sequence.compareTo(otherFestivalImage.sequence);
     }
 }

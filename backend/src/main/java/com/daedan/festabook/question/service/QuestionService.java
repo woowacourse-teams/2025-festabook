@@ -12,7 +12,7 @@ import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -30,9 +30,9 @@ public class QuestionService {
         Organization organization = getOrganizationById(organizationId);
 
         Integer currentMaxSequence = questionJpaRepository.countByOrganizationId(organizationId);
-        Integer nextSequence = currentMaxSequence + 1;
+        Integer newSequence = currentMaxSequence + 1;
 
-        Question question = new Question(organization, request.question(), request.answer(), nextSequence);
+        Question question = new Question(organization, request.question(), request.answer(), newSequence);
         Question savedQuestion = questionJpaRepository.save(question);
 
         return QuestionResponse.from(savedQuestion);
@@ -60,7 +60,7 @@ public class QuestionService {
             questions.add(question);
         }
 
-        questions.sort(sequenceAscending());
+        Collections.sort(questions);
 
         return QuestionSequenceUpdateResponses.from(questions);
     }
@@ -77,9 +77,5 @@ public class QuestionService {
     private Organization getOrganizationById(Long organizationId) {
         return organizationJpaRepository.findById(organizationId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
-    }
-
-    private Comparator<Question> sequenceAscending() {
-        return Comparator.comparing(Question::getSequence);
     }
 }

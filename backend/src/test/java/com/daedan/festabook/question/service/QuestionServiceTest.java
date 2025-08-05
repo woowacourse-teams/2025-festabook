@@ -6,7 +6,6 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.Organization;
@@ -233,10 +232,7 @@ class QuestionServiceTest {
         void 성공() {
             // given
             Long questionId = 1L;
-
-            willDoNothing().given(questionJpaRepository)
-                    .deleteById(questionId);
-
+            
             // when
             questionService.deleteQuestionByQuestionId(questionId);
 
