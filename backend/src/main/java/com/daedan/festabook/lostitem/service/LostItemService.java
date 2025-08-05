@@ -1,10 +1,10 @@
 package com.daedan.festabook.lostitem.service;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.lostitem.controller.LostItemRequest;
-import com.daedan.festabook.lostitem.controller.LostItemResponse;
-import com.daedan.festabook.lostitem.controller.LostItemResponses;
 import com.daedan.festabook.lostitem.domain.LostItem;
+import com.daedan.festabook.lostitem.dto.LostItemRequest;
+import com.daedan.festabook.lostitem.dto.LostItemResponse;
+import com.daedan.festabook.lostitem.dto.LostItemResponses;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
