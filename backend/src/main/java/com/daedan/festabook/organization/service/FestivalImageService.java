@@ -12,7 +12,6 @@ import com.daedan.festabook.organization.infrastructure.FestivalImageJpaReposito
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -41,15 +40,12 @@ public class FestivalImageService {
     }
 
     @Transactional
-    public FestivalImageResponses updateFestivalImagesSequence(Long organizationId,
-                                                               List<FestivalImageSequenceUpdateRequest> requests) {
+    public FestivalImageResponses updateFestivalImagesSequence(List<FestivalImageSequenceUpdateRequest> requests) {
         // TODO: sequence DTO 값 검증 추가
-        List<FestivalImage> existsFestivalImages = festivalImageJpaRepository.findAllByOrganizationId(organizationId);
         List<FestivalImage> festivalImages = new ArrayList<>();
 
         for (FestivalImageSequenceUpdateRequest request : requests) {
             FestivalImage festivalImage = getFestivalImageById(request.festivalImageId());
-            validateFestivalImageOwner(existsFestivalImages, festivalImage);
             festivalImage.updateSequence(request.sequence());
             festivalImages.add(festivalImage);
         }
@@ -66,12 +62,6 @@ public class FestivalImageService {
                 .toList();
 
         festivalImageJpaRepository.deleteAllById(festivalImageIds);
-    }
-
-    private void validateFestivalImageOwner(List<FestivalImage> existsFestivalImages, FestivalImage festivalImage) {
-        if (!new HashSet<>(existsFestivalImages).contains(festivalImage)) {
-            throw new BusinessException("권한이 없습니다.", HttpStatus.FORBIDDEN);
-        }
     }
 
     private Organization getOrganizationById(Long organizationId) {
