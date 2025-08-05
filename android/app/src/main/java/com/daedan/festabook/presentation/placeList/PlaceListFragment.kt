@@ -63,7 +63,7 @@ class PlaceListFragment :
 
     override fun onPlaceClicked(place: PlaceUiModel) {
         viewModel.setPlace(place)
-        startPlaceDetailFragment()
+        startPlaceDetailActivity()
     }
 
     private suspend fun setUpMapManager() {
@@ -129,7 +129,7 @@ class PlaceListFragment :
         }
     }
 
-    private fun startPlaceDetailFragment() {
+    private fun startPlaceDetailActivity() {
         viewModel.selectedPlace.value?.let {
             startActivity(PlaceDetailActivity.newIntent(requireContext(), it))
         } ?: run {
