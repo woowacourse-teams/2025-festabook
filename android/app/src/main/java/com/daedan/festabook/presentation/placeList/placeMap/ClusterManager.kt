@@ -20,6 +20,7 @@ class ClusterManager(
 ) {
     private val context = map.context
     private val clusterImage = overlayImageManager.getImage(R.drawable.ic_cluster_marker)
+    private var itemKeyMap = mapOf<ClusteringMarkerKey, PlaceCategoryUiModel>()
 
     // 클러스터링 마커를 표시할 때 호출되는 익명 객체입니다
     private val clusterMarkerUpdater by lazy {
@@ -68,6 +69,20 @@ class ClusterManager(
         block(DSLHelper)
         cluster.addAll(DSLHelper.itemKeyMap)
         cluster.map = map
+        itemKeyMap = DSLHelper.itemKeyMap
+    }
+
+    fun filterPlaceCluster(categories: List<PlaceCategoryUiModel>) {
+        clearFilter()
+        val filtered =
+            itemKeyMap.filter {
+                it.value !in categories
+            }
+        cluster.removeAll(filtered.keys)
+    }
+
+    fun clearFilter() {
+        cluster.addAll(itemKeyMap)
     }
 
     /**
@@ -82,10 +97,12 @@ class ClusterManager(
                 width = SMALL_CLUSTER_MARKER_SIZE.toPx(context)
                 height = SMALL_CLUSTER_MARKER_SIZE.toPx(context)
             }
+
             in LOW_COUNT_CLUSTER_THRESHOLD until HIGH_COUNT_CLUSTER_THRESHOLD -> {
                 width = Marker.SIZE_AUTO
                 height = Marker.SIZE_AUTO
             }
+
             else -> {
                 width = LARGE_CLUSTER_MARKER_SIZE.toPx(context)
                 height = LARGE_CLUSTER_MARKER_SIZE.toPx(context)

@@ -1,30 +1,38 @@
-package com.daedan.festabook.presentation.placeList
+package com.daedan.festabook.presentation.placeList.behavior
 
 import android.content.Context
 import android.content.res.TypedArray
 import android.util.AttributeSet
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.content.res.AppCompatResources
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.ContextCompat
 import androidx.core.content.withStyledAttributes
-import androidx.core.graphics.drawable.toDrawable
 import androidx.core.view.ViewCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.canScrollUp
 import com.daedan.festabook.presentation.common.getSystemBarHeightCompat
 import com.daedan.festabook.presentation.common.scrollAnimation
+import com.google.android.material.chip.ChipGroup
 
+/**
+ * @deprecated
+ * @see
+ *  이 클래스는 더 이상 사용되지 않으며, 향후 버전에서 제거될 예정입니다.
+ *  대안으로 현재 PlaceListBottomSheetBehavior이 사용되고 있습니다
+ *  네이버 지도 검색 UI를 본딴 동작을 수행합니다
+ *  자세한 내용은 해당 링크를 참조해주세요
+ * "https://github.com/woowacourse-teams/2025-festabook/pull/174"
+ */
 class PlaceListScrollBehavior(
-    private val context: Context,
+    context: Context,
     attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<ConstraintLayout>() {
     private lateinit var attribute: Attribute
     private lateinit var state: BehaviorState
     private var isInitialized: Boolean = false
+    private lateinit var minimumHeightView: View
 
     init {
         context.withStyledAttributes(attrs, R.styleable.PlaceListScrollBehavior) {
@@ -37,6 +45,7 @@ class PlaceListScrollBehavior(
         child: ConstraintLayout,
         layoutDirection: Int,
     ): Boolean {
+        minimumHeightView = parent.findViewById<ChipGroup>(R.id.cg_categories)
         if (!isInitialized) {
             val recyclerView: RecyclerView? = parent.findViewById(attribute.recyclerViewId)
             val companionView: View? = parent.findViewById(attribute.companionViewId)
@@ -88,11 +97,9 @@ class PlaceListScrollBehavior(
         type: Int,
         consumed: IntArray,
     ) {
-        // 리스트가 모두 펼쳐지면 모서리 부분을 없앱니다
         if (dyUnconsumed == 0) {
-            child.background = ContextCompat.getColor(context, R.color.gray050).toDrawable()
+            state.companionView?.visibility = View.GONE
         }
-
         super.onNestedScroll(
             coordinatorLayout,
             child,
@@ -151,19 +158,23 @@ class PlaceListScrollBehavior(
             val newTranslationY = getNewTranslationY(requestedTranslationY, maxHeight)
 
             // 외부 레이아웃이 스크롤이 되었을 때만 스크롤 리스너 적용
-            if (requestedTranslationY in UNINITIALIZED_VALUE..maxHeight) {
+            if (requestedTranslationY in minimumHeightView.height.toFloat()..maxHeight) {
                 state.onScrollListener?.invoke(dy.toFloat())
             }
             translationY = newTranslationY
             scrollAnimation(newTranslationY)
-            consumed[1] = newTranslationY.toInt()
+            if (newTranslationY.toInt() == minimumHeightView.height) {
+                consumed[1] = 0
+            } else {
+                consumed[1] = newTranslationY.toInt()
+            }
         }
     }
 
     private fun ViewGroup.getNewTranslationY(
         requestedTranslationY: Float,
         maxHeight: Float,
-    ): Float = requestedTranslationY.coerceIn(UNINITIALIZED_VALUE, maxHeight)
+    ): Float = requestedTranslationY.coerceIn(minimumHeightView.height.toFloat(), maxHeight)
 
     private fun ViewGroup.consumeIfRecyclerViewCanScrollUp(
         dy: Int,
@@ -172,7 +183,7 @@ class PlaceListScrollBehavior(
         state.recyclerView?.let {
             // 리사이클러 뷰가 위로 스크롤 될 수 있을 때
             if (dy < 0 && it.canScrollUp()) {
-                background = AppCompatResources.getDrawable(context, R.drawable.bg_place_list)
+                state.companionView?.visibility = View.VISIBLE
                 consumed[1] = 0
                 return true
             }

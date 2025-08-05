@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.children
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.FragmentTransaction
@@ -14,16 +15,16 @@ import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.initialPadding
-import com.daedan.festabook.presentation.common.placeListScrollBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailFragment
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
-import com.daedan.festabook.presentation.placeList.placeMap.MapScrollManager
 import com.daedan.festabook.presentation.placeList.placeMap.getMap
+import com.google.android.material.chip.Chip
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.util.FusedLocationSource
@@ -49,10 +50,6 @@ class PlaceListFragment :
 
     private lateinit var mapManager: MapManager
 
-    private val mapScrollManager by lazy {
-        MapScrollManager(naverMap)
-    }
-
     private lateinit var naverMap: NaverMap
 
     override fun onViewCreated(
@@ -64,12 +61,41 @@ class PlaceListFragment :
             setUpPlaceAdapter()
             setUpMapManager()
             setUpObserver()
+            setUpBinding()
         }
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
-        viewModel.setPlace(place)
-        startPlaceDetailFragment()
+        startPlaceDetailFragment(place)
+    }
+
+    private fun setUpBinding() {
+        binding.cgCategories.setOnCheckedStateChangeListener { group, checkedIds ->
+            val selectedCategories =
+                checkedIds.mapNotNull {
+                    val category = group.findViewById<Chip>(it).tag
+                    category as? PlaceCategoryUiModel
+                }
+            binding.chipCategoryAll.isChecked = selectedCategories.isEmpty()
+
+            if (selectedCategories.isEmpty()) {
+                viewModel.clearPlacesFilter()
+                mapManager.clearFilter()
+            } else {
+                viewModel.filterPlaces(selectedCategories)
+                mapManager.filterPlace(selectedCategories)
+            }
+        }
+        setUpChipCategoryAllListener()
+    }
+
+    private fun setUpChipCategoryAllListener() {
+        binding.chipCategoryAll.setOnClickListener {
+            binding.cgCategories.children.forEach {
+                val chip = (it as? Chip) ?: return@forEach
+                chip.isChecked = chip.id == binding.chipCategoryAll.id
+            }
+        }
     }
 
     private suspend fun setUpMapManager() {
@@ -78,7 +104,6 @@ class PlaceListFragment :
         binding.lbvCurrentLocation.map = naverMap
         naverMap.locationSource = locationSource
         mapManager = MapManager(naverMap, binding.initialPadding())
-        setPlaceListScrollListener()
     }
 
     private fun setUpPlaceAdapter() {
@@ -92,8 +117,12 @@ class PlaceListFragment :
                 is PlaceListUiState.Loading -> showSkeleton()
                 is PlaceListUiState.Success -> {
                     hideSkeleton()
-                    placeAdapter.submitList(places.value)
+                    placeAdapter.submitList(places.value) {
+                        binding.rvPlaces.itemAnimator = null
+                        binding.rvPlaces.scrollToPosition(0)
+                    }
                 }
+
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
@@ -110,6 +139,7 @@ class PlaceListFragment :
                     hideSkeleton()
                     mapManager.setPlaceLocation(placeGeographies.value)
                 }
+
                 is PlaceListUiState.Error -> {
                     Timber.d("placeGeographies: ${placeGeographies.throwable.message}")
                     showErrorSnackBar(placeGeographies.throwable)
@@ -125,22 +155,14 @@ class PlaceListFragment :
 
     private fun setUpMap(initialMapSetting: PlaceListUiState.Success<InitialMapSettingUiModel>) {
         mapManager.setupMap(initialMapSetting.value)
-        setPlaceListScrollListener()
     }
 
-    private fun setPlaceListScrollListener() {
-        val behavior = binding.layoutPlaceList.placeListScrollBehavior()
-        behavior?.setOnScrollListener { dy ->
-            mapScrollManager.cameraScroll(dy)
-        }
-    }
-
-    private fun startPlaceDetailFragment() {
+    private fun startPlaceDetailFragment(place: PlaceUiModel) {
         parentFragmentManager.registerFragmentLifecycleCallbacks(
             bottomNavigationViewAnimationCallback,
             false,
         )
-        parentFragmentManager.commitWithSavedFragment {
+        parentFragmentManager.commitWithSavedFragment(place) {
             setCustomAnimations(
                 R.anim.anim_fade_in_left,
                 R.anim.anim_fade_out,
@@ -150,8 +172,11 @@ class PlaceListFragment :
         }
     }
 
-    private fun FragmentManager.commitWithSavedFragment(block: FragmentTransaction.() -> Unit) {
-        val placeDetailFragment = getPlaceDetailFragment() ?: return
+    private fun FragmentManager.commitWithSavedFragment(
+        place: PlaceUiModel,
+        block: FragmentTransaction.() -> Unit,
+    ) {
+        val placeDetailFragment = getPlaceDetailFragment(place) ?: return
 
         commit {
             block()
@@ -164,14 +189,13 @@ class PlaceListFragment :
         }
     }
 
-    private fun getPlaceDetailFragment(): Fragment? {
-        val selectedPlace = viewModel.selectedPlace.value ?: return null
-        fragmentContainer[selectedPlace] ?: run {
-            fragmentContainer[selectedPlace] =
-                PlaceDetailFragment.newInstance(selectedPlace)
+    private fun getPlaceDetailFragment(place: PlaceUiModel): Fragment? {
+        fragmentContainer[place] ?: run {
+            fragmentContainer[place] =
+                PlaceDetailFragment.newInstance(place)
         }
 
-        return fragmentContainer[selectedPlace]
+        return fragmentContainer[place]
     }
 
     private fun showSkeleton() {

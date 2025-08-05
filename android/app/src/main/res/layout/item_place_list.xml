@@ -19,7 +19,6 @@
         android:onClick="@{()->handler.onPlaceClicked(place)}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
         android:paddingBottom="12dp">
 
         <com.google.android.material.card.MaterialCardView

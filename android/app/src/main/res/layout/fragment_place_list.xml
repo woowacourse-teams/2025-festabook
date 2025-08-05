@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+    <data>
+        <import type="com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel"/>
+    </data>
     <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -13,35 +16,197 @@
             android:layout_height="match_parent"
             android:name="com.naver.maps.map.MapFragment" />
 
+
         <com.naver.maps.map.widget.LocationButtonView
             android:id="@+id/lbv_current_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginBottom="400dp"
-            android:layout_gravity="start|bottom"
-            app:layout_constraintBottom_toTopOf="@id/rv_places"
-            app:layout_constraintStart_toStartOf="parent"
-            />
+            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior"
+            android:layout_gravity="start|bottom" />
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:scrollbars="none">
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/cg_categories"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="8dp"
+                app:singleLine="true">
+
+                <com.google.android.material.chip.Chip
+                    android:id="@+id/chip_category_all"
+                    android:tag="ALL"
+                    android:text="@string/map_category_all"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    android:checked="true"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    tools:checked="true"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.BAR}"
+                    android:text="@string/map_category_bar"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipIconSize="18dp"
+                    app:chipIconEnabled="true"
+                    app:chipIcon="@drawable/ic_map_category_bar"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.FOOD_TRUCK}"
+                    android:text="@string/map_category_food_truck"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipIconSize="18dp"
+                    app:chipIconEnabled="true"
+                    app:chipIcon="@drawable/ic_map_category_food_truck"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.BOOTH}"
+                    android:text="@string/map_category_booth"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipIconSize="18dp"
+                    app:chipIcon="@drawable/ic_map_category_booth"
+                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    app:chipIconEnabled="true"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.SMOKING_AREA}"
+                    android:text="@string/map_category_smoking_area"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.TOILET}"
+                    android:text="@string/map_category_toilet"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+
+                <com.google.android.material.chip.Chip
+                    android:tag="@{PlaceCategoryUiModel.TRASH_CAN}"
+                    android:text="@string/map_category_trash"
+                    android:textAppearance="@style/PretendardMedium14"
+                    android:textColor="@color/gray900"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:checkedIconEnabled="false"
+                    app:chipStrokeWidth="2dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipEndPadding="8dp"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    />
+            </com.google.android.material.chip.ChipGroup>
+
+        </HorizontalScrollView>
+
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/layout_place_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:paddingHorizontal="16dp"
             android:background="@drawable/bg_place_list"
-            app:layout_behavior="com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior"
+            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetBehavior"
+            app:behavior_fitToContents="false"
+            app:behavior_halfExpandedRatio="0.375"
+            app:behavior_peekHeight="70dp"
             app:initialY="390dp"
             app:minimumY="168dp"
             app:recyclerView="@id/rv_places"
-            app:companionView="@id/lbv_current_location"
-            >
+            app:companionView="@id/lbv_current_location">
+
+            <View
+                android:id="@+id/view_divider"
+                android:layout_width="32dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_gray400_radius_50dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:id="@+id/tv_title_place_list"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:text="@string/place_list_title"
+                android:textAppearance="@style/PretendardBold24"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_places"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:paddingBottom="80dp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_title_place_list"
                 tools:itemCount="2"
                 tools:listitem="@layout/item_place_list" />
 
@@ -70,7 +235,7 @@
 
             <TextView
                 android:id="@+id/tv_error_to_load_place_info"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="100dp"
                 android:text="@string/error_fail_to_load_place_info"
