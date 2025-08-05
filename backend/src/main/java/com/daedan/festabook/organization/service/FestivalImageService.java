@@ -10,6 +10,7 @@ import com.daedan.festabook.organization.dto.FestivalImageSequenceUpdateRequest;
 import com.daedan.festabook.organization.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -48,7 +49,7 @@ public class FestivalImageService {
             festivalImages.add(festivalImage);
         }
 
-        festivalImages.sort(FestivalImage::compareTo);
+        Collections.sort(festivalImages);
 
         return FestivalImageResponses.from(festivalImages);
     }

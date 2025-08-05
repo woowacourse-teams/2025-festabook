@@ -12,6 +12,7 @@ import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -59,7 +60,7 @@ public class QuestionService {
             questions.add(question);
         }
 
-        questions.sort(Question::compareTo);
+        Collections.sort(questions);
 
         return QuestionSequenceUpdateResponses.from(questions);
     }
