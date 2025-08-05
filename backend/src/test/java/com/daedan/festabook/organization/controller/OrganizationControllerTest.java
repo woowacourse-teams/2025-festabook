@@ -231,7 +231,7 @@ class OrganizationControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .patch("/organizations")
+                    .patch("/organizations/information")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
