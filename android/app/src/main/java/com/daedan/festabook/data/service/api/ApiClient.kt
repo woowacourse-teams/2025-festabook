@@ -19,11 +19,10 @@ object ApiClient {
     private val json = Json { ignoreUnknownKeys = true }
 
     private val okHttpClient: OkHttpClient by lazy {
-        if (BuildConfig.DEBUG) {
-            createDebugOkHttpClient()
-        } else {
-            createOkHttpClient().build()
-        }
+        OkHttpClient
+            .Builder()
+            .addInterceptor(FestaBookAuthInterceptor("1"))
+            .build()
     }
 
     private val retrofit: Retrofit by lazy {
