@@ -3,6 +3,7 @@ package com.daedan.festabook
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.service.NotificationHelper
+import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
 
@@ -10,13 +11,20 @@ class FestaBookApp : Application() {
     lateinit var appContainer: AppContainer
         private set
 
+    private lateinit var fireBaseAnalytics: FirebaseAnalytics
+
     override fun onCreate() {
         super.onCreate()
+        setupFirebaseAnalytics()
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
         appContainer = AppContainer(this)
         setLightTheme()
+    }
+
+    private fun setupFirebaseAnalytics() {
+        fireBaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     private fun setupNotificationChannel() {

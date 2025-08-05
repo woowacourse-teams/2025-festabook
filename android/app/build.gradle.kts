@@ -107,6 +107,7 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.timber)
     implementation(libs.lottie)
+    implementation(libs.google.firebase.analytics)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)
