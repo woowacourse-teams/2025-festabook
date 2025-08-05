@@ -3,6 +3,7 @@ package com.daedan.festabook.lostitem.controller;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
@@ -32,14 +33,14 @@ class LostItemControllerTest {
 
     private static final String ORGANIZATION_HEADER_NAME = "organization";
 
-    @LocalServerPort
-    private int port;
-
     @Autowired
     private LostItemJpaRepository lostItemJpaRepository;
 
     @Autowired
     private OrganizationJpaRepository organizationJpaRepository;
+
+    @LocalServerPort
+    private int port;
 
     @BeforeEach
     void setUp() {
@@ -69,9 +70,11 @@ class LostItemControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
+                    .body("id", notNullValue())
                     .body("imageUrl", equalTo(request.imageUrl()))
                     .body("storageLocation", equalTo(request.storageLocation()))
-                    .body("status", equalTo("PENDING"));
+                    .body("status", equalTo("PENDING"))
+                    .body("createdAt", notNullValue());
         }
     }
 
@@ -79,7 +82,29 @@ class LostItemControllerTest {
     class getAllLostItemByOrganizationId {
 
         @Test
-        void 성공() {
+        void 성공_사이즈_검증() {
+            // given
+            Organization organization = OrganizationFixture.create();
+            organizationJpaRepository.save(organization);
+
+            LostItem lostItem1 = LostItemFixture.create();
+            LostItem lostItem2 = LostItemFixture.create();
+            lostItemJpaRepository.saveAll(List.of(lostItem1, lostItem2));
+
+            int expectedSize = 2;
+
+            // when & then
+            given()
+                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .when()
+                    .get("/lost-items")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
+        }
+
+        @Test
+        void 성공_필드값_검증() {
             // given
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
@@ -99,7 +124,6 @@ class LostItemControllerTest {
 
             lostItemJpaRepository.saveAll(List.of(lostItem1, lostItem2));
 
-            int expectedSize = 2;
             int expectedFieldSize = 5;
 
             // when & then
@@ -108,10 +132,7 @@ class LostItemControllerTest {
                     .when()
                     .get("/lost-items")
                     .then()
-                    .log()
-                    .all()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
 
                     .body("[0].imageUrl", equalTo(lostItem1.getImageUrl()))
