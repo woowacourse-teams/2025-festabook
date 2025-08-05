@@ -1,6 +1,6 @@
 package com.daedan.festabook.organization.controller;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -317,7 +317,7 @@ class OrganizationControllerTest {
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
             assertThat(festivalImageJpaRepository.findAllByOrganizationIdOrderBySequenceAsc(organization.getId()))
-                    .isEqualTo(List.of());
+                    .isEmpty();
         }
 
         @Test
