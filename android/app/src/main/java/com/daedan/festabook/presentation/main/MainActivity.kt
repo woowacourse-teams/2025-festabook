@@ -185,6 +185,7 @@ class MainActivity : AppCompatActivity() {
             binding.fcvFragmentContainer.updatePadding(
                 bottom = binding.babMenu.height + binding.babMenu.marginBottom,
             )
+            binding.bnvMenu.x = binding.bnvMenu.x / 2
         }
         binding.babMenu.setOnApplyWindowInsetsListener(null)
         binding.babMenu.setPadding(0, 0, 0, 0)
