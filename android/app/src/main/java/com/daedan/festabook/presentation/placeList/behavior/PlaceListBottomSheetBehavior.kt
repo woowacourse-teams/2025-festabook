@@ -22,6 +22,7 @@ class PlaceListBottomSheetBehavior<V : View>(
 
     init {
         state = STATE_HALF_EXPANDED
+        isGestureInsetBottomIgnored = true
         addBottomSheetCallback(
             object : BottomSheetCallback() {
                 override fun onStateChanged(
