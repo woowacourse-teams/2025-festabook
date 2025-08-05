@@ -50,7 +50,7 @@ class PlaceListBottomSheetBehavior<V : View>(
         recyclerView = child.findViewById<RecyclerView>(R.id.rv_places)
         expandedOffset = parent.findViewById<ChipGroup>(R.id.cg_categories).height
         recyclerView.getChildAt(HEADER_POSITION)?.let {
-            headerRange = expandedOffset.toInt()..(expandedOffset.toInt() + it.height)
+            headerRange = expandedOffset..(expandedOffset + it.height)
         }
         return super.onLayoutChild(parent, child, layoutDirection)
     }

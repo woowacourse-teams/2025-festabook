@@ -7,7 +7,7 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class PlaceListBottomSheetFollowBehavior(
-    private val context: Context,
+    context: Context,
     attrs: AttributeSet,
 ) : CoordinatorLayout.Behavior<View>(
         context,

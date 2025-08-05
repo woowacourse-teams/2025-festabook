@@ -22,9 +22,6 @@ import kotlinx.coroutines.launch
 class PlaceListViewModel(
     private val placeListRepository: PlaceListRepository,
 ) : ViewModel() {
-    private val _selectedPlace: MutableLiveData<PlaceUiModel> = MutableLiveData()
-    val selectedPlace: LiveData<PlaceUiModel> = _selectedPlace
-
     private var _cachedPlaces = listOf<PlaceUiModel>()
 
     private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
