@@ -11,8 +11,6 @@ public interface FestivalImageJpaRepository extends JpaRepository<FestivalImage,
 
     List<FestivalImage> findAllByOrganizationIdOrderBySequenceAsc(Long organizationId);
 
-    List<FestivalImage> findAllByOrganizationId(Long organizationId);
-
     @Query("SELECT MAX(f.sequence) FROM FestivalImage f WHERE f.organization.id = :organizationId")
     Optional<Integer> findMaxSequenceByOrganizationId(@Param("organizationId") Long organizationId);
 }

@@ -11,8 +11,6 @@ import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.FestivalImageFixture;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.dto.FestivalImageDeleteRequest;
-import com.daedan.festabook.organization.dto.FestivalImageDeleteRequestFixture;
 import com.daedan.festabook.organization.dto.FestivalImageRequest;
 import com.daedan.festabook.organization.dto.FestivalImageRequestFixture;
 import com.daedan.festabook.organization.dto.FestivalImageResponse;
@@ -146,26 +144,19 @@ class FestivalImageServiceTest {
     }
 
     @Nested
-    class removeFestivalImages {
+    class removeFestivalImage {
 
         @Test
         void 성공() {
             // given
-            Long festivalImageId1 = 1L;
-            Long festivalImageId2 = 2L;
-            Long festivalImageId3 = 3L;
-
-            FestivalImageDeleteRequest request1 = FestivalImageDeleteRequestFixture.create(festivalImageId1);
-            FestivalImageDeleteRequest request2 = FestivalImageDeleteRequestFixture.create(festivalImageId2);
-            FestivalImageDeleteRequest request3 = FestivalImageDeleteRequestFixture.create(festivalImageId3);
-            List<FestivalImageDeleteRequest> requests = List.of(request1, request2, request3);
+            Long festivalImageId = 1L;
 
             // when
-            festivalImageService.removeFestivalImages(requests);
+            festivalImageService.removeFestivalImage(1L);
 
             // then
             then(festivalImageJpaRepository).should()
-                    .deleteAllById(List.of(festivalImageId1, festivalImageId2, festivalImageId3));
+                    .deleteById(festivalImageId);
         }
     }
 }

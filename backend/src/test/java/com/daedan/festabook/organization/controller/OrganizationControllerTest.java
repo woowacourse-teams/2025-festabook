@@ -9,8 +9,6 @@ import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.FestivalImageFixture;
 import com.daedan.festabook.organization.domain.Organization;
 import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.dto.FestivalImageDeleteRequest;
-import com.daedan.festabook.organization.dto.FestivalImageDeleteRequestFixture;
 import com.daedan.festabook.organization.dto.FestivalImageRequest;
 import com.daedan.festabook.organization.dto.FestivalImageRequestFixture;
 import com.daedan.festabook.organization.dto.FestivalImageSequenceUpdateRequest;
@@ -286,7 +284,7 @@ class OrganizationControllerTest {
     }
 
     @Nested
-    class removeFestivalImages {
+    class removeFestivalImage {
 
         @Test
         void 성공() {
@@ -294,25 +292,16 @@ class OrganizationControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            FestivalImage image1 = FestivalImageFixture.create(organization, 1);
-            FestivalImage image2 = FestivalImageFixture.create(organization, 2);
-            FestivalImage image3 = FestivalImageFixture.create(organization, 3);
-            festivalImageJpaRepository.saveAll(List.of(image1, image2, image3));
-
-            List<FestivalImageDeleteRequest> requests = List.of(
-                    FestivalImageDeleteRequestFixture.create(image1.getId()),
-                    FestivalImageDeleteRequestFixture.create(image2.getId()),
-                    FestivalImageDeleteRequestFixture.create(image3.getId())
-            );
+            FestivalImage festivalImage = FestivalImageFixture.create(organization, 1);
+            festivalImageJpaRepository.save(festivalImage);
 
             // when & then
             RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
-                    .body(requests)
                     .when()
-                    .delete("/organizations/images")
+                    .delete("/organizations/images/{festivalImageId}", festivalImage.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
@@ -326,16 +315,15 @@ class OrganizationControllerTest {
             Organization organization = OrganizationFixture.create();
             organizationJpaRepository.save(organization);
 
-            List<FestivalImageDeleteRequest> requests = FestivalImageDeleteRequestFixture.createList(3);
+            Long invalidFestivalImageId = 0L;
 
             // when & then
             RestAssured
                     .given()
                     .header(ORGANIZATION_HEADER_NAME, organization.getId())
                     .contentType(ContentType.JSON)
-                    .body(requests)
                     .when()
-                    .delete("/organizations/images")
+                    .delete("/organizations/images/{festivalImageId}", invalidFestivalImageId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }

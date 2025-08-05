@@ -1,7 +1,6 @@
 package com.daedan.festabook.organization.controller;
 
 import com.daedan.festabook.global.argumentresolver.OrganizationId;
-import com.daedan.festabook.organization.dto.FestivalImageDeleteRequest;
 import com.daedan.festabook.organization.dto.FestivalImageRequest;
 import com.daedan.festabook.organization.dto.FestivalImageResponse;
 import com.daedan.festabook.organization.dto.FestivalImageResponses;
@@ -23,6 +22,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -100,15 +100,15 @@ public class OrganizationController {
         return festivalImageService.updateFestivalImagesSequence(requests);
     }
 
-    @DeleteMapping("/images")
+    @DeleteMapping("/images/{festivalImageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "특정 조직의 축제 이미지들 삭제")
+    @Operation(summary = "특정 조직의 축제 이미지 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void removeFestivalImages(
-            @RequestBody List<FestivalImageDeleteRequest> requests
+            @PathVariable Long festivalImageId
     ) {
-        festivalImageService.removeFestivalImages(requests);
+        festivalImageService.removeFestivalImage(festivalImageId);
     }
 }

@@ -3,7 +3,6 @@ package com.daedan.festabook.organization.service;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.organization.domain.FestivalImage;
 import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.dto.FestivalImageDeleteRequest;
 import com.daedan.festabook.organization.dto.FestivalImageRequest;
 import com.daedan.festabook.organization.dto.FestivalImageResponse;
 import com.daedan.festabook.organization.dto.FestivalImageResponses;
@@ -54,13 +53,8 @@ public class FestivalImageService {
         return FestivalImageResponses.from(festivalImages);
     }
 
-    @Transactional
-    public void removeFestivalImages(List<FestivalImageDeleteRequest> requests) {
-        List<Long> festivalImageIds = requests.stream()
-                .map(FestivalImageDeleteRequest::festivalImageId)
-                .toList();
-
-        festivalImageJpaRepository.deleteAllById(festivalImageIds);
+    public void removeFestivalImage(Long festivalImageId) {
+        festivalImageJpaRepository.deleteById(festivalImageId);
     }
 
     private Organization getOrganizationById(Long organizationId) {
