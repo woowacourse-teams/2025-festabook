@@ -12,7 +12,6 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
-import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 
 object ApiClient {
@@ -20,18 +19,11 @@ object ApiClient {
     private val json = Json { ignoreUnknownKeys = true }
 
     private val okHttpClient: OkHttpClient by lazy {
-        OkHttpClient
-            .Builder()
-            .apply {
-                if (BuildConfig.DEBUG) {
-                    val loggingInterceptor =
-                        HttpLoggingInterceptor().apply {
-                            level = HttpLoggingInterceptor.Level.BODY
-                        }
-                    addInterceptor(loggingInterceptor)
-                }
-            }.addInterceptor(FestaBookAuthInterceptor("1"))
-            .build()
+        if (BuildConfig.DEBUG) {
+            createDebugOkHttpClient()
+        } else {
+            createOkHttpClient().build()
+        }
     }
 
     private val retrofit: Retrofit by lazy {
