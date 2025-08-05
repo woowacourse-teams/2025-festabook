@@ -104,8 +104,8 @@ class FestivalImageServiceTest {
             FestivalImage festivalImage3 = FestivalImageFixture.create(festivalImageId3, organization, 3);
 
             List<FestivalImageSequenceUpdateRequest> requests = List.of(
-                    FestivalImageSequenceUpdateRequestFixture.create(festivalImageId1, 2),
-                    FestivalImageSequenceUpdateRequestFixture.create(festivalImageId2, 3),
+                    FestivalImageSequenceUpdateRequestFixture.create(festivalImageId1, 3),
+                    FestivalImageSequenceUpdateRequestFixture.create(festivalImageId2, 2),
                     FestivalImageSequenceUpdateRequestFixture.create(festivalImageId3, 1)
             );
 
@@ -124,10 +124,10 @@ class FestivalImageServiceTest {
                 s.assertThat(result.responses().get(0).festivalImageId()).isEqualTo(festivalImageId3);
                 s.assertThat(result.responses().get(0).sequence()).isEqualTo(1);
 
-                s.assertThat(result.responses().get(1).festivalImageId()).isEqualTo(festivalImageId1);
+                s.assertThat(result.responses().get(1).festivalImageId()).isEqualTo(festivalImageId2);
                 s.assertThat(result.responses().get(1).sequence()).isEqualTo(2);
 
-                s.assertThat(result.responses().get(2).festivalImageId()).isEqualTo(festivalImageId2);
+                s.assertThat(result.responses().get(2).festivalImageId()).isEqualTo(festivalImageId1);
                 s.assertThat(result.responses().get(2).sequence()).isEqualTo(3);
             });
         }

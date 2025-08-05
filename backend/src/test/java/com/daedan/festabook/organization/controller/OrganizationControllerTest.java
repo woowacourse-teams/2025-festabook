@@ -259,8 +259,8 @@ class OrganizationControllerTest {
             festivalImageJpaRepository.saveAll(List.of(festivalImage1, festivalImage2, festivalImage3));
 
             List<FestivalImageSequenceUpdateRequest> requests = List.of(
-                    FestivalImageSequenceUpdateRequestFixture.create(festivalImage1.getId(), 2),
-                    FestivalImageSequenceUpdateRequestFixture.create(festivalImage2.getId(), 3),
+                    FestivalImageSequenceUpdateRequestFixture.create(festivalImage1.getId(), 3),
+                    FestivalImageSequenceUpdateRequestFixture.create(festivalImage2.getId(), 2),
                     FestivalImageSequenceUpdateRequestFixture.create(festivalImage3.getId(), 1)
             );
 
@@ -277,10 +277,10 @@ class OrganizationControllerTest {
                     .body("[0].festivalImageId", equalTo(festivalImage3.getId().intValue()))
                     .body("[0].sequence", equalTo(1))
 
-                    .body("[1].festivalImageId", equalTo(festivalImage1.getId().intValue()))
+                    .body("[1].festivalImageId", equalTo(festivalImage2.getId().intValue()))
                     .body("[1].sequence", equalTo(2))
 
-                    .body("[2].festivalImageId", equalTo(festivalImage2.getId().intValue()))
+                    .body("[2].festivalImageId", equalTo(festivalImage1.getId().intValue()))
                     .body("[2].sequence", equalTo(3));
         }
     }
