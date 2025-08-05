@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/lost-item")
+@RequestMapping("/lost-items")
 @Tag(name = "분실물", description = "분실물 관련 API")
 class LostItemController {
 
