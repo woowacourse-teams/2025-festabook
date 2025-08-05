@@ -97,11 +97,13 @@ class LostItemServiceTest {
             given(lostItemJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
                     .willReturn(lostItems);
 
+            int expectedSize = 2;
+            
             // when
             LostItemResponses result = lostItemService.getAllLostItemByOrganizationId(DEFAULT_ORGANIZATION_ID);
 
             // then
-            assertThat(result.responses()).hasSize(2);
+            assertThat(result.responses()).hasSize(expectedSize);
         }
     }
 }
