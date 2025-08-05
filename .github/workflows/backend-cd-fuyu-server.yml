@@ -1,4 +1,4 @@
-name: Fuyu Dev Backend CD
+name: Backend CD Fuyu Server
 
 on:
   push:

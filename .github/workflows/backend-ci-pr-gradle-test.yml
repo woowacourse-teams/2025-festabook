@@ -1,4 +1,4 @@
-name: Run Test
+name: Backend CI Pull-Request Gradle Test
 
 on:
   pull_request:
