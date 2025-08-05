@@ -4,8 +4,6 @@ import android.content.Context
 import android.util.AttributeSet
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.content.withStyledAttributes
-import com.daedan.festabook.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class PlaceListBottomSheetFollowBehavior(
@@ -16,15 +14,7 @@ class PlaceListBottomSheetFollowBehavior(
         attrs,
     ) {
     private var currentBehavior: BottomSheetBehavior<*>? = null
-    private lateinit var callback: BottomSheetFollowCallback
-    private var changeVisibility: Boolean = true
-
-    init {
-        context.withStyledAttributes(attrs, R.styleable.PlaceListBottomSheetFollowBehavior) {
-            changeVisibility =
-                getBoolean(R.styleable.PlaceListBottomSheetFollowBehavior_changeVisibility, true)
-        }
-    }
+    private lateinit var callback: BottomSheetBehavior.BottomSheetCallback
 
     override fun layoutDependsOn(
         parent: CoordinatorLayout,
@@ -32,6 +22,9 @@ class PlaceListBottomSheetFollowBehavior(
         dependency: View,
     ): Boolean {
         val behavior = (dependency.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior
+        if (behavior is BottomSheetBehavior<*>) {
+            currentBehavior = behavior
+        }
         return behavior is BottomSheetBehavior<*>
     }
 
@@ -42,18 +35,6 @@ class PlaceListBottomSheetFollowBehavior(
     ): Boolean {
         val bottomSheetTopY = dependency.y - dependency.height
         child.translationY = bottomSheetTopY
-
-        val behavior =
-            (dependency.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior as? BottomSheetBehavior<*>
-        if (behavior != null && behavior !== currentBehavior) {
-            currentBehavior?.removeBottomSheetCallback(callback)
-            if (!::callback.isInitialized) {
-                callback = BottomSheetFollowCallback(child, changeVisibility)
-            }
-            behavior.addBottomSheetCallback(callback)
-            currentBehavior = behavior
-        }
-
         return true
     }
 
@@ -63,26 +44,11 @@ class PlaceListBottomSheetFollowBehavior(
         currentBehavior = null
     }
 
-    private class BottomSheetFollowCallback(
-        private val child: View,
-        private val changeVisibility: Boolean = true,
-    ) : BottomSheetBehavior.BottomSheetCallback() {
-        override fun onStateChanged(
-            bottomSheet: View,
-            newState: Int,
-        ) {
-            if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                child.visibility = View.GONE
-                return
-            }
-            if (changeVisibility) {
-                child.visibility = View.VISIBLE
-            }
+    fun setCallback(callback: BottomSheetBehavior.BottomSheetCallback) {
+        if (::callback.isInitialized) {
+            currentBehavior?.removeBottomSheetCallback(this.callback)
         }
-
-        override fun onSlide(
-            bottomSheet: View,
-            slideOffset: Float,
-        ) = Unit
+        this.callback = callback
+        currentBehavior?.addBottomSheetCallback(callback)
     }
 }

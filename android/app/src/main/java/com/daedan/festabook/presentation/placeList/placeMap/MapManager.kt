@@ -74,16 +74,8 @@ class MapManager(
         block: (Boolean) -> Unit,
     ) {
         map.addOnCameraChangeListener { _, _ ->
-            val initialCenter = settingUiModel.initialCenter.toLatLng()
-            val maxLength =
-                settingUiModel.border.maxOf {
-                    initialCenter.distanceTo(it.toLatLng())
-                }
-
-            val currentPosition = map.cameraPosition.target
-            val zoomWeight = map.cameraPosition.zoom.zoomWeight()
             block(
-                currentPosition.distanceTo(initialCenter) > maxLength * zoomWeight,
+                isExceededMaxLength(),
             )
         }
     }
@@ -95,6 +87,18 @@ class MapManager(
                     settingUiModel.initialCenter.toLatLng(),
                 ).animate(Easing)
         map.moveCamera(initialCenterCoordinate)
+    }
+
+    fun isExceededMaxLength(): Boolean {
+        val initialCenter = settingUiModel.initialCenter.toLatLng()
+        val maxLength =
+            settingUiModel.border.maxOf {
+                initialCenter.distanceTo(it.toLatLng())
+            }
+
+        val currentPosition = map.cameraPosition.target
+        val zoomWeight = map.cameraPosition.zoom.zoomWeight()
+        return currentPosition.distanceTo(initialCenter) > maxLength * zoomWeight
     }
 
     private fun setContentPaddingBottom(height: Int) {

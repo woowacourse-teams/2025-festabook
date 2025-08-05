@@ -10,9 +10,12 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.initialPadding
+import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
+import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
+import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
@@ -144,7 +147,8 @@ class PlaceListFragment :
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
             if (!::mapManager.isInitialized) {
-                mapManager = MapManager(naverMap, binding.initialPadding().toInt(), initialMapSetting.value)
+                mapManager =
+                    MapManager(naverMap, binding.initialPadding().toInt(), initialMapSetting.value)
             }
             mapManager.setupMap()
             mapManager.setupBackToInitialPosition(initialMapSetting.value) { isExceededMaxLength ->
@@ -154,7 +158,22 @@ class PlaceListFragment :
                     binding.chipBackToInitialPosition.visibility = View.GONE
                 }
             }
+            setBehaviorCallback()
         }
+    }
+
+    private fun setBehaviorCallback() {
+        binding.lbvCurrentLocation
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                BottomSheetFollowCallback(binding.lbvCurrentLocation.id),
+            )
+
+        binding.chipBackToInitialPosition
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id, mapManager),
+            )
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {
