@@ -119,7 +119,7 @@ const HomePage = () => {
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">축제명</label>
-                        <p className="text-lg font-semibold text-gray-900">{festival.festivalName}</p>
+                        <p className="text-lg font-semibold text-gray-900 whitespace-pre-line">{festival.festivalName}</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
