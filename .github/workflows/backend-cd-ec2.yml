@@ -104,6 +104,7 @@ jobs:
           echo "LOG_PATH=${LOG_PATH}"
           
           nohup java -jar "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod > "${LOG_PATH}" 2>&1 &
+          disown
           for i in $(seq 1 20); do
             if lsof -t -i:8080 > /dev/null; then
               echo "WAS has started and is listening on port 8080."
