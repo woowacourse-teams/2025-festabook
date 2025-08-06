@@ -566,3 +566,35 @@ VALUES (1, 1),
 INSERT INTO festival_notification (festival_id, device_id)
 VALUES (1, 1),
        (1, 2);
+
+-- ========================
+-- 분실물 (LostItem)
+-- ========================
+INSERT INTO lost_item (festival_id, image_url, storage_location, status, created_at)
+VALUES (1, 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f', '본관 1층 안내데스크', 'PENDING',
+        '2025-08-01 10:15:00'),
+       (1, 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d', '도서관 2층 열람실', 'COMPLETED',
+        '2025-08-01 11:20:00'),
+       (1, 'https://images.unsplash.com/photo-1519681393784-d120267933ba', '학생회관 3층 휴게실', 'PENDING',
+        '2025-08-01 13:45:00'),
+       (1, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f', '체육관 1층 로비', 'COMPLETED',
+        '2025-08-02 09:10:00'),
+       (1, 'https://images.unsplash.com/photo-1521747116042-5a810fda9664', '공학관 4층 연구실 앞', 'PENDING',
+        '2025-08-02 15:25:00'),
+       (1, 'https://images.unsplash.com/photo-1518770660439-4636190af475', '음악관 2층 연습실', 'PENDING',
+        '2025-08-02 17:30:00'),
+       (1, 'https://images.unsplash.com/photo-1534080564583-6be75777b70a', '기숙사 A동 로비', 'COMPLETED',
+        '2025-08-03 08:50:00'),
+       (1, 'https://images.unsplash.com/photo-1521295121783-8a321d551ad2', '기숙사 B동 세탁실', 'PENDING',
+        '2025-08-03 19:10:00'),
+       (1, 'https://images.unsplash.com/photo-1481277542470-605612bd2d61', '카페테리아 입구', 'PENDING',
+        '2025-08-04 12:20:00'),
+       (1, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330', '야외무대 좌석 뒤편', 'COMPLETED',
+        '2025-08-04 16:45:00'),
+       (1, 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1', '학생회관 지하 매점', 'PENDING',
+        '2025-08-05 09:00:00'),
+       (1, 'https://images.unsplash.com/photo-1544005313-94ddf0286df2', '본관 2층 화장실 앞', 'PENDING',
+        '2025-08-05 14:35:00'),
+       (1, 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e', '중앙도서관 안내데스크', 'COMPLETED',
+        '2025-08-06 10:10:00'),
+       (1, 'https://images.unsplash.com/photo-1517841905240-472988babdf9', '운동장 매표소', 'PENDING', '2025-08-06 18:20:00');
