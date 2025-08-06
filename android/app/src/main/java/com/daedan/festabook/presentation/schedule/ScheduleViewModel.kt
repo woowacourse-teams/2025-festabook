@@ -14,7 +14,6 @@ import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
 import com.daedan.festabook.presentation.schedule.model.toUiModel
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import java.time.LocalDate
 
 class ScheduleViewModel(
