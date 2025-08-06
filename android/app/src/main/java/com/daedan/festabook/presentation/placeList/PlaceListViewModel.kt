@@ -12,6 +12,7 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
+import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -43,6 +44,9 @@ class PlaceListViewModel(
 
     private val _selectedPlace: MutableLiveData<PlaceDetailUiModel> = MutableLiveData()
     val selectedPlace: LiveData<PlaceDetailUiModel> = _selectedPlace
+
+    private val _navigateToDetail = SingleLiveData<PlaceDetailUiModel>()
+    val navigateToDetail: LiveData<PlaceDetailUiModel> = _navigateToDetail
 
     init {
         loadAllPlaces()
@@ -87,6 +91,13 @@ class PlaceListViewModel(
                 .onSuccess {
                     _selectedPlace.value = it.toUiModel()
                 }
+        }
+    }
+
+    fun onExpandedStateReached() {
+        val currentPlace = _selectedPlace.value
+        if (currentPlace != null) {
+            _navigateToDetail.setValue(currentPlace)
         }
     }
 

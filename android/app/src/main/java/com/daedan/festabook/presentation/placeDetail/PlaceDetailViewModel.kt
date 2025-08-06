@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
@@ -16,7 +17,8 @@ import kotlinx.coroutines.launch
 
 class PlaceDetailViewModel(
     private val placeDetailRepository: PlaceDetailRepository,
-    private val place: PlaceUiModel,
+    private val place: PlaceUiModel? = null,
+    private val receivedPlaceDetail: PlaceDetailUiModel? = null,
 ) : ViewModel() {
     private val _placeDetail =
         MutableLiveData<PlaceDetailUiState>(
@@ -25,12 +27,16 @@ class PlaceDetailViewModel(
     val placeDetail: LiveData<PlaceDetailUiState> = _placeDetail
 
     init {
-        loadPlaceDetail()
+        if (receivedPlaceDetail != null) {
+            _placeDetail.value = PlaceDetailUiState.Success(receivedPlaceDetail)
+        } else if (place != null) {
+            loadPlaceDetail(place.id)
+        }
     }
 
-    fun loadPlaceDetail() {
+    private fun loadPlaceDetail(placeId: Long) {
         viewModelScope.launch {
-            val result = placeDetailRepository.getPlaceDetail(place.id)
+            val result = placeDetailRepository.getPlaceDetail(placeId)
             result
                 .onSuccess { placeDetail ->
                     _placeDetail.value =
@@ -49,7 +55,16 @@ class PlaceDetailViewModel(
                 initializer {
                     val placeDetailRepository =
                         (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
-                    PlaceDetailViewModel(placeDetailRepository, place)
+                    PlaceDetailViewModel(placeDetailRepository, place = place)
+                }
+            }
+
+        fun factory(placeDetail: PlaceDetailUiModel) =
+            viewModelFactory {
+                initializer {
+                    val placeDetailRepository =
+                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
+                    PlaceDetailViewModel(placeDetailRepository, receivedPlaceDetail = placeDetail)
                 }
             }
     }

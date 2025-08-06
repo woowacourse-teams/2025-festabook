@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.children
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -22,6 +23,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.getMap
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.chip.Chip
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -44,6 +46,7 @@ class PlaceListFragment :
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
+    private lateinit var selectedPlaceBottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
     private lateinit var mapManager: MapManager
 
     private lateinit var naverMap: NaverMap
@@ -53,6 +56,11 @@ class PlaceListFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        selectedPlaceBottomSheetBehavior = BottomSheetBehavior.from(binding.nsSelectedPlace)
+
+        val bottomSheetCallback = PlaceListBottomSheetCallback(viewModel)
+        selectedPlaceBottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
+
         lifecycleScope.launch {
             setUpPlaceAdapter()
             setUpMapManager()
@@ -158,11 +166,14 @@ class PlaceListFragment :
 
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
             if (selectedPlace == null) {
-                binding.layoutSelectedPlace.visibility = View.GONE
+                binding.nsSelectedPlace.visibility = View.GONE
             } else {
-                binding.layoutSelectedPlace.visibility = View.VISIBLE
+                binding.nsSelectedPlace.visibility = View.VISIBLE
                 updateSelectedPlaceUi(selectedPlace)
             }
+        }
+        viewModel.navigateToDetail.observe(viewLifecycleOwner) { selectedPlace ->
+            startPlaceDetailActivity(selectedPlace)
         }
     }
 
@@ -207,6 +218,12 @@ class PlaceListFragment :
                 placeholder(R.color.gray300)
             }
         }
+    }
+
+    private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
+        Timber.d("start detail activity")
+        val intent = PlaceDetailActivity.newIntent(requireContext(), placeDetail)
+        startActivity(intent)
     }
 
     companion object {
