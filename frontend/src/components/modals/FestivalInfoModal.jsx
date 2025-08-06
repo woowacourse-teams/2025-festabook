@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
+import api from '../../utils/api';
 
-const FestivalInfoModal = ({ isOpen, onClose, festival, showToast }) => {
+const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) => {
     const [formData, setFormData] = useState({
         festivalName: festival?.festivalName || '',
         startDate: festival?.startDate ? festival.startDate.split('T')[0] : '',
@@ -13,12 +14,26 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast }) => {
         e.preventDefault();
         
         try {
-            // TODO: API 호출로 축제 정보 업데이트
-            // const response = await api.put('/festivals', formData);
+            const response = await api.patch('/festivals/information', {
+                festivalName: formData.festivalName,
+                startDate: formData.startDate,
+                endDate: formData.endDate
+            });
+            
+            // 상태 업데이트
+            if (onUpdate) {
+                onUpdate(prev => ({
+                    ...prev,
+                    festivalName: response.data.festivalName,
+                    startDate: response.data.startDate,
+                    endDate: response.data.endDate
+                }));
+            }
             
             showToast('축제 정보가 성공적으로 수정되었습니다.');
             onClose();
         } catch (error) {
+            console.error('Festival info update error:', error);
             showToast('축제 정보 수정에 실패했습니다.');
         }
     };
@@ -100,38 +115,6 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast }) => {
                         />
                     </div>
                     
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            축제 상태
-                        </label>
-                        <div className="flex items-center space-x-4">
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="isActive"
-                                    value="true"
-                                    checked={formData.isActive === true}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
-                                    className="mr-2 text-black focus:ring-black"
-                                />
-                                <span className="text-sm text-gray-700">활성화</span>
-                            </label>
-                            <label className="flex items-center">
-                                <input
-                                    type="radio"
-                                    name="isActive"
-                                    value="false"
-                                    checked={formData.isActive === false}
-                                    onChange={(e) => setFormData(prev => ({ ...prev, isActive: e.target.value === 'true' }))}
-                                    className="mr-2 text-black focus:ring-black"
-                                />
-                                <span className="text-sm text-gray-700">비활성화</span>
-                            </label>
-                        </div>
-                        <p className="text-xs text-gray-500 mt-1">
-                            비활성화 시 학생 앱에서 축제 정보가 숨겨집니다
-                        </p>
-                    </div>
                 </div>
                 
                 <div className="flex space-x-3 mt-6">

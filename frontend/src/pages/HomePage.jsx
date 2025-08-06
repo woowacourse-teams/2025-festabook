@@ -110,7 +110,7 @@ const HomePage = () => {
                 <div className="flex justify-between items-start mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">축제 정보</h3>
                     <button 
-                        onClick={() => openModal('festival-info', { festival })}
+                        onClick={() => openModal('festival-info', { festival, onUpdate: setFestival })}
                         className="text-black hover:text-gray-700 text-sm font-medium"
                     >
                         수정
@@ -125,16 +125,6 @@ const HomePage = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
                         <p className="text-gray-900">{formatDate(festival.startDate)} - {formatDate(festival.endDate)}</p>
                     </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
-                        <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${
-                            festival.isActive !== false 
-                                ? 'bg-black text-white' 
-                                : 'bg-gray-300 text-gray-700'
-                        }`}>
-                            {festival.isActive !== false ? '활성' : '비활성'}
-                        </span>
-                    </div>
                 </div>
             </div>
 
@@ -143,7 +133,7 @@ const HomePage = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-semibold text-gray-900">축제 이미지</h3>
                     <button 
-                        onClick={() => openModal('festival-images', { festival })}
+                        onClick={() => openModal('festival-images', { festival, onUpdate: setFestival })}
                         className="text-black hover:text-gray-700 text-sm font-medium"
                     >
                         수정
@@ -162,7 +152,7 @@ const HomePage = () => {
                         <div className="flex space-x-4 w-max select-none">
                             {festival.festivalImages.map((image, index) => (
                                 <div
-                                    key={image.id}
+                                    key={image.festivalImageId || image.id || index}
                                     className="relative group flex-shrink-0 w-[300px] h-[400px] bg-gray-200 rounded-lg overflow-hidden"
                                 >
                                     <img

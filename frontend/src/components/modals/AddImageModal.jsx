@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from '../common/Modal';
+import api from '../../utils/api';
 
-const AddImageModal = ({ isOpen, onClose, showToast }) => {
+const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -104,16 +105,20 @@ const AddImageModal = ({ isOpen, onClose, showToast }) => {
         setIsUploading(true);
         
         try {
-            // TODO: API 호출로 이미지 업로드
-            // const formData = new FormData();
-            // formData.append('image', selectedFile);
-            // const response = await api.post('/festivals/images', formData);
+            const imageUrl = URL.createObjectURL(selectedFile);
             
-            // 임시 지연 (실제 API 호출 시 제거)
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const response = await api.post('/festivals/images', {
+                imageUrl: imageUrl
+            });
             
             showToast('이미지가 성공적으로 업로드되었습니다.');
-            onClose();
+            
+            // 새로 추가된 이미지를 부모 컴포넌트에 전달
+            if (onImageAdded && response.data) {
+                onImageAdded(response.data);
+            } else {
+                onClose();
+            }
         } catch (error) {
             showToast('이미지 업로드에 실패했습니다.');
         } finally {
