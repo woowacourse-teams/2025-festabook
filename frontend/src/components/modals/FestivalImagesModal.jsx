@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 import AddImageModal from './AddImageModal';
 
-const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openModal }) => {
+const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [isReorderMode, setIsReorderMode] = useState(false);
     const [isDeleteMode, setIsDeleteMode] = useState(false);
@@ -37,8 +37,8 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
     // 이미지 데이터 초기화 및 모달 상태 관리
     useEffect(() => {
         if (isOpen) {
-            if (organization?.festivalImages) {
-                setImages([...organization.festivalImages]);
+            if (festival?.festivalImages) {
+                setImages([...festival.festivalImages]);
             }
         } else {
             // 모달이 닫힐 때 모든 상태 초기화
@@ -49,7 +49,7 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
             setImagesToDelete([]);
             setShowAddImageModal(false);
         }
-    }, [organization, isOpen]);
+    }, [festival, isOpen]);
 
     const handleImageClick = (image) => {
         if (!isReorderMode && !isDeleteMode) {
@@ -136,8 +136,8 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
         setDraggedItem(null);
         setImagesToDelete([]);
         // 원본 데이터로 복원
-        if (organization?.festivalImages) {
-            setImages([...organization.festivalImages]);
+        if (festival?.festivalImages) {
+            setImages([...festival.festivalImages]);
         }
     };
 
@@ -211,7 +211,7 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
                                 className={`relative group cursor-pointer ${
                                     isReorderMode ? 'cursor-move' : ''
                                 } ${
-                                    draggedItem?.id === image.id ? 'opacity-50' : ''
+                                    draggedItem?.id === image.id ? 'opacity-100' : ''
                                 }`}
                                 onClick={() => isDeleteMode ? handleDeleteToggle(image.id) : handleImageClick(image)}
                                 draggable={isReorderMode}

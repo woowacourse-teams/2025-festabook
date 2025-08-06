@@ -107,7 +107,7 @@ const AddImageModal = ({ isOpen, onClose, showToast }) => {
             // TODO: API 호출로 이미지 업로드
             // const formData = new FormData();
             // formData.append('image', selectedFile);
-            // const response = await api.post('/organizations/images', formData);
+            // const response = await api.post('/festivals/images', formData);
             
             // 임시 지연 (실제 API 호출 시 제거)
             await new Promise(resolve => setTimeout(resolve, 1000));
