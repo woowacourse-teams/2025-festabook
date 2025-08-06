@@ -6,12 +6,15 @@ import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
+import coil3.load
+import coil3.request.placeholder
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
@@ -102,6 +105,7 @@ class PlaceListFragment :
                 binding.initialPadding(),
                 onMarkerClickListener = { placeId, category ->
                     Timber.d("marker clicked $placeId $category")
+                    viewModel.selectPlace(placeId, category)
                 },
             )
     }
@@ -151,6 +155,15 @@ class PlaceListFragment :
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
             setUpMap(initialMapSetting)
         }
+
+        viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            if (selectedPlace == null) {
+                binding.layoutSelectedPlace.visibility = View.GONE
+            } else {
+                binding.layoutSelectedPlace.visibility = View.VISIBLE
+                updateSelectedPlaceUi(selectedPlace)
+            }
+        }
     }
 
     private fun setUpMap(initialMapSetting: PlaceListUiState.Success<InitialMapSettingUiModel>) {
@@ -170,6 +183,30 @@ class PlaceListFragment :
     private fun hideSkeleton() {
         binding.sflScheduleSkeleton.visibility = View.GONE
         binding.sflScheduleSkeleton.stopShimmer()
+    }
+
+    private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
+        with(binding) {
+            tvSelectedPlaceTitle.text = selectedPlace.place.title
+            tvSelectedPlaceLocation.text = selectedPlace.place.location
+            tvSelectedPlaceTime.text = selectedPlace.operatingHours
+            tvSelectedPlaceHost.text = selectedPlace.host
+            tvSelectedPlaceDescription.text = selectedPlace.place.description
+
+            tvSelectedPlaceCategory.text =
+                when (selectedPlace.place.category) {
+                    PlaceCategoryUiModel.FOOD_TRUCK -> getString(R.string.map_category_food_truck)
+                    PlaceCategoryUiModel.BAR -> getString(R.string.map_category_bar)
+                    PlaceCategoryUiModel.BOOTH -> getString(R.string.map_category_booth)
+                    else -> ""
+                }
+
+            ivSelectedPlaceImage.load(
+                selectedPlace.featuredImage,
+            ) {
+                placeholder(R.color.gray300)
+            }
+        }
     }
 
     companion object {

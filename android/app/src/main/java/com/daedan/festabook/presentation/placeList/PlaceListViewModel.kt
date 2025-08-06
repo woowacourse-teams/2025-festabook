@@ -10,7 +10,10 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.model.PlaceCategory
+import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
+import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
@@ -21,6 +24,7 @@ import kotlinx.coroutines.launch
 
 class PlaceListViewModel(
     private val placeListRepository: PlaceListRepository,
+    private val placeDetailRepository: PlaceDetailRepository,
 ) : ViewModel() {
     private var _cachedPlaces = listOf<PlaceUiModel>()
 
@@ -36,6 +40,9 @@ class PlaceListViewModel(
         MutableLiveData()
     val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
         _placeGeographies
+
+    private val _selectedPlace: MutableLiveData<PlaceDetailUiModel> = MutableLiveData()
+    val selectedPlace: LiveData<PlaceDetailUiModel> = _selectedPlace
 
     init {
         loadAllPlaces()
@@ -64,6 +71,23 @@ class PlaceListViewModel(
 
     fun clearPlacesFilter() {
         _places.value = PlaceListUiState.Success(_cachedPlaces)
+    }
+
+    fun selectPlace(
+        placeId: Long,
+        category: PlaceCategoryUiModel,
+    ) {
+        if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+            return
+        }
+
+        viewModelScope.launch {
+            placeDetailRepository
+                .getPlaceDetail(placeId = placeId)
+                .onSuccess {
+                    _selectedPlace.value = it.toUiModel()
+                }
+        }
     }
 
     private fun loadAllPlaces() {
@@ -108,9 +132,11 @@ class PlaceListViewModel(
         val Factory: ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
+                    val placeDetailRepository =
+                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
                     val placeListRepository =
                         (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeListRepository
-                    PlaceListViewModel(placeListRepository)
+                    PlaceListViewModel(placeListRepository, placeDetailRepository)
                 }
             }
     }
