@@ -34,13 +34,8 @@ class ScheduleFragment :
     }
 
     override fun onMenuItemReClick() {
-        val currentScheduleTabPageFragmentPosition = binding.vpSchedule.currentItem
-        val tag = getTagByFragmentPosition(currentScheduleTabPageFragmentPosition)
-        val scheduleTabPageFragment = childFragmentManager.findFragmentByTag(tag)
-
-        if (scheduleTabPageFragment is ScheduleTabPageUpdater) {
-            scheduleTabPageFragment.updateScheduleTabPage()
-        }
+        viewModel.loadAllDates()
+        viewModel.loadScheduleByDate()
     }
 
     @SuppressLint("WrongConstant")
@@ -89,7 +84,7 @@ class ScheduleFragment :
 
                 is ScheduleDatesUiState.Error -> {
                     showSkeleton(isLoading = false)
-                    Timber.tag("TAG").d("setupDate: ${scheduleDatesUiState.throwable.message}")
+                    Timber.d("setupDate: ${scheduleDatesUiState.throwable.message}")
                     showErrorSnackBar(scheduleDatesUiState.throwable)
                 }
             }
@@ -112,7 +107,5 @@ class ScheduleFragment :
     companion object {
         private const val PRELOAD_PAGE_COUNT: Int = 2
         private const val EMPTY_DATE_TEXT: String = ""
-
-        private fun getTagByFragmentPosition(position: Int): String = "f$position"
     }
 }
