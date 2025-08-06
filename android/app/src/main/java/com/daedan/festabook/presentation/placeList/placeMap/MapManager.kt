@@ -34,6 +34,13 @@ class MapManager(
         )
 
     private val context = map.context
+    private val maxLength =
+        settingUiModel.border.maxOf {
+            settingUiModel.initialCenter.toLatLng().distanceTo(it.toLatLng())
+        }
+
+    private val initialCenter = settingUiModel.initialCenter.toLatLng()
+    private var onCameraChangeListener: NaverMap.OnCameraChangeListener? = null
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         markers =
@@ -69,14 +76,18 @@ class MapManager(
         }
     }
 
-    fun setupBackToInitialPosition(
-        settingUiModel: InitialMapSettingUiModel,
-        block: (Boolean) -> Unit,
-    ) {
-        map.addOnCameraChangeListener { _, _ ->
-            block(
-                isExceededMaxLength(),
-            )
+    fun setupBackToInitialPosition(onCameraChangeListener: OnCameraChangeListener) {
+        this.onCameraChangeListener =
+            object : NaverMap.OnCameraChangeListener {
+                override fun onCameraChange(
+                    reason: Int,
+                    animated: Boolean,
+                ) {
+                    onCameraChangeListener.onCameraChanged(isExceededMaxLength())
+                }
+            }
+        this.onCameraChangeListener?.let {
+            map.addOnCameraChangeListener(it)
         }
     }
 
@@ -90,15 +101,16 @@ class MapManager(
     }
 
     fun isExceededMaxLength(): Boolean {
-        val initialCenter = settingUiModel.initialCenter.toLatLng()
-        val maxLength =
-            settingUiModel.border.maxOf {
-                initialCenter.distanceTo(it.toLatLng())
-            }
-
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()
         return currentPosition.distanceTo(initialCenter) > maxLength * zoomWeight
+    }
+
+    fun clearMapManager() {
+        onCameraChangeListener?.let { callback ->
+            map.removeOnCameraChangeListener(callback)
+            onCameraChangeListener = null
+        }
     }
 
     private fun setContentPaddingBottom(height: Int) {

@@ -60,6 +60,11 @@ class PlaceListFragment :
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mapManager.clearMapManager()
+    }
+
     override fun onPlaceClicked(place: PlaceUiModel) {
         startPlaceDetailActivity(place)
     }
@@ -151,7 +156,7 @@ class PlaceListFragment :
                     MapManager(naverMap, binding.initialPadding().toInt(), initialMapSetting.value)
             }
             mapManager.setupMap()
-            mapManager.setupBackToInitialPosition(initialMapSetting.value) { isExceededMaxLength ->
+            mapManager.setupBackToInitialPosition { isExceededMaxLength ->
                 if (isExceededMaxLength) {
                     binding.chipBackToInitialPosition.visibility = View.VISIBLE
                 } else {
