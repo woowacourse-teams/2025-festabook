@@ -2,6 +2,7 @@ package com.daedan.festabook
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.service.NotificationHelper
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
@@ -38,7 +39,7 @@ class FestaBookApp : Application() {
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) plantDebugTimberTree()
+        if (BuildConfig.DEBUG) plantDebugTimberTree() else plantInfoTimberTree()
     }
 
     private fun plantDebugTimberTree() {
@@ -48,6 +49,10 @@ class FestaBookApp : Application() {
                     "${super.createStackElementTag(element)}:${element.lineNumber}"
             },
         )
+    }
+
+    private fun plantInfoTimberTree() {
+        Timber.plant(FirebaseAnalyticsTree(fireBaseAnalytics))
     }
 
     private fun setupNaverSdk() {
