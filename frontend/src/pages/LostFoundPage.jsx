@@ -90,8 +90,9 @@ const LostFoundPage = () => {
                                             e.target.onerror = null;
                                             e.target.src = 'https://placehold.co/200x200/e0e0e0/757575?text=Error';
                                             }}
-                                            className="w-57 h-57 object-cover rounded-lg transition-opacity duration-200"
+                                            className="w-57 h-57 object-cover rounded-lg transition-opacity duration-200 select-none"
                                             alt="분실물 이미지"
+                                            draggable={false}
                                         />
 
                                         {/* 어두운 오버레이 */}
@@ -198,7 +199,7 @@ const LostFoundPage = () => {
                         <img
                             src={selectedImage}
                             alt="상세 이미지"
-                            className="rounded-lg shadow-2xl"
+                            className="rounded-lg shadow-2xl select-none"
                             style={{
                                 maxWidth: '100vw',
                                 maxHeight: '95vh',
@@ -206,6 +207,7 @@ const LostFoundPage = () => {
                                 height: 'auto',
                                 display: 'block'
                             }}
+                            draggable={false}
                         />
                         {/* 닫기 버튼 */}
                         <button 
