@@ -120,6 +120,7 @@ class PlaceListFragment :
                 onMarkerClickListener = { placeId, category ->
                     Timber.d("marker clicked $placeId $category")
                     viewModel.selectPlace(placeId, category)
+                    binding.layoutPlaceList.visibility = View.GONE
                 },
             )
     }
