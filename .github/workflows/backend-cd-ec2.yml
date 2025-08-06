@@ -1,0 +1,99 @@
+name: Backend CD EC2 Server
+
+on:
+  push:
+    branches:
+      - main
+      - backend
+    paths:
+      - 'backend/**'
+
+jobs:
+  build-and-deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout project repository
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Create application-secret.yml file
+        run: |
+          mkdir -p backend/src/main/resources
+          echo "${{ secrets.SECRET_YML }}" > backend/src/main/resources/application-secret.yml
+
+      - name: Create firebase-adminsdk-account.json file
+        run: |
+          mkdir -p backend/src/main/resources/firebase
+          echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
+
+      - name: Gradle cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+
+      - name: Gradle build
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean build
+        working-directory: ./backend
+
+      - name: Get build jar file info
+        id: get_build_jar
+        run: |
+          BUILD_JAR_PATH=$(find ./backend/build/libs -name "*.jar" ! -name "*plain.jar" | head -n 1)
+          echo "BUILD_JAR_PATH=${BUILD_JAR_PATH}" >> $GITHUB_OUTPUT
+          echo "BUILD_JAR_NAME=$(basename ${BUILD_JAR_PATH})" >> $GITHUB_OUTPUT
+
+      - name: Deploy to EC2
+        run: |
+          # 1. 이전 WAS 종료 (Graceful Shutdown)
+          echo "Stopping old Spring WAS..."
+          PID=$(lsof -t -i:8080 || true)
+          if [ -n "$PID" ]; then
+            echo "Found running process with PID: $PID. Sending SIGTERM."
+            kill -SIGTERM $PID
+            # 프로세스 종료 대기
+            for i in $(seq 1 20); do
+              if ! kill -0 $PID 2>/dev/null; then
+                echo "Process $PID has terminated."
+                break
+              fi
+              echo "Waiting for process $PID to terminate... ($i/20)"
+              sleep 1
+            done
+            if kill -0 $PID 2>/dev/null; then
+              echo "Process $PID did not terminate gracefully. Forcing shutdown with SIGKILL."
+              kill -9 $PID
+            fi
+          else
+            echo "No process found on port 8080."
+          fi
+
+          # 2. 이전 JAR 파일 삭제 및 빌드 JAR 파일 복사
+          DEPLOY_DIRECTORY="/home/ubuntu/${{ github.event.repository.name }}/backend"
+          echo "Deleting old JAR files from ${DEPLOY_DIRECTORY}..."
+          mkdir -p "${DEPLOY_DIRECTORY}"
+          find "${DEPLOY_DIRECTORY}" -maxdepth 1 -name "*.jar" -delete
+
+          BUILD_JAR_PATH="${{ steps.get_build_jar.outputs.BUILD_JAR_PATH }}"
+          BUILD_JAR_NAME="${{ steps.get_build_jar.outputs.BUILD_JAR_NAME }}"
+          DEPLOY_JAR_PATH="${DEPLOY_DIRECTORY}/${BUILD_JAR_NAME}"
+          cp "${BUILD_JAR_PATH}" "${DEPLOY_JAR_PATH}"
+          echo "New JAR file copied to ${DEPLOY_JAR_PATH}"
+
+          # 3. 새로운 WAS 실행
+          echo "Starting new Spring WAS..."
+          LOG_PATH="${DEPLOY_DIRECTORY}/application.log"
+          nohup java -jar "${DEPLOY_JAR_PATH}" > "${LOG_PATH}" 2>&1 &
+          echo "Application started."
