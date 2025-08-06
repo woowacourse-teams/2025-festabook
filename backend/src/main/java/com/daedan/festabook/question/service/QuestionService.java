@@ -1,8 +1,8 @@
 package com.daedan.festabook.question.service;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
@@ -26,10 +26,12 @@ public class QuestionService {
     private final QuestionJpaRepository questionJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
 
+    @Transactional
     public QuestionResponse createQuestion(Long festivalId, QuestionRequest request) {
         Festival festival = getFestivalById(festivalId);
 
-        Integer currentMaxSequence = questionJpaRepository.countByFestivalId(festivalId);
+        Integer currentMaxSequence = questionJpaRepository.findMaxSequenceByFestivalId(festivalId)
+                .orElseGet(() -> 0);
         Integer newSequence = currentMaxSequence + 1;
 
         Question question = new Question(festival, request.question(), request.answer(), newSequence);

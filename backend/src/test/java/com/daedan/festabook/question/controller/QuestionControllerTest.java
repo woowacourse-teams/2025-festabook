@@ -5,8 +5,8 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
 import com.daedan.festabook.question.dto.QuestionRequest;
@@ -60,7 +60,8 @@ class QuestionControllerTest {
             Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
 
-            Integer count = questionJpaRepository.countByFestivalId(festival.getId());
+            Integer count = questionJpaRepository.findMaxSequenceByFestivalId(festival.getId())
+                    .orElseGet(() -> 0);
 
             QuestionRequest request = QuestionRequestFixture.create(
                     "개도 데려갈 수 있나요?",
