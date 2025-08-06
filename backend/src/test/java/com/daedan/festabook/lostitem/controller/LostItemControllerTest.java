@@ -94,7 +94,8 @@ class LostItemControllerTest {
             int expectedSize = 2;
 
             // when & then
-            given()
+            RestAssured
+                    .given()
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/lost-items")

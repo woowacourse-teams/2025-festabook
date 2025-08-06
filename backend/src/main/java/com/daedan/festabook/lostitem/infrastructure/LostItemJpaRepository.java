@@ -5,5 +5,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface LostItemJpaRepository extends JpaRepository<LostItem, Long> {
+
     List<LostItem> findAllByFestivalId(Long festivalId);
 }
