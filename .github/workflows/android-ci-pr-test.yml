@@ -53,3 +53,12 @@ jobs:
         
       - name: Run Unit Test
         run: ./gradlew test
+
+      - name: Publish Unit Test Results
+        if: always()
+        uses: EnricoMi/publish-unit-test-result-action@v2
+        with:
+          files: android/app/build/test-results/**/TEST-*.xml
+          check_name: '테스트 결과 🛠️'
+          check_run_annotations: 'none'
+          comment_mode: 'off'
