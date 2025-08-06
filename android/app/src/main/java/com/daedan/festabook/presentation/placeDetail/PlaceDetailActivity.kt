@@ -153,7 +153,7 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
             context: Context,
             placeDetail: PlaceDetailUiModel,
         ) = Intent(context, PlaceDetailActivity::class.java).apply {
-            putExtra(PLACE_DETAIL_OBJECT, placeDetail) // 새로운 키로 객체 전달
+            putExtra(PLACE_DETAIL_OBJECT, placeDetail)
         }
     }
 }
