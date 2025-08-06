@@ -13,8 +13,4 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     ) {
         super.onViewCreated(view, savedInstanceState)
     }
-
-    companion object {
-        fun newInstance() = SettingFragment()
-    }
 }
