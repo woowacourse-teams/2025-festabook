@@ -33,6 +33,8 @@ class MapManager(
 
     private val context = map.context
 
+    private var selectedMarker: Marker? = null
+
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         markers =
             coordinates.mapIndexed { idx, place ->
@@ -125,19 +127,53 @@ class MapManager(
         height = Marker.SIZE_AUTO
         position = place.coordinate.toLatLng()
         map = this@MapManager.map
+
+        // 마커 초기 아이콘 설정
         overlayImageManager.setIcon(this, place.category)
-        tag = place.category
+        tag = place
 
         setOnClickListener {
-            onMarkerClickListener.onMarkerListener(place.placeId, place.category)
+            val clickedPlace = it.tag as PlaceCoordinateUiModel
+
+            // 이전에 선택된 마커가 있다면 크기를 원래대로 되돌림
+            selectedMarker?.let { prevMarker ->
+                setSize(prevMarker, isSelected = false)
+            }
+
+            // 현재 클릭된 마커의 크기를 크게 변경
+            setSize(this, isSelected = true)
+
+            // 현재 마커를 `selectedMarker`에 저장
+            selectedMarker = this
+
+            // ViewModel에 마커 클릭 이벤트를 전달
+            onMarkerClickListener.onMarkerListener(clickedPlace.placeId, clickedPlace.category)
             true
         }
         return this
     }
 
+    private fun setSize(
+        marker: Marker,
+        isSelected: Boolean = false,
+    ) {
+        val density = map.context.resources.displayMetrics.density
+
+        // 선택 상태에 따라 마커 크기 변경
+        marker.width =
+            if (isSelected) {
+                (SELECTED_MARKER_SIZE * density).toInt()
+            } else {
+                (ORIGINAL_MARKER_SIZE * density).toInt()
+            }
+        marker.height = marker.width
+    }
+
     companion object {
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
+        private const val SELECTED_MARKER_SIZE = 50
+        private const val ORIGINAL_MARKER_SIZE = 34
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다
         private val EDGE_COORS =
