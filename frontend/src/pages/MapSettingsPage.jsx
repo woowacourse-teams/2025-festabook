@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { placeCategories, getCategoryIcon } from '../data/categories';
 import Modal from '../components/common/Modal';
 import MapSelector from '../components/map/MapSelector';
+import { usePage } from '../hooks/usePage';
 import api from '../utils/api';
 
 const NAVER_MAP_CLIENT_ID = '09h8qpimmp';
@@ -13,6 +14,7 @@ const KOREA_BOUNDARY = [
 ];
 
 const MapSettingsPage = () => {
+  const { setPage } = usePage();
   const [booths, setBooths] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -259,65 +261,79 @@ const MapSettingsPage = () => {
           >
             <h3 className="text-xl font-bold mb-4">플레이스 목록</h3>
 
-            <div className="space-y-2">
-              {booths.map(booth => {
-                const matchedMarker = markers.find(m => m.id === booth.id);
-                const hasCoordinates = matchedMarker?.markerCoordinate?.latitude != null && matchedMarker?.markerCoordinate?.longitude != null;
+            {booths.length > 0 ? (
+              <div className="space-y-2">
+                {booths.map(booth => {
+                  const matchedMarker = markers.find(m => m.id === booth.id);
+                  const hasCoordinates = matchedMarker?.markerCoordinate?.latitude != null && matchedMarker?.markerCoordinate?.longitude != null;
 
-                return (
-                  <div
-                    key={booth.id}
-                    ref={(el) => {
-                      if (el) {
-                        placeItemRefs.current[booth.id] = el;
-                      }
-                    }}
-                    className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 cursor-pointer hover:bg-gray-100 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
-                    onClick={() => handlePlaceClick(booth)}
-                  >
-                    <div>
-                      <p className="font-semibold">
-                        {(() => {
-                          // etcPlace 카테고리들은 카테고리명을 제목으로 사용
-                          const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
-                          if (etcPlaceCategories.includes(booth.category)) {
-                            return placeCategories[booth.category];
-                          }
-                          // 일반 플레이스는 기존 로직 사용
-                          return booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.';
-                        })()}
-                      </p>
-                      <div className="flex items-center gap-2">
-                        {(() => {
-                          // etcPlace 카테고리들은 이미 제목에 카테고리명이 표시되므로 하단에는 표시하지 않음
-                          const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
-                          if (!etcPlaceCategories.includes(booth.category)) {
-                            return <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>;
-                          }
-                          return null;
-                        })()}
-                        {!hasCoordinates && (
-                          <p className="text-xs text-red-500">좌표 미설정</p>
-                        )}
-                      </div>
-                    </div>
-                    <button
-                      className={`font-bold py-2 px-4 rounded-lg text-sm ${
-                        hasCoordinates 
-                          ? 'bg-blue-200 hover:bg-blue-300 text-blue-800' 
-                          : 'bg-red-200 hover:bg-red-300 text-red-800'
-                      }`}
-                      onClick={() => {
-                        setSelectedPlace(booth);
-                        setModalOpen(true);
+                  return (
+                    <div
+                      key={booth.id}
+                      ref={(el) => {
+                        if (el) {
+                          placeItemRefs.current[booth.id] = el;
+                        }
                       }}
+                      className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 cursor-pointer hover:bg-gray-100 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
+                      onClick={() => handlePlaceClick(booth)}
                     >
-                      {hasCoordinates ? '좌표 수정' : '좌표 설정'}
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
+                      <div>
+                        <p className="font-semibold">
+                          {(() => {
+                            // etcPlace 카테고리들은 카테고리명을 제목으로 사용
+                            const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
+                            if (etcPlaceCategories.includes(booth.category)) {
+                              return placeCategories[booth.category];
+                            }
+                            // 일반 플레이스는 기존 로직 사용
+                            return booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.';
+                          })()}
+                        </p>
+                        <div className="flex items-center gap-2">
+                          {(() => {
+                            // etcPlace 카테고리들은 이미 제목에 카테고리명이 표시되므로 하단에는 표시하지 않음
+                            const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
+                            if (!etcPlaceCategories.includes(booth.category)) {
+                              return <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>;
+                            }
+                            return null;
+                          })()}
+                          {!hasCoordinates && (
+                            <p className="text-xs text-red-500">좌표 미설정</p>
+                          )}
+                        </div>
+                      </div>
+                      <button
+                        className={`font-bold py-2 px-4 rounded-lg text-sm ${
+                          hasCoordinates 
+                            ? 'bg-blue-200 hover:bg-blue-300 text-blue-800' 
+                            : 'bg-red-200 hover:bg-red-300 text-red-800'
+                        }`}
+                        onClick={() => {
+                          setSelectedPlace(booth);
+                          setModalOpen(true);
+                        }}
+                      >
+                        {hasCoordinates ? '좌표 수정' : '좌표 설정'}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : (
+              /* 플레이스가 없을 때 */
+              <div className="text-center py-12">
+                <i className="fas fa-map-marker-alt text-4xl text-gray-400 mb-4"></i>
+                <p className="text-gray-500 mb-4">등록된 플레이스가 없습니다</p>
+                <button
+                  onClick={() => setPage('booths')}
+                  className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                >
+                  플레이스 관리로 이동
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
