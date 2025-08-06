@@ -13,9 +13,7 @@ import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.IN
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
 import timber.log.Timber
 
-class ScheduleTabPageFragment :
-    BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page),
-    ScheduleTabPageUpdater {
+class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
     private val viewModel: ScheduleViewModel by viewModels {
         val dateId: Long = arguments?.getLong(KEY_DATE_ID, INVALID_ID) ?: INVALID_ID
         ScheduleViewModel.factory(dateId)
@@ -36,10 +34,6 @@ class ScheduleTabPageFragment :
 
         binding.lifecycleOwner = viewLifecycleOwner
         onSwipeRefreshScheduleByDateListener()
-    }
-
-    override fun updateScheduleTabPage() {
-        viewModel.loadScheduleByDate()
     }
 
     private fun setupScheduleEventRecyclerView() {
