@@ -18,6 +18,14 @@ val FAKE_SCHEDULE_EVENTS =
             title = "안드로이드 스터디",
             location = "서울 강남구 어딘가",
         ),
+        ScheduleEvent(
+            id = 1L,
+            status = ScheduleEventStatus.ONGOING,
+            startTime = "2025-07-26T10:00:00",
+            endTime = "2025-07-26T11:00:00",
+            title = "안드로이드 스터디",
+            location = "서울 강남구 어딘가",
+        ),
     )
 val FAKE_SCHEDULE_EVENTS_UI_MODELS =
     listOf(
