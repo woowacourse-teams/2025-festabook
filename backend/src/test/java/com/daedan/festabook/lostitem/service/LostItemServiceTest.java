@@ -80,7 +80,7 @@ class LostItemServiceTest {
             // when & then
             assertThatThrownBy(() -> lostItemService.createLostItem(invalidFestivalId, request))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 조직입니다.");
+                    .hasMessage("존재하지 않는 축제입니다.");
         }
     }
 

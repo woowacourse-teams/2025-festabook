@@ -38,6 +38,6 @@ public class LostItemService {
 
     private Festival getFestivalById(Long festivalId) {
         return festivalJpaRepository.findById(festivalId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
+                .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
     }
 }
