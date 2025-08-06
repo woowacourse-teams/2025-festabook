@@ -116,7 +116,7 @@ class ScheduleViewModelTest {
     fun `현재 진행중인 일정의 인덱스를 불러올 수 있다`() =
         runTest {
             // given
-            // 2번째 FAKE_SCHEDULE_EVENTS의 아이템이 현재 진행중입니다
+            coEvery { scheduleRepository.fetchScheduleEventsById(dateId) } returns Result.success(FAKE_SCHEDULE_EVENTS)
 
             // when
             scheduleViewModel.loadScheduleByDate()
