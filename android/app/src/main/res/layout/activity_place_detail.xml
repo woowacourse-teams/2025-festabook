@@ -50,6 +50,7 @@
                     android:id="@+id/vp_place_images"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"
+                    android:transitionName="selected_place_image_transition"
                     android:layout_marginHorizontal="-16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -86,7 +87,7 @@
                     android:text="@{placeDetail.place.title ?? @string/place_list_default_title}"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
-                    android:transitionName="selected_place_transition"
+                    android:transitionName="selected_place_title_transition"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/cv_place_category"
                     app:layout_constraintTop_toBottomOf="@id/cv_place_category"

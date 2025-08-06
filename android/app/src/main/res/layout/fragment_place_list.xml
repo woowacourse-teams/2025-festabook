@@ -258,7 +258,7 @@
             android:clipToPadding="false"
             android:elevation="8dp"
             android:focusable="true"
-            android:visibility="visible"
+            android:visibility="gone"
             app:behavior_peekHeight="200dp"
             app:behavior_skipCollapsed="false"
             app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
@@ -291,7 +291,7 @@
                     android:layout_marginTop="60dp"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
-                    android:transitionName="selected_place_transition"
+                    android:transitionName="selected_place_title_transition"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     tools:text="컴공과 주점 코딩하며 한잔" />
@@ -379,6 +379,7 @@
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:scaleType="centerCrop"
+                    android:transitionName="selected_place_image_transition"
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/tv_selected_place_title"

@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList
 import android.os.Bundle
 import android.view.View
 import androidx.core.app.ActivityOptionsCompat
+import androidx.core.util.Pair
 import androidx.core.view.children
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
@@ -230,12 +231,14 @@ class PlaceListFragment :
     private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
         Timber.d("start detail activity")
         val intent = PlaceDetailActivity.newIntent(requireContext(), placeDetail)
+
         val options =
             ActivityOptionsCompat.makeSceneTransitionAnimation(
                 requireActivity(),
-                binding.tvSelectedPlaceTitle,
-                "selected_place_transition",
+                Pair(binding.tvSelectedPlaceTitle, "selected_place_title_transition"),
+                Pair(binding.ivSelectedPlaceImage, "selected_place_image_transition"),
             )
+
         startActivity(intent, options.toBundle())
         selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
