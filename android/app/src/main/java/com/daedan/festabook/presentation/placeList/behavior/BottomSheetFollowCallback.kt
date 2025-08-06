@@ -14,7 +14,7 @@ open class BottomSheetFollowCallback(
         newState: Int,
     ) {
         if (!::child.isInitialized) {
-            child = bottomSheet.rootView.findViewById(viewId)
+            child = bottomSheet.rootView.findViewById(viewId) ?: return
         }
 
         if (newState == BottomSheetBehavior.STATE_EXPANDED) {

@@ -6,9 +6,9 @@ import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class MoveToInitialPositionCallback(
-    @IdRes val viewId: Int,
+    @IdRes private val viewId: Int,
     private val mapManager: MapManager,
-) : BottomSheetFollowCallback(viewId) {
+) : BottomSheetBehavior.BottomSheetCallback() {
     private lateinit var child: View
 
     override fun onStateChanged(
@@ -16,7 +16,7 @@ class MoveToInitialPositionCallback(
         newState: Int,
     ) {
         if (!::child.isInitialized) {
-            child = bottomSheet.rootView.findViewById(viewId)
+            child = bottomSheet.rootView.findViewById(viewId) ?: return
         }
         if (newState == BottomSheetBehavior.STATE_EXPANDED || !mapManager.isExceededMaxLength()) {
             child.visibility = View.GONE
@@ -24,4 +24,9 @@ class MoveToInitialPositionCallback(
             child.visibility = View.VISIBLE
         }
     }
+
+    override fun onSlide(
+        bottomSheet: View,
+        slideOffset: Float,
+    ) = Unit
 }
