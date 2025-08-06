@@ -1,23 +1,39 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
+import api from '../../utils/api';
 
-const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
+const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) => {
     const [formData, setFormData] = useState({
-        festivalName: organization?.festivalName || '',
-        startDate: organization?.startDate ? organization.startDate.split('T')[0] : '',
-        endDate: organization?.endDate ? organization.endDate.split('T')[0] : ''
+        festivalName: festival?.festivalName || '',
+        startDate: festival?.startDate ? festival.startDate.split('T')[0] : '',
+        endDate: festival?.endDate ? festival.endDate.split('T')[0] : '',
+        isActive: true // 기본값은 활성화
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
         try {
-            // TODO: API 호출로 축제 정보 업데이트
-            // const response = await api.put('/organizations', formData);
+            const response = await api.patch('/festivals/information', {
+                festivalName: formData.festivalName,
+                startDate: formData.startDate,
+                endDate: formData.endDate
+            });
+            
+            // 상태 업데이트
+            if (onUpdate) {
+                onUpdate(prev => ({
+                    ...prev,
+                    festivalName: response.data.festivalName,
+                    startDate: response.data.startDate,
+                    endDate: response.data.endDate
+                }));
+            }
             
             showToast('축제 정보가 성공적으로 수정되었습니다.');
             onClose();
         } catch (error) {
+            console.error('Festival info update error:', error);
             showToast('축제 정보 수정에 실패했습니다.');
         }
     };
@@ -44,22 +60,6 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
             document.removeEventListener('keydown', handleEscKey);
         };
     }, [onClose]);
-
-    // 모달 전체에서 엔터 키 감지
-    useEffect(() => {
-        const handleGlobalKeyDown = (event) => {
-            if (event.key === 'Enter' && !event.shiftKey) {
-                event.preventDefault();
-                handleSubmit(event);
-            }
-        };
-
-        document.addEventListener('keydown', handleGlobalKeyDown);
-
-        return () => {
-            document.removeEventListener('keydown', handleGlobalKeyDown);
-        };
-    }, [formData]); // formData가 변경될 때마다 이벤트 리스너 재등록
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} maxWidth="max-w-md">
@@ -114,6 +114,7 @@ const FestivalInfoModal = ({ isOpen, onClose, organization, showToast }) => {
                             required
                         />
                     </div>
+                    
                 </div>
                 
                 <div className="flex space-x-3 mt-6">

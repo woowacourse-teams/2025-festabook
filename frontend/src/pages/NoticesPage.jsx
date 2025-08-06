@@ -48,6 +48,7 @@ const NoticesPage = () => {
         } else {
             try {
                 await api.post('/announcements', data);
+                
                 // 공지 추가 후 목록 재로딩
                 const res = await api.get('/announcements');
                 const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -65,6 +66,7 @@ const NoticesPage = () => {
     const handleDelete = async (id) => {
         try {
             await api.delete(`/announcements/${id}`);
+            
             // 공지 삭제 후 목록 재로딩
             const res = await api.get('/announcements');
             const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -146,7 +148,11 @@ const NoticesPage = () => {
                     </h3>
                     <div className="space-y-4">
                         {pinned.map((notice) => (
-                            <div key={notice.id} data-id={notice.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                            <div 
+                                key={notice.id} 
+                                data-id={notice.id} 
+                                className="bg-white rounded-lg shadow-sm border border-gray-200 p-5"
+                            >
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
                                     <div className="flex-1 flex items-start gap-3">
                                         <button 
@@ -203,7 +209,11 @@ const NoticesPage = () => {
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">일반 공지사항</h3>
                 <div className="space-y-4">
                     {unpinned.map((notice) => (
-                        <div key={notice.id} data-id={notice.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
+                        <div 
+                            key={notice.id} 
+                            data-id={notice.id} 
+                            className="bg-white rounded-lg shadow-sm border border-gray-200 p-5"
+                        >
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
                                 <div className="flex-1 flex items-start gap-3">
                                     <button 
