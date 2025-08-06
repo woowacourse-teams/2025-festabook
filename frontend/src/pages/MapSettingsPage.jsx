@@ -291,14 +291,7 @@ const MapSettingsPage = () => {
                           })()}
                         </p>
                         <div className="flex items-center gap-2">
-                          {(() => {
-                            // etcPlace 카테고리들은 이미 제목에 카테고리명이 표시되므로 하단에는 표시하지 않음
-                            const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
-                            if (!etcPlaceCategories.includes(booth.category)) {
-                              return <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>;
-                            }
-                            return null;
-                          })()}
+                          <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
                           {!hasCoordinates && (
                             <p className="text-xs text-red-500">좌표 미설정</p>
                           )}
