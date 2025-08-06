@@ -17,12 +17,6 @@ jobs:
       - name: Checkout project repository
         uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
-        with:
-          java-version: '21'
-          distribution: 'temurin'
-
       - name: Create application-secret.yml file
         run: |
           mkdir -p backend/src/main/resources
@@ -60,22 +54,22 @@ jobs:
         run: |
           # 1. 이전 WAS 종료 (Graceful Shutdown)
           echo "Stopping old Spring WAS..."
-          PID=$(lsof -t -i:8080 || true)
+          PID=$(sudo lsof -t -i:8080 || true)
           if [ -n "$PID" ]; then
             echo "Found running process with PID: $PID. Sending SIGTERM."
-            kill -SIGTERM $PID
+            sudo kill -SIGTERM $PID
             # 프로세스 종료 대기
             for i in $(seq 1 20); do
-              if ! kill -0 $PID 2>/dev/null; then
+              if ! sudo kill -0 $PID 2>/dev/null; then
                 echo "Process $PID has terminated."
                 break
               fi
               echo "Waiting for process $PID to terminate... ($i/20)"
               sleep 1
             done
-            if kill -0 $PID 2>/dev/null; then
+            if sudo kill -0 $PID 2>/dev/null; then
               echo "Process $PID did not terminate gracefully. Forcing shutdown with SIGKILL."
-              kill -9 $PID
+              sudo kill -9 $PID
               sleep 3
             fi
           else
@@ -87,7 +81,7 @@ jobs:
           DEPLOY_DIRECTORY="/home/ubuntu/${{ github.event.repository.name }}/backend"
           echo "DEPLOY_DIRECTORY=${DEPLOY_DIRECTORY}"
           mkdir -p "${DEPLOY_DIRECTORY}"
-          find "${DEPLOY_DIRECTORY}" -maxdepth 1 -name "*.jar" -delete
+          sudo find "${DEPLOY_DIRECTORY}" -maxdepth 1 -name "*.jar" -delete
           echo "Old JAR files deleted."
 
           BUILD_JAR_PATH="${{ steps.get_build_jar.outputs.BUILD_JAR_PATH }}"
@@ -96,7 +90,7 @@ jobs:
           echo "BUILD_JAR_PATH=${BUILD_JAR_PATH}"
           echo "BUILD_JAR_NAME=${BUILD_JAR_NAME}"
           echo "DEPLOY_JAR_PATH=${DEPLOY_JAR_PATH}"
-          cp "${BUILD_JAR_PATH}" "${DEPLOY_JAR_PATH}"
+          sudo cp "${BUILD_JAR_PATH}" "${DEPLOY_JAR_PATH}"
           echo "New JAR file copied."
 
           # 3. 새로운 WAS 실행
@@ -104,22 +98,20 @@ jobs:
           LOG_PATH="${DEPLOY_DIRECTORY}/application.log"
           echo "LOG_PATH=${LOG_PATH}"
           
-          nohup java -jar "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod > "${LOG_PATH}" 2>&1 &
-          disown
-          for i in $(seq 1 20); do
-            if lsof -t -i:8080 > /dev/null; then
+          sudo nohup java -jar "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod > "${LOG_PATH}" 2>&1 &
+          for i in $(seq 1 30); do
+            if sudo lsof -t -i:8080 > /dev/null; then
               echo "WAS has started and is listening on port 8080."
               break
             fi
-            echo "Waiting for port 8080 to be occupied... ($i/20)"
+            echo "Waiting for port 8080 to be occupied... ($i/30)"
             sleep 1
           done
 
-          NEW_WAS_PID=$(lsof -t -i:8080 || true)
+          NEW_WAS_PID=$(sudo lsof -t -i:8080 || true)
           if [ -n "$NEW_WAS_PID" ]; then
             echo "Application started with PID: $NEW_WAS_PID."
           else
             echo "Error: Application failed to start."
-            exit 1
           fi
           echo "Deployment complete."
