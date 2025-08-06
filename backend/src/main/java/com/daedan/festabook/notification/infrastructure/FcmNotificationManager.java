@@ -1,8 +1,8 @@
 package com.daedan.festabook.notification.infrastructure;
 
+import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.notification.dto.NotificationMessage;
-import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
@@ -14,27 +14,27 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-public class FcmNotificationManager implements OrganizationNotificationManager {
+public class FcmNotificationManager implements FestivalNotificationManager {
 
-    private static final String ORGANIZATION_PREFIX = "organization";
+    private static final String FESTIVAL_PREFIX = "festival";
 
     private final FirebaseMessaging firebaseMessaging;
 
     @Override
-    public void subscribeOrganizationTopic(Long organizationId, String fcmToken) {
-        String topic = ORGANIZATION_PREFIX + organizationId;
+    public void subscribeFestivalTopic(Long festivalId, String fcmToken) {
+        String topic = FESTIVAL_PREFIX + festivalId;
         subscribeTopic(topic, fcmToken);
     }
 
     @Override
-    public void unsubscribeOrganizationTopic(Long organizationId, String fcmToken) {
-        String topic = ORGANIZATION_PREFIX + organizationId;
+    public void unsubscribeFestivalTopic(Long festivalId, String fcmToken) {
+        String topic = FESTIVAL_PREFIX + festivalId;
         unsubscribeTopic(topic, fcmToken);
     }
 
     @Override
-    public void sendToOrganizationTopic(Long organizationId, NotificationMessage notificationMessage) {
-        sendToTopic(ORGANIZATION_PREFIX, organizationId, notificationMessage);
+    public void sendToFestivalTopic(Long festivalId, NotificationMessage notificationMessage) {
+        sendToTopic(FESTIVAL_PREFIX, festivalId, notificationMessage);
     }
 
     private void subscribeTopic(String topic, String fcmToken) {

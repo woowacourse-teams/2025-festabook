@@ -19,10 +19,10 @@ import com.daedan.festabook.announcement.dto.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
@@ -44,13 +44,13 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AnnouncementControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
     private AnnouncementJpaRepository announcementJpaRepository;
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @MockitoBean
     private FcmNotificationManager fcmNotificationManager;
@@ -69,8 +69,8 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             AnnouncementRequest request = new AnnouncementRequest(
                     "폭우가 내립니다.",
@@ -83,7 +83,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -97,24 +97,24 @@ class AnnouncementControllerTest {
                     .body("createdAt", notNullValue());
 
             then(fcmNotificationManager).should()
-                    .sendToOrganizationTopic(any(), any());
+                    .sendToFestivalTopic(any(), any());
         }
 
         @Test
         void 예외_고정_공지_최대치_초과() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             boolean isPinned = true;
-            announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, organization));
+            announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, festival));
 
             AnnouncementRequest request = AnnouncementRequestFixture.create(isPinned);
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -126,16 +126,16 @@ class AnnouncementControllerTest {
     }
 
     @Nested
-    class getGroupedAnnouncementByOrganizationId {
+    class getGroupedAnnouncementByFestivalId {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Announcement announcement1 = AnnouncementFixture.create(true, organization);
-            Announcement announcement2 = AnnouncementFixture.create(false, organization);
+            Announcement announcement1 = AnnouncementFixture.create(true, festival);
+            Announcement announcement2 = AnnouncementFixture.create(false, festival);
             announcementJpaRepository.saveAll(List.of(announcement1, announcement2));
 
             int expectedSize = 2;
@@ -146,7 +146,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/announcements")
                     .then()
@@ -173,15 +173,15 @@ class AnnouncementControllerTest {
         @Test
         void 성공_여러_값_조회() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             int expectedPinnedSize = 3;
             int expectedUnpinnedSize = 4;
             List<Announcement> pinnedAnnouncements = AnnouncementFixture.createList(expectedPinnedSize, true,
-                    organization);
+                    festival);
             List<Announcement> unpinnedAnnouncements = AnnouncementFixture.createList(expectedUnpinnedSize, false,
-                    organization);
+                    festival);
 
             announcementJpaRepository.saveAll(pinnedAnnouncements);
             announcementJpaRepository.saveAll(unpinnedAnnouncements);
@@ -189,7 +189,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/announcements")
                     .then()
@@ -201,18 +201,18 @@ class AnnouncementControllerTest {
         @Test
         void 성공_생성일_역순_정렬() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Announcement announcement1 = AnnouncementFixture.create(true, organization);
-            Announcement announcement2 = AnnouncementFixture.create(true, organization);
-            Announcement announcement3 = AnnouncementFixture.create(true, organization);
+            Announcement announcement1 = AnnouncementFixture.create(true, festival);
+            Announcement announcement2 = AnnouncementFixture.create(true, festival);
+            Announcement announcement3 = AnnouncementFixture.create(true, festival);
             announcementJpaRepository.saveAll(List.of(announcement1, announcement2, announcement3));
 
             // when & then
             List<Long> result = RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/announcements")
                     .then()
@@ -229,26 +229,26 @@ class AnnouncementControllerTest {
         }
 
         @Test
-        void 성공_서로_다른_조직() {
+        void 성공_서로_다른_축제() {
             // given
-            Organization targetOrganization = OrganizationFixture.create();
-            Organization anotherOrganization = OrganizationFixture.create();
-            organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
+            Festival targetFestival = FestivalFixture.create();
+            Festival anotherFestival = FestivalFixture.create();
+            festivalJpaRepository.saveAll(List.of(targetFestival, anotherFestival));
 
             int expectedSize = 3;
             List<Announcement> targetAnnouncements = AnnouncementFixture.createList(expectedSize, true,
-                    targetOrganization);
+                    targetFestival);
             announcementJpaRepository.saveAll(targetAnnouncements);
 
             int notExpectedSize = 4;
             List<Announcement> anotherAnnouncements = AnnouncementFixture.createList(notExpectedSize, true,
-                    anotherOrganization);
+                    anotherFestival);
             announcementJpaRepository.saveAll(anotherAnnouncements);
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
+                    .header(FESTIVAL_HEADER_NAME, targetFestival.getId())
                     .when()
                     .get("/announcements")
                     .then()
@@ -268,10 +268,10 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Announcement announcement = AnnouncementFixture.create(organization);
+            Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
 
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("수정된 제목", "수정된 내용");
@@ -318,10 +318,10 @@ class AnnouncementControllerTest {
         })
         void 성공_고정_상태_변경(boolean initialPinned, boolean expectedPinned) {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Announcement announcement = AnnouncementFixture.create(initialPinned, organization);
+            Announcement announcement = AnnouncementFixture.create(initialPinned, festival);
             announcementJpaRepository.save(announcement);
 
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(expectedPinned);
@@ -329,7 +329,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -348,10 +348,10 @@ class AnnouncementControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Announcement announcement = AnnouncementFixture.create(organization);
+            Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
 
             // when & then

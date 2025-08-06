@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.controller;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
@@ -34,39 +34,39 @@ public class PlaceController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 조직에 대한 플레이스 생성")
+    @Operation(summary = "특정 축제에 대한 플레이스 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public PlaceResponse createPlace(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody PlaceRequest request
     ) {
-        return placeService.createPlace(organizationId, request);
+        return placeService.createPlace(festivalId, request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직에 대한 플레이스 전체 조회")
+    @Operation(summary = "특정 축제에 대한 플레이스 전체 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponses getAllPlaceByOrganizationId(
-            @Parameter(hidden = true) @OrganizationId Long organizationId
+    public PlaceResponses getAllPlaceByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return placeService.getAllPlaceByOrganizationId(organizationId);
+        return placeService.getAllPlaceByFestivalId(festivalId);
     }
 
     @GetMapping("/previews")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직의 모든 플레이스 프리뷰 조회")
+    @Operation(summary = "특정 축제의 모든 플레이스 프리뷰 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlacePreviewResponses getAllPreviewPlaceByOrganizationId(
-            @Parameter(hidden = true) @OrganizationId Long organizationId
+    public PlacePreviewResponses getAllPreviewPlaceByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return placePreviewService.getAllPreviewPlaceByOrganizationId(organizationId);
+        return placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
     }
 
     @GetMapping("/{placeId}")

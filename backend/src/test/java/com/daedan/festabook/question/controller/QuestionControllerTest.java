@@ -4,9 +4,9 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
 import com.daedan.festabook.question.dto.QuestionRequest;
@@ -32,10 +32,10 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class QuestionControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @Autowired
     private QuestionJpaRepository questionJpaRepository;
@@ -54,13 +54,13 @@ class QuestionControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Question question = QuestionFixture.create(organization);
+            Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
 
-            Integer count = questionJpaRepository.countByOrganizationId(organization.getId());
+            Integer count = questionJpaRepository.countByFestivalId(festival.getId());
 
             QuestionRequest request = QuestionRequestFixture.create(
                     "개도 데려갈 수 있나요?",
@@ -73,7 +73,7 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -88,15 +88,15 @@ class QuestionControllerTest {
     }
 
     @Nested
-    class getAllQuestionByOrganizationId {
+    class getAllQuestionByFestivalId {
 
         @Test
         void 성공_응답_데이터_필드_확인() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Question question = QuestionFixture.create(organization);
+            Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
 
             int expectedSize = 1;
@@ -105,7 +105,7 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/questions")
                     .then()
@@ -119,23 +119,23 @@ class QuestionControllerTest {
         }
 
         @Test
-        void 성공_조직에_해당하는_질문만_조회() {
+        void 성공_축제에_해당하는_질문만_조회() {
             // given
-            Organization checkOrganization = OrganizationFixture.create();
-            Organization otherOrganization = OrganizationFixture.create();
-            organizationJpaRepository.saveAll(List.of(checkOrganization, otherOrganization));
+            Festival checkFestival = FestivalFixture.create();
+            Festival otherFestival = FestivalFixture.create();
+            festivalJpaRepository.saveAll(List.of(checkFestival, otherFestival));
 
             int expectedSize = 2;
-            List<Question> questions = QuestionFixture.createList(expectedSize, checkOrganization);
+            List<Question> questions = QuestionFixture.createList(expectedSize, checkFestival);
             questionJpaRepository.saveAll(questions);
             int otherSize = 3;
-            List<Question> otherQuestions = QuestionFixture.createList(otherSize, otherOrganization);
+            List<Question> otherQuestions = QuestionFixture.createList(otherSize, otherFestival);
             questionJpaRepository.saveAll(otherQuestions);
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, checkOrganization.getId())
+                    .header(FESTIVAL_HEADER_NAME, checkFestival.getId())
                     .when()
                     .get("/questions")
                     .then()
@@ -146,11 +146,11 @@ class QuestionControllerTest {
         @Test
         void 성공_Sequence_오름차순_정렬() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Question question2 = QuestionFixture.create(organization, 2);
-            Question question1 = QuestionFixture.create(organization, 1);
+            Question question2 = QuestionFixture.create(festival, 2);
+            Question question1 = QuestionFixture.create(festival, 1);
             questionJpaRepository.saveAll(List.of(question2, question1));
 
             int expectedSize = 2;
@@ -158,7 +158,7 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/questions")
                     .then()
@@ -175,10 +175,10 @@ class QuestionControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Question question = QuestionFixture.create(organization);
+            Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
 
             QuestionRequest request = QuestionRequestFixture.create(
@@ -207,12 +207,12 @@ class QuestionControllerTest {
         @Test
         void 성공_수정_후에도_오름차순으로_재정렬() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Question question1 = QuestionFixture.create(organization, 1);
-            Question question2 = QuestionFixture.create(organization, 2);
-            Question question3 = QuestionFixture.create(organization, 3);
+            Question question1 = QuestionFixture.create(festival, 1);
+            Question question2 = QuestionFixture.create(festival, 2);
+            Question question3 = QuestionFixture.create(festival, 3);
             questionJpaRepository.saveAll(List.of(question1, question2, question3));
 
             QuestionSequenceUpdateRequest request1 = QuestionSequenceUpdateRequestFixture.create(question1.getId(), 2);
@@ -246,10 +246,10 @@ class QuestionControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Question question = QuestionFixture.create(organization);
+            Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
 
             // when & then

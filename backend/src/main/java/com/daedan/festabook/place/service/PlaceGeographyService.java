@@ -1,7 +1,7 @@
 package com.daedan.festabook.place.service;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Coordinate;
+import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
 import com.daedan.festabook.place.dto.PlaceCoordinateResponse;
@@ -19,8 +19,8 @@ public class PlaceGeographyService {
 
     private final PlaceJpaRepository placeJpaRepository;
 
-    public PlaceGeographyResponses getAllPlaceGeographyByOrganizationId(Long organizationId) {
-        List<Place> places = placeJpaRepository.findAllByOrganizationId(organizationId);
+    public PlaceGeographyResponses getAllPlaceGeographyByFestivalId(Long festivalId) {
+        List<Place> places = placeJpaRepository.findAllByFestivalId(festivalId);
         return PlaceGeographyResponses.from(places);
     }
 

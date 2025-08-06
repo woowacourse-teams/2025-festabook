@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.controller;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
 import com.daedan.festabook.place.dto.PlaceCoordinateResponse;
 import com.daedan.festabook.place.dto.PlaceGeographyResponses;
@@ -30,14 +30,14 @@ public class PlaceGeographyController {
 
     @GetMapping("/geographies")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직의 플레이스 모든 지리 정보 조회")
+    @Operation(summary = "특정 축제의 플레이스 모든 지리 정보 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceGeographyResponses getAllPlaceGeographyByOrganizationId(
-            @Parameter(hidden = true) @OrganizationId Long organizationId
+    public PlaceGeographyResponses getAllPlaceGeographyByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return placeGeographyService.getAllPlaceGeographyByOrganizationId(organizationId);
+        return placeGeographyService.getAllPlaceGeographyByFestivalId(festivalId);
     }
 
     @PatchMapping("/{placeId}/geographies")

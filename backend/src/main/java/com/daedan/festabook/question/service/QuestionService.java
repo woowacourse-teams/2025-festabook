@@ -1,8 +1,8 @@
 package com.daedan.festabook.question.service;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
@@ -24,22 +24,22 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuestionService {
 
     private final QuestionJpaRepository questionJpaRepository;
-    private final OrganizationJpaRepository organizationJpaRepository;
+    private final FestivalJpaRepository festivalJpaRepository;
 
-    public QuestionResponse createQuestion(Long organizationId, QuestionRequest request) {
-        Organization organization = getOrganizationById(organizationId);
+    public QuestionResponse createQuestion(Long festivalId, QuestionRequest request) {
+        Festival festival = getFestivalById(festivalId);
 
-        Integer currentMaxSequence = questionJpaRepository.countByOrganizationId(organizationId);
+        Integer currentMaxSequence = questionJpaRepository.countByFestivalId(festivalId);
         Integer newSequence = currentMaxSequence + 1;
 
-        Question question = new Question(organization, request.question(), request.answer(), newSequence);
+        Question question = new Question(festival, request.question(), request.answer(), newSequence);
         Question savedQuestion = questionJpaRepository.save(question);
 
         return QuestionResponse.from(savedQuestion);
     }
 
-    public QuestionResponses getAllQuestionByOrganizationId(Long organizationId) {
-        List<Question> questions = questionJpaRepository.findByOrganizationIdOrderBySequenceAsc(organizationId);
+    public QuestionResponses getAllQuestionByFestivalId(Long festivalId) {
+        List<Question> questions = questionJpaRepository.findByFestivalIdOrderBySequenceAsc(festivalId);
         return QuestionResponses.from(questions);
     }
 
@@ -74,8 +74,8 @@ public class QuestionService {
                 .orElseThrow(() -> new BusinessException("존재하지 않는 질문입니다.", HttpStatus.NOT_FOUND));
     }
 
-    private Organization getOrganizationById(Long organizationId) {
-        return organizationJpaRepository.findById(organizationId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
+    private Festival getFestivalById(Long festivalId) {
+        return festivalJpaRepository.findById(festivalId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
     }
 }

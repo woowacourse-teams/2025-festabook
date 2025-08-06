@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface EventDateJpaRepository extends JpaRepository<EventDate, Long> {
 
-    List<EventDate> findAllByOrganizationId(Long organizationId);
+    List<EventDate> findAllByFestivalId(Long festivalId);
 
-    boolean existsByOrganizationIdAndDate(Long organizationId, LocalDate date);
+    boolean existsByFestivalIdAndDate(Long festivalId, LocalDate date);
 }

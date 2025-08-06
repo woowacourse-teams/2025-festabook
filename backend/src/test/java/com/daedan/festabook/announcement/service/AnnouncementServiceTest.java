@@ -21,11 +21,11 @@ import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalNotificationManager;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.domain.OrganizationNotificationManager;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -47,16 +47,16 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AnnouncementServiceTest {
 
-    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+    private static final Long DEFAULT_FESTIVAL_ID = 1L;
 
     @Mock
     private AnnouncementJpaRepository announcementJpaRepository;
 
     @Mock
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @Mock
-    private OrganizationNotificationManager organizationNotificationManager;
+    private FestivalNotificationManager festivalNotificationManager;
 
     @InjectMocks
     private AnnouncementService announcementService;
@@ -72,14 +72,14 @@ class AnnouncementServiceTest {
                     "우산을 챙겨주세요.",
                     false
             );
-            Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create(organizationId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
 
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
 
             // when
-            AnnouncementResponse result = announcementService.createAnnouncement(organizationId, request);
+            AnnouncementResponse result = announcementService.createAnnouncement(festivalId, request);
 
             // then
             assertSoftly(s -> {
@@ -88,42 +88,42 @@ class AnnouncementServiceTest {
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
             });
 
-            then(organizationNotificationManager).should()
-                    .sendToOrganizationTopic(any(), any());
+            then(festivalNotificationManager).should()
+                    .sendToFestivalTopic(any(), any());
         }
 
         @Test
-        void 예외_존재하지_않는_조직_ID() {
+        void 예외_존재하지_않는_축제_ID() {
             // given
             Long invalidDeviceId = 0L;
             AnnouncementRequest request = AnnouncementRequestFixture.create();
 
-            given(organizationJpaRepository.findById(invalidDeviceId))
+            given(festivalJpaRepository.findById(invalidDeviceId))
                     .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> announcementService.createAnnouncement(invalidDeviceId, request))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 조직입니다.");
+                    .hasMessage("존재하지 않는 축제입니다.");
         }
 
         @Test
         void 예외_알림_전송_실패시_예외_전파() {
             // given
-            Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create(organizationId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
 
             AnnouncementRequest request = AnnouncementRequestFixture.create();
 
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
 
             willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
-                    .given(organizationNotificationManager)
-                    .sendToOrganizationTopic(any(), any());
+                    .given(festivalNotificationManager)
+                    .sendToFestivalTopic(any(), any());
 
             // when & then
-            assertThatThrownBy(() -> announcementService.createAnnouncement(organizationId, request))
+            assertThatThrownBy(() -> announcementService.createAnnouncement(festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
@@ -133,22 +133,22 @@ class AnnouncementServiceTest {
         void 성공_고정_공지_개수_제한_미만(Long pinnedCount) {
             // given
             AnnouncementRequest request = AnnouncementRequestFixture.create(true);
-            Organization organization = OrganizationFixture.create(DEFAULT_ORGANIZATION_ID);
+            Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
 
-            given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID))
                     .willReturn(pinnedCount);
-            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(Optional.of(organization));
+            given(festivalJpaRepository.findById(DEFAULT_FESTIVAL_ID))
+                    .willReturn(Optional.of(festival));
 
             // when
-            announcementService.createAnnouncement(DEFAULT_ORGANIZATION_ID, request);
+            announcementService.createAnnouncement(DEFAULT_FESTIVAL_ID, request);
 
             // then
             then(announcementJpaRepository).should()
                     .save(any(Announcement.class));
 
-            then(organizationNotificationManager).should()
-                    .sendToOrganizationTopic(any(), any());
+            then(festivalNotificationManager).should()
+                    .sendToFestivalTopic(any(), any());
         }
 
         @ParameterizedTest(name = "고정 공지 개수: {0}")
@@ -159,18 +159,18 @@ class AnnouncementServiceTest {
             // given
             AnnouncementRequest request = AnnouncementRequestFixture.create(true);
 
-            given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID))
                     .willReturn(maxPinnedCount);
 
             // when & then
-            assertThatThrownBy(() -> announcementService.createAnnouncement(DEFAULT_ORGANIZATION_ID, request))
+            assertThatThrownBy(() -> announcementService.createAnnouncement(DEFAULT_FESTIVAL_ID, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
         }
     }
 
     @Nested
-    class getGroupedAnnouncementByOrganizationId {
+    class getGroupedAnnouncementByFestivalId {
 
         @Test
         void 성공_고정_분류() {
@@ -185,12 +185,12 @@ class AnnouncementServiceTest {
             allAnnouncements.addAll(pinnedAnnouncements);
             allAnnouncements.addAll(unPinnedAnnouncements);
 
-            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+            given(announcementJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
                     .willReturn(allAnnouncements);
 
             // when
-            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(
-                    DEFAULT_ORGANIZATION_ID);
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(
+                    DEFAULT_FESTIVAL_ID);
 
             // then
             assertSoftly(s -> {
@@ -212,15 +212,15 @@ class AnnouncementServiceTest {
             Announcement announcement5 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 5, 3, 10, 0));
             Announcement announcement6 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 6, 2, 10, 0));
 
-            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+            given(announcementJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
                     .willReturn(List.of(
                             announcement1, announcement2, announcement3,
                             announcement4, announcement5, announcement6
                     ));
 
             // when
-            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(
-                    DEFAULT_ORGANIZATION_ID);
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(
+                    DEFAULT_FESTIVAL_ID);
 
             // then
             assertSoftly(s -> {
@@ -240,12 +240,12 @@ class AnnouncementServiceTest {
         @Test
         void 성공_빈_컬렉션() {
             // given
-            given(announcementJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+            given(announcementJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
                     .willReturn(List.of());
 
             // when
-            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByOrganizationId(
-                    DEFAULT_ORGANIZATION_ID);
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(
+                    DEFAULT_FESTIVAL_ID);
 
             // then
             assertSoftly(s -> {
@@ -308,7 +308,7 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(announcement));
 
             // when
-            announcementService.updateAnnouncementPin(announcementId, DEFAULT_ORGANIZATION_ID, request);
+            announcementService.updateAnnouncementPin(announcementId, DEFAULT_FESTIVAL_ID, request);
 
             // then
             assertThat(announcement.isPinned()).isEqualTo(request.pinned());
@@ -326,7 +326,7 @@ class AnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
                     invalidAnnouncementId,
-                    DEFAULT_ORGANIZATION_ID,
+                    DEFAULT_FESTIVAL_ID,
                     request)
             )
                     .isInstanceOf(BusinessException.class)
@@ -344,13 +344,13 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(announcement));
 
             Long pinnedCountLimit = 3L;
-            given(announcementJpaRepository.countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID))
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID))
                     .willReturn(pinnedCountLimit);
 
             // when & then
             assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
                     announcementId,
-                    DEFAULT_ORGANIZATION_ID,
+                    DEFAULT_FESTIVAL_ID,
                     request)
             )
                     .isInstanceOf(BusinessException.class)
@@ -368,11 +368,11 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(announcement));
 
             // when
-            announcementService.updateAnnouncementPin(announcementId, DEFAULT_ORGANIZATION_ID, request);
+            announcementService.updateAnnouncementPin(announcementId, DEFAULT_FESTIVAL_ID, request);
 
             // then
             then(announcementJpaRepository).should(never())
-                    .countByOrganizationIdAndIsPinnedTrue(DEFAULT_ORGANIZATION_ID);
+                    .countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID);
         }
     }
 

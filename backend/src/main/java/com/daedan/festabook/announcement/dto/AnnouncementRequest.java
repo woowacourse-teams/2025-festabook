@@ -1,7 +1,7 @@
 package com.daedan.festabook.announcement.dto;
 
 import com.daedan.festabook.announcement.domain.Announcement;
-import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.festival.domain.Festival;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record AnnouncementRequest(
@@ -16,12 +16,12 @@ public record AnnouncementRequest(
         boolean isPinned
 ) {
 
-    public Announcement toEntity(Organization organization) {
+    public Announcement toEntity(Festival festival) {
         return new Announcement(
                 title,
                 content,
                 isPinned,
-                organization
+                festival
         );
     }
 }

@@ -7,9 +7,9 @@ import static org.hamcrest.Matchers.notNullValue;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFavorite;
 import com.daedan.festabook.place.domain.PlaceFavoriteFixture;
@@ -36,7 +36,7 @@ import org.springframework.http.HttpStatus;
 class PlaceFavoriteControllerTest {
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @Autowired
     private DeviceJpaRepository deviceJpaRepository;
@@ -61,13 +61,13 @@ class PlaceFavoriteControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceFavoriteRequest request = PlaceFavoriteRequestFixture.create(device.getId());
@@ -90,13 +90,13 @@ class PlaceFavoriteControllerTest {
         @Test
         void 예외_플레이스에_이미_즐겨찾기한_디바이스() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(place, device);
@@ -119,10 +119,10 @@ class PlaceFavoriteControllerTest {
         @Test
         void 예외_존재하지_않는_디바이스() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             Long invalidDeviceId = 0L;
@@ -143,8 +143,8 @@ class PlaceFavoriteControllerTest {
         @Test
         void 예외_존재하지_않는_플레이스() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
@@ -172,10 +172,10 @@ class PlaceFavoriteControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             Device device = DeviceFixture.create();
