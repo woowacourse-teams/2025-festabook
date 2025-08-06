@@ -75,25 +75,44 @@ jobs:
             if kill -0 $PID 2>/dev/null; then
               echo "Process $PID did not terminate gracefully. Forcing shutdown with SIGKILL."
               kill -9 $PID
+              sleep 3
             fi
           else
             echo "No process found on port 8080."
           fi
 
           # 2. 이전 JAR 파일 삭제 및 빌드 JAR 파일 복사
+          echo "Deleting old JAR files..."
           DEPLOY_DIRECTORY="/home/ubuntu/${{ github.event.repository.name }}/backend"
-          echo "Deleting old JAR files from ${DEPLOY_DIRECTORY}..."
+          echo "DEPLOY_DIRECTORY=${DEPLOY_DIRECTORY}"
           mkdir -p "${DEPLOY_DIRECTORY}"
           find "${DEPLOY_DIRECTORY}" -maxdepth 1 -name "*.jar" -delete
+          echo "Old JAR files deleted."
 
           BUILD_JAR_PATH="${{ steps.get_build_jar.outputs.BUILD_JAR_PATH }}"
           BUILD_JAR_NAME="${{ steps.get_build_jar.outputs.BUILD_JAR_NAME }}"
           DEPLOY_JAR_PATH="${DEPLOY_DIRECTORY}/${BUILD_JAR_NAME}"
+          echo "BUILD_JAR_PATH=${BUILD_JAR_PATH}"
+          echo "BUILD_JAR_NAME=${BUILD_JAR_NAME}"
+          echo "DEPLOY_JAR_PATH=${DEPLOY_JAR_PATH}"
           cp "${BUILD_JAR_PATH}" "${DEPLOY_JAR_PATH}"
-          echo "New JAR file copied to ${DEPLOY_JAR_PATH}"
+          echo "New JAR file copied."
 
           # 3. 새로운 WAS 실행
           echo "Starting new Spring WAS..."
+          echo "Setting execute permission for JAR file."
+          chmod +x "${DEPLOY_JAR_PATH}"
+
           LOG_PATH="${DEPLOY_DIRECTORY}/application.log"
+          echo "LOG_PATH=${LOG_PATH}"
+
           nohup java -jar "${DEPLOY_JAR_PATH}" > "${LOG_PATH}" 2>&1 &
-          echo "Application started."
+          sleep 10
+          NEW_WAS_PID=$(lsof -t -i:8080 || true)
+          if [ -n "$NEW_WAS_PID" ]; then
+            echo "Application started with PID: $NEW_WAS_PID."
+          else
+            echo "Error: Application failed to start."
+            exit 1
+          fi
+          echo "Deployment complete."
