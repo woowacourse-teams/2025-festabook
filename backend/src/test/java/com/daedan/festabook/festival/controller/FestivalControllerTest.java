@@ -80,7 +80,11 @@ class FestivalControllerTest {
 
             FestivalImageRequest request = FestivalImageRequestFixture.create("이미지 URL");
 
+            Integer count = festivalImageJpaRepository.findMaxSequenceByFestivalId(festival.getId())
+                    .orElseGet(() -> 0);
+
             int expectedFieldSize = 3;
+            int expectedSequence = count + 1;
 
             // when & then
             RestAssured
@@ -95,7 +99,7 @@ class FestivalControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("festivalImageId", notNullValue())
                     .body("imageUrl", equalTo(request.imageUrl()))
-                    .body("sequence", equalTo(1));
+                    .body("sequence", equalTo(expectedSequence));
         }
     }
 

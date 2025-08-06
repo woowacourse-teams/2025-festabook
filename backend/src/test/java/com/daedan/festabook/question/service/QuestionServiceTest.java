@@ -7,10 +7,10 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
 import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
@@ -62,8 +62,8 @@ class QuestionServiceTest {
 
             given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));
-            given(questionJpaRepository.countByFestivalId(festivalId))
-                    .willReturn(questionCount);
+            given(questionJpaRepository.findMaxSequenceByFestivalId(festivalId))
+                    .willReturn(Optional.of(questionCount));
             given(questionJpaRepository.save(any()))
                     .willAnswer(invocation -> invocation.getArgument(0));
 
