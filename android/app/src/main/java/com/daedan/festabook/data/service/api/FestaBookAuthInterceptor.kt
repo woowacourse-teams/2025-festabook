@@ -11,7 +11,7 @@ class FestaBookAuthInterceptor(
         val requestWithHeader =
             originalRequest
                 .newBuilder()
-                .addHeader("organization", organizationId)
+                .addHeader("festival", organizationId)
                 .build()
 
         return chain.proceed(requestWithHeader)
