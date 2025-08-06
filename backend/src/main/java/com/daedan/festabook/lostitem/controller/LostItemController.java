@@ -1,6 +1,6 @@
 package com.daedan.festabook.lostitem.controller;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
@@ -34,10 +34,10 @@ class LostItemController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public LostItemResponse createLostItem(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody LostItemRequest request
     ) {
-        return lostItemService.createLostItem(organizationId, request);
+        return lostItemService.createLostItem(festivalId, request);
     }
 
     @GetMapping
@@ -46,9 +46,9 @@ class LostItemController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public LostItemResponses getAllLostItemByOrganizationId(
-            @Parameter(hidden = true) @OrganizationId Long organizationId
+    public LostItemResponses getAllLostItemByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return lostItemService.getAllLostItemByOrganizationId(organizationId);
+        return lostItemService.getAllLostItemByFestivalId(festivalId);
     }
 }

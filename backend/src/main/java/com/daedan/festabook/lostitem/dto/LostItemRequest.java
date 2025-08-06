@@ -1,17 +1,17 @@
 package com.daedan.festabook.lostitem.dto;
 
+import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
-import com.daedan.festabook.organization.domain.Organization;
 
 public record LostItemRequest(
         String imageUrl,
         String storageLocation
 ) {
 
-    public LostItem toLostItem(Organization organization) {
+    public LostItem toLostItem(Festival festival) {
         return new LostItem(
-                organization,
+                festival,
                 imageUrl,
                 storageLocation,
                 PickupStatus.PENDING

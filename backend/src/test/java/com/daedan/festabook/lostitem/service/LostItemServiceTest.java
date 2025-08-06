@@ -5,6 +5,9 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
@@ -13,9 +16,6 @@ import com.daedan.festabook.lostitem.dto.LostItemRequestFixture;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -31,13 +31,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LostItemServiceTest {
 
-    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+    private static final Long DEFAULT_FESTIVAL_ID = 1L;
 
     @Mock
     private LostItemJpaRepository lostItemJpaRepository;
 
     @Mock
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @InjectMocks
     private LostItemService lostItemService;
@@ -53,13 +53,13 @@ class LostItemServiceTest {
                     "서울특별시 강남구"
             );
 
-            Organization organization = OrganizationFixture.create(DEFAULT_ORGANIZATION_ID);
+            Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
 
-            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(Optional.of(organization));
+            given(festivalJpaRepository.findById(DEFAULT_FESTIVAL_ID))
+                    .willReturn(Optional.of(festival));
 
             // when
-            LostItemResponse result = lostItemService.createLostItem(DEFAULT_ORGANIZATION_ID, request);
+            LostItemResponse result = lostItemService.createLostItem(DEFAULT_FESTIVAL_ID, request);
 
             // then
             assertSoftly(s -> {
@@ -71,21 +71,21 @@ class LostItemServiceTest {
         @Test
         void 예외_존재하지_않는_조직_ID() {
             // given
-            Long invalidOrganizationId = 0L;
+            Long invalidFestivalId = 0L;
             LostItemRequest request = LostItemRequestFixture.create();
 
-            given(organizationJpaRepository.findById(invalidOrganizationId))
+            given(festivalJpaRepository.findById(invalidFestivalId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> lostItemService.createLostItem(invalidOrganizationId, request))
+            assertThatThrownBy(() -> lostItemService.createLostItem(invalidFestivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 조직입니다.");
         }
     }
 
     @Nested
-    class getAllLostItemByOrganizationId {
+    class getAllLostItemByFestivalId {
 
         @Test
         void 성공() {
@@ -94,13 +94,13 @@ class LostItemServiceTest {
             LostItem lostItem2 = LostItemFixture.create();
             List<LostItem> lostItems = List.of(lostItem1, lostItem2);
 
-            given(lostItemJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+            given(lostItemJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
                     .willReturn(lostItems);
 
             int expectedSize = 2;
-            
+
             // when
-            LostItemResponses result = lostItemService.getAllLostItemByOrganizationId(DEFAULT_ORGANIZATION_ID);
+            LostItemResponses result = lostItemService.getAllLostItemByFestivalId(DEFAULT_FESTIVAL_ID);
 
             // then
             assertThat(result.responses()).hasSize(expectedSize);

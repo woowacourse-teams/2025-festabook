@@ -1,7 +1,7 @@
 package com.daedan.festabook.lostitem.domain;
 
+import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -37,7 +37,7 @@ public class LostItem {
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Organization organization;
+    private Festival festival;
 
     @Column(nullable = false)
     private String imageUrl;
@@ -55,7 +55,7 @@ public class LostItem {
 
     protected LostItem(
             Long id,
-            Organization organization,
+            Festival festival,
             String imageUrl,
             String storageLocation,
             PickupStatus status,
@@ -66,7 +66,7 @@ public class LostItem {
         validatePickupStatus(status);
 
         this.id = id;
-        this.organization = organization;
+        this.festival = festival;
         this.imageUrl = imageUrl;
         this.storageLocation = storageLocation;
         this.status = status;
@@ -74,14 +74,14 @@ public class LostItem {
     }
 
     public LostItem(
-            Organization organization,
+            Festival festival,
             String imageUrl,
             String storageLocation,
             PickupStatus status
     ) {
         this(
                 null,
-                organization,
+                festival,
                 imageUrl,
                 storageLocation,
                 status,

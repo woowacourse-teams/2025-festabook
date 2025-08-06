@@ -5,15 +5,15 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemRequestFixture;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
@@ -31,13 +31,13 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LostItemControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
     private LostItemJpaRepository lostItemJpaRepository;
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -53,8 +53,8 @@ class LostItemControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             LostItemRequest request = LostItemRequestFixture.create();
 
@@ -62,7 +62,7 @@ class LostItemControllerTest {
 
             // when & then
             given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -79,23 +79,23 @@ class LostItemControllerTest {
     }
 
     @Nested
-    class getAllLostItemByOrganizationId {
+    class getAllLostItemByFestivalId {
 
         @Test
         void 성공_사이즈_검증() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            LostItem lostItem1 = LostItemFixture.create();
-            LostItem lostItem2 = LostItemFixture.create();
+            LostItem lostItem1 = LostItemFixture.create(festival);
+            LostItem lostItem2 = LostItemFixture.create(festival);
             lostItemJpaRepository.saveAll(List.of(lostItem1, lostItem2));
 
             int expectedSize = 2;
 
             // when & then
             given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/lost-items")
                     .then()
@@ -106,17 +106,17 @@ class LostItemControllerTest {
         @Test
         void 성공_필드값_검증() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             LostItem lostItem1 = LostItemFixture.create(
-                    organization,
+                    festival,
                     "http://example.com/image1.png",
                     "창고A",
                     PickupStatus.PENDING
             );
             LostItem lostItem2 = LostItemFixture.create(
-                    organization,
+                    festival,
                     "http://example.com/image2.png",
                     "창고B",
                     PickupStatus.COMPLETED
@@ -128,7 +128,7 @@ class LostItemControllerTest {
 
             // when & then
             given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/lost-items")
                     .then()
