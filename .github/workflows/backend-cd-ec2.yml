@@ -100,14 +100,19 @@ jobs:
 
           # 3. 새로운 WAS 실행
           echo "Starting new Spring WAS..."
-          echo "Setting execute permission for JAR file."
-          chmod +x "${DEPLOY_JAR_PATH}"
-
           LOG_PATH="${DEPLOY_DIRECTORY}/application.log"
           echo "LOG_PATH=${LOG_PATH}"
-
+          
           nohup java -jar "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod > "${LOG_PATH}" 2>&1 &
-          sleep 10
+          for i in $(seq 1 20); do
+            if lsof -t -i:8080 > /dev/null; then
+              echo "WAS has started and is listening on port 8080."
+              break
+            fi
+            echo "Waiting for port 8080 to be occupied... ($i/20)"
+            sleep 1
+          done
+
           NEW_WAS_PID=$(lsof -t -i:8080 || true)
           if [ -n "$NEW_WAS_PID" ]; then
             echo "Application started with PID: $NEW_WAS_PID."
