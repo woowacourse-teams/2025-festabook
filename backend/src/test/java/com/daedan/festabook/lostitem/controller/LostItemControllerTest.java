@@ -70,7 +70,7 @@ class LostItemControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
+                    .body("lostItemId", notNullValue())
                     .body("imageUrl", equalTo(request.imageUrl()))
                     .body("storageLocation", equalTo(request.storageLocation()))
                     .body("status", equalTo("PENDING"))
