@@ -3,7 +3,8 @@ export const placeCategories = {
     BAR: '주점',
     FOOD_TRUCK: '푸드트럭',
     SMOKING: '흡연구역',
-    TRASH_CAN: '쓰레기통'
+    TRASH_CAN: '쓰레기통',
+    TOILET: '화장실',
 };
 
 // 카테고리별 아이콘 SVG 생성 함수

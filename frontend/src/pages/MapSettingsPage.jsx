@@ -105,6 +105,11 @@ const MapSettingsPage = () => {
 
     mapInstanceRef.current = map;
 
+    // 지도 클릭 시 선택 해제
+    naver.maps.Event.addListener(map, 'click', () => {
+      setSelectedPlaceId(null);
+    });
+
     if (holeBoundary.length > 2) {
       const outer = KOREA_BOUNDARY.map(([lat, lng]) => new naver.maps.LatLng(lat, lng));
       const hole = holeBoundary.map((p) => new naver.maps.LatLng(p.latitude, p.longitude));
@@ -137,14 +142,18 @@ const MapSettingsPage = () => {
     // 새로운 마커들 생성
     markers.forEach(marker => {
       if (!marker.markerCoordinate || !marker.markerCoordinate.latitude || !marker.markerCoordinate.longitude) return;
+      const isSelected = selectedPlaceId === marker.id;
+      const iconSize = isSelected ? { width: 40, height: 50 } : { width: 30, height: 40 };
+      const anchorPoint = isSelected ? { x: 20, y: 50 } : { x: 15, y: 40 };
+      
       const m = new naver.maps.Marker({
         position: new naver.maps.LatLng(marker.markerCoordinate.latitude, marker.markerCoordinate.longitude),
         map,
         title: marker.category,
         icon: {
-          content: getCategoryIcon(marker.category, false),
-          size: new naver.maps.Size(30, 40),
-          anchor: new naver.maps.Point(15, 40)
+          content: getCategoryIcon(marker.category, isSelected),
+          size: new naver.maps.Size(iconSize.width, iconSize.height),
+          anchor: new naver.maps.Point(anchorPoint.x, anchorPoint.y)
         }
       });
       naver.maps.Event.addListener(m, 'click', () => {
@@ -162,7 +171,7 @@ const MapSettingsPage = () => {
       });
       markerRefs.current.push(m);
     });
-  }, [markers]);
+  }, [markers, selectedPlaceId]);
 
   // 5. 반응형 높이
   useEffect(() => {
@@ -199,6 +208,23 @@ const MapSettingsPage = () => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [modalOpen]);
+
+  // 플레이스 클릭 시 해당 마커로 이동 및 강조 표시
+  const handlePlaceClick = (place) => {
+    const marker = markers.find(m => m.id === place.id);
+    if (marker?.markerCoordinate?.latitude && marker?.markerCoordinate?.longitude && mapInstanceRef.current) {
+      // 지도 중심을 해당 마커로 이동
+      const position = new window.naver.maps.LatLng(
+        marker.markerCoordinate.latitude,
+        marker.markerCoordinate.longitude
+      );
+      mapInstanceRef.current.setCenter(position);
+      mapInstanceRef.current.setZoom(18); // 확대
+      
+      // 선택된 플레이스 표시
+      setSelectedPlaceId(place.id);
+    }
+  };
 
   return (
     <div style={{ height: '100%', boxSizing: 'border-box' }}>
@@ -246,14 +272,30 @@ const MapSettingsPage = () => {
                         placeItemRefs.current[booth.id] = el;
                       }
                     }}
-                    className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
+                    className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 cursor-pointer hover:bg-gray-100 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
+                    onClick={() => handlePlaceClick(booth)}
                   >
                     <div>
                       <p className="font-semibold">
-                        {booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.'}
+                        {(() => {
+                          // etcPlace 카테고리들은 카테고리명을 제목으로 사용
+                          const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
+                          if (etcPlaceCategories.includes(booth.category)) {
+                            return placeCategories[booth.category];
+                          }
+                          // 일반 플레이스는 기존 로직 사용
+                          return booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.';
+                        })()}
                       </p>
                       <div className="flex items-center gap-2">
-                        <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
+                        {(() => {
+                          // etcPlace 카테고리들은 이미 제목에 카테고리명이 표시되므로 하단에는 표시하지 않음
+                          const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
+                          if (!etcPlaceCategories.includes(booth.category)) {
+                            return <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>;
+                          }
+                          return null;
+                        })()}
                         {!hasCoordinates && (
                           <p className="text-xs text-red-500">좌표 미설정</p>
                         )}
