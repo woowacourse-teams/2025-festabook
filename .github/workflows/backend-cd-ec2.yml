@@ -106,7 +106,7 @@ jobs:
           LOG_PATH="${DEPLOY_DIRECTORY}/application.log"
           echo "LOG_PATH=${LOG_PATH}"
 
-          nohup java -jar "${DEPLOY_JAR_PATH}" > "${LOG_PATH}" 2>&1 &
+          nohup java -jar "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod > "${LOG_PATH}" 2>&1 &
           sleep 10
           NEW_WAS_PID=$(lsof -t -i:8080 || true)
           if [ -n "$NEW_WAS_PID" ]; then
