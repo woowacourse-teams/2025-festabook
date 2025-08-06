@@ -8,7 +8,6 @@ import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
-import jakarta.transaction.Transactional;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,7 +20,6 @@ public class LostItemService {
     private final LostItemJpaRepository lostItemJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
 
-    @Transactional
     public LostItemResponse createLostItem(Long festivalId, LostItemRequest request) {
         Festival festival = getFestivalById(festivalId);
 

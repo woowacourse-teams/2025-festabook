@@ -5,7 +5,7 @@ import com.daedan.festabook.lostitem.domain.PickupStatus;
 import java.time.LocalDateTime;
 
 public record LostItemResponse(
-        Long id,
+        Long lostItemId,
         String imageUrl,
         String storageLocation,
         PickupStatus status,

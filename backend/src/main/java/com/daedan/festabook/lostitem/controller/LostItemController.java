@@ -29,7 +29,7 @@ class LostItemController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 조직의 분실물 생성")
+    @Operation(summary = "특정 축제의 분실물 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
@@ -42,7 +42,7 @@ class LostItemController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직의 모든 분실물 조회")
+    @Operation(summary = "특정 축제의 모든 분실물 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })

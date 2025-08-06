@@ -69,7 +69,7 @@ class LostItemServiceTest {
         }
 
         @Test
-        void 예외_존재하지_않는_조직_ID() {
+        void 예외_존재하지_않는_축제_ID() {
             // given
             Long invalidFestivalId = 0L;
             LostItemRequest request = LostItemRequestFixture.create();
