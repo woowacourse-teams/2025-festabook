@@ -31,7 +31,7 @@ class ScheduleItemViewHolder(
     private fun setupBottomMargin(itemCount: Int) {
         val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
         if (layoutPosition == itemCount - 1) {
-            layoutParams.bottomMargin = 20.toPx(binding.clScheduleEventCard.context) // 원하는 값
+            layoutParams.bottomMargin = BOTTOM_MARGIN.toPx(binding.clScheduleEventCard.context)
         }
     }
 
@@ -132,6 +132,7 @@ class ScheduleItemViewHolder(
     companion object {
         private const val UPCOMING_TEXT_WIDTH = 36
         private const val UPCOMING_TEXT_HEIGHT = 24
+        private const val BOTTOM_MARGIN = 20
 
         fun from(
             parent: ViewGroup,

@@ -29,11 +29,13 @@ class FAQViewHolder(
     private fun setupTopMargin() {
         val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
         if (layoutPosition == 0) {
-            layoutParams.topMargin = 12.toPx(binding.clFaqItem.context) // 원하는 값
+            layoutParams.topMargin = TOP_MARGIN.toPx(binding.clFaqItem.context)
         }
     }
 
     companion object {
+        private const val TOP_MARGIN = 12
+
         fun from(
             parent: ViewGroup,
             onNewsClickListener: OnNewsClickListener,
