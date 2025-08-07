@@ -7,10 +7,6 @@ on:
       - backend
     paths:
       - 'backend/**'
-  pull_request:
-    branches:
-      - main
-      - backend
   workflow_dispatch:
 
 jobs:
