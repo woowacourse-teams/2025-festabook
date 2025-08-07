@@ -7,6 +7,10 @@ on:
       - backend
     paths:
       - 'backend/**'
+  pull_request:
+    branches:
+      - main
+      - backend
   workflow_dispatch:
 
 jobs:
@@ -26,6 +30,11 @@ jobs:
         run: |
           mkdir -p backend/src/main/resources/firebase
           echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
+
+      - name: Create logback-spring.xml from secret
+        run: |
+          mkdir -p src/main/resources
+          echo "${{ secrets.logback }}" > src/main/resources/logback-spring.xml
 
       - name: Gradle cache
         uses: actions/cache@v4
