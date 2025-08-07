@@ -12,7 +12,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,5 +53,30 @@ class LostItemController {
             @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
         return lostItemService.getAllLostItemByFestivalId(festivalId);
+    }
+
+    @PatchMapping("/{lostItemId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 분실물 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public LostItemUpdateResponse updateLostItem(
+            @PathVariable Long lostItemId,
+            @RequestBody LostItemRequest request
+    ) {
+        return lostItemService.updateLostItem(lostItemId, request);
+    }
+
+    @DeleteMapping("/{lostItemId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "특정 분실물 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
+    })
+    public void deleteLostItemByLostItemId(
+            @PathVariable Long lostItemId
+    ) {
+        lostItemService.deleteLostItemByLostItemId(lostItemId);
     }
 }

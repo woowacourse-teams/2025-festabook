@@ -5,8 +5,8 @@ import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
 
 public record LostItemRequest(
-        String imageUrl,
-        String storageLocation
+        String storageLocation,
+        String imageUrl
 ) {
 
     public LostItem toLostItem(Festival festival) {
