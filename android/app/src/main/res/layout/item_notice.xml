@@ -16,7 +16,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
-        android:background="@drawable/bg_stroke_gray400_radius_10dp"
         android:paddingVertical="16dp">
 
         <ImageView
@@ -32,7 +31,7 @@
 
         <TextView
             android:id="@+id/tv_notice_title"
-            style="@style/PretendardMedium14"
+            style="@style/PretendardBold14"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -46,7 +45,6 @@
 
         <TextView
             android:id="@+id/tv_notice_description"
-            style="@style/PretendardRegular12"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="16dp"

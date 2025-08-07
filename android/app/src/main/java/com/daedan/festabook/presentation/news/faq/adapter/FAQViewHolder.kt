@@ -30,6 +30,8 @@ class FAQViewHolder(
         val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
         if (layoutPosition == 0) {
             layoutParams.topMargin = TOP_MARGIN.toPx(binding.clFaqItem.context)
+        } else {
+            layoutParams.topMargin = 0
         }
     }
 

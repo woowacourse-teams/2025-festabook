@@ -22,10 +22,10 @@ class NoticeViewHolder(
         }
         if (notice.isPinned) {
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_pin)
-            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_gray100_stroke_gray400_radius_10dp)
+            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_gray100_stroke_gray200_radius_16dp)
         } else {
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_speaker)
-            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_stroke_gray400_radius_10dp)
+            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_stroke_gray200_radius_16dp)
         }
 
         binding.tvNoticeDescription.maxLines =
@@ -37,12 +37,15 @@ class NoticeViewHolder(
     private fun setupTopMargin() {
         val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
         if (layoutPosition == 0) {
-            layoutParams.topMargin = 8.toPx(binding.layoutNoticeItem.context) // 원하는 값
+            layoutParams.topMargin = TOP_MARGIN.toPx(binding.layoutNoticeItem.context)
+        } else {
+            layoutParams.topMargin = 0
         }
     }
 
     companion object {
         private const val DEFAULT_LINE_COUNT = 2
+        private const val TOP_MARGIN = 8
 
         fun from(
             parent: ViewGroup,
