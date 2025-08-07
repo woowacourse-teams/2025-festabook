@@ -62,7 +62,7 @@
     <string name="tab_faq_question">Q. %1$s</string>
     <string name="modal_lost_item">보관 장소 : %1$s</string>
 
-    <!--    설정 화면-->
+    <!-- 설정 화면 -->
     <string name="setting_title">설정</string>
     <string name="setting_notice_title">알림</string>
     <string name="setting_current_university_notice">현재 접속 중인 대학 알림</string>
@@ -71,6 +71,11 @@
     <string name="setting_app_version">앱 버전</string>
     <string name="setting_service_policy">약관 및 정책</string>
     <string name="setting_contact_us">문의하기</string>
+    <string name="setting_contact_us_email_subject">문의하기</string>
+    <string name="setting_contact_us_email">festabook2025@gmail.com</string>
+    <string name="setting_service_policy_url">https://www.notion.so/244a540dc0b780638e56e31c4bdb3c9f</string>
+
+
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
     <string name="content_description_iv_location">위치 아이콘</string>
