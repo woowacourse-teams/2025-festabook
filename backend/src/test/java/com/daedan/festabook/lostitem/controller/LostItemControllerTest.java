@@ -1,6 +1,7 @@
 package com.daedan.festabook.lostitem.controller;
 
 import static io.restassured.RestAssured.given;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
@@ -143,6 +144,78 @@ class LostItemControllerTest {
                     .body("[1].imageUrl", equalTo(lostItem2.getImageUrl()))
                     .body("[1].storageLocation", equalTo(lostItem2.getStorageLocation()))
                     .body("[1].status", equalTo(lostItem2.getStatus().name()));
+        }
+    }
+
+    @Nested
+    class updateLostItem {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            LostItem lostItem = LostItemFixture.create(festival);
+            lostItemJpaRepository.save(lostItem);
+
+            LostItemRequest request = LostItemRequestFixture.create(
+                    "수정된 보관장소",
+                    "http://example.com/updated-image.png"
+            );
+
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/lost-items/{lostItemId}", lostItem.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("storageLocation", equalTo(request.storageLocation()))
+                    .body("imageUrl", equalTo(request.imageUrl()));
+        }
+    }
+
+    @Nested
+    class deleteLostItemByLostItemId {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            LostItem lostItem = LostItemFixture.create(festival);
+            lostItemJpaRepository.save(lostItem);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/lost-items/{lostItemId}", lostItem.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertThat(lostItemJpaRepository.findById(lostItem.getId())).isEmpty();
+        }
+
+        @Test
+        void 성공_존재하지_않는_분실물_삭제() {
+            // given
+            Long notExistId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/lost-items/{lostItemId}", notExistId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }
