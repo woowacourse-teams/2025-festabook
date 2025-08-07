@@ -105,9 +105,9 @@ VALUES (1, 37.5863631, 127.0564018),
 -- 일정 날짜 (EventDate)
 -- ========================
 INSERT INTO event_date (festival_id, date)
-VALUES (1, '2025-08-04'),
-       (1, '2025-08-05'),
-       (1, '2025-08-06');
+VALUES (1, '2025-08-07'),
+       (1, '2025-08-08'),
+       (1, '2025-08-09');
 -- VALUES (1, ADDDATE(CURDATE(), -1)),
 --        (1, CURDATE()),
 --        (1, ADDDATE(CURDATE(), 1));
