@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemNoticeBinding
+import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 class NoticeViewHolder(
@@ -13,6 +14,7 @@ class NoticeViewHolder(
     private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(notice: NoticeUiModel) {
+        setupTopMargin()
         binding.notice = notice
 
         binding.layoutNoticeItem.setOnClickListener {
@@ -30,6 +32,13 @@ class NoticeViewHolder(
             if (notice.isExpanded) Integer.MAX_VALUE else DEFAULT_LINE_COUNT
         binding.tvNoticeDescription.ellipsize =
             if (notice.isExpanded) null else TextUtils.TruncateAt.END
+    }
+
+    private fun setupTopMargin() {
+        val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
+        if (layoutPosition == 0) {
+            layoutParams.topMargin = 8.toPx(binding.layoutNoticeItem.context) // 원하는 값
+        }
     }
 
     companion object {
