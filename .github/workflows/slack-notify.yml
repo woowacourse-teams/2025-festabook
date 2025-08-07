@@ -1,29 +1,31 @@
-name: Notify Review Request on Slack
+name: Slack Review Notification
 
 on:
   pull_request:
-    types: [review_requested]
+    types: [opened, ready_for_review, edited, review_requested]
+
+env:
+  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  PR_TITLE: ${{ github.event.pull_request.title }}
+  PR_NUMBER: ${{ github.event.pull_request.number }}
+  PR_URL: ${{ github.event.pull_request.html_url }}
+  PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+  REPOSITORY: ${{ github.repository }}
 
 jobs:
-  notify-reviewer:
+  notify-initial-reviewers:
+    if: ${{ github.event.action == 'opened' || github.event.action == 'ready_for_review' || github.event.action == 'edited' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install jq (for safety)
+      - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
-      - name: Send Slack Notification
+      - name: Notify All Reviewers
         env:
-          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_TITLE: ${{ github.event.pull_request.title }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_URL: ${{ github.event.pull_request.html_url }}
-          PR_REVIEWER: ${{ github.event.requested_reviewer.login }}
-          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-          REPOSITORY: ${{ github.repository }}
+          REVIEWERS_JSON: ${{ toJson(github.event.pull_request.requested_reviewers) }}
         run: |
-          # GitHub ID → Slack ID 매핑
           declare -A GITHUB_TO_SLACK
           GITHUB_TO_SLACK["soeun2537"]="U09A0LM0CRW"
           GITHUB_TO_SLACK["taek2222"]="U099ARRH3D3"
@@ -33,26 +35,76 @@ jobs:
           GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
           GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
 
-          # Slack 멘션 ID 할당
-          SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]}
-          SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[$PR_REVIEWER]}
+          SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-"$PR_AUTHOR"}
+          SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
 
-          # 리뷰 히스토리 조회 (재요청 여부 확인)
+          REVIEWER_MENTIONS=""
+          for reviewer in $(echo "$REVIEWERS_JSON" | jq -r '.[].login'); do
+            slack_id=${GITHUB_TO_SLACK[$reviewer]:-"$reviewer"}
+            REVIEWER_MENTIONS+="<@$slack_id> "
+          done
+
+          if [ -z "$REVIEWER_MENTIONS" ]; then
+            echo "리뷰어가 존재하지 않아 알림 생략"
+            exit 0
+          fi
+
+          read -r -d '' PAYLOAD <<EOF
+          {
+            "text": "📢 *리뷰 요청 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${REVIEWER_MENTIONS}\n*링크:* ${PR_URL}"
+          }
+          EOF
+
+          curl -X POST 
+          -H 'Content-type: application/json' 
+          --data "$PAYLOAD" 
+          $SLACK_WEBHOOK_URL
+
+  notify-re-review-requested:
+    if: ${{ github.event.action == 'review_requested' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Notify Reviewer on Re-review Request
+        env:
+          PR_REVIEWER: ${{ github.event.requested_reviewer.login }}
+        run: |
+          declare -A GITHUB_TO_SLACK
+          GITHUB_TO_SLACK["soeun2537"]="U09A0LM0CRW"
+          GITHUB_TO_SLACK["taek2222"]="U099ARRH3D3"
+          GITHUB_TO_SLACK["changuii"]="U099BR9RNE6"
+          GITHUB_TO_SLACK["eoehd1ek"]="U0995NANDML"
+          GITHUB_TO_SLACK["oungsi2000"]="U098U2R57NK"
+          GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
+          GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
+          
+          SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-"$PR_AUTHOR"}
+          SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[$PR_REVIEWER]:-"$PR_REVIEWER"}
+          SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
+          SLACK_REVIEWER_MENTION="<@$SLACK_REVIEWER_ID>"
+          
           REVIEW_API_URL="https://api.github.com/repos/$REPOSITORY/pulls/$PR_NUMBER/reviews"
           REVIEW_COUNT=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" \
-           "$REVIEW_API_URL" \
-           | jq -r --arg reviewer "$PR_REVIEWER" '[.[] | select(.user.login == $reviewer)] | length')
-
+            "$REVIEW_API_URL" \
+            | jq -r --arg reviewer "$PR_REVIEWER" '[.[] | select(.user.login == $reviewer)] | length')
+          
           if [ "$REVIEW_COUNT" -gt 0 ]; then
-           PR_STATUS="🏸 *리뷰 재요청 알림*"
+            PR_STATUS="🏸 *재리뷰 요청 알림*"
           else
-           PR_STATUS="📢 *리뷰 요청 알림*"
+            echo "최초 리뷰 요청으로 간주되어 알림을 생략합니다."
+            exit 0
           fi
           
-          curl -X POST \
-            -H 'Content-type: application/json' \
-            --data '{
-              "text": "'"${PR_STATUS}"'\n*PR 제목:* '"${PR_TITLE}"' (#'"${PR_NUMBER}"')\n*작성자:* <@'"${SLACK_AUTHOR_ID}"'>\n*리뷰어:* <@'"${SLACK_REVIEWER_ID}"'>\n*링크:* '"${PR_URL}"'"
-            }' \
-            $SLACK_WEBHOOK_URL
-          
+          read -r -d '' PAYLOAD <<EOF
+          {
+            "text": "${PR_STATUS}\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${SLACK_REVIEWER_MENTION}\n*링크:* ${PR_URL}"
+          }
+          EOF
+  
+          curl -X POST 
+          -H 'Content-type: application/json' 
+          --data "$PAYLOAD" 
+          $SLACK_WEBHOOK_URL
