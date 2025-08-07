@@ -17,7 +17,11 @@ class CrashlyticsTree : Timber.Tree() {
             t?.run {
                 crashlytics.recordException(t)
             }
-            crashlytics.recordException(RuntimeException(message))
+            crashlytics.recordException(CrashlyticsLog(message))
         }
     }
+
+    private class CrashlyticsLog(
+        override val message: String,
+    ) : RuntimeException()
 }
