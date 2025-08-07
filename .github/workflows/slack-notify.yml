@@ -56,7 +56,7 @@ jobs:
             fi
 
             curl -X POST -H 'Content-type: application/json' \
-              --data "{\"text\": \"📢 *리뷰 요청 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${REVIEWER_MENTIONS}\n*링크:* ${PR_URL}\"}" \
+              --data "{\"text\": \"🔥 *리뷰 요청 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${REVIEWER_MENTIONS}\n*링크:* ${PR_URL}\"}" \
               $SLACK_WEBHOOK_URL
 
             exit 0
