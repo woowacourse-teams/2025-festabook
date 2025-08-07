@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
@@ -161,8 +160,6 @@ class LostItemServiceTest {
         void 성공() {
             // given
             Long lostItemId = 1L;
-
-            willDoNothing().given(lostItemJpaRepository).deleteById(lostItemId);
 
             // when
             lostItemService.deleteLostItemByLostItemId(lostItemId);
