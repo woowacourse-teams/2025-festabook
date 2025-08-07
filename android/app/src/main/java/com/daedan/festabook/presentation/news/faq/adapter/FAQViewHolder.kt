@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemFaqBinding
+import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
@@ -14,6 +15,7 @@ class FAQViewHolder(
     private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(item: FAQItemUiModel) {
+        setupTopMargin()
         binding.clFaqItem.setOnClickListener {
             onNewsClickListener.onFAQClick(item)
         }
@@ -22,6 +24,13 @@ class FAQViewHolder(
         binding.tvFaqAnswer.text = item.answer
         binding.ivFaqExpand.setImageResource(if (item.isExpanded) R.drawable.ic_chevron_up else R.drawable.ic_chevron_down)
         binding.tvFaqAnswer.visibility = if (item.isExpanded) View.VISIBLE else View.GONE
+    }
+
+    private fun setupTopMargin() {
+        val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
+        if (layoutPosition == 0) {
+            layoutParams.topMargin = 12.toPx(binding.clFaqItem.context) // 원하는 값
+        }
     }
 
     companion object {
