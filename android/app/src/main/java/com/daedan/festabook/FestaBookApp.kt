@@ -41,7 +41,7 @@ class FestaBookApp : Application() {
         }.onSuccess {
             Timber.d("알림 채널 설정 완료")
         }.onFailure { e ->
-            Timber.e("FestabookApp: 알림 채널 설정 실패 ${e.stackTraceToString()}")
+            Timber.e(e, "FestabookApp: 알림 채널 설정 실패 ${e.message}")
         }
     }
 

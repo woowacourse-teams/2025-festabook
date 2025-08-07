@@ -37,7 +37,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 is FestivalUiState.Success -> handleSuccessState(festivalUiState)
                 is FestivalUiState.Error -> {
                     showErrorSnackBar(festivalUiState.throwable)
-                    Timber.w(festivalUiState.throwable.stackTraceToString())
+                    Timber.w(festivalUiState.throwable, "HomeFragment: ${festivalUiState.throwable.message}")
                 }
             }
         }

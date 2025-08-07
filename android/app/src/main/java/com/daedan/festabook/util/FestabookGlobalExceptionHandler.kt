@@ -54,7 +54,7 @@ class FestabookGlobalExceptionHandler(
         t: Thread,
         e: Throwable,
     ) {
-        Timber.e("FestabookGlobalExceptionHandler: ${e.stackTraceToString()}")
+        Timber.e(e, "FestabookGlobalExceptionHandler: ${e.message}")
         lastActivity?.run {
             startActivity(
                 intent.apply {

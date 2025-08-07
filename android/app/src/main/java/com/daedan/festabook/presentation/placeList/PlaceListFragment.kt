@@ -119,7 +119,7 @@ class PlaceListFragment :
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
-                    Timber.w("PlaceListFragment: ${places.throwable.stackTraceToString()}")
+                    Timber.w(places.throwable, "PlaceListFragment: ${places.throwable.message}")
                     showErrorSnackBar(places.throwable)
                 }
             }
@@ -134,7 +134,7 @@ class PlaceListFragment :
                 }
 
                 is PlaceListUiState.Error -> {
-                    Timber.w("PlaceListFragment: ${placeGeographies.throwable.stackTraceToString()}")
+                    Timber.w(placeGeographies.throwable, "PlaceListFragment: ${placeGeographies.throwable.message}")
                     showErrorSnackBar(placeGeographies.throwable)
                 }
             }
@@ -148,7 +148,7 @@ class PlaceListFragment :
                     setUpMap(initialMapSetting)
                 }
                 is PlaceListUiState.Error -> {
-                    Timber.w("PlaceListFragment: ${initialMapSetting.throwable.stackTraceToString()}")
+                    Timber.w(initialMapSetting.throwable, "PlaceListFragment: ${initialMapSetting.throwable.message}")
                     showErrorSnackBar(initialMapSetting.throwable)
                 }
             }

@@ -50,7 +50,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
 
                 is NoticeUiState.Error -> {
                     showErrorSnackBar(noticeState.throwable)
-                    Timber.w(noticeState.throwable.stackTraceToString())
+                    Timber.w(noticeState.throwable, "NoticeFragment: ${noticeState.throwable.message}")
                     binding.srlNoticeList.isRefreshing = false
                     hideSkeleton()
                 }
