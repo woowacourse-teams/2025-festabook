@@ -4,6 +4,7 @@ import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.service.LostItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
