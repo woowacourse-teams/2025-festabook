@@ -12,10 +12,12 @@ import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.initialPadding
+import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
-import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
+import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
@@ -62,6 +64,11 @@ class PlaceListFragment :
         }
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mapManager.clearMapManager()
+    }
+
     override fun onPlaceClicked(place: PlaceUiModel) {
         startPlaceDetailActivity(place)
     }
@@ -89,6 +96,9 @@ class PlaceListFragment :
                 mapManager.filterPlace(selectedCategories)
             }
         }
+        binding.chipBackToInitialPosition.setOnClickListener {
+            mapManager.moveToInitialPosition()
+        }
         setUpChipCategoryAllListener()
     }
 
@@ -106,7 +116,6 @@ class PlaceListFragment :
         naverMap = mapFragment.getMap()
         binding.lbvCurrentLocation.map = naverMap
         naverMap.locationSource = locationSource
-        mapManager = MapManager(naverMap, binding.initialPadding())
     }
 
     private fun setUpPlaceAdapter() {
@@ -152,12 +161,34 @@ class PlaceListFragment :
 
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
-            setUpMap(initialMapSetting)
+            if (!::mapManager.isInitialized) {
+                mapManager =
+                    MapManager(naverMap, binding.initialPadding().toInt(), initialMapSetting.value)
+            }
+            mapManager.setupMap()
+            mapManager.setupBackToInitialPosition { isExceededMaxLength ->
+                if (isExceededMaxLength) {
+                    binding.chipBackToInitialPosition.visibility = View.VISIBLE
+                } else {
+                    binding.chipBackToInitialPosition.visibility = View.GONE
+                }
+            }
+            setBehaviorCallback()
         }
     }
 
-    private fun setUpMap(initialMapSetting: PlaceListUiState.Success<InitialMapSettingUiModel>) {
-        mapManager.setupMap(initialMapSetting.value)
+    private fun setBehaviorCallback() {
+        binding.lbvCurrentLocation
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                BottomSheetFollowCallback(binding.lbvCurrentLocation.id),
+            )
+
+        binding.chipBackToInitialPosition
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id, mapManager),
+            )
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {

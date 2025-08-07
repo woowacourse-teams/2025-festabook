@@ -25,6 +25,22 @@
             app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior"
             android:layout_gravity="start|bottom" />
 
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_back_to_initial_position"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/map_back_to_initial_position"
+            android:textAppearance="@style/PretendardBold12"
+            android:textColor="@color/gray900"
+            android:layout_gravity="center|bottom"
+            android:visibility="gone"
+            style="@style/Widget.MaterialComponents.Chip.Action"
+            app:chipStrokeWidth="1dp"
+            app:chipStrokeColor="@color/gray500"
+            app:chipBackgroundColor="@color/gray050"
+            app:changeVisibility="false"
+            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior" />
+
         <HorizontalScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -175,11 +191,7 @@
             app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior"
             app:behavior_fitToContents="false"
             app:behavior_halfExpandedRatio="0.375"
-            app:behavior_peekHeight="70dp"
-            app:initialY="390dp"
-            app:minimumY="168dp"
-            app:recyclerView="@id/rv_places"
-            app:companionView="@id/lbv_current_location">
+            app:behavior_peekHeight="70dp">
 
             <View
                 android:id="@+id/view_divider"
@@ -242,7 +254,7 @@
                 android:id="@+id/tv_error_to_load_place_info"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="40dp"
                 android:text="@string/error_fail_to_load_place_info"
                 android:textAppearance="@style/PretendardRegular12"
                 android:textColor="@color/gray500"

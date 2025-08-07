@@ -44,6 +44,12 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="PretendardBold12">
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="PretendardRegular12">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textStyle">normal</item>
