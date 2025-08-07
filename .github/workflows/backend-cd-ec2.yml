@@ -33,8 +33,8 @@ jobs:
 
       - name: Create logback-spring.xml from secret
         run: |
-          mkdir -p src/main/resources
-          printf "%s" "${{ secrets.LOGBACK }}" > src/main/resources/logback-spring.xml
+          mkdir -p backend/src/main/resources
+          echo "%s" "${{ secrets.LOGBACK }}" > backend/src/main/resources/logback-spring.xml
 
       - name: Gradle cache
         uses: actions/cache@v4
