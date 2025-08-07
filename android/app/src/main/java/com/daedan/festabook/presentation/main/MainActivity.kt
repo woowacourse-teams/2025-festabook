@@ -32,7 +32,9 @@ import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
     private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
 
     private val placeListFragment by lazy {
@@ -52,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val settingFragment by lazy {
-        SettingFragment.newInstance()
+        SettingFragment().newInstance()
     }
 
     private val requestPermissionLauncher =
@@ -128,8 +130,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBinding() {
-        binding = ActivityMainBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -184,7 +184,7 @@ class MainActivity : AppCompatActivity() {
             binding.fcvFragmentContainer.updatePadding(
                 bottom = binding.babMenu.height + binding.babMenu.marginBottom,
             )
-            binding.bnvMenu.x = binding.bnvMenu.x / 2
+            binding.bnvMenu.x /= 2
         }
         binding.babMenu.setOnApplyWindowInsetsListener(null)
         binding.babMenu.setPadding(0, 0, 0, 0)
