@@ -2,6 +2,7 @@ package com.daedan.festabook.lostitem.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import java.time.LocalDateTime;
 
 public class LostItemFixture {
 
@@ -9,6 +10,7 @@ public class LostItemFixture {
     private static final String DEFAULT_IMAGE_URL = "http://example.com/image.png";
     private static final String DEFAULT_STORAGE_LOCATION = "창고A";
     private static final PickupStatus DEFAULT_PICK_UP_STATUS = PickupStatus.PENDING;
+    private static final LocalDateTime DEFAULT_CREATED_AT = LocalDateTime.now();
 
     public static LostItem create() {
         return new LostItem(
@@ -16,6 +18,19 @@ public class LostItemFixture {
                 DEFAULT_IMAGE_URL,
                 DEFAULT_STORAGE_LOCATION,
                 DEFAULT_PICK_UP_STATUS
+        );
+    }
+
+    public static LostItem create(
+            Long lostItemId
+    ) {
+        return new LostItem(
+                lostItemId,
+                DEFAULT_FESTIVAL,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_STORAGE_LOCATION,
+                DEFAULT_PICK_UP_STATUS,
+                DEFAULT_CREATED_AT
         );
     }
 
