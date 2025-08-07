@@ -107,7 +107,7 @@ jobs:
           LOG_PATH="${DEPLOY_DIRECTORY}/application.log"
           echo "LOG_PATH=${LOG_PATH}"
           
-          sudo nohup java -jar "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod > "${LOG_PATH}" 2>&1 &
+          sudo nohup java -jar "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod &
           for i in $(seq 1 30); do
             if sudo lsof -t -i:8080 > /dev/null; then
               echo "WAS has started and is listening on port 8080."
