@@ -9,23 +9,20 @@ import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
 
 class FestaBookApp : Application() {
-    lateinit var appContainer: AppContainer
-        private set
+    val appContainer: AppContainer by lazy {
+        AppContainer(this)
+    }
 
-    private lateinit var fireBaseAnalytics: FirebaseAnalytics
+    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
+        FirebaseAnalytics.getInstance(this)
+    }
 
     override fun onCreate() {
         super.onCreate()
-        setupFirebaseAnalytics()
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
-        appContainer = AppContainer(this)
         setLightTheme()
-    }
-
-    private fun setupFirebaseAnalytics() {
-        fireBaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     private fun setupNotificationChannel() {
