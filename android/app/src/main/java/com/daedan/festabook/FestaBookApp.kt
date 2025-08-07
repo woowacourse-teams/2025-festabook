@@ -23,6 +23,11 @@ class FestaBookApp : Application() {
         setLightTheme()
     }
 
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Timber.w("FestabookApp: onLowMemory 호출됨")
+    }
+
     private fun setupFirebaseAnalytics() {
         fireBaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
