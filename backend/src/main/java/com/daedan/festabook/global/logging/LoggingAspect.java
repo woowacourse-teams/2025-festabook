@@ -14,9 +14,9 @@ import org.springframework.stereotype.Service;
 @Component
 public class LoggingAspect {
 
-    @Around("within(@org.springframework.web.bind.annotation.RestController *) || " +
-            "within(@org.springframework.stereotype.Service *) || " +
-            "within(@org.springframework.stereotype.Repository *)")
+    @Around(" (within(@org.springframework.web.bind.annotation.RestController *) || " +
+        "within(@org.springframework.stereotype.Service *) || " +
+        "within(@org.springframework.stereotype.Repository *)) ")
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
 
         // 메서드 정보
