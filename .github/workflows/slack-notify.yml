@@ -95,6 +95,7 @@ jobs:
           PR_URL="${{ github.event.pull_request.html_url }}"
           REVIEW_STATE="${{ github.event.review.state }}"
           REVIEWER="${{ github.event.review.user.login }}"
+          PR_AUTHOR="${{ github.event.pull_request.user.login }}"
           REPOSITORY="${{ github.repository }}"
 
           declare -A GITHUB_TO_SLACK
@@ -107,7 +108,10 @@ jobs:
           GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
 
           SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[$REVIEWER]:-"$REVIEWER"}
+          SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-"$PR_AUTHOR"}
+
           SLACK_REVIEWER_MENTION="<@$SLACK_REVIEWER_ID>"
+          SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
 
           ICON=""
           case "$REVIEW_STATE" in
