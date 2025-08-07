@@ -7,18 +7,18 @@ public class LostItemRequestFixture {
 
     public static LostItemRequest create() {
         return new LostItemRequest(
-                DEFAULT_STORAGE_LOCATION,
-                DEFAULT_IMAGE_URL
+                DEFAULT_IMAGE_URL,
+                DEFAULT_STORAGE_LOCATION
         );
     }
 
     public static LostItemRequest create(
-            String storageLocation,
-            String imageUrl
+            String imageUrl,
+            String storageLocation
     ) {
         return new LostItemRequest(
-                storageLocation,
-                imageUrl
+                imageUrl,
+                storageLocation
         );
     }
 }

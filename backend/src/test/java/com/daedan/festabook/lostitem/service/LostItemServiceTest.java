@@ -52,8 +52,8 @@ class LostItemServiceTest {
         void 성공() {
             // given
             LostItemRequest request = LostItemRequestFixture.create(
-                    "서울특별시 강남구",
-                    "https://example.com/image.jpg"
+                    "https://example.com/image.jpg",
+                    "서울특별시 강남구"
             );
 
             Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
@@ -120,8 +120,8 @@ class LostItemServiceTest {
             LostItem lostItem = LostItemFixture.create(lostItemId);
 
             LostItemRequest request = LostItemRequestFixture.create(
-                    "변화 보관소",
-                    "https://example.com/change.jpg"
+                    "https://example.com/change.jpg",
+                    "변화 보관소"
             );
 
             given(lostItemJpaRepository.findById(lostItemId))

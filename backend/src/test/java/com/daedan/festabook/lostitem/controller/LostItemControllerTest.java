@@ -160,8 +160,8 @@ class LostItemControllerTest {
             lostItemJpaRepository.save(lostItem);
 
             LostItemRequest request = LostItemRequestFixture.create(
-                    "수정된 보관장소",
-                    "http://example.com/updated-image.png"
+                    "http://example.com/updated-image.png",
+                    "수정된 보관장소"
             );
 
             int expectedFieldSize = 2;
