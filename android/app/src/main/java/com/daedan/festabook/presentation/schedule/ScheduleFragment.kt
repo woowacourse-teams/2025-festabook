@@ -84,7 +84,7 @@ class ScheduleFragment :
 
                 is ScheduleDatesUiState.Error -> {
                     showSkeleton(isLoading = false)
-                    Timber.d("setupDate: ${scheduleDatesUiState.throwable.message}")
+                    Timber.w("ScheduleFragment: ${scheduleDatesUiState.throwable.stackTraceToString()}")
                     showErrorSnackBar(scheduleDatesUiState.throwable)
                 }
             }

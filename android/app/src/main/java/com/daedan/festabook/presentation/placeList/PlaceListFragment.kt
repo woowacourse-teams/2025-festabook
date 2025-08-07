@@ -119,7 +119,7 @@ class PlaceListFragment :
                 is PlaceListUiState.Error -> {
                     hideSkeleton()
                     binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
-                    Timber.d("places: ${places.throwable.message}")
+                    Timber.w("PlaceListFragment: ${places.throwable.stackTraceToString()}")
                     showErrorSnackBar(places.throwable)
                 }
             }
@@ -134,15 +134,24 @@ class PlaceListFragment :
                 }
 
                 is PlaceListUiState.Error -> {
-                    Timber.d("placeGeographies: ${placeGeographies.throwable.message}")
+                    Timber.w("PlaceListFragment: ${placeGeographies.throwable.stackTraceToString()}")
                     showErrorSnackBar(placeGeographies.throwable)
                 }
             }
         }
 
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
-            if (initialMapSetting !is PlaceListUiState.Success) return@observe
-            setUpMap(initialMapSetting)
+            when (initialMapSetting) {
+                is PlaceListUiState.Loading -> Unit
+                is PlaceListUiState.Success -> {
+                    hideSkeleton()
+                    setUpMap(initialMapSetting)
+                }
+                is PlaceListUiState.Error -> {
+                    Timber.w("PlaceListFragment: ${initialMapSetting.throwable.stackTraceToString()}")
+                    showErrorSnackBar(initialMapSetting.throwable)
+                }
+            }
         }
     }
 
