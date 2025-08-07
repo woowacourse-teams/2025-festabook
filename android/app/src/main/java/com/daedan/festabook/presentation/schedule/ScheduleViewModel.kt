@@ -56,9 +56,9 @@ class ScheduleViewModel(
                     val scheduleEventUiModels = scheduleEvents.map { it.toUiModel() }
                     val currentEventPosition =
                         scheduleEventUiModels
-                            .indexOfFirst { scheduleEvent -> scheduleEvent.status != ScheduleEventUiStatus.COMPLETED }
-                            .let { currentIndex -> if (currentIndex == INVALID_INDEX) FIRST_INDEX else currentIndex }
-
+                            .indexOfFirst { scheduleEvent -> scheduleEvent.status == ScheduleEventUiStatus.ONGOING }
+                            .coerceAtLeast(FIRST_INDEX)
+                          
                     _scheduleEventsUiState.value =
                         ScheduleEventsUiState.Success(scheduleEventUiModels, currentEventPosition)
                 }.onFailure {
