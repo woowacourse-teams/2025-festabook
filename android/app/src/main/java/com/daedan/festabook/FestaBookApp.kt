@@ -3,6 +3,7 @@ package com.daedan.festabook
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.service.NotificationHelper
+import com.daedan.festabook.util.CrashlyticsTree
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
@@ -45,7 +46,10 @@ class FestaBookApp : Application() {
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) plantDebugTimberTree()
+        if (BuildConfig.DEBUG) {
+            plantDebugTimberTree()
+        }
+        Timber.plant(CrashlyticsTree())
     }
 
     private fun plantDebugTimberTree() {
