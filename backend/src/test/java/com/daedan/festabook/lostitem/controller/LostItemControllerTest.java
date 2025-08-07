@@ -164,7 +164,7 @@ class LostItemControllerTest {
                     "수정된 보관장소"
             );
 
-            int expectedFieldSize = 2;
+            int expectedFieldSize = 3;
 
             // when & then
             RestAssured
@@ -176,6 +176,7 @@ class LostItemControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
+                    .body("lostItemId", notNullValue())
                     .body("storageLocation", equalTo(request.storageLocation()))
                     .body("imageUrl", equalTo(request.imageUrl()));
         }
