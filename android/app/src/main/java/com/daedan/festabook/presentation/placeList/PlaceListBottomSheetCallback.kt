@@ -12,8 +12,8 @@ class PlaceListBottomSheetCallback(
         newState: Int,
     ) {
         when (newState) {
-            BottomSheetBehavior.STATE_EXPANDED -> {
-                Timber.d("STATE_EXPANDED")
+            BottomSheetBehavior.STATE_DRAGGING -> {
+                Timber.d("STATE_DRAGGING")
                 viewModel.onExpandedStateReached()
             }
         }

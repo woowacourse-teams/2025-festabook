@@ -2,9 +2,11 @@ package com.daedan.festabook.presentation.placeList.placeMap
 
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 
-fun interface OnMarkerClickListener {
+interface MapClickListener {
     fun onMarkerListener(
         placeId: Long,
         category: PlaceCategoryUiModel,
     )
+
+    fun onMapClickListener()
 }

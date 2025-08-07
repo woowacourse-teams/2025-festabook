@@ -253,7 +253,7 @@
             android:id="@+id/ns_selected_place"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/gray050"
+            android:background="@drawable/bg_place_list"
             android:clickable="true"
             android:clipToPadding="false"
             android:elevation="8dp"
@@ -267,7 +267,6 @@
                 android:id="@+id/layout_selected_place"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/bg_place_list"
                 android:paddingHorizontal="16dp">
 
                 <TextView

@@ -2,8 +2,6 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
-import androidx.core.app.ActivityOptionsCompat
-import androidx.core.util.Pair
 import androidx.core.view.children
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
@@ -23,6 +21,7 @@ import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiMode
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeList.placeMap.MapClickListener
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.getMap
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -71,8 +70,8 @@ class PlaceListFragment :
         }
     }
 
-    override fun onResume() {
-        super.onResume()
+    override fun onStart() {
+        super.onStart()
         selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
@@ -87,6 +86,10 @@ class PlaceListFragment :
                     val category = group.findViewById<Chip>(it).tag
                     category as? PlaceCategoryUiModel
                 }
+
+            mapManager.unselectMarker()
+            viewModel.unselectPlace()
+
             binding.chipCategoryAll.isChecked = selectedCategories.isEmpty()
 
             if (selectedCategories.isEmpty()) {
@@ -118,11 +121,23 @@ class PlaceListFragment :
             MapManager(
                 naverMap,
                 binding.initialPadding(),
-                onMarkerClickListener = { placeId, category ->
-                    Timber.d("marker clicked $placeId $category")
-                    viewModel.selectPlace(placeId, category)
-                    binding.layoutPlaceList.visibility = View.GONE
-                },
+                mapClickListener =
+                    object : MapClickListener {
+                        override fun onMarkerListener(
+                            placeId: Long,
+                            category: PlaceCategoryUiModel,
+                        ) {
+                            Timber.d("Marker CLick : placeID: $placeId categoty: $category")
+                            viewModel.selectPlace(placeId, category)
+                            binding.layoutPlaceList.visibility = View.GONE
+                        }
+
+                        override fun onMapClickListener() {
+                            Timber.d("Map CLick")
+                            viewModel.unselectPlace()
+                            binding.layoutPlaceList.visibility = View.VISIBLE
+                        }
+                    },
             )
     }
 
@@ -232,14 +247,14 @@ class PlaceListFragment :
         Timber.d("start detail activity")
         val intent = PlaceDetailActivity.newIntent(requireContext(), placeDetail)
 
-        val options =
-            ActivityOptionsCompat.makeSceneTransitionAnimation(
-                requireActivity(),
-                Pair(binding.tvSelectedPlaceTitle, "selected_place_title_transition"),
-                Pair(binding.ivSelectedPlaceImage, "selected_place_image_transition"),
-            )
+//        val options =
+//            ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                requireActivity(),
+//                Pair(binding.tvSelectedPlaceTitle, "selected_place_title_transition"),
+//                Pair(binding.ivSelectedPlaceImage, "selected_place_image_transition"),
+//            )
 
-        startActivity(intent, options.toBundle())
+        startActivity(intent)
         selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 

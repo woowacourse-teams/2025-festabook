@@ -17,11 +17,12 @@ import com.naver.maps.map.CameraUpdate
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PolygonOverlay
+import timber.log.Timber
 
 class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
-    private val onMarkerClickListener: OnMarkerClickListener,
+    private val mapClickListener: MapClickListener,
 ) {
     var markers: List<Marker> = emptyList()
         private set
@@ -43,15 +44,29 @@ class MapManager(
     }
 
     fun filterPlace(categories: List<PlaceCategoryUiModel>) {
-        clearFilter()
         markers.forEach { marker ->
-            marker.isVisible = (marker.tag as? PlaceCategoryUiModel) in categories
+            val place = marker.tag as? PlaceCoordinateUiModel
+            val isSelectedMarker = marker == selectedMarker
+
+            // 필터링된 마커이거나 선택된 마커인 경우에만 보이게 처리
+            marker.isVisible = place?.category in categories || isSelectedMarker
+
+            // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
+            if (isSelectedMarker) {
+                setSize(marker, isSelected = true)
+            } else {
+                setSize(marker, isSelected = false)
+            }
         }
     }
 
     fun clearFilter() {
-        markers.forEach {
-            it.isVisible = true
+        markers.forEach { marker ->
+            marker.isVisible = true
+            val isSelectedMarker = marker == selectedMarker
+
+            // 선택된 마커는 크기를 유지하고, 나머지는 원래 크기로 복원
+            setSize(marker, isSelectedMarker)
         }
     }
 
@@ -66,6 +81,20 @@ class MapManager(
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
             setLogoMarginBottom()
+
+            setOnMapClickListener { point, latLng ->
+                println("지도 클릭됨! 위치: $latLng")
+                Timber.d("지도 클릭: $latLng")
+                unselectMarker()
+                mapClickListener.onMapClickListener()
+            }
+        }
+    }
+
+    fun unselectMarker() {
+        selectedMarker?.let { prevMarker ->
+            setSize(prevMarker, isSelected = false)
+            selectedMarker = null
         }
     }
 
@@ -147,7 +176,7 @@ class MapManager(
             selectedMarker = this
 
             // ViewModel에 마커 클릭 이벤트를 전달
-            onMarkerClickListener.onMarkerListener(clickedPlace.placeId, clickedPlace.category)
+            mapClickListener.onMarkerListener(clickedPlace.placeId, clickedPlace.category)
             true
         }
         return this
