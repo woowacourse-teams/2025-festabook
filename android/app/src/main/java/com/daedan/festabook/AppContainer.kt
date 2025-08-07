@@ -20,6 +20,7 @@ import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
 import com.daedan.festabook.data.repository.FAQRepositoryImpl
 import com.daedan.festabook.data.repository.FestivalRepositoryImpl
+import com.daedan.festabook.data.repository.LostItemRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
 import com.daedan.festabook.data.repository.PlaceDetailRepositoryImpl
 import com.daedan.festabook.data.repository.PlaceListRepositoryImpl
@@ -35,6 +36,7 @@ import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.FestivalRepository
+import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
@@ -99,6 +101,10 @@ class AppContainer(
     }
     val faqRepository: FAQRepository by lazy {
         FAQRepositoryImpl(faqDataSource)
+    }
+
+    val lostItemRepository: LostItemRepository by lazy {
+        LostItemRepositoryImpl()
     }
 
     init {

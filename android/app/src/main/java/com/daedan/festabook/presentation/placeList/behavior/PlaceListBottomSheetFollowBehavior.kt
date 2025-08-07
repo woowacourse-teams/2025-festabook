@@ -14,7 +14,7 @@ class PlaceListBottomSheetFollowBehavior(
         attrs,
     ) {
     private var currentBehavior: BottomSheetBehavior<*>? = null
-    private lateinit var callback: BottomSheetFollowCallback
+    private var callback: BottomSheetBehavior.BottomSheetCallback? = null
 
     override fun layoutDependsOn(
         parent: CoordinatorLayout,
@@ -22,6 +22,9 @@ class PlaceListBottomSheetFollowBehavior(
         dependency: View,
     ): Boolean {
         val behavior = (dependency.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior
+        if (behavior is BottomSheetBehavior<*>) {
+            currentBehavior = behavior
+        }
         return behavior is BottomSheetBehavior<*>
     }
 
@@ -32,43 +35,22 @@ class PlaceListBottomSheetFollowBehavior(
     ): Boolean {
         val bottomSheetTopY = dependency.y - dependency.height
         child.translationY = bottomSheetTopY
-
-        val behavior = (dependency.layoutParams as? CoordinatorLayout.LayoutParams)?.behavior as? BottomSheetBehavior<*>
-        if (behavior != null && behavior !== currentBehavior) {
-            currentBehavior?.removeBottomSheetCallback(callback)
-            if (!::callback.isInitialized) {
-                callback = BottomSheetFollowCallback(child)
-            }
-            behavior.addBottomSheetCallback(callback)
-            currentBehavior = behavior
-        }
-
         return true
     }
 
     override fun onDetachedFromLayoutParams() {
         super.onDetachedFromLayoutParams()
-        currentBehavior?.removeBottomSheetCallback(callback)
+        callback?.let {
+            currentBehavior?.removeBottomSheetCallback(it)
+        }
         currentBehavior = null
     }
 
-    private class BottomSheetFollowCallback(
-        private val child: View,
-    ) : BottomSheetBehavior.BottomSheetCallback() {
-        override fun onStateChanged(
-            bottomSheet: View,
-            newState: Int,
-        ) {
-            if (newState == BottomSheetBehavior.STATE_EXPANDED) {
-                child.visibility = View.GONE
-            } else {
-                child.visibility = View.VISIBLE
-            }
+    fun setCallback(callback: BottomSheetBehavior.BottomSheetCallback) {
+        this.callback?.let {
+            currentBehavior?.removeBottomSheetCallback(it)
         }
-
-        override fun onSlide(
-            bottomSheet: View,
-            slideOffset: Float,
-        ) = Unit
+        this.callback = callback
+        currentBehavior?.addBottomSheetCallback(callback)
     }
 }

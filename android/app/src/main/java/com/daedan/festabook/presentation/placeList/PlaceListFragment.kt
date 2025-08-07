@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList
 
 import android.os.Bundle
 import android.view.View
+import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.children
 import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
@@ -12,12 +13,15 @@ import coil3.request.placeholder
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.initialPadding
+import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
-import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
+import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
@@ -36,7 +40,8 @@ class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(
         R.layout.fragment_place_list,
     ),
-    PlaceClickListener {
+    PlaceClickListener,
+    OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
 
     private val placeAdapter by lazy {
@@ -70,13 +75,25 @@ class PlaceListFragment :
         }
     }
 
+
     override fun onStart() {
         super.onStart()
         selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        mapManager.clearMapManager()
+    }
+
     override fun onPlaceClicked(place: PlaceUiModel) {
         startPlaceDetailActivity(place)
+    }
+
+    override fun onMenuItemReClick() {
+        val layoutParams = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
+        val behavior = layoutParams?.behavior as? BottomSheetBehavior
+        behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }
 
     private fun setUpBinding() {
@@ -99,6 +116,9 @@ class PlaceListFragment :
                 viewModel.filterPlaces(selectedCategories)
                 mapManager.filterPlace(selectedCategories)
             }
+        }
+        binding.chipBackToInitialPosition.setOnClickListener {
+            mapManager.moveToInitialPosition()
         }
         setUpChipCategoryAllListener()
     }
@@ -184,7 +204,19 @@ class PlaceListFragment :
 
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
-            setUpMap(initialMapSetting)
+            if (!::mapManager.isInitialized) {
+                mapManager =
+                    MapManager(naverMap, binding.initialPadding().toInt(), initialMapSetting.value)
+            }
+            mapManager.setupMap()
+            mapManager.setupBackToInitialPosition { isExceededMaxLength ->
+                if (isExceededMaxLength) {
+                    binding.chipBackToInitialPosition.visibility = View.VISIBLE
+                } else {
+                    binding.chipBackToInitialPosition.visibility = View.GONE
+                }
+            }
+            setBehaviorCallback()
         }
 
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
@@ -200,8 +232,18 @@ class PlaceListFragment :
         }
     }
 
-    private fun setUpMap(initialMapSetting: PlaceListUiState.Success<InitialMapSettingUiModel>) {
-        mapManager.setupMap(initialMapSetting.value)
+    private fun setBehaviorCallback() {
+        binding.lbvCurrentLocation
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                BottomSheetFollowCallback(binding.lbvCurrentLocation.id),
+            )
+
+        binding.chipBackToInitialPosition
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id, mapManager),
+            )
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {

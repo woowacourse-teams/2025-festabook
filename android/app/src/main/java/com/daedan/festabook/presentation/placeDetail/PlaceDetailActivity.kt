@@ -32,9 +32,19 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
         PlaceImageViewPagerAdapter()
     }
 
+
     private lateinit var viewModel: PlaceDetailViewModel
     private lateinit var binding: ActivityPlaceDetailBinding
-
+  
+    private val binding: ActivityPlaceDetailBinding by lazy {
+        DataBindingUtil.inflate(
+            layoutInflater,
+            R.layout.activity_place_detail,
+            null,
+            false,
+        )
+    }
+    private lateinit var place: PlaceUiModel
     private lateinit var placeDetailUiModel: PlaceDetailUiModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,6 +64,7 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
             )[PlaceDetailViewModel::class.java]
 
         binding = DataBindingUtil.setContentView(this, R.layout.activity_place_detail)
+
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(binding.ncvRoot) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
