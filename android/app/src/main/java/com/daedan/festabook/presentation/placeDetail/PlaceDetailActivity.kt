@@ -6,11 +6,11 @@ import android.os.Bundle
 import android.view.View
 import android.widget.TextView
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
 import com.daedan.festabook.presentation.common.getObject
@@ -32,32 +32,38 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
         PlaceImageViewPagerAdapter()
     }
 
-    private val binding: ActivityPlaceDetailBinding by lazy {
-        DataBindingUtil.inflate(
-            layoutInflater,
-            R.layout.activity_place_detail,
-            null,
-            false,
-        )
-    }
-    private lateinit var place: PlaceUiModel
+    private lateinit var viewModel: PlaceDetailViewModel
+    private lateinit var binding: ActivityPlaceDetailBinding
 
-    private val viewModel by viewModels<PlaceDetailViewModel> { PlaceDetailViewModel.factory(place) }
+    private lateinit var placeDetailUiModel: PlaceDetailUiModel
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        placeDetailUiModel =
+            intent?.getObject<PlaceDetailUiModel>(PLACE_DETAIL_OBJECT)
+                ?: intent?.getObject<PlaceDetailUiModel>(PLACE_DETAIL_ACTIVITY)
+                ?: run {
+                    finish()
+                    return
+                }
+
+        viewModel =
+            ViewModelProvider(
+                this,
+                PlaceDetailViewModel.factory(placeDetailUiModel),
+            )[PlaceDetailViewModel::class.java]
+
+        binding = DataBindingUtil.setContentView(this, R.layout.activity_place_detail)
         enableEdgeToEdge()
-        setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.ncvRoot) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
 
-        place =
-            intent?.getObject<PlaceUiModel>(PLACE_DETAIL_ACTIVITY) ?: return
         setUpBinding()
         setUpObserver()
+        Timber.d("detailActivity : $placeDetailUiModel")
     }
 
     private fun setUpBinding() {
@@ -134,12 +140,20 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
     companion object {
         private const val DEFAULT_MAX_LINES = 1
         private const val PLACE_DETAIL_ACTIVITY = "placeDetailFragment"
+        private const val PLACE_DETAIL_OBJECT = "placeDetailObject"
 
         fun newIntent(
             context: Context,
             place: PlaceUiModel,
         ) = Intent(context, PlaceDetailActivity::class.java).apply {
             putExtra(PLACE_DETAIL_ACTIVITY, place)
+        }
+
+        fun newIntent(
+            context: Context,
+            placeDetail: PlaceDetailUiModel,
+        ) = Intent(context, PlaceDetailActivity::class.java).apply {
+            putExtra(PLACE_DETAIL_OBJECT, placeDetail)
         }
     }
 }

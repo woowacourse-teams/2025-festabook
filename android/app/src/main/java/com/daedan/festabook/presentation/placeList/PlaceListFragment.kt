@@ -4,9 +4,12 @@ import android.os.Bundle
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.children
+import androidx.core.widget.NestedScrollView
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
+import coil3.load
+import coil3.request.placeholder
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -15,12 +18,14 @@ import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
 import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeList.placeMap.MapClickListener
 import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.daedan.festabook.presentation.placeList.placeMap.getMap
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -47,6 +52,7 @@ class PlaceListFragment :
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
 
+    private lateinit var selectedPlaceBottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
     private lateinit var mapManager: MapManager
 
     private lateinit var naverMap: NaverMap
@@ -56,12 +62,22 @@ class PlaceListFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        selectedPlaceBottomSheetBehavior = BottomSheetBehavior.from(binding.nsSelectedPlace)
+
+        val bottomSheetCallback = PlaceListBottomSheetCallback(viewModel)
+        selectedPlaceBottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
+
         lifecycleScope.launch {
             setUpPlaceAdapter()
             setUpMapManager()
             setUpObserver()
             setUpBinding()
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
     }
 
     override fun onDestroy() {
@@ -86,6 +102,10 @@ class PlaceListFragment :
                     val category = group.findViewById<Chip>(it).tag
                     category as? PlaceCategoryUiModel
                 }
+
+            mapManager.unselectMarker()
+            viewModel.unselectPlace()
+
             binding.chipCategoryAll.isChecked = selectedCategories.isEmpty()
 
             if (selectedCategories.isEmpty()) {
@@ -163,7 +183,27 @@ class PlaceListFragment :
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
             if (!::mapManager.isInitialized) {
                 mapManager =
-                    MapManager(naverMap, binding.initialPadding().toInt(), initialMapSetting.value)
+                    MapManager(
+                        naverMap,
+                        binding.initialPadding(),
+                        object : MapClickListener {
+                            override fun onMarkerListener(
+                                placeId: Long,
+                                category: PlaceCategoryUiModel,
+                            ) {
+                                Timber.d("Marker CLick : placeID: $placeId categoty: $category")
+                                viewModel.selectPlace(placeId, category)
+                                binding.layoutPlaceList.visibility = View.GONE
+                            }
+
+                            override fun onMapClickListener() {
+                                Timber.d("Map CLick")
+                                viewModel.unselectPlace()
+                                binding.layoutPlaceList.visibility = View.VISIBLE
+                            }
+                        },
+                        initialMapSetting.value,
+                    )
             }
             mapManager.setupMap()
             mapManager.setupBackToInitialPosition { isExceededMaxLength ->
@@ -174,6 +214,18 @@ class PlaceListFragment :
                 }
             }
             setBehaviorCallback()
+        }
+
+        viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            if (selectedPlace == null) {
+                binding.nsSelectedPlace.visibility = View.GONE
+            } else {
+                binding.nsSelectedPlace.visibility = View.VISIBLE
+                updateSelectedPlaceUi(selectedPlace)
+            }
+        }
+        viewModel.navigateToDetail.observe(viewLifecycleOwner) { selectedPlace ->
+            startPlaceDetailActivity(selectedPlace)
         }
     }
 
@@ -204,6 +256,45 @@ class PlaceListFragment :
     private fun hideSkeleton() {
         binding.sflScheduleSkeleton.visibility = View.GONE
         binding.sflScheduleSkeleton.stopShimmer()
+    }
+
+    private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
+        with(binding) {
+            tvSelectedPlaceTitle.text = selectedPlace.place.title
+            tvSelectedPlaceLocation.text = selectedPlace.place.location
+            tvSelectedPlaceTime.text = selectedPlace.operatingHours
+            tvSelectedPlaceHost.text = selectedPlace.host
+            tvSelectedPlaceDescription.text = selectedPlace.place.description
+
+            tvSelectedPlaceCategory.text =
+                when (selectedPlace.place.category) {
+                    PlaceCategoryUiModel.FOOD_TRUCK -> getString(R.string.map_category_food_truck)
+                    PlaceCategoryUiModel.BAR -> getString(R.string.map_category_bar)
+                    PlaceCategoryUiModel.BOOTH -> getString(R.string.map_category_booth)
+                    else -> ""
+                }
+
+            ivSelectedPlaceImage.load(
+                selectedPlace.featuredImage,
+            ) {
+                placeholder(R.color.gray300)
+            }
+        }
+    }
+
+    private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
+        Timber.d("start detail activity")
+        val intent = PlaceDetailActivity.newIntent(requireContext(), placeDetail)
+
+//        val options =
+//            ActivityOptionsCompat.makeSceneTransitionAnimation(
+//                requireActivity(),
+//                Pair(binding.tvSelectedPlaceTitle, "selected_place_title_transition"),
+//                Pair(binding.ivSelectedPlaceImage, "selected_place_image_transition"),
+//            )
+
+        startActivity(intent)
+        selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
     companion object {

@@ -10,7 +10,11 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.model.PlaceCategory
+import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
+import com.daedan.festabook.presentation.common.SingleLiveData
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
+import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
@@ -21,6 +25,7 @@ import kotlinx.coroutines.launch
 
 class PlaceListViewModel(
     private val placeListRepository: PlaceListRepository,
+    private val placeDetailRepository: PlaceDetailRepository,
 ) : ViewModel() {
     private var _cachedPlaces = listOf<PlaceUiModel>()
 
@@ -36,6 +41,12 @@ class PlaceListViewModel(
         MutableLiveData()
     val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
         _placeGeographies
+
+    private val _selectedPlace: MutableLiveData<PlaceDetailUiModel?> = MutableLiveData()
+    val selectedPlace: LiveData<PlaceDetailUiModel?> = _selectedPlace
+
+    private val _navigateToDetail = SingleLiveData<PlaceDetailUiModel>()
+    val navigateToDetail: LiveData<PlaceDetailUiModel> = _navigateToDetail
 
     init {
         loadAllPlaces()
@@ -66,6 +77,34 @@ class PlaceListViewModel(
         _places.value = PlaceListUiState.Success(_cachedPlaces)
     }
 
+    fun selectPlace(
+        placeId: Long,
+        category: PlaceCategoryUiModel,
+    ) {
+        if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+            return
+        }
+
+        viewModelScope.launch {
+            placeDetailRepository
+                .getPlaceDetail(placeId = placeId)
+                .onSuccess {
+                    _selectedPlace.value = it.toUiModel()
+                }
+        }
+    }
+
+    fun unselectPlace() {
+        _selectedPlace.value = null
+    }
+
+    fun onExpandedStateReached() {
+        val currentPlace = _selectedPlace.value
+        if (currentPlace != null) {
+            _navigateToDetail.setValue(currentPlace)
+        }
+    }
+
     private fun loadAllPlaces() {
         viewModelScope.launch {
             val result = placeListRepository.getPlaces()
@@ -85,10 +124,8 @@ class PlaceListViewModel(
 
     private fun loadOrganizationGeography() {
         viewModelScope.launch {
-            launch {
-                placeListRepository.getOrganizationGeography().onSuccess {
-                    _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
-                }
+            placeListRepository.getOrganizationGeography().onSuccess {
+                _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
             }
 
             launch {
@@ -108,9 +145,11 @@ class PlaceListViewModel(
         val Factory: ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
+                    val placeDetailRepository =
+                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
                     val placeListRepository =
                         (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeListRepository
-                    PlaceListViewModel(placeListRepository)
+                    PlaceListViewModel(placeListRepository, placeDetailRepository)
                 }
             }
     }

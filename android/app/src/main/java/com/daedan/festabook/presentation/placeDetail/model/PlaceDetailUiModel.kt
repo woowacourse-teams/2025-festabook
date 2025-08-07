@@ -1,13 +1,16 @@
 package com.daedan.festabook.presentation.placeDetail.model
 
+import android.os.Parcelable
 import com.daedan.festabook.domain.model.PlaceDetail
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.toUiModel
+import kotlinx.parcelize.Parcelize
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
+@Parcelize
 data class PlaceDetailUiModel(
     val place: PlaceUiModel,
     val notices: List<NoticeUiModel>,
@@ -15,9 +18,12 @@ data class PlaceDetailUiModel(
     val startTime: String?,
     val endTime: String?,
     val images: List<ImageUiModel>,
-) {
-    companion object {
-    }
+) : Parcelable {
+    val featuredImage: String?
+        get() = images.firstOrNull()?.url
+
+    val operatingHours: String
+        get() = "$startTime ~ $endTime"
 }
 
 fun PlaceDetail.toUiModel() =

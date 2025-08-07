@@ -1,8 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
+
     <data>
-        <import type="com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel"/>
+
+        <import type="com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel" />
+
     </data>
+
     <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
@@ -12,18 +16,18 @@
 
         <androidx.fragment.app.FragmentContainerView
             android:id="@+id/fcv_map_container"
+            android:name="com.naver.maps.map.MapFragment"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:name="com.naver.maps.map.MapFragment" />
+            android:layout_height="match_parent" />
 
 
         <com.naver.maps.map.widget.LocationButtonView
             android:id="@+id/lbv_current_location"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
             android:layout_marginStart="8dp"
-            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior"
-            android:layout_gravity="start|bottom" />
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior" />
 
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_back_to_initial_position"
@@ -39,7 +43,7 @@
             app:chipStrokeColor="@color/gray500"
             app:chipBackgroundColor="@color/gray050"
             app:changeVisibility="false"
-            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior" />
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -56,127 +60,120 @@
 
                 <com.google.android.material.chip.Chip
                     android:id="@+id/chip_category_all"
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:checked="true"
                     android:tag="ALL"
                     android:text="@string/map_category_all"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:checkedIconEnabled="false"
-                    android:checked="true"
-                    app:chipStrokeWidth="2dp"
-                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
                     app:chipBackgroundColor="@color/selector_map_category_bg_color"
-                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    tools:checked="true"
-                    />
+                    app:chipStartPadding="8dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipStrokeWidth="2dp"
+                    tools:checked="true" />
 
                 <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:tag="@{PlaceCategoryUiModel.BAR}"
                     android:text="@string/map_category_bar"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:checkedIconEnabled="false"
-                    app:chipStrokeWidth="2dp"
-                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
                     app:chipBackgroundColor="@color/selector_map_category_bg_color"
-                    app:chipIconSize="18dp"
-                    app:chipIconEnabled="true"
-                    app:chipIcon="@drawable/ic_map_category_bar"
-                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    />
+                    app:chipIcon="@drawable/ic_map_category_bar"
+                    app:chipIconEnabled="true"
+                    app:chipIconSize="18dp"
+                    app:chipStartPadding="8dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipStrokeWidth="2dp" />
 
                 <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:tag="@{PlaceCategoryUiModel.FOOD_TRUCK}"
                     android:text="@string/map_category_food_truck"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:checkedIconEnabled="false"
-                    app:chipStrokeWidth="2dp"
-                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
                     app:chipBackgroundColor="@color/selector_map_category_bg_color"
-                    app:chipIconSize="18dp"
-                    app:chipIconEnabled="true"
-                    app:chipIcon="@drawable/ic_map_category_food_truck"
-                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    />
+                    app:chipIcon="@drawable/ic_map_category_food_truck"
+                    app:chipIconEnabled="true"
+                    app:chipIconSize="18dp"
+                    app:chipStartPadding="8dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipStrokeWidth="2dp" />
 
                 <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:tag="@{PlaceCategoryUiModel.BOOTH}"
                     android:text="@string/map_category_booth"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:checkedIconEnabled="false"
-                    app:chipStrokeWidth="2dp"
-                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
                     app:chipBackgroundColor="@color/selector_map_category_bg_color"
-                    app:chipIconSize="18dp"
-                    app:chipIcon="@drawable/ic_map_category_booth"
-                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
+                    app:chipIcon="@drawable/ic_map_category_booth"
                     app:chipIconEnabled="true"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    />
+                    app:chipIconSize="18dp"
+                    app:chipStartPadding="8dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipStrokeWidth="2dp" />
 
                 <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:tag="@{PlaceCategoryUiModel.SMOKING_AREA}"
                     android:text="@string/map_category_smoking_area"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:checkedIconEnabled="false"
-                    app:chipStrokeWidth="2dp"
-                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
                     app:chipBackgroundColor="@color/selector_map_category_bg_color"
-                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    />
+                    app:chipStartPadding="8dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipStrokeWidth="2dp" />
 
                 <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:tag="@{PlaceCategoryUiModel.TOILET}"
                     android:text="@string/map_category_toilet"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:checkedIconEnabled="false"
-                    app:chipStrokeWidth="2dp"
-                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
                     app:chipBackgroundColor="@color/selector_map_category_bg_color"
-                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    />
+                    app:chipStartPadding="8dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipStrokeWidth="2dp" />
 
                 <com.google.android.material.chip.Chip
+                    style="@style/Widget.MaterialComponents.Chip.Filter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:tag="@{PlaceCategoryUiModel.TRASH_CAN}"
                     android:text="@string/map_category_trash"
                     android:textAppearance="@style/PretendardMedium14"
                     android:textColor="@color/gray900"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     app:checkedIconEnabled="false"
-                    app:chipStrokeWidth="2dp"
-                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
                     app:chipBackgroundColor="@color/selector_map_category_bg_color"
-                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
-                    style="@style/Widget.MaterialComponents.Chip.Filter"
-                    />
+                    app:chipStartPadding="8dp"
+                    app:chipStrokeColor="@color/selector_map_category_stroke_color"
+                    app:chipStrokeWidth="2dp" />
             </com.google.android.material.chip.ChipGroup>
 
         </HorizontalScrollView>
@@ -186,12 +183,14 @@
             android:id="@+id/layout_place_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingHorizontal="16dp"
             android:background="@drawable/bg_place_list"
-            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior"
+            android:paddingHorizontal="16dp"
             app:behavior_fitToContents="false"
             app:behavior_halfExpandedRatio="0.375"
-            app:behavior_peekHeight="70dp">
+            app:behavior_peekHeight="70dp"
+            app:companionView="@id/lbv_current_location"
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior"
+            app:recyclerView="@id/rv_places">
 
             <View
                 android:id="@+id/view_divider"
@@ -211,8 +210,8 @@
                 android:layout_marginTop="32dp"
                 android:text="@string/place_list_title"
                 android:textAppearance="@style/PretendardBold24"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
 
@@ -231,8 +230,8 @@
                 android:id="@+id/sfl_schedule_skeleton"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:importantForAccessibility="no"
                 android:layout_marginTop="48dp"
+                android:importantForAccessibility="no"
                 app:layout_constraintTop_toBottomOf="@id/rv_places"
 
                 app:shimmer_auto_start="true">
@@ -265,6 +264,146 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/ns_selected_place"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@drawable/bg_place_list"
+            android:clickable="true"
+            android:clipToPadding="false"
+            android:elevation="8dp"
+            android:focusable="true"
+            android:visibility="gone"
+            app:behavior_peekHeight="200dp"
+            app:behavior_skipCollapsed="false"
+            app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/layout_selected_place"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:id="@+id/tv_selected_place_category"
+                    style="@style/PretendardRegular10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:background="@drawable/bg_gray900_radius_20dp"
+                    android:paddingHorizontal="8dp"
+                    android:paddingVertical="2dp"
+                    android:textColor="@color/gray050"
+                    app:layout_constraintBottom_toTopOf="@id/tv_selected_place_title"
+                    app:layout_constraintStart_toStartOf="parent"
+                    tools:text="푸드트럭" />
+
+                <TextView
+                    android:id="@+id/tv_selected_place_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="60dp"
+                    android:textAppearance="@style/PretendardBold20"
+                    android:textColor="@color/gray900"
+                    android:transitionName="selected_place_title_transition"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="컴공과 주점 코딩하며 한잔" />
+
+                <ImageView
+                    android:id="@+id/iv_selected_place_time"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="16dp"
+                    android:contentDescription="운영 시간"
+                    android:src="@drawable/ic_place_detail_clock"
+                    app:layout_constraintStart_toStartOf="@id/tv_selected_place_title"
+                    app:layout_constraintTop_toBottomOf="@id/tv_selected_place_title" />
+
+                <TextView
+                    android:id="@+id/tv_selected_place_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textAppearance="@style/PretendardRegular14"
+                    android:textColor="@color/gray500"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_selected_place_time"
+                    app:layout_constraintStart_toEndOf="@id/iv_selected_place_time"
+                    app:layout_constraintTop_toTopOf="@id/iv_selected_place_time"
+                    tools:text="09:00 ~ 18:00" />
+
+                <ImageView
+                    android:id="@+id/iv_selected_place_location"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="4dp"
+                    android:contentDescription="위치"
+                    android:src="@drawable/ic_location"
+                    app:layout_constraintStart_toStartOf="@id/iv_selected_place_time"
+                    app:layout_constraintTop_toBottomOf="@id/iv_selected_place_time" />
+
+                <TextView
+                    android:id="@+id/tv_selected_place_location"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textAppearance="@style/PretendardRegular14"
+                    android:textColor="@color/gray500"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_selected_place_location"
+                    app:layout_constraintStart_toEndOf="@id/iv_selected_place_location"
+                    app:layout_constraintTop_toTopOf="@id/iv_selected_place_location"
+                    tools:text="공학관 앞" />
+
+                <ImageView
+                    android:id="@+id/iv_selected_place_host"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:layout_marginTop="4dp"
+                    android:contentDescription="운영자"
+                    android:src="@drawable/ic_place_detail_host"
+                    app:layout_constraintStart_toStartOf="@id/iv_selected_place_location"
+                    app:layout_constraintTop_toBottomOf="@id/iv_selected_place_location" />
+
+                <TextView
+                    android:id="@+id/tv_selected_place_host"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:textAppearance="@style/PretendardRegular14"
+                    android:textColor="@color/gray500"
+                    app:layout_constraintBottom_toBottomOf="@id/iv_selected_place_host"
+                    app:layout_constraintStart_toEndOf="@id/iv_selected_place_host"
+                    app:layout_constraintTop_toTopOf="@id/iv_selected_place_host"
+                    tools:text="C블C블" />
+
+                <TextView
+                    android:id="@+id/tv_selected_place_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:textAppearance="@style/PretendardRegular14"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="@id/iv_selected_place_host"
+                    app:layout_constraintTop_toBottomOf="@id/iv_selected_place_host"
+                    tools:text="시원한 맥주와 맛있는 파전" />
+
+                <ImageView
+                    android:id="@+id/iv_selected_place_image"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:scaleType="centerCrop"
+                    android:transitionName="selected_place_image_transition"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="@id/tv_selected_place_title"
+                    app:layout_constraintWidth_percent="0.35"
+                    tools:src="@drawable/sample_poster" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.core.widget.NestedScrollView>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>
