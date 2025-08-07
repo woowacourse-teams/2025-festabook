@@ -3,21 +3,15 @@ name: Slack Review Notification
 on:
   pull_request:
     types: [opened, ready_for_review, review_requested]
-
-env:
-  SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-  PR_TITLE: ${{ github.event.pull_request.title }}
-  PR_NUMBER: ${{ github.event.pull_request.number }}
-  PR_URL: ${{ github.event.pull_request.html_url }}
-  PR_AUTHOR: ${{ github.event.pull_request.user.login }}
-  REPOSITORY: ${{ github.repository }}
+  pull_request_review:
+    types: [submitted]
 
 jobs:
   notify-initial-reviewers:
     runs-on: ubuntu-latest
 
     steps:
+      # JSON 파싱 도구
       - name: Install jq
         run: sudo apt-get update && sudo apt-get install -y jq
 
@@ -47,7 +41,7 @@ jobs:
           SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
 
           ############################
-          # 최초 리뷰 요청 알림
+          # STEP 1: 최초 리뷰 요청 알림
           ############################
           if [[ "$ACTION_TYPE" == "opened" || "$ACTION_TYPE" == "ready_for_review" ]]; then
             REVIEWER_MENTIONS=""
@@ -69,7 +63,7 @@ jobs:
           fi
           
           ############################
-          # 재리뷰 요청 알림
+          # STEP 2: 재리뷰 요청 알림
           ############################
           if [[ "$ACTION_TYPE" == "review_requested" ]]; then
             slack_id=${GITHUB_TO_SLACK[$PR_REVIEWER]:-"$PR_REVIEWER"}
@@ -88,3 +82,49 @@ jobs:
               --data "{\"text\": \"🏸 *재리뷰 요청 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${SLACK_REVIEWER_MENTION}\n*링크:* ${PR_URL}\"}" \
               $SLACK_WEBHOOK_URL
           fi
+
+  notify-review-submitted:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Notify Review Submitted
+        run: |
+          SLACK_WEBHOOK_URL="${{ secrets.SLACK_WEBHOOK_URL }}"
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_NUMBER="${{ github.event.pull_request.number }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          REVIEW_STATE="${{ github.event.review.state }}"
+          REVIEWER="${{ github.event.review.user.login }}"
+          REPOSITORY="${{ github.repository }}"
+
+          declare -A GITHUB_TO_SLACK
+          GITHUB_TO_SLACK["soeun2537"]="U09A0LM0CRW"
+          GITHUB_TO_SLACK["taek2222"]="U099ARRH3D3"
+          GITHUB_TO_SLACK["changuii"]="U099BR9RNE6"
+          GITHUB_TO_SLACK["eoehd1ek"]="U0995NANDML"
+          GITHUB_TO_SLACK["oungsi2000"]="U098U2R57NK"
+          GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
+          GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
+
+          SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[$REVIEWER]:-"$REVIEWER"}
+          SLACK_REVIEWER_MENTION="<@$SLACK_REVIEWER_ID>"
+
+          ICON=""
+          case "$REVIEW_STATE" in
+            approved)
+              ICON="✅"
+              ;;
+            changes_requested)
+              ICON="🔴"
+              ;;
+            commented)
+              ICON="💬"
+              ;;
+            *)
+              ICON="📌"
+              ;;
+          esac
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\": \"${ICON} *리뷰 완료 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${SLACK_REVIEWER_MENTION}\n*상태:* ${REVIEW_STATE}\n*링크:* ${PR_URL}\"}" \
+            $SLACK_WEBHOOK_URL
