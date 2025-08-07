@@ -52,7 +52,7 @@ class PlaceDetailViewModelTest {
             coEvery { placeDetailRepository.getPlaceDetail(any()) } returns Result.success(FAKE_PLACE_DETAIL)
 
             // when
-            placeDetailViewModel.loadPlaceDetail()
+            placeDetailViewModel.loadPlaceDetail(1)
             advanceUntilIdle()
 
             // then
@@ -70,7 +70,9 @@ class PlaceDetailViewModelTest {
             coEvery { placeDetailRepository.getPlaceDetail(any()) } returns Result.failure(exception)
 
             // then
-            placeDetailViewModel.loadPlaceDetail()
+            placeDetailViewModel.loadPlaceDetail(
+                placeId = 1,
+            )
             advanceUntilIdle()
 
             // then

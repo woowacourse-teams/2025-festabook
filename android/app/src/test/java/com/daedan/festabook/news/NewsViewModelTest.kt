@@ -2,6 +2,7 @@ package com.daedan.festabook.news
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.daedan.festabook.domain.repository.FAQRepository
+import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.presentation.news.NewsViewModel
@@ -34,6 +35,7 @@ class NewsViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var noticeRepository: NoticeRepository
     private lateinit var faqRepository: FAQRepository
+    private lateinit var lostItemRepository: LostItemRepository
     private lateinit var newsViewModel: NewsViewModel
 
     @Before
@@ -41,13 +43,16 @@ class NewsViewModelTest {
         Dispatchers.setMain(testDispatcher)
         noticeRepository = mockk()
         faqRepository = mockk()
+        lostItemRepository = mockk()
         coEvery { noticeRepository.fetchNotices() } returns Result.success(FAKE_NOTICES)
         coEvery { faqRepository.getAllFAQ() } returns Result.success(FAKE_FAQS)
+        coEvery { lostItemRepository.getAllLostItems() } returns FAKE_LOST_ITEM
 
         newsViewModel =
             NewsViewModel(
                 noticeRepository,
                 faqRepository,
+                lostItemRepository,
             )
     }
 
@@ -98,7 +103,7 @@ class NewsViewModelTest {
             coEvery { faqRepository.getAllFAQ() } returns Result.success(FAKE_FAQS)
 
             // when
-            newsViewModel = NewsViewModel(noticeRepository, faqRepository)
+            newsViewModel = NewsViewModel(noticeRepository, faqRepository, lostItemRepository)
             advanceUntilIdle()
 
             // then
@@ -116,7 +121,7 @@ class NewsViewModelTest {
             coEvery { faqRepository.getAllFAQ() } returns Result.failure(exception)
 
             // when
-            newsViewModel = NewsViewModel(noticeRepository, faqRepository)
+            newsViewModel = NewsViewModel(noticeRepository, faqRepository, lostItemRepository)
             advanceUntilIdle()
 
             // then
