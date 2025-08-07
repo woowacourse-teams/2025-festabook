@@ -98,6 +98,7 @@ jobs:
 
   # 리뷰 완료 알림
   notify-review-submitted:
+    if: github.event.review.state == 'approved' || github.event.review.state == 'changes_requested'
     runs-on: ubuntu-latest
     steps:
       - name: Notify Review Submitted
