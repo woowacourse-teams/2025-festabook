@@ -30,7 +30,8 @@ public class LoggingFilter implements Filter {
                     httpServletRequest.getRequestURI(),
                     httpServletRequest.getQueryString(),
                     httpServletRequest.getContentType(),
-                    httpServletRequest.getRemoteAddr());
+                    httpServletRequest.getRemoteAddr()
+            );
 
             chain.doFilter(request, response);
         } finally {
