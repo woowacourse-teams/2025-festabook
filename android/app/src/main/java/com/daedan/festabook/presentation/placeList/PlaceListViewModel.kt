@@ -124,10 +124,8 @@ class PlaceListViewModel(
 
     private fun loadOrganizationGeography() {
         viewModelScope.launch {
-            launch {
-                placeListRepository.getOrganizationGeography().onSuccess {
-                    _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
-                }
+            placeListRepository.getOrganizationGeography().onSuccess {
+                _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
             }
 
             launch {

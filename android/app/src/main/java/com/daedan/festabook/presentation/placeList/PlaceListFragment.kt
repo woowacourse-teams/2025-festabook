@@ -75,7 +75,6 @@ class PlaceListFragment :
         }
     }
 
-
     override fun onStart() {
         super.onStart()
         selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
@@ -137,28 +136,6 @@ class PlaceListFragment :
         naverMap = mapFragment.getMap()
         binding.lbvCurrentLocation.map = naverMap
         naverMap.locationSource = locationSource
-        mapManager =
-            MapManager(
-                naverMap,
-                binding.initialPadding(),
-                mapClickListener =
-                    object : MapClickListener {
-                        override fun onMarkerListener(
-                            placeId: Long,
-                            category: PlaceCategoryUiModel,
-                        ) {
-                            Timber.d("Marker CLick : placeID: $placeId categoty: $category")
-                            viewModel.selectPlace(placeId, category)
-                            binding.layoutPlaceList.visibility = View.GONE
-                        }
-
-                        override fun onMapClickListener() {
-                            Timber.d("Map CLick")
-                            viewModel.unselectPlace()
-                            binding.layoutPlaceList.visibility = View.VISIBLE
-                        }
-                    },
-            )
     }
 
     private fun setUpPlaceAdapter() {
@@ -206,7 +183,27 @@ class PlaceListFragment :
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
             if (!::mapManager.isInitialized) {
                 mapManager =
-                    MapManager(naverMap, binding.initialPadding().toInt(), initialMapSetting.value)
+                    MapManager(
+                        naverMap,
+                        binding.initialPadding(),
+                        object : MapClickListener {
+                            override fun onMarkerListener(
+                                placeId: Long,
+                                category: PlaceCategoryUiModel,
+                            ) {
+                                Timber.d("Marker CLick : placeID: $placeId categoty: $category")
+                                viewModel.selectPlace(placeId, category)
+                                binding.layoutPlaceList.visibility = View.GONE
+                            }
+
+                            override fun onMapClickListener() {
+                                Timber.d("Map CLick")
+                                viewModel.unselectPlace()
+                                binding.layoutPlaceList.visibility = View.VISIBLE
+                            }
+                        },
+                        initialMapSetting.value,
+                    )
             }
             mapManager.setupMap()
             mapManager.setupBackToInitialPosition { isExceededMaxLength ->
