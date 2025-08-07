@@ -22,7 +22,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior"
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior"
             android:layout_gravity="start|bottom" />
 
         <HorizontalScrollView
@@ -86,7 +86,8 @@
                     app:checkedIconEnabled="false"
                     app:chipStrokeWidth="2dp"
                     app:chipStrokeColor="@color/selector_map_category_stroke_color"
-                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipIconSize="18dp"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipIconSize="18dp"
                     app:chipIconEnabled="true"
                     app:chipIcon="@drawable/ic_map_category_food_truck"
                     app:chipStartPadding="8dp"
@@ -104,7 +105,8 @@
                     app:checkedIconEnabled="false"
                     app:chipStrokeWidth="2dp"
                     app:chipStrokeColor="@color/selector_map_category_stroke_color"
-                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipIconSize="18dp"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipIconSize="18dp"
                     app:chipIcon="@drawable/ic_map_category_booth"
                     app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
@@ -122,7 +124,8 @@
                     app:checkedIconEnabled="false"
                     app:chipStrokeWidth="2dp"
                     app:chipStrokeColor="@color/selector_map_category_stroke_color"
-                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
                     />
@@ -137,7 +140,8 @@
                     app:checkedIconEnabled="false"
                     app:chipStrokeWidth="2dp"
                     app:chipStrokeColor="@color/selector_map_category_stroke_color"
-                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
                     />
@@ -152,7 +156,8 @@
                     app:checkedIconEnabled="false"
                     app:chipStrokeWidth="2dp"
                     app:chipStrokeColor="@color/selector_map_category_stroke_color"
-                    app:chipBackgroundColor="@color/selector_map_category_bg_color"                    app:chipStartPadding="8dp"
+                    app:chipBackgroundColor="@color/selector_map_category_bg_color"
+                    app:chipStartPadding="8dp"
                     app:chipEndPadding="8dp"
                     style="@style/Widget.MaterialComponents.Chip.Filter"
                     />
@@ -167,7 +172,7 @@
             android:layout_height="match_parent"
             android:paddingHorizontal="16dp"
             android:background="@drawable/bg_place_list"
-            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetBehavior"
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior"
             app:behavior_fitToContents="false"
             app:behavior_halfExpandedRatio="0.375"
             app:behavior_peekHeight="70dp"
