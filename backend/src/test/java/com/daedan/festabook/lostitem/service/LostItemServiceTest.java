@@ -4,6 +4,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
@@ -15,6 +17,7 @@ import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemRequestFixture;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import java.util.List;
 import java.util.Optional;
@@ -49,8 +52,8 @@ class LostItemServiceTest {
         void 성공() {
             // given
             LostItemRequest request = LostItemRequestFixture.create(
-                    "https://example.com/image.jpg",
-                    "서울특별시 강남구"
+                    "서울특별시 강남구",
+                    "https://example.com/image.jpg"
             );
 
             Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
@@ -104,6 +107,68 @@ class LostItemServiceTest {
 
             // then
             assertThat(result.responses()).hasSize(expectedSize);
+        }
+    }
+
+    @Nested
+    class updateLostItem {
+
+        @Test
+        void 성공() {
+            // given
+            Long lostItemId = 1L;
+            LostItem lostItem = LostItemFixture.create(lostItemId);
+
+            LostItemRequest request = LostItemRequestFixture.create(
+                    "변화 보관소",
+                    "https://example.com/change.jpg"
+            );
+
+            given(lostItemJpaRepository.findById(lostItemId))
+                    .willReturn(Optional.of(lostItem));
+
+            // when
+            LostItemUpdateResponse result = lostItemService.updateLostItem(lostItemId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.imageUrl()).isEqualTo(request.imageUrl());
+                s.assertThat(result.storageLocation()).isEqualTo(request.storageLocation());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_분실물_ID() {
+            // given
+            Long invalidLostItemId = 0L;
+            LostItemRequest request = LostItemRequestFixture.create();
+
+            given(lostItemJpaRepository.findById(invalidLostItemId))
+                    .willReturn(Optional.empty());
+
+            // then
+            assertThatThrownBy(() -> lostItemService.updateLostItem(invalidLostItemId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 분실물입니다.");
+        }
+    }
+
+    @Nested
+    class deleteLostItemByLostItemId {
+
+        @Test
+        void 성공() {
+            // given
+            Long lostItemId = 1L;
+
+            willDoNothing().given(lostItemJpaRepository).deleteById(lostItemId);
+
+            // when
+            lostItemService.deleteLostItemByLostItemId(lostItemId);
+
+            // then
+            then(lostItemJpaRepository).should()
+                    .deleteById(lostItemId);
         }
     }
 }
