@@ -3,6 +3,7 @@ package com.daedan.festabook
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.service.NotificationHelper
+import com.daedan.festabook.util.FestabookGlobalExceptionHandler
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
@@ -21,6 +22,7 @@ class FestaBookApp : Application() {
         setupNotificationChannel()
         appContainer = AppContainer(this)
         setLightTheme()
+        setGlobalExceptionHandler()
     }
 
     override fun onLowMemory() {
@@ -62,5 +64,10 @@ class FestaBookApp : Application() {
 
     private fun setLightTheme() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    }
+
+    private fun setGlobalExceptionHandler() {
+        val defaultExceptionHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler(FestabookGlobalExceptionHandler(this, defaultExceptionHandler))
     }
 }

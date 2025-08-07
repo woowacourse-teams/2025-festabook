@@ -52,7 +52,8 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
     private fun setupObservers() {
         viewModel.scheduleEventsUiState.observe(viewLifecycleOwner) { schedule ->
             when (schedule) {
-                is ScheduleEventsUiState.Loading -> {
+                is ScheduleEventsUiState.Loading,
+                -> {
                     showSkeleton(isLoading = true)
                 }
 

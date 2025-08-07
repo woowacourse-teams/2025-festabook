@@ -15,7 +15,6 @@ class PlaceListRepositoryImpl(
     override suspend fun getPlaces(): Result<List<Place>> {
         val response = placeDataSource.fetchPlaces().toResult()
         return response.mapCatching { places ->
-            throw Exception("test")
             places.map { it.toDomain() }
         }
     }
