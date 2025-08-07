@@ -1,7 +1,7 @@
 <configuration>
 
     <!-- 공통 로그 패턴 -->
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} [%X{requestId}] - %msg%n"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{requestId}] - %msg%n"/>
 
     <!-- PROD 전용: 로그를 파일에 기록 -->
     <springProfile name="prod">
