@@ -86,6 +86,7 @@ class PlaceListFragment :
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
+        Timber.d("onPlaceClicked: $place")
         startPlaceDetailActivity(place)
     }
 

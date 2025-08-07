@@ -8,7 +8,7 @@
             type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
 
         <variable
-            name="handler"
+            name="listener"
             type="com.daedan.festabook.presentation.placeList.PlaceClickListener" />
 
     </data>
@@ -16,7 +16,7 @@
     <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
-        android:onClick="@{()->handler.onPlaceClicked(place)}"
+        android:onClick="@{()->listener.onPlaceClicked(place)}"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="12dp">
