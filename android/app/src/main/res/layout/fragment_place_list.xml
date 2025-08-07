@@ -173,7 +173,7 @@
             app:behavior_halfExpandedRatio="0.375"
             app:behavior_peekHeight="70dp"
             app:companionView="@id/lbv_current_location"
-            app:layout_behavior=".presentation.placeList.behavior.PlaceListBottomSheetBehavior"
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior"
             app:recyclerView="@id/rv_places">
 
             <View
