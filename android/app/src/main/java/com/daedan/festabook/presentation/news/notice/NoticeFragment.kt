@@ -11,6 +11,7 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import timber.log.Timber
 
 class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_notice) {
     private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
@@ -49,6 +50,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
 
                 is NoticeUiState.Error -> {
                     showErrorSnackBar(noticeState.throwable)
+                    Timber.w(noticeState.throwable, "NoticeFragment: ${noticeState.throwable.message}")
                     binding.srlNoticeList.isRefreshing = false
                     hideSkeleton()
                 }

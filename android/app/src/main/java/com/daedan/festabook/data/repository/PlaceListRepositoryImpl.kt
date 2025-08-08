@@ -14,7 +14,9 @@ class PlaceListRepositoryImpl(
 ) : PlaceListRepository {
     override suspend fun getPlaces(): Result<List<Place>> {
         val response = placeDataSource.fetchPlaces().toResult()
-        return response.mapCatching { places -> places.map { it.toDomain() } }
+        return response.mapCatching { places ->
+            places.map { it.toDomain() }
+        }
     }
 
     override suspend fun getOrganizationGeography(): Result<OrganizationGeography> {

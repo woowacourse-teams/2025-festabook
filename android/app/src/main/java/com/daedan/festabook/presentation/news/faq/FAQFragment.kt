@@ -13,6 +13,7 @@ import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import timber.log.Timber
 
 class FAQFragment : BaseFragment<FragmentFAQBinding>(R.layout.fragment_f_a_q) {
     private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
@@ -35,6 +36,7 @@ class FAQFragment : BaseFragment<FragmentFAQBinding>(R.layout.fragment_f_a_q) {
                 }
 
                 is FAQUiState.Error -> {
+                    Timber.w(state.throwable.stackTraceToString())
                     showErrorSnackBar(state.throwable)
                 }
             }

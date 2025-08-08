@@ -52,7 +52,8 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
     private fun setupObservers() {
         viewModel.scheduleEventsUiState.observe(viewLifecycleOwner) { schedule ->
             when (schedule) {
-                is ScheduleEventsUiState.Loading -> {
+                is ScheduleEventsUiState.Loading,
+                -> {
                     showSkeleton(isLoading = true)
                 }
 
@@ -63,7 +64,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                 }
 
                 is ScheduleEventsUiState.Error -> {
-                    Timber.tag("TAG").d("setupObservers: ${schedule.throwable.message}")
+                    Timber.w(schedule.throwable, "ScheduleTabPageFragment: ${schedule.throwable.message}")
                     showErrorSnackBar(schedule.throwable)
                     showSkeleton(isLoading = false)
                 }

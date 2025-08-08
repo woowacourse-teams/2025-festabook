@@ -29,7 +29,7 @@ class MainViewModel(
                     Timber.d("기기 등록 성공! 서버에서 받은 ID: $id")
                     preferencesManager.saveDeviceId(id)
                 }.onFailure { throwable ->
-                    Timber.e(throwable, "기기 등록 실패: ${throwable.message}")
+                    Timber.e(throwable, "MainViewModel: 기기 등록 실패: ${throwable.message}")
                 }
         }
     }

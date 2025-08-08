@@ -77,7 +77,7 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
         viewModel.placeDetail.observe(this) { result ->
             when (result) {
                 is PlaceDetailUiState.Error -> {
-                    Timber.d("PlaceDetail: ${result.throwable.message}")
+                    Timber.w(result.throwable, "PlaceDetailActivity: ${result.throwable.message}")
                     showErrorSnackBar(result.throwable)
                 }
 

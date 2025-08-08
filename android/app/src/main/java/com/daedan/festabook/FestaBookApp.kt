@@ -4,6 +4,8 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.service.NotificationHelper
+import com.daedan.festabook.util.CrashlyticsTree
+import com.daedan.festabook.util.FestabookGlobalExceptionHandler
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
@@ -23,6 +25,12 @@ class FestaBookApp : Application() {
         setupNaverSdk()
         setupNotificationChannel()
         setLightTheme()
+        setGlobalExceptionHandler()
+    }
+
+    override fun onLowMemory() {
+        super.onLowMemory()
+        Timber.w("FestabookApp: onLowMemory 호출됨")
     }
 
     private fun setupNotificationChannel() {
@@ -31,12 +39,17 @@ class FestaBookApp : Application() {
         }.onSuccess {
             Timber.d("알림 채널 설정 완료")
         }.onFailure { e ->
-            Timber.e(e, "알림 채널 설정 실패")
+            Timber.e(e, "FestabookApp: 알림 채널 설정 실패 ${e.message}")
         }
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) plantDebugTimberTree() else plantInfoTimberTree()
+        if (BuildConfig.DEBUG) {
+            plantDebugTimberTree()
+        } else {
+          plantInfoTimberTree()
+        }
+        Timber.plant(CrashlyticsTree())
     }
 
     private fun plantDebugTimberTree() {
@@ -59,5 +72,10 @@ class FestaBookApp : Application() {
 
     private fun setLightTheme() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    }
+
+    private fun setGlobalExceptionHandler() {
+        val defaultExceptionHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler(FestabookGlobalExceptionHandler(this, defaultExceptionHandler))
     }
 }

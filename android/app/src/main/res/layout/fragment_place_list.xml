@@ -44,6 +44,8 @@
             app:chipBackgroundColor="@color/gray050"
             app:changeVisibility="false"
             app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior" />
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior"
+            android:layout_gravity="start|bottom" />
 
         <HorizontalScrollView
             android:layout_width="match_parent"
