@@ -1,14 +1,18 @@
 package com.daedan.festabook.lostitem.domain;
 
+import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,6 +35,10 @@ public class LostItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Festival festival;
+
     @Column(nullable = false)
     private String imageUrl;
 
@@ -39,7 +47,7 @@ public class LostItem {
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private PickupStatus pickupStatus;
+    private PickupStatus status;
 
     @CreatedDate
     @Column(nullable = false)
@@ -47,34 +55,46 @@ public class LostItem {
 
     protected LostItem(
             Long id,
+            Festival festival,
             String imageUrl,
             String storageLocation,
-            PickupStatus pickupStatus,
+            PickupStatus status,
             LocalDateTime createdAt
     ) {
         validateImageUrl(imageUrl);
         validateStorageLocation(storageLocation);
-        validatePickupStatus(pickupStatus);
+        validatePickupStatus(status);
 
         this.id = id;
+        this.festival = festival;
         this.imageUrl = imageUrl;
         this.storageLocation = storageLocation;
-        this.pickupStatus = pickupStatus;
+        this.status = status;
         this.createdAt = createdAt;
     }
 
     public LostItem(
+            Festival festival,
             String imageUrl,
             String storageLocation,
-            PickupStatus pickupStatus
+            PickupStatus status
     ) {
         this(
                 null,
+                festival,
                 imageUrl,
                 storageLocation,
-                pickupStatus,
+                status,
                 null
         );
+    }
+
+    public void updateLostItem(String imageUrl, String storageLocation) {
+        validateImageUrl(imageUrl);
+        validateStorageLocation(storageLocation);
+
+        this.imageUrl = imageUrl;
+        this.storageLocation = storageLocation;
     }
 
     private void validateImageUrl(String imageUrl) {
@@ -87,7 +107,7 @@ public class LostItem {
         if (!StringUtils.hasText(storageLocation)) {
             throw new BusinessException("보관 장소는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
-        
+
         if (storageLocation.length() > MAX_STORAGE_LOCATION_LENGTH) {
             throw new BusinessException(
                     String.format("보관 장소는 %d자를 초과할 수 없습니다.", MAX_STORAGE_LOCATION_LENGTH),
@@ -96,8 +116,8 @@ public class LostItem {
         }
     }
 
-    private void validatePickupStatus(PickupStatus pickupStatus) {
-        if (ObjectUtils.isEmpty(pickupStatus)) {
+    private void validatePickupStatus(PickupStatus status) {
+        if (ObjectUtils.isEmpty(status)) {
             throw new BusinessException("수령 상태는 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }

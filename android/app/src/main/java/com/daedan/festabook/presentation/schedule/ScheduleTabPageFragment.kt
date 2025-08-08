@@ -13,9 +13,7 @@ import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.IN
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
 import timber.log.Timber
 
-class ScheduleTabPageFragment :
-    BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page),
-    ScheduleTabPageUpdater {
+class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
     private val viewModel: ScheduleViewModel by viewModels {
         val dateId: Long = arguments?.getLong(KEY_DATE_ID, INVALID_ID) ?: INVALID_ID
         ScheduleViewModel.factory(dateId)
@@ -38,10 +36,6 @@ class ScheduleTabPageFragment :
         onSwipeRefreshScheduleByDateListener()
     }
 
-    override fun updateScheduleTabPage() {
-        viewModel.loadScheduleByDate()
-    }
-
     private fun setupScheduleEventRecyclerView() {
         binding.rvScheduleEvent.adapter = adapter
         (binding.rvScheduleEvent.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
@@ -58,7 +52,8 @@ class ScheduleTabPageFragment :
     private fun setupObservers() {
         viewModel.scheduleEventsUiState.observe(viewLifecycleOwner) { schedule ->
             when (schedule) {
-                is ScheduleEventsUiState.Loading -> {
+                is ScheduleEventsUiState.Loading,
+                -> {
                     showSkeleton(isLoading = true)
                 }
 
@@ -69,7 +64,7 @@ class ScheduleTabPageFragment :
                 }
 
                 is ScheduleEventsUiState.Error -> {
-                    Timber.tag("TAG").d("setupObservers: ${schedule.throwable.message}")
+                    Timber.w(schedule.throwable, "ScheduleTabPageFragment: ${schedule.throwable.message}")
                     showErrorSnackBar(schedule.throwable)
                     showSkeleton(isLoading = false)
                 }

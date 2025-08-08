@@ -150,8 +150,8 @@ const Sidebar = ({ open, setOpen }) => {
                         </h1>
                         <button
                             className="text-gray-500 hover:text-gray-800 focus:outline-none"
-                            title="Organization 변경"
-                            onClick={() => openModal('organization')}
+                            title="Festival ID 변경"
+                            onClick={() => openModal('festival')}
                         >
                             <i className="fas fa-lock text-lg" />
                         </button>

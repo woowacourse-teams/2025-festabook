@@ -1,13 +1,13 @@
 -- ========================
--- 조직 (Organization)
+-- 축제 (Festival)
 -- ========================
-INSERT INTO organization (university_name, festival_name, start_date, end_date, zoom, latitude, longitude)
+INSERT INTO festival (university_name, festival_name, start_date, end_date, zoom, latitude, longitude)
 VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', '2025-08-04', '2025-08-06', 15, 37.583585, 127.0588862);
 
 -- ========================
 -- 축제 이미지 (FestivalImage)
 -- ========================
-INSERT INTO festival_image (organization_id, image_url, sequence)
+INSERT INTO festival_image (festival_id, image_url, sequence)
 VALUES (1, 'https://www.themoviedb.org/t/p/w1280/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg', 1),
        (1, 'https://www.themoviedb.org/t/p/w1280/qNBAXBIQlnOThrVvA6mA2B5ggV6.jpg', 2),
        (1, 'https://cdn.cgv.co.kr/cgvpomsfilm/Movie/Thumbnail/Poster/000089/89833/89833_320.jpg', 3),
@@ -15,9 +15,9 @@ VALUES (1, 'https://www.themoviedb.org/t/p/w1280/vpnVM9B6NMmQpWeZvzLvDESb2QY.jpg
        (1, 'https://www.themoviedb.org/t/p/w1280/fwch4T5aUDPuJ6zUzkub8prfhtI.jpg', 5);
 
 -- ========================
--- 조직 폴리곤 구멍 경계 (OrganizationPolygonHoleBoundary)
+-- 축제 폴리곤 구멍 경계 (FestivalPolygonHoleBoundary)
 -- ========================
-INSERT INTO organization_polygon_hole_boundary (organization_id, latitude, longitude)
+INSERT INTO festival_polygon_hole_boundary (festival_id, latitude, longitude)
 VALUES (1, 37.5863631, 127.0564018),
        (1, 37.5862823, 127.0562999),
        (1, 37.5862047, 127.0562275),
@@ -104,10 +104,10 @@ VALUES (1, 37.5863631, 127.0564018),
 -- ========================
 -- 일정 날짜 (EventDate)
 -- ========================
-INSERT INTO event_date (organization_id, date)
-VALUES (1, '2025-08-04'),
-       (1, '2025-08-05'),
-       (1, '2025-08-06');
+INSERT INTO event_date (festival_id, date)
+VALUES (1, '2025-08-07'),
+       (1, '2025-08-08'),
+       (1, '2025-08-09');
 -- VALUES (1, ADDDATE(CURDATE(), -1)),
 --        (1, CURDATE()),
 --        (1, ADDDATE(CURDATE(), 1));
@@ -147,7 +147,7 @@ VALUES ('10:00:00', '11:30:00', '개막식', '운동장', 1),
 -- ========================
 -- 전체 공지사항 (Announcement)
 -- ========================
-INSERT INTO announcement (title, content, is_pinned, organization_id, created_at)
+INSERT INTO announcement (title, content, is_pinned, festival_id, created_at)
 VALUES ('축제 입장 규칙 안내', '재학생 존은 배부된 띠지를 통해서만 입장할 수 있습니다.', false, 1, '2025-07-16 10:00:00'),
        ('주점 주류 판매 안내', '주점에서 직접 주류를 판매하지 않습니다. 이 점 참고해 주세요.', true, 1, '2025-07-17 09:00:00'),
        ('우천 시 대피 안내', '비가 올 경우 모든 야외 행사는 체육관으로 이동합니다.', false, 1, '2025-07-16 11:00:00'),
@@ -162,7 +162,7 @@ VALUES ('축제 입장 규칙 안내', '재학생 존은 배부된 띠지를 통
 -- ========================
 -- 자주 묻는 질문 (Question)
 -- ========================
-INSERT INTO question (organization_id, question, answer, sequence)
+INSERT INTO question (festival_id, question, answer, sequence)
 VALUES (1, '차를 가져가도 될까요?', '동문 주차장을 이용하실 수 있습니다.', 1),
        (1, '부스 위치가 궁금해요.', '푸드트럭은 운동장 오른쪽 라인에 위치합니다.', 2),
        (1, '페스타북 앱은 어떻게 활용하나요?',
@@ -173,7 +173,7 @@ VALUES (1, '차를 가져가도 될까요?', '동문 주차장을 이용하실 �
 -- ========================
 -- 플레이스 (Place)
 -- ========================
-INSERT INTO place (organization_id, category, latitude, longitude)
+INSERT INTO place (festival_id, category, latitude, longitude)
 VALUES (1, 'BAR', 37.5848056, 127.0600224),
        (1, 'BAR', 37.5845384, 127.0595952),
        (1, 'BAR', 37.5845279, 127.0594143),
@@ -561,8 +561,40 @@ VALUES (1, 1),
        (4, 2);
 
 -- ========================
--- 조직 알림 (OrganizationNotification)
+-- 축제 알림 (FestivalNotification)
 -- ========================
-INSERT INTO organization_notification (organization_id, device_id)
+INSERT INTO festival_notification (festival_id, device_id)
 VALUES (1, 1),
        (1, 2);
+
+-- ========================
+-- 분실물 (LostItem)
+-- ========================
+INSERT INTO lost_item (festival_id, image_url, storage_location, status, created_at)
+VALUES (1, 'https://images.unsplash.com/photo-1526170375885-4d8ecf77b99f', '본관 1층 안내데스크', 'PENDING',
+        '2025-08-01 10:15:00'),
+       (1, 'https://images.unsplash.com/photo-1503023345310-bd7c1de61c7d', '도서관 2층 열람실', 'COMPLETED',
+        '2025-08-01 11:20:00'),
+       (1, 'https://images.unsplash.com/photo-1519681393784-d120267933ba', '학생회관 3층 휴게실', 'PENDING',
+        '2025-08-01 13:45:00'),
+       (1, 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f', '체육관 1층 로비', 'COMPLETED',
+        '2025-08-02 09:10:00'),
+       (1, 'https://images.unsplash.com/photo-1521747116042-5a810fda9664', '공학관 4층 연구실 앞', 'PENDING',
+        '2025-08-02 15:25:00'),
+       (1, 'https://images.unsplash.com/photo-1518770660439-4636190af475', '음악관 2층 연습실', 'PENDING',
+        '2025-08-02 17:30:00'),
+       (1, 'https://images.unsplash.com/photo-1534080564583-6be75777b70a', '기숙사 A동 로비', 'COMPLETED',
+        '2025-08-03 08:50:00'),
+       (1, 'https://images.unsplash.com/photo-1521295121783-8a321d551ad2', '기숙사 B동 세탁실', 'PENDING',
+        '2025-08-03 19:10:00'),
+       (1, 'https://images.unsplash.com/photo-1481277542470-605612bd2d61', '카페테리아 입구', 'PENDING',
+        '2025-08-04 12:20:00'),
+       (1, 'https://images.unsplash.com/photo-1494790108377-be9c29b29330', '야외무대 좌석 뒤편', 'COMPLETED',
+        '2025-08-04 16:45:00'),
+       (1, 'https://images.unsplash.com/photo-1524504388940-b1c1722653e1', '학생회관 지하 매점', 'PENDING',
+        '2025-08-05 09:00:00'),
+       (1, 'https://images.unsplash.com/photo-1544005313-94ddf0286df2', '본관 2층 화장실 앞', 'PENDING',
+        '2025-08-05 14:35:00'),
+       (1, 'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e', '중앙도서관 안내데스크', 'COMPLETED',
+        '2025-08-06 10:10:00'),
+       (1, 'https://images.unsplash.com/photo-1517841905240-472988babdf9', '운동장 매표소', 'PENDING', '2025-08-06 18:20:00');

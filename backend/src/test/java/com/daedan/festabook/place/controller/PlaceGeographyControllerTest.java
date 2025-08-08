@@ -4,9 +4,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.hasSize;
 
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceCoordinateRequestFixture;
@@ -37,7 +37,7 @@ import org.springframework.http.HttpStatus;
 class PlaceGeographyControllerTest {
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @Autowired
     private PlaceJpaRepository placeJpaRepository;
@@ -63,15 +63,15 @@ class PlaceGeographyControllerTest {
     }
 
     @Nested
-    class getAllPlaceGeographyByOrganizationId {
+    class getAllPlaceGeographyByFestivalId {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.saveAll(List.of(place));
 
             int expectedSize = 1;
@@ -81,7 +81,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("organization", organization.getId())
+                    .header("festival", festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -96,13 +96,13 @@ class PlaceGeographyControllerTest {
         }
 
         @Test
-        void 성공_특정_조직의_플레이스_지리_목록() {
+        void 성공_특정_축제의_플레이스_지리_목록() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place1 = PlaceFixture.create(organization);
-            Place place2 = PlaceFixture.create(organization);
+            Place place1 = PlaceFixture.create(festival);
+            Place place2 = PlaceFixture.create(festival);
             placeJpaRepository.saveAll(List.of(place1, place2));
 
             int expectedSize = 2;
@@ -110,7 +110,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("organization", organization.getId())
+                    .header("festival", festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -121,10 +121,10 @@ class PlaceGeographyControllerTest {
         @Test
         void 성공_Coordinate가_없을_경우_응답에_포함하지_않음() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, null);
+            Place place = PlaceFixture.create(festival, PlaceCategory.BAR, null);
             placeJpaRepository.save(place);
 
             int expectedSize = 0;
@@ -132,7 +132,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("organization", organization.getId())
+                    .header("festival", festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -147,10 +147,10 @@ class PlaceGeographyControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();

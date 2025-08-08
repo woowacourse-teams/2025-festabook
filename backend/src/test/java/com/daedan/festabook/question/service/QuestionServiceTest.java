@@ -6,12 +6,11 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
 import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
@@ -42,7 +41,7 @@ class QuestionServiceTest {
     private QuestionJpaRepository questionJpaRepository;
 
     @Mock
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @InjectMocks
     private QuestionService questionService;
@@ -53,23 +52,23 @@ class QuestionServiceTest {
         @Test
         void 성공() {
             // given
-            Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create(organizationId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
             QuestionRequest request = QuestionRequestFixture.create(
                     "개도 데려갈 수 있나요?",
                     "죄송하지만 후유는 출입 금지입니다."
             );
             int questionCount = 1;
 
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
-            given(questionJpaRepository.countByOrganizationId(organizationId))
-                    .willReturn(questionCount);
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
+            given(questionJpaRepository.findMaxSequenceByFestivalId(festivalId))
+                    .willReturn(Optional.of(questionCount));
             given(questionJpaRepository.save(any()))
                     .willAnswer(invocation -> invocation.getArgument(0));
 
             // when
-            QuestionResponse result = questionService.createQuestion(organizationId, request);
+            QuestionResponse result = questionService.createQuestion(festivalId, request);
 
             // then
             assertSoftly(s -> {
@@ -80,33 +79,33 @@ class QuestionServiceTest {
         }
 
         @Test
-        void 예외_존재하지_않는_조직() {
+        void 예외_존재하지_않는_축제() {
             // given
-            Long invalidOrganizationId = 0L;
+            Long invalidFestivalId = 0L;
             QuestionRequest request = QuestionRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> questionService.createQuestion(invalidOrganizationId, request))
+            assertThatThrownBy(() -> questionService.createQuestion(invalidFestivalId, request))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 조직입니다.");
+                    .hasMessage("존재하지 않는 축제입니다.");
         }
     }
 
     @Nested
-    class getAllQuestionByOrganizationId {
+    class getAllQuestionByFestivalId {
 
         @Test
         void 성공_응답_개수() {
             // given
             int expected = 3;
-            Long organizationId = 1L;
+            Long festivalId = 1L;
             List<Question> questions = QuestionFixture.createList(expected);
-            given(questionJpaRepository.findByOrganizationIdOrderBySequenceAsc(organizationId))
+            given(questionJpaRepository.findByFestivalIdOrderBySequenceAsc(festivalId))
                     .willReturn(questions);
 
             // when
-            QuestionResponses questionResponses = questionService.getAllQuestionByOrganizationId(
-                    organizationId);
+            QuestionResponses questionResponses = questionService.getAllQuestionByFestivalId(
+                    festivalId);
 
             // then
             int result = questionResponses.responses().size();
@@ -116,15 +115,15 @@ class QuestionServiceTest {
         @Test
         void 성공_Sequence_오름차순_정렬() {
             // given
-            Long organizationId = 1L;
+            Long festivalId = 1L;
             Question question2 = QuestionFixture.create(2);
             Question question1 = QuestionFixture.create(1);
 
-            given(questionJpaRepository.findByOrganizationIdOrderBySequenceAsc(organizationId))
+            given(questionJpaRepository.findByFestivalIdOrderBySequenceAsc(festivalId))
                     .willReturn(List.of(question1, question2));
 
             // when
-            QuestionResponses result = questionService.getAllQuestionByOrganizationId(organizationId);
+            QuestionResponses result = questionService.getAllQuestionByFestivalId(festivalId);
 
             // then
             assertThat(result.responses().getFirst().sequence()).isEqualTo(question1.getSequence());
@@ -233,9 +232,6 @@ class QuestionServiceTest {
         void 성공() {
             // given
             Long questionId = 1L;
-
-            willDoNothing().given(questionJpaRepository)
-                    .deleteById(questionId);
 
             // when
             questionService.deleteQuestionByQuestionId(questionId);

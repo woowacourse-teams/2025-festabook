@@ -35,7 +35,6 @@
     @RequestMapping("/api/places")
     ```
 
-
 ### 5. 파라미터 순서
 
 1. 실제 사용 순서대로 파라미터 순서를 정렬한다.
@@ -46,7 +45,6 @@
     		System.out.println(c);
     }
     ```
-
 
 ### 6. Bean 주입 방식
 
@@ -134,7 +132,6 @@ festival
     }
     ```
 
-
 ### 4. 어노테이션 순서
 
 1. 상단에는 컨트롤러 관련 어노테이션을 작성하고 하단에는 스웨거 관련 어노테이션을 작성한다.
@@ -179,7 +176,7 @@ festival
 1. DTO는 **`record`** 로 작성한다.
 2. 각 필드 변수는 매번 줄바꿈한다.
 3. 생성자 대신 정적 팩터리 메서드를 사용하여 생성한다.
-4. **`organizationId`** 는 응답으로 작성하지 않는다.
+4. **`festivalId`** 는 응답으로 작성하지 않는다.
 
 # 5. Entity 컨벤션
 
@@ -192,10 +189,9 @@ festival
 3. 연관관계는 id만 작성하지 않고 entity의 연관관계를 매핑하는 정보까지 작성한다.
 
     ```java
-    private Long organizationId // x
-    private Organization organization // o
+    private Long festivalId // x
+    private Festival festival // o
     ```
-
 
 ### 2. EqualsHashCode 여부
 
@@ -227,7 +223,6 @@ festival
             this.endTime = endTime;
         }
         ```
-
 
 ### 4. DB 컬럼 타입
 
@@ -269,31 +264,30 @@ festival
 
     ```
     // X
-        Organization organization = organizationJpaRepository.save(
-            OrganizationFixture.create(
-                OrganizationFixture.randomName(),
-                OrganizationFixture.randomRegistrationNumber(),
-                OrganizationFixture.randomPastDate(),
-                OrganizationFixture.randomAddress(),
-                OrganizationFixture.randomEmail(),
-                OrganizationFixture.randomBoolean(),
-                OrganizationFixture.randomDescription()
+        Festival festival = festivalJpaRepository.save(
+            FestivalFixture.create(
+                FestivalFixture.randomName(),
+                FestivalFixture.randomRegistrationNumber(),
+                FestivalFixture.randomPastDate(),
+                FestivalFixture.randomAddress(),
+                FestivalFixture.randomEmail(),
+                FestivalFixture.randomBoolean(),
+                FestivalFixture.randomDescription()
             )
         );
     
     // O
-        Organization checkOrganization = OrganizationFixture.create(
-            OrganizationFixture.randomName(),
-            OrganizationFixture.randomRegistrationNumber(),
-            OrganizationFixture.randomPastDate(),
-            OrganizationFixture.randomAddress(),
-            OrganizationFixture.randomEmail(),
-            OrganizationFixture.randomBoolean(),
-            OrganizationFixture.randomDescription()
+        Festival checkFestival = FestivalFixture.create(
+            FestivalFixture.randomName(),
+            FestivalFixture.randomRegistrationNumber(),
+            FestivalFixture.randomPastDate(),
+            FestivalFixture.randomAddress(),
+            FestivalFixture.randomEmail(),
+            FestivalFixture.randomBoolean(),
+            FestivalFixture.randomDescription()
         );
-        organizationJpaRepository.save(checkOrganization);
+        festivalJpaRepository.save(checkFestival);
     ```
-
 
 ### 3. 개행
 
@@ -324,7 +318,6 @@ festival
     RestAssured
         .given()
     ```
-
 
 ### 4. Test Fixture
 
@@ -390,14 +383,14 @@ public class PlaceFixture {
             LocalTime endTime
     ) {
         return new Place(
-		        title,
-	         description, 
-	         category, 
-	         location, 
-	         host, 
-	         startTime, 
-	         endTime
-         );
+                title,
+                description,
+                category,
+                location,
+                host,
+                startTime,
+                endTime
+        );
     }
 }
 ```

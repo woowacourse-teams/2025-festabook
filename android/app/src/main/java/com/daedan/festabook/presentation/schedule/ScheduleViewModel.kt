@@ -57,8 +57,8 @@ class ScheduleViewModel(
                     val currentEventPosition =
                         scheduleEventUiModels
                             .indexOfFirst { scheduleEvent -> scheduleEvent.status == ScheduleEventUiStatus.ONGOING }
-                            .let { currentIndex -> if (currentIndex == INVALID_INDEX) FIRST_INDEX else currentIndex }
-
+                            .coerceAtLeast(FIRST_INDEX)
+                          
                     _scheduleEventsUiState.value =
                         ScheduleEventsUiState.Success(scheduleEventUiModels, currentEventPosition)
                 }.onFailure {
@@ -68,7 +68,7 @@ class ScheduleViewModel(
         }
     }
 
-    private fun loadAllDates() {
+    fun loadAllDates() {
         viewModelScope.launch {
             _scheduleDatesUiState.value = ScheduleDatesUiState.Loading
 

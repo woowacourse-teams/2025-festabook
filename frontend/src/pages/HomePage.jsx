@@ -4,7 +4,7 @@ import api from '../utils/api';
 
 const HomePage = () => {
     const { openModal, showToast } = useModal();
-    const [organization, setOrganization] = useState(null);
+    const [festival, setFestival] = useState(null);
     const [loading, setLoading] = useState(true);
     const [isDragging, setIsDragging] = useState(false);
     const scrollContainerRef = useRef(null);
@@ -12,24 +12,24 @@ const HomePage = () => {
     const scrollLeftRef = useRef(null);
 
     useEffect(() => {
-        fetchOrganizationData();
+        fetchFestivalData();
     }, []);
 
-    const fetchOrganizationData = async () => {
+    const fetchFestivalData = async () => {
         try {
             setLoading(true);
-            const orgId = localStorage.getItem('organization');
-            if (!orgId) {
-                showToast('Organization ID가 설정되지 않았습니다.');
+            const festivalId = localStorage.getItem('festivalId');
+            if (!festivalId) {
+                showToast('Festival ID가 설정되지 않았습니다.');
                 return;
             }
-            const response = await api.get('/organizations');
-            setOrganization(response.data);
+            const response = await api.get('/festivals');
+            setFestival(response.data);
         } catch (error) {
             if (error.response?.status === 404) {
-                showToast('조직 정보를 찾을 수 없습니다. Organization ID를 확인해주세요.');
+                showToast('축제 정보를 찾을 수 없습니다. Festival ID를 확인해주세요.');
             } else if (error.response?.status === 401) {
-                showToast('인증에 실패했습니다. Organization ID를 다시 설정해주세요.');
+                showToast('인증에 실패했습니다. Festival ID를 다시 설정해주세요.');
             } else if (error.code === 'NETWORK_ERROR') {
                 showToast('네트워크 연결을 확인해주세요.');
             } else {
@@ -78,12 +78,12 @@ const HomePage = () => {
         );
     }
 
-    if (!organization) {
+    if (!festival) {
         return (
             <div className="text-center py-12">
-                <p className="text-gray-600 mb-4">조직 정보를 불러올 수 없습니다.</p>
+                <p className="text-gray-600 mb-4">축제 정보를 불러올 수 없습니다.</p>
                 <button 
-                    onClick={fetchOrganizationData}
+                    onClick={fetchFestivalData}
                     className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                 >
                     다시 시도
@@ -99,7 +99,7 @@ const HomePage = () => {
                 <div className="flex justify-between items-start">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-                            {organization.universityName} 관리
+                            {festival.universityName} 관리
                         </h1>
                     </div>
                 </div>
@@ -110,7 +110,7 @@ const HomePage = () => {
                 <div className="flex justify-between items-start mb-4">
                     <h3 className="text-lg font-semibold text-gray-900">축제 정보</h3>
                     <button 
-                        onClick={() => openModal('festival-info', { organization })}
+                        onClick={() => openModal('festival-info', { festival, onUpdate: setFestival })}
                         className="text-black hover:text-gray-700 text-sm font-medium"
                     >
                         수정
@@ -119,21 +119,11 @@ const HomePage = () => {
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">축제명</label>
-                        <p className="text-lg font-semibold text-gray-900">{organization.festivalName}</p>
+                        <p className="text-lg font-semibold text-gray-900 whitespace-pre-line">{festival.festivalName}</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
-                        <p className="text-gray-900">{formatDate(organization.startDate)} - {formatDate(organization.endDate)}</p>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">상태</label>
-                        <span className={`inline-flex items-center px-3 py-0.5 rounded-full text-xs font-medium ${
-                            organization.isActive !== false 
-                                ? 'bg-black text-white' 
-                                : 'bg-gray-300 text-gray-700'
-                        }`}>
-                            {organization.isActive !== false ? '활성' : '비활성'}
-                        </span>
+                        <p className="text-gray-900">{formatDate(festival.startDate)} - {formatDate(festival.endDate)}</p>
                     </div>
                 </div>
             </div>
@@ -143,14 +133,14 @@ const HomePage = () => {
                 <div className="flex justify-between items-center mb-6">
                     <h3 className="text-lg font-semibold text-gray-900">축제 이미지</h3>
                     <button 
-                        onClick={() => openModal('festival-images', { organization })}
+                        onClick={() => openModal('festival-images', { festival, onUpdate: setFestival })}
                         className="text-black hover:text-gray-700 text-sm font-medium"
                     >
                         수정
                     </button>
                 </div>
                 
-                {organization.festivalImages && organization.festivalImages.length > 0 ? (
+                {festival.festivalImages && festival.festivalImages.length > 0 ? (
                     <div 
                         ref={scrollContainerRef}
                         className={`overflow-x-auto ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
@@ -160,9 +150,9 @@ const HomePage = () => {
                         onMouseLeave={handleMouseLeave}
                     >
                         <div className="flex space-x-4 w-max select-none">
-                            {organization.festivalImages.map((image, index) => (
+                            {festival.festivalImages.map((image, index) => (
                                 <div
-                                    key={image.id}
+                                    key={image.festivalImageId || image.id || index}
                                     className="relative group flex-shrink-0 w-[300px] h-[400px] bg-gray-200 rounded-lg overflow-hidden"
                                 >
                                     <img

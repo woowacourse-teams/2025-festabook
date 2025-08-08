@@ -15,7 +15,14 @@ enum class PlaceCategoryUiModel {
     SMOKING_AREA,
     ;
 
-    companion object
+    companion object {
+        val SECONDARY_CATEGORIES =
+            listOf(
+                TRASH_CAN,
+                TOILET,
+                SMOKING_AREA,
+            )
+    }
 }
 
 val PlaceCategoryUiModel.Companion.iconResources: List<Int>

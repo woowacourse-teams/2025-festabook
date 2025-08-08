@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.dto;
 
-import com.daedan.festabook.organization.domain.Coordinate;
+import com.daedan.festabook.festival.domain.Coordinate;
 
 public record PlaceCoordinateRequest(
         Double latitude,

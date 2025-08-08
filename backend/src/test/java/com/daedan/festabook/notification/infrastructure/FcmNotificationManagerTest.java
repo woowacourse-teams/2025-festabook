@@ -28,12 +28,12 @@ class FcmNotificationManagerTest {
     private FcmNotificationManager fcmNotificationManager;
 
     @Nested
-    class subscribeOrganizationTopic {
+    class subscribeFestivalTopic {
 
         @Test
         void 예외_도메인_예외로_변화하여_던지기() throws FirebaseMessagingException {
             // given
-            Long organizationId = 1L;
+            Long festivalId = 1L;
             String fcmToken = "fcmToken";
             willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
@@ -41,7 +41,7 @@ class FcmNotificationManagerTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                fcmNotificationManager.subscribeOrganizationTopic(organizationId, fcmToken);
+                fcmNotificationManager.subscribeFestivalTopic(festivalId, fcmToken);
             })
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 토픽 구독을 실패했습니다.");
@@ -49,12 +49,12 @@ class FcmNotificationManagerTest {
     }
 
     @Nested
-    class unsubscribeOrganizationTopic {
+    class unsubscribeFestivalTopic {
 
         @Test
         void 예외_도메인_예외로_변화하여_던지기() throws FirebaseMessagingException {
             // given
-            Long organizationId = 1L;
+            Long festivalId = 1L;
             String fcmToken = "fcmToken";
             willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
@@ -62,7 +62,7 @@ class FcmNotificationManagerTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                fcmNotificationManager.unsubscribeOrganizationTopic(organizationId, fcmToken);
+                fcmNotificationManager.unsubscribeFestivalTopic(festivalId, fcmToken);
             })
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 토픽 구독 취소를 실패했습니다.");
@@ -70,12 +70,12 @@ class FcmNotificationManagerTest {
     }
 
     @Nested
-    class sendToOrganizationTopic {
+    class sendToFestivalTopic {
 
         @Test
         void 예외_도메인_예외로_변화하여_던지기() throws FirebaseMessagingException {
             // given
-            Long organizationId = 1L;
+            Long festivalId = 1L;
             NotificationMessage notificationMessage = new NotificationMessage("title", "body");
             willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
@@ -83,7 +83,7 @@ class FcmNotificationManagerTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                fcmNotificationManager.sendToOrganizationTopic(organizationId, notificationMessage);
+                fcmNotificationManager.sendToFestivalTopic(festivalId, notificationMessage);
             })
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");

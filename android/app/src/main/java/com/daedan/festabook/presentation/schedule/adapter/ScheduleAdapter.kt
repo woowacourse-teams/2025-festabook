@@ -18,7 +18,7 @@ class ScheduleAdapter(
         holder: ScheduleItemViewHolder,
         position: Int,
     ) {
-        holder.bind(getItem(position))
+        holder.bind(getItem(position), itemCount)
     }
 
     companion object {

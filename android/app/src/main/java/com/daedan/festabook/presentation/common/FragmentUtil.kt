@@ -1,35 +1,37 @@
 package com.daedan.festabook.presentation.common
 
+import android.app.Activity
 import android.content.Context
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.os.Parcelable
 import android.util.TypedValue
 import android.view.View
-import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
-import com.daedan.festabook.presentation.placeList.PlaceListScrollBehavior
+import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior
 import com.google.android.material.snackbar.Snackbar
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         getParcelable(key, T::class.java)
     } else {
         getParcelable(key)
     }
 
-fun ConstraintLayout.placeListScrollBehavior(): PlaceListScrollBehavior? {
-    val layoutParams = layoutParams as? CoordinatorLayout.LayoutParams
-    val behavior = layoutParams?.behavior as? PlaceListScrollBehavior
-    return behavior
-}
+inline fun <reified T : Parcelable> Intent.getObject(key: String): T? =
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+        getParcelableExtra(key, T::class.java)
+    } else {
+        getParcelableExtra(key)
+    }
 
-fun FragmentPlaceListBinding.initialPadding() = layoutPlaceList.height / 2
+fun FragmentPlaceListBinding.initialPadding() = layoutPlaceList.height / 3
 
 fun Int.toPx(context: Context) =
     TypedValue
@@ -50,18 +52,25 @@ fun View.getSystemBarHeightCompat() =
     }
 
 fun Fragment.showErrorSnackBar(msg: String) {
-    val context = requireContext()
-    val snackBar = Snackbar.make(requireView().rootView, msg, Snackbar.LENGTH_SHORT)
-    snackBar
-        .setAction(
-            context.getString(R.string.fail_snackbar_confirm),
-        ) {
-            snackBar.dismiss()
-        }.setActionTextColor(context.getColor(R.color.blue400))
-        .show()
+    requireActivity().showErrorSnackBar(msg)
 }
 
 fun Fragment.showErrorSnackBar(exception: Throwable?) {
+    requireActivity().showErrorSnackBar(exception)
+}
+
+fun Activity.showErrorSnackBar(msg: String) {
+    val snackBar = Snackbar.make(window.decorView.rootView, msg, Snackbar.LENGTH_SHORT)
+    snackBar
+        .setAction(
+            getString(R.string.fail_snackbar_confirm),
+        ) {
+            snackBar.dismiss()
+        }.setActionTextColor(getColor(R.color.blue400))
+        .show()
+}
+
+fun Activity.showErrorSnackBar(exception: Throwable?) {
     when (exception) {
         is ApiResultException.ClientException -> {
             showErrorSnackBar(
@@ -93,4 +102,9 @@ fun Fragment.showErrorSnackBar(exception: Throwable?) {
             )
         }
     }
+}
+
+fun View.placeListBottomSheetFollowBehavior(): PlaceListBottomSheetFollowBehavior? {
+    val params = layoutParams as? CoordinatorLayout.LayoutParams
+    return params?.behavior as? PlaceListBottomSheetFollowBehavior
 }

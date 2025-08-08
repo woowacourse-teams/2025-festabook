@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface AnnouncementJpaRepository extends JpaRepository<Announcement, Long> {
 
-    List<Announcement> findAllByOrganizationId(Long organizationId);
+    List<Announcement> findAllByFestivalId(Long festivalId);
 
-    Long countByOrganizationIdAndIsPinnedTrue(Long organizationId);
+    Long countByFestivalIdAndIsPinnedTrue(Long festivalId);
 }

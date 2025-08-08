@@ -1,0 +1,114 @@
+package com.daedan.festabook.festival.controller;
+
+import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
+import com.daedan.festabook.festival.dto.FestivalImageRequest;
+import com.daedan.festabook.festival.dto.FestivalImageResponse;
+import com.daedan.festabook.festival.dto.FestivalImageResponses;
+import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalInformationResponse;
+import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalResponse;
+import com.daedan.festabook.festival.service.FestivalImageService;
+import com.daedan.festabook.festival.service.FestivalService;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/festivals")
+@Tag(name = "축제", description = "축제 관련 API")
+public class FestivalController {
+
+    private final FestivalService festivalService;
+    private final FestivalImageService festivalImageService;
+
+    @PostMapping("/images")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "특정 축제의 이미지 추가")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
+    })
+    public FestivalImageResponse addFestivalImage(
+            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @RequestBody FestivalImageRequest request
+    ) {
+        return festivalImageService.addFestivalImage(festivalId, request);
+    }
+
+    @GetMapping("/geography")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 초기 지리 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalGeographyResponse getFestivalGeographyByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
+    ) {
+        return festivalService.getFestivalGeographyByFestivalId(festivalId);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 정보 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalResponse getFestivalByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
+    ) {
+        return festivalService.getFestivalByFestivalId(festivalId);
+    }
+
+    @PatchMapping("/information")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 정보 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalInformationResponse updateFestivalInformation(
+            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @RequestBody FestivalInformationUpdateRequest request
+    ) {
+        return festivalService.updateFestivalInformation(festivalId, request);
+    }
+
+    @PatchMapping("/images/sequences")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 이미지들 순서 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalImageResponses updateFestivalImagesSequence(
+            @RequestBody List<FestivalImageSequenceUpdateRequest> requests
+    ) {
+        return festivalImageService.updateFestivalImagesSequence(requests);
+    }
+
+    @DeleteMapping("/images/{festivalImageId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "특정 축제의 이미지 삭제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
+    })
+    public void removeFestivalImage(
+            @PathVariable Long festivalImageId
+    ) {
+        festivalImageService.removeFestivalImage(festivalImageId);
+    }
+}

@@ -9,9 +9,9 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -55,7 +55,7 @@ class PlaceServiceTest {
     private PlaceDetailJpaRepository placeDetailJpaRepository;
 
     @Mock
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @Mock
     private PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
@@ -72,21 +72,21 @@ class PlaceServiceTest {
         @Test
         void 성공() {
             // given
-            Long organizationId = 1L;
+            Long festivalId = 1L;
             Long expectedPlaceId = 1L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
             PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
 
-            Organization organization = OrganizationFixture.create(organizationId);
-            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, organization, expectedPlaceCategory);
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, festival, expectedPlaceCategory);
 
-            given(organizationJpaRepository.findById(organizationId))
-                    .willReturn(Optional.of(organization));
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
             given(placeJpaRepository.save(any()))
                     .willReturn(place);
 
             // when
-            PlaceResponse result = placeService.createPlace(organizationId, placeRequest);
+            PlaceResponse result = placeService.createPlace(festivalId, placeRequest);
 
             // then
             assertSoftly(s -> {
@@ -106,19 +106,19 @@ class PlaceServiceTest {
         }
 
         @Test
-        void 예외_존재하지_않는_조직() {
+        void 예외_존재하지_않는_축제() {
             // given
-            Long invalidOrganizationId = 0L;
+            Long invalidFestivalId = 0L;
 
             PlaceRequest placeRequest = PlaceRequestFixture.create();
 
-            given(organizationJpaRepository.findById(invalidOrganizationId))
+            given(festivalJpaRepository.findById(invalidFestivalId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeService.createPlace(invalidOrganizationId, placeRequest))
+            assertThatThrownBy(() -> placeService.createPlace(invalidFestivalId, placeRequest))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 조직입니다.");
+                    .hasMessage("존재하지 않는 축제입니다.");
 
             then(placeJpaRepository).should(never())
                     .save(any());
@@ -126,22 +126,22 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class getAllPlaceByOrganizationId {
+    class getAllPlaceByFestivalId {
 
         @Test
         void 성공_PlaceDetail이_있는_경우() {
             // given
-            Long organizationId = 1L;
+            Long festivalId = 1L;
 
-            Organization organization = OrganizationFixture.create(organizationId);
-            Place place = PlaceFixture.create(organization);
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
 
             PlaceDetail detail = PlaceDetailFixture.create(place);
 
             PlaceImage image = PlaceImageFixture.create(place);
             PlaceAnnouncement announcement = PlaceAnnouncementFixture.create(place);
 
-            given(placeJpaRepository.findAllByOrganizationId(organizationId))
+            given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(List.of(place));
             given(placeDetailJpaRepository.existsByPlace(place))
                     .willReturn(true);
@@ -153,7 +153,7 @@ class PlaceServiceTest {
                     .willReturn(List.of(announcement));
 
             // when
-            PlaceResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
+            PlaceResponses result = placeService.getAllPlaceByFestivalId(festivalId);
 
             // then
             assertThat(result.responses()).hasSize(1);
@@ -162,18 +162,18 @@ class PlaceServiceTest {
         @Test
         void 성공_PlaceDetail이_없는_경우() {
             // given
-            Long organizationId = 1L;
+            Long festivalId = 1L;
 
-            Organization organization = OrganizationFixture.create(organizationId);
-            Place place = PlaceFixture.create(organization);
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
 
-            given(placeJpaRepository.findAllByOrganizationId(organizationId))
+            given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(List.of(place));
             given(placeDetailJpaRepository.existsByPlace(place))
                     .willReturn(false);
 
             // when
-            PlaceResponses result = placeService.getAllPlaceByOrganizationId(organizationId);
+            PlaceResponses result = placeService.getAllPlaceByFestivalId(festivalId);
 
             // then
             assertThat(result.responses()).hasSize(1);

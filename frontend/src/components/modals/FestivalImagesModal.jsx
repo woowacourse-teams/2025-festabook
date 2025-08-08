@@ -1,14 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 import AddImageModal from './AddImageModal';
+import api from '../../utils/api';
 
-const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openModal }) => {
+const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, onUpdate }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [isReorderMode, setIsReorderMode] = useState(false);
     const [isDeleteMode, setIsDeleteMode] = useState(false);
     const [images, setImages] = useState([]);
     const [draggedItem, setDraggedItem] = useState(null);
-    const [imagesToDelete, setImagesToDelete] = useState([]);
+    const [selectedImageToDelete, setSelectedImageToDelete] = useState(null);
     const [showAddImageModal, setShowAddImageModal] = useState(false);
 
     // ESC 키 이벤트 리스너
@@ -34,11 +35,23 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
         };
     }, [selectedImage, isReorderMode, isDeleteMode, onClose, isOpen]);
 
+    // 이미지 데이터 정규화 함수
+    const normalizeImageData = (imageData) => {
+        return imageData.map(image => ({
+            ...image,
+            id: image.festivalImageId || image.id,
+            festivalImageId: image.festivalImageId || image.id
+        }));
+    };
+
     // 이미지 데이터 초기화 및 모달 상태 관리
     useEffect(() => {
         if (isOpen) {
-            if (organization?.festivalImages) {
-                setImages([...organization.festivalImages]);
+            if (festival?.festivalImages) {
+                console.log('Original festival images:', festival.festivalImages);
+                const normalizedImages = normalizeImageData(festival.festivalImages);
+                console.log('Normalized images:', normalizedImages);
+                setImages(normalizedImages);
             }
         } else {
             // 모달이 닫힐 때 모든 상태 초기화
@@ -46,10 +59,10 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
             setIsReorderMode(false);
             setIsDeleteMode(false);
             setDraggedItem(null);
-            setImagesToDelete([]);
+            setSelectedImageToDelete(null);
             setShowAddImageModal(false);
         }
-    }, [organization, isOpen]);
+    }, [festival, isOpen]);
 
     const handleImageClick = (image) => {
         if (!isReorderMode && !isDeleteMode) {
@@ -61,11 +74,12 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
         setSelectedImage(null);
     };
 
-    // 드래그 앤 드롭 함수들
+    // 드래그 앤 드롭 함수들 (HTML5 기반)
     const handleDragStart = (e, image) => {
         if (isReorderMode) {
             setDraggedItem(image);
             e.dataTransfer.effectAllowed = 'move';
+            e.dataTransfer.setData('text/html', '');
         }
     };
 
@@ -77,17 +91,24 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
     };
 
     const handleDrop = (e, targetImage) => {
-        if (isReorderMode && draggedItem && draggedItem.id !== targetImage.id) {
-            e.preventDefault();
+        e.preventDefault();
+        
+        if (isReorderMode && draggedItem) {
+            const draggedId = draggedItem?.festivalImageId || draggedItem?.id;
+            const targetId = targetImage?.festivalImageId || targetImage?.id;
             
-            const draggedIndex = images.findIndex(img => img.id === draggedItem.id);
-            const targetIndex = images.findIndex(img => img.id === targetImage.id);
+            if (draggedId !== targetId) {
+                const draggedIndex = images.findIndex(img => (img.festivalImageId || img.id) === draggedId);
+                const targetIndex = images.findIndex(img => (img.festivalImageId || img.id) === targetId);
+                
+                if (draggedIndex !== -1 && targetIndex !== -1) {
+                    const newImages = [...images];
+                    const [removed] = newImages.splice(draggedIndex, 1);
+                    newImages.splice(targetIndex, 0, removed);
+                    setImages(newImages);
+                }
+            }
             
-            const newImages = [...images];
-            const [removed] = newImages.splice(draggedIndex, 1);
-            newImages.splice(targetIndex, 0, removed);
-            
-            setImages(newImages);
             setDraggedItem(null);
         }
     };
@@ -97,19 +118,39 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
     };
 
     // 삭제 모드 함수들
-    const handleDeleteToggle = (imageId) => {
+    const handleDeleteToggle = (imageId, event) => {
         if (isDeleteMode) {
-            setImagesToDelete(prev => 
-                prev.includes(imageId) 
-                    ? prev.filter(id => id !== imageId)
-                    : [...prev, imageId]
-            );
+            event.preventDefault();
+            event.stopPropagation();
+            
+            setSelectedImageToDelete(prev => {
+                const newSelection = prev === imageId ? null : imageId;
+                return newSelection;
+            });
         }
     };
 
     const handleSaveOrder = async () => {
         try {
-            // TODO: API 호출로 순서 저장
+            const sequences = images.map((image, index) => ({
+                festivalImageId: image.festivalImageId || image.id,
+                sequence: index
+            }));
+
+            const response = await api.patch('/festivals/images/sequences', sequences);
+            console.log('Sequence update response:', response.data);
+            
+            // 상태 업데이트
+            if (onUpdate && response.data) {
+                const normalizedResponseImages = normalizeImageData(response.data);
+                console.log('Normalized sequence response images:', normalizedResponseImages);
+                onUpdate(prev => ({
+                    ...prev,
+                    festivalImages: normalizedResponseImages
+                }));
+                setImages(normalizedResponseImages);
+            }
+            
             showToast('이미지 순서가 저장되었습니다.');
             setIsReorderMode(false);
         } catch (error) {
@@ -118,13 +159,32 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
     };
 
     const handleSaveDeletions = async () => {
+        if (!selectedImageToDelete) {
+            showToast('삭제할 이미지를 선택해주세요.');
+            return;
+        }
+
         try {
-            // TODO: API 호출로 삭제된 이미지들 처리
-            const newImages = images.filter(img => !imagesToDelete.includes(img.id));
+            // 선택된 이미지 삭제 - festivalImageId 사용
+            const imageToDelete = images.find(img => img.id === selectedImageToDelete);
+            const festivalImageId = imageToDelete?.festivalImageId || imageToDelete?.id || selectedImageToDelete;
+            
+            await api.delete(`/festivals/images/${festivalImageId}`);
+            
+            const newImages = images.filter(img => (img.festivalImageId || img.id) !== selectedImageToDelete);
             setImages(newImages);
-            setImagesToDelete([]);
+            
+            // 상태 업데이트
+            if (onUpdate) {
+                onUpdate(prev => ({
+                    ...prev,
+                    festivalImages: newImages
+                }));
+            }
+            
+            setSelectedImageToDelete(null);
             setIsDeleteMode(false);
-            showToast('선택된 이미지들이 삭제되었습니다.');
+            showToast('이미지가 삭제되었습니다.');
         } catch (error) {
             showToast('삭제에 실패했습니다.');
         }
@@ -134,10 +194,10 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
         setIsReorderMode(false);
         setIsDeleteMode(false);
         setDraggedItem(null);
-        setImagesToDelete([]);
+        setSelectedImageToDelete(null);
         // 원본 데이터로 복원
-        if (organization?.festivalImages) {
-            setImages([...organization.festivalImages]);
+        if (festival?.festivalImages) {
+            setImages([...festival.festivalImages]);
         }
     };
 
@@ -197,7 +257,7 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
                         <p className="text-yellow-800 text-sm">
                             {isReorderMode 
                                 ? '드래그하여 이미지 순서를 변경하세요. 변경사항을 저장하려면 "순서 저장" 버튼을 클릭하세요.'
-                                : '삭제할 이미지들을 선택하세요. 선택 완료 후 "삭제 완료" 버튼을 클릭하세요.'
+                                : '삭제할 이미지를 하나 선택하세요. 선택 완료 후 "삭제 완료" 버튼을 클릭하세요.'
                             }
                         </p>
                     </div>
@@ -205,18 +265,26 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
 
                 {images && images.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[600px] overflow-y-auto">
-                        {images.map((image, index) => (
+                        {images.map((image, index) => {
+                            const imageId = image.festivalImageId || image.id || index;
+                            return (
                             <div
-                                key={image.id}
+                                key={imageId}
+                                draggable={isReorderMode}
                                 className={`relative group cursor-pointer ${
                                     isReorderMode ? 'cursor-move' : ''
                                 } ${
-                                    draggedItem?.id === image.id ? 'opacity-50' : ''
+                                    draggedItem?.festivalImageId === image.festivalImageId || draggedItem?.id === image.id ? 'opacity-100' : ''
                                 }`}
-                                onClick={() => isDeleteMode ? handleDeleteToggle(image.id) : handleImageClick(image)}
-                                draggable={isReorderMode}
+                                onClick={(e) => {
+                                    if (isDeleteMode) {
+                                        handleDeleteToggle(imageId, e);
+                                    } else if (!isReorderMode) {
+                                        handleImageClick(image);
+                                    }
+                                }}
                                 onDragStart={(e) => handleDragStart(e, image)}
-                                onDragOver={(e) => handleDragOver(e)}
+                                onDragOver={handleDragOver}
                                 onDrop={(e) => handleDrop(e, image)}
                                 onDragEnd={handleDragEnd}
                             >
@@ -226,14 +294,14 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
                                         alt={`축제 이미지 ${index + 1}`}
                                         className="w-full h-full object-cover pointer-events-none"
                                     />
-                                    {isDeleteMode && imagesToDelete.includes(image.id) && (
+                                    {isDeleteMode && selectedImageToDelete === imageId && (
                                         <div className="absolute inset-0 border-4 border-red-500 rounded-lg pointer-events-none"></div>
                                     )}
                                 </div>
                                 <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
                                     {index + 1}
                                 </div>
-                                {isDeleteMode && imagesToDelete.includes(image.id) && (
+                                {isDeleteMode && selectedImageToDelete === imageId && (
                                     <div className="absolute top-2 left-2 bg-red-500 text-white p-1 rounded-full">
                                         <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                                             <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
@@ -248,7 +316,8 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
                                     </div>
                                 )}
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 ) : (
                     <div className="text-center py-12">
@@ -322,9 +391,27 @@ const FestivalImagesModal = ({ isOpen, onClose, organization, showToast, openMod
                     setIsReorderMode(false);
                     setIsDeleteMode(false);
                     setDraggedItem(null);
-                    setImagesToDelete([]);
+                    setSelectedImageToDelete(null);
                 }}
                 showToast={showToast}
+                onImageAdded={(newImage) => {
+                    console.log('New image received:', newImage);
+                    const normalizedNewImage = {
+                        ...newImage,
+                        id: newImage.festivalImageId || newImage.id,
+                        festivalImageId: newImage.festivalImageId || newImage.id
+                    };
+                    console.log('Normalized new image:', normalizedNewImage);
+                    const updatedImages = [...images, normalizedNewImage];
+                    setImages(updatedImages);
+                    if (onUpdate) {
+                        onUpdate(prev => ({
+                            ...prev,
+                            festivalImages: updatedImages
+                        }));
+                    }
+                    setShowAddImageModal(false);
+                }}
             />
             )}
 

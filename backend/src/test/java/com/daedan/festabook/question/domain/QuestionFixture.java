@@ -1,26 +1,26 @@
 package com.daedan.festabook.question.domain;
 
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class QuestionFixture {
 
-    private static final Organization DEFAULT_ORGANIZATION = OrganizationFixture.create();
+    private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final String DEFAULT_QUESTION = "이 서비스는 무엇인가요?";
     private static final String DEFAULT_ANSWER = "이 서비스는 페스타북입니다.";
     private static final Integer DEFAULT_SEQUENCE = 3;
 
     public static Question create(
-            Organization organization,
+            Festival festival,
             String question,
             String answer,
             Integer sequence
     ) {
         return new Question(
-                organization,
+                festival,
                 question,
                 answer,
                 sequence
@@ -28,10 +28,10 @@ public class QuestionFixture {
     }
 
     public static Question create(
-            Organization organization
+            Festival festival
     ) {
         return create(
-                organization,
+                festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
@@ -39,11 +39,11 @@ public class QuestionFixture {
     }
 
     public static Question create(
-            Organization organization,
+            Festival festival,
             Integer sequence
     ) {
         return create(
-                organization,
+                festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 sequence
@@ -54,7 +54,7 @@ public class QuestionFixture {
             String question
     ) {
         return create(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 question,
                 DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
@@ -65,7 +65,7 @@ public class QuestionFixture {
             String answer
     ) {
         return create(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 answer,
                 DEFAULT_SEQUENCE
@@ -78,7 +78,7 @@ public class QuestionFixture {
             Integer sequence
     ) {
         return create(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 question,
                 answer,
                 sequence
@@ -89,7 +89,7 @@ public class QuestionFixture {
             Integer sequence
     ) {
         return create(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 sequence
@@ -98,7 +98,7 @@ public class QuestionFixture {
 
     public static Question create() {
         return create(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
@@ -110,7 +110,7 @@ public class QuestionFixture {
     ) {
         return new Question(
                 id,
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
@@ -123,16 +123,16 @@ public class QuestionFixture {
     ) {
         return new Question(
                 id,
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 sequence
         );
     }
 
-    public static List<Question> createList(int size, Organization organization) {
+    public static List<Question> createList(int size, Festival festival) {
         return IntStream.range(0, size)
-                .mapToObj(i -> create(organization))
+                .mapToObj(i -> create(festival))
                 .collect(Collectors.toList());
     }
 

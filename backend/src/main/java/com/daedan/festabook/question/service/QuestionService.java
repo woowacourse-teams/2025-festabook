@@ -1,8 +1,8 @@
 package com.daedan.festabook.question.service;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
@@ -12,7 +12,7 @@ import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -24,22 +24,24 @@ import org.springframework.transaction.annotation.Transactional;
 public class QuestionService {
 
     private final QuestionJpaRepository questionJpaRepository;
-    private final OrganizationJpaRepository organizationJpaRepository;
+    private final FestivalJpaRepository festivalJpaRepository;
 
-    public QuestionResponse createQuestion(Long organizationId, QuestionRequest request) {
-        Organization organization = getOrganizationById(organizationId);
+    @Transactional
+    public QuestionResponse createQuestion(Long festivalId, QuestionRequest request) {
+        Festival festival = getFestivalById(festivalId);
 
-        Integer currentMaxSequence = questionJpaRepository.countByOrganizationId(organizationId);
-        Integer nextSequence = currentMaxSequence + 1;
+        Integer currentMaxSequence = questionJpaRepository.findMaxSequenceByFestivalId(festivalId)
+                .orElseGet(() -> 0);
+        Integer newSequence = currentMaxSequence + 1;
 
-        Question question = new Question(organization, request.question(), request.answer(), nextSequence);
+        Question question = new Question(festival, request.question(), request.answer(), newSequence);
         Question savedQuestion = questionJpaRepository.save(question);
 
         return QuestionResponse.from(savedQuestion);
     }
 
-    public QuestionResponses getAllQuestionByOrganizationId(Long organizationId) {
-        List<Question> questions = questionJpaRepository.findByOrganizationIdOrderBySequenceAsc(organizationId);
+    public QuestionResponses getAllQuestionByFestivalId(Long festivalId) {
+        List<Question> questions = questionJpaRepository.findByFestivalIdOrderBySequenceAsc(festivalId);
         return QuestionResponses.from(questions);
     }
 
@@ -60,7 +62,7 @@ public class QuestionService {
             questions.add(question);
         }
 
-        questions.sort(sequenceAscending());
+        Collections.sort(questions);
 
         return QuestionSequenceUpdateResponses.from(questions);
     }
@@ -74,12 +76,8 @@ public class QuestionService {
                 .orElseThrow(() -> new BusinessException("존재하지 않는 질문입니다.", HttpStatus.NOT_FOUND));
     }
 
-    private Organization getOrganizationById(Long organizationId) {
-        return organizationJpaRepository.findById(organizationId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 조직입니다.", HttpStatus.BAD_REQUEST));
-    }
-
-    private Comparator<Question> sequenceAscending() {
-        return Comparator.comparing(Question::getSequence);
+    private Festival getFestivalById(Long festivalId) {
+        return festivalJpaRepository.findById(festivalId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
     }
 }

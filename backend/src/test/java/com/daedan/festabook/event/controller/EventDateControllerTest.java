@@ -13,9 +13,9 @@ import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -37,7 +37,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventDateControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
     private EventDateJpaRepository eventDateJpaRepository;
@@ -46,7 +46,7 @@ class EventDateControllerTest {
     private EventJpaRepository eventJpaRepository;
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @MockitoBean
     private Clock clock;
@@ -65,8 +65,8 @@ class EventDateControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             EventDateRequest request = EventDateRequestFixture.create();
 
@@ -74,7 +74,7 @@ class EventDateControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .post("/event-dates")
@@ -85,10 +85,10 @@ class EventDateControllerTest {
         @Test
         void 예외_이미_존재하는_일정_날짜() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate existingEventDate = EventDateFixture.create(organization);
+            EventDate existingEventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(existingEventDate);
 
             EventDateRequest request = EventDateRequestFixture.create(existingEventDate.getDate());
@@ -97,7 +97,7 @@ class EventDateControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .post("/event-dates")
@@ -113,10 +113,10 @@ class EventDateControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate eventDate = EventDateFixture.create(organization);
+            EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             EventDateRequest request = EventDateRequestFixture.create(eventDate.getDate().plusDays(1));
@@ -125,7 +125,7 @@ class EventDateControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .patch("/event-dates/{eventDateId}", eventDate.getId())
@@ -141,8 +141,8 @@ class EventDateControllerTest {
         @Test
         void 성공_존재하지_않는_일정_날짜_ID_204_응답() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Long notExistingEventDateId = 0L;
             EventDateRequest request = EventDateRequestFixture.create();
@@ -151,7 +151,7 @@ class EventDateControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .patch("/event-dates/{eventDateId}", notExistingEventDateId)
@@ -167,10 +167,10 @@ class EventDateControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate eventDate = EventDateFixture.create(organization);
+            EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             List<Event> events = EventFixture.createList(3, eventDate);
@@ -179,7 +179,7 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/{eventDateId}", eventDate.getId())
                     .then()
@@ -193,15 +193,15 @@ class EventDateControllerTest {
         @Test
         void 성공_존재하지_않는_일정_날짜_ID() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Long invalidEventDateId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/{eventDateId}", invalidEventDateId)
                     .then()
@@ -214,15 +214,15 @@ class EventDateControllerTest {
     }
 
     @Nested
-    class getAllEventDateByOrganizationId {
+    class getAllEventDateByFestivalId {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            EventDate eventDate = EventDateFixture.create(organization);
+            EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             int expectedSize = 1;
@@ -231,7 +231,7 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/event-dates")
                     .then()
@@ -243,23 +243,23 @@ class EventDateControllerTest {
         }
 
         @Test
-        void 성공_조직_ID_기반() {
+        void 성공_축제_ID_기반() {
             // given
-            Organization organization = OrganizationFixture.create("우리 학교");
-            Organization otherOrganization = OrganizationFixture.create("다른 학교");
-            organizationJpaRepository.saveAll(List.of(organization, otherOrganization));
+            Festival festival = FestivalFixture.create("우리 학교");
+            Festival otherFestival = FestivalFixture.create("다른 학교");
+            festivalJpaRepository.saveAll(List.of(festival, otherFestival));
 
             int expectedSize = 4;
-            List<EventDate> eventDates = EventDateFixture.createList(expectedSize, organization);
+            List<EventDate> eventDates = EventDateFixture.createList(expectedSize, festival);
             int otherSize = 5;
-            List<EventDate> otherEventDates = EventDateFixture.createList(otherSize, otherOrganization);
+            List<EventDate> otherEventDates = EventDateFixture.createList(otherSize, otherFestival);
             eventDateJpaRepository.saveAll(eventDates);
             eventDateJpaRepository.saveAll(otherEventDates);
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/event-dates")
                     .then()
@@ -270,8 +270,8 @@ class EventDateControllerTest {
         @Test
         void 성공_날짜_오름차순() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             List<LocalDate> dates = List.of(
                     LocalDate.of(2025, 7, 20),
@@ -280,7 +280,7 @@ class EventDateControllerTest {
                     LocalDate.of(2025, 7, 19)
             );
 
-            List<EventDate> eventDates = EventDateFixture.createList(dates, organization);
+            List<EventDate> eventDates = EventDateFixture.createList(dates, festival);
             eventDateJpaRepository.saveAll(eventDates);
 
             List<String> expectedSortedDates = dates.stream()
@@ -291,7 +291,7 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/event-dates")
                     .then()

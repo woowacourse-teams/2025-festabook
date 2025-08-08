@@ -37,3 +37,6 @@ bin/**
 
 ### FCM firebase-adminsdk ###
 **/firebase/*.json
+
+### MAC ###
+**/.DS_Store

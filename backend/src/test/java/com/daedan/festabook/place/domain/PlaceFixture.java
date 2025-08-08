@@ -1,18 +1,18 @@
 package com.daedan.festabook.place.domain;
 
-import com.daedan.festabook.organization.domain.Coordinate;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.festival.domain.Coordinate;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 
 public class PlaceFixture {
 
-    private static final Organization DEFAULT_ORGANIZATION = OrganizationFixture.create();
+    private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final PlaceCategory DEFAULT_CATEGORY = PlaceCategory.BAR;
     private static final Coordinate DEFAULT_COORDINATE = new Coordinate(37.3595704, 127.105399);
 
     public static Place create() {
         return new Place(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE
         );
@@ -23,42 +23,42 @@ public class PlaceFixture {
     ) {
         return new Place(
                 id,
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE
         );
     }
 
     public static Place create(
-            Organization organization
+            Festival festival
     ) {
         return new Place(
-                organization,
+                festival,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE
         );
     }
 
     public static Place create(
-            Organization organization,
+            Festival festival,
             PlaceCategory category,
             Double latitude,
             Double longitude
     ) {
         return new Place(
-                organization,
+                festival,
                 category,
                 new Coordinate(latitude, longitude)
         );
     }
 
     public static Place create(
-            Organization organization,
+            Festival festival,
             PlaceCategory category,
             Coordinate coordinate
     ) {
         return new Place(
-                organization,
+                festival,
                 category,
                 coordinate
         );
@@ -66,24 +66,24 @@ public class PlaceFixture {
 
     public static Place create(
             Long id,
-            Organization organization,
+            Festival festival,
             Double latitude,
             Double longitude
     ) {
         return new Place(
                 id,
-                organization,
+                festival,
                 DEFAULT_CATEGORY,
                 new Coordinate(latitude, longitude)
         );
     }
 
     public static Place create(
-            Organization organization,
+            Festival festival,
             PlaceCategory category
     ) {
         return new Place(
-                organization,
+                festival,
                 category,
                 DEFAULT_COORDINATE
         );
@@ -91,12 +91,12 @@ public class PlaceFixture {
 
     public static Place createWithNullDefaults(
             Long id,
-            Organization organization,
+            Festival festival,
             PlaceCategory placeCategory
     ) {
         return new Place(
                 id,
-                organization,
+                festival,
                 placeCategory,
                 null
         );

@@ -19,14 +19,15 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SwaggerConfig {
 
-    private static final String ORGANIZATION_SCHEME_NAME = "조직(Organization) ID 값";
+    private static final String FESTIVAL_SCHEME_NAME = "축제(Festival) ID 값";
     private static final List<String[]> API_GROUPS = List.of(
             new String[]{"전체", "/**"},
             new String[]{"일정 API", "/event-dates/**"},
             new String[]{"플레이스 API", "/places/**"},
             new String[]{"공지 API", "/announcements/**"},
             new String[]{"질문 API", "/questions/**"},
-            new String[]{"조직 API", "/organizations/**"},
+            new String[]{"분실물 API", "/lost-items/**"},
+            new String[]{"축제 API", "/festivals/**"},
             new String[]{"디바이스 API", "/devices/**"}
     );
 
@@ -58,14 +59,14 @@ public class SwaggerConfig {
     }
 
     private static SecurityRequirement createSecurityRequirement() {
-        return new SecurityRequirement().addList(ORGANIZATION_SCHEME_NAME);
+        return new SecurityRequirement().addList(FESTIVAL_SCHEME_NAME);
     }
 
     private static Components createComponents() {
         return new Components()
-                .addSecuritySchemes(ORGANIZATION_SCHEME_NAME, new SecurityScheme()
+                .addSecuritySchemes(FESTIVAL_SCHEME_NAME, new SecurityScheme()
                         .type(Type.APIKEY)
                         .in(In.HEADER)
-                        .name("organization"));
+                        .name("festival"));
     }
 }
