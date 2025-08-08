@@ -32,6 +32,8 @@ class ScheduleItemViewHolder(
         val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
         if (layoutPosition == itemCount - 1) {
             layoutParams.bottomMargin = BOTTOM_MARGIN.toPx(binding.clScheduleEventCard.context)
+        } else {
+            layoutParams.bottomMargin = 0
         }
     }
 
