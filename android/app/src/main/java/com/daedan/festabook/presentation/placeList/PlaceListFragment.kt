@@ -191,10 +191,14 @@ class PlaceListFragment :
                             override fun onMarkerListener(
                                 placeId: Long,
                                 category: PlaceCategoryUiModel,
-                            ) {
+                            ): Boolean {
                                 Timber.d("Marker CLick : placeID: $placeId categoty: $category")
+                                if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+                                    return true
+                                }
                                 viewModel.selectPlace(placeId, category)
                                 binding.layoutPlaceList.visibility = View.GONE
+                                return true
                             }
 
                             override fun onMapClickListener() {
