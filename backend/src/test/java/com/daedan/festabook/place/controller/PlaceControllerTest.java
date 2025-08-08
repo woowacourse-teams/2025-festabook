@@ -10,10 +10,10 @@ import static org.hamcrest.Matchers.nullValue;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
-import com.daedan.festabook.organization.domain.Coordinate;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.Coordinate;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -50,10 +50,10 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceControllerTest {
 
-    private static final String ORGANIZATION_HEADER_NAME = "organization";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @Autowired
     private PlaceJpaRepository placeJpaRepository;
@@ -87,8 +87,8 @@ class PlaceControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
             PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
@@ -98,7 +98,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(placeRequest)
                     .post("/places")
@@ -121,21 +121,21 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getAllPlaceByOrganizationId {
+    class getAllPlaceByFestivalId {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place mainPlace = PlaceFixture.create(organization);
+            Place mainPlace = PlaceFixture.create(festival);
             placeJpaRepository.save(mainPlace);
 
             PlaceDetail mainPlaceDetail = PlaceDetailFixture.create(mainPlace);
             placeDetailJpaRepository.save(mainPlaceDetail);
 
-            Place etcPlace = PlaceFixture.create(organization);
+            Place etcPlace = PlaceFixture.create(festival);
             placeJpaRepository.save(etcPlace);
 
             int expectedSize = 2;
@@ -143,7 +143,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .get("/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
@@ -153,10 +153,10 @@ class PlaceControllerTest {
         @Test
         void 성공_MainPlace인_경우() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place mainPlace = PlaceFixture.create(organization);
+            Place mainPlace = PlaceFixture.create(festival);
             placeJpaRepository.save(mainPlace);
 
             PlaceDetail mainPlaceDetail = PlaceDetailFixture.create(mainPlace);
@@ -167,7 +167,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .get("/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
@@ -177,10 +177,10 @@ class PlaceControllerTest {
         @Test
         void 성공_EtcPlace인_경우() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place etcPlace = PlaceFixture.create(organization);
+            Place etcPlace = PlaceFixture.create(festival);
             placeJpaRepository.save(etcPlace);
 
             int expectedSize = 1;
@@ -188,7 +188,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .get("/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
@@ -197,15 +197,15 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getAllPreviewPlaceByOrganizationId {
+    class getAllPreviewPlaceByFestivalId {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceDetail placeDetail = PlaceDetailFixture.create(place);
@@ -222,7 +222,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/previews")
                     .then()
@@ -238,15 +238,15 @@ class PlaceControllerTest {
         }
 
         @Test
-        void 성공_특정_조직의_모든_플레이스_리스트_조회() {
+        void 성공_특정_축제의_모든_플레이스_리스트_조회() {
             // given
-            Organization targetOrganization = OrganizationFixture.create();
-            Organization anotherOrganization = OrganizationFixture.create();
-            organizationJpaRepository.saveAll(List.of(targetOrganization, anotherOrganization));
+            Festival targetFestival = FestivalFixture.create();
+            Festival anotherFestival = FestivalFixture.create();
+            festivalJpaRepository.saveAll(List.of(targetFestival, anotherFestival));
 
-            Place targetPlace1 = PlaceFixture.create(targetOrganization);
-            Place targetPlace2 = PlaceFixture.create(targetOrganization);
-            Place anotherPlace = PlaceFixture.create(anotherOrganization);
+            Place targetPlace1 = PlaceFixture.create(targetFestival);
+            Place targetPlace2 = PlaceFixture.create(targetFestival);
+            Place anotherPlace = PlaceFixture.create(anotherFestival);
             placeJpaRepository.saveAll(List.of(targetPlace1, targetPlace2, anotherPlace));
 
             PlaceDetail targetPlaceDetail1 = PlaceDetailFixture.create(targetPlace1);
@@ -265,7 +265,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, targetOrganization.getId())
+                    .header(FESTIVAL_HEADER_NAME, targetFestival.getId())
                     .when()
                     .get("/places/previews")
                     .then()
@@ -276,11 +276,11 @@ class PlaceControllerTest {
         @Test
         void 성공_대표_이미지가_없다면_null_반환() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place1 = PlaceFixture.create(organization);
-            Place place2 = PlaceFixture.create(organization);
+            Place place1 = PlaceFixture.create(festival);
+            Place place2 = PlaceFixture.create(festival);
             placeJpaRepository.saveAll(List.of(place1, place2));
 
             PlaceDetail placeDetail1 = PlaceDetailFixture.create(place1);
@@ -297,7 +297,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/previews")
                     .then()
@@ -309,17 +309,17 @@ class PlaceControllerTest {
         @Test
         void 성공_Detail이_없는_경우_나머지_필드_null_반환() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Coordinate coordinate = null;
-            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, coordinate);
+            Place place = PlaceFixture.create(festival, PlaceCategory.BAR, coordinate);
             placeJpaRepository.save(place);
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/previews")
                     .then()
@@ -338,10 +338,10 @@ class PlaceControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceDetail placeDetail = PlaceDetailFixture.create(place);
@@ -364,7 +364,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/{placeId}", place.getId())
                     .then()
@@ -399,10 +399,10 @@ class PlaceControllerTest {
         @Test
         void 성공_이미지_오름차순_정렬() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceDetail placeDetail = PlaceDetailFixture.create(place);
@@ -418,7 +418,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/{placeId}", place.getId())
                     .then()
@@ -433,10 +433,10 @@ class PlaceControllerTest {
         @Test
         void 성공_이미지가_없는_경우_빈_배열_반환() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceDetail placeDetail = PlaceDetailFixture.create(place);
@@ -448,7 +448,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/{placeId}", place.getId())
                     .then()
@@ -461,10 +461,10 @@ class PlaceControllerTest {
         @Test
         void 성공_공지가_없는_경우_빈_배열_반환() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceDetail placeDetail = PlaceDetailFixture.create(place);
@@ -476,7 +476,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/{placeId}", place.getId())
                     .then()
@@ -487,8 +487,8 @@ class PlaceControllerTest {
         @Test
         void 실패_placeDetail이_존재하지_않는_place_id() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Long placeId = 0L;
             int expectedFieldSize = 1;
@@ -496,7 +496,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/{placeId}", placeId)
                     .then()
@@ -514,10 +514,10 @@ class PlaceControllerTest {
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
-            Place place = PlaceFixture.create(organization);
+            Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
             PlaceDetail placeDetail = PlaceDetailFixture.create(place);
@@ -542,7 +542,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/places/{placeId}", place.getId())
                     .then()
@@ -567,15 +567,15 @@ class PlaceControllerTest {
         @Test
         void 성공_place가_존재하지_않는_경우_204를_응답() {
             // given
-            Organization organization = OrganizationFixture.create();
-            organizationJpaRepository.save(organization);
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
 
             Long invalidPlaceId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .header(ORGANIZATION_HEADER_NAME, organization.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/places/{placeId}", invalidPlaceId)
                     .then()

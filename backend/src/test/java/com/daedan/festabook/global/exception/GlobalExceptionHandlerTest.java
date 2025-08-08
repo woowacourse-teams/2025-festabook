@@ -79,7 +79,7 @@ class GlobalExceptionHandlerTest {
     }
 
     @RestController
-    static private class ExceptionController {
+    static public class ExceptionController {
 
         @GetMapping("/business-exception-test")
         public void test1(

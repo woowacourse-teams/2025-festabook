@@ -1,6 +1,6 @@
 package com.daedan.festabook.event.domain;
 
-import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.festival.domain.Festival;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -25,28 +25,28 @@ public class EventDate implements Comparable<EventDate> {
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Organization organization;
+    private Festival festival;
 
     @Column(nullable = false)
     private LocalDate date;
 
     protected EventDate(
             Long id,
-            Organization organization,
+            Festival festival,
             LocalDate date
     ) {
         this.id = id;
-        this.organization = organization;
+        this.festival = festival;
         this.date = date;
     }
 
     public EventDate(
-            Organization organization,
+            Festival festival,
             LocalDate date
     ) {
         this(
                 null,
-                organization,
+                festival,
                 date
         );
     }

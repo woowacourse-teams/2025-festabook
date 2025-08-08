@@ -1,6 +1,6 @@
 package com.daedan.festabook.question.controller;
 
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionResponse;
@@ -36,27 +36,27 @@ public class QuestionController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 조직의 질문 생성")
+    @Operation(summary = "특정 축제의 질문 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public QuestionResponse createQuestion(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody QuestionRequest request
     ) {
-        return questionService.createQuestion(organizationId, request);
+        return questionService.createQuestion(festivalId, request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직의 모든 질문 조회")
+    @Operation(summary = "특정 축제의 모든 질문 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public QuestionResponses getAllQuestionByOrganizationId(
-            @Parameter(hidden = true) @OrganizationId Long organizationId
+    public QuestionResponses getAllQuestionByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return questionService.getAllQuestionByOrganizationId(organizationId);
+        return questionService.getAllQuestionByFestivalId(festivalId);
     }
 
     @PatchMapping("/{questionId}")

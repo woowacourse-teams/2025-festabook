@@ -24,8 +24,8 @@ public class PlacePreviewService {
     private final PlaceImageJpaRepository placeImageJpaRepository;
     private final PlaceDetailJpaRepository placeDetailJpaRepository;
 
-    public PlacePreviewResponses getAllPreviewPlaceByOrganizationId(Long organizationId) {
-        List<Place> places = getPlacesHasDetail(organizationId);
+    public PlacePreviewResponses getAllPreviewPlaceByFestivalId(Long festivalId) {
+        List<Place> places = getPlacesHasDetail(festivalId);
 
         Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(places);
         Map<Long, PlaceDetail> placeDetails = mapPlaceDetailsToIds(places);
@@ -33,8 +33,8 @@ public class PlacePreviewService {
         return PlacePreviewResponses.from(places, placeDetails, placeImages);
     }
 
-    private List<Place> getPlacesHasDetail(Long organizationId) {
-        return placeJpaRepository.findAllByOrganizationId(organizationId).stream()
+    private List<Place> getPlacesHasDetail(Long festivalId) {
+        return placeJpaRepository.findAllByFestivalId(festivalId).stream()
                 .filter(Place::hasDetail)
                 .toList();
     }

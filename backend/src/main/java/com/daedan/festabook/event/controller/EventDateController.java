@@ -3,7 +3,7 @@ package com.daedan.festabook.event.controller;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateResponses;
 import com.daedan.festabook.event.service.EventDateService;
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -36,10 +36,10 @@ public class EventDateController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
     public void createEventDate(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody EventDateRequest request
     ) {
-        eventDateService.createEventDate(organizationId, request);
+        eventDateService.createEventDate(festivalId, request);
     }
 
     @PatchMapping("/{eventDateId}")
@@ -69,13 +69,13 @@ public class EventDateController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 조직의 모든 일정 날짜 조회")
+    @Operation(summary = "특정 축제의 모든 일정 날짜 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
-    public EventDateResponses getAllEventDateByOrganizationId(
-            @Parameter(hidden = true) @OrganizationId Long organizationId
+    public EventDateResponses getAllEventDateByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return eventDateService.getAllEventDateByOrganizationId(organizationId);
+        return eventDateService.getAllEventDateByFestivalId(festivalId);
     }
 }

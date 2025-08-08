@@ -6,7 +6,7 @@ import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.service.AnnouncementService;
-import com.daedan.festabook.global.argumentresolver.OrganizationId;
+import com.daedan.festabook.global.argumentresolver.FestivalId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -39,10 +39,10 @@ public class AnnouncementController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public AnnouncementResponse createAnnouncement(
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody AnnouncementRequest request
     ) {
-        return announcementService.createAnnouncement(organizationId, request);
+        return announcementService.createAnnouncement(festivalId, request);
     }
 
     @GetMapping
@@ -51,10 +51,10 @@ public class AnnouncementController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public AnnouncementGroupedResponses getGroupedAnnouncementByOrganizationId(
-            @Parameter(hidden = true) @OrganizationId Long organizationId
+    public AnnouncementGroupedResponses getGroupedAnnouncementByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return announcementService.getGroupedAnnouncementByOrganizationId(organizationId);
+        return announcementService.getGroupedAnnouncementByFestivalId(festivalId);
     }
 
     @PatchMapping("/{announcementId}")
@@ -78,10 +78,10 @@ public class AnnouncementController {
     })
     public void updateAnnouncementPin(
             @PathVariable Long announcementId,
-            @Parameter(hidden = true) @OrganizationId Long organizationId,
+            @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody AnnouncementPinUpdateRequest request
     ) {
-        announcementService.updateAnnouncementPin(announcementId, organizationId, request);
+        announcementService.updateAnnouncementPin(announcementId, festivalId, request);
     }
 
     @DeleteMapping("/{announcementId}")

@@ -2,9 +2,9 @@ package com.daedan.festabook.place.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import com.daedan.festabook.organization.domain.Coordinate;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.festival.domain.Coordinate;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -27,9 +27,9 @@ class PlaceTest {
         })
         void 성공_카테고리에_따라_상세_정보_유무_반환(PlaceCategory category, boolean expected) {
             // given
-            Organization organization = OrganizationFixture.create();
+            Festival festival = FestivalFixture.create();
             Coordinate coordinate = new Coordinate(37.5, 127.0);
-            Place place = new Place(organization, category, coordinate);
+            Place place = new Place(festival, category, coordinate);
 
             // when
             boolean result = place.hasDetail();

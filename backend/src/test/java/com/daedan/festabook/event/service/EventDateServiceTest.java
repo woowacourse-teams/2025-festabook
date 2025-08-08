@@ -15,10 +15,10 @@ import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
-import com.daedan.festabook.organization.infrastructure.OrganizationJpaRepository;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +35,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventDateServiceTest {
 
-    private static final Long DEFAULT_ORGANIZATION_ID = 1L;
+    private static final Long DEFAULT_FESTIVAL_ID = 1L;
 
     @Mock
     private EventDateJpaRepository eventDateJpaRepository;
@@ -44,7 +44,7 @@ class EventDateServiceTest {
     private EventJpaRepository eventJpaRepository;
 
     @Mock
-    private OrganizationJpaRepository organizationJpaRepository;
+    private FestivalJpaRepository festivalJpaRepository;
 
     @InjectMocks
     private EventDateService eventDateService;
@@ -60,12 +60,12 @@ class EventDateServiceTest {
             given(eventDateJpaRepository.save(any()))
                     .willReturn(eventDate);
 
-            Organization organization = OrganizationFixture.create(DEFAULT_ORGANIZATION_ID);
-            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
-                    .willReturn(Optional.of(organization));
+            Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
+            given(festivalJpaRepository.findById(DEFAULT_FESTIVAL_ID))
+                    .willReturn(Optional.of(festival));
 
             // when
-            EventDateResponse result = eventDateService.createEventDate(DEFAULT_ORGANIZATION_ID, request);
+            EventDateResponse result = eventDateService.createEventDate(DEFAULT_FESTIVAL_ID, request);
 
             // then
             assertSoftly(s -> {
@@ -78,26 +78,26 @@ class EventDateServiceTest {
         void 예외_이미_존재하는_일정_날짜() {
             // given
             EventDateRequest request = EventDateRequestFixture.create();
-            given(eventDateJpaRepository.existsByOrganizationIdAndDate(DEFAULT_ORGANIZATION_ID, request.date()))
+            given(eventDateJpaRepository.existsByFestivalIdAndDate(DEFAULT_FESTIVAL_ID, request.date()))
                     .willReturn(true);
 
             // when & then
-            assertThatThrownBy(() -> eventDateService.createEventDate(DEFAULT_ORGANIZATION_ID, request))
+            assertThatThrownBy(() -> eventDateService.createEventDate(DEFAULT_FESTIVAL_ID, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("이미 존재하는 일정 날짜입니다.");
         }
 
         @Test
-        void 예외_존재하지_않는_조직() {
+        void 예외_존재하지_않는_축제() {
             // given
             EventDateRequest request = EventDateRequestFixture.create();
-            given(organizationJpaRepository.findById(DEFAULT_ORGANIZATION_ID))
+            given(festivalJpaRepository.findById(DEFAULT_FESTIVAL_ID))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> eventDateService.createEventDate(DEFAULT_ORGANIZATION_ID, request))
+            assertThatThrownBy(() -> eventDateService.createEventDate(DEFAULT_FESTIVAL_ID, request))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 조직입니다.");
+                    .hasMessage("존재하지 않는 축제입니다.");
         }
     }
 
@@ -141,7 +141,7 @@ class EventDateServiceTest {
     }
 
     @Nested
-    class getAllEventDateByOrganizationId {
+    class getAllEventDateByFestivalId {
 
         @Test
         void 성공_응답_개수_확인() {
@@ -151,13 +151,13 @@ class EventDateServiceTest {
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2);
 
-            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+            given(eventDateJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
                     .willReturn(eventDates);
 
             LocalDate expected = LocalDate.of(2025, 10, 26);
 
             // when
-            EventDateResponses result = eventDateService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
+            EventDateResponses result = eventDateService.getAllEventDateByFestivalId(DEFAULT_FESTIVAL_ID);
 
             // then
             assertSoftly(s -> {
@@ -175,11 +175,11 @@ class EventDateServiceTest {
 
             List<EventDate> eventDates = List.of(eventDate1, eventDate2, eventDate3);
 
-            given(eventDateJpaRepository.findAllByOrganizationId(DEFAULT_ORGANIZATION_ID))
+            given(eventDateJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
                     .willReturn(eventDates);
 
             // when
-            EventDateResponses result = eventDateService.getAllEventDateByOrganizationId(DEFAULT_ORGANIZATION_ID);
+            EventDateResponses result = eventDateService.getAllEventDateByFestivalId(DEFAULT_FESTIVAL_ID);
 
             // then
             assertThat(result.responses())

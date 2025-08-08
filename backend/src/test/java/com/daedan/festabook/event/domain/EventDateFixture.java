@@ -1,14 +1,14 @@
 package com.daedan.festabook.event.domain;
 
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
 
 public class EventDateFixture {
 
-    private static final Organization DEFAULT_ORGANIZATION = OrganizationFixture.create();
+    private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 5, 20);
 
     public static EventDate create(
@@ -17,23 +17,23 @@ public class EventDateFixture {
     ) {
         return new EventDate(
                 eventDateId,
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 date
         );
     }
 
     public static EventDate create() {
         return new EventDate(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 DEFAULT_DATE
         );
     }
 
     public static EventDate create(
-            Organization organization
+            Festival festival
     ) {
         return new EventDate(
-                organization,
+                festival,
                 DEFAULT_DATE
         );
     }
@@ -42,30 +42,30 @@ public class EventDateFixture {
             LocalDate date
     ) {
         return new EventDate(
-                DEFAULT_ORGANIZATION,
+                DEFAULT_FESTIVAL,
                 date
         );
     }
 
     public static EventDate create(
-            Organization organization,
+            Festival festival,
             LocalDate date
     ) {
         return new EventDate(
-                organization,
+                festival,
                 date
         );
     }
 
-    public static List<EventDate> createList(int size, Organization organization) {
+    public static List<EventDate> createList(int size, Festival festival) {
         return IntStream.range(0, size)
-                .mapToObj(i -> create(organization))
+                .mapToObj(i -> create(festival))
                 .toList();
     }
 
-    public static List<EventDate> createList(List<LocalDate> dates, Organization organization) {
+    public static List<EventDate> createList(List<LocalDate> dates, Festival festival) {
         return dates.stream()
-                .map(date -> create(organization, date))
+                .map(date -> create(festival, date))
                 .toList();
     }
 }

@@ -6,8 +6,8 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceCoordinateRequestFixture;
@@ -38,22 +38,22 @@ class PlaceGeographyServiceTest {
     private PlaceGeographyService placeGeographyService;
 
     @Nested
-    class getAllPlaceGeographyByOrganizationId {
+    class getAllPlaceGeographyByFestivalId {
 
         @Test
         void 성공() {
             // given
-            Organization organization = OrganizationFixture.create(1L);
+            Festival festival = FestivalFixture.create(1L);
 
-            Place place1 = PlaceFixture.create(organization, PlaceCategory.BAR, 37.123, 125.432);
-            Place place2 = PlaceFixture.create(organization, PlaceCategory.SMOKING, 37.343, 125.782);
+            Place place1 = PlaceFixture.create(festival, PlaceCategory.BAR, 37.123, 125.432);
+            Place place2 = PlaceFixture.create(festival, PlaceCategory.SMOKING, 37.343, 125.782);
 
-            given(placeJpaRepository.findAllByOrganizationId(organization.getId()))
+            given(placeJpaRepository.findAllByFestivalId(festival.getId()))
                     .willReturn(List.of(place1, place2));
 
             // when
-            PlaceGeographyResponses result = placeGeographyService.getAllPlaceGeographyByOrganizationId(
-                    organization.getId()
+            PlaceGeographyResponses result = placeGeographyService.getAllPlaceGeographyByFestivalId(
+                    festival.getId()
             );
 
             // then
@@ -77,16 +77,16 @@ class PlaceGeographyServiceTest {
         @Test
         void 성공_Coordinate가_없을_경우_응답에_포함하지_않음() {
             // given
-            Organization organization = OrganizationFixture.create(1L);
+            Festival festival = FestivalFixture.create(1L);
 
-            Place place = PlaceFixture.create(organization, PlaceCategory.BAR, null);
+            Place place = PlaceFixture.create(festival, PlaceCategory.BAR, null);
 
-            given(placeJpaRepository.findAllByOrganizationId(organization.getId()))
+            given(placeJpaRepository.findAllByFestivalId(festival.getId()))
                     .willReturn(List.of(place));
 
             // when
-            PlaceGeographyResponses result = placeGeographyService.getAllPlaceGeographyByOrganizationId(
-                    organization.getId()
+            PlaceGeographyResponses result = placeGeographyService.getAllPlaceGeographyByFestivalId(
+                    festival.getId()
             );
 
             // then
@@ -101,8 +101,8 @@ class PlaceGeographyServiceTest {
         void 성공() {
             // given
             Long placeId = 1L;
-            Organization organization = OrganizationFixture.create(1L);
-            Place place = PlaceFixture.create(placeId, organization, 37.0, 127.0);
+            Festival festival = FestivalFixture.create(1L);
+            Place place = PlaceFixture.create(placeId, festival, 37.0, 127.0);
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
             given(placeJpaRepository.findById(placeId))

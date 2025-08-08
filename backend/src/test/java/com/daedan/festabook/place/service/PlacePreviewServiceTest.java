@@ -4,9 +4,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
-import com.daedan.festabook.organization.domain.Coordinate;
-import com.daedan.festabook.organization.domain.Organization;
-import com.daedan.festabook.organization.domain.OrganizationFixture;
+import com.daedan.festabook.festival.domain.Coordinate;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceDetail;
@@ -45,7 +45,7 @@ class PlacePreviewServiceTest {
     private PlacePreviewService placePreviewService;
 
     @Nested
-    class getAllPreviewPlaceByOrganizationId {
+    class getAllPreviewPlaceByFestivalId {
 
         @Test
         void 성공() {
@@ -63,8 +63,8 @@ class PlacePreviewServiceTest {
             PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
             List<PlaceImage> placeImages = List.of(placeImage1, placeImage2);
 
-            Long organizationId = 1L;
-            given(placeJpaRepository.findAllByOrganizationId(organizationId))
+            Long festivalId = 1L;
+            given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(places);
             given(placeDetailJpaRepository.findAllByPlaceIn(places))
                     .willReturn(placeDetails);
@@ -74,7 +74,7 @@ class PlacePreviewServiceTest {
             int expectedSize = 2;
 
             // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByOrganizationId(organizationId);
+            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
 
             // then
             assertThat(result.responses()).hasSize(expectedSize);
@@ -95,9 +95,9 @@ class PlacePreviewServiceTest {
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
             List<PlaceImage> placeImages = List.of(placeImage1);
 
-            Long organizationId = 1L;
+            Long festivalId = 1L;
 
-            given(placeJpaRepository.findAllByOrganizationId(organizationId))
+            given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(places);
             given(placeDetailJpaRepository.findAllByPlaceIn(places))
                     .willReturn(placeDetails);
@@ -105,7 +105,7 @@ class PlacePreviewServiceTest {
                     .willReturn(placeImages);
 
             // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByOrganizationId(organizationId);
+            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
 
             // then
             assertSoftly(s -> {
@@ -117,18 +117,18 @@ class PlacePreviewServiceTest {
         @Test
         void 성공_Detail이_없는_경우_나머지_필드_null_반환() {
             // given
-            Long organizationId = 1L;
-            Organization organization = OrganizationFixture.create(organizationId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
 
             PlaceCategory placeCategory = PlaceCategory.BAR;
             Coordinate coordinate = null;
-            Place place = PlaceFixture.create(organization, placeCategory, coordinate);
+            Place place = PlaceFixture.create(festival, placeCategory, coordinate);
 
-            given(placeJpaRepository.findAllByOrganizationId(organization.getId()))
+            given(placeJpaRepository.findAllByFestivalId(festival.getId()))
                     .willReturn(List.of(place));
 
             // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByOrganizationId(organizationId);
+            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
 
             // then
             assertSoftly(s -> {

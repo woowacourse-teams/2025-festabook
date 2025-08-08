@@ -1,7 +1,7 @@
 package com.daedan.festabook.place.domain;
 
-import com.daedan.festabook.organization.domain.Coordinate;
-import com.daedan.festabook.organization.domain.Organization;
+import com.daedan.festabook.festival.domain.Coordinate;
+import com.daedan.festabook.festival.domain.Festival;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -28,7 +28,7 @@ public class Place {
 
     @JoinColumn(nullable = false)
     @ManyToOne(fetch = FetchType.LAZY)
-    private Organization organization;
+    private Festival festival;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
@@ -39,24 +39,24 @@ public class Place {
 
     protected Place(
             Long id,
-            Organization organization,
+            Festival festival,
             PlaceCategory category,
             Coordinate coordinate
     ) {
         this.id = id;
-        this.organization = organization;
+        this.festival = festival;
         this.category = category;
         this.coordinate = coordinate;
     }
 
     public Place(
-            Organization organization,
+            Festival festival,
             PlaceCategory category,
             Coordinate coordinate
     ) {
         this(
                 null,
-                organization,
+                festival,
                 category,
                 coordinate
         );
