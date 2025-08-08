@@ -33,29 +33,28 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
     }
 
     private lateinit var viewModel: PlaceDetailViewModel
-    private lateinit var binding: ActivityPlaceDetailBinding
-
-    private lateinit var placeDetailUiModel: PlaceDetailUiModel
+    private val binding: ActivityPlaceDetailBinding by lazy {
+        DataBindingUtil.setContentView(this, R.layout.activity_place_detail)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        placeDetailUiModel =
-            intent?.getObject<PlaceDetailUiModel>(PLACE_DETAIL_OBJECT)
-                ?: intent?.getObject<PlaceDetailUiModel>(PLACE_DETAIL_ACTIVITY)
-                ?: run {
-                    finish()
-                    return
-                }
+
+        val placeUiObject = intent?.getObject<PlaceUiModel>(KEY_PLACE_UI_MODEL)
+        val placeDetailObject = intent?.getObject<PlaceDetailUiModel>(KEY_PLACE_DETAIL_UI_MODEL)
 
         viewModel =
-            ViewModelProvider(
-                this,
-                PlaceDetailViewModel.factory(placeDetailUiModel),
-            )[PlaceDetailViewModel::class.java]
+            if (placeDetailObject != null) {
+                ViewModelProvider(this, PlaceDetailViewModel.factory(placeDetailObject))[PlaceDetailViewModel::class.java]
+            } else if (placeUiObject != null) {
+                ViewModelProvider(this, PlaceDetailViewModel.factory(placeUiObject))[PlaceDetailViewModel::class.java]
+            } else {
+                finish()
+                return
+            }
 
-        binding = DataBindingUtil.setContentView(this, R.layout.activity_place_detail)
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.ncvRoot) { v, insets ->
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
@@ -63,7 +62,7 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
 
         setUpBinding()
         setUpObserver()
-        Timber.d("detailActivity : $placeDetailUiModel")
+        Timber.d("detailActivity : ${viewModel.placeDetail.value}")
     }
 
     private fun setUpBinding() {
@@ -139,21 +138,21 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
 
     companion object {
         private const val DEFAULT_MAX_LINES = 1
-        private const val PLACE_DETAIL_ACTIVITY = "placeDetailFragment"
-        private const val PLACE_DETAIL_OBJECT = "placeDetailObject"
+        private const val KEY_PLACE_UI_MODEL = "placeUiModel"
+        private const val KEY_PLACE_DETAIL_UI_MODEL = "placeDetailUiModel"
 
         fun newIntent(
             context: Context,
             place: PlaceUiModel,
         ) = Intent(context, PlaceDetailActivity::class.java).apply {
-            putExtra(PLACE_DETAIL_ACTIVITY, place)
+            putExtra(KEY_PLACE_UI_MODEL, place)
         }
 
         fun newIntent(
             context: Context,
             placeDetail: PlaceDetailUiModel,
         ) = Intent(context, PlaceDetailActivity::class.java).apply {
-            putExtra(PLACE_DETAIL_OBJECT, placeDetail)
+            putExtra(KEY_PLACE_DETAIL_UI_MODEL, placeDetail)
         }
     }
 }

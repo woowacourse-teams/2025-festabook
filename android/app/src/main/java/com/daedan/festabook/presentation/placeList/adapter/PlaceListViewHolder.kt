@@ -9,17 +9,17 @@ import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 
 class PlaceViewHolder private constructor(
     private val binding: ItemPlaceListBinding,
-    private val handler: PlaceClickListener,
+    private val listener: PlaceClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(placeUiModel: PlaceUiModel) {
         binding.place = placeUiModel
-        binding.handler = handler
+        binding.listener = listener
     }
 
     companion object {
         fun from(
             parent: ViewGroup,
-            handler: PlaceClickListener,
+            listener: PlaceClickListener,
         ): PlaceViewHolder =
             PlaceViewHolder(
                 ItemPlaceListBinding.inflate(
@@ -27,7 +27,7 @@ class PlaceViewHolder private constructor(
                     parent,
                     false,
                 ),
-                handler,
+                listener,
             )
     }
 }

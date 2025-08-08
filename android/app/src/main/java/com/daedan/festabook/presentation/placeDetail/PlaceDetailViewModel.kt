@@ -34,7 +34,7 @@ class PlaceDetailViewModel(
         }
     }
 
-    private fun loadPlaceDetail(placeId: Long) {
+    fun loadPlaceDetail(placeId: Long) {
         viewModelScope.launch {
             val result = placeDetailRepository.getPlaceDetail(placeId)
             result

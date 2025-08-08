@@ -22,7 +22,7 @@ class HomeViewModel(
         loadFestival()
     }
 
-    private fun loadFestival() {
+    fun loadFestival() {
         viewModelScope.launch {
             _festivalUiState.value = FestivalUiState.Loading
 

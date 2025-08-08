@@ -2,6 +2,7 @@ package com.daedan.festabook
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.service.NotificationHelper
 import com.daedan.festabook.util.CrashlyticsTree
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
@@ -10,18 +11,19 @@ import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
 
 class FestaBookApp : Application() {
-    lateinit var appContainer: AppContainer
-        private set
+    val appContainer: AppContainer by lazy {
+        AppContainer(this)
+    }
 
-    private lateinit var fireBaseAnalytics: FirebaseAnalytics
+    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
+        FirebaseAnalytics.getInstance(this)
+    }
 
     override fun onCreate() {
         super.onCreate()
-        setupFirebaseAnalytics()
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
-        appContainer = AppContainer(this)
         setLightTheme()
         setGlobalExceptionHandler()
     }
@@ -29,10 +31,6 @@ class FestaBookApp : Application() {
     override fun onLowMemory() {
         super.onLowMemory()
         Timber.w("FestabookApp: onLowMemory 호출됨")
-    }
-
-    private fun setupFirebaseAnalytics() {
-        fireBaseAnalytics = FirebaseAnalytics.getInstance(this)
     }
 
     private fun setupNotificationChannel() {
@@ -48,6 +46,8 @@ class FestaBookApp : Application() {
     private fun setupTimber() {
         if (BuildConfig.DEBUG) {
             plantDebugTimberTree()
+        } else {
+          plantInfoTimberTree()
         }
         Timber.plant(CrashlyticsTree())
     }
@@ -59,6 +59,10 @@ class FestaBookApp : Application() {
                     "${super.createStackElementTag(element)}:${element.lineNumber}"
             },
         )
+    }
+
+    private fun plantInfoTimberTree() {
+        Timber.plant(FirebaseAnalyticsTree(fireBaseAnalytics))
     }
 
     private fun setupNaverSdk() {

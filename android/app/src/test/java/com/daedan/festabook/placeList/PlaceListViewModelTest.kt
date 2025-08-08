@@ -1,6 +1,7 @@
 package com.daedan.festabook.placeList
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
@@ -31,16 +32,28 @@ class PlaceListViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var placeListRepository: PlaceListRepository
+    private lateinit var placeDetailRepository: PlaceDetailRepository
     private lateinit var placeListViewModel: PlaceListViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         placeListRepository = mockk()
+        placeDetailRepository = mockk()
         coEvery { placeListRepository.getPlaces() } returns Result.success(FAKE_PLACES)
-        coEvery { placeListRepository.getPlaceGeographies() } returns Result.success(FAKE_PLACE_GEOGRAPHIES)
-        coEvery { placeListRepository.getOrganizationGeography() } returns Result.success(FAKE_ORGANIZATION_GEOGRAPHY)
-        placeListViewModel = PlaceListViewModel(placeListRepository)
+        coEvery { placeListRepository.getPlaceGeographies() } returns
+            Result.success(
+                FAKE_PLACE_GEOGRAPHIES,
+            )
+        coEvery { placeListRepository.getOrganizationGeography() } returns
+            Result.success(
+                FAKE_ORGANIZATION_GEOGRAPHY,
+            )
+        placeListViewModel =
+            PlaceListViewModel(
+                placeListRepository,
+                placeDetailRepository,
+            )
     }
 
     @After
@@ -55,7 +68,7 @@ class PlaceListViewModelTest {
             coEvery { placeListRepository.getPlaces() } returns Result.success(FAKE_PLACES)
 
             // when
-            placeListViewModel = PlaceListViewModel(placeListRepository)
+            placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
             advanceUntilIdle()
 
             // then
@@ -69,10 +82,13 @@ class PlaceListViewModelTest {
     fun `뷰모델을 생성했을 때 모든 플레이스의 지도 좌표 정보를 불러올 수 있다`() =
         runTest {
             // given
-            coEvery { placeListRepository.getPlaceGeographies() } returns Result.success(FAKE_PLACE_GEOGRAPHIES)
+            coEvery { placeListRepository.getPlaceGeographies() } returns
+                Result.success(
+                    FAKE_PLACE_GEOGRAPHIES,
+                )
 
             // when
-            placeListViewModel = PlaceListViewModel(placeListRepository)
+            placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
             advanceUntilIdle()
 
             // then
@@ -86,10 +102,13 @@ class PlaceListViewModelTest {
     fun `뷰모델을 생성했을 때 초기 학교 지리 정보를 불러올 수 있다`() =
         runTest {
             // given
-            coEvery { placeListRepository.getOrganizationGeography() } returns Result.success(FAKE_ORGANIZATION_GEOGRAPHY)
+            coEvery { placeListRepository.getOrganizationGeography() } returns
+                Result.success(
+                    FAKE_ORGANIZATION_GEOGRAPHY,
+                )
 
             // when
-            placeListViewModel = PlaceListViewModel(placeListRepository)
+            placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
             advanceUntilIdle()
 
             // then
@@ -104,18 +123,22 @@ class PlaceListViewModelTest {
             // given
             val exception = Throwable("테스트")
             coEvery { placeListRepository.getPlaces() } returns Result.failure(exception)
-            coEvery { placeListRepository.getOrganizationGeography() } returns Result.success(FAKE_ORGANIZATION_GEOGRAPHY)
+            coEvery { placeListRepository.getOrganizationGeography() } returns
+                Result.success(
+                    FAKE_ORGANIZATION_GEOGRAPHY,
+                )
             coEvery { placeListRepository.getPlaceGeographies() } returns Result.failure(exception)
 
             // when
-            placeListViewModel = PlaceListViewModel(placeListRepository)
+            placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
             advanceUntilIdle()
 
             // then
             val expected = PlaceListUiState.Error<PlaceUiModel>(exception)
             val actual = placeListViewModel.places.getOrAwaitValue()
 
-            val expected2 = PlaceListUiState.Success<InitialMapSettingUiModel>(FAKE_ORGANIZATION_GEOGRAPHY.toUiModel())
+            val expected2 =
+                PlaceListUiState.Success<InitialMapSettingUiModel>(FAKE_ORGANIZATION_GEOGRAPHY.toUiModel())
             val actual2 = placeListViewModel.initialMapSetting.getOrAwaitValue()
 
             val expected3 = PlaceListUiState.Error<PlaceUiModel>(exception)
@@ -130,14 +153,18 @@ class PlaceListViewModelTest {
     fun `선택된 카테고리를 전달하면 해당 카테고리의 플레이스만 필터링 할 수 있다`() =
         runTest {
             // given
-            val targetCategories = listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
+            val targetCategories =
+                listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
 
             // when
             placeListViewModel.filterPlaces(targetCategories)
             advanceUntilIdle()
 
             // then
-            val expected = FAKE_PLACES.filter { it.category.toUiModel() in targetCategories }.map { it.toUiModel() }
+            val expected =
+                FAKE_PLACES
+                    .filter { it.category.toUiModel() in targetCategories }
+                    .map { it.toUiModel() }
             val actual = placeListViewModel.places.getOrAwaitValue()
             assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
         }
@@ -146,7 +173,8 @@ class PlaceListViewModelTest {
     fun `선택된 카테고리가 부스, 주점, 푸드트럭에 해당되지 않을 때 전체 목록을 불러온다`() =
         runTest {
             // given
-            val targetCategories = listOf(PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET)
+            val targetCategories =
+                listOf(PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET)
 
             // when
             placeListViewModel.filterPlaces(targetCategories)
@@ -178,7 +206,8 @@ class PlaceListViewModelTest {
     fun `필터링을 해제하면 전체 목록을 반환한다`() =
         runTest {
             // given
-            val targetCategories = listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
+            val targetCategories =
+                listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
             placeListViewModel.filterPlaces(targetCategories)
             advanceUntilIdle()
 
