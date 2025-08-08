@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    >
+    xmlns:tools="http://schemas.android.com/tools">
 
     <data>
+
         <variable
             name="placeDetail"
             type="com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel" />
@@ -42,8 +41,8 @@
                     android:id="@+id/end_guideline"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
                     android:layout_marginEnd="16dp"
+                    android:orientation="vertical"
                     app:layout_constraintGuide_end="16dp" />
 
 
@@ -51,6 +50,7 @@
                     android:id="@+id/vp_place_images"
                     android:layout_width="match_parent"
                     android:layout_height="240dp"
+                    android:transitionName="selected_place_image_transition"
                     android:layout_marginHorizontal="-16dp"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -87,6 +87,7 @@
                     android:text="@{placeDetail.place.title ?? @string/place_list_default_title}"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
+                    android:transitionName="selected_place_title_transition"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/cv_place_category"
                     app:layout_constraintTop_toBottomOf="@id/cv_place_category"
@@ -108,8 +109,8 @@
                     android:textAppearance="@style/PretendardRegular14"
                     android:textColor="@color/gray500"
                     app:endTime="@{placeDetail.endTime}"
-                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintBottom_toBottomOf="@id/iv_time"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toEndOf="@id/iv_time"
                     app:layout_constraintTop_toTopOf="@id/iv_time"
                     app:startTime="@{placeDetail.startTime}"
@@ -129,12 +130,12 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:maxEms="10"
+                    android:maxLines="1"
                     android:text="@{placeDetail.place.location ?? @string/place_list_default_location}"
                     android:textAppearance="@style/PretendardRegular14"
                     android:textColor="@color/gray500"
-                    android:maxLines="1"
-                    android:maxEms="10"
-                    android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toEndOf="@id/iv_location"
                     app:layout_constraintTop_toTopOf="@id/iv_location"
@@ -154,14 +155,14 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="4dp"
+                    android:ellipsize="end"
+                    android:maxEms="10"
+                    android:maxLines="1"
                     android:text="@{placeDetail.host ?? @string/place_detail_default_host}"
                     android:textAppearance="@style/PretendardRegular14"
                     android:textColor="@color/gray500"
-                    android:maxLines="1"
-                    android:maxEms="10"
-                    android:ellipsize="end"
-                    app:layout_constraintStart_toEndOf="@id/iv_host"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
+                    app:layout_constraintStart_toEndOf="@id/iv_host"
                     app:layout_constraintTop_toTopOf="@id/iv_host"
                     tools:text="C블C블C블C블C블C블C블C블C블C블C블C블C블C블" />
 
@@ -172,8 +173,8 @@
                     android:layout_marginTop="16dp"
                     android:text="@{placeDetail.place.description ?? @string/place_list_default_description}"
                     android:textAppearance="@style/PretendardRegular14"
-                    app:layout_constraintStart_toStartOf="@id/iv_host"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
+                    app:layout_constraintStart_toStartOf="@id/iv_host"
                     app:layout_constraintTop_toBottomOf="@id/tv_host"
                     tools:text="시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전" />
 
@@ -183,8 +184,8 @@
                     android:layout_height="1dp"
                     android:layout_marginTop="20dp"
                     android:background="@color/gray300"
-                    app:layout_constraintStart_toStartOf="@id/start_guideline"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
                     app:layout_constraintTop_toBottomOf="@id/tv_place_description" />
 
                 <TextView
@@ -195,8 +196,8 @@
                     android:text="@string/place_detail_notice_title"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
-                    app:layout_constraintStart_toStartOf="@id/start_guideline"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
                     app:layout_constraintTop_toBottomOf="@id/view_divider" />
 
                 <TextView
@@ -230,9 +231,9 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:nestedScrollingEnabled="false"
-                    app:layout_constraintStart_toStartOf="@id/start_guideline"
-                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
                     app:layout_constraintTop_toBottomOf="@id/tv_notice_description"
                     tools:itemCount="2"
                     tools:listitem="@layout/item_notice" />
@@ -246,8 +247,8 @@
                 android:background="@color/gray050"
                 android:importantForAccessibility="no"
                 app:layout_constraintTop_toTopOf="parent"
-                tools:visibility="gone"
-                app:shimmer_auto_start="true">
+                app:shimmer_auto_start="true"
+                tools:visibility="gone">
 
                 <LinearLayout
                     android:layout_width="match_parent"

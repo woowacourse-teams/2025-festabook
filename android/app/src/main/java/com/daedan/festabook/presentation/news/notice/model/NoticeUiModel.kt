@@ -1,9 +1,12 @@
 package com.daedan.festabook.presentation.news.notice.model
 
+import android.os.Parcelable
 import com.daedan.festabook.domain.model.Notice
+import kotlinx.parcelize.Parcelize
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@Parcelize
 data class NoticeUiModel(
     val id: Long,
     val title: String,
@@ -11,7 +14,7 @@ data class NoticeUiModel(
     val createdAt: LocalDateTime,
     val isPinned: Boolean = false,
     val isExpanded: Boolean = false,
-) {
+) : Parcelable {
     val formattedCreatedAt: String
         get() =
             runCatching {

@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.model.response
+package com.daedan.festabook.data.model.response.festival
 
 import com.daedan.festabook.domain.model.Festival
 import com.daedan.festabook.domain.model.Organization
@@ -24,7 +24,7 @@ data class OrganizationResponse(
 ) {
     @Serializable
     data class FestivalImage(
-        @SerialName("id")
+        @SerialName("festivalImageId")
         val id: Long,
         @SerialName("imageUrl")
         val imageUrl: String,

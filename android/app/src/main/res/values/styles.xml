@@ -44,6 +44,12 @@
         <item name="android:textSize">14sp</item>
     </style>
 
+    <style name="PretendardBold12">
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="PretendardRegular12">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textStyle">normal</item>
@@ -62,4 +68,9 @@
         <item name="android:background">@android:color/transparent</item>
     </style>
 
+    <style name="LostItemModalDialogTheme" parent="Theme.AppCompat.Dialog">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+    
 </resources>
