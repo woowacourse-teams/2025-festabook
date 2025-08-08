@@ -1,59 +1,226 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import FlipMove from 'react-flip-move';
 import { useData } from '../hooks/useData';
 import { useModal } from '../hooks/useModal';
+
+function formatDate(dateString) {
+    if (!dateString) return '';
+    const d = new Date(dateString);
+    const yyyy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    const hh = String(d.getHours()).padStart(2, '0');
+    const min = String(d.getMinutes()).padStart(2, '0');
+    return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+}
 
 const LostFoundPage = () => {
     const { lostItems, toggleLostItemStatus, addLostItem, updateLostItem, deleteLostItem } = useData();
     const { openModal, showToast } = useModal();
-    const sortedItems = [...lostItems].sort((a,b) => new Date(b.date) - new Date(a.date));
+    const [selectedImage, setSelectedImage] = useState(null);
+    
+    const sortedItems = [...lostItems].sort((a,b) => {
+        // pickupStatus가 PENDING인 항목을 먼저 표시
+        if (a.pickupStatus === 'PENDING' && b.pickupStatus !== 'PENDING') return -1;
+        if (a.pickupStatus !== 'PENDING' && b.pickupStatus === 'PENDING') return 1;
+        
+        // 같은 상태 내에서는 날짜 내림차순 정렬 (최신 날짜가 위로)
+        return new Date(b.createdAt) - new Date(a.createdAt);
+    });
+
+    const handleImageClick = (imageUrl) => {
+        setSelectedImage(imageUrl);
+    };
+
+    const handleCloseDetail = () => {
+        setSelectedImage(null);
+    };
+
+    // ESC 키로 상세보기 닫기
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape' && selectedImage) {
+                setSelectedImage(null);
+            }
+        };
+
+        if (selectedImage) {
+            document.addEventListener('keydown', handleEscKey);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [selectedImage]);
 
     const handleSave = (id, data) => {
-        if (!data.name || !data.location) { showToast('물품명과 습득 장소를 입력해주세요.'); return; }
+        if (!data.imageUrl || !data.storageLocation) { showToast('이미지와 보관 장소를 입력해주세요.'); return; }
         if (id) { updateLostItem(id, data); showToast('분실물 정보가 수정되었습니다.'); }
         else { addLostItem(data); showToast('분실물이 등록되었습니다.'); }
     };
 
     return (
         <div>
-             <div className="flex justify-between items-center mb-6"><h2 className="text-3xl font-bold">분실물 관리</h2><button onClick={() => openModal('lostItem', { onSave: (data) => handleSave(null, data) })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> 새 분실물 등록</button></div>
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-x-auto">
-                <table className="min-w-full w-full">
-                    <thead className="table-header"><tr>
-                        <th className="p-4 text-left font-semibold min-w-[80px]">상태</th>
-                        <th className="p-4 text-left font-semibold min-w-[120px]">물품명</th>
-                        <th className="p-4 text-left font-semibold min-w-[80px]">사진</th>
-                        <th className="p-4 text-left font-semibold min-w-[120px]">습득 장소</th>
-                        <th className="p-4 text-left font-semibold min-w-[100px]">습득일</th>
-                        <th className="p-4 text-left font-semibold min-w-[120px]">관리</th>
-                    </tr></thead>
-                     <tbody>
-                        {sortedItems.map(item => (
-                            <tr key={item.id} className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
-                                <td className="p-4"><span className={`text-xs font-medium mr-2 px-2.5 py-0.5 rounded-full ${item.status === '보관중' ? 'bg-green-100 text-green-800' : 'bg-gray-200 text-gray-800'}`}>{item.status}</span></td>
-                                <td className="p-4 max-w-xs truncate" title={item.name}>{item.name}</td>
-                                <td className="p-4"><img src={item.photo} onError={(e) => { e.target.onerror = null; e.target.src='https://placehold.co/100x100/e0e0e0/757575?text=Error' }} className="w-12 h-12 object-cover rounded-md cursor-pointer" alt={item.name} onClick={() => openModal('image', { src: item.photo })}/></td>
-                                <td className="p-4 text-gray-600">{item.location}</td><td className="p-4 text-gray-600">{item.date}</td>
-                                <td className="p-4 min-w-[120px]">
-                                    <div className="flex items-center justify-start space-x-4 flex-wrap">
-                                        <button onClick={() => openModal('lostItem', { item, onSave: (data) => handleSave(item.id, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
-                                        <button onClick={() => {
-                                            openModal('confirm', {
-                                                title: '분실물 삭제 확인',
-                                                message: `'${item.name}' 분실물을 정말 삭제하시겠습니까?`,
-                                                onConfirm: () => {
-                                                    deleteLostItem(item.id);
-                                                    showToast('분실물이 삭제되었습니다.');
-                                                }
-                                            });
-                                        }} className="text-red-600 hover:text-red-800 font-bold">삭제</button>
-                                        <button onClick={() => toggleLostItemStatus(item.id, showToast)} className={`text-white text-sm py-1 px-3 rounded-lg ${item.status === '보관중' ? 'bg-blue-500 hover:bg-blue-600' : 'bg-gray-400 hover:bg-gray-500'}`}>{item.status === '보관중' ? '완료 처리' : '보관 처리'}</button>
-                                    </div>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            <div className="flex justify-between items-center mb-6">
+                <h2 className="text-3xl font-bold">분실물 관리</h2>
+                <button 
+                    onClick={() => openModal('lostItem', { onSave: (data) => handleSave(null, data) })} 
+                    className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"
+                >
+                    <i className="fas fa-plus mr-2"></i> 분실물 등록
+                </button>
             </div>
+            
+            <FlipMove className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(270px,1fr))]">
+                {sortedItems.length > 0 ? (
+                    sortedItems.map(item => (
+                        <div key={item.id} data-id={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col">
+
+                            {/* 정보 컨테이너 */}
+                            <div className="px-0.5">
+                                {/* 이미지 */}
+                                <div className="flex justify-center mb-4">
+                                    <div
+                                        className="relative group cursor-pointer"
+                                        onClick={() => handleImageClick(item.imageUrl)}
+                                        >
+                                        <img
+                                            src={item.imageUrl}
+                                            onError={(e) => {
+                                            e.target.onerror = null;
+                                            e.target.src = 'https://placehold.co/200x200/e0e0e0/757575?text=Error';
+                                            }}
+                                            className="w-57 h-57 object-cover rounded-lg transition-opacity duration-200 select-none"
+                                            alt="분실물 이미지"
+                                            draggable={false}
+                                        />
+
+                                        {/* 어두운 오버레이 */}
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200 rounded-lg pointer-events-none" />
+
+                                        {/* 텍스트 오버레이 */}
+                                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                                            <span className="text-white text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                            클릭하여 상세보기
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {/* 상태 배지 */}
+                                <div className="flex justify-start mb-3">
+                                    <span className={`text-sm font-medium px-2.5 py-0.5 rounded-full ${
+                                        item.pickupStatus === 'PENDING' 
+                                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' 
+                                            : 'bg-green-100 text-green-800 border border-green-200'
+                                    }`}>
+                                        {item.pickupStatus === 'PENDING' ? '보관중' : '수령완료'}
+                                    </span>
+                                </div>
+                                
+                                {/* 장소 */}
+                                <div className="text-start mb-2">
+                                    <p className="text-gray-500 text-base font-medium">
+                                        <i className="fas fa-map-marker-alt mr-2 text-gray-400"></i>
+                                        {item.storageLocation}
+                                    </p>
+                                </div>
+                                
+                                {/* 생성일 */}
+                                <div className="text-start mb-3">
+                                    <p className="text-gray-500 text-base font-medium">
+                                        <i className="fas fa-calendar mr-2 text-gray-400"></i>
+                                        {formatDate(item.createdAt)}
+                                    </p>
+                                </div>
+                                
+                                {/* 액션 버튼들 */}
+                                <div className="flex flex-col space-y-2 mt-auto">
+                                    <div className="flex justify-start space-x-2">
+                                        <button 
+                                            onClick={() => openModal('lostItem', { item, onSave: (data) => handleSave(item.id, data) })} 
+                                            className="text-blue-600 hover:text-blue-800 font-bold"
+                                        >
+                                            수정
+                                        </button>
+                                        <button 
+                                            onClick={() => {
+                                                openModal('confirm', {
+                                                    title: '분실물 삭제 확인',
+                                                    message: `이 분실물을 정말 삭제하시겠습니까?`,
+                                                    onConfirm: () => {
+                                                        deleteLostItem(item.id);
+                                                        showToast('분실물이 삭제되었습니다.');
+                                                    }
+                                                });
+                                            }} 
+                                            className="text-red-600 hover:text-red-800 font-bold"
+                                        >
+                                            삭제
+                                        </button>
+                                    </div>
+                                    <button 
+                                        onClick={() => toggleLostItemStatus(item.id, showToast)} 
+                                        className={`text-white text-sm py-2 px-0 rounded-md font-bold transition-colors w-full ${
+                                            item.pickupStatus === 'PENDING' 
+                                                ? 'bg-blue-500 hover:bg-blue-600 shadow-sm' 
+                                                : 'bg-gray-500 hover:bg-gray-600 shadow-sm'
+                                        }`}
+                                    >
+                                        {item.pickupStatus === 'PENDING' ? '완료 처리' : '보관 처리'}
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className="col-span-full text-center py-12">
+                        <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
+                        <p className="text-gray-500 mb-4">등록된 분실물이 없습니다</p>
+                        <button
+                            onClick={() => openModal('lostItem', { onSave: (data) => handleSave(null, data) })}
+                            className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                        >
+                            첫 번째 분실물 등록
+                        </button>
+                    </div>
+                )}
+            </FlipMove>
+
+            {/* 이미지 상세 보기 오버레이 */}
+            {selectedImage && (
+                                                    <div 
+                      className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+                  >
+                      <div 
+                          className="relative pointer-events-auto"
+                          onClick={(e) => e.stopPropagation()}
+                      >
+                        <img
+                            src={selectedImage}
+                            alt="상세 이미지"
+                            className="rounded-lg shadow-2xl select-none"
+                            style={{
+                                maxWidth: '100vw',
+                                maxHeight: '95vh',
+                                width: 'auto',
+                                height: 'auto',
+                                display: 'block'
+                            }}
+                            draggable={false}
+                        />
+                        {/* 닫기 버튼 */}
+                        <button 
+                            onClick={handleCloseDetail}
+                            className="absolute top-4 right-4 bg-black bg-opacity-60 text-white p-2 rounded-full hover:bg-opacity-80 transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

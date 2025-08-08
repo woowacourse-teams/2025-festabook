@@ -11,9 +11,9 @@ const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const organization = localStorage.getItem('organization');
-  if (organization) {
-    config.headers['organization'] = organization;
+  const festivalId = localStorage.getItem('festivalId');
+  if (festivalId) {
+    config.headers['festival'] = festivalId;
   }
   return config;
 });

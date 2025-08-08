@@ -45,11 +45,11 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
   const polygonRef = useRef<any>(null);
   const { openModal, showToast } = useModal();
 
-  // GET /organizations/geography로 폴리곤 홀도 받아오기
+          // GET /festivals/geography로 폴리곤 홀도 받아오기
   useEffect(() => {
     async function fetchGeography() {
       try {
-        const res = await api.get('/organizations/geography');
+        const res = await api.get('/festivals/geography');
         if (res.data && res.data.centerCoordinate) {
           setCenter({
             lat: res.data.centerCoordinate.latitude,
