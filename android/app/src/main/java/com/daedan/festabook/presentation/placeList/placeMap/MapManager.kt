@@ -208,22 +208,23 @@ class MapManager(
         overlayImageManager.setIcon(this, place.category)
         tag = place
 
-        setOnClickListener {
-            val clickedPlace = it.tag as PlaceCoordinateUiModel
+        setOnClickListener { marker ->
+            val clickedPlace = marker.tag as? PlaceCoordinateUiModel ?: return@setOnClickListener false
 
             // 이전에 선택된 마커가 있다면 크기를 원래대로 되돌림
             selectedMarker?.let { prevMarker ->
                 setSize(prevMarker, isSelected = false)
             }
 
-            // 현재 클릭된 마커의 크기를 크게 변경
-            setSize(this, isSelected = true)
+            if (clickedPlace.category !in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+                setSize(this, isSelected = true)
+                selectedMarker = this
+            } else {
+                selectedMarker = null
+            }
 
-            // 현재 마커를 `selectedMarker`에 저장
-            selectedMarker = this
-
-            // ViewModel에 마커 클릭 이벤트를 전달
             mapClickListener.onMarkerListener(clickedPlace.placeId, clickedPlace.category)
+
             true
         }
         return this
@@ -244,7 +245,7 @@ class MapManager(
             }
         marker.height = marker.width
     }
-    
+
     private fun Double.zoomWeight() =
         2.0.pow(
             DEFAULT_ZOOM_LEVEL - this,

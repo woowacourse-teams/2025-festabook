@@ -6,7 +6,7 @@ interface MapClickListener {
     fun onMarkerListener(
         placeId: Long,
         category: PlaceCategoryUiModel,
-    )
+    ): Boolean
 
     fun onMapClickListener()
 }
