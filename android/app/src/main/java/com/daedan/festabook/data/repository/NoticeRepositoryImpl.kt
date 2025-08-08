@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.repository
 
-import com.daedan.festabook.data.datasource.remote.NoticeDataSource
-import com.daedan.festabook.data.model.response.toDomain
+import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSource
+import com.daedan.festabook.data.model.response.notice.toDomain
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.Notice
 import com.daedan.festabook.domain.repository.NoticeRepository

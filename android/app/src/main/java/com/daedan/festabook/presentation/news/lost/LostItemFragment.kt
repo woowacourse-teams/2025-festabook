@@ -1,55 +1,74 @@
 package com.daedan.festabook.presentation.news.lost
 
 import android.os.Bundle
-import android.view.LayoutInflater
 import android.view.View
-import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.GridLayoutManager
 import com.daedan.festabook.R
+import com.daedan.festabook.databinding.FragmentLostItemBinding
+import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.news.NewsViewModel
+import com.daedan.festabook.presentation.news.lost.LostItemModalDialogFragment.Companion.TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT
+import com.daedan.festabook.presentation.news.lost.adapter.LostItemAdapter
+import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment_lost_item) {
+    private val adapter by lazy {
+        LostItemAdapter(requireParentFragment() as OnNewsClickListener)
+    }
 
-/**
- * A simple [Fragment] subclass.
- * Use the [LostItemFragment.newInstance] factory method to
- * create an instance of this fragment.
- */
-class LostItemFragment : Fragment() {
-    // TODO: Rename and change types of parameters
-    private var param1: String? = null
-    private var param2: String? = null
+    private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) {
+        NewsViewModel.Factory
+    }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.rvLostItem.layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
+        binding.rvLostItem.adapter = adapter
+
+        val spacingInPx = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
+        binding.rvLostItem.addItemDecoration(
+            LostItemDecoration(
+                spanCount = SPAN_COUNT,
+                spacing = spacingInPx,
+            ),
+        )
+        setupObservers()
+    }
+
+    private fun setupObservers() {
+        viewModel.lostItemUiState.observe(viewLifecycleOwner) { state ->
+            when (state) {
+                is LostItemUiState.InitialLoading -> {}
+                is LostItemUiState.Loading -> {}
+                is LostItemUiState.Success -> {
+                    adapter.submitList(state.lostItems)
+                }
+
+                is LostItemUiState.Error -> {}
+            }
+        }
+
+        viewModel.lostItemClickEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { lostItem ->
+                showLostItemModalDialog(lostItem)
+            }
         }
     }
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?,
-    ): View? {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_lost_item, container, false)
+    private fun showLostItemModalDialog(lostItem: LostItemUiModel) {
+        LostItemModalDialogFragment
+            .newInstance(lostItem)
+            .show(childFragmentManager, TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT)
     }
 
     companion object {
-        /**
-         * Use this factory method to create a new instance of
-         * this fragment using the provided parameters.
-         *
-         * @param param1 Parameter 1.
-         * @param param2 Parameter 2.
-         * @return A new instance of fragment LostItemFragment.
-         */
-        // TODO: Rename and change types and number of parameters
-        @JvmStatic
+        private const val SPAN_COUNT: Int = 2
+
         fun newInstance() = LostItemFragment()
     }
 }

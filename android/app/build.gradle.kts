@@ -7,6 +7,7 @@ plugins {
     id("kotlin-kapt")
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
+    id("com.google.firebase.crashlytics")
 }
 
 android {
@@ -63,12 +64,19 @@ android {
     }
 
     buildTypes {
+        debug {
+            applicationIdSuffix = ".debug"
+            versionNameSuffix = "-debug"
+            resValue("string", "app_name", "(Debug)Festabook")
+        }
+
         release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
+            resValue("string", "app_name", "Festabook")
         }
     }
     compileOptions {
@@ -107,10 +115,13 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.timber)
     implementation(libs.lottie)
+    implementation(libs.firebase.crashlytics.ndk)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.assertj.core)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+    debugImplementation(libs.logging.interceptor)
 }

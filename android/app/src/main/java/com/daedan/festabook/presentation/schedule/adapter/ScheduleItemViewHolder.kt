@@ -18,10 +18,23 @@ class ScheduleItemViewHolder(
     private val binding: ItemScheduleTabPageBinding,
     private val onBookmarkCheckedListener: OnBookmarkCheckedListener,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(item: ScheduleEventUiModel) {
+    fun bind(
+        item: ScheduleEventUiModel,
+        itemCount: Int,
+    ) {
+        setupBottomMargin(itemCount)
         binding.scheduleEvent = item
         binding.onBookmarkCheckedListener = onBookmarkCheckedListener
         setupEventViewByStatus(item.status)
+    }
+
+    private fun setupBottomMargin(itemCount: Int) {
+        val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
+        if (layoutPosition == itemCount - 1) {
+            layoutParams.bottomMargin = BOTTOM_MARGIN.toPx(binding.clScheduleEventCard.context)
+        } else {
+            layoutParams.bottomMargin = 0
+        }
     }
 
     private fun setupEventViewByStatus(status: ScheduleEventUiStatus) {
@@ -121,6 +134,7 @@ class ScheduleItemViewHolder(
     companion object {
         private const val UPCOMING_TEXT_WIDTH = 36
         private const val UPCOMING_TEXT_HEIGHT = 24
+        private const val BOTTOM_MARGIN = 20
 
         fun from(
             parent: ViewGroup,

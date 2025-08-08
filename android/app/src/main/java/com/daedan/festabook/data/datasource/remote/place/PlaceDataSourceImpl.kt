@@ -1,16 +1,16 @@
 package com.daedan.festabook.data.datasource.remote.place
 
 import com.daedan.festabook.data.datasource.remote.ApiResult
-import com.daedan.festabook.data.model.response.OrganizationGeographyResponse
-import com.daedan.festabook.data.model.response.PlaceDetailResponse
-import com.daedan.festabook.data.model.response.PlaceGeographyResponse
-import com.daedan.festabook.data.model.response.PlaceResponse
-import com.daedan.festabook.data.service.OrganizationService
+import com.daedan.festabook.data.model.response.organization.OrganizationGeographyResponse
+import com.daedan.festabook.data.model.response.place.PlaceDetailResponse
+import com.daedan.festabook.data.model.response.place.PlaceGeographyResponse
+import com.daedan.festabook.data.model.response.place.PlaceResponse
+import com.daedan.festabook.data.service.FestivalService
 import com.daedan.festabook.data.service.PlaceService
 
 class PlaceDataSourceImpl(
     private val placeService: PlaceService,
-    private val organizationService: OrganizationService,
+    private val festivalService: FestivalService,
 ) : PlaceDataSource {
     override suspend fun fetchPlaces(): ApiResult<List<PlaceResponse>> = ApiResult.toApiResult { placeService.fetchPlaces() }
 
@@ -19,7 +19,7 @@ class PlaceDataSourceImpl(
 
     override suspend fun fetchOrganizationGeography(): ApiResult<OrganizationGeographyResponse> =
         ApiResult.toApiResult {
-            organizationService.fetchOrganizationGeography()
+            festivalService.fetchOrganizationGeography()
         }
 
     override suspend fun fetchPlaceGeographies(): ApiResult<List<PlaceGeographyResponse>> =

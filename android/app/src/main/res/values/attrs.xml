@@ -7,6 +7,10 @@
         <attr name="companionView" format="reference" />
     </declare-styleable>
 
+    <declare-styleable name="PlaceListBottomSheetFollowBehavior">
+        <attr name="changeVisibility" format="boolean" />
+    </declare-styleable>
+
     <declare-styleable name="SkeletonView">
         <attr name="SkeletonBackground" format="color" />
     </declare-styleable>

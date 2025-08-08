@@ -9,9 +9,11 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.formatFestivalPeriod
+import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
+import timber.log.Timber
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     private val viewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
@@ -33,7 +35,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             when (festivalUiState) {
                 is FestivalUiState.Loading -> {}
                 is FestivalUiState.Success -> handleSuccessState(festivalUiState)
-                is FestivalUiState.Error -> {}
+                is FestivalUiState.Error -> {
+                    showErrorSnackBar(festivalUiState.throwable)
+                    Timber.w(festivalUiState.throwable, "HomeFragment: ${festivalUiState.throwable.message}")
+                }
             }
         }
     }

@@ -20,7 +20,6 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
-import com.daedan.festabook.presentation.common.bottomNavigationViewAnimationCallback
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
@@ -33,7 +32,9 @@ import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var binding: ActivityMainBinding
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
     private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
 
     private val placeListFragment by lazy {
@@ -53,7 +54,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private val settingFragment by lazy {
-        SettingFragment.newInstance()
+        SettingFragment().newInstance()
     }
 
     private val requestPermissionLauncher =
@@ -129,8 +130,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupBinding() {
-        binding = ActivityMainBinding.inflate(layoutInflater)
-
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -185,6 +184,7 @@ class MainActivity : AppCompatActivity() {
             binding.fcvFragmentContainer.updatePadding(
                 bottom = binding.babMenu.height + binding.babMenu.marginBottom,
             )
+            binding.bnvMenu.x /= 2
         }
         binding.babMenu.setOnApplyWindowInsetsListener(null)
         binding.babMenu.setPadding(0, 0, 0, 0)
@@ -212,6 +212,8 @@ class MainActivity : AppCompatActivity() {
         }
         binding.fabMap.setOnClickListener {
             binding.bnvMenu.selectedItemId = R.id.item_menu_map
+            val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_LIST_FRAGMENT)
+            if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
             switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
         }
     }
@@ -224,7 +226,6 @@ class MainActivity : AppCompatActivity() {
                     val fragment = supportFragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT)
                     if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
                 }
-
                 R.id.item_menu_news -> Unit
                 R.id.item_menu_setting -> Unit
             }
@@ -235,9 +236,6 @@ class MainActivity : AppCompatActivity() {
         fragment: Fragment,
         tag: String,
     ) {
-        supportFragmentManager.unregisterFragmentLifecycleCallbacks(
-            bottomNavigationViewAnimationCallback,
-        )
         supportFragmentManager.commit {
             supportFragmentManager.fragments.forEach { fragment -> hide(fragment) }
 

@@ -6,25 +6,26 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemNoticeBinding
+import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 class NoticeViewHolder(
     private val binding: ItemNoticeBinding,
-    noticeItemClickListener: OnNoticeClickListener,
+    private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
-    init {
-        binding.listener = noticeItemClickListener
-    }
-
     fun bind(notice: NoticeUiModel) {
+        setupTopMargin()
         binding.notice = notice
 
+        binding.layoutNoticeItem.setOnClickListener {
+            onNewsClickListener.onNoticeClick(notice)
+        }
         if (notice.isPinned) {
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_pin)
-            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_gray100_stroke_gray400_radius_10dp)
+            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_gray100_stroke_gray200_radius_16dp)
         } else {
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_speaker)
-            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_stroke_gray400_radius_10dp)
+            binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_stroke_gray200_radius_16dp)
         }
 
         binding.tvNoticeDescription.maxLines =
@@ -33,12 +34,22 @@ class NoticeViewHolder(
             if (notice.isExpanded) null else TextUtils.TruncateAt.END
     }
 
+    private fun setupTopMargin() {
+        val layoutParams = itemView.layoutParams as ViewGroup.MarginLayoutParams
+        if (layoutPosition == 0) {
+            layoutParams.topMargin = TOP_MARGIN.toPx(binding.layoutNoticeItem.context)
+        } else {
+            layoutParams.topMargin = 0
+        }
+    }
+
     companion object {
         private const val DEFAULT_LINE_COUNT = 2
+        private const val TOP_MARGIN = 8
 
         fun from(
             parent: ViewGroup,
-            listener: OnNoticeClickListener,
+            listener: OnNewsClickListener,
         ): NoticeViewHolder {
             val binding =
                 ItemNoticeBinding.inflate(LayoutInflater.from(parent.context), parent, false)
