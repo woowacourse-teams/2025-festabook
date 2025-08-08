@@ -7,7 +7,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="70dp"
-        android:layout_marginVertical="12dp"
+        android:layout_marginVertical="4dp"
         android:background="@drawable/bg_gray300_radius_10dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />

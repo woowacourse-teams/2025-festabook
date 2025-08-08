@@ -21,9 +21,6 @@
                 android:id="@+id/rv_notice_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:fadingEdgeLength="16dp"
-                android:paddingTop="20dp"
-                android:requiresFadingEdge="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_notice" />
 
@@ -41,7 +38,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:paddingTop="8dp">
+                android:paddingTop="4dp">
 
                 <include layout="@layout/item_notice_skeleton" />
 

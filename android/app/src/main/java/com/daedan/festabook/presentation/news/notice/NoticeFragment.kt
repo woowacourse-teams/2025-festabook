@@ -68,11 +68,13 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
     }
 
     private fun showSkeleton() {
+        binding.srlNoticeList.visibility = View.INVISIBLE
         binding.sflNoticeSkeleton.visibility = View.VISIBLE
         binding.sflNoticeSkeleton.startShimmer()
     }
 
     private fun hideSkeleton() {
+        binding.srlNoticeList.visibility = View.VISIBLE
         binding.sflNoticeSkeleton.visibility = View.GONE
         binding.sflNoticeSkeleton.stopShimmer()
     }
