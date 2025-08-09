@@ -69,6 +69,19 @@ class LostItemController {
         return lostItemService.updateLostItem(lostItemId, request);
     }
 
+    @PatchMapping("/{lostItemId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 분실물 상태 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public LostItemStatusUpdateResponse updateLostItemStatus(
+            @PathVariable Long lostItemId,
+            @RequestBody LostItemStatusRequest request
+    ) {
+        return lostItemService.updateLostItemStatus(lostItemId, request);
+    }
+
     @DeleteMapping("/{lostItemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 분실물 삭제")
