@@ -13,5 +13,9 @@ class LostItemRepositoryImpl(
         lostItemDataSource
             .fetchAllLostItem()
             .toResult()
-            .mapCatching { it.map { lostItemResponse -> lostItemResponse.toDomain() } }
+            .mapCatching { lostItemResponses ->
+                lostItemResponses
+                    .map { lostItemResponse -> lostItemResponse.toDomain() }
+                    .sortedByDescending { it.createdAt }
+            }
 }

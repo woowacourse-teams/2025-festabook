@@ -2,6 +2,7 @@ package com.daedan.festabook.data.model.response.lostitem
 
 import com.daedan.festabook.domain.model.LostItem
 import com.daedan.festabook.domain.model.LostItemStatus
+import com.daedan.festabook.domain.model.toLocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -25,5 +26,5 @@ fun LostItemResponse.toDomain(): LostItem =
         imageUrl = imageUrl,
         storageLocation = storageLocation,
         status = status,
-        createdAt = createdAt,
+        createdAt = createdAt.toLocalDateTime(),
     )
