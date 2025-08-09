@@ -69,7 +69,7 @@ class LostItemController {
         return lostItemService.updateLostItem(lostItemId, request);
     }
 
-    @PatchMapping("/{lostItemId}")
+    @PatchMapping("/{lostItemId}/status")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 분실물 상태 수정")
     @ApiResponses(value = {
