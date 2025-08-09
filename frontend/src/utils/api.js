@@ -18,6 +18,29 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
+// 응답 인터셉터 - 에러 처리
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 400) {
+      // 백엔드에서 제공하는 에러 메시지 사용
+      const message = error.response.data?.message || '잘못된 요청입니다.';
+      throw new Error(message);
+    }
+    if (error.response?.status === 404) {
+      throw new Error('요청한 리소스를 찾을 수 없습니다.');
+    }
+    if (error.response?.status === 500) {
+      throw new Error('서버 내부 오류가 발생했습니다.');
+    }
+    // 네트워크 에러 등
+    if (!error.response) {
+      throw new Error('네트워크 연결을 확인해주세요.');
+    }
+    throw error;
+  }
+);
+
 // 축제 날짜 관련 API
 export const scheduleAPI = {
   // 모든 축제 날짜 조회
@@ -166,6 +189,87 @@ export const qnaAPI = {
     } catch (error) {
       console.error('Failed to update question sequences:', error);
       throw new Error('QnA 순서 변경에 실패했습니다.');
+    }
+  }
+};
+
+// 분실물 관련 API
+export const lostItemAPI = {
+  // 모든 분실물 조회
+  getLostItems: async () => {
+    try {
+      const response = await api.get('/lost-items');
+      // 백엔드 응답을 프론트엔드 형식으로 변환
+      return response.data.map(item => ({
+        id: item.lostItemId,
+        imageUrl: item.imageUrl,
+        storageLocation: item.storageLocation,
+        pickupStatus: item.status,
+        createdAt: item.createdAt
+      }));
+    } catch (error) {
+      console.error('Failed to fetch lost items:', error);
+      throw new Error('분실물 조회에 실패했습니다.');
+    }
+  },
+
+  // 분실물 등록
+  createLostItem: async (lostItemData) => {
+    try {
+      const response = await api.post('/lost-items', lostItemData);
+      // LostItemResponse를 프론트엔드 형식으로 변환
+      return {
+        id: response.data.lostItemId,
+        imageUrl: response.data.imageUrl,
+        storageLocation: response.data.storageLocation,
+        pickupStatus: response.data.status,
+        createdAt: response.data.createdAt
+      };
+    } catch (error) {
+      console.error('Failed to create lost item:', error);
+      throw new Error('분실물 등록에 실패했습니다.');
+    }
+  },
+
+  // 분실물 수정
+  updateLostItem: async (lostItemId, updateData) => {
+    try {
+      const response = await api.patch(`/lost-items/${lostItemId}`, updateData);
+      // LostItemUpdateResponse를 프론트엔드 형식으로 변환
+      return {
+        id: response.data.lostItemId,
+        imageUrl: response.data.imageUrl,
+        storageLocation: response.data.storageLocation
+      };
+    } catch (error) {
+      console.error('Failed to update lost item:', error);
+      throw new Error('분실물 수정에 실패했습니다.');
+    }
+  },
+
+  // 분실물 삭제  
+  deleteLostItem: async (lostItemId) => {
+    try {
+      await api.delete(`/lost-items/${lostItemId}`);
+      // 204 No Content - 반환값 없음
+    } catch (error) {
+      console.error('Failed to delete lost item:', error);
+      throw new Error('분실물 삭제에 실패했습니다.');
+    }
+  },
+
+  // 분실물 상태 변경
+  updateLostItemStatus: async (lostItemId, status) => {
+    try {
+      const response = await api.patch(`/lost-items/${lostItemId}/status`, { status });
+      // LostItemStatusUpdateResponse를 프론트엔드 형식으로 변환
+      return {
+        id: response.data.lostItemId,
+        pickupStatus: response.data.status
+      };
+    } catch (error) {
+      console.error('Failed to update lost item status:', error);
+      throw new Error('분실물 상태 변경에 실패했습니다.');
     }
   }
 };
