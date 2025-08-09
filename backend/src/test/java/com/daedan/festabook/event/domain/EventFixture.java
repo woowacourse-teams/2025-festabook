@@ -15,19 +15,19 @@ public class EventFixture {
 
     public static Event create(
             Long eventId,
+            EventDate eventDate,
             LocalTime startTime,
             LocalTime endTime,
             String title,
-            String location,
-            EventDate eventDate
+            String location
     ) {
         return new Event(
                 eventId,
+                eventDate,
                 startTime,
                 endTime,
                 title,
-                location,
-                eventDate
+                location
         );
     }
 
@@ -35,21 +35,21 @@ public class EventFixture {
             String title
     ) {
         return new Event(
+                DEFAULT_EVENT_DATE,
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME,
                 title,
-                DEFAULT_LOCATION,
-                DEFAULT_EVENT_DATE
+                DEFAULT_LOCATION
         );
     }
 
     public static Event create() {
         return new Event(
+                DEFAULT_EVENT_DATE,
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME,
                 DEFAULT_TITLE,
-                DEFAULT_LOCATION,
-                DEFAULT_EVENT_DATE
+                DEFAULT_LOCATION
         );
     }
 
@@ -57,11 +57,11 @@ public class EventFixture {
             EventDate eventDate
     ) {
         return new Event(
+                eventDate,
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME,
                 DEFAULT_TITLE,
-                DEFAULT_LOCATION,
-                eventDate
+                DEFAULT_LOCATION
         );
     }
 
@@ -71,27 +71,27 @@ public class EventFixture {
             EventDate eventDate
     ) {
         return new Event(
+                eventDate,
                 startTime,
                 endTime,
                 DEFAULT_TITLE,
-                DEFAULT_LOCATION,
-                eventDate
+                DEFAULT_LOCATION
         );
     }
 
     public static Event create(
+            EventDate eventDate,
             LocalTime startTime,
             LocalTime endTime,
             String title,
-            String location,
-            EventDate eventDate
+            String location
     ) {
         return new Event(
+                eventDate,
                 startTime,
                 endTime,
                 title,
-                location,
-                eventDate
+                location
         );
     }
 

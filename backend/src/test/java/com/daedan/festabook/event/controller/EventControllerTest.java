@@ -113,11 +113,11 @@ class EventControllerTest {
             Long eventId = event.getId();
 
             EventRequest request = EventRequestFixture.create(
+                    eventDate.getId(),
                     LocalTime.of(3, 0),
                     LocalTime.of(4, 0),
                     "updated title",
-                    "updated location",
-                    eventDate.getId()
+                    "updated location"
             );
 
             // when & then

@@ -7,6 +7,9 @@ import java.time.LocalTime;
 
 public record EventRequest(
 
+        @Schema(description = "일정 날짜 ID", example = "1")
+        Long eventDateId,
+
         @Schema(description = "일정 시작 시간", example = "01:00")
         LocalTime startTime,
 
@@ -17,19 +20,16 @@ public record EventRequest(
         String title,
 
         @Schema(description = "일정 진행 위치", example = "알고리즘 밸리 정문")
-        String location,
-
-        @Schema(description = "일정 날짜 ID", example = "1")
-        Long eventDateId
+        String location
 ) {
 
     public Event toEntity(EventDate eventDate) {
         return new Event(
+                eventDate,
                 startTime,
                 endTime,
                 title,
-                location,
-                eventDate
+                location
         );
     }
 }

@@ -71,11 +71,11 @@ class EventServiceTest {
             Long eventId = 1L;
             Event event = EventFixture.create(
                     eventId,
+                    eventDate,
                     request.startTime(),
                     request.endTime(),
                     request.title(),
-                    request.location(),
-                    eventDate
+                    request.location()
             );
             given(eventJpaRepository.save(any()))
                     .willReturn(event);
@@ -138,11 +138,11 @@ class EventServiceTest {
             );
 
             EventRequest eventRequest = EventRequestFixture.create(
+                    eventDateId,
                     updatedEvent.getStartTime(),
                     updatedEvent.getEndTime(),
                     updatedEvent.getTitle(),
-                    updatedEvent.getLocation(),
-                    eventDateId
+                    updatedEvent.getLocation()
             );
 
             // when
@@ -199,11 +199,11 @@ class EventServiceTest {
             setFixedClock();
 
             Event event = EventFixture.create(
+                    EventDateFixture.create(LocalDate.of(2025, 5, 5)),
                     LocalTime.of(16, 0, 0),
                     LocalTime.of(16, 0, 0),
                     "title",
-                    "location",
-                    EventDateFixture.create(LocalDate.of(2025, 5, 5))
+                    "location"
             );
 
             Long eventDateId = 1L;
