@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.domain.model.LostItemStatus
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
@@ -44,7 +45,7 @@ class NewsViewModel(
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
-        loadAllLostItems()
+        loadPendingItems()
     }
 
     fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
@@ -89,10 +90,22 @@ class NewsViewModel(
         _lostItemClickEvent.value = Event(lostItem)
     }
 
-    private fun loadAllLostItems(state: NoticeUiState = NoticeUiState.Loading) {
-        val lostItems = lostItemRepository.getAllLostItems()
+    private fun loadPendingItems(state: LostItemUiState = LostItemUiState.Loading) {
+        viewModelScope.launch {
+            _lostItemUiState.value = state
 
-        _lostItemUiState.value = LostItemUiState.Success(lostItems.map { it.toUiModel() })
+            val result = lostItemRepository.getAllLostItems()
+            result
+                .onSuccess { allLostItems ->
+                    val pendingLostItems =
+                        allLostItems.filter { it.status == LostItemStatus.PENDING }
+
+                    _lostItemUiState.value =
+                        LostItemUiState.Success(pendingLostItems.map { it.toUiModel() })
+                }.onFailure {
+                    _lostItemUiState.value = LostItemUiState.Error(it)
+                }
+        }
     }
 
     private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {

@@ -36,7 +36,7 @@ val FAKE_FAQS =
 val FAKE_LOST_ITEM =
     listOf(
         LostItem(
-            imageId = 1,
+            lostItemId = 1,
             imageUrl = "테스트 이미지 주소",
             storageLocation = "테스트 장소",
         ),
