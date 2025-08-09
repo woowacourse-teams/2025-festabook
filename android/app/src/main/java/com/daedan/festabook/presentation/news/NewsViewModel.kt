@@ -45,7 +45,7 @@ class NewsViewModel(
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
-        loadPendingItems()
+        loadPendingLostItems()
     }
 
     fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
@@ -90,7 +90,7 @@ class NewsViewModel(
         _lostItemClickEvent.value = Event(lostItem)
     }
 
-    private fun loadPendingItems(state: LostItemUiState = LostItemUiState.Loading) {
+    private fun loadPendingLostItems(state: LostItemUiState = LostItemUiState.Loading) {
         viewModelScope.launch {
             _lostItemUiState.value = state
 
