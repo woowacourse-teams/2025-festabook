@@ -2,6 +2,7 @@ package com.daedan.festabook.news
 
 import com.daedan.festabook.domain.model.FAQItem
 import com.daedan.festabook.domain.model.LostItem
+import com.daedan.festabook.domain.model.LostItemStatus
 import com.daedan.festabook.domain.model.Notice
 import java.time.LocalDateTime
 
@@ -39,5 +40,7 @@ val FAKE_LOST_ITEM =
             lostItemId = 1,
             imageUrl = "테스트 이미지 주소",
             storageLocation = "테스트 장소",
+            status = LostItemStatus.PENDING,
+            createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
         ),
     )
