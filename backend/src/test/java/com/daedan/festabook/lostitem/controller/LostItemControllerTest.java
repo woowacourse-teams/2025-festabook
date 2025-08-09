@@ -14,6 +14,8 @@ import com.daedan.festabook.lostitem.domain.LostItemFixture;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemRequestFixture;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequestFixture;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -23,6 +25,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -179,6 +183,41 @@ class LostItemControllerTest {
                     .body("lostItemId", notNullValue())
                     .body("storageLocation", equalTo(request.storageLocation()))
                     .body("imageUrl", equalTo(request.imageUrl()));
+        }
+    }
+
+    @Nested
+    class updateLostItemStatus {
+
+        @ParameterizedTest
+        @CsvSource({
+                "PENDING, COMPLETED",
+                "COMPLETED, PENDING"
+        })
+        void 성공(PickupStatus previousStatus, PickupStatus updatedStatus) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            LostItem lostItem = LostItemFixture.create(festival, previousStatus);
+            lostItemJpaRepository.save(lostItem);
+
+            LostItemStatusUpdateRequest request = LostItemStatusUpdateRequestFixture.create(updatedStatus);
+
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/lost-items/{lostItemId}/status", lostItem.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("lostItemId", notNullValue())
+                    .body("status", equalTo(request.status().name()));
         }
     }
 
