@@ -5,7 +5,7 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 
 public record PlaceGeographyResponse(
-        Long id,
+        Long placeId,
         PlaceCategory category,
         FestivalCoordinateResponse markerCoordinate
 ) {
