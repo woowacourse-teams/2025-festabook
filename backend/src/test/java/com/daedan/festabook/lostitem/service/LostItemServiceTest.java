@@ -10,8 +10,6 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.lostitem.controller.LostItemStatusRequest;
-import com.daedan.festabook.lostitem.controller.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
@@ -19,7 +17,9 @@ import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemRequestFixture;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
 import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequestFixture;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import java.util.List;
@@ -170,7 +170,7 @@ class LostItemServiceTest {
             LostItem lostItem = LostItemFixture.create(lostItemId, previousStatus);
 
             PickupStatus updateStatus = PickupStatus.COMPLETED;
-            LostItemStatusRequest request = LostItemStatusUpdateRequestFixture.create(updateStatus);
+            LostItemStatusUpdateRequest request = LostItemStatusUpdateRequestFixture.create(updateStatus);
 
             given(lostItemJpaRepository.findById(lostItemId))
                     .willReturn(Optional.of(lostItem));
@@ -189,7 +189,7 @@ class LostItemServiceTest {
         void 예외_존재하지_않는_분실물_ID() {
             // given
             Long invalidLostItemId = 0L;
-            LostItemStatusRequest request = LostItemStatusUpdateRequestFixture.create();
+            LostItemStatusUpdateRequest request = LostItemStatusUpdateRequestFixture.create();
 
             given(lostItemJpaRepository.findById(invalidLostItemId))
                     .willReturn(Optional.empty());

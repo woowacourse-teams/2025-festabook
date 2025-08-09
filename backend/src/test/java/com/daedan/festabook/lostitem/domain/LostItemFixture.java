@@ -66,6 +66,18 @@ public class LostItemFixture {
     }
 
     public static LostItem create(
+            Festival festival,
+            PickupStatus status
+    ) {
+        return new LostItem(
+                festival,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_STORAGE_LOCATION,
+                status
+        );
+    }
+
+    public static LostItem create(
             Long lostItemId,
             PickupStatus status
     ) {

@@ -3,12 +3,12 @@ package com.daedan.festabook.lostitem.service;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.lostitem.controller.LostItemStatusRequest;
-import com.daedan.festabook.lostitem.controller.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import jakarta.transaction.Transactional;
@@ -46,7 +46,7 @@ public class LostItemService {
     }
 
     @Transactional
-    public LostItemStatusUpdateResponse updateLostItemStatus(Long lostItemId, LostItemStatusRequest request) {
+    public LostItemStatusUpdateResponse updateLostItemStatus(Long lostItemId, LostItemStatusUpdateRequest request) {
         LostItem lostItem = getLostItemById(lostItemId);
         lostItem.updateLostItem(request.status());
         return LostItemStatusUpdateResponse.from(lostItem);
