@@ -14,7 +14,7 @@ public class EventFixture {
     private static final EventDate DEFAULT_EVENT_DATE = EventDateFixture.create();
 
     public static Event create(
-            Long id,
+            Long eventId,
             LocalTime startTime,
             LocalTime endTime,
             String title,
@@ -22,7 +22,7 @@ public class EventFixture {
             EventDate eventDate
     ) {
         return new Event(
-                id,
+                eventId,
                 startTime,
                 endTime,
                 title,
