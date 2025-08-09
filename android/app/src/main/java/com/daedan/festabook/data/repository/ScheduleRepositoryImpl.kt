@@ -12,7 +12,9 @@ class ScheduleRepositoryImpl(
 ) : ScheduleRepository {
     override suspend fun fetchAllScheduleDates(): Result<List<ScheduleDate>> {
         val response = scheduleDataSource.fetchScheduleDates().toResult()
-        return response.mapCatching { scheduleDateResponses -> scheduleDateResponses.map { it.toDomain() } }
+        return response.mapCatching { scheduleDateResponses ->
+            scheduleDateResponses.map { it.toDomain() }.sortedBy { it.date }
+        }
     }
 
     override suspend fun fetchScheduleEventsById(eventDateId: Long): Result<List<ScheduleEvent>> {
