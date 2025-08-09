@@ -12,8 +12,8 @@ import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -105,7 +105,7 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
+                    .body("placeId", notNullValue())
                     .body("category", equalTo(expectedPlaceCategory.toString()))
 
                     .body("placeImages", empty())
@@ -229,7 +229,7 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(place.getId().intValue()))
+                    .body("[0].placeId", equalTo(place.getId().intValue()))
                     .body("[0].imageUrl", equalTo(placeImage.getImageUrl()))
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].title", equalTo(placeDetail.getTitle()))
@@ -370,7 +370,7 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", equalTo(place.getId().intValue()))
+                    .body("placeId", equalTo(place.getId().intValue()))
                     .body("placeImages", hasSize(expectedPlaceImagesSize))
                     .body("placeImages[0].id", equalTo(placeImage1.getId().intValue()))
                     .body("placeImages[0].imageUrl", equalTo(placeImage1.getImageUrl()))

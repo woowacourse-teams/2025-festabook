@@ -71,7 +71,7 @@ class PlaceFavoriteServiceTest {
             PlaceFavoriteResponse result = placeFavoriteService.addPlaceFavorite(placeId, request);
 
             // then
-            assertThat(result.id()).isEqualTo(placeFavoriteId);
+            assertThat(result.placeFavoriteId()).isEqualTo(placeFavoriteId);
             then(placeFavoriteJpaRepository).should()
                     .save(any());
         }

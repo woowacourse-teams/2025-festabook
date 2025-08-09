@@ -10,7 +10,6 @@ import static org.mockito.BDDMockito.then;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalNotification;
@@ -21,6 +20,7 @@ import com.daedan.festabook.festival.dto.FestivalNotificationRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -80,7 +80,7 @@ class FestivalNotificationServiceTest {
                     festivalId, request);
 
             // then
-            assertThat(result.id()).isEqualTo(festivalNotificationId);
+            assertThat(result.festivalNotificationId()).isEqualTo(festivalNotificationId);
             then(festivalNotificationJpaRepository).should()
                     .save(any());
             then(festivalNotificationManager).should()

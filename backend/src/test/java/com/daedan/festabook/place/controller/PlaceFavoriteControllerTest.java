@@ -84,7 +84,7 @@ class PlaceFavoriteControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue());
+                    .body("placeFavoriteId", notNullValue());
         }
 
         @Test

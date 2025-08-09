@@ -82,7 +82,7 @@ class FestivalNotificationControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue());
+                    .body("festivalNotificationId", notNullValue());
 
             then(fcmNotificationManager).should()
                     .subscribeFestivalTopic(any(), any());

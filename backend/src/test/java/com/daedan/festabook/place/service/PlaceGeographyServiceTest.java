@@ -5,9 +5,9 @@ import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceCoordinateRequestFixture;
@@ -113,7 +113,7 @@ class PlaceGeographyServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(placeId);
+                s.assertThat(result.placeId()).isEqualTo(placeId);
                 s.assertThat(result.coordinate().latitude()).isEqualTo(request.latitude());
                 s.assertThat(result.coordinate().longitude()).isEqualTo(request.longitude());
             });

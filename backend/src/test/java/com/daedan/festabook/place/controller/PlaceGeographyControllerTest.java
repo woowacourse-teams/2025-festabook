@@ -170,7 +170,7 @@ class PlaceGeographyControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("$", hasKey("coordinate"))
                     .body("coordinate.size()", equalTo(expectedCoordinateSize))
-                    .body("id", equalTo(place.getId().intValue()))
+                    .body("placeId", equalTo(place.getId().intValue()))
                     .body("coordinate.latitude", equalTo(request.latitude()))
                     .body("coordinate.longitude", equalTo(request.longitude()));
         }

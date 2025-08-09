@@ -10,7 +10,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public record PlaceResponse(
-        Long id,
+        Long placeId,
         PlaceImageResponses placeImages,
         PlaceCategory category,
         String title,

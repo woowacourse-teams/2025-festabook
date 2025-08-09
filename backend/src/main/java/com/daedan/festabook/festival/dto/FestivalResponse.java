@@ -6,7 +6,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public record FestivalResponse(
-        Long id,
+        Long festivalId,
         String universityName,
         FestivalImageResponses festivalImages,
         String festivalName,

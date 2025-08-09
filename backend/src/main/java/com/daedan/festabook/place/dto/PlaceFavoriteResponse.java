@@ -3,7 +3,7 @@ package com.daedan.festabook.place.dto;
 import com.daedan.festabook.place.domain.PlaceFavorite;
 
 public record PlaceFavoriteResponse(
-        Long id
+        Long placeFavoriteId
 ) {
 
     public static PlaceFavoriteResponse from(PlaceFavorite placeFavorite) {

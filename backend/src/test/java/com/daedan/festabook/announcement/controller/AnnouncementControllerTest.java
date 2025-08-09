@@ -20,9 +20,9 @@ import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
-import com.daedan.festabook.festival.domain.FestivalFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.util.List;
@@ -157,13 +157,13 @@ class AnnouncementControllerTest {
                     .body("pinned", hasSize(expectedPinnedSize))
                     .body("unpinned.size()", equalTo(expectedUnpinnedSize))
                     .body("pinned[0].size()", equalTo(expectedFieldSize))
-                    .body("pinned[0].id", equalTo(announcement1.getId().intValue()))
+                    .body("pinned[0].announcementId", equalTo(announcement1.getId().intValue()))
                     .body("pinned[0].title", equalTo(announcement1.getTitle()))
                     .body("pinned[0].content", equalTo(announcement1.getContent()))
                     .body("pinned[0].isPinned", equalTo(announcement1.isPinned()))
                     .body("pinned[0].createdAt", notNullValue())
                     .body("unpinned[0].size()", equalTo(expectedFieldSize))
-                    .body("unpinned[0].id", equalTo(announcement2.getId().intValue()))
+                    .body("unpinned[0].announcementId", equalTo(announcement2.getId().intValue()))
                     .body("unpinned[0].title", equalTo(announcement2.getTitle()))
                     .body("unpinned[0].content", equalTo(announcement2.getContent()))
                     .body("unpinned[0].isPinned", equalTo(announcement2.isPinned()))
@@ -219,7 +219,7 @@ class AnnouncementControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .extract()
                     .jsonPath()
-                    .getList("pinned.id", Long.class);
+                    .getList("pinned.announcementId", Long.class);
 
             assertSoftly(s -> {
                 s.assertThat(result.get(0)).isEqualTo(announcement3.getId());
@@ -254,7 +254,7 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("pinned.size()", equalTo(expectedSize))
-                    .body("pinned.id", containsInAnyOrder(
+                    .body("pinned.announcementId", containsInAnyOrder(
                             targetAnnouncements.get(0).getId().intValue(),
                             targetAnnouncements.get(1).getId().intValue(),
                             targetAnnouncements.get(2).getId().intValue()
