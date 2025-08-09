@@ -9,33 +9,33 @@ public class FestivalNotificationFixture {
     private static final Device DEFAULT_DEVICE = DeviceFixture.create();
 
     public static FestivalNotification create(
-            Long id
+            Long festivalNotificationId
     ) {
         return new FestivalNotification(
-                id,
+                festivalNotificationId,
                 DEFAULT_FESTIVAL,
                 DEFAULT_DEVICE
         );
     }
 
     public static FestivalNotification create(
-            Long id,
+            Long festivalNotificationId,
             Festival festival
     ) {
         return new FestivalNotification(
-                id,
+                festivalNotificationId,
                 festival,
                 DEFAULT_DEVICE
         );
     }
 
     public static FestivalNotification create(
-            Long id,
+            Long festivalNotificationId,
             Festival festival,
             Device device
     ) {
         return new FestivalNotification(
-                id,
+                festivalNotificationId,
                 festival,
                 device
         );

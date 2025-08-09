@@ -19,10 +19,10 @@ public class PlaceFixture {
     }
 
     public static Place create(
-            Long id
+            Long placeId
     ) {
         return new Place(
-                id,
+                placeId,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE
@@ -65,13 +65,13 @@ public class PlaceFixture {
     }
 
     public static Place create(
-            Long id,
+            Long placeId,
             Festival festival,
             Double latitude,
             Double longitude
     ) {
         return new Place(
-                id,
+                placeId,
                 festival,
                 DEFAULT_CATEGORY,
                 new Coordinate(latitude, longitude)
@@ -90,12 +90,12 @@ public class PlaceFixture {
     }
 
     public static Place createWithNullDefaults(
-            Long id,
+            Long placeId,
             Festival festival,
             PlaceCategory placeCategory
     ) {
         return new Place(
-                id,
+                placeId,
                 festival,
                 placeCategory,
                 null

@@ -7,11 +7,11 @@ import java.util.stream.IntStream;
 public class QuestionSequenceUpdateRequestFixture {
 
     public static QuestionSequenceUpdateRequest create(
-            Long id,
+            Long questionId,
             Integer sequence
     ) {
         return new QuestionSequenceUpdateRequest(
-                id,
+                questionId,
                 sequence
         );
     }

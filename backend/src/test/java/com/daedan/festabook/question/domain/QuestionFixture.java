@@ -106,10 +106,10 @@ public class QuestionFixture {
     }
 
     public static Question create(
-            Long id
+            Long questionId
     ) {
         return new Question(
-                id,
+                questionId,
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
@@ -118,11 +118,11 @@ public class QuestionFixture {
     }
 
     public static Question create(
-            Long id,
+            Long questionId,
             Integer sequence
     ) {
         return new Question(
-                id,
+                questionId,
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
