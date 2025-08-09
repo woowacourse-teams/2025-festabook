@@ -10,4 +10,4 @@ data class LostItem(
     val createdAt: LocalDateTime,
 )
 
-fun String.toLocalDateTime() = LocalDateTime.parse(this)
+fun String.toLocalDateTime(): LocalDateTime = LocalDateTime.parse(this)
