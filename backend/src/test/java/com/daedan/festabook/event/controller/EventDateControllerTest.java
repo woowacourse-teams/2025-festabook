@@ -139,7 +139,7 @@ class EventDateControllerTest {
         }
 
         @Test
-        void 성공_존재하지_않는_일정_날짜_ID_204_응답() {
+        void 성공_존재하지_않는_일정_날짜_ID_404_응답() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
