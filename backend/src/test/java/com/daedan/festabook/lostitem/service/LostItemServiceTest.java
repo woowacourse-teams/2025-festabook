@@ -10,12 +10,16 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.lostitem.controller.LostItemStatusRequest;
+import com.daedan.festabook.lostitem.controller.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
+import com.daedan.festabook.lostitem.domain.PickupStatus;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemRequestFixture;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequestFixture;
 import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import java.util.List;
@@ -116,7 +120,9 @@ class LostItemServiceTest {
         void 성공() {
             // given
             Long lostItemId = 1L;
-            LostItem lostItem = LostItemFixture.create(lostItemId);
+            String previousImageUrl = "https://example.com/previous.jpg";
+            String previousStorageLocation = "서울특별시 강남구";
+            LostItem lostItem = LostItemFixture.create(lostItemId, previousImageUrl, previousStorageLocation);
 
             LostItemRequest request = LostItemRequestFixture.create(
                     "https://example.com/change.jpg",
@@ -148,6 +154,48 @@ class LostItemServiceTest {
 
             // then
             assertThatThrownBy(() -> lostItemService.updateLostItem(invalidLostItemId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 분실물입니다.");
+        }
+    }
+
+    @Nested
+    class updateLostItemStatus {
+
+        @Test
+        void 성공() {
+            // given
+            Long lostItemId = 1L;
+            PickupStatus previousStatus = PickupStatus.PENDING;
+            LostItem lostItem = LostItemFixture.create(lostItemId, previousStatus);
+
+            PickupStatus updateStatus = PickupStatus.COMPLETED;
+            LostItemStatusRequest request = LostItemStatusUpdateRequestFixture.create(updateStatus);
+
+            given(lostItemJpaRepository.findById(lostItemId))
+                    .willReturn(Optional.of(lostItem));
+
+            // when
+            LostItemStatusUpdateResponse result = lostItemService.updateLostItemStatus(lostItemId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.lostItemId()).isEqualTo(lostItemId);
+                s.assertThat(result.status()).isEqualTo(request.status());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_분실물_ID() {
+            // given
+            Long invalidLostItemId = 0L;
+            LostItemStatusRequest request = LostItemStatusUpdateRequestFixture.create();
+
+            given(lostItemJpaRepository.findById(invalidLostItemId))
+                    .willReturn(Optional.empty());
+
+            // then
+            assertThatThrownBy(() -> lostItemService.updateLostItemStatus(invalidLostItemId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 분실물입니다.");
         }

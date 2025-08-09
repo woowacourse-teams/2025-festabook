@@ -22,19 +22,6 @@ public class LostItemFixture {
     }
 
     public static LostItem create(
-            Long lostItemId
-    ) {
-        return new LostItem(
-                lostItemId,
-                DEFAULT_FESTIVAL,
-                DEFAULT_IMAGE_URL,
-                DEFAULT_STORAGE_LOCATION,
-                DEFAULT_PICK_UP_STATUS,
-                DEFAULT_CREATED_AT
-        );
-    }
-
-    public static LostItem create(
             Festival festival
     ) {
         return new LostItem(
@@ -75,6 +62,35 @@ public class LostItemFixture {
                 DEFAULT_IMAGE_URL,
                 DEFAULT_STORAGE_LOCATION,
                 status
+        );
+    }
+
+    public static LostItem create(
+            Long lostItemId,
+            PickupStatus status
+    ) {
+        return new LostItem(
+                lostItemId,
+                DEFAULT_FESTIVAL,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_STORAGE_LOCATION,
+                status,
+                DEFAULT_CREATED_AT
+        );
+    }
+
+    public static LostItem create(
+            Long lostItemId,
+            String imageUrl,
+            String storageLocation
+    ) {
+        return new LostItem(
+                lostItemId,
+                DEFAULT_FESTIVAL,
+                imageUrl,
+                storageLocation,
+                DEFAULT_PICK_UP_STATUS,
+                DEFAULT_CREATED_AT
         );
     }
 
