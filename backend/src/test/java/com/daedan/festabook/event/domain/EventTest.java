@@ -29,19 +29,19 @@ class EventTest {
             // given
             EventDate eventDate = EventDateFixture.create(LocalDate.of(2025, 5, 5));
             Event originalEvent = EventFixture.create(
+                    eventDate,
                     LocalTime.of(1, 0),
                     LocalTime.of(2, 0),
                     "Original Title",
-                    "Original Location",
-                    eventDate
+                    "Original Location"
             );
 
             Event newEvent = EventFixture.create(
+                    eventDate,
                     LocalTime.of(3, 0),
                     LocalTime.of(4, 0),
                     "Updated Title",
-                    "Updated Location",
-                    eventDate
+                    "Updated Location"
             );
 
             // when

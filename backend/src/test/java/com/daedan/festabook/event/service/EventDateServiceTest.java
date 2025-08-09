@@ -16,9 +16,9 @@ import com.daedan.festabook.event.dto.EventDateResponses;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -69,7 +69,7 @@ class EventDateServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(eventDate.getId());
+                s.assertThat(result.eventDateId()).isEqualTo(eventDate.getId());
                 s.assertThat(result.date()).isEqualTo(eventDate.getDate());
             });
         }

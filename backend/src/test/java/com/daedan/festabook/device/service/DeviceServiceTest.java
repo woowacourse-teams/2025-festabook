@@ -51,7 +51,7 @@ class DeviceServiceTest {
             DeviceResponse result = deviceService.registerDevice(request);
 
             // then
-            assertThat(result.id()).isEqualTo(expectedId);
+            assertThat(result.deviceId()).isEqualTo(expectedId);
             then(deviceJpaRepository).should()
                     .save(any());
         }
@@ -70,7 +70,7 @@ class DeviceServiceTest {
             DeviceResponse result = deviceService.registerDevice(request);
 
             // then
-            assertThat(result.id()).isEqualTo(expectedId);
+            assertThat(result.deviceId()).isEqualTo(expectedId);
             then(deviceJpaRepository).should(never())
                     .save(any());
         }

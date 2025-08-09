@@ -6,7 +6,7 @@ import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceImage;
 
 public record PlacePreviewResponse(
-        Long id,
+        Long placeId,
         String imageUrl,
         PlaceCategory category,
         String title,

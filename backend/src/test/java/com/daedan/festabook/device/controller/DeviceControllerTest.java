@@ -51,7 +51,7 @@ class DeviceControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue());
+                    .body("deviceId", notNullValue());
         }
 
         @Test
@@ -69,9 +69,9 @@ class DeviceControllerTest {
                     .post("/devices")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
-                    .body("id", notNullValue())
+                    .body("deviceId", notNullValue())
                     .extract()
-                    .path("id");
+                    .path("deviceId");
 
             int expectedFieldSize = 1;
 
@@ -85,7 +85,7 @@ class DeviceControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", equalTo(expectedId));
+                    .body("deviceId", equalTo(expectedId));
         }
     }
 }

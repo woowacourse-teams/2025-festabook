@@ -15,8 +15,8 @@ import com.daedan.festabook.event.dto.EventRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -113,11 +113,11 @@ class EventControllerTest {
             Long eventId = event.getId();
 
             EventRequest request = EventRequestFixture.create(
+                    eventDate.getId(),
                     LocalTime.of(3, 0),
                     LocalTime.of(4, 0),
                     "updated title",
-                    "updated location",
-                    eventDate.getId()
+                    "updated location"
             );
 
             // when & then
@@ -213,7 +213,7 @@ class EventControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(event.getId().intValue()))
+                    .body("[0].eventId", equalTo(event.getId().intValue()))
                     .body("[0].status", equalTo(EventStatus.ONGOING.name()))
                     .body("[0].startTime", equalTo(event.getStartTime().toString()))
                     .body("[0].endTime", equalTo(event.getEndTime().toString()))

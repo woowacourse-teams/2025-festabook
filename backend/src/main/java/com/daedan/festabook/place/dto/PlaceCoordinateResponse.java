@@ -4,7 +4,7 @@ import com.daedan.festabook.festival.dto.FestivalCoordinateResponse;
 import com.daedan.festabook.place.domain.Place;
 
 public record PlaceCoordinateResponse(
-        Long id,
+        Long placeId,
         FestivalCoordinateResponse coordinate
 ) {
 

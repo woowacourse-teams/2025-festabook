@@ -12,9 +12,6 @@ import org.junit.jupiter.api.Test;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DeviceTest {
 
-    private final String DEFAULT_DEVICE_IDENTIFIER = "device-abc123";
-    private final String DEFAULT_FCM_TOKEN = "fcm-token-xyz";
-
     @Nested
     class validateDeviceIdentifier {
 

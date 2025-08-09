@@ -8,10 +8,10 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.never;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -90,7 +90,7 @@ class PlaceServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(expectedPlaceId);
+                s.assertThat(result.placeId()).isEqualTo(expectedPlaceId);
                 s.assertThat(result.category()).isEqualTo(expectedPlaceCategory);
 
                 s.assertThat(result.placeImages().responses()).isEmpty();
@@ -214,7 +214,7 @@ class PlaceServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(expectedPlaceId);
+                s.assertThat(result.placeId()).isEqualTo(expectedPlaceId);
                 s.assertThat(result.category()).isEqualTo(place.getCategory());
 
                 s.assertThat(result.description()).isEqualTo(placeDetail.getDescription());
@@ -246,7 +246,7 @@ class PlaceServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.id()).isEqualTo(expectedPlaceId);
+                s.assertThat(result.placeId()).isEqualTo(expectedPlaceId);
                 s.assertThat(result.category()).isEqualTo(place.getCategory());
 
                 s.assertThat(result.description()).isNull();

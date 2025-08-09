@@ -88,7 +88,7 @@ class PlaceGeographyControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(place.getId().intValue()))
+                    .body("[0].placeId", equalTo(place.getId().intValue()))
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
                     .body("[0].markerCoordinate.latitude", equalTo(place.getCoordinate().getLatitude()))
@@ -170,7 +170,7 @@ class PlaceGeographyControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("$", hasKey("coordinate"))
                     .body("coordinate.size()", equalTo(expectedCoordinateSize))
-                    .body("id", equalTo(place.getId().intValue()))
+                    .body("placeId", equalTo(place.getId().intValue()))
                     .body("coordinate.latitude", equalTo(request.latitude()))
                     .body("coordinate.longitude", equalTo(request.longitude()));
         }

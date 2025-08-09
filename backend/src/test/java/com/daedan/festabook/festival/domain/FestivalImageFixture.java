@@ -6,7 +6,6 @@ import java.util.stream.IntStream;
 
 public class FestivalImageFixture {
 
-    private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final String DEFAULT_IMAGE_URL = "https://example.com/image.jpg";
     private static final Integer DEFAULT_SEQUENCE = 3;
 
@@ -32,12 +31,12 @@ public class FestivalImageFixture {
     }
 
     public static FestivalImage create(
-            Long id,
+            Long festivalImageId,
             Festival festival,
             Integer sequence
     ) {
         return new FestivalImage(
-                id,
+                festivalImageId,
                 festival,
                 DEFAULT_IMAGE_URL,
                 sequence

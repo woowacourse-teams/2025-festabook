@@ -14,8 +14,8 @@ import com.daedan.festabook.event.dto.EventDateRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -139,7 +139,7 @@ class EventDateControllerTest {
         }
 
         @Test
-        void 성공_존재하지_않는_일정_날짜_ID_204_응답() {
+        void 성공_존재하지_않는_일정_날짜_ID_404_응답() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
@@ -238,7 +238,7 @@ class EventDateControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(eventDate.getId().intValue()))
+                    .body("[0].eventDateId", equalTo(eventDate.getId().intValue()))
                     .body("[0].date", equalTo(eventDate.getDate().toString()));
         }
 

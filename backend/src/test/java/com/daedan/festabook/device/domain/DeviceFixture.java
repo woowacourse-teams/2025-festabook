@@ -31,10 +31,10 @@ public class DeviceFixture {
     }
 
     public static Device create(
-            Long id
+            Long deviceId
     ) {
         return new Device(
-                id,
+                deviceId,
                 DEFAULT_DEVICE_IDENTIFIER,
                 DEFAULT_FCM_TOKEN
         );

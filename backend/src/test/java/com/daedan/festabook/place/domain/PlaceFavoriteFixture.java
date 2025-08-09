@@ -5,12 +5,12 @@ import com.daedan.festabook.device.domain.Device;
 public class PlaceFavoriteFixture {
 
     public static PlaceFavorite create(
-            Long id,
+            Long placeFavoriteId,
             Place place,
             Device device
     ) {
         return new PlaceFavorite(
-                id,
+                placeFavoriteId,
                 place,
                 device
         );

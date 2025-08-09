@@ -86,10 +86,10 @@ public class FestivalFixture {
     }
 
     public static Festival create(
-            Long id
+            Long festivalId
     ) {
         return new Festival(
-                id,
+                festivalId,
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,

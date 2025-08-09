@@ -23,6 +23,10 @@ public class Event implements Comparable<Event> {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private EventDate eventDate;
+
     @Column(nullable = false)
     private LocalTime startTime;
 
@@ -35,40 +39,36 @@ public class Event implements Comparable<Event> {
     @Column(nullable = false)
     private String location;
 
-    @JoinColumn(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private EventDate eventDate;
-
     protected Event(
             Long id,
+            EventDate eventDate,
             LocalTime startTime,
             LocalTime endTime,
             String title,
-            String location,
-            EventDate eventDate
+            String location
     ) {
         this.id = id;
+        this.eventDate = eventDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.title = title;
         this.location = location;
-        this.eventDate = eventDate;
     }
 
     public Event(
+            EventDate eventDate,
             LocalTime startTime,
             LocalTime endTime,
             String title,
-            String location,
-            EventDate eventDate
+            String location
     ) {
         this(
                 null,
+                eventDate,
                 startTime,
                 endTime,
                 title,
-                location,
-                eventDate
+                location
         );
     }
 
