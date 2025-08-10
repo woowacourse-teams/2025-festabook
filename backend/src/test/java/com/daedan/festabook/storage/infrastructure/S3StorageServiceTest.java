@@ -81,6 +81,18 @@ class S3StorageServiceTest {
         }
 
         @Test
+        void 예외_null_값_MultipartFile() {
+            // given
+            String fileName = "test_123.jpg";
+
+            // when & then
+            assertThatThrownBy(() -> s3StorageService.uploadFile(null, fileName))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("파일이 비어 있습니다.");
+            then(s3Client).shouldHaveNoInteractions();
+        }
+
+        @Test
         void 예외_빈_파일_업로드() {
             // given
             String fileName = "test_123.jpg";
