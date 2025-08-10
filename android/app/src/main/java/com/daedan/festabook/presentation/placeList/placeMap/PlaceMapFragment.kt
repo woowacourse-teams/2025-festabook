@@ -2,15 +2,155 @@ package com.daedan.festabook.presentation.placeList.placeMap
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.commit
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
+import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
+import com.daedan.festabook.presentation.placeList.PlaceListFragment
+import com.daedan.festabook.presentation.placeList.PlaceListViewModel
+import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
+import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
+import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
+import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewFragment
+import com.naver.maps.map.MapFragment
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.util.FusedLocationSource
+import kotlinx.coroutines.launch
+import timber.log.Timber
+import kotlin.getValue
 
 class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment_place_map) {
+    private lateinit var naverMap: NaverMap
+    private val locationSource by lazy {
+        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+    }
+    private lateinit var mapManager: MapManager
+    private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
+
+    private val placeListFragment by lazy {
+        PlaceListFragment().newInstance()
+    }
+
+    private val placeDetailPreviewFragment by lazy {
+        PlaceDetailPreviewFragment().newInstance()
+    }
+
+    private val placeCategoryFragment by lazy {
+        PlaceCategoryFragment().newInstance()
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        childFragmentManager.commit {
+            add(R.id.fcv_map_container, placeListFragment, null)
+            add(R.id.fcv_map_container, placeDetailPreviewFragment, null)
+            add(R.id.fcv_map_container, placeCategoryFragment, null)
+        }
+        lifecycleScope.launch {
+            setUpMapManager()
+            setUpBinding()
+            setUpObserver()
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        mapManager.clearMapManager()
+    }
+
+    private fun setUpBinding() {
+        binding.chipBackToInitialPosition.setOnClickListener {
+            mapManager.moveToInitialPosition()
+        }
+    }
+
+    private suspend fun setUpMapManager() {
+        val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
+        naverMap = mapFragment.getMap()
+        binding.lbvCurrentLocation.map = naverMap
+        naverMap.locationSource = locationSource
+    }
+
+    private fun setUpObserver() {
+        viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
+            when (placeGeographies) {
+                is PlaceListUiState.Loading -> Unit
+                is PlaceListUiState.Success -> {
+                    mapManager.setPlaceLocation(placeGeographies.value)
+                }
+
+                is PlaceListUiState.Error -> {
+                    Timber.w(placeGeographies.throwable, "PlaceListFragment: ${placeGeographies.throwable.message}")
+                    showErrorSnackBar(placeGeographies.throwable)
+                }
+            }
+        }
+
+        viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
+            if (initialMapSetting !is PlaceListUiState.Success) return@observe
+            if (!::mapManager.isInitialized) {
+                mapManager =
+                    MapManager(
+                        naverMap,
+                        0,
+                        object : MapClickListener {
+                            override fun onMarkerListener(
+                                placeId: Long,
+                                category: PlaceCategoryUiModel,
+                            ): Boolean {
+                                Timber.d("Marker CLick : placeID: $placeId categoty: $category")
+                                if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+                                    return true
+                                }
+                                viewModel.selectPlace(placeId, category)
+                                return true
+                            }
+
+                            override fun onMapClickListener() {
+                                Timber.d("Map CLick")
+                                viewModel.unselectPlace()
+                            }
+                        },
+                        initialMapSetting.value,
+                    )
+            }
+            mapManager.setupMap()
+            mapManager.setupBackToInitialPosition { isExceededMaxLength ->
+                if (isExceededMaxLength) {
+                    binding.chipBackToInitialPosition.visibility = View.VISIBLE
+                } else {
+                    binding.chipBackToInitialPosition.visibility = View.GONE
+                }
+            }
+            setBehaviorCallback()
+        }
+    }
+
+    private fun setBehaviorCallback() {
+        binding.lbvCurrentLocation
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                BottomSheetFollowCallback(binding.lbvCurrentLocation.id),
+            )
+
+        binding.chipBackToInitialPosition
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id, mapManager),
+            )
+    }
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
     }
 }
