@@ -4,7 +4,6 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.domain.StorageService;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
@@ -19,16 +18,21 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 @Profile("prod")
-@RequiredArgsConstructor
 public class S3StorageService implements StorageService {
 
     private final S3Client s3Client;
-
-    @Value("${cloud.aws.s3.base-path}")
     private final String basePath;
-
-    @Value("${cloud.aws.s3.bucket}")
     private final String bucketName;
+
+    public S3StorageService(
+            S3Client s3Client,
+            @Value("${cloud.aws.s3.base-path}") String basePath,
+            @Value("${cloud.aws.s3.bucket}") String bucketName
+    ) {
+        this.s3Client = s3Client;
+        this.basePath = basePath;
+        this.bucketName = bucketName;
+    }
 
     @Override
     public String uploadFile(MultipartFile file, String fileName) {
