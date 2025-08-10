@@ -90,7 +90,7 @@ class NewsViewModel(
         _lostItemClickEvent.value = Event(lostItem)
     }
 
-    private fun loadPendingLostItems(state: LostItemUiState = LostItemUiState.Loading) {
+    fun loadPendingLostItems(state: LostItemUiState = LostItemUiState.InitialLoading) {
         viewModelScope.launch {
             _lostItemUiState.value = state
 

@@ -27,29 +27,39 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvLostItem.layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
-        binding.rvLostItem.adapter = adapter
+        binding.rvLostItemList.layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
+        binding.rvLostItemList.adapter = adapter
 
         val spacingInPx = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
-        binding.rvLostItem.addItemDecoration(
+        binding.rvLostItemList.addItemDecoration(
             LostItemDecoration(
                 spanCount = SPAN_COUNT,
                 spacing = spacingInPx,
             ),
         )
         setupObservers()
+        onSwipeRefreshLostItemsListener()
     }
 
     private fun setupObservers() {
         viewModel.lostItemUiState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is LostItemUiState.InitialLoading -> {}
-                is LostItemUiState.Loading -> {}
+                is LostItemUiState.InitialLoading -> {
+                    binding.srlLostItemList.isRefreshing = false
+                }
+
+                is LostItemUiState.Refreshing -> {
+                    binding.srlLostItemList.isRefreshing = true
+                }
+
                 is LostItemUiState.Success -> {
+                    binding.srlLostItemList.isRefreshing = false
                     adapter.submitList(state.lostItems)
                 }
 
-                is LostItemUiState.Error -> {}
+                is LostItemUiState.Error -> {
+                    binding.srlLostItemList.isRefreshing = false
+                }
             }
         }
 
@@ -64,6 +74,12 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         LostItemModalDialogFragment
             .newInstance(lostItem)
             .show(childFragmentManager, TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT)
+    }
+
+    private fun onSwipeRefreshLostItemsListener() {
+        binding.srlLostItemList.setOnRefreshListener {
+            viewModel.loadPendingLostItems(LostItemUiState.Refreshing)
+        }
     }
 
     companion object {
