@@ -1,4 +1,4 @@
-name: Notification (Submitted)
+name: Slack Notification (Submitted)
 
 on:
   pull_request_review:
