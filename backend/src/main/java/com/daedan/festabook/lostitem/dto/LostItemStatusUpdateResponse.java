@@ -5,7 +5,7 @@ import com.daedan.festabook.lostitem.domain.PickupStatus;
 
 public record LostItemStatusUpdateResponse(
         Long lostItemId,
-        PickupStatus status
+        PickupStatus pickupStatus
 ) {
 
     public static LostItemStatusUpdateResponse from(LostItem lostItem) {

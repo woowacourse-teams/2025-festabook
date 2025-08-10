@@ -8,7 +8,7 @@ public record LostItemResponse(
         Long lostItemId,
         String imageUrl,
         String storageLocation,
-        PickupStatus status,
+        PickupStatus pickupStatus,
         LocalDateTime createdAt
 ) {
 

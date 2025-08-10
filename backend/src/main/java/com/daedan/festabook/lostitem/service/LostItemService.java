@@ -48,7 +48,7 @@ public class LostItemService {
     @Transactional
     public LostItemStatusUpdateResponse updateLostItemStatus(Long lostItemId, LostItemStatusUpdateRequest request) {
         LostItem lostItem = getLostItemById(lostItemId);
-        lostItem.updateLostItem(request.status());
+        lostItem.updateStatus(request.pickupStatus());
         return LostItemStatusUpdateResponse.from(lostItem);
     }
 

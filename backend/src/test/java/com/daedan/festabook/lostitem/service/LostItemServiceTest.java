@@ -181,7 +181,7 @@ class LostItemServiceTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(result.lostItemId()).isEqualTo(lostItemId);
-                s.assertThat(result.status()).isEqualTo(request.status());
+                s.assertThat(result.pickupStatus()).isEqualTo(request.pickupStatus());
             });
         }
 

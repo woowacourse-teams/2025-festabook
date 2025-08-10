@@ -78,7 +78,7 @@ class LostItemControllerTest {
                     .body("lostItemId", notNullValue())
                     .body("imageUrl", equalTo(request.imageUrl()))
                     .body("storageLocation", equalTo(request.storageLocation()))
-                    .body("status", equalTo("PENDING"))
+                    .body("pickupStatus", equalTo("PENDING"))
                     .body("createdAt", notNullValue());
         }
     }
@@ -143,11 +143,11 @@ class LostItemControllerTest {
 
                     .body("[0].imageUrl", equalTo(lostItem1.getImageUrl()))
                     .body("[0].storageLocation", equalTo(lostItem1.getStorageLocation()))
-                    .body("[0].status", equalTo(lostItem1.getStatus().name()))
+                    .body("[0].pickupStatus", equalTo(lostItem1.getStatus().name()))
 
                     .body("[1].imageUrl", equalTo(lostItem2.getImageUrl()))
                     .body("[1].storageLocation", equalTo(lostItem2.getStorageLocation()))
-                    .body("[1].status", equalTo(lostItem2.getStatus().name()));
+                    .body("[1].pickupStatus", equalTo(lostItem2.getStatus().name()));
         }
     }
 
@@ -191,6 +191,8 @@ class LostItemControllerTest {
 
         @ParameterizedTest
         @CsvSource({
+                "PENDING, PENDING",
+                "COMPLETED, COMPLETED",
                 "PENDING, COMPLETED",
                 "COMPLETED, PENDING"
         })
@@ -217,7 +219,7 @@ class LostItemControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("lostItemId", notNullValue())
-                    .body("status", equalTo(request.status().name()));
+                    .body("pickupStatus", equalTo(request.pickupStatus().name()));
         }
     }
 
