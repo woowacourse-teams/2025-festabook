@@ -227,7 +227,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
       });
       // PATCH 응답 데이터를 명확하게 전달
       const markerData = {
-        id: placeId,
+        placeId: res.data.placeId,
         category: currentPlace?.category,
         coordinate: res.data.coordinate,
         markerCoordinate: res.data.coordinate,

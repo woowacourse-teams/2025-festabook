@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 import AddImageModal from './AddImageModal';
-import api from '../../utils/api';
+import { festivalAPI } from '../../utils/api';
 
 const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, onUpdate }) => {
     const [selectedImage, setSelectedImage] = useState(null);
@@ -48,9 +48,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
     useEffect(() => {
         if (isOpen) {
             if (festival?.festivalImages) {
-                console.log('Original festival images:', festival.festivalImages);
                 const normalizedImages = normalizeImageData(festival.festivalImages);
-                console.log('Normalized images:', normalizedImages);
                 setImages(normalizedImages);
             }
         } else {
@@ -137,13 +135,11 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
                 sequence: index
             }));
 
-            const response = await api.patch('/festivals/images/sequences', sequences);
-            console.log('Sequence update response:', response.data);
+            const response = await festivalAPI.updateFestivalImageSequences(sequences);
             
             // 상태 업데이트
-            if (onUpdate && response.data) {
-                const normalizedResponseImages = normalizeImageData(response.data);
-                console.log('Normalized sequence response images:', normalizedResponseImages);
+            if (onUpdate && response) {
+                const normalizedResponseImages = normalizeImageData(response);
                 onUpdate(prev => ({
                     ...prev,
                     festivalImages: normalizedResponseImages
@@ -169,7 +165,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
             const imageToDelete = images.find(img => img.id === selectedImageToDelete);
             const festivalImageId = imageToDelete?.festivalImageId || imageToDelete?.id || selectedImageToDelete;
             
-            await api.delete(`/festivals/images/${festivalImageId}`);
+            await festivalAPI.deleteFestivalImage(festivalImageId);
             
             const newImages = images.filter(img => (img.festivalImageId || img.id) !== selectedImageToDelete);
             setImages(newImages);
@@ -395,13 +391,11 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
                 }}
                 showToast={showToast}
                 onImageAdded={(newImage) => {
-                    console.log('New image received:', newImage);
                     const normalizedNewImage = {
                         ...newImage,
                         id: newImage.festivalImageId || newImage.id,
                         festivalImageId: newImage.festivalImageId || newImage.id
                     };
-                    console.log('Normalized new image:', normalizedNewImage);
                     const updatedImages = [...images, normalizedNewImage];
                     setImages(updatedImages);
                     if (onUpdate) {

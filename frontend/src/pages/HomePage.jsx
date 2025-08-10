@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useModal } from '../hooks/useModal';
-import api from '../utils/api';
+import { festivalAPI } from '../utils/api';
 
 const HomePage = () => {
     const { openModal, showToast } = useModal();
@@ -23,8 +23,8 @@ const HomePage = () => {
                 showToast('Festival ID가 설정되지 않았습니다.');
                 return;
             }
-            const response = await api.get('/festivals');
-            setFestival(response.data);
+            const festivalData = await festivalAPI.getFestival();
+            setFestival(festivalData);
         } catch (error) {
             if (error.response?.status === 404) {
                 showToast('축제 정보를 찾을 수 없습니다. Festival ID를 확인해주세요.');

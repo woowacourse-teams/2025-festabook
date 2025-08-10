@@ -13,7 +13,7 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
     useEffect(() => { 
         if (event) {
             setForm({ 
-                id: event.id, // 수정 시 ID 포함
+                eventId: event.eventId, // 수정 시 ID 포함
                 title: event.title || '', 
                 startTime: event.startTime || '', 
                 endTime: event.endTime || '', 

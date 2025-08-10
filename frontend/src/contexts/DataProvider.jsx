@@ -134,13 +134,13 @@ export const DataProvider = ({ children }) => {
             }
         },
         
-        deleteQnaItem: async (id, showToast) => {
+        deleteQnaItem: async (questionId, showToast) => {
             try {
                 setIsLoadingQna(true);
-                await qnaAPI.deleteQuestion(id);
+                await qnaAPI.deleteQuestion(questionId);
                 setData(prev => ({
                     ...prev,
-                    qnaItems: prev.qnaItems.filter(q => q.questionId !== id)
+                    qnaItems: prev.qnaItems.filter(q => q.questionId !== questionId)
                 }));
                 showToast('QnA가 삭제되었습니다.');
             } catch (error) {
@@ -211,7 +211,7 @@ export const DataProvider = ({ children }) => {
                     return;
                 }
                 
-                const updatedDates = await scheduleAPI.deleteEventDate(eventDateObj.id);
+                const updatedDates = await scheduleAPI.deleteEventDate(eventDateObj.eventDateId);
                 setEventDates(updatedDates);
                 
                 // 삭제된 날짜를 schedule에서 제거
@@ -240,13 +240,18 @@ export const DataProvider = ({ children }) => {
         },
         
         // 기존 이벤트 관리 액션들 (서버 연동으로 변경)
-        loadEventsForDate: async (date, showToast) => {
+                loadEventsForDate: async (date, showToast) => {
+            // 이미 로딩 중이거나 이미 데이터가 있는 경우 중복 호출 방지
+            if (isLoadingEvents || (data.schedule[date] !== undefined && data.schedule[date] !== null)) {
+                return;
+            }
+            
             try {
                 setIsLoadingEvents(true);
                 const eventDateObj = eventDates.find(ed => ed.date === date);
                 if (!eventDateObj) return;
                 
-                const events = await scheduleAPI.getEventsByDateId(eventDateObj.id);
+                const events = await scheduleAPI.getEventsByDateId(eventDateObj.eventDateId);
                 
                 setData(prev => ({
                     ...prev,
@@ -257,11 +262,19 @@ export const DataProvider = ({ children }) => {
                 }));
             } catch (error) {
                 if (showToast) showToast(error.message || '일정 조회에 실패했습니다.');
+                // 실패 시 빈 배열을 설정하여 undefined 상태를 유지하지 않음
+                setData(prev => ({
+                    ...prev,
+                    schedule: {
+                        ...prev.schedule,
+                        [date]: []
+                    }
+                }));
             } finally {
                 setIsLoadingEvents(false);
             }
         },
-
+        
         addScheduleEvent: async (date, eventData, showToast) => {
             try {
                 setIsLoadingEvents(true);
@@ -276,13 +289,13 @@ export const DataProvider = ({ children }) => {
                     endTime: eventData.endTime,
                     title: eventData.title,
                     location: eventData.location,
-                    eventDateId: eventDateObj.id
+                    eventDateId: eventDateObj.eventDateId
                 };
 
                 await scheduleAPI.createEvent(eventRequest);
                 
                 // 성공 후 해당 날짜의 일정 다시 조회
-                const events = await scheduleAPI.getEventsByDateId(eventDateObj.id);
+                const events = await scheduleAPI.getEventsByDateId(eventDateObj.eventDateId);
                 setData(prev => ({
                     ...prev,
                     schedule: {
@@ -294,6 +307,14 @@ export const DataProvider = ({ children }) => {
                 showToast('새 이벤트가 추가되었습니다.');
             } catch (error) {
                 showToast(error.message || '일정 추가에 실패했습니다.');
+                // 실패 시 기존 상태 유지 (undefined로 되돌림)
+                setData(prev => ({
+                    ...prev,
+                    schedule: {
+                        ...prev.schedule,
+                        [date]: undefined
+                    }
+                }));
             } finally {
                 setIsLoadingEvents(false);
             }
@@ -313,13 +334,13 @@ export const DataProvider = ({ children }) => {
                     endTime: eventData.endTime,
                     title: eventData.title,
                     location: eventData.location,
-                    eventDateId: eventDateObj.id
+                    eventDateId: eventDateObj.eventDateId
                 };
 
                 await scheduleAPI.updateEvent(eventId, eventRequest);
                 
                 // 성공 후 해당 날짜의 일정 다시 조회
-                const events = await scheduleAPI.getEventsByDateId(eventDateObj.id);
+                const events = await scheduleAPI.getEventsByDateId(eventDateObj.eventDateId);
                 setData(prev => ({
                     ...prev,
                     schedule: {
@@ -331,6 +352,14 @@ export const DataProvider = ({ children }) => {
                 showToast('이벤트가 수정되었습니다.');
             } catch (error) {
                 showToast(error.message || '일정 수정에 실패했습니다.');
+                // 실패 시 기존 상태 유지 (undefined로 되돌림)
+                setData(prev => ({
+                    ...prev,
+                    schedule: {
+                        ...prev.schedule,
+                        [date]: undefined
+                    }
+                }));
             } finally {
                 setIsLoadingEvents(false);
             }
@@ -348,7 +377,7 @@ export const DataProvider = ({ children }) => {
                 await scheduleAPI.deleteEvent(eventId);
                 
                 // 성공 후 해당 날짜의 일정 다시 조회
-                const events = await scheduleAPI.getEventsByDateId(eventDateObj.id);
+                const events = await scheduleAPI.getEventsByDateId(eventDateObj.eventDateId);
                 setData(prev => ({
                     ...prev,
                     schedule: {
@@ -360,6 +389,14 @@ export const DataProvider = ({ children }) => {
                 showToast('이벤트가 삭제되었습니다.');
             } catch (error) {
                 showToast(error.message || '일정 삭제에 실패했습니다.');
+                // 실패 시 기존 상태 유지 (undefined로 되돌림)
+                setData(prev => ({
+                    ...prev,
+                    schedule: {
+                        ...prev.schedule,
+                        [date]: undefined
+                    }
+                }));
             } finally {
                 setIsLoadingEvents(false);
             }

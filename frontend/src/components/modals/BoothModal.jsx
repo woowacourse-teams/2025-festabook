@@ -55,7 +55,7 @@ const BoothModal = ({ booth, onSave, onClose }) => {
     };
 
     const handleStartEditNotice = (notice) => {
-        setEditingNotice({ id: notice.id, text: notice.text });
+        setEditingNotice({ id: notice.placeId || notice.id, text: notice.text });
     };
 
     const handleCancelEditNotice = () => {
@@ -64,7 +64,7 @@ const BoothModal = ({ booth, onSave, onClose }) => {
 
     const handleSaveNoticeEdit = () => {
         const newNotices = form.notices.map(n => 
-            n.id === editingNotice.id ? { ...n, text: editingNotice.text } : n
+            (n.placeId || n.id) === editingNotice.id ? { ...n, text: editingNotice.text } : n
         );
         setForm(prev => ({...prev, notices: newNotices}));
         handleCancelEditNotice();
@@ -76,7 +76,7 @@ const BoothModal = ({ booth, onSave, onClose }) => {
             title: '공지 삭제 확인',
             message: `'${text}' 공지를 정말 삭제하시겠습니까?`,
             onConfirm: () => {
-                const newNotices = form.notices.filter(n => n.id !== id);
+                const newNotices = form.notices.filter(n => (n.placeId || n.id) !== id);
                 setForm(prev => ({...prev, notices: newNotices}));
                 showToast('공지가 삭제되었습니다.');
             }
@@ -137,14 +137,14 @@ const BoothModal = ({ booth, onSave, onClose }) => {
                             <label className="block text-sm font-medium text-gray-700 mb-1">개별 공지사항</label>
                             <ul className="mt-2 space-y-1">
                                 {form.notices && form.notices.map(notice => (
-                                    <li key={notice.id} className="flex justify-between items-center text-sm bg-gray-100 p-2 rounded-md">
-                                        {editingNotice.id === notice.id ? (
+                                    <li key={notice.placeId || notice.id} className="flex justify-between items-center text-sm bg-gray-100 p-2 rounded-md">
+                                        {editingNotice.id === (notice.placeId || notice.id) ? (
                                             <>
                                                 <input type="text" value={editingNotice.text} onChange={(e) => setEditingNotice(prev => ({...prev, text: e.target.value}))} className="flex-1 block w-full border border-gray-300 rounded-md shadow-sm py-1 px-2 mr-2"/>
                                                 <div className="flex items-center space-x-3">
                                                     <button onClick={handleSaveNoticeEdit} className="text-green-600 hover:text-green-800"><i className="fas fa-check"></i></button>
                                                     <button onClick={handleCancelEditNotice} className="text-gray-500 hover:text-gray-700"><i className="fas fa-times"></i></button>
-                                                    <button onClick={() => handleDeleteNotice(notice.id, notice.text)} className="text-red-500 hover:text-red-700"><i className="fas fa-trash"></i></button>
+                                                    <button onClick={() => handleDeleteNotice(notice.placeId || notice.id, notice.text)} className="text-red-500 hover:text-red-700"><i className="fas fa-trash"></i></button>
                                                 </div>
                                             </>
                                         ) : (

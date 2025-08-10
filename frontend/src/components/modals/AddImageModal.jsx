@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from '../common/Modal';
-import api from '../../utils/api';
+import { festivalAPI } from '../../utils/api';
 
 const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
     const [selectedFile, setSelectedFile] = useState(null);
@@ -107,15 +107,15 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
         try {
             const imageUrl = URL.createObjectURL(selectedFile);
             
-            const response = await api.post('/festivals/images', {
+            const response = await festivalAPI.addFestivalImage({
                 imageUrl: imageUrl
             });
             
             showToast('이미지가 성공적으로 업로드되었습니다.');
             
             // 새로 추가된 이미지를 부모 컴포넌트에 전달
-            if (onImageAdded && response.data) {
-                onImageAdded(response.data);
+            if (onImageAdded && response) {
+                onImageAdded(response);
             } else {
                 onClose();
             }
