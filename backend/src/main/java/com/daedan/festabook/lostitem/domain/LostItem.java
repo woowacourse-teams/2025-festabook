@@ -97,8 +97,9 @@ public class LostItem {
         this.storageLocation = storageLocation;
     }
 
-    public void updateLostItem(PickupStatus status) {
+    public void updateStatus(PickupStatus status) {
         validatePickupStatus(status);
+
         this.status = status;
     }
 
