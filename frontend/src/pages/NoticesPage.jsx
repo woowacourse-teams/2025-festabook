@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useModal } from '../hooks/useModal';
-import api from '../utils/api';
+import { announcementAPI } from '../utils/api';
 
 function formatDate(dateString) {
     if (!dateString) return '';
@@ -19,10 +19,10 @@ const NoticesPage = () => {
     const [unpinned, setUnpinned] = useState([]);
 
     useEffect(() => {
-        api.get('/announcements').then(res => {
+        announcementAPI.getAnnouncements().then(res => {
             // 고정된 공지사항과 일반 공지사항을 모두 작성 시간 순서대로 정렬 (최신순)
-            const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const pinnedNotices = (res.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const unpinnedNotices = (res.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             
             setPinned(pinnedNotices);
             setUnpinned(unpinnedNotices);
@@ -33,11 +33,11 @@ const NoticesPage = () => {
         if (!data.title || !data.content) { showToast('제목과 내용을 모두 입력해주세요.'); return; }
         if (id) {
             try {
-                await api.patch(`/announcements/${id}`, data);
+                await announcementAPI.updateAnnouncement(id, data);
                 // 공지 수정 후 목록 재로딩
-                const res = await api.get('/announcements');
-                const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const res = await announcementAPI.getAnnouncements();
+                const pinnedNotices = (res.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const unpinnedNotices = (res.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 setPinned(pinnedNotices);
                 setUnpinned(unpinnedNotices);
@@ -47,12 +47,12 @@ const NoticesPage = () => {
             }
         } else {
             try {
-                await api.post('/announcements', data);
+                await announcementAPI.createAnnouncement(data);
                 
                 // 공지 추가 후 목록 재로딩
-                const res = await api.get('/announcements');
-                const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const res = await announcementAPI.getAnnouncements();
+                const pinnedNotices = (res.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                const unpinnedNotices = (res.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 
                 setPinned(pinnedNotices);
                 setUnpinned(unpinnedNotices);
@@ -65,12 +65,12 @@ const NoticesPage = () => {
 
     const handleDelete = async (id) => {
         try {
-            await api.delete(`/announcements/${id}`);
+            await announcementAPI.deleteAnnouncement(id);
             
             // 공지 삭제 후 목록 재로딩
-            const res = await api.get('/announcements');
-            const pinnedNotices = (res.data.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-            const unpinnedNotices = (res.data.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const res = await announcementAPI.getAnnouncements();
+            const pinnedNotices = (res.pinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+            const unpinnedNotices = (res.unpinned || []).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             
             setPinned(pinnedNotices);
             setUnpinned(unpinnedNotices);
@@ -89,9 +89,7 @@ const NoticesPage = () => {
             }
             
             // API 호출 - 변경하려는 값으로 전달
-            const response = await api.patch(`/announcements/${noticeId}/pin`, { 
-                pinned: !currentIsPinned
-            });
+            const response = await announcementAPI.toggleAnnouncementPin(noticeId, !currentIsPinned);
             
             if (response.status === 204) {
                 // 클라이언트 상태 업데이트

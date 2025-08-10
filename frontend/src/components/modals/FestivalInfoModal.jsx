@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import api from '../../utils/api';
+import { festivalAPI } from '../../utils/api';
 
 const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) => {
     const [formData, setFormData] = useState({
@@ -14,7 +14,7 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
         e.preventDefault();
         
         try {
-            const response = await api.patch('/festivals/information', {
+            const response = await festivalAPI.updateFestivalInfo({
                 festivalName: formData.festivalName,
                 startDate: formData.startDate,
                 endDate: formData.endDate
@@ -24,9 +24,9 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
             if (onUpdate) {
                 onUpdate(prev => ({
                     ...prev,
-                    festivalName: response.data.festivalName,
-                    startDate: response.data.startDate,
-                    endDate: response.data.endDate
+                    festivalName: response.festivalName,
+                    startDate: response.startDate,
+                    endDate: response.endDate
                 }));
             }
             

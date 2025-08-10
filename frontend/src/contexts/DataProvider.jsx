@@ -134,13 +134,13 @@ export const DataProvider = ({ children }) => {
             }
         },
         
-        deleteQnaItem: async (id, showToast) => {
+        deleteQnaItem: async (questionId, showToast) => {
             try {
                 setIsLoadingQna(true);
-                await qnaAPI.deleteQuestion(id);
+                await qnaAPI.deleteQuestion(questionId);
                 setData(prev => ({
                     ...prev,
-                    qnaItems: prev.qnaItems.filter(q => q.questionId !== id)
+                    qnaItems: prev.qnaItems.filter(q => q.questionId !== questionId)
                 }));
                 showToast('QnA가 삭제되었습니다.');
             } catch (error) {

@@ -1,16 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../data/categories';
-import api from '../utils/api';
+import { placeAPI } from '../utils/api';
 
 const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth }) => {
 
     const defaultBooth = (booth) => {
         return {
-            id: booth.id,
+            id: booth.placeId,
             category: booth.category,
-            placeImages: booth.placeImages,
-            placeAnnouncements: booth.placeAnnouncements,
+            placeImages: booth.placeImages || [],
+            placeAnnouncements: booth.placeAnnouncements || [],
+            // 기존 코드와의 호환성을 위한 필드들
+            images: booth.placeImages?.responses?.map(img => img.imageUrl) || [],
+            notices: booth.placeAnnouncements?.responses || [],
+            mainImageIndex: 0,
 
             title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
             description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
@@ -35,10 +39,10 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
             booth.host === null
         ) {
             const newBooth = defaultBooth(booth);
-            updateBooth(newBooth.id, newBooth);
+            updateBooth(newBooth.placeId, newBooth);
         }
     }, [
-        booth.id,
+        booth.placeId,
         booth.title,
         booth.description,
         booth.startTime,
@@ -60,9 +64,9 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
                         <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {booth.startTime} - {booth.endTime}</p>
                     </div>
                     <h4 className="font-semibold text-lg mt-4 mb-2">공지사항</h4>
-                    {booth.notices && booth.notices.length > 0 ? (
+                                            {booth.notices && booth.notices.length > 0 ? (
                         <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                            {booth.notices.map(notice => <li key={notice.id}>{notice.text}</li>)}
+                            {booth.notices.map(notice => <li key={notice.placeId || notice.id}>{notice.text}</li>)}
                         </ul>
                     ) : <p className="text-sm text-gray-500">공지사항 없음</p>}
                 </div>
@@ -99,10 +103,10 @@ const BoothsPage = () => {
     // defaultBooth 메서드 (유저가 만든 것 사용)
     const getDefaultValueIfNull = (defaultValue, nullableValue) => nullableValue === null ? defaultValue : nullableValue;
     const defaultBooth = (booth) => ({
-        id: booth.id,
+        placeId: booth.placeId,
         category: booth.category,
-        placeImages: booth.placeImages,
-        placeAnnouncements: booth.placeAnnouncements,
+        placeImages: booth.placeImages || [],
+        placeAnnouncements: booth.placeAnnouncements || [],
         // 흡연구역, 쓰레기통은 title을 category명으로 세팅
         title: ['SMOKING', 'TRASH_CAN'].includes(booth.category)
             ? placeCategories[booth.category]
@@ -112,24 +116,34 @@ const BoothsPage = () => {
         endTime: getDefaultValueIfNull('00:00', booth.endTime),
         location: getDefaultValueIfNull('미지정', booth.location),
         host: getDefaultValueIfNull('미지정', booth.host),
+        // 기존 코드와의 호환성을 위한 필드들
+        images: booth.placeImages?.responses?.map(img => img.imageUrl) || [],
+        notices: booth.placeAnnouncements?.responses || [],
     });
 
     // 1. Booth 목록 불러오기
     useEffect(() => {
-        setLoading(true);
-        api.get('/places')
-            .then(res => {
-                setBooths(res.data.map(defaultBooth));
-            })
-            .catch(() => showToast('플레이스 목록을 불러오지 못했습니다.'))
-            .finally(() => setLoading(false));
+        const fetchPlaces = async () => {
+            try {
+                setLoading(true);
+                const places = await placeAPI.getPlaces();
+                setBooths(places.map(defaultBooth));
+            } catch (error) {
+                showToast('플레이스 목록을 불러오지 못했습니다.');
+                console.error('Failed to fetch places:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        
+        fetchPlaces();
     }, []);
 
-    const toggleExpand = id => {
+    const toggleExpand = placeId => {
         setExpandedIds(prev =>
-            prev.includes(id)
-                ? prev.filter(expandedId => expandedId !== id)
-                : [...prev, id]
+            prev.includes(placeId)
+                ? prev.filter(expandedId => expandedId !== placeId)
+                : [...prev, placeId]
         );
     };
 
@@ -138,15 +152,11 @@ const BoothsPage = () => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
         try {
             setLoading(true);
-            const res = await api.post('/places', { placeCategory: data.category });
-            // 201 응답이면 성공 처리, 응답 구조 반영
-            if (res.status === 201 && res.data) {
-                const newBooth = defaultBooth(res.data);
-                setBooths(prev => [newBooth, ...prev]);
-                showToast('새 플레이스가 추가되었습니다.');
-            } else {
-                showToast('플레이스 생성에 실패했습니다.');
-            }
+            await placeAPI.createPlace({ placeCategory: data.category });
+            // 성공 후 목록 다시 조회
+            const places = await placeAPI.getPlaces();
+            setBooths(places.map(defaultBooth));
+            showToast('새 플레이스가 추가되었습니다.');
         } catch (e) {
             showToast('플레이스 생성에 실패했습니다.');
         } finally {
@@ -155,17 +165,14 @@ const BoothsPage = () => {
     };
 
     // 3. Booth 삭제
-    const handleDelete = async (id) => {
+    const handleDelete = async (placeId) => {
         try {
             setLoading(true);
-            const res = await api.delete(`/places/${id}`);
-            // 201 응답이면 성공 처리, 응답 구조 반영
-            if (res.status === 204) {
-                setBooths(prevBooths => prevBooths.filter(booth => booth.id !== id));
-                showToast('성공적으로 플레이스가 삭제되었습니다.');
-            } else {
-                showToast('플레이스 삭제에 실패했습니다.');
-            }
+            await placeAPI.deletePlace(placeId);
+            // 성공 후 목록 다시 조회
+            const places = await placeAPI.getPlaces();
+            setBooths(places.map(defaultBooth));
+            showToast('성공적으로 플레이스가 삭제되었습니다.');
         } catch (e) {
             showToast('플레이스 삭제에 실패했습니다.');
         } finally {
@@ -186,7 +193,7 @@ const BoothsPage = () => {
                 </>
             ),
             onConfirm: () => {
-                handleDelete(booth.id);
+                handleDelete(booth.placeId);
             }
         });
     }
@@ -195,7 +202,7 @@ const BoothsPage = () => {
     const handleSave = (data) => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
         // TODO: 수정 API 연동 필요 (현재는 로컬 상태만 갱신)
-        setBooths(prev => prev.map(b => b.id === data.id ? { ...b, ...data } : b));
+        setBooths(prev => prev.map(b => b.placeId === data.placeId ? { ...b, ...data } : b));
         showToast('플레이스 정보가 수정되었습니다.');
     };
 
@@ -230,17 +237,17 @@ const BoothsPage = () => {
                             <tbody>
                                 {booths.map(booth => (
                                     isMainPlace(booth.category) ?
-                                        <React.Fragment key={booth.id}>
+                                        <React.Fragment key={booth.placeId}>
                                             <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                                                 <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
                                                 <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
                                                 <td className="p-4 align-middle text-right min-w-[180px]">
                                                     <div className="flex items-center justify-end space-x-4 flex-wrap">
                                                         <button
-                                                            onClick={() => toggleExpand(booth.id)}
+                                                            onClick={() => toggleExpand(booth.placeId)}
                                                             className={`text-gray-600 hover:text-gray-900 text-sm font-semibold`}
                                                         >
-                                                            <i className={`fas ${expandedIds.includes(booth.id) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
+                                                            <i className={`fas ${expandedIds.includes(booth.placeId) ? 'fa-chevron-up' : 'fa-chevron-down'} mr-1`}></i>
                                                             상세보기
                                                         </button>
                                                     </div>
@@ -248,15 +255,15 @@ const BoothsPage = () => {
                                             </tr>
                                             <tr>
                                                 <td colSpan="3" className="p-0">
-                                                    <div className={`details-row-container ${expandedIds.includes(booth.id) ? 'open' : ''}`}>
-                                                        {expandedIds.includes(booth.id) && (
+                                                    <div className={`details-row-container ${expandedIds.includes(booth.placeId) ? 'open' : ''}`}>
+                                                        {expandedIds.includes(booth.placeId) && (
                                                             <BoothDetails
                                                                 booth={booth}
                                                                 openDeleteModal={openDeleteModal}
                                                                 openModal={openModal}
                                                                 handleSave={handleSave}
                                                                 showToast={showToast}
-                                                                updateBooth={(id, data) => setBooths(prev => prev.map(b => b.id === id ? { ...b, ...data } : b))}
+                                                                updateBooth={(id, data) => setBooths(prev => prev.map(b => b.placeId === id ? { ...b, ...data } : b))}
                                                             />
                                                         )}
                                                     </div>
@@ -284,7 +291,7 @@ const BoothsPage = () => {
                             <tbody>
                                 {booths.map(booth => (
                                     !isMainPlace(booth.category) ?
-                                        <React.Fragment key={booth.id}>
+                                        <React.Fragment key={booth.placeId}>
                                             <tr className="border-b border-gray-200 last:border-b-0 hover:bg-gray-50">
                                                 <td className="p-4 truncate align-middle text-left max-w-xs" title={booth.title}>{booth.title}</td>
                                                 <td className="p-4 text-gray-600 align-middle text-center max-w-xs truncate" title={placeCategories[booth.category]}>{placeCategories[booth.category]}</td>
