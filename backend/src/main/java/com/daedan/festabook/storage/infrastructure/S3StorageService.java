@@ -20,6 +20,8 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 @Profile("prod")
 public class S3StorageService implements StorageService {
 
+    private static final int MAX_FILE_NAME_LENGTH = 255;
+
     private final S3Client s3Client;
     private final String basePath;
     private final String bucketName;
@@ -69,7 +71,7 @@ public class S3StorageService implements StorageService {
             throw new BusinessException("파일 이름이 비어 있습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        if (fileName.length() > 255) {
+        if (fileName.length() > MAX_FILE_NAME_LENGTH) {
             throw new BusinessException("파일명이 너무 깁니다.", HttpStatus.BAD_REQUEST);
         }
 
