@@ -22,7 +22,7 @@ jobs:
           PR_NUMBER: ${{ github.event.pull_request.number }}
           PR_URL: ${{ github.event.pull_request.html_url }}
           REVIEW_STATE: ${{ github.event.review.state }}
-          REVIEWER: ${{ github.event.review.user.login }}
+          PR_REVIEWER: ${{ github.event.review.user.login }}
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
           if [[ "$REVIEW_STATE" == "commented" ]]; then
@@ -39,7 +39,7 @@ jobs:
           GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
           GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
 
-          SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[$REVIEWER]:-"$REVIEWER"}
+          SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[PR_REVIEWER]:-"PR_REVIEWER"}
           SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-"$PR_AUTHOR"}
 
           SLACK_REVIEWER_MENTION="<@$SLACK_REVIEWER_ID>"
