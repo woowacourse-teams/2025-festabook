@@ -1,0 +1,73 @@
+name: Slack Notification (Review Requested)
+
+on:
+  pull_request:
+    types: [review_requested]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-slack-review-requested
+  cancel-in-progress: true
+
+# 재리뷰 요청 알림
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      # JSON 파싱 도구
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Notify Re-review Requested
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_REVIEWER: ${{ github.event.requested_reviewer.login }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          declare -A GITHUB_TO_SLACK
+          GITHUB_TO_SLACK["soeun2537"]="U09A0LM0CRW"
+          GITHUB_TO_SLACK["taek2222"]="U099ARRH3D3"
+          GITHUB_TO_SLACK["changuii"]="U099BR9RNE6"
+          GITHUB_TO_SLACK["eoehd1ek"]="U0995NANDML"
+          GITHUB_TO_SLACK["oungsi2000"]="U098U2R57NK"
+          GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
+          GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
+          
+          if [[ "$PR_REVIEWER" == *"[bot]" ]]; then
+            echo "Bot 계정 리뷰 요청은 알림 생략"
+            exit 0
+          fi
+
+          REVIEW_API_URL="https://api.github.com/repos/$REPOSITORY/pulls/$PR_NUMBER/reviews"
+          REVIEW_COUNT=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$REVIEW_API_URL" \
+            | jq -r --arg reviewer "$PR_REVIEWER" '[.[] | select(.user.login == $reviewer)] | length')
+          if [ "$REVIEW_COUNT" -eq 0 ]; then
+            echo "최초 리뷰 요청으로 간주되어 알림 생략"
+            exit 0
+          fi
+          
+          slack_id=${GITHUB_TO_SLACK[$PR_REVIEWER]}
+          if [[ -z "$slack_id" ]]; then
+            echo "매핑 없는 사용자(${PR_REVIEWER})는 생략"
+            exit 0
+          fi
+      
+          if [[ -n "${GITHUB_TO_SLACK[$PR_AUTHOR]}" ]]; then
+            SLACK_AUTHOR_MENTION="<@${GITHUB_TO_SLACK[$PR_AUTHOR]}>"
+          else
+            SLACK_AUTHOR_MENTION="@${PR_AUTHOR}"   # 평문
+          fi
+
+          SLACK_REVIEWER_MENTION="<@$slack_id>"
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\": \"🏸 *재리뷰 요청 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${SLACK_REVIEWER_MENTION}\n*링크:* ${PR_URL}\"}" \
+            $SLACK_WEBHOOK_URL
