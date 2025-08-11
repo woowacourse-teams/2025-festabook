@@ -47,7 +47,6 @@
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
 
-
     <!-- 아이콘 contentDescription   -->
     <string name="schedule_location">위치</string>
     <string name="schedule_time">시간</string>
@@ -73,8 +72,6 @@
     <string name="setting_contact_us">문의하기</string>
     <string name="setting_contact_us_email_subject">문의하기</string>
     <string name="setting_contact_us_email">festabook2025@gmail.com</string>
-    <string name="setting_service_policy_url">https://www.notion.so/244a540dc0b780638e56e31c4bdb3c9f</string>
-
 
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>

@@ -21,15 +21,14 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
     }
 
     private fun setupServicePolicyClickListener() {
-        binding.ivSettingServicePolicy.setOnClickListener {
-            val url = getString(R.string.setting_service_policy_url)
-            val intent = Intent(Intent.ACTION_VIEW, url.toUri())
+        binding.tvSettingServicePolicy.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, POLICY_URL.toUri())
             startActivity(intent)
         }
     }
 
     private fun setupContactUsButtonClickListener() {
-        binding.ivSettingContactUs.setOnClickListener {
+        binding.tvSettingContactUs.setOnClickListener {
             val emailAddress = getString(R.string.setting_contact_us_email)
             val subject = R.string.setting_contact_us_email_subject
 
@@ -38,5 +37,10 @@ class SettingFragment : BaseFragment<FragmentSettingBinding>(R.layout.fragment_s
 
             startActivity(intent)
         }
+    }
+
+    companion object {
+        private const val POLICY_URL: String =
+            "https://www.notion.so/244a540dc0b780638e56e31c4bdb3c9f"
     }
 }
