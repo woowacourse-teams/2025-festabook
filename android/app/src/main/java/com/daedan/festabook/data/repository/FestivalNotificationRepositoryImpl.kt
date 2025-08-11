@@ -8,22 +8,22 @@ class FestivalNotificationRepositoryImpl(
     private val festivalNotificationDataSource: FestivalNotificationDataSource,
 ) : FestivalNotificationRepository {
     override suspend fun saveFestivalNotification(
-        organizationId: Long,
+        festivalNotificationId: Long,
         deviceId: Long,
     ): Result<Long> {
         val response =
             festivalNotificationDataSource
                 .saveFestivalNotification(
-                    organizationId = organizationId,
+                    festivalNotificationId = festivalNotificationId,
                     deviceId = deviceId,
                 ).toResult()
 
         return response.mapCatching { it.festivalNotificationId }
     }
 
-    override suspend fun deleteFestivalNotification(organizationBookmarkId: Long): Result<Unit> {
+    override suspend fun deleteFestivalNotification(festivalNotificationId: Long): Result<Unit> {
         val response =
-            festivalNotificationDataSource.deleteFestivalNotification(organizationBookmarkId)
+            festivalNotificationDataSource.deleteFestivalNotification(festivalNotificationId)
         val result = response.toResult()
 
         return result

@@ -9,18 +9,18 @@ class FestivalNotificationDataSourceImpl(
     private val organizationBookmarkService: OrganizationBookmarkService,
 ) : FestivalNotificationDataSource {
     override suspend fun saveFestivalNotification(
-        organizationId: Long,
+        festivalNotificationId: Long,
         deviceId: Long,
     ): ApiResult<FestivalNotificationResponse> =
         ApiResult.toApiResult {
             organizationBookmarkService.bookmarkOrganization(
-                organizationId,
+                festivalNotificationId,
                 FestivalNotificationRequest(deviceId = deviceId),
             )
         }
 
-    override suspend fun deleteFestivalNotification(organizationBookmarkId: Long): ApiResult<Unit> =
+    override suspend fun deleteFestivalNotification(festivalNotificationId: Long): ApiResult<Unit> =
         ApiResult.toApiResult {
-            organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId)
+            organizationBookmarkService.deleteOrganizationBookmark(festivalNotificationId)
         }
 }
