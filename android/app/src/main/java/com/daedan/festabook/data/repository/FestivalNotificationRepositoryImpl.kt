@@ -1,18 +1,18 @@
 package com.daedan.festabook.data.repository
 
-import com.daedan.festabook.data.datasource.remote.organization.OrganizationBookmarkDataSource
+import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
 import com.daedan.festabook.data.util.toResult
-import com.daedan.festabook.domain.repository.BookmarkRepository
+import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 
-class BookmarkRepositoryImpl(
-    private val organizationBookmarkDataSource: OrganizationBookmarkDataSource,
-) : BookmarkRepository {
+class FestivalNotificationRepositoryImpl(
+    private val festivalNotificationDataSource: FestivalNotificationDataSource,
+) : FestivalNotificationRepository {
     override suspend fun saveOrganizationBookmark(
         organizationId: Long,
         deviceId: Long,
     ): Result<Long> {
         val response =
-            organizationBookmarkDataSource
+            festivalNotificationDataSource
                 .saveOrganizationBookmark(
                     organizationId = organizationId,
                     deviceId = deviceId,
@@ -23,7 +23,7 @@ class BookmarkRepositoryImpl(
 
     override suspend fun deleteOrganizationBookmark(organizationBookmarkId: Long): Result<Unit> {
         val response =
-            organizationBookmarkDataSource.deleteOrganizationBookmark(organizationBookmarkId)
+            festivalNotificationDataSource.deleteOrganizationBookmark(organizationBookmarkId)
         val result = response.toResult()
 
         return result

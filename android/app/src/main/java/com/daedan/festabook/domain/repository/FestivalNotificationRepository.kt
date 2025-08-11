@@ -1,6 +1,6 @@
 package com.daedan.festabook.domain.repository
 
-interface BookmarkRepository {
+interface FestivalNotificationRepository {
     suspend fun saveOrganizationBookmark(
         organizationId: Long,
         deviceId: Long,

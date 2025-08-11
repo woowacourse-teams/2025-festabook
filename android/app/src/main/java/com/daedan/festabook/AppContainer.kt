@@ -6,19 +6,19 @@ import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.faq.FAQDataSource
 import com.daedan.festabook.data.datasource.remote.faq.FAQDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.festival.FestivalDataSource
+import com.daedan.festabook.data.datasource.remote.festival.FestivalDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
+import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.organization.FestivalDataSource
-import com.daedan.festabook.data.datasource.remote.organization.FestivalDataSourceImpl
-import com.daedan.festabook.data.datasource.remote.organization.OrganizationBookmarkDataSource
-import com.daedan.festabook.data.datasource.remote.organization.OrganizationBookmarkDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
-import com.daedan.festabook.data.repository.BookmarkRepositoryImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
 import com.daedan.festabook.data.repository.FAQRepositoryImpl
+import com.daedan.festabook.data.repository.FestivalNotificationRepositoryImpl
 import com.daedan.festabook.data.repository.FestivalRepositoryImpl
 import com.daedan.festabook.data.repository.LostItemRepositoryImpl
 import com.daedan.festabook.data.repository.NoticeRepositoryImpl
@@ -32,9 +32,9 @@ import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.organizationBookmarkService
 import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
-import com.daedan.festabook.domain.repository.BookmarkRepository
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.FAQRepository
+import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
@@ -59,8 +59,8 @@ class AppContainer(
     private val deviceDataSource: DeviceDataSource by lazy {
         DeviceDataSourceImpl(deviceService)
     }
-    private val organizationBookmarkDataSource: OrganizationBookmarkDataSource by lazy {
-        OrganizationBookmarkDataSourceImpl(organizationBookmarkService)
+    private val festivalNotificationDataSource: FestivalNotificationDataSource by lazy {
+        FestivalNotificationDataSourceImpl(organizationBookmarkService)
     }
     private val placeListDataSource: PlaceDataSource by lazy {
         PlaceDataSourceImpl(placeService, festivalService)
@@ -93,8 +93,8 @@ class AppContainer(
     val deviceRepository: DeviceRepository by lazy {
         DeviceRepositoryImpl(deviceDataSource)
     }
-    val bookmarkRepository: BookmarkRepository by lazy {
-        BookmarkRepositoryImpl(organizationBookmarkDataSource)
+    val festivalNotificationRepository: FestivalNotificationRepository by lazy {
+        FestivalNotificationRepositoryImpl(festivalNotificationDataSource)
     }
     val festivalRepository: FestivalRepository by lazy {
         FestivalRepositoryImpl(festivalDataSource)
