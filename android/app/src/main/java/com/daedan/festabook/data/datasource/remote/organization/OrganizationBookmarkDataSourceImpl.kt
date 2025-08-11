@@ -1,8 +1,8 @@
 package com.daedan.festabook.data.datasource.remote.organization
 
 import com.daedan.festabook.data.datasource.remote.ApiResult
-import com.daedan.festabook.data.model.request.OrganizationBookmarkRequest
-import com.daedan.festabook.data.model.response.organization.OrganizationBookmarkResponse
+import com.daedan.festabook.data.model.request.FestivalNotificationRequest
+import com.daedan.festabook.data.model.response.festival.FestivalNotificationResponse
 import com.daedan.festabook.data.service.OrganizationBookmarkService
 
 class OrganizationBookmarkDataSourceImpl(
@@ -11,11 +11,11 @@ class OrganizationBookmarkDataSourceImpl(
     override suspend fun saveOrganizationBookmark(
         organizationId: Long,
         deviceId: Long,
-    ): ApiResult<OrganizationBookmarkResponse> =
+    ): ApiResult<FestivalNotificationResponse> =
         ApiResult.toApiResult {
             organizationBookmarkService.bookmarkOrganization(
                 organizationId,
-                OrganizationBookmarkRequest(deviceId = deviceId),
+                FestivalNotificationRequest(deviceId = deviceId),
             )
         }
 

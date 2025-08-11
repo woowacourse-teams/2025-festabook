@@ -13,7 +13,7 @@ import java.time.format.DateTimeFormatter
 
 @Serializable
 data class PlaceDetailResponse(
-    @SerialName("id")
+    @SerialName("placeId")
     val id: Long,
     @SerialName("category")
     val category: PlaceCategory,

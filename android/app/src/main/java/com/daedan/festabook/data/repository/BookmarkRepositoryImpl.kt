@@ -18,7 +18,7 @@ class BookmarkRepositoryImpl(
                     deviceId = deviceId,
                 ).toResult()
 
-        return response.mapCatching { it.organizationBookmarkId }
+        return response.mapCatching { it.festivalNotificationId }
     }
 
     override suspend fun deleteOrganizationBookmark(organizationBookmarkId: Long): Result<Unit> {
