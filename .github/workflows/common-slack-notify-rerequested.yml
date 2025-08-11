@@ -40,12 +40,6 @@ jobs:
           GITHUB_TO_SLACK["oungsi2000"]="U098U2R57NK"
           GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
           GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
-
-          SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-"$PR_AUTHOR"}
-          SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
-
-          slack_id=${GITHUB_TO_SLACK[$PR_REVIEWER]:-"$PR_REVIEWER"}
-          SLACK_REVIEWER_MENTION="<@$slack_id>"
           
           if [[ "$PR_REVIEWER" == *"[bot]" ]]; then
             echo "Bot 계정 리뷰 요청은 알림 생략"
@@ -55,11 +49,24 @@ jobs:
           REVIEW_API_URL="https://api.github.com/repos/$REPOSITORY/pulls/$PR_NUMBER/reviews"
           REVIEW_COUNT=$(curl -s -H "Authorization: Bearer $GITHUB_TOKEN" "$REVIEW_API_URL" \
             | jq -r --arg reviewer "$PR_REVIEWER" '[.[] | select(.user.login == $reviewer)] | length')
-
           if [ "$REVIEW_COUNT" -eq 0 ]; then
             echo "최초 리뷰 요청으로 간주되어 알림 생략"
             exit 0
           fi
+          
+          slack_id=${GITHUB_TO_SLACK[$PR_REVIEWER]}
+          if [[ -z "$slack_id" ]]; then
+            echo "매핑 없는 사용자(${PR_REVIEWER})는 생략"
+            exit 0
+          fi
+      
+          if [[ -n "${GITHUB_TO_SLACK[$PR_AUTHOR]}" ]]; then
+            SLACK_AUTHOR_MENTION="<@${GITHUB_TO_SLACK[$PR_AUTHOR]}>"
+          else
+            SLACK_AUTHOR_MENTION="@${PR_AUTHOR}"   # 평문
+          fi
+
+          SLACK_REVIEWER_MENTION="<@$slack_id>"
 
           curl -X POST -H 'Content-type: application/json' \
             --data "{\"text\": \"🏸 *재리뷰 요청 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${SLACK_REVIEWER_MENTION}\n*링크:* ${PR_URL}\"}" \

@@ -37,12 +37,18 @@ jobs:
           GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
           GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
 
-          SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-"$PR_AUTHOR"}
-          SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
+          author_id=${GITHUB_TO_SLACK[$PR_AUTHOR]}
+          if [[ -n "$author_id" ]]; then
+            SLACK_AUTHOR_MENTION="<@$author_id>"
+          else
+            SLACK_AUTHOR_MENTION="@${PR_AUTHOR}"
+          fi
 
           REVIEWER_MENTIONS=""
           for reviewer in $(echo "$REVIEWERS_JSON" | jq -r '.[].login'); do
-            slack_id=${GITHUB_TO_SLACK[$reviewer]:-"$reviewer"}
+            [[ "$reviewer" == *"[bot]" ]] && continue
+            slack_id=${GITHUB_TO_SLACK[$reviewer]}
+            [[ -z "$slack_id" ]] && continue
             REVIEWER_MENTIONS+="<@$slack_id> "
           done
 
