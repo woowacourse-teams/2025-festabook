@@ -1,10 +1,10 @@
 package com.daedan.festabook.domain.repository
 
 interface FestivalNotificationRepository {
-    suspend fun saveOrganizationBookmark(
+    suspend fun saveFestivalNotification(
         organizationId: Long,
         deviceId: Long,
     ): Result<Long>
 
-    suspend fun deleteOrganizationBookmark(organizationBookmarkId: Long): Result<Unit>
+    suspend fun deleteFestivalNotification(organizationBookmarkId: Long): Result<Unit>
 }

@@ -7,13 +7,13 @@ import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 class FestivalNotificationRepositoryImpl(
     private val festivalNotificationDataSource: FestivalNotificationDataSource,
 ) : FestivalNotificationRepository {
-    override suspend fun saveOrganizationBookmark(
+    override suspend fun saveFestivalNotification(
         organizationId: Long,
         deviceId: Long,
     ): Result<Long> {
         val response =
             festivalNotificationDataSource
-                .saveOrganizationBookmark(
+                .saveFestivalNotification(
                     organizationId = organizationId,
                     deviceId = deviceId,
                 ).toResult()
@@ -21,9 +21,9 @@ class FestivalNotificationRepositoryImpl(
         return response.mapCatching { it.festivalNotificationId }
     }
 
-    override suspend fun deleteOrganizationBookmark(organizationBookmarkId: Long): Result<Unit> {
+    override suspend fun deleteFestivalNotification(organizationBookmarkId: Long): Result<Unit> {
         val response =
-            festivalNotificationDataSource.deleteOrganizationBookmark(organizationBookmarkId)
+            festivalNotificationDataSource.deleteFestivalNotification(organizationBookmarkId)
         val result = response.toResult()
 
         return result

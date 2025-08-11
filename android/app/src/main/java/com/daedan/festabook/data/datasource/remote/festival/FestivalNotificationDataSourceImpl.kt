@@ -8,7 +8,7 @@ import com.daedan.festabook.data.service.OrganizationBookmarkService
 class FestivalNotificationDataSourceImpl(
     private val organizationBookmarkService: OrganizationBookmarkService,
 ) : FestivalNotificationDataSource {
-    override suspend fun saveOrganizationBookmark(
+    override suspend fun saveFestivalNotification(
         organizationId: Long,
         deviceId: Long,
     ): ApiResult<FestivalNotificationResponse> =
@@ -19,7 +19,7 @@ class FestivalNotificationDataSourceImpl(
             )
         }
 
-    override suspend fun deleteOrganizationBookmark(organizationBookmarkId: Long): ApiResult<Unit> =
+    override suspend fun deleteFestivalNotification(organizationBookmarkId: Long): ApiResult<Unit> =
         ApiResult.toApiResult {
             organizationBookmarkService.deleteOrganizationBookmark(organizationBookmarkId)
         }
