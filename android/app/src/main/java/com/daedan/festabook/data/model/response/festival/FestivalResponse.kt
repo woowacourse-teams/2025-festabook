@@ -8,8 +8,8 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OrganizationResponse(
-    @SerialName("id")
+data class FestivalResponse(
+    @SerialName("festivalId")
     val id: Long,
     @SerialName("universityName")
     val universityName: String,
@@ -33,7 +33,7 @@ data class OrganizationResponse(
     )
 }
 
-fun OrganizationResponse.toDomain() =
+fun FestivalResponse.toDomain() =
     Organization(
         id = id,
         universityName = universityName,
@@ -46,7 +46,7 @@ fun OrganizationResponse.toDomain() =
             ),
     )
 
-fun OrganizationResponse.FestivalImage.toDomain() =
+fun FestivalResponse.FestivalImage.toDomain() =
     Poster(
         id = id,
         imageUrl = imageUrl,

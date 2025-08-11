@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.service
 
-import com.daedan.festabook.data.model.request.OrganizationBookmarkRequest
-import com.daedan.festabook.data.model.response.organization.OrganizationBookmarkResponse
+import com.daedan.festabook.data.model.request.FestivalNotificationRequest
+import com.daedan.festabook.data.model.response.festival.FestivalNotificationResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -12,8 +12,8 @@ interface OrganizationBookmarkService {
     @POST("/organizations/{organizationId}/bookmarks")
     suspend fun bookmarkOrganization(
         @Path("organizationId") id: Long,
-        @Body request: OrganizationBookmarkRequest,
-    ): Response<OrganizationBookmarkResponse>
+        @Body request: FestivalNotificationRequest,
+    ): Response<FestivalNotificationResponse>
 
     @DELETE("/organizations/bookmarks/{organizationBookmarkId}")
     suspend fun deleteOrganizationBookmark(

@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 data class PlaceGeographyResponse(
     @SerialName("category")
     val category: PlaceCategory,
-    @SerialName("id")
+    @SerialName("placeId")
     val id: Long,
     @SerialName("markerCoordinate")
     val markerCoordinate: MarkerCoordinate,

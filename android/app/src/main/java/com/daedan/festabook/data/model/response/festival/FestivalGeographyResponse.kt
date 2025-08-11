@@ -1,11 +1,11 @@
-package com.daedan.festabook.data.model.response.organization
+package com.daedan.festabook.data.model.response.festival
 
 import com.daedan.festabook.domain.model.OrganizationGeography
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OrganizationGeographyResponse(
+data class FestivalGeographyResponse(
     @SerialName("zoom")
     val zoom: Int,
     @SerialName("centerCoordinate")
@@ -30,7 +30,7 @@ data class OrganizationGeographyResponse(
     )
 }
 
-fun OrganizationGeographyResponse.toDomain() =
+fun FestivalGeographyResponse.toDomain() =
     OrganizationGeography(
         zoom = zoom,
         initialCenter =

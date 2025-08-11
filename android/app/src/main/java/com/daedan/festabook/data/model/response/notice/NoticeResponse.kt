@@ -7,7 +7,7 @@ import java.time.LocalDateTime
 
 @Serializable
 data class NoticeResponse(
-    @SerialName("id")
+    @SerialName("announcementId")
     val id: Long,
     @SerialName("title")
     val title: String,

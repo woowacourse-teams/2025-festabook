@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class PlaceResponse(
-    @SerialName("id")
+    @SerialName("placeId")
     val id: Long,
     @SerialName("title")
     val title: String?,

@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class OrganizationBookmarkRequest(
+data class FestivalNotificationRequest(
     @SerialName("deviceId")
     val deviceId: Long,
 )

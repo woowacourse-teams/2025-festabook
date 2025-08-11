@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.datasource.remote.place
 
 import com.daedan.festabook.data.datasource.remote.ApiResult
-import com.daedan.festabook.data.model.response.organization.OrganizationGeographyResponse
+import com.daedan.festabook.data.model.response.festival.FestivalGeographyResponse
 import com.daedan.festabook.data.model.response.place.PlaceDetailResponse
 import com.daedan.festabook.data.model.response.place.PlaceGeographyResponse
 import com.daedan.festabook.data.model.response.place.PlaceResponse
@@ -17,7 +17,7 @@ class PlaceDataSourceImpl(
     override suspend fun fetchPlaceDetail(placeId: Long): ApiResult<PlaceDetailResponse> =
         ApiResult.toApiResult { placeService.fetchPlaceDetail(placeId) }
 
-    override suspend fun fetchOrganizationGeography(): ApiResult<OrganizationGeographyResponse> =
+    override suspend fun fetchOrganizationGeography(): ApiResult<FestivalGeographyResponse> =
         ApiResult.toApiResult {
             festivalService.fetchOrganizationGeography()
         }
