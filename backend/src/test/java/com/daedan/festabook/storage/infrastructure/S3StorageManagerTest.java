@@ -31,7 +31,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class S3StorageServiceTest {
+class S3StorageManagerTest {
 
     private static final String BUCKET_NAME = "test-bucket";
     private static final String BASE_PATH = "test";
@@ -40,11 +40,11 @@ class S3StorageServiceTest {
     private S3Client s3Client;
 
     @InjectMocks
-    private S3StorageService s3StorageService;
+    private S3StorageManager s3StorageService;
 
     @BeforeEach
     void setUp() {
-        s3StorageService = new S3StorageService(s3Client, BASE_PATH, BUCKET_NAME);
+        s3StorageService = new S3StorageManager(s3Client, BASE_PATH, BUCKET_NAME);
     }
 
     @Nested

@@ -1,7 +1,7 @@
 package com.daedan.festabook.storage.infrastructure;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.storage.domain.StorageService;
+import com.daedan.festabook.storage.domain.StorageManager;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Value;
@@ -18,7 +18,7 @@ import software.amazon.awssdk.services.s3.model.S3Exception;
 
 @Service
 @Profile("prod")
-public class S3StorageService implements StorageService {
+public class S3StorageManager implements StorageManager {
 
     private static final int MAX_FILE_NAME_LENGTH = 255;
 
@@ -26,7 +26,7 @@ public class S3StorageService implements StorageService {
     private final String basePath;
     private final String bucketName;
 
-    public S3StorageService(
+    public S3StorageManager(
             S3Client s3Client,
             @Value("${cloud.aws.s3.base-path}") String basePath,
             @Value("${cloud.aws.s3.bucket}") String bucketName

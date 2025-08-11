@@ -2,7 +2,7 @@ package com.daedan.festabook.storage.domain;
 
 import org.springframework.web.multipart.MultipartFile;
 
-public interface StorageService {
+public interface StorageManager {
 
     String uploadFile(MultipartFile file, String fileName);
 }
