@@ -262,7 +262,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
                 {images && images.length > 0 ? (
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[600px] overflow-y-auto">
                         {images.map((image, index) => {
-                            const imageId = image.festivalImageId || image.id || index;
+                            const imageId = image.festivalImageId || image.id || `temp-${index}`;
                             return (
                             <div
                                 key={imageId}

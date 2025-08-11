@@ -3,17 +3,17 @@ import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../data/categories';
 import { placeAPI } from '../utils/api';
 
-const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast, updateBooth }) => {
+const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBooth, handleImageUpdate, handleNoticeCreate }) => {
 
     const defaultBooth = (booth) => {
         return {
-            id: booth.placeId,
+            placeId: booth.placeId,
             category: booth.category,
             placeImages: booth.placeImages || [],
             placeAnnouncements: booth.placeAnnouncements || [],
-            // 기존 코드와의 호환성을 위한 필드들
-            images: booth.placeImages?.responses?.map(img => img.imageUrl) || [],
-            notices: booth.placeAnnouncements?.responses || [],
+            // 기존 코드와의 호환성을 위한 필드들 (DTO 반영)
+            images: (booth.placeImages || []).map(img => img.imageUrl),
+            notices: booth.placeAnnouncements || [],
             mainImageIndex: 0,
 
             title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
@@ -64,11 +64,34 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
                         <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {booth.startTime} - {booth.endTime}</p>
                     </div>
                     <h4 className="font-semibold text-lg mt-4 mb-2">공지사항</h4>
-                                            {booth.notices && booth.notices.length > 0 ? (
-                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
-                            {booth.notices.map(notice => <li key={notice.placeId || notice.id}>{notice.text}</li>)}
+                    {booth.notices && booth.notices.length > 0 ? (
+                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-2">
+                            {booth.notices.map(notice => (
+                                <li key={notice.id} className="flex items-start">
+                                    <span className="mr-2 mt-1">•</span>
+                                    <div className="flex-1">
+                                        <div>
+                                            <span className="font-medium">{notice.title}</span>
+                                            <span className="mx-1">-</span>
+                                            <span>{notice.content}</span>
+                                        </div>
+                                        {notice.createdAt && (
+                                            <div className="text-xs text-gray-400 mt-1">
+                                                {new Date(notice.createdAt).toLocaleString('ko-KR', {
+                                                    year: 'numeric',
+                                                    month: '2-digit',
+                                                    day: '2-digit',
+                                                    hour: '2-digit',
+                                                    minute: '2-digit'
+                                                }).replace(/\./g, '-').replace(/\s/g, ' ')}
+                                            </div>
+                                        )}
+                                    </div>
+                                </li>
+                            ))}
                         </ul>
                     ) : <p className="text-sm text-gray-500">공지사항 없음</p>}
+
                 </div>
                 <div>
                     <h4 className="font-semibold text-lg mb-2">사진</h4>
@@ -85,8 +108,9 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, showToast
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
-                <button onClick={() => openModal('copyLink', { link: `https://example.com/edit?key=${booth.editKey}` })} className="text-green-600 hover:text-green-800 text-sm font-semibold">권한 링크 복사</button>
-                <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">수정</button>
+                <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">공지사항 생성</button>
+                <button onClick={() => openModal('placeImages', { place: booth, onUpdate: handleImageUpdate })} className="text-purple-600 hover:text-purple-800 text-sm font-semibold">이미지 수정</button>
+                <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">세부사항 수정</button>
                 <button onClick={() => openDeleteModal(booth)}
                     className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
             </div>
@@ -117,8 +141,8 @@ const BoothsPage = () => {
         location: getDefaultValueIfNull('미지정', booth.location),
         host: getDefaultValueIfNull('미지정', booth.host),
         // 기존 코드와의 호환성을 위한 필드들
-        images: booth.placeImages?.responses?.map(img => img.imageUrl) || [],
-        notices: booth.placeAnnouncements?.responses || [],
+        images: (booth.placeImages || []).map(img => img.imageUrl),
+        notices: booth.placeAnnouncements || [],
     });
 
     // 1. Booth 목록 불러오기
@@ -157,7 +181,7 @@ const BoothsPage = () => {
             const places = await placeAPI.getPlaces();
             setBooths(places.map(defaultBooth));
             showToast('새 플레이스가 추가되었습니다.');
-        } catch (e) {
+        } catch {
             showToast('플레이스 생성에 실패했습니다.');
         } finally {
             setLoading(false);
@@ -173,7 +197,7 @@ const BoothsPage = () => {
             const places = await placeAPI.getPlaces();
             setBooths(places.map(defaultBooth));
             showToast('성공적으로 플레이스가 삭제되었습니다.');
-        } catch (e) {
+        } catch {
             showToast('플레이스 삭제에 실패했습니다.');
         } finally {
             setLoading(false);
@@ -202,8 +226,56 @@ const BoothsPage = () => {
     const handleSave = (data) => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
         // TODO: 수정 API 연동 필요 (현재는 로컬 상태만 갱신)
-        setBooths(prev => prev.map(b => b.placeId === data.placeId ? { ...b, ...data } : b));
+        setBooths(prev => prev.map(prevBooth => {
+            if (prevBooth.placeId !== data.placeId) return prevBooth;
+
+            return {
+                ...prevBooth,
+                ...data,
+                // 공지사항과 이미지는 별도 모달에서 처리되므로 기존 값 유지
+                placeImages: prevBooth.placeImages,
+                placeAnnouncements: prevBooth.placeAnnouncements,
+                images: prevBooth.images,
+                notices: prevBooth.notices,
+            };
+        }));
         showToast('플레이스 정보가 수정되었습니다.');
+    };
+
+    // 이미지 수정 전용 핸들러
+    const handleImageUpdate = (data) => {
+        setBooths(prev => prev.map(prevBooth => {
+            if (prevBooth.placeId !== data.placeId) return prevBooth;
+
+            return {
+                ...prevBooth,
+                placeImages: data.placeImages || [],
+                images: (data.placeImages || []).map(img => img.imageUrl),
+            };
+        }));
+        showToast('플레이스 이미지가 수정되었습니다.');
+    };
+
+    // 공지 생성 전용 핸들러
+    const handleNoticeCreate = (data) => {
+        setBooths(prev => prev.map(prevBooth => {
+            if (prevBooth.placeId !== data.placeId) return prevBooth;
+
+            // 공지가 3개를 초과할 경우 가장 오래된 공지 삭제
+            let updatedAnnouncements = [...(prevBooth.placeAnnouncements || []), data.newNotice];
+            if (updatedAnnouncements.length > 3) {
+                updatedAnnouncements = updatedAnnouncements
+                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
+                    .slice(-3);
+            }
+
+            return {
+                ...prevBooth,
+                placeAnnouncements: updatedAnnouncements,
+                notices: updatedAnnouncements,
+            };
+        }));
+        showToast('플레이스 공지가 생성되었습니다.');
     };
 
     const isMainPlace = (category) => {
@@ -262,7 +334,8 @@ const BoothsPage = () => {
                                                                 openDeleteModal={openDeleteModal}
                                                                 openModal={openModal}
                                                                 handleSave={handleSave}
-                                                                showToast={showToast}
+                                                                handleImageUpdate={handleImageUpdate}
+                                                                handleNoticeCreate={handleNoticeCreate}
                                                                 updateBooth={(id, data) => setBooths(prev => prev.map(b => b.placeId === id ? { ...b, ...data } : b))}
                                                             />
                                                         )}

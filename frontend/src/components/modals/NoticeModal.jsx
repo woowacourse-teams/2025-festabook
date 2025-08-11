@@ -1,17 +1,15 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../common/Modal";
 
-const NoticeModal = ({ notice, onSave, onClose }) => {
+const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [agreePush, setAgreePush] = useState(false);
-  const [isPinned, setIsPinned] = useState(false);
   useEffect(() => {
     setTitle(notice?.title || "");
     setContent(notice?.content || "");
   }, [notice]);
   const handleSave = () => {
-    onSave({ title, content, isPinned });
+    onSave({ title, content });
     onClose();
   };
 
@@ -33,7 +31,7 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [title, content, isPinned]); // 의존성 배열에 form 데이터 추가
+  }, [title, content]); // 의존성 배열에서 isPinned 제거
   return (
     <Modal isOpen={true} onClose={onClose}>
       <h3 className="text-xl font-bold mb-6">
@@ -64,38 +62,11 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
-        {!notice && (
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex items-center">
-              <input
-                id="pin-notice"
-                type="checkbox"
-                checked={isPinned}
-                onChange={(e) => setIsPinned(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="pin-notice"
-                className="text-sm text-gray-700 select-none"
-              >
-                상단 고정
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                id="push-agree"
-                type="checkbox"
-                checked={agreePush}
-                onChange={(e) => setAgreePush(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="push-agree"
-                className="text-sm text-gray-700 select-none"
-              >
-                푸시 알림을 사용자에게 전송하시겠습니까?
-              </label>
-            </div>
+        {!notice && isPlaceNotice && (
+          <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
+            <p className="text-red-600 text-sm font-medium">
+              ⚠️ 3개를 초과하는 플레이스 공지는 가장 오래된 순으로 삭제됩니다.
+            </p>
           </div>
         )}
       </div>
