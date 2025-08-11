@@ -109,7 +109,7 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
                 <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">공지사항 생성</button>
-                <button onClick={() => openModal('placeImages', { place: booth, onUpdate: handleImageUpdate })} className="text-purple-600 hover:text-purple-800 text-sm font-semibold">이미지 수정</button>
+                <button onClick={() => openModal('placeImages', { place: booth, onUpdate: handleImageUpdate })} className="text-purple-600 hover:text-purple-800 text-sm font-semibold">이미지 관리</button>
                 <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">세부사항 수정</button>
                 <button onClick={() => openDeleteModal(booth)}
                     className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
