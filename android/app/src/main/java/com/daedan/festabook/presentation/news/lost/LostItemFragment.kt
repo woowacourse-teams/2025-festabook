@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.news.lost
 
 import android.os.Bundle
 import android.view.View
+import android.widget.GridLayout
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.daedan.festabook.R
@@ -29,16 +30,16 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         super.onViewCreated(view, savedInstanceState)
         binding.rvLostItemList.layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
         binding.rvLostItemList.adapter = adapter
-
-        val spacingInPx = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
+        val spacing = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
         binding.rvLostItemList.addItemDecoration(
             LostItemDecoration(
                 spanCount = SPAN_COUNT,
-                spacing = spacingInPx,
+                spacing = spacing,
             ),
         )
         setupObservers()
         onSwipeRefreshLostItemsListener()
+        setupSkeletonView(spacing)
     }
 
     private fun setupObservers() {
@@ -46,19 +47,23 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
             when (state) {
                 is LostItemUiState.InitialLoading -> {
                     binding.srlLostItemList.isRefreshing = false
+                    showSkeleton()
                 }
 
                 is LostItemUiState.Refreshing -> {
                     binding.srlLostItemList.isRefreshing = true
+                    showSkeleton()
                 }
 
                 is LostItemUiState.Success -> {
                     binding.srlLostItemList.isRefreshing = false
                     adapter.submitList(state.lostItems)
+                    hideSkeleton()
                 }
 
                 is LostItemUiState.Error -> {
                     binding.srlLostItemList.isRefreshing = false
+                    hideSkeleton()
                 }
             }
         }
@@ -80,6 +85,35 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         binding.srlLostItemList.setOnRefreshListener {
             viewModel.loadPendingLostItems(LostItemUiState.Refreshing)
         }
+    }
+
+    private fun setupSkeletonView(spacing: Int) {
+        val itemCount = binding.glLostItemSkeleton.childCount
+        val spanCount = binding.glLostItemSkeleton.columnCount
+        (0 until itemCount).forEach { index ->
+            val child = binding.glLostItemSkeleton.getChildAt(index)
+            val params = child.layoutParams as GridLayout.LayoutParams
+
+            val column = index % spanCount
+
+            val leftMargin = if (column == 0) 0 else spacing / SPAN_COUNT
+            val rightMargin = if (column == spanCount - 1) 0 else spacing / SPAN_COUNT
+            val topMargin = if (index < spanCount) spacing else 0
+            params.setMargins(leftMargin, topMargin, rightMargin, spacing)
+            child.layoutParams = params
+        }
+    }
+
+    private fun showSkeleton() {
+        binding.srlLostItemList.visibility = View.INVISIBLE
+        binding.sflLostItemSkeleton.visibility = View.VISIBLE
+        binding.sflLostItemSkeleton.startShimmer()
+    }
+
+    private fun hideSkeleton() {
+        binding.srlLostItemList.visibility = View.VISIBLE
+        binding.sflLostItemSkeleton.visibility = View.GONE
+        binding.sflLostItemSkeleton.stopShimmer()
     }
 
     companion object {
