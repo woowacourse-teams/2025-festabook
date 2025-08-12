@@ -49,12 +49,16 @@ public class Place {
     @Enumerated(EnumType.STRING)
     private PlaceCategory category;
 
+    @Column(length = 20)
     private String title;
 
+    @Column(length = 100)
     private String description;
 
+    @Column(length = 100)
     private String location;
 
+    @Column(length = 100)
     private String host;
 
     private LocalTime startTime;
