@@ -156,6 +156,31 @@ public class PlaceFixture {
         );
     }
 
+    public static Place create(
+            Festival festival,
+            PlaceCategory placeCategory,
+            Coordinate coordinate,
+            String title,
+            String description,
+            String location,
+            String host,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        return new Place(
+                1L,
+                festival,
+                placeCategory,
+                coordinate,
+                title,
+                description,
+                location,
+                host,
+                startTime,
+                endTime
+        );
+    }
+
     public static Place createWithNullDefaults(
             Long placeId,
             Festival festival,

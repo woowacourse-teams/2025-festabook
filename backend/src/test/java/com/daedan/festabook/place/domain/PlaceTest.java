@@ -4,6 +4,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.daedan.festabook.festival.domain.Coordinate;
+import com.daedan.festabook.festival.domain.CoordinateFixture;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.global.exception.BusinessException;
 import java.time.LocalTime;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -23,11 +27,15 @@ class PlaceTest {
     private static final int MAX_HOST_LENGTH = 100;
 
     @Nested
-    class validatePlaceDetail {
+    class validatePlace {
 
         @Test
         void 성공() {
             // given
+
+            Festival festival = FestivalFixture.create();
+            PlaceCategory placeCategory = PlaceCategory.BOOTH;
+            Coordinate coordinate = CoordinateFixture.create();
             String title = "플레이스 이름";
             String content = "플레이스 내용";
             String location = "플레이스 위치";
@@ -38,6 +46,9 @@ class PlaceTest {
             // when & then
             assertThatCode(() -> {
                 PlaceFixture.create(
+                        festival,
+                        placeCategory,
+                        coordinate,
                         title,
                         content,
                         location,

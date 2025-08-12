@@ -424,29 +424,6 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("placeAnnouncements", hasSize(0));
         }
-
-        @Test
-        void 실패_placeDetail이_존재하지_않는_place_id() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Long placeId = 0L;
-            int expectedFieldSize = 1;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .when()
-                    .get("/places/{placeId}", placeId)
-                    .then()
-                    .log()
-                    .all()
-                    .statusCode(HttpStatus.NOT_FOUND.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("message", equalTo("존재하지 않는 플레이스입니다."));
-        }
     }
 
     @Nested

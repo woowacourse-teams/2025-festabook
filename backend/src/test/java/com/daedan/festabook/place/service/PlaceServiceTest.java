@@ -123,7 +123,7 @@ class PlaceServiceTest {
     class getAllPlaceByFestivalId {
 
         @Test
-        void 성공_PlaceDetail이_있는_경우() {
+        void 성공() {
             // given
             Long festivalId = 1L;
 
