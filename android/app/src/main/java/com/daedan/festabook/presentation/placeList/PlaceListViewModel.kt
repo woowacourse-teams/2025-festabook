@@ -48,6 +48,9 @@ class PlaceListViewModel(
     private val _navigateToDetail = SingleLiveData<PlaceDetailUiModel>()
     val navigateToDetail: LiveData<PlaceDetailUiModel> = _navigateToDetail
 
+    private val _isExceededMaxLength: MutableLiveData<Boolean> = MutableLiveData()
+    val isExceededMaxLength: LiveData<Boolean> = _isExceededMaxLength
+
     init {
         loadAllPlaces()
         loadOrganizationGeography()
@@ -103,6 +106,13 @@ class PlaceListViewModel(
         if (currentPlace != null) {
             _navigateToDetail.setValue(currentPlace)
         }
+    }
+
+    fun publishEvent() {
+    }
+
+    fun setIsExceededMaxLength(isExceededMaxLength: Boolean) {
+        _isExceededMaxLength.value = isExceededMaxLength
     }
 
     private fun loadAllPlaces() {

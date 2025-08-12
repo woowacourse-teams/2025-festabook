@@ -13,9 +13,8 @@
             android:background="@drawable/bg_place_list"
             android:paddingHorizontal="16dp"
             app:behavior_fitToContents="false"
-            app:behavior_halfExpandedRatio="0.375"
+            app:behavior_halfExpandedRatio="0.4"
             app:behavior_peekHeight="70dp"
-            app:companionView="@id/lbv_current_location"
             app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior"
             app:recyclerView="@id/rv_places">
 
@@ -91,6 +90,30 @@
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <com.naver.maps.map.widget.LocationButtonView
+            android:id="@+id/lbv_current_location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start|bottom"
+            android:layout_marginStart="8dp"
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior" />
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_back_to_initial_position"
+            style="@style/Widget.MaterialComponents.Chip.Action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center|bottom"
+            android:text="@string/map_back_to_initial_position"
+            android:textAppearance="@style/PretendardBold12"
+            android:textColor="@color/gray900"
+            android:visibility="gone"
+            app:changeVisibility="false"
+            app:chipBackgroundColor="@color/gray050"
+            app:chipStrokeColor="@color/gray500"
+            app:chipStrokeWidth="1dp"
+            app:layout_behavior="com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior" />
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>
 </layout>

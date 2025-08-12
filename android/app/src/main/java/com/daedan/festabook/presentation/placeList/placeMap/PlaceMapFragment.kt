@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.commit
@@ -8,13 +9,11 @@ import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
-import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
-import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
@@ -52,13 +51,12 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
     ) {
         super.onViewCreated(view, savedInstanceState)
         childFragmentManager.commit {
-            add(R.id.fcv_map_container, placeListFragment, null)
+            add(R.id.fcv_place_list_container, placeListFragment, null)
             add(R.id.fcv_map_container, placeDetailPreviewFragment, null)
-            add(R.id.fcv_map_container, placeCategoryFragment, null)
+            add(R.id.fcv_place_category_container, placeCategoryFragment, null)
         }
         lifecycleScope.launch {
             setUpMapManager()
-            setUpBinding()
             setUpObserver()
         }
     }
@@ -68,16 +66,9 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
         mapManager.clearMapManager()
     }
 
-    private fun setUpBinding() {
-        binding.chipBackToInitialPosition.setOnClickListener {
-            mapManager.moveToInitialPosition()
-        }
-    }
-
     private suspend fun setUpMapManager() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
         naverMap = mapFragment.getMap()
-        binding.lbvCurrentLocation.map = naverMap
         naverMap.locationSource = locationSource
     }
 
@@ -90,7 +81,10 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
                 }
 
                 is PlaceListUiState.Error -> {
-                    Timber.w(placeGeographies.throwable, "PlaceListFragment: ${placeGeographies.throwable.message}")
+                    Timber.w(
+                        placeGeographies.throwable,
+                        "PlaceListFragment: ${placeGeographies.throwable.message}",
+                    )
                     showErrorSnackBar(placeGeographies.throwable)
                 }
             }
@@ -102,7 +96,7 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
                 mapManager =
                     MapManager(
                         naverMap,
-                        0,
+                        getInitialPadding(requireContext()),
                         object : MapClickListener {
                             override fun onMarkerListener(
                                 placeId: Long,
@@ -126,31 +120,14 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
             }
             mapManager.setupMap()
             mapManager.setupBackToInitialPosition { isExceededMaxLength ->
-                if (isExceededMaxLength) {
-                    binding.chipBackToInitialPosition.visibility = View.VISIBLE
-                } else {
-                    binding.chipBackToInitialPosition.visibility = View.GONE
-                }
+                viewModel.setIsExceededMaxLength(isExceededMaxLength)
             }
-            setBehaviorCallback()
         }
-    }
-
-    private fun setBehaviorCallback() {
-        binding.lbvCurrentLocation
-            .placeListBottomSheetFollowBehavior()
-            ?.setCallback(
-                BottomSheetFollowCallback(binding.lbvCurrentLocation.id),
-            )
-
-        binding.chipBackToInitialPosition
-            .placeListBottomSheetFollowBehavior()
-            ?.setCallback(
-                MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id, mapManager),
-            )
     }
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
+
+        private fun getInitialPadding(context: Context): Int = 254.toPx(context)
     }
 }

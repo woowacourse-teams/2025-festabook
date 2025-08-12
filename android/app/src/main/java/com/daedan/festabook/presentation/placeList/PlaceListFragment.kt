@@ -10,13 +10,18 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
+import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
+import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
+import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -25,12 +30,15 @@ class PlaceListFragment :
         R.layout.fragment_place_list,
     ),
     PlaceClickListener,
-    OnMenuItemReClickListener {
-    private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
+    OnMenuItemReClickListener,
+    OnMapReadyCallback {
+    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
 
     private val placeAdapter by lazy {
         PlaceListAdapter(this)
     }
+
+    private lateinit var moveToInitialPositionCallback: MoveToInitialPositionCallback
 
     override fun onViewCreated(
         view: View,
@@ -39,7 +47,9 @@ class PlaceListFragment :
         super.onViewCreated(view, savedInstanceState)
         lifecycleScope.launch {
             setUpPlaceAdapter()
+            setBehaviorCallback()
             setUpObserver()
+            setUpBinding()
         }
     }
 
@@ -52,6 +62,10 @@ class PlaceListFragment :
         val layoutParams = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
         val behavior = layoutParams?.behavior as? BottomSheetBehavior
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+    }
+
+    override fun onMapReady(p0: NaverMap) {
+        binding.lbvCurrentLocation.map = p0
     }
 
     private fun setUpPlaceAdapter() {
@@ -83,6 +97,35 @@ class PlaceListFragment :
         viewModel.navigateToDetail.observe(viewLifecycleOwner) { selectedPlace ->
             startPlaceDetailActivity(selectedPlace)
         }
+
+        viewModel.isExceededMaxLength.observe(viewLifecycleOwner) { isExceededMaxLength ->
+            moveToInitialPositionCallback.setIsExceededMaxLength(isExceededMaxLength)
+            if (isExceededMaxLength) {
+                binding.chipBackToInitialPosition.visibility = View.VISIBLE
+            } else {
+                binding.chipBackToInitialPosition.visibility = View.GONE
+            }
+        }
+    }
+
+    private fun setUpBinding() {
+        binding.chipBackToInitialPosition.setOnClickListener {
+            viewModel.publishEvent()
+        }
+    }
+
+    private fun setBehaviorCallback() {
+        moveToInitialPositionCallback = MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id)
+
+        binding.lbvCurrentLocation
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(
+                BottomSheetFollowCallback(binding.lbvCurrentLocation.id),
+            )
+
+        binding.chipBackToInitialPosition
+            .placeListBottomSheetFollowBehavior()
+            ?.setCallback(moveToInitialPositionCallback)
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {
