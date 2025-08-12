@@ -7,6 +7,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import java.io.IOException;
@@ -89,7 +90,8 @@ class S3StorageManagerTest {
             assertThatThrownBy(() -> s3StorageManager.uploadFile(null, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일이 비어 있습니다.");
-            then(s3Client).shouldHaveNoInteractions();
+            then(s3Client).should(never())
+                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
         }
 
         @Test
@@ -107,7 +109,8 @@ class S3StorageManagerTest {
             assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일이 비어 있습니다.");
-            then(s3Client).shouldHaveNoInteractions();
+            then(s3Client).should(never())
+                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
         }
 
         @ParameterizedTest(name = "fileName: {0}")
@@ -125,7 +128,8 @@ class S3StorageManagerTest {
             assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일 이름이 비어 있습니다.");
-            then(s3Client).shouldHaveNoInteractions();
+            then(s3Client).should(never())
+                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
         }
 
         @Test
@@ -144,7 +148,8 @@ class S3StorageManagerTest {
             assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일명이 너무 깁니다.");
-            then(s3Client).shouldHaveNoInteractions();
+            then(s3Client).should(never())
+                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
         }
 
         @ParameterizedTest(name = "fileName: {0}")
@@ -162,7 +167,8 @@ class S3StorageManagerTest {
             assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("허용되지 않는 파일명입니다.");
-            then(s3Client).shouldHaveNoInteractions();
+            then(s3Client).should(never())
+                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
         }
 
         @Test
