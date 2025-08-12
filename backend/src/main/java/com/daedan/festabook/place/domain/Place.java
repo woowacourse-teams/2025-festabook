@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -130,7 +131,7 @@ public class Place {
             return;
         }
 
-        if (title.trim().isEmpty()) {
+        if (!StringUtils.hasText(title)) {
             throw new BusinessException("플레이스의 이름은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -147,7 +148,7 @@ public class Place {
             return;
         }
 
-        if (description.trim().isEmpty()) {
+        if (!StringUtils.hasText(description)) {
             throw new BusinessException("플레이스의 설명은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -164,7 +165,7 @@ public class Place {
             return;
         }
 
-        if (location.trim().isEmpty()) {
+        if (!StringUtils.hasText(location)) {
             throw new BusinessException("플레이스의 위치는 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
@@ -181,7 +182,7 @@ public class Place {
             return;
         }
 
-        if (host.trim().isEmpty()) {
+        if (!StringUtils.hasText(host)) {
             throw new BusinessException("플레이스의 호스트는 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
