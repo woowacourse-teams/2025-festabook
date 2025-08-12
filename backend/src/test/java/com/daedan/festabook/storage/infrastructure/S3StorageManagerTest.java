@@ -191,9 +191,11 @@ class S3StorageManagerTest {
             // given
             String fileName = "test_123.jpg";
             MockMultipartFile mockFile = mock(MockMultipartFile.class);
+
             given(mockFile.isEmpty()).willReturn(false);
             given(mockFile.getSize()).willReturn(1024L);
             given(mockFile.getContentType()).willReturn("image/jpeg");
+
             willThrow(IOException.class)
                     .given(mockFile)
                     .getBytes();
