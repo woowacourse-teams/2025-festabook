@@ -40,11 +40,11 @@ class S3StorageManagerTest {
     private S3Client s3Client;
 
     @InjectMocks
-    private S3StorageManager s3StorageService;
+    private S3StorageManager s3StorageManager;
 
     @BeforeEach
     void setUp() {
-        s3StorageService = new S3StorageManager(s3Client, BASE_PATH, BUCKET_NAME);
+        s3StorageManager = new S3StorageManager(s3Client, BASE_PATH, BUCKET_NAME);
     }
 
     @Nested
@@ -72,7 +72,7 @@ class S3StorageManagerTest {
             );
 
             // when
-            String result = s3StorageService.uploadFile(mockFile, fileName);
+            String result = s3StorageManager.uploadFile(mockFile, fileName);
 
             // then
             assertThat(result).isEqualTo(expectedFileUrl);
@@ -86,7 +86,7 @@ class S3StorageManagerTest {
             String fileName = "test_123.jpg";
 
             // when & then
-            assertThatThrownBy(() -> s3StorageService.uploadFile(null, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(null, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일이 비어 있습니다.");
             then(s3Client).shouldHaveNoInteractions();
@@ -104,7 +104,7 @@ class S3StorageManagerTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> s3StorageService.uploadFile(mockFile, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일이 비어 있습니다.");
             then(s3Client).shouldHaveNoInteractions();
@@ -122,7 +122,7 @@ class S3StorageManagerTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> s3StorageService.uploadFile(mockFile, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일 이름이 비어 있습니다.");
             then(s3Client).shouldHaveNoInteractions();
@@ -141,7 +141,7 @@ class S3StorageManagerTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> s3StorageService.uploadFile(mockFile, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일명이 너무 깁니다.");
             then(s3Client).shouldHaveNoInteractions();
@@ -159,7 +159,7 @@ class S3StorageManagerTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> s3StorageService.uploadFile(mockFile, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("허용되지 않는 파일명입니다.");
             then(s3Client).shouldHaveNoInteractions();
@@ -181,7 +181,7 @@ class S3StorageManagerTest {
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));
 
             // when & then
-            assertThatThrownBy(() -> s3StorageService.uploadFile(mockFile, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("S3 업로드 실패");
         }
@@ -199,7 +199,7 @@ class S3StorageManagerTest {
                     .getBytes();
 
             // when & then
-            assertThatThrownBy(() -> s3StorageService.uploadFile(mockFile, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일 처리 실패");
         }
