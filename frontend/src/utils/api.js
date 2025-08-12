@@ -163,6 +163,17 @@ export const placeAPI = {
       console.error('Failed to delete place:', error);
       throw new Error('플레이스 삭제에 실패했습니다.');
     }
+  },
+
+  // 플레이스 수정
+  updatePlace: async (placeId, placeData) => {
+    try {
+      const response = await api.put(`/places/${placeId}`, placeData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update place:', error);
+      throw new Error('플레이스 수정에 실패했습니다.');
+    }
   }
 };
 

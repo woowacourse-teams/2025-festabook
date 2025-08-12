@@ -244,23 +244,33 @@ const BoothsPage = () => {
     }
 
     // 기존 handleSave는 수정만 담당
-    const handleSave = (data) => {
+    const handleSave = async (data) => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
-        // TODO: 수정 API 연동 필요 (현재는 로컬 상태만 갱신)
-        setBooths(prev => prev.map(prevBooth => {
-            if (prevBooth.placeId !== data.placeId) return prevBooth;
-
-            return {
-                ...prevBooth,
-                ...data,
-                // 공지사항과 이미지는 별도 모달에서 처리되므로 기존 값 유지
-                placeImages: prevBooth.placeImages,
-                placeAnnouncements: prevBooth.placeAnnouncements,
-                images: prevBooth.images,
-                notices: prevBooth.notices,
+        try {
+            setLoading(true);
+            // API 호출을 위한 데이터 구조 변환
+            const updateData = {
+                placeCategory: data.category,
+                title: data.title,
+                description: data.description || '',
+                location: data.location || '',
+                host: data.host || '',
+                startTime: data.startTime || '',
+                endTime: data.endTime || ''
             };
-        }));
-        showToast('플레이스 정보가 수정되었습니다.');
+            
+            await placeAPI.updatePlace(data.placeId, updateData);
+            
+            // 성공 후 목록 다시 조회
+            const places = await placeAPI.getPlaces();
+            setBooths(places.map(defaultBooth));
+            showToast('플레이스 정보가 수정되었습니다.');
+        } catch (error) {
+            showToast('플레이스 수정에 실패했습니다.');
+            console.error('Failed to update place:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     // 이미지 수정 전용 핸들러
