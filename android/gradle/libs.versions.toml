@@ -2,6 +2,7 @@
 agp = "8.9.0"
 assertjCore = "3.27.3"
 coil = "3.3.0"
+coreSplashscreen = "1.0.1"
 coreTesting = "2.2.0"
 firebaseBom = "34.0.0"
 fragmentKtx = "1.8.8"
@@ -32,6 +33,7 @@ ktlint = "13.0.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertjCore" }
