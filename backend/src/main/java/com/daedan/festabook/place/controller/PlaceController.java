@@ -78,7 +78,7 @@ public class PlaceController {
     public PlaceResponse getPlaceWithDetailByPlaceId(
             @PathVariable Long placeId
     ) {
-        return placeService.getPlaceWithDetailByPlaceId(placeId);
+        return placeService.getPlaceById(placeId);
     }
 
     @DeleteMapping("/{placeId}")
