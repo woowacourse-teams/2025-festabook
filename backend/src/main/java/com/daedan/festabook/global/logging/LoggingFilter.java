@@ -43,13 +43,13 @@ public class LoggingFilter implements Filter {
             chain.doFilter(requestWrapper, response);
         } finally {
             long endTime = System.currentTimeMillis();
-            long duration = endTime - startTime;
+            long executionTime = endTime - startTime;
             int statusCode = httpServletResponse.getStatus();
             String requestBody = new String(requestWrapper.getContentAsByteArray(), StandardCharsets.UTF_8);
 
             log.info("[API END] status={}, duration={}ms, requestBody={}",
                     statusCode,
-                    duration,
+                    executionTime,
                     requestBody
             );
 
