@@ -7,6 +7,8 @@ import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import jakarta.transaction.Transactional;
@@ -41,6 +43,13 @@ public class LostItemService {
         LostItem lostItem = getLostItemById(lostItemId);
         lostItem.updateLostItem(request.imageUrl(), request.storageLocation());
         return LostItemUpdateResponse.from(lostItem);
+    }
+
+    @Transactional
+    public LostItemStatusUpdateResponse updateLostItemStatus(Long lostItemId, LostItemStatusUpdateRequest request) {
+        LostItem lostItem = getLostItemById(lostItemId);
+        lostItem.updateStatus(request.pickupStatus());
+        return LostItemStatusUpdateResponse.from(lostItem);
     }
 
     public void deleteLostItemByLostItemId(Long lostItemId) {

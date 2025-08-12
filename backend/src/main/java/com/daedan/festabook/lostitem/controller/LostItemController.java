@@ -4,6 +4,8 @@ import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.service.LostItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -67,6 +69,19 @@ class LostItemController {
             @RequestBody LostItemRequest request
     ) {
         return lostItemService.updateLostItem(lostItemId, request);
+    }
+
+    @PatchMapping("/{lostItemId}/status")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 분실물 상태 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public LostItemStatusUpdateResponse updateLostItemStatus(
+            @PathVariable Long lostItemId,
+            @RequestBody LostItemStatusUpdateRequest request
+    ) {
+        return lostItemService.updateLostItemStatus(lostItemId, request);
     }
 
     @DeleteMapping("/{lostItemId}")

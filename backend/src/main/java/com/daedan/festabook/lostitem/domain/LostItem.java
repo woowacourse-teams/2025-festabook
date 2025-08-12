@@ -97,6 +97,12 @@ public class LostItem {
         this.storageLocation = storageLocation;
     }
 
+    public void updateStatus(PickupStatus status) {
+        validatePickupStatus(status);
+
+        this.status = status;
+    }
+
     private void validateImageUrl(String imageUrl) {
         if (!StringUtils.hasText(imageUrl)) {
             throw new BusinessException("이미지 URL은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
