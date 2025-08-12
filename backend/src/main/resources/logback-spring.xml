@@ -29,7 +29,8 @@
     <springProfile name="!prod">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %green([%thread]) %cyan(%logger{36}) -
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %green([%thread]) %cyan(%logger{36})
+                    [%X{traceId}] -
                     %msg%n
                 </pattern>
             </encoder>
