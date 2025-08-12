@@ -98,6 +98,14 @@ class PlaceListFragment :
             startPlaceDetailActivity(selectedPlace)
         }
 
+        viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
+            if (selectedCategories.isEmpty()) {
+                viewModel.clearPlacesFilter()
+            } else {
+                viewModel.filterPlaces(selectedCategories)
+            }
+        }
+
         viewModel.isExceededMaxLength.observe(viewLifecycleOwner) { isExceededMaxLength ->
             moveToInitialPositionCallback.setIsExceededMaxLength(isExceededMaxLength)
             if (isExceededMaxLength) {
@@ -105,6 +113,10 @@ class PlaceListFragment :
             } else {
                 binding.chipBackToInitialPosition.visibility = View.GONE
             }
+        }
+
+        viewModel.selectedPlace.observe(viewLifecycleOwner) {
+            binding.root.visibility = if (it != null) View.GONE else View.VISIBLE
         }
     }
 

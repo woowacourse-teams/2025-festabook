@@ -12,7 +12,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.google.android.material.chip.Chip
 
 class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>(R.layout.fragment_place_category) {
-    private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
+    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
 
     override fun onViewCreated(
         view: View,
@@ -31,15 +31,10 @@ class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>(R.layou
                 }
 
             viewModel.unselectPlace()
-
+            viewModel.setSelectedCategories(selectedCategories)
             binding.chipCategoryAll.isChecked = selectedCategories.isEmpty()
-
-            if (selectedCategories.isEmpty()) {
-                viewModel.clearPlacesFilter()
-            } else {
-                viewModel.filterPlaces(selectedCategories)
-            }
         }
+
         setUpChipCategoryAllListener()
     }
 

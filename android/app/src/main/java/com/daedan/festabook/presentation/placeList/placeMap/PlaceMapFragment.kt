@@ -132,6 +132,14 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
                 mapManager.moveToInitialPosition()
             }
         }
+
+        viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
+            if (selectedCategories.isEmpty()) {
+                mapManager.clearFilter()
+            } else {
+                mapManager.filterPlace(selectedCategories)
+            }
+        }
     }
 
     companion object {

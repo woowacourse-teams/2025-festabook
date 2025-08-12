@@ -54,6 +54,9 @@ class PlaceListViewModel(
     private val _placeListEvent: MutableLiveData<PlaceListEvent> = MutableLiveData()
     val placeListEvent: LiveData<PlaceListEvent> = _placeListEvent
 
+    private val _selectedCategories: MutableLiveData<List<PlaceCategoryUiModel>> = MutableLiveData()
+    val selectedCategories: LiveData<List<PlaceCategoryUiModel>> = _selectedCategories
+
     init {
         loadAllPlaces()
         loadOrganizationGeography()
@@ -117,6 +120,10 @@ class PlaceListViewModel(
 
     fun setIsExceededMaxLength(isExceededMaxLength: Boolean) {
         _isExceededMaxLength.value = isExceededMaxLength
+    }
+
+    fun setSelectedCategories(categories: List<PlaceCategoryUiModel>) {
+        _selectedCategories.value = categories
     }
 
     private fun loadAllPlaces() {
