@@ -11,17 +11,17 @@ public class StorageUploadRequest {
     private static final int MAX_FILE_NAME_LENGTH = 255;
 
     private final MultipartFile file;
-    private final String filePath;
+    private final String storagePath;
 
     public StorageUploadRequest(
             MultipartFile file,
-            String filePath
+            String storagePath
     ) {
         validateMultipartFile(file);
-        validateFilePath(filePath);
+        validateStoragePath(storagePath);
 
         this.file = file;
-        this.filePath = filePath;
+        this.storagePath = storagePath;
     }
 
     private void validateMultipartFile(MultipartFile file) {
@@ -30,12 +30,12 @@ public class StorageUploadRequest {
         }
     }
 
-    private void validateFilePath(String filePath) {
-        if (!StringUtils.hasText(filePath)) {
+    private void validateStoragePath(String storagePath) {
+        if (!StringUtils.hasText(storagePath)) {
             throw new BusinessException("파일 경로는 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        if (filePath.length() > MAX_FILE_NAME_LENGTH) {
+        if (storagePath.length() > MAX_FILE_NAME_LENGTH) {
             throw new BusinessException(
                     String.format("파일 경로는 %d자를 초과할 수 없습니다.", MAX_FILE_NAME_LENGTH),
                     HttpStatus.BAD_REQUEST
@@ -43,8 +43,8 @@ public class StorageUploadRequest {
         }
     }
 
-    public String getFilePath() {
-        return filePath;
+    public String getStoragePath() {
+        return storagePath;
     }
 
     public String getContentType() {

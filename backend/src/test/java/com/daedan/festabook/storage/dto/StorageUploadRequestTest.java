@@ -23,10 +23,10 @@ class StorageUploadRequestTest {
         @Test
         void 예외_null_값_MultipartFile() {
             // given
-            String filePath = "test.jpg";
+            String storagePath = "test.jpg";
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(null, filePath))
+            assertThatThrownBy(() -> new StorageUploadRequest(null, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일은 비어있을 수 없습니다.");
         }
@@ -34,22 +34,22 @@ class StorageUploadRequestTest {
         @Test
         void 예외_비어있는_MultipartFile() {
             // given
-            String filePath = "test.jpg";
+            String storagePath = "test.jpg";
             MultipartFile emptyFile = new MockMultipartFile("file", new byte[0]);
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(emptyFile, filePath))
+            assertThatThrownBy(() -> new StorageUploadRequest(emptyFile, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일은 비어있을 수 없습니다.");
         }
     }
 
     @Nested
-    class validateFilePath {
+    class validateStoragePath {
 
-        @ParameterizedTest(name = "filePath: {0}")
+        @ParameterizedTest(name = "storagePath: {0}")
         @NullAndEmptySource
-        void 예외_비어있는_filePath(String filePath) {
+        void 예외_비어있는_storagePath(String storagePath) {
             // given
             MultipartFile file = new MockMultipartFile(
                     "file",
@@ -59,16 +59,16 @@ class StorageUploadRequestTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(file, filePath))
+            assertThatThrownBy(() -> new StorageUploadRequest(file, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일 경로는 비어있을 수 없습니다.");
         }
 
         @Test
-        void 예외_길이_제한_초과_filePath() {
+        void 예외_길이_제한_초과_storagePath() {
             // given
             int maxFileNameLength = 255;
-            String filePath = "a".repeat(maxFileNameLength + 1);
+            String storagePath = "a".repeat(maxFileNameLength + 1);
             MultipartFile file = new MockMultipartFile(
                     "file",
                     "test.jpg",
@@ -77,7 +77,7 @@ class StorageUploadRequestTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(file, filePath))
+            assertThatThrownBy(() -> new StorageUploadRequest(file, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일 경로는 %d자를 초과할 수 없습니다.", maxFileNameLength);
         }
@@ -96,10 +96,10 @@ class StorageUploadRequestTest {
                     "image/jpeg",
                     fileContent
             );
-            String filePath = "test.jpg";
+            String storagePath = "test.jpg";
 
             // when
-            byte[] result = new StorageUploadRequest(file, filePath).getBytes();
+            byte[] result = new StorageUploadRequest(file, storagePath).getBytes();
 
             // then
             assertThat(result).isEqualTo(fileContent);
@@ -119,10 +119,10 @@ class StorageUploadRequestTest {
                     throw new IOException();
                 }
             };
-            String filePath = "test.jpg";
+            String storagePath = "test.jpg";
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(file, filePath).getBytes())
+            assertThatThrownBy(() -> new StorageUploadRequest(file, storagePath).getBytes())
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("MultipartFile 에서 Byte 데이터를 읽기 실패했습니다.");
         }

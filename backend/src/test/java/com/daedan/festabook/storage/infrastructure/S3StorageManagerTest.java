@@ -80,7 +80,7 @@ class S3StorageManagerTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(result.accessUrl()).isEqualTo(expectedFileUrl);
-                s.assertThat(result.filePath()).isEqualTo(expectedS3Key);
+                s.assertThat(result.storagePath()).isEqualTo(expectedS3Key);
             });
             then(s3Client).should()
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));
