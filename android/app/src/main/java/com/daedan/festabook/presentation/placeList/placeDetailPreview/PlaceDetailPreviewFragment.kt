@@ -9,10 +9,12 @@ import coil3.request.placeholder
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListBottomSheetCallback
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.getValue
 
@@ -42,17 +44,23 @@ class PlaceDetailPreviewFragment :
 
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
-            if (selectedPlace == null) {
-                binding.nsSelectedPlace.visibility = View.GONE
-            } else {
-                binding.nsSelectedPlace.visibility = View.VISIBLE
-                updateSelectedPlaceUi(selectedPlace)
+            binding.nsSelectedPlace.visibility =
+                if (selectedPlace == null) View.GONE else View.VISIBLE
+
+            when (selectedPlace) {
+                is PlaceListUiState.Loading -> {
+                    binding.layoutSelectedPlace.visibility = View.INVISIBLE
+                }
+                is PlaceListUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
+                is PlaceListUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
+                else -> Unit
             }
         }
     }
 
     private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
         with(binding) {
+            layoutSelectedPlace.visibility = View.VISIBLE
             tvSelectedPlaceTitle.text = selectedPlace.place.title
             tvSelectedPlaceLocation.text = selectedPlace.place.location
             tvSelectedPlaceTime.text = selectedPlace.operatingHours

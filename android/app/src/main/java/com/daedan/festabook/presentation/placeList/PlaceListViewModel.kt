@@ -34,8 +34,8 @@ class PlaceListViewModel(
     val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
         _placeGeographies
 
-    private val _selectedPlace: MutableLiveData<PlaceDetailUiModel?> = MutableLiveData()
-    val selectedPlace: LiveData<PlaceDetailUiModel?> = _selectedPlace
+    private val _selectedPlace: MutableLiveData<PlaceListUiState<PlaceDetailUiModel>?> = MutableLiveData()
+    val selectedPlace: LiveData<PlaceListUiState<PlaceDetailUiModel>?> = _selectedPlace
 
     private val _navigateToDetail = SingleLiveData<PlaceDetailUiModel>()
     val navigateToDetail: LiveData<PlaceDetailUiModel> = _navigateToDetail
@@ -62,10 +62,13 @@ class PlaceListViewModel(
         }
 
         viewModelScope.launch {
+            _selectedPlace.value = PlaceListUiState.Loading()
             placeDetailRepository
                 .getPlaceDetail(placeId = placeId)
                 .onSuccess {
-                    _selectedPlace.value = it.toUiModel()
+                    _selectedPlace.value = PlaceListUiState.Success(it.toUiModel())
+                }.onFailure {
+                    _selectedPlace.value = PlaceListUiState.Error(it)
                 }
         }
     }
@@ -75,7 +78,7 @@ class PlaceListViewModel(
     }
 
     fun onExpandedStateReached() {
-        val currentPlace = _selectedPlace.value
+        val currentPlace = _selectedPlace.value.let { it as? PlaceListUiState.Success }?.value
         if (currentPlace != null) {
             _navigateToDetail.setValue(currentPlace)
         }

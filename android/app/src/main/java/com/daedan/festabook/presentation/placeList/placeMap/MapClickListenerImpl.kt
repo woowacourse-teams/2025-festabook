@@ -12,9 +12,7 @@ class MapClickListenerImpl(
         category: PlaceCategoryUiModel,
     ): Boolean {
         Timber.d("Marker CLick : placeID: $placeId categoty: $category")
-        if (category !in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
-            viewModel.selectPlace(placeId, category)
-        }
+        viewModel.selectPlace(placeId, category)
         return true
     }
 
