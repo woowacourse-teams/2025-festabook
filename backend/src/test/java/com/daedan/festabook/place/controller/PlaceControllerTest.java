@@ -10,7 +10,6 @@ import static org.hamcrest.Matchers.nullValue;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
-import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
@@ -281,35 +280,10 @@ class PlaceControllerTest {
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
                     .body("[1].imageUrl", equalTo(null));
         }
-
-        @Test
-        void 성공_Detail이_없는_경우_나머지_필드_null_반환() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Coordinate coordinate = null;
-            Place place = PlaceFixture.create(festival, PlaceCategory.BAR, coordinate);
-            placeJpaRepository.save(place);
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .when()
-                    .get("/places/previews")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("[0].imageUrl", nullValue())
-                    .body("[0].category", equalTo(place.getCategory().name()))
-                    .body("[0].title", nullValue())
-                    .body("[0].description", nullValue())
-                    .body("[0].location", nullValue());
-        }
     }
 
     @Nested
-    class getPlaceWithDetailByPlaceId {
+    class getPlaceById {
 
         @Test
         void 성공() {
@@ -513,7 +487,7 @@ class PlaceControllerTest {
 
             assertSoftly(s -> {
                 s.assertThat(placeJpaRepository.findById(place.getId())).isEmpty();
-                
+
                 s.assertThat(placeImageJpaRepository.findById(placeImage1.getId())).isEmpty();
                 s.assertThat(placeImageJpaRepository.findById(placeImage2.getId())).isEmpty();
 

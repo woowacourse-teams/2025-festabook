@@ -146,24 +146,6 @@ class PlaceServiceTest {
             // then
             assertThat(result.responses()).hasSize(1);
         }
-
-        @Test
-        void 성공_PlaceDetail이_없는_경우() {
-            // given
-            Long festivalId = 1L;
-
-            Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(festival);
-
-            given(placeJpaRepository.findAllByFestivalId(festivalId))
-                    .willReturn(List.of(place));
-
-            // when
-            PlaceResponses result = placeService.getAllPlaceByFestivalId(festivalId);
-
-            // then
-            assertThat(result.responses()).hasSize(1);
-        }
     }
 
     @Nested
