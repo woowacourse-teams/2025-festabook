@@ -294,10 +294,11 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            int representativeSequence = 1;
+            int representativeSequence1 = 1;
+            int representativeSequence2 = 2;
 
-            PlaceImage placeImage1 = PlaceImageFixture.create(place, representativeSequence);
-            PlaceImage placeImage2 = PlaceImageFixture.create(place, representativeSequence);
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, representativeSequence1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, representativeSequence2);
             placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
 
             PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
@@ -324,7 +325,7 @@ class PlaceControllerTest {
                     .body("placeImages[0].sequence", equalTo(placeImage1.getSequence()))
                     .body("placeImages[1].id", equalTo(placeImage2.getId().intValue()))
                     .body("placeImages[1].imageUrl", equalTo(placeImage2.getImageUrl()))
-                    .body("placeImages[1].sequence", equalTo(placeImage1.getSequence()))
+                    .body("placeImages[1].sequence", equalTo(placeImage2.getSequence()))
 
                     .body("category", equalTo(place.getCategory().name()))
                     .body("title", equalTo(place.getTitle()))
