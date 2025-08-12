@@ -87,7 +87,8 @@ public class S3StorageManager implements StorageManager {
 
     private String buildFileUrl(String key) {
         String encodedKey = UriUtils.encodePath(key, StandardCharsets.UTF_8);
-        return String.format("https://%s.s3.%s.amazonaws.com/%s",
+        return String.format(
+                "https://%s.s3.%s.amazonaws.com/%s",
                 bucketName,
                 s3Client.serviceClientConfiguration().region().id(),
                 encodedKey);
