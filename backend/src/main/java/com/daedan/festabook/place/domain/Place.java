@@ -110,6 +110,14 @@ public class Place {
         );
     }
 
+    public boolean isMainPlace() {
+        return MAIN_PLACE.contains(this.category);
+    }
+
+    public void updateCoordinate(Coordinate coordinate) {
+        this.coordinate = coordinate;
+    }
+
     private void validateTitle(String title) {
         if (title == null) {
             return;
@@ -187,13 +195,5 @@ public class Place {
             throw new BusinessException("플레이스의 시작 날짜, 종료 날짜는 모두 비어 있거나 모두 입력되어야 합니다.",
                     HttpStatus.BAD_REQUEST);
         }
-    }
-
-    public boolean isMainPlace() {
-        return MAIN_PLACE.contains(this.category);
-    }
-
-    public void updateCoordinate(Coordinate coordinate) {
-        this.coordinate = coordinate;
     }
 }
