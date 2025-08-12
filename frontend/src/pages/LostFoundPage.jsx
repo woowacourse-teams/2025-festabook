@@ -15,7 +15,7 @@ function formatDate(dateString) {
 }
 
 const LostFoundPage = () => {
-    const { lostItems, toggleLostItemStatus, addLostItem, updateLostItem, deleteLostItem } = useData();
+    const { lostItems, toggleLostItemStatus, addLostItem, updateLostItem, deleteLostItem, isLoadingLostItems, fetchLostItems } = useData();
     const { openModal, showToast } = useModal();
     const [selectedImage, setSelectedImage] = useState(null);
     
@@ -53,26 +53,46 @@ const LostFoundPage = () => {
         };
     }, [selectedImage]);
 
-    const handleSave = (id, data) => {
-        if (!data.imageUrl || !data.storageLocation) { showToast('이미지와 보관 장소를 입력해주세요.'); return; }
-        if (id) { updateLostItem(id, data); showToast('분실물 정보가 수정되었습니다.'); }
-        else { addLostItem(data); showToast('분실물이 등록되었습니다.'); }
+    const handleSave = async (id, data) => {
+        if (!data.imageUrl || !data.storageLocation) { 
+            showToast('이미지와 보관 장소를 입력해주세요.'); 
+            return; 
+        }
+        
+        try {
+            if (id) { 
+                await updateLostItem(id, data, showToast); 
+            } else { 
+                await addLostItem(data, showToast); 
+            }
+        } catch (error) {
+            console.error('Save operation failed:', error);
+        }
     };
 
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
                 <h2 className="text-3xl font-bold">분실물 관리</h2>
-                <button 
-                    onClick={() => openModal('lostItem', { onSave: (data) => handleSave(null, data) })} 
-                    className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"
-                >
-                    <i className="fas fa-plus mr-2"></i> 분실물 등록
-                </button>
+                <div className="flex gap-2">
+                    <button 
+                        onClick={() => openModal('lostItem', { onSave: (data) => handleSave(null, data) })} 
+                        className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"
+                    >
+                        <i className="fas fa-plus mr-2"></i> 분실물 등록
+                    </button>
+                </div>
             </div>
             
-            <FlipMove className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(270px,1fr))]">
-                {sortedItems.length > 0 ? (
+            {/* 로딩 상태 표시 */}
+            {isLoadingLostItems ? (
+                <div className="col-span-full text-center py-12">
+                    <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900 mb-4"></div>
+                    <p className="text-gray-500">분실물 목록을 불러오는 중...</p>
+                </div>
+            ) : (
+                <FlipMove className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(270px,1fr))]">
+                    {sortedItems.length > 0 ? (
                     sortedItems.map(item => (
                         <div key={item.id} data-id={item.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5 flex flex-col">
 
@@ -148,9 +168,12 @@ const LostFoundPage = () => {
                                                 openModal('confirm', {
                                                     title: '분실물 삭제 확인',
                                                     message: `이 분실물을 정말 삭제하시겠습니까?`,
-                                                    onConfirm: () => {
-                                                        deleteLostItem(item.id);
-                                                        showToast('분실물이 삭제되었습니다.');
+                                                    onConfirm: async () => {
+                                                        try {
+                                                            await deleteLostItem(item.id, showToast);
+                                                        } catch (error) {
+                                                            console.error('Delete failed:', error);
+                                                        }
                                                     }
                                                 });
                                             }} 
@@ -160,7 +183,13 @@ const LostFoundPage = () => {
                                         </button>
                                     </div>
                                     <button 
-                                        onClick={() => toggleLostItemStatus(item.id, showToast)} 
+                                        onClick={async () => {
+                                            try {
+                                                await toggleLostItemStatus(item.id, showToast);
+                                            } catch (error) {
+                                                console.error('Status toggle failed:', error);
+                                            }
+                                        }} 
                                         className={`text-white text-sm py-2 px-0 rounded-md font-bold transition-colors w-full ${
                                             item.pickupStatus === 'PENDING' 
                                                 ? 'bg-blue-500 hover:bg-blue-600 shadow-sm' 
@@ -173,7 +202,7 @@ const LostFoundPage = () => {
                             </div>
                         </div>
                     ))
-                ) : (
+                ) : lostItems.length === 0 ? (
                     <div className="col-span-full text-center py-12">
                         <i className="fas fa-search text-4xl text-gray-400 mb-4"></i>
                         <p className="text-gray-500 mb-4">등록된 분실물이 없습니다</p>
@@ -184,8 +213,20 @@ const LostFoundPage = () => {
                             첫 번째 분실물 등록
                         </button>
                     </div>
+                ) : (
+                    <div className="col-span-full text-center py-12">
+                        <i className="fas fa-exclamation-triangle text-4xl text-red-400 mb-4"></i>
+                        <p className="text-gray-500 mb-4">분실물 목록을 불러오는데 실패했습니다</p>
+                        <button
+                            onClick={() => fetchLostItems()}
+                            className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors"
+                        >
+                            다시 시도
+                        </button>
+                    </div>
                 )}
-            </FlipMove>
+                </FlipMove>
+            )}
 
             {/* 이미지 상세 보기 오버레이 */}
             {selectedImage && (

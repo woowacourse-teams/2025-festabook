@@ -237,27 +237,27 @@ export const scheduleAPI = {
     }
   },
 
-  // 일정 수정
-  updateEvent: async (eventId, eventData) => {
-    try {
-      await api.patch(`/event-dates/events/${eventId}`, eventData);
-      // 성공 시 204 응답, body 없음 - 재조회 필요
-    } catch (error) {
-      console.error('Failed to update event:', error);
-      throw new Error('일정 수정에 실패했습니다.');
-    }
-  },
+    // 일정 수정
+    updateEvent: async (eventId, eventData) => {
+        try {
+            await api.patch(`/event-dates/events/${eventId}`, eventData);
+            // 성공 시 204 응답, body 없음 - 재조회 필요
+        } catch (error) {
+            console.error('Failed to update event:', error);
+            throw new Error('일정 수정에 실패했습니다.');
+        }
+    },
 
-  // 일정 삭제
-  deleteEvent: async (eventId) => {
-    try {
-      await api.delete(`/event-dates/events/${eventId}`);
-      // 성공 시 204 응답, body 없음 - 재조회 필요
-    } catch (error) {
-      console.error('Failed to delete event:', error);
-      throw new Error('일정 삭제에 실패했습니다.');
+    // 일정 삭제
+    deleteEvent: async (eventId) => {
+        try {
+            await api.delete(`/event-dates/events/${eventId}`);
+            // 성공 시 204 응답, body 없음 - 재조회 필요
+        } catch (error) {
+            console.error('Failed to delete event:', error);
+            throw new Error('일정 삭제에 실패했습니다.');
+        }
     }
-  }
 };
 
 // QnA 관련 API
@@ -316,6 +316,87 @@ export const qnaAPI = {
       throw new Error('QnA 순서 변경에 실패했습니다.');
     }
   }
+};
+
+// 분실물 관련 API
+export const lostItemAPI = {
+    // 모든 분실물 조회
+    getLostItems: async () => {
+        try {
+            const response = await api.get('/lost-items');
+            // 백엔드 응답을 프론트엔드 형식으로 변환
+            return response.data.map(item => ({
+                id: item.lostItemId,
+                imageUrl: item.imageUrl,
+                storageLocation: item.storageLocation,
+                pickupStatus: item.pickupStatus,
+                createdAt: item.createdAt
+            }));
+        } catch (error) {
+            console.error('Failed to fetch lost items:', error);
+            throw new Error('분실물 조회에 실패했습니다.');
+        }
+    },
+
+    // 분실물 등록
+    createLostItem: async (lostItemData) => {
+        try {
+            const response = await api.post('/lost-items', lostItemData);
+            // LostItemResponse를 프론트엔드 형식으로 변환
+            return {
+                id: response.data.lostItemId,
+                imageUrl: response.data.imageUrl,
+                storageLocation: response.data.storageLocation,
+                pickupStatus: response.data.pickupStatus,
+                createdAt: response.data.createdAt
+            };
+        } catch (error) {
+            console.error('Failed to create lost item:', error);
+            throw new Error('분실물 등록에 실패했습니다.');
+        }
+    },
+
+    // 분실물 수정
+    updateLostItem: async (lostItemId, updateData) => {
+        try {
+            const response = await api.patch(`/lost-items/${lostItemId}`, updateData);
+            // LostItemUpdateResponse를 프론트엔드 형식으로 변환
+            return {
+                id: response.data.lostItemId,
+                imageUrl: response.data.imageUrl,
+                storageLocation: response.data.storageLocation
+            };
+        } catch (error) {
+            console.error('Failed to update lost item:', error);
+            throw new Error('분실물 수정에 실패했습니다.');
+        }
+    },
+
+    // 분실물 삭제
+    deleteLostItem: async (lostItemId) => {
+        try {
+            await api.delete(`/lost-items/${lostItemId}`);
+            // 204 No Content - 반환값 없음
+        } catch (error) {
+            console.error('Failed to delete lost item:', error);
+            throw new Error('분실물 삭제에 실패했습니다.');
+        }
+    },
+
+    // 분실물 상태 변경
+    updateLostItemStatus: async (lostItemId, status) => {
+        try {
+            const response = await api.patch(`/lost-items/${lostItemId}/status`, { pickupStatus : status});
+            // LostItemStatusUpdateResponse를 프론트엔드 형식으로 변환
+            return {
+                id: response.data.lostItemId,
+                pickupStatus: response.data.pickupStatus
+            };
+        } catch (error) {
+            console.error('Failed to update lost item status:', error);
+            throw new Error('분실물 상태 변경에 실패했습니다.');
+        }
+    }
 };
 
 export default api;
