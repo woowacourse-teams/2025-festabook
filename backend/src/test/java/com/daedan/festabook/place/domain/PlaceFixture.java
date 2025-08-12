@@ -21,9 +21,16 @@ public class PlaceFixture {
 
     public static Place create() {
         return new Place(
+                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
-                DEFAULT_COORDINATE
+                DEFAULT_COORDINATE,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
         );
     }
 
@@ -83,9 +90,16 @@ public class PlaceFixture {
             PlaceCategory category
     ) {
         return new Place(
+                null,
                 festival,
                 category,
-                DEFAULT_COORDINATE
+                DEFAULT_COORDINATE,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
         );
     }
 
@@ -96,9 +110,16 @@ public class PlaceFixture {
             Double longitude
     ) {
         return new Place(
+                null,
                 festival,
                 category,
-                CoordinateFixture.create(latitude, longitude)
+                CoordinateFixture.create(latitude, longitude),
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
         );
     }
 
@@ -108,9 +129,16 @@ public class PlaceFixture {
             Coordinate coordinate
     ) {
         return new Place(
+                null,
                 festival,
                 category,
-                coordinate
+                coordinate,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
         );
     }
 
@@ -261,14 +289,15 @@ public class PlaceFixture {
     public static Place createWithNullDefaults(
             Long placeId,
             Festival festival,
-            PlaceCategory placeCategory
+            PlaceCategory placeCategory,
+            String title
     ) {
         return new Place(
                 placeId,
                 festival,
                 placeCategory,
                 null,
-                null,
+                title,
                 null,
                 null,
                 null,

@@ -50,7 +50,7 @@ public class Place {
     @Enumerated(EnumType.STRING)
     private PlaceCategory category;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String title;
 
     @Column(length = 100)
@@ -102,14 +102,14 @@ public class Place {
     public Place(
             Festival festival,
             PlaceCategory category,
-            Coordinate coordinate
+            String title
     ) {
         this(
                 null,
                 festival,
                 category,
-                coordinate,
                 null,
+                title,
                 null,
                 null,
                 null,
