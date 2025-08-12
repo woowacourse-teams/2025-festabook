@@ -149,7 +149,7 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class getPlaceById {
+    class getPlaceByPlaceId {
 
         @Test
         void 성공() {
@@ -172,7 +172,7 @@ class PlaceServiceTest {
                     .willReturn(List.of(announcement1, announcement2));
 
             // when
-            PlaceResponse result = placeService.getPlaceById(expectedPlaceId);
+            PlaceResponse result = placeService.getPlaceByPlaceId(expectedPlaceId);
 
             // then
             assertSoftly(s -> {
@@ -197,7 +197,7 @@ class PlaceServiceTest {
             Long inValidPlaceId = 0L;
 
             // when & then
-            assertThatThrownBy(() -> placeService.getPlaceById(inValidPlaceId))
+            assertThatThrownBy(() -> placeService.getPlaceByPlaceId(inValidPlaceId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }

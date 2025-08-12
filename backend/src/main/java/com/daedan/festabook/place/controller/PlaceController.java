@@ -75,10 +75,10 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponse getPlaceById(
+    public PlaceResponse getPlaceByPlaceId(
             @PathVariable Long placeId
     ) {
-        return placeService.getPlaceById(placeId);
+        return placeService.getPlaceByPlaceId(placeId);
     }
 
     @DeleteMapping("/{placeId}")

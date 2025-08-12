@@ -283,7 +283,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getPlaceById {
+    class getPlaceByPlaceId {
 
         @Test
         void 성공() {

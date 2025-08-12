@@ -48,8 +48,8 @@ public class PlaceService {
     }
 
     @Transactional(readOnly = true)
-    public PlaceResponse getPlaceById(Long placeId) {
-        Place place = getPlaceByPlaceId(placeId);
+    public PlaceResponse getPlaceByPlaceId(Long placeId) {
+        Place place = getPlaceById(placeId);
         return convertPlaceToResponse(place);
     }
 
@@ -73,7 +73,7 @@ public class PlaceService {
     }
 
     // TODO: ExceptionHandler 등록 후 예외 변경
-    private Place getPlaceByPlaceId(Long placeId) {
+    private Place getPlaceById(Long placeId) {
         return placeJpaRepository.findById(placeId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스입니다.", HttpStatus.NOT_FOUND));
     }
