@@ -26,8 +26,11 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Place {
 
-    private static final Set<PlaceCategory> MAIN_PLACE =
-            Set.of(PlaceCategory.BAR, PlaceCategory.BOOTH, PlaceCategory.FOOD_TRUCK);
+    private static final Set<PlaceCategory> MAIN_PLACE = Set.of(
+            PlaceCategory.BAR,
+            PlaceCategory.BOOTH,
+            PlaceCategory.FOOD_TRUCK
+    );
 
     private static final int MAX_TITLE_LENGTH = 20;
     private static final int MAX_DESCRIPTION_LENGTH = 100;
