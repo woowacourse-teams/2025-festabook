@@ -45,7 +45,7 @@ class StorageUploadRequestTest {
     @Nested
     class validateFilePath {
 
-        @ParameterizedTest(name = "fileName: {0}")
+        @ParameterizedTest(name = "filePath: {0}")
         @NullAndEmptySource
         void 예외_비어있는_filePath(String filePath) {
             // given
