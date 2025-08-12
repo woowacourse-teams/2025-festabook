@@ -13,14 +13,17 @@ public class LoggingAspect {
 
     @Around("""
             execution(* com.daedan.festabook..*.*(..)) &&
-            (within(@org.springframework.web.bind.annotation.RestController *) || 
-            within(@org.springframework.stereotype.Service *) ||
-            within(@org.springframework.stereotype.Repository *))) """
+            (
+                within(@org.springframework.web.bind.annotation.RestController *) ||
+                within(@org.springframework.stereotype.Service *) ||
+                execution(* org.springframework.data.jpa.repository.JpaRepository+.*(..))
+            )
+            """
     )
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
 
         log.info("[Method Call] | Class: {} | Method: {} | Args: {}",
-                joinPoint.getSignature().getName(),
+                joinPoint.getSignature().getDeclaringTypeName(),
                 joinPoint.getSignature().getName(),
                 joinPoint.getArgs()
         );
