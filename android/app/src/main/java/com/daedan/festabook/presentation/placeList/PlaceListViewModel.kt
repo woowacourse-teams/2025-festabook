@@ -51,6 +51,9 @@ class PlaceListViewModel(
     private val _isExceededMaxLength: MutableLiveData<Boolean> = MutableLiveData()
     val isExceededMaxLength: LiveData<Boolean> = _isExceededMaxLength
 
+    private val _placeListEvent: MutableLiveData<PlaceListEvent> = MutableLiveData()
+    val placeListEvent: LiveData<PlaceListEvent> = _placeListEvent
+
     init {
         loadAllPlaces()
         loadOrganizationGeography()
@@ -108,7 +111,8 @@ class PlaceListViewModel(
         }
     }
 
-    fun publishEvent() {
+    fun publishEvent(event: PlaceListEvent) {
+        _placeListEvent.value = event
     }
 
     fun setIsExceededMaxLength(isExceededMaxLength: Boolean) {

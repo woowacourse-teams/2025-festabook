@@ -12,6 +12,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
+import com.daedan.festabook.presentation.placeList.PlaceListEvent
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
@@ -123,6 +124,12 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
             mapManager.setupMap()
             mapManager.setupBackToInitialPosition { isExceededMaxLength ->
                 viewModel.setIsExceededMaxLength(isExceededMaxLength)
+            }
+        }
+
+        viewModel.placeListEvent.observe(viewLifecycleOwner) { event ->
+            if (event == PlaceListEvent.BACK_TO_INITIAL_POSITION_CLICKED) {
+                mapManager.moveToInitialPosition()
             }
         }
     }

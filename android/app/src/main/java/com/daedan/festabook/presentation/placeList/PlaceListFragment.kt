@@ -110,7 +110,7 @@ class PlaceListFragment :
 
     private fun setUpBinding() {
         binding.chipBackToInitialPosition.setOnClickListener {
-            viewModel.publishEvent()
+            viewModel.publishEvent(PlaceListEvent.BACK_TO_INITIAL_POSITION_CLICKED)
         }
     }
 
