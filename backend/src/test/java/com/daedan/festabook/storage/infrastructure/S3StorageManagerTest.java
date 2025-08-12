@@ -1,7 +1,7 @@
 package com.daedan.festabook.storage.infrastructure;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -10,6 +10,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -71,12 +72,16 @@ class S3StorageManagerTest {
                     mockRegion,
                     BASE_PATH
             );
+            String expectedS3Key = String.format("%s/%s", BASE_PATH, fileName);
 
             // when
-            String result = s3StorageManager.uploadFile(mockFile, fileName);
+            StorageUploadResponse result = s3StorageManager.uploadFile(mockFile, fileName);
 
             // then
-            assertThat(result).isEqualTo(expectedFileUrl);
+            assertSoftly(s -> {
+                s.assertThat(result.accessUrl()).isEqualTo(expectedFileUrl);
+                s.assertThat(result.filePath()).isEqualTo(expectedS3Key);
+            });
             then(s3Client).should()
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));
         }

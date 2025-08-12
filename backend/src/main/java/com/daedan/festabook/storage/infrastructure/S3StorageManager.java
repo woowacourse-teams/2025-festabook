@@ -2,6 +2,7 @@ package com.daedan.festabook.storage.infrastructure;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.domain.StorageManager;
+import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Value;
@@ -37,7 +38,7 @@ public class S3StorageManager implements StorageManager {
     }
 
     @Override
-    public String uploadFile(MultipartFile file, String fileName) {
+    public StorageUploadResponse uploadFile(MultipartFile file, String fileName) {
         validateFile(file);
         validateFileName(fileName);
 
@@ -52,7 +53,7 @@ public class S3StorageManager implements StorageManager {
             RequestBody requestBody = RequestBody.fromBytes(file.getBytes());
             s3Client.putObject(putObjectRequest, requestBody);
 
-            return buildFileUrl(s3Key);
+            return new StorageUploadResponse(buildFileUrl(s3Key), s3Key);
         } catch (S3Exception e) {
             throw new BusinessException("S3 업로드 실패", HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (IOException e) {
