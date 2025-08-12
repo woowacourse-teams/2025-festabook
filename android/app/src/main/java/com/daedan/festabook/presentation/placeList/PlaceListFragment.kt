@@ -33,6 +33,7 @@ class PlaceListFragment :
     OnMenuItemReClickListener,
     OnMapReadyCallback {
     private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val childViewModel by viewModels<PlaceListChildViewModel> { PlaceListChildViewModel.Factory }
 
     private val placeAdapter by lazy {
         PlaceListAdapter(this)
@@ -74,7 +75,7 @@ class PlaceListFragment :
     }
 
     private fun setUpObserver() {
-        viewModel.places.observe(viewLifecycleOwner) { places ->
+        childViewModel.places.observe(viewLifecycleOwner) { places ->
             when (places) {
                 is PlaceListUiState.Loading -> showSkeleton()
                 is PlaceListUiState.Success -> {
@@ -100,19 +101,15 @@ class PlaceListFragment :
 
         viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
             if (selectedCategories.isEmpty()) {
-                viewModel.clearPlacesFilter()
+                childViewModel.clearPlacesFilter()
             } else {
-                viewModel.filterPlaces(selectedCategories)
+                childViewModel.filterPlaces(selectedCategories)
             }
         }
 
         viewModel.isExceededMaxLength.observe(viewLifecycleOwner) { isExceededMaxLength ->
             moveToInitialPositionCallback.setIsExceededMaxLength(isExceededMaxLength)
-            if (isExceededMaxLength) {
-                binding.chipBackToInitialPosition.visibility = View.VISIBLE
-            } else {
-                binding.chipBackToInitialPosition.visibility = View.GONE
-            }
+            binding.chipBackToInitialPosition.visibility = if (isExceededMaxLength) View.VISIBLE else View.GONE
         }
 
         viewModel.selectedPlace.observe(viewLifecycleOwner) {

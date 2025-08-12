@@ -15,7 +15,6 @@ import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
 import com.daedan.festabook.presentation.placeList.PlaceListEvent
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
-import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
 import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewFragment
@@ -100,24 +99,7 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
                     MapManager(
                         naverMap,
                         getInitialPadding(requireContext()),
-                        object : MapClickListener {
-                            override fun onMarkerListener(
-                                placeId: Long,
-                                category: PlaceCategoryUiModel,
-                            ): Boolean {
-                                Timber.d("Marker CLick : placeID: $placeId categoty: $category")
-                                if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
-                                    return true
-                                }
-                                viewModel.selectPlace(placeId, category)
-                                return true
-                            }
-
-                            override fun onMapClickListener() {
-                                Timber.d("Map CLick")
-                                viewModel.unselectPlace()
-                            }
-                        },
+                        MapClickListenerImpl(viewModel),
                         initialMapSetting.value,
                     )
             }
