@@ -14,7 +14,7 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListBottomSheetCallback
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
-import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
+import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import kotlin.getValue
 
@@ -45,15 +45,15 @@ class PlaceDetailPreviewFragment :
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
             binding.nsSelectedPlace.visibility =
-                if (selectedPlace == null) View.GONE else View.VISIBLE
+                if (selectedPlace == SelectedPlaceUiState.Empty) View.GONE else View.VISIBLE
 
             when (selectedPlace) {
-                is PlaceListUiState.Loading -> {
+                is SelectedPlaceUiState.Loading -> {
                     binding.layoutSelectedPlace.visibility = View.INVISIBLE
                 }
-                is PlaceListUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
-                is PlaceListUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
-                else -> Unit
+                is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
+                is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
+                is SelectedPlaceUiState.Empty -> Unit
             }
         }
     }

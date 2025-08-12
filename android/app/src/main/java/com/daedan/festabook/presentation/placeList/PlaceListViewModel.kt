@@ -18,6 +18,7 @@ import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiMode
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
+import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.toUiModel
 import kotlinx.coroutines.launch
 
@@ -34,8 +35,8 @@ class PlaceListViewModel(
     val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
         _placeGeographies
 
-    private val _selectedPlace: MutableLiveData<PlaceListUiState<PlaceDetailUiModel>?> = MutableLiveData()
-    val selectedPlace: LiveData<PlaceListUiState<PlaceDetailUiModel>?> = _selectedPlace
+    private val _selectedPlace: MutableLiveData<SelectedPlaceUiState> = MutableLiveData()
+    val selectedPlace: LiveData<SelectedPlaceUiState> = _selectedPlace
 
     private val _navigateToDetail = SingleLiveData<PlaceDetailUiModel>()
     val navigateToDetail: LiveData<PlaceDetailUiModel> = _navigateToDetail
@@ -62,23 +63,23 @@ class PlaceListViewModel(
         }
 
         viewModelScope.launch {
-            _selectedPlace.value = PlaceListUiState.Loading()
+            _selectedPlace.value = SelectedPlaceUiState.Loading
             placeDetailRepository
                 .getPlaceDetail(placeId = placeId)
                 .onSuccess {
-                    _selectedPlace.value = PlaceListUiState.Success(it.toUiModel())
+                    _selectedPlace.value = SelectedPlaceUiState.Success(it.toUiModel())
                 }.onFailure {
-                    _selectedPlace.value = PlaceListUiState.Error(it)
+                    _selectedPlace.value = SelectedPlaceUiState.Error(it)
                 }
         }
     }
 
     fun unselectPlace() {
-        _selectedPlace.value = null
+        _selectedPlace.value = SelectedPlaceUiState.Empty
     }
 
     fun onExpandedStateReached() {
-        val currentPlace = _selectedPlace.value.let { it as? PlaceListUiState.Success }?.value
+        val currentPlace = _selectedPlace.value.let { it as? SelectedPlaceUiState.Success }?.value
         if (currentPlace != null) {
             _navigateToDetail.setValue(currentPlace)
         }

@@ -101,10 +101,10 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
                         MapClickListenerImpl(viewModel),
                         initialMapSetting.value,
                     )
-            }
-            mapManager.setupMap()
-            mapManager.setupBackToInitialPosition { isExceededMaxLength ->
-                viewModel.setIsExceededMaxLength(isExceededMaxLength)
+                mapManager.setupMap()
+                mapManager.setupBackToInitialPosition { isExceededMaxLength ->
+                    viewModel.setIsExceededMaxLength(isExceededMaxLength)
+                }
             }
         }
 

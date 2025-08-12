@@ -5,13 +5,13 @@ import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.placeDetail.FAKE_PLACE_DETAIL
-import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.toUiModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -144,7 +144,7 @@ class PlaceListViewModelTest {
             // then
             coVerify { placeDetailRepository.getPlaceDetail(1) }
 
-            val expected = PlaceListUiState.Success<PlaceDetailUiModel>(FAKE_PLACE_DETAIL.toUiModel())
+            val expected = SelectedPlaceUiState.Success(FAKE_PLACE_DETAIL.toUiModel())
             val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
             assertThat(actual).isEqualTo(expected)
         }
@@ -178,7 +178,7 @@ class PlaceListViewModelTest {
             advanceUntilIdle()
 
             // then
-            val expected = null
+            val expected = SelectedPlaceUiState.Empty
             val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
             assertThat(actual).isEqualTo(expected)
         }
