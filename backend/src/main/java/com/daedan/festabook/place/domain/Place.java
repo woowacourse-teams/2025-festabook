@@ -126,6 +126,30 @@ public class Place {
         this.coordinate = coordinate;
     }
 
+    public void update(
+            PlaceCategory category,
+            String title,
+            String description,
+            String location,
+            String host,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        validateTitle(title);
+        validateDescription(description);
+        validateLocation(location);
+        validateHost(host);
+        validateTime(startTime, endTime);
+
+        this.category = category;
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.host = host;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
     private void validateTitle(String title) {
         if (title == null) {
             return;

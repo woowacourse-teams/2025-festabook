@@ -5,6 +5,8 @@ import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateResponse;
 import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -43,6 +46,19 @@ public class PlaceController {
             @RequestBody PlaceRequest request
     ) {
         return placeService.createPlace(festivalId, request);
+    }
+
+    @PutMapping("/{placeId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제에 대한 플레이스 세부사항 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public PlaceUpdateResponse updatePlaceByPlaceId(
+            @PathVariable Long placeId,
+            @RequestBody PlaceUpdateRequest request
+    ) {
+        return placeService.updatePlaceByPlaceId(placeId, request);
     }
 
     @GetMapping

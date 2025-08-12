@@ -9,6 +9,8 @@ import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -36,6 +38,23 @@ public class PlaceService {
         Place savedPlace = placeJpaRepository.save(notSavedPlace);
 
         return PlaceResponse.from(savedPlace);
+    }
+
+    @Transactional
+    public PlaceUpdateResponse updatePlaceByPlaceId(Long placeId, PlaceUpdateRequest request) {
+        Place place = getPlaceById(placeId);
+
+        place.update(
+                request.placeCategory(),
+                request.title(),
+                request.description(),
+                request.location(),
+                request.host(),
+                request.startTime(),
+                request.endTime()
+        );
+
+        return PlaceUpdateResponse.from(place);
     }
 
     @Transactional(readOnly = true)

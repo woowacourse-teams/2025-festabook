@@ -24,6 +24,8 @@ import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -110,6 +112,41 @@ class PlaceControllerTest {
                     .body("location", nullValue())
                     .body("host", nullValue())
                     .body("description", nullValue());
+        }
+    }
+
+    @Nested
+    class updatePlaceByPlaceId {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create();
+
+            int expectedFieldSize = 7;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(placeUpdateRequest)
+                    .put("/places/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("placeCategory", equalTo(placeUpdateRequest.placeCategory().name()))
+                    .body("title", equalTo(placeUpdateRequest.title()))
+                    .body("description", equalTo(placeUpdateRequest.description()))
+                    .body("location", equalTo(placeUpdateRequest.location()))
+                    .body("host", equalTo(placeUpdateRequest.host()))
+                    .body("startTime", equalTo(placeUpdateRequest.startTime().toString()))
+                    .body("endTime", equalTo(placeUpdateRequest.endTime().toString()));
         }
     }
 

@@ -3,6 +3,7 @@ package com.daedan.festabook.place.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.CoordinateFixture;
@@ -299,6 +300,196 @@ class PlaceTest {
 
             // then
             assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class update {
+
+        @Test
+        void 성공() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            // when
+            place.update(
+                    placeCategory,
+                    title,
+                    description,
+                    location,
+                    host,
+                    startTime,
+                    endTime
+            );
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(place.getCategory()).isEqualTo(placeCategory);
+                s.assertThat(place.getTitle()).isEqualTo(title);
+                s.assertThat(place.getDescription()).isEqualTo(description);
+                s.assertThat(place.getLocation()).isEqualTo(location);
+                s.assertThat(place.getHost()).isEqualTo(host);
+                s.assertThat(place.getStartTime()).isEqualTo(startTime);
+                s.assertThat(place.getEndTime()).isEqualTo(endTime);
+            });
+        }
+
+        @Test
+        void 예외_제목() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            String longTitle = "m".repeat(21);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.update(
+                        placeCategory,
+                        longTitle,
+                        description,
+                        location,
+                        host,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("초과할 수 없습니다.");
+        }
+
+        @Test
+        void 예외_설명() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            String longDescription = "m".repeat(101);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.update(
+                        placeCategory,
+                        title,
+                        longDescription,
+                        location,
+                        host,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("초과할 수 없습니다.");
+        }
+
+        @Test
+        void 예외_위치() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            String longLocation = "m".repeat(101);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.update(
+                        placeCategory,
+                        title,
+                        description,
+                        longLocation,
+                        host,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("초과할 수 없습니다.");
+        }
+
+        @Test
+        void 예외_호스트() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            String longHost = "m".repeat(101);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.update(
+                        placeCategory,
+                        title,
+                        description,
+                        location,
+                        longHost,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("초과할 수 없습니다.");
+        }
+
+        @Test
+        void 예외_시간() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+
+            Place place = PlaceFixture.create();
+
+            LocalTime emptyTime = null;
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.update(
+                        placeCategory,
+                        title,
+                        description,
+                        location,
+                        host,
+                        startTime,
+                        emptyTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessageContaining("플레이스의 시작 날짜, 종료 날짜는 모두 비어 있거나 모두 입력되어야 합니다.");
         }
     }
 }
