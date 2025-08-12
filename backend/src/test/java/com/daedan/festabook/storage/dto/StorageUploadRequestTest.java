@@ -26,7 +26,7 @@ class StorageUploadRequestTest {
             // when & then
             assertThatThrownBy(() -> new StorageUploadRequest(null, filePath))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일이 비어 있습니다.");
+                    .hasMessage("파일은 비어있을 수 없습니다.");
         }
 
         @Test
@@ -38,7 +38,7 @@ class StorageUploadRequestTest {
             // when & then
             assertThatThrownBy(() -> new StorageUploadRequest(emptyFile, filePath))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일이 비어 있습니다.");
+                    .hasMessage("파일은 비어있을 수 없습니다.");
         }
     }
 
@@ -59,7 +59,7 @@ class StorageUploadRequestTest {
             // when & then
             assertThatThrownBy(() -> new StorageUploadRequest(file, filePath))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일 이름이 비어 있습니다.");
+                    .hasMessage("파일 경로는 비어있을 수 없습니다.");
         }
 
         @Test
@@ -77,7 +77,7 @@ class StorageUploadRequestTest {
             // when & then
             assertThatThrownBy(() -> new StorageUploadRequest(file, filePath))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일명이 너무 깁니다.");
+                    .hasMessage("파일 경로는 %d자를 초과할 수 없습니다.", maxFileNameLength);
         }
     }
 }
