@@ -12,9 +12,10 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
 
     @Around("""
-        within(@org.springframework.web.bind.annotation.RestController *) || 
-        within(@org.springframework.stereotype.Service *) ||
-        within(@org.springframework.stereotype.Repository *)) """
+            execution(* com.daedan.festabook..*.*(..)) &&
+            (within(@org.springframework.web.bind.annotation.RestController *) || 
+            within(@org.springframework.stereotype.Service *) ||
+            within(@org.springframework.stereotype.Repository *))) """
     )
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
 
