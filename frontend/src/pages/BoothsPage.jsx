@@ -150,10 +150,8 @@ const BoothsPage = () => {
         category: booth.category,
         placeImages: booth.placeImages || [],
         placeAnnouncements: booth.placeAnnouncements || [],
-        // 흡연구역, 쓰레기통은 title을 category명으로 세팅
-        title: ['SMOKING', 'TRASH_CAN'].includes(booth.category)
-            ? placeCategories[booth.category]
-            : getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
+        // 서버에서 받은 title 값을 우선 사용
+        title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
         description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
         startTime: getDefaultValueIfNull('00:00', booth.startTime),
         endTime: getDefaultValueIfNull('00:00', booth.endTime),
@@ -193,9 +191,13 @@ const BoothsPage = () => {
     // 2. Booth 생성
     const handleCreate = async (data) => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
+        if (!data.title) { showToast('플레이스명은 필수 항목입니다.'); return; }
         try {
             setLoading(true);
-            await placeAPI.createPlace({ placeCategory: data.category });
+            await placeAPI.createPlace({ 
+                placeCategory: data.category,
+                title: data.title
+            });
             // 성공 후 목록 다시 조회
             const places = await placeAPI.getPlaces();
             setBooths(places.map(defaultBooth));
@@ -290,7 +292,7 @@ const BoothsPage = () => {
     };
 
     const isMainPlace = (category) => {
-        return !['SMOKING', 'TRASH_CAN'].includes(category);
+        return !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE'].includes(category);
     }
 
     return (

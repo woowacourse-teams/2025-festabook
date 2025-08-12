@@ -15,12 +15,11 @@ const BoothModal = ({ booth, onSave, onClose }) => {
     
     useEffect(() => {
         if (!isEditMode) { // Only for new booths
-            if (form.category === 'SMOKING' || form.category === 'TRASH_CAN') {
-                setForm(prev => ({
-                    ...prev,
-                    title: placeCategories[prev.category]
-                }));
-            }
+            // 모든 카테고리에 대해 기본값으로 카테고리명을 설정
+            setForm(prev => ({
+                ...prev,
+                title: placeCategories[prev.category] || ''
+            }));
         }
     }, [form.category, isEditMode]);
 
@@ -38,12 +37,25 @@ const BoothModal = ({ booth, onSave, onClose }) => {
                     <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
                     <select name="category" value={form.category || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
                         {Object.entries(placeCategories)
-                            .filter(([key]) => ['BOOTH', 'BAR', 'FOOD_TRUCK'].includes(key))
+                            .filter(([key]) => isEditMode ? ['BOOTH', 'BAR', 'FOOD_TRUCK'].includes(key) : ['BOOTH', 'BAR', 'FOOD_TRUCK', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE'].includes(key))
                             .map(([key, value]) => (
                                 <option key={key} value={key}>{value}</option>
                             ))}
                     </select>
                 </div>
+                {!isEditMode && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">플레이스명</label>
+                        <input 
+                            name="title" 
+                            type="text" 
+                            value={form.title || ''} 
+                            onChange={handleChange} 
+                            placeholder="플레이스 이름을 입력해주세요" 
+                            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
+                        />
+                    </div>
+                )}
                 {isEditMode && (
                     <>
                         <div>
@@ -72,10 +84,22 @@ const BoothModal = ({ booth, onSave, onClose }) => {
                     </>
                 )}
             </div>
-            <div className="mt-6 flex justify-between w-full">
+            <div className="mt-6 flex justify-between w-full relative z-10">
                 <div className="space-x-3">
-                    <button onClick={onClose} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">취소</button>
-                    <button onClick={handleSave} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg">저장</button>
+                    <button 
+                        type="button"
+                        onClick={onClose} 
+                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                    >
+                        취소
+                    </button>
+                    <button 
+                        type="button"
+                        onClick={handleSave} 
+                        className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                    >
+                        저장
+                    </button>
                 </div>
             </div>
         </Modal>

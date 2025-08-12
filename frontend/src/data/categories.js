@@ -5,6 +5,9 @@ export const placeCategories = {
     SMOKING: '흡연구역',
     TRASH_CAN: '쓰레기통',
     TOILET: '화장실',
+    PARKING: '주차장',
+    PRIMARY: '주요시설',
+    STAGE: '무대',
 };
 
 // 카테고리별 아이콘 SVG 생성 함수
