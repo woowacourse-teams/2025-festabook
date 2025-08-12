@@ -45,23 +45,6 @@ public class PlaceFixture {
     }
 
     public static Place create(
-            PlaceCategory placeCategory
-    ) {
-        return new Place(
-                DEFAULT_ID,
-                DEFAULT_FESTIVAL,
-                placeCategory,
-                DEFAULT_COORDINATE,
-                DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION,
-                DEFAULT_LOCATION,
-                DEFAULT_HOST,
-                DEFAULT_START_TIME,
-                DEFAULT_END_TIME
-        );
-    }
-
-    public static Place create(
             Festival festival
     ) {
         return new Place(
@@ -79,6 +62,34 @@ public class PlaceFixture {
     }
 
     public static Place create(
+            PlaceCategory placeCategory
+    ) {
+        return new Place(
+                DEFAULT_ID,
+                DEFAULT_FESTIVAL,
+                placeCategory,
+                DEFAULT_COORDINATE,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
+        );
+    }
+
+    public static Place create(
+            Festival festival,
+            PlaceCategory category
+    ) {
+        return new Place(
+                festival,
+                category,
+                DEFAULT_COORDINATE
+        );
+    }
+
+    public static Place create(
             Festival festival,
             PlaceCategory category,
             Double latitude,
@@ -87,7 +98,7 @@ public class PlaceFixture {
         return new Place(
                 festival,
                 category,
-                new Coordinate(latitude, longitude)
+                CoordinateFixture.create(latitude, longitude)
         );
     }
 
@@ -113,24 +124,13 @@ public class PlaceFixture {
                 placeId,
                 festival,
                 DEFAULT_CATEGORY,
-                new Coordinate(latitude, longitude),
+                CoordinateFixture.create(latitude, longitude),
                 DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION,
                 DEFAULT_LOCATION,
                 DEFAULT_HOST,
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME
-        );
-    }
-
-    public static Place create(
-            Festival festival,
-            PlaceCategory category
-    ) {
-        return new Place(
-                festival,
-                category,
-                DEFAULT_COORDINATE
         );
     }
 
@@ -178,25 +178,6 @@ public class PlaceFixture {
                 host,
                 startTime,
                 endTime
-        );
-    }
-
-    public static Place createWithNullDefaults(
-            Long placeId,
-            Festival festival,
-            PlaceCategory placeCategory
-    ) {
-        return new Place(
-                placeId,
-                festival,
-                placeCategory,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
-                null
         );
     }
 
@@ -274,6 +255,25 @@ public class PlaceFixture {
                 DEFAULT_HOST,
                 startTime,
                 endTime
+        );
+    }
+
+    public static Place createWithNullDefaults(
+            Long placeId,
+            Festival festival,
+            PlaceCategory placeCategory
+    ) {
+        return new Place(
+                placeId,
+                festival,
+                placeCategory,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null
         );
     }
 }
