@@ -6,21 +6,16 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
-import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.NullAndEmptySource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Answers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -66,6 +61,7 @@ class S3StorageManagerTest {
             String mockRegion = "mock-region";
             given(s3Client.serviceClientConfiguration().region().id())
                     .willReturn(mockRegion);
+
             String expectedFileUrl = String.format(
                     "https://%s.s3.%s.amazonaws.com/%s/test_123.jpg",
                     BUCKET_NAME,
@@ -74,8 +70,10 @@ class S3StorageManagerTest {
             );
             String expectedS3Key = String.format("%s/%s", BASE_PATH, fileName);
 
+            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
+
             // when
-            StorageUploadResponse result = s3StorageManager.uploadFile(mockFile, fileName);
+            StorageUploadResponse result = s3StorageManager.uploadFile(request);
 
             // then
             assertSoftly(s -> {
@@ -83,96 +81,6 @@ class S3StorageManagerTest {
                 s.assertThat(result.filePath()).isEqualTo(expectedS3Key);
             });
             then(s3Client).should()
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        }
-
-        @Test
-        void 예외_null_값_MultipartFile() {
-            // given
-            String fileName = "test_123.jpg";
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(null, fileName))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일이 비어 있습니다.");
-            then(s3Client).should(never())
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        }
-
-        @Test
-        void 예외_빈_파일_업로드() {
-            // given
-            String fileName = "test_123.jpg";
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    new byte[0]
-            );
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일이 비어 있습니다.");
-            then(s3Client).should(never())
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        }
-
-        @ParameterizedTest(name = "fileName: {0}")
-        @NullAndEmptySource
-        void 예외_빈_파일명(String fileName) {
-            // given
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    "test content".getBytes()
-            );
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일 이름이 비어 있습니다.");
-            then(s3Client).should(never())
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        }
-
-        @Test
-        void 예외_길이_제한_초과_파일명() {
-            // given
-            int maxFileNameLength = 255;
-            String fileName = "a".repeat(maxFileNameLength + 1);
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    "test content".getBytes()
-            );
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일명이 너무 깁니다.");
-            then(s3Client).should(never())
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-        }
-
-        @ParameterizedTest(name = "fileName: {0}")
-        @ValueSource(strings = {"../test_123.jpg", "..test_123.jpg", "test/123.jpg", "test\\123.jpg"})
-        void 예외_사용불가_문자_사용한_파일명(String fileName) {
-            // given
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    "test content".getBytes()
-            );
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("허용되지 않는 파일명입니다.");
-            then(s3Client).should(never())
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));
         }
 
@@ -186,35 +94,16 @@ class S3StorageManagerTest {
                     "image/jpeg",
                     "test content".getBytes()
             );
+            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
 
             willThrow(S3Exception.class)
                     .given(s3Client)
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));
 
             // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
+            assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("S3 업로드 실패");
-        }
-
-        @Test
-        void 예외_IOException_발생시_BusinessException으로_변환() throws IOException {
-            // given
-            String fileName = "test_123.jpg";
-            MockMultipartFile mockFile = mock(MockMultipartFile.class);
-
-            given(mockFile.isEmpty()).willReturn(false);
-            given(mockFile.getSize()).willReturn(1024L);
-            given(mockFile.getContentType()).willReturn("image/jpeg");
-
-            willThrow(IOException.class)
-                    .given(mockFile)
-                    .getBytes();
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(mockFile, fileName))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일 처리 실패");
         }
     }
 }
