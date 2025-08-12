@@ -5,6 +5,8 @@ import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.dto.EventRequest;
 import com.daedan.festabook.event.dto.EventResponse;
 import com.daedan.festabook.event.dto.EventResponses;
+import com.daedan.festabook.event.dto.EventUpdateRequest;
+import com.daedan.festabook.event.dto.EventUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
@@ -33,13 +35,13 @@ public class EventService {
     }
 
     @Transactional
-    public EventResponse updateEvent(Long eventId, EventRequest request) {
+    public EventUpdateResponse updateEvent(Long eventId, EventUpdateRequest request) {
         Event event = getEventById(eventId);
 
         Event newEvent = request.toEntity(event.getEventDate());
         event.updateEvent(newEvent);
 
-        return EventResponse.from(event, clock);
+        return EventUpdateResponse.from(event, clock);
     }
 
     public void deleteEventByEventId(Long eventId) {

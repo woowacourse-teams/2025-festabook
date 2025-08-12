@@ -127,6 +127,8 @@ class EventDateControllerTest {
 
             EventDateRequest request = EventDateRequestFixture.create(eventDate.getDate().plusDays(1));
 
+            int expectedSize = 2;
+
             // when & then
             RestAssured
                     .given()
@@ -136,7 +138,10 @@ class EventDateControllerTest {
                     .when()
                     .patch("/event-dates/{eventDateId}", eventDate.getId())
                     .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize))
+                    .body("eventDateId", equalTo(eventDate.getId().intValue()))
+                    .body("date", equalTo(request.date().toString()));
 
             assertSoftly(s -> {
                 EventDate updatedEventDate = eventDateJpaRepository.findById(eventDate.getId()).orElseThrow();

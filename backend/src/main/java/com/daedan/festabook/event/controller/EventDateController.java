@@ -45,10 +45,10 @@ public class EventDateController {
     }
 
     @PatchMapping("/{eventDateId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "일정 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
     public EventDateUpdateResponse updateEventDate(
             @Parameter(hidden = true) @FestivalId Long festivalId,
