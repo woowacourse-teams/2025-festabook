@@ -1,31 +1,43 @@
 package com.daedan.festabook.data.repository
 
+import com.daedan.festabook.data.datasource.local.AppPreferencesManager
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
+import timber.log.Timber
 
 class FestivalNotificationRepositoryImpl(
     private val festivalNotificationDataSource: FestivalNotificationDataSource,
+    private val preferencesManager: AppPreferencesManager,
 ) : FestivalNotificationRepository {
-    override suspend fun saveFestivalNotification(
-        festivalNotificationId: Long,
-        deviceId: Long,
-    ): Result<Long> {
-        val response =
+    override suspend fun saveFestivalNotification(): Result<Unit> {
+        val deviceId = preferencesManager.getDeviceId()
+        val festivalNotificationId = preferencesManager.getFestivalNotificationId()
+
+        val result =
             festivalNotificationDataSource
                 .saveFestivalNotification(
                     festivalNotificationId = festivalNotificationId,
                     deviceId = deviceId,
                 ).toResult()
 
-        return response.mapCatching { it.festivalNotificationId }
+        return result.mapCatching { preferencesManager.saveFestivalNotificationId(it.festivalNotificationId) }
     }
 
-    override suspend fun deleteFestivalNotification(festivalNotificationId: Long): Result<Unit> {
+    override suspend fun deleteFestivalNotification(): Result<Unit> {
+        val festivalNotificationId = preferencesManager.getFestivalNotificationId()
         val response =
             festivalNotificationDataSource.deleteFestivalNotification(festivalNotificationId)
-        val result = response.toResult()
 
-        return result
+        preferencesManager.deleteFestivalNotificationId()
+
+        return response.toResult()
+    }
+
+    override fun getFestivalNotificationIsAllow(): Boolean = preferencesManager.getFestivalNotificationIsAllowed()
+
+    override fun setFestivalNotificationIsAllow(isAllowed: Boolean) {
+        Timber.d("$isAllowed")
+        preferencesManager.saveFestivalNotificationIsAllowed(isAllowed)
     }
 }

@@ -94,7 +94,7 @@ class AppContainer(
         DeviceRepositoryImpl(deviceDataSource)
     }
     val festivalNotificationRepository: FestivalNotificationRepository by lazy {
-        FestivalNotificationRepositoryImpl(festivalNotificationDataSource)
+        FestivalNotificationRepositoryImpl(festivalNotificationDataSource, preferencesManager)
     }
     val festivalRepository: FestivalRepository by lazy {
         FestivalRepositoryImpl(festivalDataSource)

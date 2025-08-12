@@ -1,0 +1,59 @@
+package com.daedan.festabook.presentation
+
+import android.Manifest
+import android.content.Context
+import android.content.pm.PackageManager
+import android.os.Build
+import androidx.appcompat.app.AlertDialog
+import androidx.core.content.ContextCompat
+import timber.log.Timber
+
+class NotificationPermissionManager(
+    private val requester: NotificationPermissionRequester,
+    private val onPermissionDenied: () -> Unit = {},
+) {
+    fun requestNotificationPermission(context: Context) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    context,
+                    Manifest.permission.POST_NOTIFICATIONS,
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // 이미 권한이 허용됨
+                    Timber.d("Notification permission already granted")
+                }
+
+                requester.shouldShowPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
+                    // 이전에 거부했지만 "다시 묻지 않음"을 선택하지 않은 경우
+                    // 권한이 필요한 이유를 설명하는 UI(예: AlertDialog)를 표시
+                    Timber.d("Show rationale for notification permission")
+                    showRationaleDialog(context)
+                }
+
+                else -> {
+                    // 권한이 없으며, 이전에 "다시 묻지 않음"을 선택하지 않았거나 첫 요청인 경우
+                    // 바로 권한 요청 다이얼로그 표시
+                    Timber.d("Requesting notification permission for the first time or after 'don't ask again'")
+                    requester.permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            Timber.d("Notification permission not required for API < 33")
+        }
+    }
+
+    private fun showRationaleDialog(context: Context) {
+        AlertDialog
+            .Builder(context)
+            .setTitle("알림 권한 필요")
+            .setMessage("새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.")
+            .setPositiveButton("확인") { dialog, _ ->
+                requester.permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                dialog.dismiss()
+            }.setNegativeButton("취소") { dialog, _ ->
+                Timber.d("Notification permission denied")
+                onPermissionDenied()
+                dialog.dismiss()
+            }.show()
+    }
+}

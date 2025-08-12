@@ -1,15 +1,11 @@
 package com.daedan.festabook.presentation.main
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginBottom
@@ -19,6 +15,8 @@ import androidx.fragment.app.commit
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.presentation.NotificationPermissionManager
+import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
@@ -31,7 +29,9 @@ import com.daedan.festabook.presentation.setting.SettingFragment
 import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class MainActivity :
+    AppCompatActivity(),
+    NotificationPermissionRequester {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -57,7 +57,9 @@ class MainActivity : AppCompatActivity() {
         SettingFragment().newInstance()
     }
 
-    private val requestPermissionLauncher =
+    private val notificationPermissionManager by lazy { NotificationPermissionManager(this) }
+
+    override val permissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
         ) { isGranted: Boolean ->
@@ -75,7 +77,7 @@ class MainActivity : AppCompatActivity() {
         setupBinding()
 
         registerDeviceAndFcmToken()
-        requestNotificationPermission()
+        notificationPermissionManager.requestNotificationPermission(this)
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         onMenuItemClick()
@@ -97,6 +99,8 @@ class MainActivity : AppCompatActivity() {
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+
+    override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
     private fun registerDeviceAndFcmToken() {
         val app = application as FestaBookApp
@@ -135,46 +139,6 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
-        }
-    }
-
-    private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS,
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // 이미 권한이 허용됨
-                    Timber.d("Notification permission already granted")
-                }
-
-                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                    // 이전에 거부했지만 "다시 묻지 않음"을 선택하지 않은 경우
-                    // 권한이 필요한 이유를 설명하는 UI(예: AlertDialog)를 표시
-                    Timber.d("Show rationale for notification permission")
-                    AlertDialog
-                        .Builder(this)
-                        .setTitle("알림 권한 필요")
-                        .setMessage("새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.")
-                        .setPositiveButton("확인") { dialog, _ ->
-                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            dialog.dismiss()
-                        }.setNegativeButton("취소") { dialog, _ ->
-                            showToast("알림 권한이 거부되었습니다.")
-                            dialog.dismiss()
-                        }.show()
-                }
-
-                else -> {
-                    // 권한이 없으며, 이전에 "다시 묻지 않음"을 선택하지 않았거나 첫 요청인 경우
-                    // 바로 권한 요청 다이얼로그 표시
-                    Timber.d("Requesting notification permission for the first time or after 'don't ask again'")
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-        } else {
-            Timber.d("Notification permission not required for API < 33")
         }
     }
 
@@ -226,6 +190,7 @@ class MainActivity : AppCompatActivity() {
                     val fragment = supportFragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT)
                     if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
                 }
+
                 R.id.item_menu_news -> Unit
                 R.id.item_menu_setting -> Unit
             }

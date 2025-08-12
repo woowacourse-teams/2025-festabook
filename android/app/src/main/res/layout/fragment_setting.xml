@@ -55,9 +55,7 @@
             app:layout_constraintEnd_toEndOf="@id/tv_setting_current_university_notice"
             app:layout_constraintTop_toTopOf="@id/tv_setting_current_university_notice"
             app:trackDecorationTint="@color/selector_setting_notice_bg_color"
-            app:trackTint="@color/selector_setting_notice_bg_color"
-            tools:layout_editor_absoluteX="0dp"
-            tools:layout_editor_absoluteY="0dp" />
+            app:trackTint="@color/selector_setting_notice_bg_color" />
 
         <TextView
             android:id="@+id/tv_setting_notice_detail"
