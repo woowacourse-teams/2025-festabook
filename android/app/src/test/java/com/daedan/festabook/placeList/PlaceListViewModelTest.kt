@@ -7,7 +7,6 @@ import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.placeDetail.FAKE_PLACE_DETAIL
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
-import com.daedan.festabook.presentation.placeList.PlaceListEvent
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
@@ -185,22 +184,21 @@ class PlaceListViewModelTest {
         }
 
     @Test
-    fun `PlaceListEvent 객체를 발송할 수 있다`() =
+    fun `초기 위치로 돌아가기 버튼 클릭 시 이벤트가 방출된다`() =
         runTest {
             // given
-            val event = PlaceListEvent.BACK_TO_INITIAL_POSITION_CLICKED
 
             // when
-            placeListViewModel.publishEvent(event)
+            placeListViewModel.onBackToInitialPositionClicked()
             advanceUntilIdle()
 
             // then
-            val actual = placeListViewModel.placeListEvent.getOrAwaitValue()
-            assertThat(actual).isEqualTo(event)
+            val actual = placeListViewModel.backToInitialPositionClicked.getOrAwaitValue()
+            assertThat(actual).isEqualTo(Unit)
         }
 
     @Test
-    fun `IsExceededMaxLength 값을 넣을 수 있다`() =
+    fun `학교로 돌아가기 버튼이 나타나지 않는 임계값을 넣을 수 있다`() =
         runTest {
             // given
             val isExceededMaxLength = true

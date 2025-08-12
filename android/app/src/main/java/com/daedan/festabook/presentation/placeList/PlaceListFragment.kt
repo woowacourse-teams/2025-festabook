@@ -65,8 +65,8 @@ class PlaceListFragment :
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }
 
-    override fun onMapReady(p0: NaverMap) {
-        binding.lbvCurrentLocation.map = p0
+    override fun onMapReady(naverMap: NaverMap) {
+        binding.lbvCurrentLocation.map = naverMap
     }
 
     private fun setUpPlaceAdapter() {
@@ -81,7 +81,6 @@ class PlaceListFragment :
                 is PlaceListUiState.Success -> {
                     hideSkeleton()
                     placeAdapter.submitList(places.value) {
-                        binding.rvPlaces.itemAnimator = null
                         binding.rvPlaces.scrollToPosition(0)
                     }
                 }
@@ -119,8 +118,9 @@ class PlaceListFragment :
 
     private fun setUpBinding() {
         binding.chipBackToInitialPosition.setOnClickListener {
-            viewModel.publishEvent(PlaceListEvent.BACK_TO_INITIAL_POSITION_CLICKED)
+            viewModel.onBackToInitialPositionClicked()
         }
+        binding.rvPlaces.itemAnimator = null
     }
 
     private fun setBehaviorCallback() {

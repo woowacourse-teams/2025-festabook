@@ -12,7 +12,6 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
-import com.daedan.festabook.presentation.placeList.PlaceListEvent
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
@@ -109,10 +108,8 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
             }
         }
 
-        viewModel.placeListEvent.observe(viewLifecycleOwner) { event ->
-            if (event == PlaceListEvent.BACK_TO_INITIAL_POSITION_CLICKED) {
-                mapManager.moveToInitialPosition()
-            }
+        viewModel.backToInitialPositionClicked.observe(viewLifecycleOwner) { event ->
+            mapManager.moveToInitialPosition()
         }
 
         viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->

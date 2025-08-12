@@ -43,8 +43,8 @@ class PlaceListViewModel(
     private val _isExceededMaxLength: MutableLiveData<Boolean> = MutableLiveData()
     val isExceededMaxLength: LiveData<Boolean> = _isExceededMaxLength
 
-    private val _placeListEvent: MutableLiveData<PlaceListEvent> = MutableLiveData()
-    val placeListEvent: LiveData<PlaceListEvent> = _placeListEvent
+    private val _backToInitialPositionClicked: MutableLiveData<Unit> = MutableLiveData()
+    val backToInitialPositionClicked: LiveData<Unit> = _backToInitialPositionClicked
 
     private val _selectedCategories: MutableLiveData<List<PlaceCategoryUiModel>> = MutableLiveData()
     val selectedCategories: LiveData<List<PlaceCategoryUiModel>> = _selectedCategories
@@ -84,8 +84,8 @@ class PlaceListViewModel(
         }
     }
 
-    fun publishEvent(event: PlaceListEvent) {
-        _placeListEvent.value = event
+    fun onBackToInitialPositionClicked() {
+        _backToInitialPositionClicked.value = Unit
     }
 
     fun setIsExceededMaxLength(isExceededMaxLength: Boolean) {
@@ -98,16 +98,16 @@ class PlaceListViewModel(
 
     private fun loadOrganizationGeography() {
         viewModelScope.launch {
-            placeListRepository.getOrganizationGeography().onSuccess {
-                _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
+            placeListRepository.getOrganizationGeography().onSuccess { organizationGeography ->
+                _initialMapSetting.value = PlaceListUiState.Success(organizationGeography.toUiModel())
             }
 
             launch {
                 placeListRepository
                     .getPlaceGeographies()
-                    .onSuccess {
+                    .onSuccess { placeGeographies ->
                         _placeGeographies.value =
-                            PlaceListUiState.Success(it.map { it.toUiModel() })
+                            PlaceListUiState.Success(placeGeographies.map { it.toUiModel() })
                     }.onFailure {
                         _placeGeographies.value = PlaceListUiState.Error(it)
                     }
