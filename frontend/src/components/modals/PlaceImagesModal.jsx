@@ -243,7 +243,7 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                                 onDrop={(e) => handleDrop(e, image)}
                                 onDragEnd={handleDragEnd}
                             >
-                                <div className="aspect-[3/4] bg-gray-200 rounded-lg overflow-hidden transition-colors">
+                                <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden transition-colors">
                                     <img
                                         src={image.imageUrl}
                                         alt={`플레이스 이미지 ${index + 1}`}

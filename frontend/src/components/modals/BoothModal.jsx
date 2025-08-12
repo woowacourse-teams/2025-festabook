@@ -37,9 +37,11 @@ const BoothModal = ({ booth, onSave, onClose }) => {
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">카테고리</label>
                     <select name="category" value={form.category || ''} onChange={handleChange} className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 bg-white">
-                        {Object.entries(placeCategories).map(([key, value]) => (
-                            <option key={key} value={key}>{value}</option>
-                        ))}
+                        {Object.entries(placeCategories)
+                            .filter(([key]) => ['BOOTH', 'BAR', 'FOOD_TRUCK'].includes(key))
+                            .map(([key, value]) => (
+                                <option key={key} value={key}>{value}</option>
+                            ))}
                     </select>
                 </div>
                 {isEditMode && (

@@ -2,8 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../data/categories';
 import { placeAPI } from '../utils/api';
+import { BoothsPageSkeleton } from '../components/common/Skeleton';
 
 const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBooth, handleImageUpdate, handleNoticeCreate }) => {
+    const [imageLoadingStates, setImageLoadingStates] = useState({});
+
+    const handleImageLoad = (index) => {
+        setImageLoadingStates(prev => ({ ...prev, [index]: true }));
+    };
 
     const defaultBooth = (booth) => {
         return {
@@ -95,11 +101,24 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
                 </div>
                 <div>
                     <h4 className="font-semibold text-lg mb-2">사진</h4>
-                    <div className="grid grid-cols-2 gap-2 mb-10">
+                    <div className="grid grid-cols-3 gap-2 mb-10">
                         {booth.images && booth.images.length > 0 ? booth.images.map((img, index) => (
-                            <div key={index} className="relative">
-                                <img src={img} alt={`${booth.title} ${index + 1}`} className="w-full h-24 object-cover rounded-md" />
-                                {index === booth.mainImageIndex && <span className="main-image-indicator">대표</span>}
+                            <div key={index} className="relative aspect-square">
+                                {!imageLoadingStates[index] && (
+                                    <div className="w-full h-full bg-gray-200 rounded-md animate-pulse"></div>
+                                )}
+                                <img 
+                                    src={img} 
+                                    alt={`${booth.title} ${index + 1}`} 
+                                    className={`w-full h-full object-cover rounded-md transition-opacity duration-300 ${
+                                        imageLoadingStates[index] ? 'opacity-100' : 'opacity-0'
+                                    }`}
+                                    onLoad={() => handleImageLoad(index)}
+                                    style={{ display: imageLoadingStates[index] ? 'block' : 'none' }}
+                                />
+                                {index === booth.mainImageIndex && imageLoadingStates[index] && (
+                                    <span className="main-image-indicator">대표</span>
+                                )}
                             </div>
                         )) : (
                             <p className="text-sm text-gray-500">사진 없음</p>
@@ -108,7 +127,7 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
-                <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">공지사항 생성</button>
+                <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">플레이스 관리</button>
                 <button onClick={() => openModal('placeImages', { place: booth, onUpdate: handleImageUpdate })} className="text-purple-600 hover:text-purple-800 text-sm font-semibold">이미지 관리</button>
                 <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">세부사항 수정</button>
                 <button onClick={() => openDeleteModal(booth)}
@@ -256,26 +275,18 @@ const BoothsPage = () => {
         showToast('플레이스 이미지가 수정되었습니다.');
     };
 
-    // 공지 생성 전용 핸들러
+    // 공지 관리 전용 핸들러
     const handleNoticeCreate = (data) => {
         setBooths(prev => prev.map(prevBooth => {
             if (prevBooth.placeId !== data.placeId) return prevBooth;
 
-            // 공지가 3개를 초과할 경우 가장 오래된 공지 삭제
-            let updatedAnnouncements = [...(prevBooth.placeAnnouncements || []), data.newNotice];
-            if (updatedAnnouncements.length > 3) {
-                updatedAnnouncements = updatedAnnouncements
-                    .sort((a, b) => new Date(a.createdAt) - new Date(b.createdAt))
-                    .slice(-3);
-            }
-
             return {
                 ...prevBooth,
-                placeAnnouncements: updatedAnnouncements,
-                notices: updatedAnnouncements,
+                placeAnnouncements: data.placeAnnouncements || [],
+                notices: data.placeAnnouncements || [],
             };
         }));
-        showToast('플레이스 공지가 생성되었습니다.');
+        showToast('플레이스 공지가 업데이트되었습니다.');
     };
 
     const isMainPlace = (category) => {
@@ -291,7 +302,7 @@ const BoothsPage = () => {
                 </button>
             </div>
             {loading ? (
-                <div className="p-8 text-center text-gray-500">로딩 중...</div>
+                <BoothsPageSkeleton />
             ) : (
                 <div>
                     <div className='text-xl font-bold ml-1 mt-10 mb-2'>
