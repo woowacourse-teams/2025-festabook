@@ -1,7 +1,7 @@
 <configuration>
 
     <!-- 공통 로그 패턴 -->
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{requestId}] - %msg%n"/>
+    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{traceId}] - %msg%n"/>
 
     <!-- PROD 전용: 로그를 파일에 기록 -->
     <springProfile name="prod">
@@ -21,7 +21,7 @@
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="FILE" />
+            <appender-ref ref="FILE"/>
         </root>
     </springProfile>
 
@@ -29,12 +29,14 @@
     <springProfile name="!prod">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %green([%thread]) %cyan(%logger{36}) - %msg%n</pattern>
+                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %green([%thread]) %cyan(%logger{36}) -
+                    %msg%n
+                </pattern>
             </encoder>
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 

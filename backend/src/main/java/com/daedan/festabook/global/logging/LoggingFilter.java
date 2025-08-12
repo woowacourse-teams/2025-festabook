@@ -6,10 +6,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.UUID;
-
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -24,7 +23,7 @@ public class LoggingFilter implements Filter {
         try {
             HttpServletRequest httpServletRequest = (HttpServletRequest) request;
 
-            MDC.put("requestId", UUID.randomUUID().toString());
+            MDC.put("traceId", UUID.randomUUID().toString());
             log.info("[API CALL] method={}, uri={}, query={}, contentType={}, ip={}",
                     httpServletRequest.getMethod(),
                     httpServletRequest.getRequestURI(),
@@ -35,7 +34,7 @@ public class LoggingFilter implements Filter {
 
             chain.doFilter(request, response);
         } finally {
-            HttpServletResponse  httpServletResponse = (HttpServletResponse) response;
+            HttpServletResponse httpServletResponse = (HttpServletResponse) response;
             log.info("[API END] status={}", httpServletResponse.getStatus());
             MDC.clear();
         }
