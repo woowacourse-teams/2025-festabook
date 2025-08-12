@@ -4,6 +4,7 @@ import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
+import com.daedan.festabook.event.dto.EventDateUpdateRequest;
 import com.daedan.festabook.event.dto.EventDateUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
@@ -37,7 +38,7 @@ public class EventDateService {
     }
 
     @Transactional
-    public EventDateUpdateResponse updateEventDate(Long festivalId, Long eventDateId, EventDateRequest request) {
+    public EventDateUpdateResponse updateEventDate(Long festivalId, Long eventDateId, EventDateUpdateRequest request) {
         validateDuplicatedEventDate(festivalId, request.date());
 
         EventDate eventDate = getEventDateById(eventDateId);

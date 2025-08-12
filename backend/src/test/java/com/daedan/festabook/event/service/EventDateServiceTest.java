@@ -13,6 +13,8 @@ import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateRequestFixture;
 import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
+import com.daedan.festabook.event.dto.EventDateUpdateRequest;
+import com.daedan.festabook.event.dto.EventDateUpdateRequestFixture;
 import com.daedan.festabook.event.dto.EventDateUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
@@ -113,7 +115,7 @@ class EventDateServiceTest {
             EventDate eventDate = EventDateFixture.create(eventDateId, festival);
             given(eventDateJpaRepository.findById(eventDateId))
                     .willReturn(Optional.of(eventDate));
-            EventDateRequest request = EventDateRequestFixture.create(eventDate.getDate().plusDays(1));
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create(eventDate.getDate().plusDays(1));
 
             // when
             EventDateUpdateResponse result = eventDateService.updateEventDate(
@@ -133,7 +135,7 @@ class EventDateServiceTest {
         void 예외_이미_존재하는_일정_날짜() {
             // given
             Long eventDateId = 1L;
-            EventDateRequest request = EventDateRequestFixture.create();
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create();
             given(eventDateJpaRepository.existsByFestivalIdAndDate(DEFAULT_FESTIVAL_ID, request.date()))
                     .willReturn(true);
 

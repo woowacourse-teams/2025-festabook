@@ -3,6 +3,7 @@ package com.daedan.festabook.event.controller;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
+import com.daedan.festabook.event.dto.EventDateUpdateRequest;
 import com.daedan.festabook.event.dto.EventDateUpdateResponse;
 import com.daedan.festabook.event.service.EventDateService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
@@ -53,7 +54,7 @@ public class EventDateController {
     public EventDateUpdateResponse updateEventDate(
             @Parameter(hidden = true) @FestivalId Long festivalId,
             @PathVariable Long eventDateId,
-            @RequestBody EventDateRequest request
+            @RequestBody EventDateUpdateRequest request
     ) {
         return eventDateService.updateEventDate(festivalId, eventDateId, request);
     }
