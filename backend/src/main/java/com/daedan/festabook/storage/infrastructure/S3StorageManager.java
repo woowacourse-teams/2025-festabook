@@ -78,6 +78,7 @@ public class S3StorageManager implements StorageManager {
                 "https://%s.s3.%s.amazonaws.com/%s",
                 bucketName,
                 s3Client.serviceClientConfiguration().region().id(),
-                encodedKey);
+                encodedKey
+        );
     }
 }
