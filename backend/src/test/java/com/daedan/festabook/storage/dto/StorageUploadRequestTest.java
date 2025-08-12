@@ -3,6 +3,8 @@ package com.daedan.festabook.storage.dto;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -10,6 +12,7 @@ import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class StorageUploadRequestTest {
 
     @Nested
