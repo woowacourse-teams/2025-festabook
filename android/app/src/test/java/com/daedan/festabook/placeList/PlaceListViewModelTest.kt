@@ -4,8 +4,13 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
+import com.daedan.festabook.placeDetail.FAKE_PLACE_DETAIL
+import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
+import com.daedan.festabook.presentation.placeDetail.model.toUiModel
+import com.daedan.festabook.presentation.placeList.PlaceListEvent
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.toUiModel
@@ -125,5 +130,100 @@ class PlaceListViewModelTest {
 
             assertThat(actual2).isEqualTo(expected2)
             assertThat(actual3).isEqualTo(expected3)
+        }
+
+    @Test
+    fun `플레이스의 아이디와 카테고리가 있으면 플레이스 상세를 선택할 수 있다`() =
+        runTest {
+            // given
+            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
+
+            // when
+            placeListViewModel.selectPlace(1, PlaceCategoryUiModel.FOOD_TRUCK)
+            advanceUntilIdle()
+
+            // then
+            coVerify { placeDetailRepository.getPlaceDetail(1) }
+
+            val expected = PlaceListUiState.Success<PlaceDetailUiModel>(FAKE_PLACE_DETAIL.toUiModel())
+            val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
+            assertThat(actual).isEqualTo(expected)
+        }
+
+    @Test
+    fun `카테고리가 기타시설이라면 플레이스 상세가 선택되지 않는다`() =
+        runTest {
+            // given
+            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
+
+            // when
+            placeListViewModel.selectPlace(1, PlaceCategoryUiModel.TOILET)
+            advanceUntilIdle()
+
+            // then
+            val expected = null
+            val actual = placeListViewModel.selectedPlace.value
+            assertThat(actual).isEqualTo(expected)
+        }
+
+    @Test
+    fun `플레이스 상세 선택을 해제할 수 있다`() =
+        runTest {
+            // given
+            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
+            placeListViewModel.selectPlace(1, PlaceCategoryUiModel.FOOD_TRUCK)
+            advanceUntilIdle()
+
+            // when
+            placeListViewModel.unselectPlace()
+            advanceUntilIdle()
+
+            // then
+            val expected = null
+            val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
+            assertThat(actual).isEqualTo(expected)
+        }
+
+    @Test
+    fun `PlaceListEvent 객체를 발송할 수 있다`() =
+        runTest {
+            // given
+            val event = PlaceListEvent.BACK_TO_INITIAL_POSITION_CLICKED
+
+            // when
+            placeListViewModel.publishEvent(event)
+            advanceUntilIdle()
+
+            // then
+            val actual = placeListViewModel.placeListEvent.getOrAwaitValue()
+            assertThat(actual).isEqualTo(event)
+        }
+
+    @Test
+    fun `IsExceededMaxLength 값을 넣을 수 있다`() =
+        runTest {
+            // given
+            val isExceededMaxLength = true
+
+            // when
+            placeListViewModel.setIsExceededMaxLength(isExceededMaxLength)
+
+            // then
+            val actual = placeListViewModel.isExceededMaxLength.getOrAwaitValue()
+            assertThat(actual).isEqualTo(isExceededMaxLength)
+        }
+
+    @Test
+    fun `선택된 카테고리 값을 넣을 수 있다`() =
+        runTest {
+            // given
+            val categories = listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
+
+            // when
+            placeListViewModel.setSelectedCategories(categories)
+
+            // then
+            val actual = placeListViewModel.selectedCategories.getOrAwaitValue()
+            assertThat(actual).isEqualTo(categories)
         }
 }

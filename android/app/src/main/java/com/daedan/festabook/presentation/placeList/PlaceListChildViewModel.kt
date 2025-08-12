@@ -11,8 +11,6 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.repository.PlaceListRepository
-import com.daedan.festabook.presentation.common.SingleLiveData
-import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
@@ -27,9 +25,6 @@ class PlaceListChildViewModel(
     private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
         MutableLiveData(PlaceListUiState.Loading())
     val places: LiveData<PlaceListUiState<List<PlaceUiModel>>> = _places
-
-    private val _navigateToDetail = SingleLiveData<PlaceDetailUiModel>()
-    val navigateToDetail: LiveData<PlaceDetailUiModel> = _navigateToDetail
 
     init {
         loadAllPlaces()
