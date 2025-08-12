@@ -298,27 +298,27 @@ export const scheduleAPI = {
     }
   },
 
-  // 일정 수정
-  updateEvent: async (eventId, eventData) => {
-    try {
-      await api.patch(`/event-dates/events/${eventId}`, eventData);
-      // 성공 시 204 응답, body 없음 - 재조회 필요
-    } catch (error) {
-      console.error('Failed to update event:', error);
-      throw new Error('일정 수정에 실패했습니다.');
-    }
-  },
+    // 일정 수정
+    updateEvent: async (eventId, eventData) => {
+        try {
+            await api.patch(`/event-dates/events/${eventId}`, eventData);
+            // 성공 시 204 응답, body 없음 - 재조회 필요
+        } catch (error) {
+            console.error('Failed to update event:', error);
+            throw new Error('일정 수정에 실패했습니다.');
+        }
+    },
 
-  // 일정 삭제
-  deleteEvent: async (eventId) => {
-    try {
-      await api.delete(`/event-dates/events/${eventId}`);
-      // 성공 시 204 응답, body 없음 - 재조회 필요
-    } catch (error) {
-      console.error('Failed to delete event:', error);
-      throw new Error('일정 삭제에 실패했습니다.');
+    // 일정 삭제
+    deleteEvent: async (eventId) => {
+        try {
+            await api.delete(`/event-dates/events/${eventId}`);
+            // 성공 시 204 응답, body 없음 - 재조회 필요
+        } catch (error) {
+            console.error('Failed to delete event:', error);
+            throw new Error('일정 삭제에 실패했습니다.');
+        }
     }
-  }
 };
 
 // QnA 관련 API
