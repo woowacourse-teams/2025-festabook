@@ -1,7 +1,9 @@
 package com.daedan.festabook.event.controller;
 
 import com.daedan.festabook.event.dto.EventDateRequest;
+import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
+import com.daedan.festabook.event.dto.EventDateUpdateResponse;
 import com.daedan.festabook.event.service.EventDateService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,11 +37,11 @@ public class EventDateController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
-    public void createEventDate(
+    public EventDateResponse createEventDate(
             @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody EventDateRequest request
     ) {
-        eventDateService.createEventDate(festivalId, request);
+        return eventDateService.createEventDate(festivalId, request);
     }
 
     @PatchMapping("/{eventDateId}")
@@ -48,11 +50,12 @@ public class EventDateController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
-    public void updateEventDate(
+    public EventDateUpdateResponse updateEventDate(
+            @Parameter(hidden = true) @FestivalId Long festivalId,
             @PathVariable Long eventDateId,
             @RequestBody EventDateRequest request
     ) {
-        eventDateService.updateEventDate(eventDateId, request);
+        return eventDateService.updateEventDate(festivalId, eventDateId, request);
     }
 
     @DeleteMapping("/{eventDateId}")

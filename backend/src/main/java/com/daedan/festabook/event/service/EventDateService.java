@@ -4,11 +4,12 @@ import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
+import com.daedan.festabook.event.dto.EventDateUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -36,9 +37,13 @@ public class EventDateService {
     }
 
     @Transactional
-    public void updateEventDate(Long eventDateId, EventDateRequest request) {
+    public EventDateUpdateResponse updateEventDate(Long festivalId, Long eventDateId, EventDateRequest request) {
+        validateDuplicatedEventDate(festivalId, request.date());
+
         EventDate eventDate = getEventDateById(eventDateId);
         eventDate.updateDate(request.date());
+
+        return EventDateUpdateResponse.from(eventDate);
     }
 
     @Transactional

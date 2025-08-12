@@ -4,6 +4,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.event.domain.Event;
 import com.daedan.festabook.event.domain.EventDate;
@@ -70,6 +71,8 @@ class EventDateControllerTest {
 
             EventDateRequest request = EventDateRequestFixture.create();
 
+            int expectedSize = 2;
+
             // when & then
             RestAssured
                     .given()
@@ -79,7 +82,10 @@ class EventDateControllerTest {
                     .when()
                     .post("/event-dates")
                     .then()
-                    .statusCode(HttpStatus.CREATED.value());
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedSize))
+                    .body("eventDateId", notNullValue())
+                    .body("date", equalTo(request.date().toString()));
         }
 
         @Test
@@ -158,6 +164,30 @@ class EventDateControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 일정 날짜입니다."));
+        }
+
+        @Test
+        void 예외_이미_존재하는_일정_날짜() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            List<EventDate> eventDates = EventDateFixture.createList(2, festival);
+            eventDateJpaRepository.saveAll(eventDates);
+
+            EventDateRequest request = EventDateRequestFixture.create(eventDates.get(1).getDate());
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .body(request)
+                    .when()
+                    .patch("/event-dates/{eventDateId}", eventDates.get(0).getId())
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("이미 존재하는 일정 날짜입니다."));
         }
     }
 
