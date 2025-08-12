@@ -20,6 +20,7 @@ import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFr
 import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewFragment
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
+import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -69,6 +70,7 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
     private suspend fun setUpMapManager() {
         val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
         naverMap = mapFragment.getMap()
+        (placeListFragment as? OnMapReadyCallback)?.onMapReady(naverMap)
         naverMap.locationSource = locationSource
     }
 
