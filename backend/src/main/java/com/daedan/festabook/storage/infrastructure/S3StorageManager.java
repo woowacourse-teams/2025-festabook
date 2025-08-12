@@ -49,15 +49,15 @@ public class S3StorageManager implements StorageManager {
 
             return new StorageUploadResponse(buildFileUrl(s3Key), s3Key);
         } catch (S3Exception e) {
-            if (e.statusCode() == 400) {
+            if (e.statusCode() == HttpStatus.BAD_REQUEST.value()) {
                 throw new BusinessException("잘못된 요청입니다. 메타데이터, 요청 파라미터를 확인하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
-            } else if (e.statusCode() == 403) {
+            } else if (e.statusCode() == HttpStatus.FORBIDDEN.value()) {
                 throw new BusinessException("S3 업로드 권한이 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-            } else if (e.statusCode() == 404) {
+            } else if (e.statusCode() == HttpStatus.NOT_FOUND.value()) {
                 throw new BusinessException("S3 버킷을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-            } else if (e.statusCode() == 413) {
-                throw new BusinessException("파일 크기가 너무 큽니다.", HttpStatus.BAD_REQUEST);
-            } else if (e.statusCode() >= 500) {
+            } else if (e.statusCode() == HttpStatus.PAYLOAD_TOO_LARGE.value()) {
+                throw new BusinessException("업로드 하려는 파일이 요청 크기 제한을 초과했습니다.", HttpStatus.BAD_REQUEST);
+            } else if (e.statusCode() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 throw new BusinessException("S3 서버 오류가 발생했습니다. 나중에 다시 시도하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
             } else {
                 throw new BusinessException("S3 업로드 실패 " + e.awsErrorDetails().errorMessage(),

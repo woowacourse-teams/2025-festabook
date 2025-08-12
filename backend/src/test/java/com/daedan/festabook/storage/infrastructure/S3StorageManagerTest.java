@@ -191,7 +191,7 @@ class S3StorageManagerTest {
             // when & then
             assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("파일 크기가 너무 큽니다.");
+                    .hasMessage("업로드 하려는 파일이 요청 크기 제한을 초과했습니다.");
         }
 
         @Test
