@@ -75,7 +75,7 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceResponse getPlaceWithDetailByPlaceId(
+    public PlaceResponse getPlaceById(
             @PathVariable Long placeId
     ) {
         return placeService.getPlaceById(placeId);
