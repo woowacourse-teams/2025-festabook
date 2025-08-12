@@ -1,7 +1,8 @@
 package com.daedan.festabook
 
 import android.app.Application
-import com.daedan.festabook.data.datasource.local.AppPreferencesManager
+import com.daedan.festabook.data.datasource.local.AppDataSource
+import com.daedan.festabook.data.datasource.local.AppDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.faq.FAQDataSource
@@ -48,7 +49,9 @@ import java.util.UUID
 class AppContainer(
     application: Application,
 ) {
-    val preferencesManager = AppPreferencesManager(application)
+    private val appDataSource: AppDataSource by lazy {
+        AppDataSourceImpl(application)
+    }
 
     private val scheduleDataSource: ScheduleDataSource by lazy {
         ScheduleDataSourceImpl(scheduleService)
@@ -91,10 +94,10 @@ class AppContainer(
         NoticeRepositoryImpl(noticeDataSource)
     }
     val deviceRepository: DeviceRepository by lazy {
-        DeviceRepositoryImpl(deviceDataSource)
+        DeviceRepositoryImpl(deviceDataSource, appDataSource)
     }
     val festivalNotificationRepository: FestivalNotificationRepository by lazy {
-        FestivalNotificationRepositoryImpl(festivalNotificationDataSource, preferencesManager)
+        FestivalNotificationRepositoryImpl(festivalNotificationDataSource, appDataSource)
     }
     val festivalRepository: FestivalRepository by lazy {
         FestivalRepositoryImpl(festivalDataSource)
@@ -112,9 +115,9 @@ class AppContainer(
     }
 
     private fun ensureDeviceIdentifiers() {
-        if (preferencesManager.getUuid().isNullOrEmpty()) {
+        if (appDataSource.getUuid().isNullOrEmpty()) {
             val uuid = UUID.randomUUID().toString()
-            preferencesManager.saveUuid(uuid)
+            appDataSource.saveUuid(uuid)
             Timber.d("🆕 UUID 생성 및 저장: $uuid")
         }
 
@@ -122,7 +125,7 @@ class AppContainer(
             .getInstance()
             .token
             .addOnSuccessListener { token ->
-                preferencesManager.saveFcmToken(token)
+                appDataSource.saveFcmToken(token)
                 Timber.d("📡 FCM 토큰 저장: $token")
             }.addOnFailureListener {
                 Timber.w(it, "❌ FCM 토큰 수신 실패")

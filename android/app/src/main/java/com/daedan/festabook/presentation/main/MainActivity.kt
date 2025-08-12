@@ -12,7 +12,6 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.NotificationPermissionManager
@@ -76,7 +75,7 @@ class MainActivity :
         enableEdgeToEdge()
         setupBinding()
 
-        registerDeviceAndFcmToken()
+        viewModel.registerDeviceAndFcmToken()
         notificationPermissionManager.requestNotificationPermission(this)
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
@@ -101,37 +100,6 @@ class MainActivity :
     }
 
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
-
-    private fun registerDeviceAndFcmToken() {
-        val app = application as FestaBookApp
-        val prefsManager = app.appContainer.preferencesManager
-
-        val uuid = prefsManager.getUuid().orEmpty()
-        val fcmToken = prefsManager.getFcmToken()
-
-        Timber.d("registerDeviceAndFcmToken() UUID: $uuid, FCM: $fcmToken")
-
-        // UUID는 항상 있으므로, FCM 없으면 기다렸다가 호출
-        if (uuid.isNotBlank() && fcmToken.isNullOrBlank()) {
-            FirebaseMessaging
-                .getInstance()
-                .token
-                .addOnSuccessListener { token ->
-                    prefsManager.saveFcmToken(token)
-                    Timber.d("🪄 받은 FCM 토큰으로 디바이스 등록: $token")
-                    viewModel.registerDevice(uuid, token)
-                }.addOnFailureListener {
-                    Timber.w(it, "❌ FCM 토큰 받기 실패")
-                }
-        } else if (fcmToken != null) {
-            if (uuid.isNotBlank() && fcmToken.isNotBlank()) {
-                Timber.d("✅ 기존 값으로 디바이스 등록 실행")
-                viewModel.registerDevice(uuid, fcmToken)
-            } else {
-                Timber.w("❌ UUID 생성 전 or FCM 토큰 없음")
-            }
-        }
-    }
 
     private fun setupBinding() {
         setContentView(binding.root)
