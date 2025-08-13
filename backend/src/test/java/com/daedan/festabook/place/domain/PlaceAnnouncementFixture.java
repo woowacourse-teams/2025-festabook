@@ -14,6 +14,15 @@ public class PlaceAnnouncementFixture {
         );
     }
 
+    public static PlaceAnnouncement create(Long id) {
+        return new PlaceAnnouncement(
+                id,
+                DEFAULT_PLACE,
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT
+        );
+    }
+
     public static PlaceAnnouncement create(
             Place place
     ) {

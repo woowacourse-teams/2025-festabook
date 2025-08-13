@@ -11,4 +11,8 @@ public class PlaceAnnouncementService {
 
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
+
+    public void deleteByPlaceAnnouncementId(Long placeAnnouncementId) {
+        placeAnnouncementJpaRepository.deleteById(placeAnnouncementId);
+    }
 }
