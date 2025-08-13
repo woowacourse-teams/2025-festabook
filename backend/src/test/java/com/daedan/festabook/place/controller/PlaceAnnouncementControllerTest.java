@@ -67,6 +67,7 @@ class PlaceAnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
+                    .body("id", notNullValue())
                     .body("title", equalTo(request.title()))
                     .body("content", equalTo(request.content()))
                     .body("createdAt", notNullValue());
