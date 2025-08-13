@@ -9,6 +9,7 @@ import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceImageRequest;
+import com.daedan.festabook.place.dto.PlaceImageRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -54,7 +55,7 @@ public class PlaceImageControllerTest {
             placeJpaRepository.save(place);
 
             String imageUrl = "https://example.com/image/1";
-            PlaceImageRequest placeImageRequest = new PlaceImageRequest(imageUrl);
+            PlaceImageRequest placeImageRequest = PlaceImageRequestFixture.create(imageUrl);
 
             int expectedFieldSize = 3;
             int expectedSequence = 1;

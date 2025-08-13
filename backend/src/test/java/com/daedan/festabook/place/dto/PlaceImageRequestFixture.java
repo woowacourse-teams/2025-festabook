@@ -7,4 +7,10 @@ public class PlaceImageRequestFixture {
     public static PlaceImageRequest create() {
         return new PlaceImageRequest(DEFAULT_IMAGE_URL);
     }
+
+    public static PlaceImageRequest create(
+            String imageUrl
+    ) {
+        return new PlaceImageRequest(imageUrl);
+    }
 }
