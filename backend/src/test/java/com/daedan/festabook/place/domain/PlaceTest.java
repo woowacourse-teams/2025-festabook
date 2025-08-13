@@ -352,15 +352,15 @@ class PlaceTest {
             LocalTime startTime = LocalTime.of(9, 10);
             LocalTime endTime = LocalTime.of(23, 14);
 
-            Place place = PlaceFixture.create();
+            String invalidTitle = "m".repeat(21);
 
-            String longTitle = "m".repeat(21);
+            Place place = PlaceFixture.create();
 
             // when & then
             assertThatThrownBy(() -> {
                 place.updatePlace(
                         placeCategory,
-                        longTitle,
+                        invalidTitle,
                         description,
                         location,
                         host,
@@ -384,14 +384,14 @@ class PlaceTest {
 
             Place place = PlaceFixture.create();
 
-            String longDescription = "m".repeat(101);
+            String invalidDescription = "m".repeat(101);
 
             // when & then
             assertThatThrownBy(() -> {
                 place.updatePlace(
                         placeCategory,
                         title,
-                        longDescription,
+                        invalidDescription,
                         location,
                         host,
                         startTime,
@@ -414,7 +414,7 @@ class PlaceTest {
 
             Place place = PlaceFixture.create();
 
-            String longLocation = "m".repeat(101);
+            String invalidLocation = "m".repeat(101);
 
             // when & then
             assertThatThrownBy(() -> {
@@ -422,7 +422,7 @@ class PlaceTest {
                         placeCategory,
                         title,
                         description,
-                        longLocation,
+                        invalidLocation,
                         host,
                         startTime,
                         endTime
@@ -444,7 +444,7 @@ class PlaceTest {
 
             Place place = PlaceFixture.create();
 
-            String longHost = "m".repeat(101);
+            String invalidHost = "m".repeat(101);
 
             // when & then
             assertThatThrownBy(() -> {
@@ -453,7 +453,7 @@ class PlaceTest {
                         title,
                         description,
                         location,
-                        longHost,
+                        invalidHost,
                         startTime,
                         endTime
                 );
@@ -474,7 +474,7 @@ class PlaceTest {
 
             Place place = PlaceFixture.create();
 
-            LocalTime emptyTime = null;
+            LocalTime invalidTime = null;
 
             // when & then
             assertThatThrownBy(() -> {
@@ -485,7 +485,7 @@ class PlaceTest {
                         location,
                         host,
                         startTime,
-                        emptyTime
+                        invalidTime
                 );
             })
                     .isInstanceOf(BusinessException.class)
