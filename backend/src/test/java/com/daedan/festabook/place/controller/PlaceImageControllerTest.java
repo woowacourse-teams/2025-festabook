@@ -62,6 +62,7 @@ public class PlaceImageControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .when()
                     .delete("/places/images/{placeImageId}", placeImage.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
