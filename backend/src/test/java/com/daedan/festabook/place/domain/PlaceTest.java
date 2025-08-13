@@ -369,7 +369,7 @@ class PlaceTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("초과할 수 없습니다.");
+                    .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH);
         }
 
         @Test
@@ -399,7 +399,7 @@ class PlaceTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("초과할 수 없습니다.");
+                    .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", MAX_DESCRIPTION_LENGTH);
         }
 
         @Test
@@ -429,7 +429,7 @@ class PlaceTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("초과할 수 없습니다.");
+                    .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", MAX_LOCATION_LENGTH);
         }
 
         @Test
@@ -459,7 +459,7 @@ class PlaceTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("초과할 수 없습니다.");
+                    .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", MAX_HOST_LENGTH);
         }
 
         @Test
