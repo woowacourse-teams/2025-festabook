@@ -18,13 +18,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/places/{placeId}/images")
+@RequestMapping("/places")
 @Tag(name = "플레이스 이미지", description = "플레이스 이미지 관련 API")
 public class PlaceImageController {
 
     private final PlaceImageService placeImageService;
 
-    @PostMapping
+    @PostMapping("/{placeId}/images")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스의 이미지 생성")
     @ApiResponses(value = {
