@@ -10,9 +10,7 @@ import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.daedan.festabook.R
-import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
-import com.google.android.material.card.MaterialCardView
 
 @BindingAdapter("startTime", "endTime", requireAll = true)
 fun setFormatDate(
@@ -36,46 +34,6 @@ fun setBookmarkColor(
     val iconRes =
         if (isBookmarked) R.drawable.ic_bookmark_selected else R.drawable.ic_bookmark_normal
     imageView.setImageResource(iconRes)
-}
-
-@BindingAdapter("category")
-fun setCategory(
-    view: MaterialCardView,
-    category: PlaceCategoryUiModel?,
-) {
-    category ?: return
-    val density = view.context.resources.displayMetrics.density
-    val layoutParams = view.layoutParams
-    when (category) {
-        PlaceCategoryUiModel.FOOD_TRUCK -> layoutParams.width = (50 * density).toInt()
-        PlaceCategoryUiModel.BAR -> layoutParams.width = (34 * density).toInt()
-        PlaceCategoryUiModel.BOOTH -> layoutParams.width = (34 * density).toInt()
-        PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET, PlaceCategoryUiModel.TRASH_CAN -> Unit
-    }
-    view.layoutParams = layoutParams
-}
-
-@BindingAdapter("category")
-fun setCategory(
-    view: TextView,
-    category: PlaceCategoryUiModel?,
-) {
-    category ?: return
-    when (category) {
-        PlaceCategoryUiModel.FOOD_TRUCK ->
-            view.text =
-                view.context.getString(R.string.place_list_title_food_truck)
-
-        PlaceCategoryUiModel.BAR ->
-            view.text =
-                view.context.getString(R.string.place_list_title_bar)
-
-        PlaceCategoryUiModel.BOOTH ->
-            view.text =
-                view.context.getString(R.string.place_list_title_booth)
-
-        PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET, PlaceCategoryUiModel.TRASH_CAN -> Unit
-    }
 }
 
 @BindingAdapter("imageUrl")
