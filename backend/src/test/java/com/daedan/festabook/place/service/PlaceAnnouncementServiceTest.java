@@ -71,7 +71,7 @@ class PlaceAnnouncementServiceTest {
         }
 
         @Test
-        void 예외_공지_최대_갯수_초과() {
+        void 예외_공지_최대_개수_초과() {
             // given
             Place place = PlaceFixture.create();
 
