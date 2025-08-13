@@ -36,6 +36,18 @@ public class PlaceImageFixture {
     }
 
     public static PlaceImage create(
+            Long placeImageId,
+            Integer sequence
+    ) {
+        return new PlaceImage(
+                placeImageId,
+                DEFAULT_PLACE,
+                DEFAULT_IMAGE_URL,
+                sequence
+        );
+    }
+
+    public static PlaceImage create(
             Place place,
             String imageUrl,
             Integer sequence
