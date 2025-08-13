@@ -31,14 +31,29 @@ public class PlaceImage {
     @Column(nullable = false)
     private Integer sequence;
 
+    protected PlaceImage(
+            Long id,
+            Place place,
+            String imageUrl,
+            Integer sequence
+    ) {
+        this.id = id;
+        this.place = place;
+        this.imageUrl = imageUrl;
+        this.sequence = sequence;
+    }
+
     // TODO PlaceImage 최대 5개 검증 로직 구현
     public PlaceImage(
             Place place,
             String imageUrl,
             Integer sequence
     ) {
-        this.place = place;
-        this.imageUrl = imageUrl;
-        this.sequence = sequence;
+        this(
+                null,
+                place,
+                imageUrl,
+                sequence
+        );
     }
 }
