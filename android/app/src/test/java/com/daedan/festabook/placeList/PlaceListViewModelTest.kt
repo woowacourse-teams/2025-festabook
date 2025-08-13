@@ -5,6 +5,7 @@ import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.placeDetail.FAKE_PLACE_DETAIL
+import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -194,7 +195,7 @@ class PlaceListViewModelTest {
 
             // then
             val actual = placeListViewModel.backToInitialPositionClicked.getOrAwaitValue()
-            assertThat(actual).isEqualTo(Unit)
+            assertThat(actual).isInstanceOf(Event::class.java)
         }
 
     @Test

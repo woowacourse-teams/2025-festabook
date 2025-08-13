@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
+import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
@@ -44,8 +45,8 @@ class PlaceListViewModel(
     private val _isExceededMaxLength: MutableLiveData<Boolean> = MutableLiveData()
     val isExceededMaxLength: LiveData<Boolean> = _isExceededMaxLength
 
-    private val _backToInitialPositionClicked: MutableLiveData<Unit> = MutableLiveData()
-    val backToInitialPositionClicked: LiveData<Unit> = _backToInitialPositionClicked
+    private val _backToInitialPositionClicked: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val backToInitialPositionClicked: LiveData<Event<Unit>> = _backToInitialPositionClicked
 
     private val _selectedCategories: MutableLiveData<List<PlaceCategoryUiModel>> = MutableLiveData()
     val selectedCategories: LiveData<List<PlaceCategoryUiModel>> = _selectedCategories
@@ -86,7 +87,7 @@ class PlaceListViewModel(
     }
 
     fun onBackToInitialPositionClicked() {
-        _backToInitialPositionClicked.value = Unit
+        _backToInitialPositionClicked.value = Event(Unit)
     }
 
     fun setIsExceededMaxLength(isExceededMaxLength: Boolean) {
