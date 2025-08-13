@@ -1,13 +1,11 @@
 package com.daedan.festabook.storage.infrastructure;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import java.nio.charset.StandardCharsets;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.util.UriUtils;
 import software.amazon.awssdk.core.exception.SdkClientException;
@@ -51,22 +49,13 @@ public class S3StorageManager implements StorageManager {
 
             return new StorageUploadResponse(buildFileUrl(s3Key), s3Key);
         } catch (S3Exception e) {
-            if (e.statusCode() == HttpStatus.BAD_REQUEST.value()) {
-                throw new BusinessException("잘못된 요청입니다. 메타데이터, 요청 파라미터를 확인하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
-            } else if (e.statusCode() == HttpStatus.FORBIDDEN.value()) {
-                throw new BusinessException("S3 업로드 권한이 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-            } else if (e.statusCode() == HttpStatus.NOT_FOUND.value()) {
-                throw new BusinessException("S3 버킷을 찾을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
-            } else if (e.statusCode() == HttpStatus.PAYLOAD_TOO_LARGE.value()) {
-                throw new BusinessException("업로드 하려는 파일이 요청 크기 제한을 초과했습니다.", HttpStatus.BAD_REQUEST);
-            } else if (e.statusCode() >= HttpStatus.INTERNAL_SERVER_ERROR.value()) {
-                throw new BusinessException("S3 서버 오류가 발생했습니다. 나중에 다시 시도하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
-            } else {
-                throw new BusinessException("S3 업로드 실패 " + e.awsErrorDetails().errorMessage(),
-                        HttpStatus.INTERNAL_SERVER_ERROR);
-            }
+            throw new RuntimeException(String.format(
+                    "S3 업로드 실패 {%s}:{%s}",
+                    e.awsErrorDetails().errorCode(),
+                    e.awsErrorDetails().errorMessage()
+            ));
         } catch (SdkClientException e) {
-            throw new BusinessException("S3 업로드 실패, 네트워크 연결 또는 AWS 자격 증명을 확인하세요.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new RuntimeException(String.format("S3 업로드 실패 [%s]", e.getMessage()));
         }
     }
 

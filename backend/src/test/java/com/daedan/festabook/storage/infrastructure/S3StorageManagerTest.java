@@ -8,7 +8,6 @@ import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import org.junit.jupiter.api.BeforeEach;
@@ -36,7 +35,7 @@ class S3StorageManagerTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private S3Client s3Client;
-    
+
     private S3StorageManager s3StorageManager;
 
     @BeforeEach
@@ -85,144 +84,8 @@ class S3StorageManagerTest {
         }
 
         @Test
-        void 예외_400_코드_S3Exception_발생시_BusinessException으로_변환() {
+        void 예외_S3Exception_발생시_RuntimeException_변환() {
             // given
-            int errorStatusCode = 400;
-            String fileName = "test_123.jpg";
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    new byte[10]
-            );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
-
-            S3Exception s3Exception = mock(S3Exception.class);
-            given(s3Exception.statusCode())
-                    .willReturn(errorStatusCode);
-
-            willThrow(s3Exception)
-                    .given(s3Client)
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("잘못된 요청입니다. 메타데이터, 요청 파라미터를 확인하세요.");
-        }
-
-        @Test
-        void 예외_403_코드_S3Exception_발생시_BusinessException으로_변환() {
-            // given
-            int errorStatusCode = 403;
-            String fileName = "test_123.jpg";
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    new byte[10]
-            );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
-
-            S3Exception s3Exception = mock(S3Exception.class);
-            given(s3Exception.statusCode())
-                    .willReturn(errorStatusCode);
-
-            willThrow(s3Exception)
-                    .given(s3Client)
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("S3 업로드 권한이 없습니다.");
-        }
-
-        @Test
-        void 예외_404_코드_S3Exception_발생시_BusinessException으로_변환() {
-            // given
-            int errorStatusCode = 404;
-            String fileName = "test_123.jpg";
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    new byte[10]
-            );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
-
-            S3Exception s3Exception = mock(S3Exception.class);
-            given(s3Exception.statusCode())
-                    .willReturn(errorStatusCode);
-
-            willThrow(s3Exception)
-                    .given(s3Client)
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("S3 버킷을 찾을 수 없습니다.");
-        }
-
-        @Test
-        void 예외_413_코드_S3Exception_발생시_BusinessException으로_변환() {
-            // given
-            int errorStatusCode = 413;
-            String fileName = "test_123.jpg";
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    new byte[10]
-            );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
-
-            S3Exception s3Exception = mock(S3Exception.class);
-            given(s3Exception.statusCode())
-                    .willReturn(errorStatusCode);
-
-            willThrow(s3Exception)
-                    .given(s3Client)
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("업로드 하려는 파일이 요청 크기 제한을 초과했습니다.");
-        }
-
-        @Test
-        void 예외_500_코드_S3Exception_발생시_BusinessException으로_변환() {
-            // given
-            int errorStatusCode = 500;
-            String fileName = "test_123.jpg";
-            MockMultipartFile mockFile = new MockMultipartFile(
-                    "file",
-                    fileName,
-                    "image/jpeg",
-                    new byte[10]
-            );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
-
-            S3Exception s3Exception = mock(S3Exception.class);
-            given(s3Exception.statusCode())
-                    .willReturn(errorStatusCode);
-
-            willThrow(s3Exception)
-                    .given(s3Client)
-                    .putObject(any(PutObjectRequest.class), any(RequestBody.class));
-
-            // when & then
-            assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("S3 서버 오류가 발생했습니다. 나중에 다시 시도하세요.");
-        }
-
-        @Test
-        void 예외_미정의_4XX코드_S3Exception_발생시_BusinessException으로_변환() {
-            // given
-            int errorStatusCode = 418;
             String fileName = "test_123.jpg";
             MockMultipartFile mockFile = new MockMultipartFile(
                     "file",
@@ -233,10 +96,13 @@ class S3StorageManagerTest {
             StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
 
             S3Exception s3Exception = mock(S3Exception.class, Answers.RETURNS_DEEP_STUBS);
-            given(s3Exception.statusCode())
-                    .willReturn(errorStatusCode);
+            String mockErrorCode = "AccessDenied";
+            given(s3Exception.awsErrorDetails().errorCode())
+                    .willReturn(mockErrorCode);
+
+            String mockErrorMessage = "Access Denied";
             given(s3Exception.awsErrorDetails().errorMessage())
-                    .willReturn("Mock Error Message");
+                    .willReturn(mockErrorMessage);
 
             willThrow(s3Exception)
                     .given(s3Client)
@@ -244,12 +110,16 @@ class S3StorageManagerTest {
 
             // when & then
             assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessageStartingWith("S3 업로드 실패");
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage(String.format(
+                            "S3 업로드 실패 {%s}:{%s}",
+                            mockErrorCode,
+                            mockErrorMessage
+                    ));
         }
 
         @Test
-        void 예외_SdkClientException_발생시_BusinessException으로_변환() {
+        void 예외_SdkClientException_발생시_RuntimeException_변환() {
             // given
             String fileName = "test_123.jpg";
             MockMultipartFile mockFile = new MockMultipartFile(
@@ -260,14 +130,19 @@ class S3StorageManagerTest {
             );
             StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
 
-            willThrow(SdkClientException.class)
+            SdkClientException sdkClientException = mock(SdkClientException.class, Answers.RETURNS_DEEP_STUBS);
+            String mockMessage = "Network error";
+            given(sdkClientException.getMessage())
+                    .willReturn(mockMessage);
+
+            willThrow(sdkClientException)
                     .given(s3Client)
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));
 
             // when & then
             assertThatThrownBy(() -> s3StorageManager.uploadFile(request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessageStartingWith("S3 업로드 실패, 네트워크 연결 또는 AWS 자격 증명을 확인하세요.");
+                    .isInstanceOf(RuntimeException.class)
+                    .hasMessage(String.format("S3 업로드 실패 [%s]", mockMessage));
         }
     }
 }
