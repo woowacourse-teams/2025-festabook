@@ -1,14 +1,13 @@
 name: Backend CD Prod Server
 
 on:
-  pull_request:
-    branches: [ main, backend ]
-    paths: [ 'backend/**' ]
+  push:
+    branches: [ backend ]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, prod-runner]
 
     steps:
       - name: Checkout project repository
