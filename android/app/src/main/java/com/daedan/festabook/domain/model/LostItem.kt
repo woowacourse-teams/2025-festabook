@@ -1,5 +1,6 @@
 package com.daedan.festabook.domain.model
 
+import timber.log.Timber
 import java.time.LocalDateTime
 
 data class LostItem(
@@ -10,4 +11,11 @@ data class LostItem(
     val createdAt: LocalDateTime,
 )
 
-fun String.toLocalDateTime(): LocalDateTime = LocalDateTime.parse(this)
+fun String.toLocalDateTime(): LocalDateTime =
+    runCatching {
+        LocalDateTime.parse(this)
+    }.onFailure {
+        Timber.e(it, "LostItem: 날짜 파싱 실패:${it.message}")
+    }.getOrElse {
+        LocalDateTime.MIN
+    }
