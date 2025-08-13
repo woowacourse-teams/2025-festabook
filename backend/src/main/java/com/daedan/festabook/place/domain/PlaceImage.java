@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceImage {
+public class PlaceImage implements Comparable<PlaceImage> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,5 +54,14 @@ public class PlaceImage {
                 imageUrl,
                 sequence
         );
+    }
+
+    public void updateSequence(int sequence) {
+        this.sequence = sequence;
+    }
+
+    @Override
+    public int compareTo(PlaceImage otherPlaceImage) {
+        return sequence.compareTo(otherPlaceImage.sequence);
     }
 }
