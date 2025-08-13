@@ -136,7 +136,7 @@ class PlaceControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .body(placeUpdateRequest)
-                    .put("/places/{placeId}", place.getId())
+                    .patch("/places/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
