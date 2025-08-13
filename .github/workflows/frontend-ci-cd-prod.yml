@@ -1,8 +1,9 @@
 name: Frontend CI/CD Prod
 
 on:
-  pull_request:
-    branches: [ backend ]
+  push:
+    branches: [ main ]
+    paths: [ 'frontend/**' ]
 
 jobs:
   build-and-deploy-to-AWS:
