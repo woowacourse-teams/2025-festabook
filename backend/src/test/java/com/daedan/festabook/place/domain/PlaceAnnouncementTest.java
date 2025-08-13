@@ -144,8 +144,9 @@ class PlaceAnnouncementTest {
             // given
             PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
 
-            String invalidTitle = "m".repeat(MAX_TITLE_LENGTH + 1);
             String content = "수정된 내용";
+
+            String invalidTitle = "m".repeat(MAX_TITLE_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(invalidTitle, content))
@@ -159,6 +160,7 @@ class PlaceAnnouncementTest {
             PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
 
             String title = "수정된 공지";
+
             String invalidContent = "m".repeat(MAX_CONTENT_LENGTH + 1);
 
             // when & then
