@@ -38,7 +38,8 @@ class PlaceAnnouncementServiceTest {
             placeAnnouncementService.deleteByPlaceAnnouncementId(placeAnnouncementId);
 
             // then
-            then(placeAnnouncementJpaRepository).should().deleteById(placeAnnouncementId);
+            then(placeAnnouncementJpaRepository).should()
+                    .deleteById(placeAnnouncementId);
         }
     }
 }

@@ -62,6 +62,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .when()
                     .delete("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
