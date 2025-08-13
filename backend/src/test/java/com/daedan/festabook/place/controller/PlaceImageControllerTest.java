@@ -68,5 +68,18 @@ public class PlaceImageControllerTest {
 
             assertThat(placeImageJpaRepository.findById(placeImage.getId())).isEmpty();
         }
+
+        @Test
+        void 성공_존재하지_않는_플레이스_삭제() {
+            // given
+            Long notExistsPlaceId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .delete("/places/images/{placeImageId}", notExistsPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
     }
 }
