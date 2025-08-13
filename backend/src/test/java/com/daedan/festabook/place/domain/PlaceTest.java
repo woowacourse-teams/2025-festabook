@@ -304,7 +304,7 @@ class PlaceTest {
     }
 
     @Nested
-    class update {
+    class updatePlace {
 
         @Test
         void 성공() {
@@ -320,7 +320,7 @@ class PlaceTest {
             Place place = PlaceFixture.create();
 
             // when
-            place.update(
+            place.updatePlace(
                     placeCategory,
                     title,
                     description,
@@ -358,7 +358,7 @@ class PlaceTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                place.update(
+                place.updatePlace(
                         placeCategory,
                         longTitle,
                         description,
@@ -388,7 +388,7 @@ class PlaceTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                place.update(
+                place.updatePlace(
                         placeCategory,
                         title,
                         longDescription,
@@ -418,7 +418,7 @@ class PlaceTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                place.update(
+                place.updatePlace(
                         placeCategory,
                         title,
                         description,
@@ -448,7 +448,7 @@ class PlaceTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                place.update(
+                place.updatePlace(
                         placeCategory,
                         title,
                         description,
@@ -478,7 +478,7 @@ class PlaceTest {
 
             // when & then
             assertThatThrownBy(() -> {
-                place.update(
+                place.updatePlace(
                         placeCategory,
                         title,
                         description,

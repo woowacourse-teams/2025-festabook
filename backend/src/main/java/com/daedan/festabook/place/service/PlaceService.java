@@ -44,7 +44,7 @@ public class PlaceService {
     public PlaceUpdateResponse updatePlace(Long placeId, PlaceUpdateRequest request) {
         Place place = getPlaceById(placeId);
 
-        place.update(
+        place.updatePlace(
                 request.placeCategory(),
                 request.title(),
                 request.description(),

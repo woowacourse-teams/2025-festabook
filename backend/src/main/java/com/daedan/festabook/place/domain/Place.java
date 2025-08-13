@@ -126,7 +126,7 @@ public class Place {
         this.coordinate = coordinate;
     }
 
-    public void update(
+    public void updatePlace(
             PlaceCategory category,
             String title,
             String description,
