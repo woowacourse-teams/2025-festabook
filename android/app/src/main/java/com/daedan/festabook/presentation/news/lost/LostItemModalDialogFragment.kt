@@ -62,7 +62,7 @@ class LostItemModalDialogFragment : DialogFragment() {
                     it.storageLocation,
                 )
         } ?: run {
-            Timber.e("선택한 분실물이 존재하지 않습니다.")
+            Timber.e("${::LostItemModalDialogFragment.name}: 선택한 분실물이 존재하지 않습니다.")
             dismissAllowingStateLoss()
         }
     }
