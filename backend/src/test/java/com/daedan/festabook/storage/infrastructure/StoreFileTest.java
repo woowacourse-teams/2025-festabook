@@ -1,4 +1,4 @@
-package com.daedan.festabook.storage.dto;
+package com.daedan.festabook.storage.infrastructure;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -15,7 +15,7 @@ import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.web.multipart.MultipartFile;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class StorageUploadRequestTest {
+class StoreFileTest {
 
     @Nested
     class validateMultipartFile {
@@ -26,7 +26,7 @@ class StorageUploadRequestTest {
             String storagePath = "test.jpg";
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(null, storagePath))
+            assertThatThrownBy(() -> new StoreFile(null, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일은 비어있을 수 없습니다.");
         }
@@ -38,7 +38,7 @@ class StorageUploadRequestTest {
             MultipartFile emptyFile = new MockMultipartFile("file", new byte[0]);
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(emptyFile, storagePath))
+            assertThatThrownBy(() -> new StoreFile(emptyFile, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일은 비어있을 수 없습니다.");
         }
@@ -59,7 +59,7 @@ class StorageUploadRequestTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(file, storagePath))
+            assertThatThrownBy(() -> new StoreFile(file, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일 경로는 비어있을 수 없습니다.");
         }
@@ -77,7 +77,7 @@ class StorageUploadRequestTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(file, storagePath))
+            assertThatThrownBy(() -> new StoreFile(file, storagePath))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("파일 경로는 %d자를 초과할 수 없습니다.", maxFileNameLength);
         }
@@ -99,7 +99,7 @@ class StorageUploadRequestTest {
             String storagePath = "test.jpg";
 
             // when
-            byte[] result = new StorageUploadRequest(file, storagePath).getBytes();
+            byte[] result = new StoreFile(file, storagePath).getBytes();
 
             // then
             assertThat(result).isEqualTo(fileContent);
@@ -122,7 +122,7 @@ class StorageUploadRequestTest {
             String storagePath = "test.jpg";
 
             // when & then
-            assertThatThrownBy(() -> new StorageUploadRequest(file, storagePath).getBytes())
+            assertThatThrownBy(() -> new StoreFile(file, storagePath).getBytes())
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("MultipartFile 에서 Byte 데이터를 읽기 실패했습니다.");
         }

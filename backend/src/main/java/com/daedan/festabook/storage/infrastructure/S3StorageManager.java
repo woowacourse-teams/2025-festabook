@@ -36,15 +36,17 @@ public class S3StorageManager implements StorageManager {
 
     @Override
     public StorageUploadResponse uploadFile(StorageUploadRequest request) {
+        StoreFile storeFile = new StoreFile(request.file(), request.storagePath());
+
         try {
-            String s3Key = buildS3Key(request.getStoragePath());
+            String s3Key = buildS3Key(storeFile.getStoragePath());
             PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                     .bucket(bucketName)
                     .key(s3Key)
-                    .contentType(request.getContentType())
-                    .contentLength(request.getSize())
+                    .contentType(storeFile.getContentType())
+                    .contentLength(storeFile.getSize())
                     .build();
-            RequestBody requestBody = RequestBody.fromBytes(request.getBytes());
+            RequestBody requestBody = RequestBody.fromBytes(storeFile.getBytes());
             s3Client.putObject(putObjectRequest, requestBody);
 
             return new StorageUploadResponse(buildFileUrl(s3Key), s3Key);
