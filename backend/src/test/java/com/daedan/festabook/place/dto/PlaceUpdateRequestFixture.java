@@ -13,9 +13,7 @@ public class PlaceUpdateRequestFixture {
     private static final LocalTime DEFAULT_START_TIME = LocalTime.of(14, 12);
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(14, 39);
 
-    public static PlaceUpdateRequest create(
-
-    ) {
+    public static PlaceUpdateRequest create() {
         return new PlaceUpdateRequest(
                 DEFAULT_CATEGORY,
                 DEFAULT_TITLE,
