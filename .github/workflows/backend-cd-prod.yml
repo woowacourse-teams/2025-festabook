@@ -2,7 +2,7 @@ name: Backend CD Prod Server
 
 on:
   pull_request:
-    branches: [ main, backend ]
+    branches: [ backend ]
   workflow_dispatch:
 
 jobs:
