@@ -9,8 +9,10 @@ import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeList.model.getNormalIcon
+import com.daedan.festabook.presentation.placeList.model.getSelectedIcon
 import com.daedan.festabook.presentation.placeList.model.iconResources
-import com.daedan.festabook.presentation.placeList.model.setIcon
 import com.daedan.festabook.presentation.placeList.model.toLatLng
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation.Easing
@@ -63,9 +65,9 @@ class MapManager(
 
             // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
             if (isSelectedMarker) {
-                setSize(marker, isSelected = true)
+                setMarkerIcon(marker, isSelected = true)
             } else {
-                setSize(marker, isSelected = false)
+                setMarkerIcon(marker, isSelected = false)
             }
         }
     }
@@ -76,7 +78,7 @@ class MapManager(
             val isSelectedMarker = marker == selectedMarker
 
             // 선택된 마커는 크기를 유지하고, 나머지는 원래 크기로 복원
-            setSize(marker, isSelectedMarker)
+            setMarkerIcon(marker, isSelectedMarker)
         }
     }
 
@@ -103,7 +105,7 @@ class MapManager(
 
     fun unselectMarker() {
         selectedMarker?.let { prevMarker ->
-            setSize(prevMarker, isSelected = false)
+            setMarkerIcon(prevMarker, isSelected = false)
             selectedMarker = null
         }
     }
@@ -123,11 +125,11 @@ class MapManager(
         }
     }
 
-    fun moveToInitialPosition() {
+    fun moveToPosition(position: LatLng = settingUiModel.initialCenter.toLatLng()) {
         val initialCenterCoordinate =
             CameraUpdate
                 .scrollTo(
-                    settingUiModel.initialCenter.toLatLng(),
+                    position,
                 ).animate(Easing)
         map.moveCamera(initialCenterCoordinate)
     }
@@ -143,6 +145,14 @@ class MapManager(
             map.removeOnCameraChangeListener(callback)
             onCameraChangeListener = null
         }
+    }
+
+    fun selectMarker(place: PlaceUiModel) {
+        markers
+            .find { (it.tag as? PlaceCoordinateUiModel)?.placeId == place.id }
+            ?.let {
+                onMarkerClick(it)
+            }
     }
 
     private fun setContentPaddingBottom(height: Int) {
@@ -203,47 +213,40 @@ class MapManager(
         height = Marker.SIZE_AUTO
         position = place.coordinate.toLatLng()
         map = this@MapManager.map
-
-        // 마커 초기 아이콘 설정
-        overlayImageManager.setIcon(this, place.category)
+        overlayImageManager.getNormalIcon(place.category)?.let {
+            icon = it
+        }
         tag = place
-
-        setOnClickListener { marker ->
-            val clickedPlace = marker.tag as? PlaceCoordinateUiModel ?: return@setOnClickListener false
-
-            // 이전에 선택된 마커가 있다면 크기를 원래대로 되돌림
-            selectedMarker?.let { prevMarker ->
-                setSize(prevMarker, isSelected = false)
-            }
-
-            if (clickedPlace.category !in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
-                setSize(this, isSelected = true)
-                selectedMarker = this
-            } else {
-                selectedMarker = null
-            }
-
-            mapClickListener.onMarkerListener(clickedPlace.placeId, clickedPlace.category)
-
-            true
+        setOnClickListener {
+            mapClickListener.onMarkerListener(place.placeId, place.category)
         }
         return this
     }
 
-    private fun setSize(
+    private fun setMarkerIcon(
         marker: Marker,
         isSelected: Boolean = false,
     ) {
-        val density = map.context.resources.displayMetrics.density
-
-        // 선택 상태에 따라 마커 크기 변경
-        marker.width =
-            if (isSelected) {
-                (SELECTED_MARKER_SIZE * density).toInt()
-            } else {
-                (ORIGINAL_MARKER_SIZE * density).toInt()
+        val category = (marker.tag as? PlaceCoordinateUiModel)?.category ?: return
+        if (isSelected) {
+            overlayImageManager.getSelectedIcon(category)?.let {
+                marker.icon = it
             }
-        marker.height = marker.width
+        } else {
+            overlayImageManager.getNormalIcon(category)?.let {
+                marker.icon = it
+            }
+        }
+    }
+
+    private fun onMarkerClick(marker: Marker): Boolean {
+        selectedMarker?.let {
+            setMarkerIcon(it, isSelected = false)
+        }
+        selectedMarker = marker
+        setMarkerIcon(marker, isSelected = true)
+        moveToPosition(marker.position)
+        return true
     }
 
     private fun Double.zoomWeight() =
@@ -254,8 +257,6 @@ class MapManager(
     companion object {
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
-        private const val SELECTED_MARKER_SIZE = 50
-        private const val ORIGINAL_MARKER_SIZE = 34
         private const val DEFAULT_ZOOM_LEVEL = 15
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다

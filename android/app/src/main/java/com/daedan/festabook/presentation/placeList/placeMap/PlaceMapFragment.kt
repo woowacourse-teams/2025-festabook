@@ -16,6 +16,7 @@ import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
+import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
 import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewFragment
 import com.naver.maps.map.MapFragment
@@ -112,7 +113,7 @@ class PlaceMapFragment :
         }
 
         viewModel.backToInitialPositionClicked.observe(viewLifecycleOwner) { event ->
-            mapManager.moveToInitialPosition()
+            mapManager.moveToPosition()
         }
 
         viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
@@ -120,6 +121,18 @@ class PlaceMapFragment :
                 mapManager.clearFilter()
             } else {
                 mapManager.filterPlace(selectedCategories)
+            }
+        }
+
+        viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            when (selectedPlace) {
+                is SelectedPlaceUiState.Success -> {
+                    mapManager.selectMarker(selectedPlace.value.place)
+                }
+                is SelectedPlaceUiState.Empty -> {
+                    mapManager.unselectMarker()
+                }
+                else -> Unit
             }
         }
     }
