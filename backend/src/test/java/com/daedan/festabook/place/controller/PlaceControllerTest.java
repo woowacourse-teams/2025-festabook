@@ -25,13 +25,13 @@ import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -126,8 +126,16 @@ class PlaceControllerTest {
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
-
-            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create();
+            
+            PlaceUpdateRequest placeUpdateRequest = new PlaceUpdateRequest(
+                    PlaceCategory.FOOD_TRUCK,
+                    "수정된 제목",
+                    "수정된 설명",
+                    "수정된 위치",
+                    "수정된 호스트",
+                    LocalTime.of(12, 37),
+                    LocalTime.of(13, 11)
+            );
 
             int expectedFieldSize = 7;
 
