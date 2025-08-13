@@ -9,7 +9,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
-import com.daedan.festabook.domain.model.LostItemStatus
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
@@ -94,12 +93,9 @@ class NewsViewModel(
         viewModelScope.launch {
             _lostItemUiState.value = state
 
-            val result = lostItemRepository.getAllLostItems()
+            val result = lostItemRepository.getPendingLostItems()
             result
-                .onSuccess { allLostItems ->
-                    val pendingLostItems =
-                        allLostItems.filter { it.status == LostItemStatus.PENDING }
-
+                .onSuccess { pendingLostItems ->
                     _lostItemUiState.value =
                         LostItemUiState.Success(pendingLostItems.map { it.toUiModel() })
                 }.onFailure {
