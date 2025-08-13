@@ -1,17 +1,14 @@
-name: Backend CD EC2 Server
+name: Backend CD Prod Server
 
 on:
   push:
-    branches:
-      - main
-      - backend
-    paths:
-      - 'backend/**'
+    branches: [ main ]
+    paths: [ 'backend/**' ]
   workflow_dispatch:
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: [self-hosted, prod-runner]
 
     steps:
       - name: Checkout project repository
