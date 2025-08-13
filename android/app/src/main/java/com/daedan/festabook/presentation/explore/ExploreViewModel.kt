@@ -24,6 +24,15 @@ class ExploreViewModel(
     private val _navigateToMain = SingleLiveData<University?>()
     val navigateToMain: LiveData<University?> = _navigateToMain
 
+    fun onTextInputChanged() {
+        when (searchState.value) {
+            is SearchUiState.Success, is SearchUiState.Error -> {
+                _searchState.value = SearchUiState.Idle()
+            }
+            else -> {}
+        }
+    }
+
     fun search(query: String) {
         if (query.length < 2) {
             _searchState.value = SearchUiState.Idle()
@@ -39,6 +48,7 @@ class ExploreViewModel(
                     Timber.d("검색 성공 - received: $university")
                     _searchState.value = SearchUiState.Success(university)
                 }.onFailure {
+                    Timber.d(it, "검색 실패")
                     _searchState.value = SearchUiState.Error(it)
                 }
         }
