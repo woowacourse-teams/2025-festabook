@@ -9,8 +9,10 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import kotlin.getValue
 
@@ -26,6 +28,16 @@ class PlaceDetailPreviewFragment :
     ) {
         super.onViewCreated(view, savedInstanceState)
         setUpObserver()
+        setupBinding()
+    }
+
+    private fun setupBinding() {
+        binding.layoutSelectedPlace.setOnClickListener {
+            val selectedPlaceState = viewModel.selectedPlace.value
+            if (selectedPlaceState is SelectedPlaceUiState.Success) {
+                startPlaceDetailActivity(selectedPlaceState.value.place)
+            }
+        }
     }
 
     private fun setUpObserver() {
@@ -60,5 +72,9 @@ class PlaceDetailPreviewFragment :
                 placeholder(R.color.gray300)
             }
         }
+    }
+
+    private fun startPlaceDetailActivity(place: PlaceUiModel) {
+        startActivity(PlaceDetailActivity.newIntent(requireContext(), place))
     }
 }
