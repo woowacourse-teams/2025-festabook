@@ -47,7 +47,10 @@ class PlaceAnnouncementServiceTest {
             given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
                     .willReturn(Optional.of(placeAnnouncement));
 
-            PlaceAnnouncementUpdateRequest request = new PlaceAnnouncementUpdateRequest("수정된 제목", "수정된 내용");
+            PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create(
+                    "수정된 제목",
+                    "수정된 내용"
+            );
 
             // when
             PlaceAnnouncementUpdateResponse result = placeAnnouncementService.updatePlaceAnnouncement(
