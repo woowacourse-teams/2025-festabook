@@ -8,6 +8,9 @@ public record PlaceAnnouncementUpdateResponse(
 ) {
 
     public static PlaceAnnouncementUpdateResponse from(PlaceAnnouncement placeAnnouncement) {
-        return new PlaceAnnouncementUpdateResponse(placeAnnouncement.getTitle(), placeAnnouncement.getContent());
+        return new PlaceAnnouncementUpdateResponse(
+                placeAnnouncement.getTitle(),
+                placeAnnouncement.getContent()
+        );
     }
 }
