@@ -18,7 +18,6 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Answers;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
@@ -37,8 +36,7 @@ class S3StorageManagerTest {
 
     @Mock(answer = Answers.RETURNS_DEEP_STUBS)
     private S3Client s3Client;
-
-    @InjectMocks
+    
     private S3StorageManager s3StorageManager;
 
     @BeforeEach
