@@ -352,7 +352,7 @@ class PlaceTest {
             LocalTime startTime = LocalTime.of(9, 10);
             LocalTime endTime = LocalTime.of(23, 14);
 
-            String invalidTitle = "m".repeat(21);
+            String invalidTitle = "m".repeat(MAX_TITLE_LENGTH + 1);
 
             Place place = PlaceFixture.create();
 
@@ -384,7 +384,7 @@ class PlaceTest {
 
             Place place = PlaceFixture.create();
 
-            String invalidDescription = "m".repeat(101);
+            String invalidDescription = "m".repeat(MAX_DESCRIPTION_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> {
@@ -414,7 +414,7 @@ class PlaceTest {
 
             Place place = PlaceFixture.create();
 
-            String invalidLocation = "m".repeat(101);
+            String invalidLocation = "m".repeat(MAX_LOCATION_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> {
@@ -444,7 +444,7 @@ class PlaceTest {
 
             Place place = PlaceFixture.create();
 
-            String invalidHost = "m".repeat(101);
+            String invalidHost = "m".repeat(MAX_HOST_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> {
