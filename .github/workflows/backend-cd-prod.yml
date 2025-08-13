@@ -1,8 +1,8 @@
 name: Backend CD Prod Server
 
 on:
-  push:
-    branches: [ main ]
+  pull_request:
+    branches: [ main, backend ]
     paths: [ 'backend/**' ]
   workflow_dispatch:
 
