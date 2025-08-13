@@ -9,6 +9,7 @@ import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -17,6 +18,7 @@ public class PlaceAnnouncementService {
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
+    @Transactional
     public PlaceAnnouncementUpdateResponse updatePlaceAnnouncement(
             Long placeAnnouncementId,
             PlaceAnnouncementUpdateRequest request
