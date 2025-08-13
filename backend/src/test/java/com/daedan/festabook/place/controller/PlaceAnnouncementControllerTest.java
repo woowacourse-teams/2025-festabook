@@ -1,16 +1,29 @@
 package com.daedan.festabook.place.controller;
 
+import static org.hamcrest.Matchers.equalTo;
+
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceAnnouncement;
+import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
+import com.daedan.festabook.place.domain.PlaceFixture;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -31,5 +44,38 @@ class PlaceAnnouncementControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    @Nested
+    class updatePlaceAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.save(placeAnnouncement);
+
+            int expectedFieldSize = 2;
+
+            PlaceAnnouncementUpdateRequest request = new PlaceAnnouncementUpdateRequest("수정된 공지", "수정된 내용");
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .patch("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("title", equalTo(request.title()))
+                    .body("content", equalTo(request.content()));
+        }
     }
 }

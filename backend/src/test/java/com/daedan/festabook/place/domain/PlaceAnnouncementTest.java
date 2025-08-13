@@ -2,6 +2,7 @@ package com.daedan.festabook.place.domain;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -112,6 +113,56 @@ class PlaceAnnouncementTest {
 
             // when & then
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithContent(content))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", MAX_CONTENT_LENGTH);
+        }
+    }
+
+    @Nested
+    class updatePlaceAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
+
+            String title = "수정된 공지";
+            String content = "수정된 내용";
+
+            // when
+            placeAnnouncement.updatePlaceAnnouncement(title, content);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(placeAnnouncement.getTitle()).isEqualTo(title);
+                s.assertThat(placeAnnouncement.getContent()).isEqualTo(content);
+            });
+        }
+
+        @Test
+        void 예외_제목() {
+            // given
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
+
+            String invalidTitle = "m".repeat(MAX_TITLE_LENGTH + 1);
+            String content = "수정된 내용";
+
+            // when & then
+            assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(invalidTitle, content))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH);
+        }
+
+        @Test
+        void 예외_내용() {
+            // given
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
+
+            String title = "수정된 공지";
+            String invalidContent = "m".repeat(MAX_CONTENT_LENGTH + 1);
+
+            // when & then
+            assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(title, invalidContent))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", MAX_CONTENT_LENGTH);
         }
