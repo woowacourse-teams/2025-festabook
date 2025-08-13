@@ -213,7 +213,7 @@ class MainActivity : AppCompatActivity() {
         binding.fabMap.setOnClickListener {
             binding.bnvMenu.selectedItemId = R.id.item_menu_map
             val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_MAP_FRAGMENT)
-            if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
+            if (fragment is OnMenuItemReClickListener && !fragment.isHidden) fragment.onMenuItemReClick()
             switchFragment(placeMapFragment, TAG_PLACE_MAP_FRAGMENT)
         }
     }

@@ -147,6 +147,7 @@ class PlaceMapFragment :
         childFragments.forEach { fragment ->
             (fragment as? OnMenuItemReClickListener)?.onMenuItemReClick()
         }
+        mapManager.moveToPosition()
     }
 
     companion object {
