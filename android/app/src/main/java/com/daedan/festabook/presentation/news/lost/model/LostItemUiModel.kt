@@ -11,7 +11,6 @@ data class LostItemUiModel(
     val imageUrl: String = "",
     val storageLocation: String = "",
     val status: LostItemUiStatus,
-    val createdAt: String = "",
 ) : Parcelable
 
 fun LostItem.toUiModel(): LostItemUiModel =
@@ -23,6 +22,6 @@ fun LostItem.toUiModel(): LostItemUiModel =
             when (status) {
                 LostItemStatus.PENDING -> LostItemUiStatus.PENDING
                 LostItemStatus.COMPLETED -> LostItemUiStatus.COMPLETED
+                LostItemStatus.UNKNOWN -> LostItemUiStatus.PENDING
             },
-        createdAt = createdAt.toString(),
     )
