@@ -10,6 +10,7 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
+import com.daedan.festabook.place.dto.PlaceAnnouncementRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
@@ -46,12 +47,9 @@ class PlaceAnnouncementServiceTest {
             // given
             Place place = PlaceFixture.create();
 
-            String title = "공지입니다.";
-            String content = "공지 내용입니다.";
+            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
 
-            PlaceAnnouncementRequest request = new PlaceAnnouncementRequest(title, content);
-
-            PlaceAnnouncement placeAnnouncement = new PlaceAnnouncement(place, title, content);
+            PlaceAnnouncement placeAnnouncement = new PlaceAnnouncement(place, request.title(), request.content());
 
             given(placeJpaRepository.findById(place.getId()))
                     .willReturn(Optional.of(place));
@@ -65,8 +63,8 @@ class PlaceAnnouncementServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.title()).isEqualTo(title);
-                s.assertThat(result.content()).isEqualTo(content);
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.content()).isEqualTo(request.content());
             });
         }
 
@@ -75,10 +73,7 @@ class PlaceAnnouncementServiceTest {
             // given
             Place place = PlaceFixture.create();
 
-            String title = "공지입니다.";
-            String content = "공지 내용입니다.";
-
-            PlaceAnnouncementRequest request = new PlaceAnnouncementRequest(title, content);
+            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
 
             given(placeJpaRepository.findById(place.getId()))
                     .willReturn(Optional.of(place));

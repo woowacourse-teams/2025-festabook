@@ -9,6 +9,7 @@ import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
+import com.daedan.festabook.place.dto.PlaceAnnouncementRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -53,7 +54,7 @@ class PlaceAnnouncementControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            PlaceAnnouncementRequest request = new PlaceAnnouncementRequest("공지입니다.", "공지 내용입니다.");
+            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
 
             int expectedFieldSize = 4;
 
