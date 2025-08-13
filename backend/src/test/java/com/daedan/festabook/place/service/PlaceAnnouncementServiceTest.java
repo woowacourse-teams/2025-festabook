@@ -8,6 +8,7 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
@@ -67,7 +68,10 @@ class PlaceAnnouncementServiceTest {
             given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
                     .willReturn(Optional.empty());
 
-            PlaceAnnouncementUpdateRequest request = new PlaceAnnouncementUpdateRequest("수정된 제목", "수정된 내용");
+            PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create(
+                    "수정된 제목",
+                    "수정된 내용"
+            );
 
             // when & then
             assertThatThrownBy(() -> placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, request))
