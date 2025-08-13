@@ -2,6 +2,7 @@ package com.daedan.festabook.place.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static org.assertj.core.api.Assertions.assertThat;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
@@ -10,6 +11,9 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceImageRequest;
 import com.daedan.festabook.place.dto.PlaceImageRequestFixture;
+import com.daedan.festabook.place.domain.PlaceImage;
+import com.daedan.festabook.place.domain.PlaceImageFixture;
+import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -33,6 +37,9 @@ public class PlaceImageControllerTest {
 
     @Autowired
     private PlaceJpaRepository placeJpaRepository;
+
+    @Autowired
+    private PlaceImageJpaRepository placeImageJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -72,6 +79,46 @@ public class PlaceImageControllerTest {
                     .body("id", notNullValue())
                     .body("imageUrl", equalTo(imageUrl))
                     .body("sequence", equalTo(expectedSequence));
+        }
+    }
+
+    @Nested
+    class deletePlaceImageByPlaceImageId {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceImage placeImage = PlaceImageFixture.create(place);
+            placeImageJpaRepository.save(placeImage);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/places/images/{placeImageId}", placeImage.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            assertThat(placeImageJpaRepository.findById(placeImage.getId())).isEmpty();
+        }
+
+        @Test
+        void 성공_존재하지_않는_플레이스_삭제() {
+            // given
+            Long notExistsPlaceId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .delete("/places/images/{placeImageId}", notExistsPlaceId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

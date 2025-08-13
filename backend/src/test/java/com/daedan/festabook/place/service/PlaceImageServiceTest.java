@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
@@ -27,7 +28,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class PlaceImageServiceTest {
+public class PlaceImageServiceTest {
 
     private static final int MAX_IMAGE_SEQUENCE = 5;
 
@@ -110,6 +111,23 @@ class PlaceImageServiceTest {
             assertThatThrownBy(() -> placeImageService.addPlaceImage(placeId, placeImageRequest))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_SEQUENCE));
+        }
+    }
+
+    @Nested
+    class deletePlaceImageByPlaceImageId {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeImageId = 1L;
+
+            // when
+            placeImageService.deletePlaceImageByPlaceImageId(placeImageId);
+
+            // then
+            then(placeImageJpaRepository).should()
+                    .deleteById(placeImageId);
         }
     }
 }

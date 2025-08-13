@@ -46,6 +46,10 @@ public class PlaceImageService {
         }
     }
 
+    public void deletePlaceImageByPlaceImageId(Long placeImageId) {
+        placeImageJpaRepository.deleteById(placeImageId);
+    }
+
     private Place getPlaceById(Long placeId) {
         return placeJpaRepository.findById(placeId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스입니다.", HttpStatus.NOT_FOUND));
