@@ -56,6 +56,12 @@
         <item name="android:textSize">12sp</item>
     </style>
 
+    <style name="PretendardMedium12">
+        <item name="android:fontFamily">@font/pretendard_medium</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
     <style name="PretendardRegular12">
         <item name="android:fontFamily">@font/pretendard_regular</item>
         <item name="android:textStyle">normal</item>
@@ -65,12 +71,6 @@
     <!-- Caption -->
     <style name="PretendardRegular10">
         <item name="android:fontFamily">@font/pretendard_regular</item>
-        <item name="android:textStyle">normal</item>
-        <item name="android:textSize">10sp</item>
-    </style>
-
-    <style name="PretendardMedium10">
-        <item name="android:fontFamily">@font/pretendard_medium</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">10sp</item>
     </style>

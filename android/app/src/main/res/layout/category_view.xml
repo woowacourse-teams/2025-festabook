@@ -22,7 +22,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_width="wrap_content"
-        android:textAppearance="@style/PretendardMedium10"
+        android:textAppearance="@style/PretendardMedium12"
         android:textColor="@color/gray900"
         app:layout_constraintBottom_toBottomOf="@id/iv_category_icon"
         app:layout_constraintEnd_toEndOf="parent"
