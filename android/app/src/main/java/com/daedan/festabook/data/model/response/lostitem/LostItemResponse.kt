@@ -15,6 +15,7 @@ data class LostItemResponse(
     @SerialName("storageLocation")
     val storageLocation: String,
     @SerialName("status")
+    @Serializable(with = LostItemStatusSerializer::class)
     val status: LostItemStatus,
     @SerialName("createdAt")
     val createdAt: String,

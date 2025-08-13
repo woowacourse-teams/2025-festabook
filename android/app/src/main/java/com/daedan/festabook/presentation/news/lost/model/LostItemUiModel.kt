@@ -4,7 +4,6 @@ import android.os.Parcelable
 import com.daedan.festabook.domain.model.LostItem
 import com.daedan.festabook.domain.model.LostItemStatus
 import kotlinx.parcelize.Parcelize
-import java.time.LocalDateTime
 
 @Parcelize
 data class LostItemUiModel(
