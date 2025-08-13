@@ -9,13 +9,10 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
-import com.daedan.festabook.place.domain.PlaceDetail;
-import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
-import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
@@ -38,9 +35,6 @@ class PlacePreviewServiceTest {
     @Mock
     private PlaceImageJpaRepository placeImageJpaRepository;
 
-    @Mock
-    private PlaceDetailJpaRepository placeDetailJpaRepository;
-
     @InjectMocks
     private PlacePreviewService placePreviewService;
 
@@ -54,10 +48,6 @@ class PlacePreviewServiceTest {
             Place place2 = PlaceFixture.create(2L);
             List<Place> places = List.of(place1, place2);
 
-            PlaceDetail placeDetail1 = PlaceDetailFixture.create(place1);
-            PlaceDetail placeDetail2 = PlaceDetailFixture.create(place2);
-            List<PlaceDetail> placeDetails = List.of(placeDetail1, placeDetail2);
-
             int representativeSequence = 1;
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
             PlaceImage placeImage2 = PlaceImageFixture.create(place2, representativeSequence);
@@ -66,8 +56,6 @@ class PlacePreviewServiceTest {
             Long festivalId = 1L;
             given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(places);
-            given(placeDetailJpaRepository.findAllByPlaceIn(places))
-                    .willReturn(placeDetails);
             given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
                     .willReturn(placeImages);
 
@@ -87,10 +75,6 @@ class PlacePreviewServiceTest {
             Place place2 = PlaceFixture.create(2L);
             List<Place> places = List.of(place1, place2);
 
-            PlaceDetail placeDetail1 = PlaceDetailFixture.create(place1);
-            PlaceDetail placeDetail2 = PlaceDetailFixture.create(place2);
-            List<PlaceDetail> placeDetails = List.of(placeDetail1, placeDetail2);
-
             int representativeSequence = 1;
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
             List<PlaceImage> placeImages = List.of(placeImage1);
@@ -99,8 +83,6 @@ class PlacePreviewServiceTest {
 
             given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(places);
-            given(placeDetailJpaRepository.findAllByPlaceIn(places))
-                    .willReturn(placeDetails);
             given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
                     .willReturn(placeImages);
 

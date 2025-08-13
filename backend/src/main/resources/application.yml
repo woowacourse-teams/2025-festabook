@@ -1,6 +1,9 @@
 server:
   # Graceful Shutdown 활성화
   shutdown: graceful
+  tomcat:
+    mbeanregistry:
+      enabled: true
 
 spring:
   application:
