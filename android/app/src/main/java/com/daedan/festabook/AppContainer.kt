@@ -26,6 +26,7 @@ import com.daedan.festabook.data.datasource.remote.place.PlaceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSource
 import com.daedan.festabook.data.datasource.remote.schedule.ScheduleDataSourceImpl
 import com.daedan.festabook.data.repository.DeviceRepositoryImpl
+import com.daedan.festabook.data.repository.ExploreRepositoryImpl
 import com.daedan.festabook.data.repository.FAQRepositoryImpl
 import com.daedan.festabook.data.repository.FestivalNotificationRepositoryImpl
 import com.daedan.festabook.data.repository.FestivalRepositoryImpl
@@ -43,6 +44,7 @@ import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.DeviceRepository
+import com.daedan.festabook.domain.repository.ExploreRepository
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.domain.repository.FestivalRepository
@@ -136,6 +138,10 @@ class AppContainer(
 
     val lostItemRepository: LostItemRepository by lazy {
         LostItemRepositoryImpl(lostItemDataSource)
+    }
+
+    val exploreRepository: ExploreRepository by lazy {
+        ExploreRepositoryImpl()
     }
 
     init {
