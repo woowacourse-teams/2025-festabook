@@ -9,6 +9,7 @@ import coil3.request.placeholder
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
@@ -20,7 +21,8 @@ import kotlin.getValue
 class PlaceDetailPreviewFragment :
     BaseFragment<FragmentPlaceDetailPreviewBinding>(
         R.layout.fragment_place_detail_preview,
-    ) {
+    ),
+    OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
 
     override fun onViewCreated(
@@ -31,6 +33,10 @@ class PlaceDetailPreviewFragment :
         setUpObserver()
         setupBinding()
         setUpBackPressedCallback()
+    }
+
+    override fun onMenuItemReClick() {
+        requireActivity().onBackPressedDispatcher.onBackPressed()
     }
 
     private fun setupBinding() {

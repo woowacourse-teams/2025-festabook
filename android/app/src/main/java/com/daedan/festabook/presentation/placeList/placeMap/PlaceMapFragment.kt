@@ -9,6 +9,7 @@ import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
@@ -25,7 +26,9 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.getValue
 
-class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment_place_map) {
+class PlaceMapFragment :
+    BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment_place_map),
+    OnMenuItemReClickListener {
     private lateinit var naverMap: NaverMap
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
@@ -118,6 +121,18 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
             } else {
                 mapManager.filterPlace(selectedCategories)
             }
+        }
+    }
+
+    override fun onMenuItemReClick() {
+        val childFragments =
+            listOf(
+                placeListFragment,
+                placeDetailPreviewFragment,
+                placeCategoryFragment,
+            )
+        childFragments.forEach { fragment ->
+            (fragment as? OnMenuItemReClickListener)?.onMenuItemReClick()
         }
     }
 
