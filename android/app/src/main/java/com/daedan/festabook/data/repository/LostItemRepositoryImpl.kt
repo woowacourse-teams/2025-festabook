@@ -11,7 +11,7 @@ class LostItemRepositoryImpl(
 ) : LostItemRepository {
     override suspend fun getAllLostItems(): Result<List<LostItem>> =
         lostItemDataSource
-            .fetchAllLostItem()
+            .fetchAllLostItems()
             .toResult()
             .mapCatching { lostItemResponses ->
                 lostItemResponses

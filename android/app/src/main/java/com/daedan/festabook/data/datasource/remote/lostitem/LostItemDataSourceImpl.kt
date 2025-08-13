@@ -7,6 +7,6 @@ import com.daedan.festabook.data.service.LostItemService
 class LostItemDataSourceImpl(
     private val lostItemService: LostItemService,
 ) : LostItemDataSource {
-    override suspend fun fetchAllLostItem(): ApiResult<List<LostItemResponse>> =
+    override suspend fun fetchAllLostItems(): ApiResult<List<LostItemResponse>> =
         ApiResult.toApiResult { lostItemService.fetchAllLostItems() }
 }

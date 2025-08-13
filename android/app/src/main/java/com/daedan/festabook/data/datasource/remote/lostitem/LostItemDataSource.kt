@@ -4,5 +4,5 @@ import com.daedan.festabook.data.datasource.remote.ApiResult
 import com.daedan.festabook.data.model.response.lostitem.LostItemResponse
 
 interface LostItemDataSource {
-    suspend fun fetchAllLostItem(): ApiResult<List<LostItemResponse>>
+    suspend fun fetchAllLostItems(): ApiResult<List<LostItemResponse>>
 }
