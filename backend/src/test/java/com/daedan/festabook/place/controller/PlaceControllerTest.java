@@ -25,6 +25,7 @@ import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -126,8 +127,8 @@ class PlaceControllerTest {
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
-            
-            PlaceUpdateRequest placeUpdateRequest = new PlaceUpdateRequest(
+
+            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create(
                     PlaceCategory.FOOD_TRUCK,
                     "수정된 제목",
                     "수정된 설명",
