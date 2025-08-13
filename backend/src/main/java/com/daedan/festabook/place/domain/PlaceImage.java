@@ -43,7 +43,6 @@ public class PlaceImage implements Comparable<PlaceImage> {
         this.sequence = sequence;
     }
 
-    // TODO PlaceImage 최대 5개 검증 로직 구현
     public PlaceImage(
             Place place,
             String imageUrl,
