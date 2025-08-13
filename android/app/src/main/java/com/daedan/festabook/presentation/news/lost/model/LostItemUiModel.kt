@@ -7,9 +7,9 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class LostItemUiModel(
-    val lostItemId: Long = -1L,
-    val imageUrl: String = "",
-    val storageLocation: String = "",
+    val lostItemId: Long,
+    val imageUrl: String,
+    val storageLocation: String,
     val status: LostItemUiStatus,
 ) : Parcelable
 
