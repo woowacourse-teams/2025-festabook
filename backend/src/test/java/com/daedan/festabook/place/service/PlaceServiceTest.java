@@ -124,7 +124,7 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class updatePlaceByPlaceId {
+    class updatePlace {
 
         @Test
         void 성공() {
@@ -146,7 +146,7 @@ class PlaceServiceTest {
                     .willReturn(Optional.of(place));
 
             // when
-            PlaceUpdateResponse result = placeService.updatePlaceByPlaceId(placeId, request);
+            PlaceUpdateResponse result = placeService.updatePlace(placeId, request);
 
             // then
             assertSoftly(s -> {

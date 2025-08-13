@@ -54,11 +54,11 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceUpdateResponse updatePlaceByPlaceId(
+    public PlaceUpdateResponse updatePlace(
             @PathVariable Long placeId,
             @RequestBody PlaceUpdateRequest request
     ) {
-        return placeService.updatePlaceByPlaceId(placeId, request);
+        return placeService.updatePlace(placeId, request);
     }
 
     @GetMapping

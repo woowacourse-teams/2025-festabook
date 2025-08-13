@@ -41,7 +41,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceUpdateResponse updatePlaceByPlaceId(Long placeId, PlaceUpdateRequest request) {
+    public PlaceUpdateResponse updatePlace(Long placeId, PlaceUpdateRequest request) {
         Place place = getPlaceById(placeId);
 
         place.update(

@@ -116,7 +116,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class updatePlaceByPlaceId {
+    class updatePlace {
 
         @Test
         void 성공() {
