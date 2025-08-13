@@ -50,7 +50,7 @@ jobs:
         run: |
           # 1. 이전 WAS 종료 (Graceful Shutdown)
           echo "Stopping old Spring WAS..."
-          PID=$(sudo lsof -t -i:8080 || true)
+          PID=$(sudo lsof -t -i:80 || true)
           if [ -n "$PID" ]; then
             echo "Found running process with PID: $PID. Sending SIGTERM."
             sudo kill -SIGTERM $PID
@@ -69,7 +69,7 @@ jobs:
               sleep 3
             fi
           else
-            echo "No process found on port 8080."
+            echo "No process found on port 80."
           fi
 
           # 2. 이전 JAR 파일 삭제 및 빌드 JAR 파일 복사
@@ -96,15 +96,15 @@ jobs:
           
           sudo nohup java -jar -Duser.timezone=Asia/Seoul "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod &
           for i in $(seq 1 30); do
-            if sudo lsof -t -i:8080 > /dev/null; then
-              echo "WAS has started and is listening on port 8080."
+            if sudo lsof -t -i:80 > /dev/null; then
+              echo "WAS has started and is listening on port 80."
               break
             fi
-            echo "Waiting for port 8080 to be occupied... ($i/30)"
+            echo "Waiting for port 80 to be occupied... ($i/30)"
             sleep 1
           done
 
-          NEW_WAS_PID=$(sudo lsof -t -i:8080 || true)
+          NEW_WAS_PID=$(sudo lsof -t -i:80 || true)
           if [ -n "$NEW_WAS_PID" ]; then
             echo "Application started with PID: $NEW_WAS_PID."
           else
