@@ -489,7 +489,7 @@ class PlaceTest {
                 );
             })
                     .isInstanceOf(BusinessException.class)
-                    .hasMessageContaining("플레이스의 시작 날짜, 종료 날짜는 모두 비어 있거나 모두 입력되어야 합니다.");
+                    .hasMessage("플레이스의 시작 날짜, 종료 날짜는 모두 비어 있거나 모두 입력되어야 합니다.");
         }
     }
 }
