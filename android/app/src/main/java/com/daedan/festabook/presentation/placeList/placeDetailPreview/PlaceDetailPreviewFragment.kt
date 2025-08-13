@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 
 import android.os.Bundle
 import android.view.View
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import coil3.load
 import coil3.request.placeholder
@@ -29,6 +30,7 @@ class PlaceDetailPreviewFragment :
         super.onViewCreated(view, savedInstanceState)
         setUpObserver()
         setupBinding()
+        setUpBackPressedCallback()
     }
 
     private fun setupBinding() {
@@ -38,6 +40,16 @@ class PlaceDetailPreviewFragment :
                 startPlaceDetailActivity(selectedPlaceState.value.place)
             }
         }
+    }
+
+    private fun setUpBackPressedCallback() {
+        val callback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.unselectPlace()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
     }
 
     private fun setUpObserver() {

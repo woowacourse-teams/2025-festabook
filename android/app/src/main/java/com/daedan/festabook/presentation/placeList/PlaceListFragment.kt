@@ -139,7 +139,7 @@ class PlaceListFragment :
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {
-        startActivity(PlaceDetailActivity.newIntent(requireContext(), place))
+        viewModel.selectPlace(place.id, place.category)
     }
 
     private fun showSkeleton() {
