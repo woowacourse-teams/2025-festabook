@@ -1,43 +1,65 @@
 package com.daedan.festabook.global.logging;
 
-import jakarta.servlet.Filter;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.UUID;
-
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Slf4j
 @Component
-public class LoggingFilter implements Filter {
+public class LoggingFilter extends OncePerRequestFilter {
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
-        try {
-            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+        long startTime = System.currentTimeMillis();
 
-            MDC.put("requestId", UUID.randomUUID().toString());
-            log.info("[API CALL] method={}, uri={}, query={}, contentType={}, ip={}",
-                    httpServletRequest.getMethod(),
-                    httpServletRequest.getRequestURI(),
-                    httpServletRequest.getQueryString(),
-                    httpServletRequest.getContentType(),
-                    httpServletRequest.getRemoteAddr()
+        MDC.put("traceId", UUID.randomUUID().toString());
+        try {
+            String httpMethod = request.getMethod();
+            String uri = request.getRequestURI();
+            String queryString = request.getQueryString();
+
+            log.info("[API CALL] method={}, uri={}, query={}",
+                    httpMethod,
+                    uri,
+                    queryString
             );
 
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         } finally {
-            HttpServletResponse  httpServletResponse = (HttpServletResponse) response;
-            log.info("[API END] status={}", httpServletResponse.getStatus());
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime - startTime;
+            int statusCode = response.getStatus();
+            String requestBody = extractBodyFromCache(request);
+
+            log.info("[API END] status={}, duration={}ms, requestBody={}",
+                    statusCode,
+                    executionTime,
+                    requestBody
+            );
+
             MDC.clear();
         }
+    }
+
+    private String extractBodyFromCache(HttpServletRequest request) {
+        String requestBody = "";
+        if (request instanceof ContentCachingRequestWrapper) {
+            ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
+            byte[] content = requestWrapper.getContentAsByteArray();
+            if (content.length > 0) {
+                requestBody = new String(content, StandardCharsets.UTF_8);
+            }
+        }
+        return requestBody;
     }
 }

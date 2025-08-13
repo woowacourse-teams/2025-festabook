@@ -21,14 +21,15 @@ public class LoggingAspect {
             """
     )
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+        String className = joinPoint.getSignature().getDeclaringTypeName();
+        String methodName = joinPoint.getSignature().getName();
 
-        log.info("[Method Call] | Class: {} | Method: {} | Args: {}",
-                joinPoint.getSignature().getDeclaringTypeName(),
-                joinPoint.getSignature().getName(),
-                joinPoint.getArgs()
+        log.info("[Method Call] | Class: {} | Method: {}",
+                className,
+                methodName
         );
 
-        long start = System.currentTimeMillis();
         Object result = null;
         try {
             result = joinPoint.proceed();
@@ -36,12 +37,7 @@ public class LoggingAspect {
             long end = System.currentTimeMillis();
             long executionTime = end - start;
 
-            log.info("[Method End] | Class: {} | Method: {} | Execution Time: {}ms | Response: {}",
-                    joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName(),
-                    executionTime,
-                    result
-            );
+            log.info("[Method End] Execution Time: {}ms", executionTime);
         }
 
         return result;
