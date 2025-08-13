@@ -2,8 +2,8 @@ name: Frontend Deploy to AWS
 
 on:
   push:
-    branches:
-      - frontend
+    branches: [ main ]
+    paths: [ 'frontend/**' ]
 
 jobs:
   build-and-deploy-to-AWS:
@@ -34,4 +34,4 @@ jobs:
       # 빌드 파일 S3에 업로드
       - name: Upload build files to S3
         run: |
-          aws s3 cp ./frontend/dist ${{ secrets.S3_BUCKET }} --recursive
+          aws s3 cp ./frontend/dist ${{ secrets.PROD_S3_BUCKET }} --recursive
