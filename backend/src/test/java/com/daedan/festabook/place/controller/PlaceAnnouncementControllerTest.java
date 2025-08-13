@@ -68,5 +68,18 @@ class PlaceAnnouncementControllerTest {
 
             assertThat(placeAnnouncementJpaRepository.findById(placeAnnouncement.getId())).isEmpty();
         }
+
+        @Test
+        void 성공_존재하지_않는_플레이스_공지() {
+            // given
+            Long notExistsPlaceAnnouncementId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .delete("/places/announcements/{placeAnnouncementId}", notExistsPlaceAnnouncementId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+        }
     }
 }
