@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import com.daedan.festabook.R
 import timber.log.Timber
 
 class NotificationPermissionManager(
@@ -45,12 +46,12 @@ class NotificationPermissionManager(
     private fun showRationaleDialog(context: Context) {
         AlertDialog
             .Builder(context)
-            .setTitle("알림 권한 필요")
-            .setMessage("새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.")
-            .setPositiveButton("확인") { dialog, _ ->
+            .setTitle(R.string.notification_permission_title)
+            .setMessage(R.string.notification_permission_message)
+            .setPositiveButton(R.string.confirm) { dialog, _ ->
                 requester.permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
                 dialog.dismiss()
-            }.setNegativeButton("취소") { dialog, _ ->
+            }.setNegativeButton(R.string.cancel) { dialog, _ ->
                 Timber.d("Notification permission denied")
                 onPermissionDenied()
                 dialog.dismiss()

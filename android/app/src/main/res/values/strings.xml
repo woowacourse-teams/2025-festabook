@@ -93,4 +93,11 @@
     <string name="faq_expand">답변 펼치기</string>
 
 
+    <!--다이어로그-->
+    <string name="notification_permission_title">알림 권한 필요</string>
+    <string name="notification_permission_message">새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.</string>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+
+
 </resources>
