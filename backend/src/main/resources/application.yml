@@ -1,5 +1,7 @@
 server:
-  # Graceful Shutdown 활성화
+  port: 80
+  servlet:
+    context-path: /api
   shutdown: graceful
   tomcat:
     mbeanregistry:
@@ -17,7 +19,7 @@ spring:
     include: secret
   lifecycle:
     # WAS 종료 대기 시간 15초로 설정
-    timeout-per-shutdown-phase: 15s 
+    timeout-per-shutdown-phase: 15s
 
 # Swagger
 springdoc:
