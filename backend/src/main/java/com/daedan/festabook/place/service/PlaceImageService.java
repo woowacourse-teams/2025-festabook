@@ -3,11 +3,10 @@ package com.daedan.festabook.place.service;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceImage;
-import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
-import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.dto.PlaceImageRequest;
 import com.daedan.festabook.place.dto.PlaceImageResponse;
+import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PlaceImageService {
 
-    private static final int MAX_IMAGE_SEQUENCE = 5;
+    private static final int MAX_IMAGE_COUNT = 5;
 
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
@@ -35,7 +34,7 @@ public class PlaceImageService {
         int currentMaxSequence = placeImageJpaRepository.findMaxSequenceByPlace(place)
                 .orElseGet(() -> 0);
         Integer newSequence = currentMaxSequence + 1;
-        validateMaxImageSequence(newSequence);
+        validateMaxImageCount(place);
 
         PlaceImage placeImage = new PlaceImage(place, request.imageUrl(), newSequence);
         PlaceImage savedPlaceImage = placeImageJpaRepository.save(placeImage);
@@ -43,10 +42,11 @@ public class PlaceImageService {
         return PlaceImageResponse.from(savedPlaceImage);
     }
 
-    private void validateMaxImageSequence(int newSequence) {
-        if (newSequence > MAX_IMAGE_SEQUENCE) {
+    private void validateMaxImageCount(Place place) {
+        Long imageCount = placeImageJpaRepository.countByPlace(place);
+        if (imageCount > MAX_IMAGE_COUNT) {
             throw new BusinessException(
-                    String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_SEQUENCE),
+                    String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_COUNT),
                     HttpStatus.BAD_REQUEST
             );
         }
@@ -67,7 +67,6 @@ public class PlaceImageService {
 
         return PlaceImageSequenceUpdateResponses.from(placeImages);
     }
-
 
     public void deletePlaceImageByPlaceImageId(Long placeImageId) {
         placeImageJpaRepository.deleteById(placeImageId);

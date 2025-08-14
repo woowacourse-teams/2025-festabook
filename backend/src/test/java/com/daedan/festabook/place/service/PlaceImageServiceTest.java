@@ -34,7 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class PlaceImageServiceTest {
 
-    private static final int MAX_IMAGE_SEQUENCE = 5;
+    private static final int MAX_IMAGE_COUNT = 5;
 
     @Mock
     private PlaceJpaRepository placeJpaRepository;
@@ -102,7 +102,7 @@ public class PlaceImageServiceTest {
             Long placeId = 1L;
             Place place = PlaceFixture.create(placeId);
 
-            int invalidSequence = MAX_IMAGE_SEQUENCE + 1;
+            int invalidSequence = MAX_IMAGE_COUNT + 1;
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
@@ -114,7 +114,7 @@ public class PlaceImageServiceTest {
             // when & then
             assertThatThrownBy(() -> placeImageService.addPlaceImage(placeId, placeImageRequest))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage(String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_SEQUENCE));
+                    .hasMessage(String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_COUNT));
         }
     }
 
