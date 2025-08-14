@@ -19,26 +19,26 @@ class MainViewModel(
     fun registerDeviceAndFcmToken() {
         val uuid = deviceRepository.getUuid().orEmpty()
         val fcmToken = deviceRepository.getFcmToken()
-
         Timber.d("registerDeviceAndFcmToken() UUID: $uuid, FCM: $fcmToken")
 
-        // UUID는 항상 있으므로, FCM 없으면 기다렸다가 호출
-        if (uuid.isNotBlank() && fcmToken.isNullOrBlank()) {
-            FirebaseMessaging
-                .getInstance()
-                .token
-                .addOnSuccessListener { token ->
-                    deviceRepository.saveFcmToken(token)
-                    Timber.d("🪄 받은 FCM 토큰으로 디바이스 등록: $token")
-                    registerDevice(uuid, token)
-                }.addOnFailureListener {
-                    Timber.w(it, "❌ FCM 토큰 받기 실패")
-                }
-        } else if (fcmToken != null) {
-            if (uuid.isNotBlank() && fcmToken.isNotBlank()) {
+        when {
+            uuid.isBlank() -> Timber.w("❌ UUID 생성 전")
+            !fcmToken.isNullOrBlank() -> {
                 Timber.d("✅ 기존 값으로 디바이스 등록 실행")
-            } else {
-                Timber.w("❌ UUID 생성 전 or FCM 토큰 없음")
+                registerDevice(uuid, fcmToken)
+            }
+
+            else -> {
+                FirebaseMessaging
+                    .getInstance()
+                    .token
+                    .addOnSuccessListener { token ->
+                        deviceRepository.saveFcmToken(token)
+                        Timber.d("🪄 받은 FCM 토큰으로 디바이스 등록: $token")
+                        registerDevice(uuid, token)
+                    }.addOnFailureListener {
+                        Timber.w(it, "❌ FCM 토큰 받기 실패")
+                    }
             }
         }
     }

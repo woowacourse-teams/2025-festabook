@@ -25,7 +25,6 @@ import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
-import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 
 class MainActivity :
