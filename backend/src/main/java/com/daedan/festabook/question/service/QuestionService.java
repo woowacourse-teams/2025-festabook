@@ -4,12 +4,13 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.question.domain.Question;
-import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
+import com.daedan.festabook.question.dto.QuestionUpdateRequest;
+import com.daedan.festabook.question.dto.QuestionUpdateResponse;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -46,10 +47,10 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionAndAnswerUpdateResponse updateQuestionAndAnswer(Long questionId, QuestionRequest request) {
+    public QuestionUpdateResponse updateQuestionAndAnswer(Long questionId, QuestionUpdateRequest request) {
         Question question = getQuestionById(questionId);
         question.updateQuestionAndAnswer(request.question(), request.answer());
-        return QuestionAndAnswerUpdateResponse.from(question);
+        return QuestionUpdateResponse.from(question);
     }
 
     @Transactional

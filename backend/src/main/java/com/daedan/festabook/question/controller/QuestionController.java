@@ -1,12 +1,13 @@
 package com.daedan.festabook.question.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
-import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
+import com.daedan.festabook.question.dto.QuestionUpdateRequest;
+import com.daedan.festabook.question.dto.QuestionUpdateResponse;
 import com.daedan.festabook.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,14 +30,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/questions")
-@Tag(name = "질문", description = "질문 관련 API")
+@Tag(name = "FAQ", description = "FAQ 관련 API")
 public class QuestionController {
 
     private final QuestionService questionService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 축제의 질문 생성")
+    @Operation(summary = "특정 축제의 FAQ 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
@@ -49,7 +50,7 @@ public class QuestionController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 모든 질문 조회")
+    @Operation(summary = "특정 축제의 모든 FAQ 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -61,20 +62,20 @@ public class QuestionController {
 
     @PatchMapping("/{questionId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 질문 수정")
+    @Operation(summary = "특정 FAQ 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public QuestionAndAnswerUpdateResponse updateQuestionAndAnswer(
+    public QuestionUpdateResponse updateQuestionAndAnswer(
             @PathVariable Long questionId,
-            @RequestBody QuestionRequest request
+            @RequestBody QuestionUpdateRequest request
     ) {
         return questionService.updateQuestionAndAnswer(questionId, request);
     }
 
     @PatchMapping("/sequences")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "질문들의 순서 수정")
+    @Operation(summary = "FAQ 순서 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -86,7 +87,7 @@ public class QuestionController {
 
     @DeleteMapping("/{questionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "특정 질문 삭제")
+    @Operation(summary = "특정 FAQ 삭제")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
