@@ -13,6 +13,7 @@ import com.daedan.festabook.databinding.FragmentSettingBinding
 import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.showErrorSnackBar
 import timber.log.Timber
 
 class SettingFragment :
@@ -25,21 +26,8 @@ class SettingFragment :
     private val notificationPermissionManager by lazy {
         NotificationPermissionManager(
             requester = this,
-            onPermissionDenied = { onPermissionGranted() },
+            onPermissionDenied = { onPermissionDenied() },
         )
-    }
-
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.btnNoticeAllow.isChecked = viewModel.isAllowed
-        setupNoticeAllowButtonClickListener()
-        setupServicePolicyClickListener()
-        setupContactUsButtonClickListener()
-
-        setupObservers()
     }
 
     override val permissionLauncher: ActivityResultLauncher<String> =
@@ -58,8 +46,21 @@ class SettingFragment :
 
     override fun onPermissionDenied() {
         binding.btnNoticeAllow.isChecked = false
-        viewModel.saveNotificationIsAllowed(false)
         viewModel.updateNotificationIsAllowed(false)
+        viewModel.saveNotificationIsAllowed(false)
+    }
+
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.btnNoticeAllow.isChecked = viewModel.isAllowed
+        setupNoticeAllowButtonClickListener()
+        setupServicePolicyClickListener()
+        setupContactUsButtonClickListener()
+
+        setupObservers()
     }
 
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
@@ -72,6 +73,11 @@ class SettingFragment :
                         requireContext(),
                     )
                 }
+            }
+        }
+        viewModel.error.observe(viewLifecycleOwner) {
+            it.getContentIfNotHandled()?.let { throwable ->
+                showErrorSnackBar(throwable)
             }
         }
     }

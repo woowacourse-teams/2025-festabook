@@ -32,11 +32,6 @@ class FestivalNotificationRepositoryImpl(
                 festivalNotificationLocalDataSource.saveFestivalNotificationId(
                     it.festivalNotificationId,
                 )
-            }.onFailure {
-                Timber.e(
-                    it,
-                    "${::FestivalNotificationRepositoryImpl.name}: festivalNotificationId 저장 실패",
-                )
             }
     }
 

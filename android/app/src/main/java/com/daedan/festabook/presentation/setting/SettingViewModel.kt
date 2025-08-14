@@ -12,6 +12,7 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.presentation.common.Event
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class SettingViewModel(
     private val festivalNotificationRepository: FestivalNotificationRepository,
@@ -22,10 +23,12 @@ class SettingViewModel(
     var isAllowed = festivalNotificationRepository.getFestivalNotificationIsAllow()
         private set
 
+    private val _error: MutableLiveData<Event<Throwable>> = MutableLiveData()
+    val error: LiveData<Event<Throwable>> get() = _error
+
     fun notificationAllowClick() {
         updateNotificationIsAllowed(!isAllowed)
         _allowClickEvent.value = Event(Unit)
-        saveNotificationIsAllowed(isAllowed)
         if (isAllowed) saveNotificationId() else deleteNotificationId()
     }
 
@@ -42,8 +45,13 @@ class SettingViewModel(
             val result =
                 festivalNotificationRepository.saveFestivalNotification()
 
-            result.onFailure {
-            }
+            result
+                .onSuccess {
+                    saveNotificationIsAllowed(isAllowed)
+                }.onFailure {
+                    _error.value = Event(it)
+                    Timber.e(it, "${::SettingViewModel.name} NotificationId 저장 실패")
+                }
         }
     }
 
@@ -52,8 +60,13 @@ class SettingViewModel(
             val result =
                 festivalNotificationRepository.deleteFestivalNotification()
 
-            result.onFailure {
-            }
+            result
+                .onSuccess {
+                    saveNotificationIsAllowed(isAllowed)
+                }.onFailure {
+                    _error.value = Event(it)
+                    Timber.e(it, "${::SettingViewModel.name} NotificationId 삭제 실패")
+                }
         }
     }
 
