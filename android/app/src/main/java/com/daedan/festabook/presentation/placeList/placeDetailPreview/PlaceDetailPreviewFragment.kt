@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import coil3.load
 import coil3.request.placeholder
@@ -17,6 +18,7 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import kotlin.getValue
+import kotlin.sequences.forEach
 
 class PlaceDetailPreviewFragment :
     BaseFragment<FragmentPlaceDetailPreviewBinding>(
@@ -61,8 +63,12 @@ class PlaceDetailPreviewFragment :
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
             when (selectedPlace) {
-                is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
+                is SelectedPlaceUiState.Success -> {
+                    binding.makeChildVisible()
+                    updateSelectedPlaceUi(selectedPlace.value)
+                }
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
+                is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
                 else -> Unit
             }
         }
@@ -94,5 +100,17 @@ class PlaceDetailPreviewFragment :
 
     private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
         startActivity(PlaceDetailActivity.newIntent(requireContext(), placeDetail))
+    }
+
+    private fun FragmentPlaceDetailPreviewBinding.makeChildInvisible() {
+        layoutSelectedPlace.children.forEach {
+            it.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun FragmentPlaceDetailPreviewBinding.makeChildVisible() {
+        layoutSelectedPlace.children.forEach {
+            it.visibility = View.VISIBLE
+        }
     }
 }

@@ -134,22 +134,26 @@ class PlaceMapFragment :
 
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
             childFragmentManager.commit {
-                hide(placeListFragment)
-                hide(placeDetailPreviewFragment)
-                hide(placeDetailPreviewSecondaryFragment)
+                setReorderingAllowed(true)
 
                 when (selectedPlace) {
                     is SelectedPlaceUiState.Success -> {
                         mapManager?.selectMarker(selectedPlace.value.place.id)
                         if (selectedPlace.isSecondary) {
+                            hide(placeListFragment)
+                            hide(placeDetailPreviewFragment)
                             show(placeDetailPreviewSecondaryFragment)
                         } else {
+                            hide(placeListFragment)
+                            hide(placeDetailPreviewSecondaryFragment)
                             show(placeDetailPreviewFragment)
                         }
                     }
 
                     is SelectedPlaceUiState.Empty -> {
                         mapManager?.unselectMarker()
+                        hide(placeDetailPreviewFragment)
+                        hide(placeDetailPreviewSecondaryFragment)
                         show(placeListFragment)
                     }
 

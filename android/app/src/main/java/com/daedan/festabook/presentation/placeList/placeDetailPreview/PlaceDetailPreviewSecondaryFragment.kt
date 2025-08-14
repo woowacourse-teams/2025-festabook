@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import coil3.load
 import com.daedan.festabook.R
@@ -48,8 +49,12 @@ class PlaceDetailPreviewSecondaryFragment :
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
             when (selectedPlace) {
-                is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
+                is SelectedPlaceUiState.Success -> {
+                    binding.makeChildVisible()
+                    updateSelectedPlaceUi(selectedPlace.value)
+                }
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
+                is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
                 else -> Unit
             }
         }
@@ -60,6 +65,18 @@ class PlaceDetailPreviewSecondaryFragment :
             ivSecondaryCategoryItem.load(selectedPlace.place.category.getIconId())
             tvSelectedPlaceTitle.text =
                 selectedPlace.place.title ?: getString(selectedPlace.place.category.getTextId())
+        }
+    }
+
+    private fun FragmentPlaceDetailPreviewSecondaryBinding.makeChildInvisible() {
+        layoutSelectedPlace.children.forEach {
+            it.visibility = View.INVISIBLE
+        }
+    }
+
+    private fun FragmentPlaceDetailPreviewSecondaryBinding.makeChildVisible() {
+        layoutSelectedPlace.children.forEach {
+            it.visibility = View.VISIBLE
         }
     }
 }
