@@ -1,60 +1,55 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginHorizontal="16dp"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    android:layout_marginHorizontal="16dp">
 
     <View
         android:id="@+id/view_item_place_list_image_skeleton"
         android:layout_width="80dp"
         android:layout_height="80dp"
-        android:background="@drawable/bg_gray300_radius_10dp"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
         android:layout_marginVertical="8dp"
-        />
+        android:background="@drawable/bg_skeleton_radius_10dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <View
         android:id="@+id/view_item_place_list_category"
         android:layout_width="40dp"
         android:layout_height="12dp"
-        android:background="?attr/SkeletonBackground"
-        app:layout_constraintTop_toTopOf="@id/view_item_place_list_image_skeleton"
-        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
-        />
+        android:background="?attr/SkeletonBackground"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
+        app:layout_constraintTop_toTopOf="@id/view_item_place_list_image_skeleton" />
 
     <View
         android:id="@+id/view_item_place_list_title"
         android:layout_width="260dp"
         android:layout_height="12dp"
-        android:background="?attr/SkeletonBackground"
-        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_category"
-        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
         android:layout_marginTop="6dp"
-        />
+        android:background="?attr/SkeletonBackground"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
+        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_category" />
 
     <View
         android:id="@+id/view_item_place_list_description"
         android:layout_width="260dp"
         android:layout_height="12dp"
-        android:background="?attr/SkeletonBackground"
-        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_title"
-        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
         android:layout_marginTop="6dp"
-        />
+        android:background="?attr/SkeletonBackground"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
+        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_title" />
 
     <View
         android:layout_width="60dp"
         android:layout_height="12dp"
-        android:background="?attr/SkeletonBackground"
-        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_description"
-        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
         android:layout_marginStart="12dp"
         android:layout_marginTop="6dp"
-        />
+        android:background="?attr/SkeletonBackground"
+        app:layout_constraintStart_toEndOf="@id/view_item_place_list_image_skeleton"
+        app:layout_constraintTop_toBottomOf="@id/view_item_place_list_description" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
