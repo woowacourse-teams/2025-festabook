@@ -3,6 +3,7 @@ package com.daedan.festabook.event.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.event.domain.Event;
@@ -12,6 +13,8 @@ import com.daedan.festabook.event.domain.EventFixture;
 import com.daedan.festabook.event.domain.EventStatus;
 import com.daedan.festabook.event.dto.EventRequest;
 import com.daedan.festabook.event.dto.EventRequestFixture;
+import com.daedan.festabook.event.dto.EventUpdateRequest;
+import com.daedan.festabook.event.dto.EventUpdateRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
@@ -81,6 +84,8 @@ class EventControllerTest {
 
             EventRequest request = EventRequestFixture.create(eventDate.getId());
 
+            int expectedSize = 6;
+
             // when & then
             RestAssured
                     .given()
@@ -90,7 +95,14 @@ class EventControllerTest {
                     .when()
                     .post("/event-dates/events")
                     .then()
-                    .statusCode(HttpStatus.CREATED.value());
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedSize))
+                    .body("eventId", notNullValue())
+                    .body("status", notNullValue())
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()))
+                    .body("title", equalTo(request.title()))
+                    .body("location", equalTo(request.location()));
         }
     }
 
@@ -100,10 +112,10 @@ class EventControllerTest {
         @Test
         void 성공() {
             // given
+            setFixedClock(LocalDateTime.now());
+
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
-
-            setFixedClock(LocalDateTime.now());
 
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
@@ -112,13 +124,15 @@ class EventControllerTest {
             eventJpaRepository.save(event);
             Long eventId = event.getId();
 
-            EventRequest request = EventRequestFixture.create(
+            EventUpdateRequest request = EventUpdateRequestFixture.create(
                     eventDate.getId(),
                     LocalTime.of(3, 0),
                     LocalTime.of(4, 0),
                     "updated title",
                     "updated location"
             );
+
+            int expectedSize = 6;
 
             // when & then
             RestAssured
@@ -129,7 +143,14 @@ class EventControllerTest {
                     .when()
                     .patch("/event-dates/events/{eventId}", eventId)
                     .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize))
+                    .body("eventId", equalTo(eventId.intValue()))
+                    .body("status", notNullValue())
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()))
+                    .body("title", equalTo(request.title()))
+                    .body("location", equalTo(request.location()));
         }
     }
 

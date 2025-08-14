@@ -1,5 +1,7 @@
 server:
-  # Graceful Shutdown 활성화
+  port: 80
+  servlet:
+    context-path: /api
   shutdown: graceful
   tomcat:
     mbeanregistry:
