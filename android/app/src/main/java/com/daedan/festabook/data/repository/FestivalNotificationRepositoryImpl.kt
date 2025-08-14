@@ -1,18 +1,19 @@
 package com.daedan.festabook.data.repository
 
-import com.daedan.festabook.data.datasource.local.AppDataSource
+import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
+import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
-import timber.log.Timber
 
 class FestivalNotificationRepositoryImpl(
     private val festivalNotificationDataSource: FestivalNotificationDataSource,
-    private val appDataSource: AppDataSource,
+    private val deviceLocalDataSource: DeviceLocalDataSource,
+    private val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource,
 ) : FestivalNotificationRepository {
     override suspend fun saveFestivalNotification(): Result<Unit> {
-        val deviceId = appDataSource.getDeviceId()
-        val festivalNotificationId = appDataSource.getFestivalNotificationId()
+        val deviceId = deviceLocalDataSource.getDeviceId()
+        val festivalNotificationId = festivalNotificationLocalDataSource.getFestivalNotificationId()
 
         val result =
             festivalNotificationDataSource
@@ -21,23 +22,26 @@ class FestivalNotificationRepositoryImpl(
                     deviceId = deviceId,
                 ).toResult()
 
-        return result.mapCatching { appDataSource.saveFestivalNotificationId(it.festivalNotificationId) }
+        return result.mapCatching {
+            festivalNotificationLocalDataSource.saveFestivalNotificationId(
+                it.festivalNotificationId,
+            )
+        }
     }
 
     override suspend fun deleteFestivalNotification(): Result<Unit> {
-        val festivalNotificationId = appDataSource.getFestivalNotificationId()
+        val festivalNotificationId = festivalNotificationLocalDataSource.getFestivalNotificationId()
         val response =
             festivalNotificationDataSource.deleteFestivalNotification(festivalNotificationId)
 
-        appDataSource.deleteFestivalNotificationId()
+        festivalNotificationLocalDataSource.deleteFestivalNotificationId()
 
         return response.toResult()
     }
 
-    override fun getFestivalNotificationIsAllow(): Boolean = appDataSource.getFestivalNotificationIsAllowed()
+    override fun getFestivalNotificationIsAllow(): Boolean = festivalNotificationLocalDataSource.getFestivalNotificationIsAllowed()
 
     override fun setFestivalNotificationIsAllow(isAllowed: Boolean) {
-        Timber.d("$isAllowed")
-        appDataSource.saveFestivalNotificationIsAllowed(isAllowed)
+        festivalNotificationLocalDataSource.saveFestivalNotificationIsAllowed(isAllowed)
     }
 }

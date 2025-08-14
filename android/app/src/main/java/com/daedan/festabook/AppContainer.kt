@@ -1,8 +1,14 @@
 package com.daedan.festabook
 
 import android.app.Application
-import com.daedan.festabook.data.datasource.local.AppDataSource
-import com.daedan.festabook.data.datasource.local.AppDataSourceImpl
+import android.content.Context
+import android.content.SharedPreferences
+import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
+import com.daedan.festabook.data.datasource.local.DeviceLocalDataSourceImpl
+import com.daedan.festabook.data.datasource.local.FcmDataSource
+import com.daedan.festabook.data.datasource.local.FcmDataSourceImpl
+import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource
+import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.faq.FAQDataSource
@@ -49,8 +55,19 @@ import java.util.UUID
 class AppContainer(
     application: Application,
 ) {
-    private val appDataSource: AppDataSource by lazy {
-        AppDataSourceImpl(application)
+    private val prefs: SharedPreferences =
+        application.applicationContext.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+
+    private val deviceLocalDataSource: DeviceLocalDataSource by lazy {
+        DeviceLocalDataSourceImpl(prefs)
+    }
+
+    private val fcmDataSource: FcmDataSource by lazy {
+        FcmDataSourceImpl(prefs)
+    }
+
+    private val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource by lazy {
+        FestivalNotificationLocalDataSourceImpl(prefs)
     }
 
     private val scheduleDataSource: ScheduleDataSource by lazy {
@@ -94,10 +111,14 @@ class AppContainer(
         NoticeRepositoryImpl(noticeDataSource)
     }
     val deviceRepository: DeviceRepository by lazy {
-        DeviceRepositoryImpl(deviceDataSource, appDataSource)
+        DeviceRepositoryImpl(deviceDataSource, deviceLocalDataSource, fcmDataSource)
     }
     val festivalNotificationRepository: FestivalNotificationRepository by lazy {
-        FestivalNotificationRepositoryImpl(festivalNotificationDataSource, appDataSource)
+        FestivalNotificationRepositoryImpl(
+            festivalNotificationDataSource,
+            deviceLocalDataSource,
+            festivalNotificationLocalDataSource,
+        )
     }
     val festivalRepository: FestivalRepository by lazy {
         FestivalRepositoryImpl(festivalDataSource)
@@ -115,9 +136,9 @@ class AppContainer(
     }
 
     private fun ensureDeviceIdentifiers() {
-        if (appDataSource.getUuid().isNullOrEmpty()) {
+        if (deviceLocalDataSource.getUuid().isNullOrEmpty()) {
             val uuid = UUID.randomUUID().toString()
-            appDataSource.saveUuid(uuid)
+            deviceLocalDataSource.saveUuid(uuid)
             Timber.d("🆕 UUID 생성 및 저장: $uuid")
         }
 
@@ -125,10 +146,14 @@ class AppContainer(
             .getInstance()
             .token
             .addOnSuccessListener { token ->
-                appDataSource.saveFcmToken(token)
+                fcmDataSource.saveFcmToken(token)
                 Timber.d("📡 FCM 토큰 저장: $token")
             }.addOnFailureListener {
                 Timber.w(it, "❌ FCM 토큰 수신 실패")
             }
+    }
+
+    companion object {
+        private const val PREFS_NAME = "app_prefs"
     }
 }
