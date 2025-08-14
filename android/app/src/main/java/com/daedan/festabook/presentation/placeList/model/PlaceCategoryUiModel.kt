@@ -12,6 +12,9 @@ enum class PlaceCategoryUiModel {
     TRASH_CAN,
     TOILET,
     SMOKING_AREA,
+    PRIMARY,
+    PARKING,
+    STAGE,
     ;
 
     companion object {
@@ -49,6 +52,9 @@ fun OverlayImageManager.getNormalIcon(category: PlaceCategoryUiModel): OverlayIm
         PlaceCategoryUiModel.BAR -> getImage(R.drawable.ic_bar)
         PlaceCategoryUiModel.TRASH_CAN -> getImage(R.drawable.ic_trash)
         PlaceCategoryUiModel.SMOKING_AREA -> getImage(R.drawable.ic_smoking_area)
+        PlaceCategoryUiModel.PRIMARY -> getImage(R.drawable.ic_primary)
+        PlaceCategoryUiModel.PARKING -> getImage(R.drawable.ic_parking)
+        PlaceCategoryUiModel.STAGE -> getImage(R.drawable.ic_stage)
     }
 
 fun OverlayImageManager.getSelectedIcon(category: PlaceCategoryUiModel): OverlayImage? =
@@ -59,6 +65,9 @@ fun OverlayImageManager.getSelectedIcon(category: PlaceCategoryUiModel): Overlay
         PlaceCategoryUiModel.BAR -> getImage(R.drawable.ic_bar_selected)
         PlaceCategoryUiModel.TRASH_CAN -> getImage(R.drawable.ic_trash_selected)
         PlaceCategoryUiModel.SMOKING_AREA -> getImage(R.drawable.ic_smoking_area_selected)
+        PlaceCategoryUiModel.PRIMARY -> getImage(R.drawable.ic_primary_selected)
+        PlaceCategoryUiModel.PARKING -> getImage(R.drawable.ic_parking_selected)
+        PlaceCategoryUiModel.STAGE -> getImage(R.drawable.ic_stage_selected)
     }
 
 fun PlaceCategory.toUiModel() =
@@ -69,4 +78,7 @@ fun PlaceCategory.toUiModel() =
         PlaceCategory.BAR -> PlaceCategoryUiModel.BAR
         PlaceCategory.TRASH_CAN -> PlaceCategoryUiModel.TRASH_CAN
         PlaceCategory.SMOKING_AREA -> PlaceCategoryUiModel.SMOKING_AREA
+        PlaceCategory.PARKING -> PlaceCategoryUiModel.PARKING
+        PlaceCategory.PRIMARY -> PlaceCategoryUiModel.PRIMARY
+        PlaceCategory.STAGE -> PlaceCategoryUiModel.STAGE
     }
