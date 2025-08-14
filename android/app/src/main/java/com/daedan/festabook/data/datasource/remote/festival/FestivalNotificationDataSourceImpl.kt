@@ -3,17 +3,17 @@ package com.daedan.festabook.data.datasource.remote.festival
 import com.daedan.festabook.data.datasource.remote.ApiResult
 import com.daedan.festabook.data.model.request.FestivalNotificationRequest
 import com.daedan.festabook.data.model.response.festival.FestivalNotificationResponse
-import com.daedan.festabook.data.service.OrganizationBookmarkService
+import com.daedan.festabook.data.service.FestivalNotificationService
 
 class FestivalNotificationDataSourceImpl(
-    private val organizationBookmarkService: OrganizationBookmarkService,
+    private val festivalNotificationService: FestivalNotificationService,
 ) : FestivalNotificationDataSource {
     override suspend fun saveFestivalNotification(
         festivalNotificationId: Long,
         deviceId: Long,
     ): ApiResult<FestivalNotificationResponse> =
         ApiResult.toApiResult {
-            organizationBookmarkService.bookmarkOrganization(
+            festivalNotificationService.bookmarkOrganization(
                 festivalNotificationId,
                 FestivalNotificationRequest(deviceId = deviceId),
             )
@@ -21,6 +21,6 @@ class FestivalNotificationDataSourceImpl(
 
     override suspend fun deleteFestivalNotification(festivalNotificationId: Long): ApiResult<Unit> =
         ApiResult.toApiResult {
-            organizationBookmarkService.deleteOrganizationBookmark(festivalNotificationId)
+            festivalNotificationService.deleteOrganizationBookmark(festivalNotificationId)
         }
 }

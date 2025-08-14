@@ -34,9 +34,9 @@ import com.daedan.festabook.data.repository.PlaceListRepositoryImpl
 import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
 import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.faqService
+import com.daedan.festabook.data.service.api.ApiClient.festivalNotificationService
 import com.daedan.festabook.data.service.api.ApiClient.festivalService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
-import com.daedan.festabook.data.service.api.ApiClient.organizationBookmarkService
 import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
 import com.daedan.festabook.domain.repository.DeviceRepository
@@ -80,7 +80,7 @@ class AppContainer(
         DeviceDataSourceImpl(deviceService)
     }
     private val festivalNotificationDataSource: FestivalNotificationDataSource by lazy {
-        FestivalNotificationDataSourceImpl(organizationBookmarkService)
+        FestivalNotificationDataSourceImpl(festivalNotificationService)
     }
     private val placeListDataSource: PlaceDataSource by lazy {
         PlaceDataSourceImpl(placeService, festivalService)
