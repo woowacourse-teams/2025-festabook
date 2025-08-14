@@ -13,7 +13,7 @@ class FestivalNotificationDataSourceImpl(
         deviceId: Long,
     ): ApiResult<FestivalNotificationResponse> =
         ApiResult.toApiResult {
-            festivalNotificationService.bookmarkOrganization(
+            festivalNotificationService.saveFestivalNotification(
                 festivalNotificationId,
                 FestivalNotificationRequest(deviceId = deviceId),
             )
@@ -21,6 +21,6 @@ class FestivalNotificationDataSourceImpl(
 
     override suspend fun deleteFestivalNotification(festivalNotificationId: Long): ApiResult<Unit> =
         ApiResult.toApiResult {
-            festivalNotificationService.deleteOrganizationBookmark(festivalNotificationId)
+            festivalNotificationService.deleteFestivalNotification(festivalNotificationId)
         }
 }

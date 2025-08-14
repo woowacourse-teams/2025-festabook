@@ -10,13 +10,13 @@ import retrofit2.http.Path
 
 interface FestivalNotificationService {
     @POST("/festivals/{festivalId}/notifications")
-    suspend fun bookmarkOrganization(
-        @Path("organizationId") id: Long,
+    suspend fun saveFestivalNotification(
+        @Path("festivalId") id: Long,
         @Body request: FestivalNotificationRequest,
     ): Response<FestivalNotificationResponse>
 
     @DELETE("/festivals/notifications/{festivalNotificationId}")
-    suspend fun deleteOrganizationBookmark(
-        @Path("organizationBookmarkId") id: Long,
+    suspend fun deleteFestivalNotification(
+        @Path("festivalNotificationId") id: Long,
     ): Response<Unit>
 }
