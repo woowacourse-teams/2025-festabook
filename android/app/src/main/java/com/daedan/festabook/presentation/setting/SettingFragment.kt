@@ -54,9 +54,7 @@ class SettingFragment :
             }
         }
 
-    override fun onPermissionGranted() {
-        TODO("Not yet implemented")
-    }
+    override fun onPermissionGranted() = Unit
 
     override fun onPermissionDenied() {
         binding.btnNoticeAllow.isChecked = false
@@ -68,10 +66,12 @@ class SettingFragment :
 
     private fun setupObservers() {
         viewModel.allowClickEvent.observe(viewLifecycleOwner) {
-            if (viewModel.isAllowed) {
-                notificationPermissionManager.requestNotificationPermission(
-                    requireContext(),
-                )
+            it.getContentIfNotHandled()?.let {
+                if (viewModel.isAllowed) {
+                    notificationPermissionManager.requestNotificationPermission(
+                        requireContext(),
+                    )
+                }
             }
         }
     }
