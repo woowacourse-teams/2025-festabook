@@ -10,6 +10,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
+import com.daedan.festabook.presentation.common.setFormatDate
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
@@ -78,11 +79,11 @@ class PlaceDetailPreviewFragment :
     private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
         with(binding) {
             layoutSelectedPlace.visibility = View.VISIBLE
-            tvSelectedPlaceTitle.text = selectedPlace.place.title
-            tvSelectedPlaceLocation.text = selectedPlace.place.location
-            tvSelectedPlaceTime.text = selectedPlace.operatingHours
-            tvSelectedPlaceHost.text = selectedPlace.host
-            tvSelectedPlaceDescription.text = selectedPlace.place.description
+            tvSelectedPlaceTitle.text = selectedPlace.place.title ?: getString(R.string.place_list_default_title)
+            tvSelectedPlaceLocation.text = selectedPlace.place.location ?: getString(R.string.place_list_default_location)
+            setFormatDate(binding.tvSelectedPlaceTime, selectedPlace.startTime, selectedPlace.endTime)
+            tvSelectedPlaceHost.text = selectedPlace.host ?: getString(R.string.place_detail_default_host)
+            tvSelectedPlaceDescription.text = selectedPlace.place.description ?: getString(R.string.place_list_default_description)
             cvPlaceCategory.setCategory(selectedPlace.place.category)
             ivSelectedPlaceImage.load(
                 selectedPlace.featuredImage,
