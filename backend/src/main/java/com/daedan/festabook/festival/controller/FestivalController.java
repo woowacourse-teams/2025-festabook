@@ -8,6 +8,7 @@ import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalResponse;
+import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.service.FestivalImageService;
 import com.daedan.festabook.festival.service.FestivalService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -73,6 +75,18 @@ public class FestivalController {
             @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
         return festivalService.getFestivalByFestivalId(festivalId);
+    }
+
+    @GetMapping("/universities")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "대학 이름 기준 축제 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalUniversityResponses getUniversitiesByUniversityName(
+            @RequestParam String universityName
+    ) {
+        return festivalService.getUniversitiesByUniversityName(universityName);
     }
 
     @PatchMapping("/information")
