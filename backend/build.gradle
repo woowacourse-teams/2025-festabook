@@ -41,6 +41,10 @@ dependencies {
 
     // Firebase Admin 자바 SDK
     implementation 'com.google.firebase:firebase-admin:9.5.0'
+
+    // AWS
+    implementation platform('software.amazon.awssdk:bom:2.32.16')
+    implementation 'software.amazon.awssdk:s3'
 }
 
 tasks.named('test') {
