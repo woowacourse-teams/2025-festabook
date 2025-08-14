@@ -34,7 +34,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 public class PlaceImageServiceTest {
 
-    private static final int MAX_IMAGE_COUNT = 5;
+    private static final Long MAX_IMAGE_COUNT = 5L;
 
     @Mock
     private PlaceJpaRepository placeJpaRepository;
@@ -102,12 +102,15 @@ public class PlaceImageServiceTest {
             Long placeId = 1L;
             Place place = PlaceFixture.create(placeId);
 
-            int invalidSequence = MAX_IMAGE_COUNT + 1;
+            int sequence = 10;
+            Long imageCount = MAX_IMAGE_COUNT + 1;
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
             given(placeImageJpaRepository.findMaxSequenceByPlace(place))
-                    .willReturn(Optional.of(invalidSequence));
+                    .willReturn(Optional.of(sequence));
+            given(placeImageJpaRepository.countByPlace(place))
+                    .willReturn(imageCount);
 
             PlaceImageRequest placeImageRequest = PlaceImageRequestFixture.create();
 

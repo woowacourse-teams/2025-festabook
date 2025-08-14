@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PlaceImageService {
 
-    private static final int MAX_IMAGE_COUNT = 5;
+    private static final Long MAX_IMAGE_COUNT = 5L;
 
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
