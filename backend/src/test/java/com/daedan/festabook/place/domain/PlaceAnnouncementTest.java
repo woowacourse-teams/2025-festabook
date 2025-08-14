@@ -139,23 +139,83 @@ class PlaceAnnouncementTest {
             });
         }
 
-        @Test
-        void 예외_제목() {
+        @ParameterizedTest
+        @ValueSource(ints = {1, 5, 10, MAX_TITLE_LENGTH})
+        void 성공_플레이스_공지_제목_경계값(int length) {
             // given
             PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
 
             String content = "수정된 내용";
 
-            String invalidTitle = "m".repeat(MAX_TITLE_LENGTH + 1);
+            String title = "m".repeat(length);
+
+            // when & then
+            assertThatCode(() -> placeAnnouncement.updatePlaceAnnouncement(title, content))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_공지_제목_null() {
+            // given
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
+
+            String content = "수정된 내용";
+
+            String invalidTitle = null;
 
             // when & then
             assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(invalidTitle, content))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH);
+                    .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
         }
 
         @Test
-        void 예외_내용() {
+        void 예외_플레이스_공지_제목_공백() {
+            // given
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
+
+            String content = "수정된 내용";
+
+            String invalidTitle = " ";
+
+            // when & then
+            assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(invalidTitle, content))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, 100, 200, MAX_CONTENT_LENGTH})
+        void 성공_플레이스_공지_내용_경계값(int length) {
+            // given
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
+
+            String title = "수정된 공지";
+
+            String content = "m".repeat(length);
+
+            // when & then
+            assertThatCode(() -> placeAnnouncement.updatePlaceAnnouncement(title, content))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_플레이스_공지_내용_최대_null() {
+            // given
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
+
+            String title = "수정된 공지";
+
+            String invalidContent = null;
+
+            // when & then
+            assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(title, invalidContent))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 공지 내용은 null일 수 없습니다.", MAX_CONTENT_LENGTH);
+        }
+
+        @Test
+        void 예외_플레이스_공지_내용_최대_길이_초과() {
             // given
             PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
 
