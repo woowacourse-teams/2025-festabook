@@ -2,6 +2,9 @@ package com.daedan.festabook.data.datasource.local
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource.Companion.DEFAULT_FESTIVAL_NOTIFICATION_ID
+import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource.Companion.KEY_FESTIVAL_NOTIFICATION_ID
+import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource.Companion.KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED
 
 class FestivalNotificationLocalDataSourceImpl(
     private val prefs: SharedPreferences,
@@ -29,10 +32,4 @@ class FestivalNotificationLocalDataSourceImpl(
             KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED,
             false,
         )
-
-    companion object {
-        private const val KEY_FESTIVAL_NOTIFICATION_ID = "festival_notification_id"
-        private const val DEFAULT_FESTIVAL_NOTIFICATION_ID = -1L
-        private const val KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED = "key_festival_notification_allowed"
-    }
 }
