@@ -25,11 +25,7 @@ class SettingFragment :
     private val notificationPermissionManager by lazy {
         NotificationPermissionManager(
             requester = this,
-            onPermissionDenied = {
-                binding.btnNoticeAllow.isChecked = false
-                viewModel.saveNotificationIsAllowed(false)
-                viewModel.updateNotificationIsAllowed(false)
-            },
+            onPermissionDenied = { onPermissionGranted() },
         )
     }
 
@@ -57,6 +53,16 @@ class SettingFragment :
                 // 사용자에게 알림 권한이 필요한 이유를 설명하거나, 설정 화면으로 유도
             }
         }
+
+    override fun onPermissionGranted() {
+        TODO("Not yet implemented")
+    }
+
+    override fun onPermissionDenied() {
+        binding.btnNoticeAllow.isChecked = false
+        viewModel.saveNotificationIsAllowed(false)
+        viewModel.updateNotificationIsAllowed(false)
+    }
 
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 

@@ -55,7 +55,9 @@ class MainActivity :
         SettingFragment().newInstance()
     }
 
-    private val notificationPermissionManager by lazy { NotificationPermissionManager(this) }
+    private val notificationPermissionManager by lazy {
+        NotificationPermissionManager(this)
+    }
 
     override val permissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
@@ -68,6 +70,10 @@ class MainActivity :
                 // 사용자에게 알림 권한이 필요한 이유를 설명하거나, 설정 화면으로 유도
             }
         }
+
+    override fun onPermissionGranted() = Unit
+
+    override fun onPermissionDenied() = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -11,6 +11,7 @@ import timber.log.Timber
 
 class NotificationPermissionManager(
     private val requester: NotificationPermissionRequester,
+    private val onPermissionGranted: () -> Unit = {},
     private val onPermissionDenied: () -> Unit = {},
 ) {
     fun requestNotificationPermission(context: Context) {
@@ -22,6 +23,7 @@ class NotificationPermissionManager(
                 ) == PackageManager.PERMISSION_GRANTED -> {
                     // 이미 권한이 허용됨
                     Timber.d("Notification permission already granted")
+                    onPermissionGranted()
                 }
 
                 requester.shouldShowPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
@@ -50,6 +52,7 @@ class NotificationPermissionManager(
             .setMessage(R.string.notification_permission_message)
             .setPositiveButton(R.string.confirm) { dialog, _ ->
                 requester.permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                onPermissionGranted()
                 dialog.dismiss()
             }.setNegativeButton(R.string.cancel) { dialog, _ ->
                 Timber.d("Notification permission denied")
