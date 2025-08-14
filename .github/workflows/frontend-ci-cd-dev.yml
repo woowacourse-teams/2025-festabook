@@ -3,10 +3,11 @@ name: Frontend CI/CD Dev
 on:
   pull_request:
     branches: [ frontend ]
+    paths: [ 'frontend/**' ]
 
 jobs:
   build-and-deploy-to-AWS:
-    runs-on: self-hosted
+    runs-on: [self-hosted, dev-runner]
 
     steps:
       # 프로젝트 체크아웃
