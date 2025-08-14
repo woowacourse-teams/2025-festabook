@@ -19,6 +19,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
 import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewFragment
+import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewSecondaryFragment
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
@@ -49,6 +50,10 @@ class PlaceMapFragment :
         PlaceCategoryFragment().newInstance()
     }
 
+    private val placeDetailPreviewSecondaryFragment by lazy {
+        PlaceDetailPreviewSecondaryFragment().newInstance()
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -57,7 +62,10 @@ class PlaceMapFragment :
         childFragmentManager.commit {
             add(R.id.fcv_place_list_container, placeListFragment, null)
             add(R.id.fcv_map_container, placeDetailPreviewFragment, null)
-            add(R.id.fcv_place_category_container, placeCategoryFragment, null)
+            add(R.id.fcv_map_container, placeCategoryFragment, null)
+            add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment, null)
+            hide(placeDetailPreviewFragment)
+            hide(placeDetailPreviewSecondaryFragment)
         }
         lifecycleScope.launch {
             setUpMapManager()
@@ -125,20 +133,28 @@ class PlaceMapFragment :
         }
 
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
-            when (selectedPlace) {
-                is SelectedPlaceUiState.Success -> {
-                    mapManager?.selectMarker(selectedPlace.value.place.id)
-                }
+            childFragmentManager.commit {
+                hide(placeListFragment)
+                hide(placeDetailPreviewFragment)
+                hide(placeDetailPreviewSecondaryFragment)
 
-                is SelectedPlaceUiState.Empty -> {
-                    mapManager?.unselectMarker()
-                }
+                when (selectedPlace) {
+                    is SelectedPlaceUiState.Success -> {
+                        mapManager?.selectMarker(selectedPlace.value.place.id)
+                        if (selectedPlace.isSecondary) {
+                            show(placeDetailPreviewSecondaryFragment)
+                        } else {
+                            show(placeDetailPreviewFragment)
+                        }
+                    }
 
-                is SelectedPlaceUiState.Secondary -> {
-                    mapManager?.selectMarker(selectedPlace.placeId)
-                }
+                    is SelectedPlaceUiState.Empty -> {
+                        mapManager?.unselectMarker()
+                        show(placeListFragment)
+                    }
 
-                else -> Unit
+                    else -> Unit
+                }
             }
         }
     }
