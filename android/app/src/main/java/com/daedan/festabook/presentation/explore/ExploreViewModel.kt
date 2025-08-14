@@ -18,23 +18,32 @@ import timber.log.Timber
 class ExploreViewModel(
     private val exploreRepository: ExploreRepository,
 ) : ViewModel() {
-    private val _searchState = MutableLiveData<SearchUiState<University?>>()
-    val searchState: LiveData<SearchUiState<University?>> = _searchState
+    private val _searchState = MutableLiveData<SearchUiState<List<University>>>()
+    val searchState: LiveData<SearchUiState<List<University>>> = _searchState
 
     private val _navigateToMain = SingleLiveData<University?>()
     val navigateToMain: LiveData<University?> = _navigateToMain
+
+    private val _selectedUniversity = MutableLiveData<University>()
+    val selectedUniversity: LiveData<University> = _selectedUniversity
+
+    fun onUniversitySelected(university: University) {
+        _selectedUniversity.value = university
+        _searchState.value = SearchUiState.Success(listOf(university))
+    }
 
     fun onTextInputChanged() {
         when (searchState.value) {
             is SearchUiState.Success, is SearchUiState.Error -> {
                 _searchState.value = SearchUiState.Idle()
             }
+
             else -> {}
         }
     }
 
     fun search(query: String) {
-        if (query.length < 2) {
+        if (query.isEmpty()) {
             _searchState.value = SearchUiState.Idle()
             return
         }
@@ -55,10 +64,11 @@ class ExploreViewModel(
     }
 
     fun onNavigateIconClicked() {
-        val currentState = searchState.value
-        if (currentState is SearchUiState.Success && currentState.value != null) {
-            Timber.d("festivalId 로 화면 이동 - ${currentState.value.festivalId}")
-            _navigateToMain.setValue(currentState.value)
+        val selectedUniversity = _selectedUniversity.value
+
+        if (selectedUniversity != null) {
+            Timber.d("festivalId 로 화면 이동 - ${selectedUniversity.festivalId}")
+            _navigateToMain.setValue(selectedUniversity)
         }
     }
 

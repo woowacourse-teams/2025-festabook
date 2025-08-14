@@ -5,19 +5,29 @@ import com.daedan.festabook.domain.repository.ExploreRepository
 import timber.log.Timber
 
 class ExploreRepositoryImpl : ExploreRepository {
-    override suspend fun search(query: String): Result<University?> {
-        Timber.d("Searching for query: $query") // 쿼리 값 로그
-        return if (query.contains("서울시립대학교")) {
-            val university =
-                University(
-                    festivalId = 1,
-                    universityName = "서울시립대학교",
+    override suspend fun search(query: String): Result<List<University>> {
+        Timber.d("Searching for query: $query")
+        return if (query.contains("서울")) {
+            val universities =
+                listOf(
+                    University(
+                        festivalId = 1,
+                        universityName = "서울시립대학교",
+                    ),
+                    University(
+                        festivalId = 2,
+                        universityName = "서울대학교",
+                    ),
+                    University(
+                        festivalId = 3,
+                        universityName = "서울과학기술대학교",
+                    ),
                 )
-            Timber.d("Found university: $university") // 찾았을 때 로그
-            Result.success(university)
+            Timber.d("검색 결과: $universities")
+            Result.success(universities)
         } else {
-            Timber.d("No university found for query: $query") // 못 찾았을 때 로그
-            Result.success(null)
+            Timber.d("검색결과 없음: $query")
+            Result.success(emptyList())
         }
     }
 }

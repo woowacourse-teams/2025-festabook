@@ -9,13 +9,17 @@ import com.daedan.festabook.R
 import com.daedan.festabook.data.datasource.local.AppPreferencesManager
 import com.daedan.festabook.databinding.ActivityExploreBinding
 import com.daedan.festabook.domain.model.University
+import com.daedan.festabook.presentation.explore.adapter.OnUniversityClickListener
+import com.daedan.festabook.presentation.explore.adapter.SearchResultAdapter
 import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.material.textfield.TextInputLayout
-import timber.log.Timber
 
-class ExploreActivity : AppCompatActivity() {
+class ExploreActivity :
+    AppCompatActivity(),
+    OnUniversityClickListener {
     private val binding by lazy { ActivityExploreBinding.inflate(layoutInflater) }
     private val viewModel by viewModels<ExploreViewModel> { ExploreViewModel.Factory }
+    private val searchResultAdapter by lazy { SearchResultAdapter(this) }
 
     private lateinit var appPreferencesManager: AppPreferencesManager
 
@@ -26,6 +30,7 @@ class ExploreActivity : AppCompatActivity() {
         appPreferencesManager = AppPreferencesManager(this)
 
         setupBinding()
+        setupRecyclerView()
         setupObservers()
     }
 
@@ -45,12 +50,59 @@ class ExploreActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupRecyclerView() {
+        binding.rvSearchResults.adapter = searchResultAdapter
+    }
+
+    private fun setupObservers() {
+        viewModel.searchState.observe(this) { state ->
+            when (state) {
+                is SearchUiState.Idle -> {
+                    binding.tilSearchInputLayout.isErrorEnabled = false
+                    binding.tilSearchInputLayout.error = null
+                    binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                    binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
+                    setOnSearchIconClickListener()
+                }
+
+                is SearchUiState.Loading -> Unit
+                is SearchUiState.Success -> {
+                    // 검색 결과가 없을 때
+                    if (state.value.isEmpty()) {
+                        binding.tilSearchInputLayout.isErrorEnabled = true
+                        binding.tilSearchInputLayout.error = "검색 결과가 없습니다."
+                        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
+                    } else {
+                        // 검색 결과가 있을 때
+                        binding.tilSearchInputLayout.isErrorEnabled = false
+//                        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+//                        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
+//                        setOnSearchIconClickListener()
+
+                        searchResultAdapter.submitList(state.value)
+                    }
+                }
+
+                is SearchUiState.Error -> {
+                    binding.tilSearchInputLayout.isErrorEnabled = true
+                    binding.tilSearchInputLayout.error = "오류가 발생했습니다: ${state.throwable.message}"
+                    binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
+                }
+            }
+        }
+
+        viewModel.navigateToMain.observe(this) { university ->
+            university?.let {
+                saveFestivalIdToLocal(it)
+                navigateToMainActivity(university.festivalId)
+            }
+        }
+    }
+
     private fun setOnSearchIconClickListener() {
         binding.tilSearchInputLayout.setEndIconOnClickListener {
             val query = binding.etSearchText.text.toString()
             val currentState = viewModel.searchState.value
-
-            Timber.d("current state: $currentState")
 
             when (currentState) {
                 is SearchUiState.Idle -> {
@@ -73,57 +125,26 @@ class ExploreActivity : AppCompatActivity() {
         }
     }
 
-    private fun setupObservers() {
-        viewModel.searchState.observe(this) { state ->
-            Timber.d("current state: $state")
-            when (state) {
-                is SearchUiState.Idle -> {
-                    binding.tilSearchInputLayout.isErrorEnabled = false
-                    binding.tilSearchInputLayout.error = null
-                    binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-                    binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
-                    setOnSearchIconClickListener()
-                }
-
-                is SearchUiState.Loading -> Unit
-                is SearchUiState.Success -> {
-                    // 검색 결과가 없을 때
-                    if (state.value == null) {
-                        binding.tilSearchInputLayout.isErrorEnabled = true
-                        binding.tilSearchInputLayout.error = "검색 결과가 없습니다."
-                        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
-                    } else {
-                        // 검색 결과가 있을 때
-                        binding.tilSearchInputLayout.isErrorEnabled = false
-                        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-                        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
-                        setOnSearchIconClickListener()
-                    }
-                }
-
-                is SearchUiState.Error -> {
-                    binding.tilSearchInputLayout.isErrorEnabled = true
-                    binding.tilSearchInputLayout.error = "오류가 발생했습니다: ${state.throwable.message}"
-                    binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
-                }
-            }
-        }
-
-        viewModel.navigateToMain.observe(this) { university ->
-            university?.let {
-                saveFestivalIdToLocal(it)
-                navigateToMainActivity()
-            }
-        }
-    }
-
     private fun saveFestivalIdToLocal(it: University) {
         appPreferencesManager.saveFestivalId(it.festivalId)
     }
 
-    private fun navigateToMainActivity() {
-        val intent = Intent(this, MainActivity::class.java)
+    private fun navigateToMainActivity(festivalId: Long) {
+        val intent =
+            Intent(this, MainActivity::class.java).apply {
+                putExtra("festival_id", festivalId)
+            }
         startActivity(intent)
         finish()
+    }
+
+    override fun onUniversityClick(university: University) {
+        binding.etSearchText.setText(university.universityName)
+        binding.etSearchText.setSelection(university.universityName.length)
+
+        viewModel.onUniversitySelected(university)
+        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
+        setOnSearchIconClickListener()
     }
 }
