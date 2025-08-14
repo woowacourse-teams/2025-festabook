@@ -28,7 +28,7 @@ class LostItemAdapter(
                 override fun areItemsTheSame(
                     oldItem: LostItemUiModel,
                     newItem: LostItemUiModel,
-                ): Boolean = oldItem.imageId == newItem.imageId
+                ): Boolean = oldItem.lostItemId == newItem.lostItemId
 
                 override fun areContentsTheSame(
                     oldItem: LostItemUiModel,

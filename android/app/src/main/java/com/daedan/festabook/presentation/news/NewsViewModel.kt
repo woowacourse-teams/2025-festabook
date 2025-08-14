@@ -44,7 +44,7 @@ class NewsViewModel(
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
-        loadAllLostItems()
+        loadPendingLostItems()
     }
 
     fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
@@ -89,10 +89,19 @@ class NewsViewModel(
         _lostItemClickEvent.value = Event(lostItem)
     }
 
-    private fun loadAllLostItems(state: NoticeUiState = NoticeUiState.Loading) {
-        val lostItems = lostItemRepository.getAllLostItems()
+    fun loadPendingLostItems(state: LostItemUiState = LostItemUiState.InitialLoading) {
+        viewModelScope.launch {
+            _lostItemUiState.value = state
 
-        _lostItemUiState.value = LostItemUiState.Success(lostItems.map { it.toUiModel() })
+            val result = lostItemRepository.getPendingLostItems()
+            result
+                .onSuccess { pendingLostItems ->
+                    _lostItemUiState.value =
+                        LostItemUiState.Success(pendingLostItems.map { it.toUiModel() })
+                }.onFailure {
+                    _lostItemUiState.value = LostItemUiState.Error(it)
+                }
+        }
     }
 
     private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {

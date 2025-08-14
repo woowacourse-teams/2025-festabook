@@ -14,10 +14,11 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemModalDialogBinding
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import timber.log.Timber
 
 class LostItemModalDialogFragment : DialogFragment() {
-    private val lostItem: LostItemUiModel by lazy {
-        arguments?.getObject(KEY_LOST_ITEM) ?: LostItemUiModel()
+    private val lostItem: LostItemUiModel? by lazy {
+        arguments?.getObject(KEY_LOST_ITEM)
     }
 
     private lateinit var binding: FragmentLostItemModalDialogBinding
@@ -53,13 +54,17 @@ class LostItemModalDialogFragment : DialogFragment() {
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-
-        binding.ivModalLostItemImage.load(lostItem.imageUrl)
-        binding.tvModalLostItemStorageLocation.text =
-            binding.tvModalLostItemStorageLocation.context.getString(
-                R.string.modal_lost_item,
-                lostItem.storageLocation,
-            )
+        lostItem?.let {
+            binding.ivModalLostItemImage.load(it.imageUrl)
+            binding.tvModalLostItemStorageLocation.text =
+                binding.tvModalLostItemStorageLocation.context.getString(
+                    R.string.modal_lost_item,
+                    it.storageLocation,
+                )
+        } ?: run {
+            Timber.e("${::LostItemModalDialogFragment.name}: 선택한 분실물이 존재하지 않습니다.")
+            dismissAllowingStateLoss()
+        }
     }
 
     override fun onStart() {

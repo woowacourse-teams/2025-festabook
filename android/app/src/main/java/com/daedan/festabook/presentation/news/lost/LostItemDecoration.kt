@@ -19,9 +19,7 @@ class LostItemDecoration(
 
         outRect.left = column * spacing / spanCount
         outRect.right = spacing - (column + 1) * spacing / spanCount
-
-        if (position >= spanCount) {
-            outRect.top = spacing
-        }
+        outRect.top = spacing
+        if (position >= state.itemCount - 1) outRect.bottom = spacing
     }
 }

@@ -46,7 +46,7 @@ class NewsViewModelTest {
         lostItemRepository = mockk()
         coEvery { noticeRepository.fetchNotices() } returns Result.success(FAKE_NOTICES)
         coEvery { faqRepository.getAllFAQ() } returns Result.success(FAKE_FAQS)
-        coEvery { lostItemRepository.getAllLostItems() } returns FAKE_LOST_ITEM
+        coEvery { lostItemRepository.getPendingLostItems() } returns Result.success(FAKE_LOST_ITEM)
 
         newsViewModel =
             NewsViewModel(
