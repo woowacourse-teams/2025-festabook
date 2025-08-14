@@ -4,11 +4,11 @@ import java.time.LocalTime;
 
 public class EventUpdateRequestFixture {
 
+    private final static Long DEFAULT_EVENT_DATE_ID = 1L;
     private final static LocalTime DEFAULT_START_TIME = LocalTime.of(1, 0);
     private final static LocalTime DEFAULT_END_TIME = LocalTime.of(2, 0);
     private final static String DEFAULT_TITLE = "title";
     private final static String DEFAULT_LOCATION = "location";
-    private final static Long DEFAULT_EVENT_DATE_ID = 1L;
 
     public static EventUpdateRequest create(
             Long eventDateId,
