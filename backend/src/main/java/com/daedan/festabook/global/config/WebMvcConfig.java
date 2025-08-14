@@ -20,7 +20,8 @@ public class WebMvcConfig implements WebMvcConfigurer {
                 .allowedOrigins(
                         "http://localhost:5173",
                         "http://127.0.0.1:5173",
-                        "http://d3tesogs79du0m.cloudfront.net"
+                        "https://festabook.app",
+                        "https://dev.festabook.app"
                 )
                 .allowedMethods("GET", "POST", "PUT", "PATCH", "DELETE")
                 .allowedHeaders("*")

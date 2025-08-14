@@ -22,6 +22,17 @@ public class EventDateFixture {
         );
     }
 
+    public static EventDate create(
+            Long eventDateId,
+            Festival festival
+    ) {
+        return new EventDate(
+                eventDateId,
+                festival,
+                DEFAULT_DATE
+        );
+    }
+
     public static EventDate create() {
         return new EventDate(
                 DEFAULT_FESTIVAL,
