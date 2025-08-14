@@ -116,6 +116,9 @@ class PlaceDetailPreviewFragment :
                     PlaceCategoryUiModel.TRASH_CAN -> getString(R.string.map_category_trash)
                     PlaceCategoryUiModel.TOILET -> getString(R.string.map_category_toilet)
                     PlaceCategoryUiModel.SMOKING_AREA -> getString(R.string.map_category_smoking_area)
+                    PlaceCategoryUiModel.PARKING -> getString(R.string.map_category_parking)
+                    PlaceCategoryUiModel.PRIMARY -> getString(R.string.map_category_primary)
+                    PlaceCategoryUiModel.STAGE -> getString(R.string.map_category_stage)
                     else -> return
                 }
         }
