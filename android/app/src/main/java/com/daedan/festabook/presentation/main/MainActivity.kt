@@ -25,7 +25,7 @@ import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
 import com.daedan.festabook.presentation.home.HomeFragment
 import com.daedan.festabook.presentation.news.NewsFragment
-import com.daedan.festabook.presentation.placeList.PlaceListFragment
+import com.daedan.festabook.presentation.placeList.placeMap.PlaceMapFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
 import com.google.firebase.messaging.FirebaseMessaging
@@ -37,8 +37,8 @@ class MainActivity : AppCompatActivity() {
     }
     private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
 
-    private val placeListFragment by lazy {
-        PlaceListFragment().newInstance()
+    private val placeMapFragment by lazy {
+        PlaceMapFragment().newInstance()
     }
 
     private val homeFragment by lazy {
@@ -212,9 +212,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.fabMap.setOnClickListener {
             binding.bnvMenu.selectedItemId = R.id.item_menu_map
-            val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_LIST_FRAGMENT)
+            val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_MAP_FRAGMENT)
             if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
-            switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
+            switchFragment(placeMapFragment, TAG_PLACE_MAP_FRAGMENT)
         }
     }
 
@@ -252,7 +252,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         private const val TAG_HOME_FRAGMENT = "homeFragment"
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
-        private const val TAG_PLACE_LIST_FRAGMENT = "placeListFragment"
+        private const val TAG_PLACE_MAP_FRAGMENT = "placeMapFragment"
         private const val TAG_NEW_FRAGMENT = "newFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
