@@ -82,7 +82,7 @@ class PlaceMapFragment :
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> {
-                    mapManager?.setPlaceLocation(placeGeographies.value)
+                    mapManager?.setPlaceLocation(placeGeographies.value + DummyPlaceGeography.VALUE)
                 }
 
                 is PlaceListUiState.Error -> {
@@ -129,12 +129,15 @@ class PlaceMapFragment :
                 is SelectedPlaceUiState.Success -> {
                     mapManager?.selectMarker(selectedPlace.value.place.id)
                 }
+
                 is SelectedPlaceUiState.Empty -> {
                     mapManager?.unselectMarker()
                 }
+
                 is SelectedPlaceUiState.Secondary -> {
                     mapManager?.selectMarker(selectedPlace.placeId)
                 }
+
                 else -> Unit
             }
         }
