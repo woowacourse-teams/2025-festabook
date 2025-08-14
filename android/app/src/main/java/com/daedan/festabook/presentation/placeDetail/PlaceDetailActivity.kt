@@ -155,13 +155,6 @@ class PlaceDetailActivity :
 
         fun newIntent(
             context: Context,
-            place: PlaceUiModel,
-        ) = Intent(context, PlaceDetailActivity::class.java).apply {
-            putExtra(KEY_PLACE_UI_MODEL, place)
-        }
-
-        fun newIntent(
-            context: Context,
             placeDetail: PlaceDetailUiModel,
         ) = Intent(context, PlaceDetailActivity::class.java).apply {
             putExtra(KEY_PLACE_DETAIL_UI_MODEL, placeDetail)

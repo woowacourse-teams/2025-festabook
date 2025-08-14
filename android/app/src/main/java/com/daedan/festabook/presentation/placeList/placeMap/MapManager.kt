@@ -29,8 +29,7 @@ class MapManager(
     private val mapClickListener: MapClickListener,
     private val settingUiModel: InitialMapSettingUiModel,
 ) {
-    var markers: List<Marker> = emptyList()
-        private set
+    private var markers: List<Marker> = emptyList()
 
     private val overlayImageManager =
         OverlayImageManager(
@@ -94,7 +93,7 @@ class MapManager(
             setContentPaddingBottom(initialPadding)
             setLogoMarginBottom()
 
-            setOnMapClickListener { point, latLng ->
+            setOnMapClickListener { _, latLng ->
                 println("지도 클릭됨! 위치: $latLng")
                 Timber.d("지도 클릭: $latLng")
                 unselectMarker()
@@ -112,13 +111,10 @@ class MapManager(
 
     fun setupBackToInitialPosition(onCameraChangeListener: OnCameraChangeListener) {
         this.onCameraChangeListener =
-            object : NaverMap.OnCameraChangeListener {
-                override fun onCameraChange(
-                    reason: Int,
-                    animated: Boolean,
-                ) {
-                    onCameraChangeListener.onCameraChanged(isExceededMaxLength())
-                }
+            NaverMap.OnCameraChangeListener { _, _ ->
+                onCameraChangeListener.onCameraChanged(
+                    isExceededMaxLength(),
+                )
             }
         this.onCameraChangeListener?.let {
             map.addOnCameraChangeListener(it)
@@ -134,7 +130,7 @@ class MapManager(
         map.moveCamera(initialCenterCoordinate)
     }
 
-    fun isExceededMaxLength(): Boolean {
+    private fun isExceededMaxLength(): Boolean {
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()
         return currentPosition.distanceTo(initialCenter) > maxLength * zoomWeight
