@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 import AddImageModal from './AddImageModal';
+import { placeAPI } from '../../utils/api';
 
 const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
     const [isReorderMode, setIsReorderMode] = useState(false);
@@ -31,15 +32,27 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
     // 이미지 데이터 초기화
     useEffect(() => {
         if (place?.placeImages) {
-            const normalizedImages = place.placeImages.map(image => ({
-                ...image,
-                id: image.id,
-                imageUrl: image.imageUrl,
-                sequence: image.sequence
-            }));
+            console.log('Original place images:', place.placeImages);
+            const normalizedImages = place.placeImages.map((image, index) => {
+                // 실제 서버 ID를 우선적으로 사용
+                const imageId = image.id || image.placeImageId;
+                if (!imageId) {
+                    console.warn('Image without ID found:', image);
+                }
+                return {
+                    ...image,
+                    id: imageId,
+                    imageUrl: image.imageUrl,
+                    sequence: image.sequence || index + 1
+                };
+            });
+            console.log('Normalized images:', normalizedImages);
+            console.log('Image IDs:', normalizedImages.map(img => ({ id: img.id, sequence: img.sequence })));
             setImages(normalizedImages);
+        } else {
+            setImages([]);
         }
-    }, [place]);
+    }, [place?.placeImages]); // place.placeImages가 변경될 때만 실행
 
 
 
@@ -66,9 +79,13 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
             const draggedId = draggedItem.id;
             const targetId = targetImage.id;
             
+            console.log('Drop event - draggedId:', draggedId, 'targetId:', targetId);
+            
             if (draggedId !== targetId) {
                 const draggedIndex = images.findIndex(img => img.id === draggedId);
                 const targetIndex = images.findIndex(img => img.id === targetId);
+                
+                console.log('Drop indices - draggedIndex:', draggedIndex, 'targetIndex:', targetIndex);
                 
                 const newImages = [...images];
                 const [draggedImage] = newImages.splice(draggedIndex, 1);
@@ -80,6 +97,7 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                     sequence: index + 1
                 }));
                 
+                console.log('Images after reorder:', updatedImages);
                 setImages(updatedImages);
             }
         }
@@ -91,34 +109,106 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
 
     const handleDeleteToggle = (imageId, event) => {
         event.stopPropagation();
-        setSelectedImageToDelete(selectedImageToDelete === imageId ? null : imageId);
+        console.log('Delete toggle clicked for image ID:', imageId);
+        console.log('Current selectedImageToDelete:', selectedImageToDelete);
+        const newSelectedId = selectedImageToDelete === imageId ? null : imageId;
+        console.log('New selectedImageToDelete will be:', newSelectedId);
+        setSelectedImageToDelete(newSelectedId);
     };
 
     const handleSaveOrder = async () => {
         try {
-            // 이미지 순서 저장 로직
-            const updatedImages = images.map((img, index) => ({
-                ...img,
+            console.log('=== handleSaveOrder called ===');
+            console.log('Current images before saving order:', images);
+            
+            // 현재 이미지 배열에서 유효한 이미지만 필터링하고 sequence 재설정
+            const validImages = images.filter(img => img.id && 
+                                                   img.id !== undefined && 
+                                                   img.id !== null && 
+                                                   !img.id.toString().startsWith('temp-'));
+            
+            console.log('Valid images:', validImages);
+            
+            if (validImages.length === 0) {
+                alert('유효한 이미지가 없습니다.');
+                return;
+            }
+            
+            // API 호출하여 순서 변경 - 현재 화면 순서대로 sequence 1부터 설정
+            const sequences = validImages.map((img, index) => ({
+                placeImageId: img.id,
                 sequence: index + 1
             }));
             
-            onUpdate({ placeId: place.placeId, placeImages: updatedImages });
+            console.log('Sequences to send to API:', sequences);
+            console.log('API request body:', JSON.stringify(sequences, null, 2));
+            
+            // API 호출
+            await placeAPI.updatePlaceImageSequences(sequences);
+            console.log('Sequences updated successfully');
+            
+            // 서버에서 최신 데이터를 다시 가져와서 업데이트
+            const response = await placeAPI.getPlaces();
+            const updatedPlace = response.find(p => p.placeId === place.placeId);
+            if (updatedPlace) {
+                const serverImages = updatedPlace.placeImages || [];
+                console.log('Updated images from server (order):', serverImages);
+                // 로컬 상태 업데이트
+                setImages(serverImages);
+                // 부모 컴포넌트에 업데이트 전달
+                onUpdate({ placeId: place.placeId, placeImages: serverImages });
+            } else {
+                console.log('Updated place not found in response (order)');
+            }
+            
             setIsReorderMode(false);
         } catch (error) {
             console.error('Failed to save image order:', error);
+            console.error('Error details:', error.response?.data);
+            alert('이미지 순서 변경에 실패했습니다: ' + error.message);
         }
     };
 
     const handleSaveDeletions = async () => {
         try {
-            if (selectedImageToDelete) {
-                const updatedImages = images.filter(img => img.id !== selectedImageToDelete);
-                onUpdate({ placeId: place.placeId, placeImages: updatedImages });
+            console.log('handleSaveDeletions called');
+            console.log('selectedImageToDelete:', selectedImageToDelete);
+            console.log('selectedImageToDelete type:', typeof selectedImageToDelete);
+            
+            // 유효한 ID인지 확인 (temp-로 시작하지 않는 실제 서버 ID)
+            if (selectedImageToDelete && 
+                selectedImageToDelete !== undefined && 
+                selectedImageToDelete !== null && 
+                !selectedImageToDelete.toString().startsWith('temp-')) {
+                
+                console.log('Deleting image with ID:', selectedImageToDelete);
+                // API 호출하여 이미지 삭제
+                await placeAPI.deletePlaceImage(selectedImageToDelete);
+                console.log('Image deleted successfully');
+                
+                // 서버에서 최신 데이터를 다시 가져와서 업데이트
+                const response = await placeAPI.getPlaces();
+                const updatedPlace = response.find(p => p.placeId === place.placeId);
+                if (updatedPlace) {
+                    const updatedImages = updatedPlace.placeImages || [];
+                    console.log('Updated images from server:', updatedImages);
+                    // 로컬 상태 업데이트
+                    setImages(updatedImages);
+                    // 부모 컴포넌트에 업데이트 전달
+                    onUpdate({ placeId: place.placeId, placeImages: updatedImages });
+                } else {
+                    console.log('Updated place not found in response');
+                }
+            } else {
+                console.log('No valid image selected for deletion');
+                alert('삭제할 이미지를 선택해주세요.');
+                return;
             }
             setIsDeleteMode(false);
             setSelectedImageToDelete(null);
         } catch (error) {
             console.error('Failed to delete images:', error);
+            alert('이미지 삭제에 실패했습니다: ' + error.message);
         }
     };
 
@@ -133,40 +223,75 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
         setShowAddImageModal(true);
     };
 
-    const handleAddImage = (newImages) => {
-        const maxSequence = images.length > 0 ? Math.max(...images.map(img => img.sequence)) : 0;
-        const newImagesWithSequence = newImages.map((img, index) => ({
-            ...img,
-            id: Date.now() + index, // 임시 ID
-            sequence: maxSequence + index + 1
-        }));
-        
-        const updatedImages = [...images, ...newImagesWithSequence];
-        setImages(updatedImages);
-        setShowAddImageModal(false);
+    const handleAddImage = async (newImage) => {
+        try {
+            // 서버에서 최신 데이터를 다시 가져와서 업데이트
+            const response = await placeAPI.getPlaces();
+            const updatedPlace = response.find(p => p.placeId === place.placeId);
+            if (updatedPlace) {
+                onUpdate({ placeId: place.placeId, placeImages: updatedPlace.placeImages || [] });
+                // 로컬 상태도 업데이트
+                setImages(updatedPlace.placeImages || []);
+            }
+            setShowAddImageModal(false);
+        } catch (error) {
+            console.error('Failed to refresh images after adding:', error);
+            // 에러가 발생해도 로컬 상태는 업데이트
+            const maxSequence = images.length > 0 ? Math.max(...images.map(img => img.sequence)) : 0;
+            const newImageWithSequence = {
+                ...newImage,
+                sequence: maxSequence + 1
+            };
+            
+            const updatedImages = [...images, newImageWithSequence];
+            setImages(updatedImages);
+            setShowAddImageModal(false);
+        }
     };
 
-    const handleImageUpdate = () => {
-        onUpdate({ placeId: place.placeId, placeImages: images });
-        onClose();
+    const handleImageUpdate = async () => {
+        try {
+            // 서버에서 최신 데이터를 다시 가져와서 업데이트
+            const response = await placeAPI.getPlaces();
+            const updatedPlace = response.find(p => p.placeId === place.placeId);
+            if (updatedPlace) {
+                const updatedImages = updatedPlace.placeImages || [];
+                // 로컬 상태 업데이트
+                setImages(updatedImages);
+                // 부모 컴포넌트에 업데이트 전달
+                onUpdate({ placeId: place.placeId, placeImages: updatedImages });
+            }
+            onClose();
+        } catch (error) {
+            console.error('Failed to refresh images:', error);
+            // 에러가 발생해도 로컬 상태로 업데이트
+            onUpdate({ placeId: place.placeId, placeImages: images });
+            onClose();
+        }
     };
 
     return (
         <Modal isOpen={true} onClose={onClose} maxWidth="max-w-7xl">
-            <div className="p-6">
+            <div className="p-6 h-[800px] flex flex-col">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-bold text-gray-900">플레이스 이미지 관리</h2>
                     <div className="flex space-x-2">
                         {!isReorderMode && !isDeleteMode && (
                             <>
                                 <button 
-                                    onClick={() => setIsReorderMode(true)}
+                                    onClick={() => {
+                                        console.log('Reorder mode button clicked');
+                                        setIsReorderMode(true);
+                                    }}
                                     className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
                                 >
                                     순서 변경
                                 </button>
                                 <button 
-                                    onClick={() => setIsDeleteMode(true)}
+                                    onClick={() => {
+                                        console.log('Delete mode button clicked');
+                                        setIsDeleteMode(true);
+                                    }}
                                     className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors"
                                 >
                                     삭제
@@ -187,7 +312,16 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                         {(isReorderMode || isDeleteMode) && (
                             <>
                                 <button 
-                                    onClick={isReorderMode ? handleSaveOrder : handleSaveDeletions}
+                                    onClick={async () => {
+                                        console.log('Save button clicked, isReorderMode:', isReorderMode);
+                                        if (isReorderMode) {
+                                            console.log('Calling handleSaveOrder...');
+                                            await handleSaveOrder();
+                                        } else {
+                                            console.log('Calling handleSaveDeletions...');
+                                            await handleSaveDeletions();
+                                        }
+                                    }}
                                     className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
                                 >
                                     {isReorderMode ? '순서 저장' : '삭제 완료'}
@@ -209,21 +343,10 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                     </p>
                 </div>
 
-                {(isReorderMode || isDeleteMode) && (
-                    <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                        <p className="text-yellow-800 text-sm">
-                            {isReorderMode 
-                                ? '드래그하여 플레이스 이미지 순서를 변경하세요. 변경사항을 저장하려면 "순서 저장" 버튼을 클릭하세요.'
-                                : '삭제할 플레이스 이미지를 하나 선택하세요. 선택 완료 후 "삭제 완료" 버튼을 클릭하세요.'
-                            }
-                        </p>
-                    </div>
-                )}
-
                 {images && images.length > 0 ? (
-                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-h-[600px] overflow-y-auto">
-                        {images.map((image, index) => {
-                            const imageId = image.id || `temp-${index}`;
+                    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 flex-1 overflow-y-auto">
+                        {images.filter(image => image.id).map((image, index) => {
+                            const imageId = image.id;
                             return (
                             <div
                                 key={imageId}
@@ -235,7 +358,8 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                                 }`}
                                 onClick={(e) => {
                                     if (isDeleteMode) {
-                                        handleDeleteToggle(imageId, e);
+                                        console.log('Image clicked for deletion:', image);
+                                        handleDeleteToggle(image.id, e);
                                     }
                                 }}
                                 onDragStart={(e) => handleDragStart(e, image)}
@@ -249,8 +373,23 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                                         alt={`플레이스 이미지 ${index + 1}`}
                                         className="w-full h-full object-cover pointer-events-none"
                                     />
-                                    {isDeleteMode && selectedImageToDelete === imageId && (
+                                    {isDeleteMode && selectedImageToDelete === image.id && (
                                         <div className="absolute inset-0 border-4 border-red-500 rounded-lg pointer-events-none"></div>
+                                    )}
+                                    {isDeleteMode && (
+                                        <div className="absolute top-2 left-2">
+                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
+                                                selectedImageToDelete === image.id 
+                                                    ? 'bg-red-500 border-red-500 text-white' 
+                                                    : 'bg-white border-gray-300'
+                                            }`}>
+                                                {selectedImageToDelete === image.id && (
+                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                                    </svg>
+                                                )}
+                                            </div>
+                                        </div>
                                     )}
                                 </div>
                                 <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
@@ -268,28 +407,34 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                     </div>
                 )}
 
-                <div className="mt-6 flex justify-end space-x-3">
-                    <button 
-                        onClick={onClose} 
-                        className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
-                    >
-                        취소
-                    </button>
-                    <button 
-                        onClick={handleImageUpdate} 
-                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
-                    >
-                        저장
-                    </button>
-                </div>
+
+
+                {/* 삭제 및 순서 변경 모드가 아닐 때만 하단 버튼 표시 */}
+                {!isReorderMode && !isDeleteMode && (
+                    <div className="mt-auto pt-6 flex justify-end space-x-3">
+                        <button 
+                            onClick={onClose} 
+                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
+                        >
+                            취소
+                        </button>
+                        <button 
+                            onClick={handleImageUpdate} 
+                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                        >
+                            저장
+                        </button>
+                    </div>
+                )}
             </div>
 
             {showAddImageModal && (
                 <AddImageModal
                     isOpen={showAddImageModal}
                     onClose={() => setShowAddImageModal(false)}
-                    onSave={handleAddImage}
-                    title="플레이스 이미지 추가"
+                    onImageAdded={handleAddImage}
+                    placeId={place?.placeId}
+                    isPlaceImage={true}
                 />
             )}
 

@@ -1,7 +1,7 @@
 // src/utils/api.js
 import axios from 'axios';
 
-const API_HOST = 'http://localhost:8080';
+const API_HOST = 'http://festabook.woowacourse.com:8080';
 
 const api = axios.create({
   baseURL: API_HOST,
@@ -173,6 +173,57 @@ export const placeAPI = {
     } catch (error) {
       console.error('Failed to update place:', error);
       throw new Error('플레이스 수정에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 이미지 생성
+  createPlaceImage: async (placeId, imageData) => {
+    try {
+      const response = await api.post(`/places/${placeId}/images`, imageData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create place image:', error);
+      throw new Error('플레이스 이미지 생성에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 이미지 삭제
+  deletePlaceImage: async (placeImageId) => {
+    try {
+      console.log('API: Deleting place image with ID:', placeImageId);
+      console.log('API: Request URL:', `/places/images/${placeImageId}`);
+      console.log('API: Request method: DELETE');
+      const response = await api.delete(`/places/images/${placeImageId}`);
+      console.log('API: Response status:', response.status);
+      console.log('API: Place image deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete place image:', error);
+      console.error('Error response:', error.response);
+      throw new Error('플레이스 이미지 삭제에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 이미지 순서 변경
+  updatePlaceImageSequences: async (sequences) => {
+    try {
+      console.log('=== API: updatePlaceImageSequences called ===');
+      console.log('API: Request URL:', '/places/images/sequences');
+      console.log('API: Request method: PATCH');
+      console.log('API: Request body:', JSON.stringify(sequences, null, 2));
+      
+      const response = await api.patch('/places/images/sequences', sequences);
+      
+      console.log('API: Response status:', response.status);
+      console.log('API: Response data:', response.data);
+      console.log('API: Place image sequences updated successfully');
+      return response.data;
+    } catch (error) {
+      console.error('=== API: updatePlaceImageSequences failed ===');
+      console.error('Error message:', error.message);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error response status:', error.response?.status);
+      throw new Error('플레이스 이미지 순서 변경에 실패했습니다.');
     }
   }
 };

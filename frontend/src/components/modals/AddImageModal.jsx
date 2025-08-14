@@ -1,8 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from '../common/Modal';
-import { festivalAPI } from '../../utils/api';
+import { festivalAPI, placeAPI } from '../../utils/api';
 
-const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
+const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded, placeId, isPlaceImage = false }) => {
+    // showToast가 없을 경우 기본 함수 사용
+    const handleToast = showToast || ((message) => console.log(message));
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -47,12 +49,12 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
         const maxSize = 5 * 1024 * 1024; // 5MB
 
         if (!allowedTypes.includes(file.type)) {
-            showToast('PNG, JPG, JPEG 파일만 업로드 가능합니다.');
+            handleToast('PNG, JPG, JPEG 파일만 업로드 가능합니다.');
             return false;
         }
 
         if (file.size > maxSize) {
-            showToast('파일 크기는 5MB 이하여야 합니다.');
+            handleToast('파일 크기는 5MB 이하여야 합니다.');
             return false;
         }
 
@@ -98,7 +100,7 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
 
     const handleUpload = async () => {
         if (!selectedFile) {
-            showToast('업로드할 이미지를 선택해주세요.');
+            handleToast('업로드할 이미지를 선택해주세요.');
             return;
         }
 
@@ -107,11 +109,20 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
         try {
             const imageUrl = URL.createObjectURL(selectedFile);
             
-            const response = await festivalAPI.addFestivalImage({
-                imageUrl: imageUrl
-            });
+            let response;
+            if (isPlaceImage && placeId) {
+                // 플레이스 이미지인 경우
+                response = await placeAPI.createPlaceImage(placeId, {
+                    imageUrl: imageUrl
+                });
+            } else {
+                // 축제 이미지인 경우
+                response = await festivalAPI.addFestivalImage({
+                    imageUrl: imageUrl
+                });
+            }
             
-            showToast('이미지가 성공적으로 업로드되었습니다.');
+            handleToast('이미지가 성공적으로 업로드되었습니다.');
             
             // 새로 추가된 이미지를 부모 컴포넌트에 전달
             if (onImageAdded && response) {
@@ -120,7 +131,7 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
                 onClose();
             }
         } catch (error) {
-            showToast('이미지 업로드에 실패했습니다.');
+            handleToast('이미지 업로드에 실패했습니다.');
         } finally {
             setIsUploading(false);
         }

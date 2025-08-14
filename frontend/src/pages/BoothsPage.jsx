@@ -274,17 +274,26 @@ const BoothsPage = () => {
     };
 
     // 이미지 수정 전용 핸들러
-    const handleImageUpdate = (data) => {
-        setBooths(prev => prev.map(prevBooth => {
-            if (prevBooth.placeId !== data.placeId) return prevBooth;
+    const handleImageUpdate = async (data) => {
+        try {
+            // 서버에서 최신 데이터를 다시 가져와서 업데이트
+            const places = await placeAPI.getPlaces();
+            setBooths(places.map(defaultBooth));
+            showToast('플레이스 이미지가 수정되었습니다.');
+        } catch (error) {
+            console.error('Failed to refresh places after image update:', error);
+            // 에러가 발생해도 로컬 상태는 업데이트
+            setBooths(prev => prev.map(prevBooth => {
+                if (prevBooth.placeId !== data.placeId) return prevBooth;
 
-            return {
-                ...prevBooth,
-                placeImages: data.placeImages || [],
-                images: (data.placeImages || []).map(img => img.imageUrl),
-            };
-        }));
-        showToast('플레이스 이미지가 수정되었습니다.');
+                return {
+                    ...prevBooth,
+                    placeImages: data.placeImages || [],
+                    images: (data.placeImages || []).map(img => img.imageUrl),
+                };
+            }));
+            showToast('플레이스 이미지가 수정되었습니다.');
+        }
     };
 
     // 공지 관리 전용 핸들러
