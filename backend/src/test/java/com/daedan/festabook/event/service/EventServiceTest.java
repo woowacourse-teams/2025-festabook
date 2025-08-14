@@ -16,6 +16,9 @@ import com.daedan.festabook.event.dto.EventRequest;
 import com.daedan.festabook.event.dto.EventRequestFixture;
 import com.daedan.festabook.event.dto.EventResponse;
 import com.daedan.festabook.event.dto.EventResponses;
+import com.daedan.festabook.event.dto.EventUpdateRequest;
+import com.daedan.festabook.event.dto.EventUpdateRequestFixture;
+import com.daedan.festabook.event.dto.EventUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
@@ -137,7 +140,7 @@ class EventServiceTest {
                     eventDate
             );
 
-            EventRequest eventRequest = EventRequestFixture.create(
+            EventUpdateRequest eventUpdateRequest = EventUpdateRequestFixture.create(
                     eventDateId,
                     updatedEvent.getStartTime(),
                     updatedEvent.getEndTime(),
@@ -146,7 +149,7 @@ class EventServiceTest {
             );
 
             // when
-            EventResponse result = eventService.updateEvent(eventId, eventRequest);
+            EventUpdateResponse result = eventService.updateEvent(eventId, eventUpdateRequest);
 
             // then
             assertSoftly(s -> {
@@ -161,7 +164,7 @@ class EventServiceTest {
         void 예외_존재하지_않는_이벤트() {
             // given
             Long eventId = 1L;
-            EventRequest request = EventRequestFixture.create();
+            EventUpdateRequest request = EventUpdateRequestFixture.create();
 
             given(eventJpaRepository.findById(eventId))
                     .willReturn(Optional.empty());

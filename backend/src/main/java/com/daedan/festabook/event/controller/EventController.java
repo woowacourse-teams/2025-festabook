@@ -1,7 +1,10 @@
 package com.daedan.festabook.event.controller;
 
 import com.daedan.festabook.event.dto.EventRequest;
+import com.daedan.festabook.event.dto.EventResponse;
 import com.daedan.festabook.event.dto.EventResponses;
+import com.daedan.festabook.event.dto.EventUpdateRequest;
+import com.daedan.festabook.event.dto.EventUpdateResponse;
 import com.daedan.festabook.event.service.EventService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -33,23 +36,23 @@ public class EventController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
-    public void createEvent(
+    public EventResponse createEvent(
             @RequestBody EventRequest request
     ) {
-        eventService.createEvent(request);
+        return eventService.createEvent(request);
     }
 
     @PatchMapping("/events/{eventId}")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "일정 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
     })
-    public void updateEvent(
+    public EventUpdateResponse updateEvent(
             @PathVariable Long eventId,
-            @RequestBody EventRequest request
+            @RequestBody EventUpdateRequest request
     ) {
-        eventService.updateEvent(eventId, request);
+        return eventService.updateEvent(eventId, request);
     }
 
     @DeleteMapping("/events/{eventId}")

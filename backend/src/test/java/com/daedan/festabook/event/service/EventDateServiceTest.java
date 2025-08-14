@@ -13,6 +13,9 @@ import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateRequestFixture;
 import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
+import com.daedan.festabook.event.dto.EventDateUpdateRequest;
+import com.daedan.festabook.event.dto.EventDateUpdateRequestFixture;
+import com.daedan.festabook.event.dto.EventDateUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
@@ -108,16 +111,38 @@ class EventDateServiceTest {
         void 성공() {
             // given
             Long eventDateId = 1L;
-            EventDateRequest request = EventDateRequestFixture.create();
-            EventDate eventDate = EventDateFixture.create(request.date());
+            Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
+            EventDate eventDate = EventDateFixture.create(eventDateId, festival);
             given(eventDateJpaRepository.findById(eventDateId))
                     .willReturn(Optional.of(eventDate));
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create(eventDate.getDate().plusDays(1));
 
             // when
-            eventDateService.updateEventDate(eventDateId, request);
+            EventDateUpdateResponse result = eventDateService.updateEventDate(
+                    DEFAULT_FESTIVAL_ID,
+                    eventDateId,
+                    request
+            );
 
             // then
-            assertThat(eventDate.getDate()).isEqualTo(request.date());
+            assertSoftly(s -> {
+                s.assertThat(result.eventDateId()).isEqualTo(eventDate.getId());
+                s.assertThat(result.date()).isEqualTo(request.date());
+            });
+        }
+
+        @Test
+        void 예외_이미_존재하는_일정_날짜() {
+            // given
+            Long eventDateId = 1L;
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create();
+            given(eventDateJpaRepository.existsByFestivalIdAndDate(DEFAULT_FESTIVAL_ID, request.date()))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> eventDateService.updateEventDate(DEFAULT_FESTIVAL_ID, eventDateId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이미 존재하는 일정 날짜입니다.");
         }
     }
 
