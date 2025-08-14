@@ -14,6 +14,7 @@ import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalResponse;
+import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
@@ -123,6 +124,34 @@ class FestivalServiceTest {
             assertThatThrownBy(() -> festivalService.getFestivalByFestivalId(invalidFestivalId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제입니다.");
+        }
+    }
+
+    @Nested
+    class getUniversitiesByUniversityName {
+
+        @Test
+        void 성공() {
+            // given
+            String universityName1 = "한양 대학교";
+            String universityName2 = "한양 에리카 대학교";
+            Festival festival1 = FestivalFixture.create(universityName1);
+            Festival festival2 = FestivalFixture.create(universityName2);
+
+            String universityNameToSearch = "한양";
+
+            given(festivalJpaRepository.findByUniversityNameContaining(universityNameToSearch))
+                    .willReturn(List.of(festival1, festival2));
+
+            // when
+            FestivalUniversityResponses results =
+                    festivalService.getUniversitiesByUniversityName(universityNameToSearch);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(results.responses().get(0).universityName()).isEqualTo(universityName1);
+                s.assertThat(results.responses().get(1).universityName()).isEqualTo(universityName2);
+            });
         }
     }
 

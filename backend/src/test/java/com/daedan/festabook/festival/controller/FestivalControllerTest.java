@@ -209,6 +209,41 @@ class FestivalControllerTest {
     }
 
     @Nested
+    class getUniversitiesByUniversityName {
+
+        @Test
+        void 성공() {
+            String universityName1 = "한양 대학교";
+            String universityName2 = "한양 에리카 대학교";
+            Festival festival1 = FestivalFixture.create(universityName1);
+            Festival festival2 = FestivalFixture.create(universityName2);
+            festivalJpaRepository.saveAll(List.of(festival1, festival2));
+
+            String universityNameToSearch = "한양";
+
+            int expectedSize = 2;
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize))
+
+                    .body("[0].festivalId", equalTo(festival1.getId().intValue()))
+                    .body("[0].universityName", equalTo(festival1.getUniversityName()))
+                    .body("[0].size()", equalTo(expectedFieldSize))
+
+                    .body("[1].festivalId", equalTo(festival2.getId().intValue()))
+                    .body("[1].universityName", equalTo(festival2.getUniversityName()))
+                    .body("[1].size()", equalTo(expectedFieldSize));
+        }
+    }
+
+    @Nested
     class updateFestivalInformation {
 
         @Test
