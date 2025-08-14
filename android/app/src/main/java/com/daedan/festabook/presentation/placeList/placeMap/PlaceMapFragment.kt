@@ -127,8 +127,7 @@ class PlaceMapFragment :
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
             when (selectedPlace) {
                 is SelectedPlaceUiState.Success -> {
-                    mapManager?.selectMarker(selectedPlace.value.place)
-                    mapManager.selectMarker(selectedPlace.value.place.id)
+                    mapManager?.selectMarker(selectedPlace.value.place.id)
                 }
                 is SelectedPlaceUiState.Empty -> {
                     mapManager?.unselectMarker()
