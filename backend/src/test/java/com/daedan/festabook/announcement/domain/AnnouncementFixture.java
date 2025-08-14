@@ -19,6 +19,14 @@ public class AnnouncementFixture {
         return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, DEFAULT_IS_PINNED, DEFAULT_FESTIVAL);
     }
 
+    public static Announcement createWithTitle(String title) {
+        return new Announcement(title, DEFAULT_CONTENT, DEFAULT_IS_PINNED, DEFAULT_FESTIVAL);
+    }
+
+    public static Announcement createWithContent(String content) {
+        return new Announcement(DEFAULT_TITLE, content, DEFAULT_IS_PINNED, DEFAULT_FESTIVAL);
+    }
+
     public static Announcement create(
             boolean isPinned
     ) {
@@ -52,6 +60,15 @@ public class AnnouncementFixture {
             Festival festival
     ) {
         return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, festival);
+    }
+
+    public static Announcement create(
+            String title,
+            String content,
+            boolean isPinned,
+            Festival festival
+    ) {
+        return new Announcement(title, content, isPinned, festival);
     }
 
     public static List<Announcement> createList(
