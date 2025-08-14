@@ -36,12 +36,18 @@ val PlaceCategoryUiModel.Companion.iconResources: List<Int>
             R.drawable.ic_trash,
             R.drawable.ic_toilet,
             R.drawable.ic_smoking_area,
+            R.drawable.ic_primary,
+            R.drawable.ic_parking,
+            R.drawable.ic_stage,
             R.drawable.ic_food_truck_selected,
             R.drawable.ic_booth_selected,
             R.drawable.ic_bar_selected,
             R.drawable.ic_trash_selected,
             R.drawable.ic_toilet_selected,
             R.drawable.ic_smoking_area_selected,
+            R.drawable.ic_primary_selected,
+            R.drawable.ic_parking_selected,
+            R.drawable.ic_stage_selected,
         )
 
 fun OverlayImageManager.getNormalIcon(category: PlaceCategoryUiModel): OverlayImage? =
