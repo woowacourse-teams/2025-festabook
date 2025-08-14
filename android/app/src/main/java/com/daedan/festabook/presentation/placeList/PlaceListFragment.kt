@@ -62,7 +62,7 @@ class PlaceListFragment :
     }
 
     override fun onMenuItemReClick() {
-        if (binding.root.isGone) return
+        if (binding.root.isGone || !isResumed || view == null) return
         val layoutParams = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
         val behavior = layoutParams?.behavior as? BottomSheetBehavior
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED

@@ -15,7 +15,6 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
-import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import kotlin.getValue
 
@@ -44,7 +43,7 @@ class PlaceDetailPreviewFragment :
         binding.layoutSelectedPlace.setOnClickListener {
             val selectedPlaceState = viewModel.selectedPlace.value
             if (selectedPlaceState is SelectedPlaceUiState.Success) {
-                startPlaceDetailActivity(selectedPlaceState.value.place)
+                startPlaceDetailActivity(selectedPlaceState.value)
             }
         }
     }
@@ -93,7 +92,7 @@ class PlaceDetailPreviewFragment :
         }
     }
 
-    private fun startPlaceDetailActivity(place: PlaceUiModel) {
-        startActivity(PlaceDetailActivity.newIntent(requireContext(), place))
+    private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
+        startActivity(PlaceDetailActivity.newIntent(requireContext(), placeDetail))
     }
 }
