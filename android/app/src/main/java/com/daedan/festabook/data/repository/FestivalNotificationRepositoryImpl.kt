@@ -5,6 +5,7 @@ import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataS
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
+import timber.log.Timber
 
 class FestivalNotificationRepositoryImpl(
     private val festivalNotificationDataSource: FestivalNotificationDataSource,
@@ -13,6 +14,10 @@ class FestivalNotificationRepositoryImpl(
 ) : FestivalNotificationRepository {
     override suspend fun saveFestivalNotification(): Result<Unit> {
         val deviceId = deviceLocalDataSource.getDeviceId()
+        if (deviceId == DeviceLocalDataSource.DEFAULT_DEVICE_ID) {
+            Timber.e("${::FestivalNotificationRepositoryImpl.name}: DeviceId가 없습니다.")
+            return Result.failure(IllegalStateException())
+        }
         val festivalNotificationId = festivalNotificationLocalDataSource.getFestivalNotificationId()
 
         val result =
@@ -22,11 +27,17 @@ class FestivalNotificationRepositoryImpl(
                     deviceId = deviceId,
                 ).toResult()
 
-        return result.mapCatching {
-            festivalNotificationLocalDataSource.saveFestivalNotificationId(
-                it.festivalNotificationId,
-            )
-        }
+        return result
+            .mapCatching {
+                festivalNotificationLocalDataSource.saveFestivalNotificationId(
+                    it.festivalNotificationId,
+                )
+            }.onFailure {
+                Timber.e(
+                    it,
+                    "${::FestivalNotificationRepositoryImpl.name}: festivalNotificationId 저장 실패",
+                )
+            }
     }
 
     override suspend fun deleteFestivalNotification(): Result<Unit> {
