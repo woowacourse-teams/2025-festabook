@@ -129,12 +129,15 @@ class PlaceMapFragment :
                 is SelectedPlaceUiState.Success -> {
                     mapManager?.selectMarker(selectedPlace.value.place.id)
                 }
+
                 is SelectedPlaceUiState.Empty -> {
                     mapManager?.unselectMarker()
                 }
+
                 is SelectedPlaceUiState.Secondary -> {
                     mapManager?.selectMarker(selectedPlace.placeId)
                 }
+
                 else -> Unit
             }
         }
