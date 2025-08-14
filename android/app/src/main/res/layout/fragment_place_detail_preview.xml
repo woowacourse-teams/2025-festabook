@@ -15,7 +15,7 @@
             android:id="@+id/layout_selected_place"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/bg_gray050_radius_20dp"
+            android:background="@drawable/bg_gray050_radius_24dp"
             android:paddingVertical="20dp"
             android:visibility="gone"
             android:paddingHorizontal="16dp">
