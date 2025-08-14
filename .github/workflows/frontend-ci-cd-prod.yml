@@ -3,7 +3,6 @@ name: Frontend CI/CD Prod
 on:
   pull_request:
     branches: [ frontend ]
-    paths: [ 'frontend/**' ]
 
 jobs:
   build-and-deploy-to-AWS:
