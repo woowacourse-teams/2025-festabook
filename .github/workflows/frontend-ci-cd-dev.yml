@@ -6,8 +6,8 @@ on:
     paths: [ 'frontend/**' ]
 
 jobs:
-  build-and-deploy-to-AWS:
-    runs-on: self-hosted
+  build-and-deploy:
+    runs-on: [self-hosted, dev-runner]
 
     steps:
       # 프로젝트 체크아웃
