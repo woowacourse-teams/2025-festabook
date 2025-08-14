@@ -6,8 +6,6 @@ import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
-import com.daedan.festabook.question.dto.QuestionUpdateRequest;
-import com.daedan.festabook.question.dto.QuestionUpdateResponse;
 import com.daedan.festabook.question.service.QuestionService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -66,9 +64,9 @@ public class QuestionController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public QuestionUpdateResponse updateQuestionAndAnswer(
+    public QuestionResponse updateQuestionAndAnswer(
             @PathVariable Long questionId,
-            @RequestBody QuestionUpdateRequest request
+            @RequestBody QuestionRequest request
     ) {
         return questionService.updateQuestionAndAnswer(questionId, request);
     }

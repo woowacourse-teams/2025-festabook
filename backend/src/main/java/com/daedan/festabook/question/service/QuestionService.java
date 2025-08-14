@@ -9,8 +9,6 @@ import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
-import com.daedan.festabook.question.dto.QuestionUpdateRequest;
-import com.daedan.festabook.question.dto.QuestionUpdateResponse;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,10 +45,10 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionUpdateResponse updateQuestionAndAnswer(Long questionId, QuestionUpdateRequest request) {
+    public QuestionResponse updateQuestionAndAnswer(Long questionId, QuestionRequest request) {
         Question question = getQuestionById(questionId);
         question.updateQuestionAndAnswer(request.question(), request.answer());
-        return QuestionUpdateResponse.from(question);
+        return QuestionResponse.from(question);
     }
 
     @Transactional

@@ -20,9 +20,6 @@ import com.daedan.festabook.question.dto.QuestionResponses;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequest;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequestFixture;
 import com.daedan.festabook.question.dto.QuestionSequenceUpdateResponses;
-import com.daedan.festabook.question.dto.QuestionUpdateRequest;
-import com.daedan.festabook.question.dto.QuestionUpdateRequestFixture;
-import com.daedan.festabook.question.dto.QuestionUpdateResponse;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import java.util.List;
 import java.util.Optional;
@@ -145,13 +142,13 @@ class QuestionServiceTest {
             given(questionJpaRepository.findById(questionId))
                     .willReturn(Optional.of(question));
 
-            QuestionUpdateRequest request = QuestionUpdateRequestFixture.create(
+            QuestionRequest request = QuestionRequestFixture.create(
                     "수정 후 제목입니다.",
                     "수정 후 답변입니다."
             );
 
             // when
-            QuestionUpdateResponse result = questionService.updateQuestionAndAnswer(questionId, request);
+            QuestionResponse result = questionService.updateQuestionAndAnswer(questionId, request);
 
             // then
             assertSoftly(s -> {
@@ -164,7 +161,7 @@ class QuestionServiceTest {
         void 예외_존재하지_않는_질문() {
             // given
             Long invalidQuestionId = 0L;
-            QuestionUpdateRequest request = QuestionUpdateRequestFixture.create();
+            QuestionRequest request = QuestionRequestFixture.create();
 
             // when & then
             assertThatThrownBy(() -> questionService.updateQuestionAndAnswer(invalidQuestionId, request))
