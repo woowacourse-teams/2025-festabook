@@ -17,7 +17,7 @@ spring:
     include: secret
   lifecycle:
     # WAS 종료 대기 시간 15초로 설정
-    timeout-per-shutdown-phase: 15s 
+    timeout-per-shutdown-phase: 15s
 
 # Swagger
 springdoc:
@@ -30,3 +30,7 @@ firebase:
   adminsdk:
     account:
       path: classpath:firebase/firebase-adminsdk-account.json
+
+secret:
+  jwt-key: asidjiogorepgkpoergkorepgkopergkgopkregopqwrokgro
+  jwt-expiration: 9023859840385093458
