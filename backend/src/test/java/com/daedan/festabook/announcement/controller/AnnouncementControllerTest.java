@@ -33,6 +33,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.ValueSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -98,6 +99,52 @@ class AnnouncementControllerTest {
 
             then(fcmNotificationManager).should()
                     .sendToFestivalTopic(any(), any());
+        }
+
+        @ParameterizedTest(name = "제목 길이: {0}")
+        @ValueSource(ints = {1, 25, 50})
+        void 성공_제목_길이(int titleLength) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            String title = "a".repeat(titleLength);
+            AnnouncementRequest request = AnnouncementRequestFixture.createWithTitle(title);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/announcements")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("title", equalTo(title));
+        }
+
+        @ParameterizedTest(name = "내용 길이: {0}")
+        @ValueSource(ints = {1, 500, 1000})
+        void 성공_내용_길이(int contentLength) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            String content = "a".repeat(contentLength);
+            AnnouncementRequest request = AnnouncementRequestFixture.createWithContent(content);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/announcements")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("content", equalTo(content));
         }
 
         @Test
@@ -287,6 +334,56 @@ class AnnouncementControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("title", equalTo(request.title()))
                     .body("content", equalTo(request.content()));
+        }
+
+        @ParameterizedTest(name = "수정할 제목 길이: {0}")
+        @ValueSource(ints = {1, 25, 50})
+        void 성공_제목_길이_이하(int titleLength) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Announcement announcement = AnnouncementFixture.create(festival);
+            announcementJpaRepository.save(announcement);
+
+            String title = "a".repeat(titleLength);
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.createWithTitle(title);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/announcements/{announcementId}", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("title", equalTo(title));
+        }
+
+        @ParameterizedTest(name = "수정할 내용 길이: {0}")
+        @ValueSource(ints = {1, 500, 1000})
+        void 성공_내용_길이_이하(int contentLength) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Announcement announcement = AnnouncementFixture.create(festival);
+            announcementJpaRepository.save(announcement);
+
+            String content = "a".repeat(contentLength);
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.createWithContent(content);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/announcements/{announcementId}", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("content", equalTo(content));
         }
 
         @Test
