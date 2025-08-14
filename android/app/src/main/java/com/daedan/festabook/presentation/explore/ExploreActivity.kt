@@ -2,10 +2,9 @@ package com.daedan.festabook.presentation.explore
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.data.datasource.local.AppPreferencesManager
 import com.daedan.festabook.databinding.ActivityExploreBinding
@@ -14,7 +13,7 @@ import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.material.textfield.TextInputLayout
 import timber.log.Timber
 
-class ExploreActivity : AppCompatActivity(R.layout.activity_explore) {
+class ExploreActivity : AppCompatActivity() {
     private val binding by lazy { ActivityExploreBinding.inflate(layoutInflater) }
     private val viewModel by viewModels<ExploreViewModel> { ExploreViewModel.Factory }
 
@@ -41,28 +40,9 @@ class ExploreActivity : AppCompatActivity(R.layout.activity_explore) {
             }
         }
 
-        binding.etSearchText.addTextChangedListener(
-            object : TextWatcher {
-                override fun beforeTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    count: Int,
-                    after: Int,
-                ) {
-                }
-
-                override fun onTextChanged(
-                    s: CharSequence?,
-                    start: Int,
-                    before: Int,
-                    count: Int,
-                ) {
-                    viewModel.onTextInputChanged()
-                }
-
-                override fun afterTextChanged(s: Editable?) {}
-            },
-        )
+        binding.etSearchText.doOnTextChanged { _, _, _, _ ->
+            viewModel.onTextInputChanged()
+        }
     }
 
     private fun setOnSearchIconClickListener() {
@@ -144,5 +124,6 @@ class ExploreActivity : AppCompatActivity(R.layout.activity_explore) {
     private fun navigateToMainActivity() {
         val intent = Intent(this, MainActivity::class.java)
         startActivity(intent)
+        finish()
     }
 }
