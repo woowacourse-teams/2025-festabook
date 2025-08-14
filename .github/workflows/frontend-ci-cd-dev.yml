@@ -5,7 +5,7 @@ on:
     branches: [ frontend ]
 
 jobs:
-  build-and-deploy-to-AWS:
+  build-and-deploy:
     runs-on: [self-hosted, dev-runner]
 
     steps:
