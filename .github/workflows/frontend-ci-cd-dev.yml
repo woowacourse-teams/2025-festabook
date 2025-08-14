@@ -1,8 +1,9 @@
 name: Frontend CI/CD Dev
 
 on:
-  pull_request:
+  push:
     branches: [ frontend ]
+    paths: [ 'frontend/**' ]
 
 jobs:
   build-and-deploy:
