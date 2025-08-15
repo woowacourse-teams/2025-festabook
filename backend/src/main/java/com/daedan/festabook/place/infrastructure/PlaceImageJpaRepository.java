@@ -3,13 +3,21 @@ package com.daedan.festabook.place.infrastructure;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceImage;
 import java.util.List;
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
 public interface PlaceImageJpaRepository extends JpaRepository<PlaceImage, Long> {
 
     List<PlaceImage> findAllByPlaceIdOrderBySequenceAsc(Long placeId);
 
     List<PlaceImage> findAllByPlaceInAndSequence(List<Place> places, int sequence);
+
+    @Query("SELECT MAX(p.sequence) FROM PlaceImage p WHERE p.place = :place")
+    Optional<Integer> findMaxSequenceByPlace(@Param("place") Place place);
+
+    Long countByPlace(Place place);
 
     void deleteAllByPlaceId(Long placeId);
 }

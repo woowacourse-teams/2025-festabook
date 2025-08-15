@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceImage {
+public class PlaceImage implements Comparable<PlaceImage> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,14 +31,37 @@ public class PlaceImage {
     @Column(nullable = false)
     private Integer sequence;
 
-    // TODO PlaceImage 최대 5개 검증 로직 구현
+    protected PlaceImage(
+            Long id,
+            Place place,
+            String imageUrl,
+            Integer sequence
+    ) {
+        this.id = id;
+        this.place = place;
+        this.imageUrl = imageUrl;
+        this.sequence = sequence;
+    }
+
     public PlaceImage(
             Place place,
             String imageUrl,
             Integer sequence
     ) {
-        this.place = place;
-        this.imageUrl = imageUrl;
+        this(
+                null,
+                place,
+                imageUrl,
+                sequence
+        );
+    }
+
+    public void updateSequence(int sequence) {
         this.sequence = sequence;
+    }
+
+    @Override
+    public int compareTo(PlaceImage otherPlaceImage) {
+        return sequence.compareTo(otherPlaceImage.sequence);
     }
 }
