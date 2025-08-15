@@ -129,7 +129,7 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
             <div className="flex items-center gap-4 justify-end mt-2">
                 <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">플레이스 관리</button>
                 <button onClick={() => openModal('placeImages', { place: booth, onUpdate: handleImageUpdate })} className="text-purple-600 hover:text-purple-800 text-sm font-semibold">이미지 관리</button>
-                <button onClick={() => openModal('booth', { booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">세부사항 수정</button>
+                <button onClick={() => openModal('placeEdit', { place: booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">세부사항 수정</button>
                 <button onClick={() => openDeleteModal(booth)}
                     className="text-red-600 hover:text-red-800 text-sm font-semibold">삭제</button>
             </div>
@@ -243,31 +243,18 @@ const BoothsPage = () => {
         });
     }
 
-    // 기존 handleSave는 수정만 담당
+    // 플레이스 수정 완료 후 최신 데이터 조회
     const handleSave = async (data) => {
-        if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
         try {
             setLoading(true);
-            // API 호출을 위한 데이터 구조 변환
-            const updateData = {
-                placeCategory: data.category,
-                title: data.title,
-                description: data.description || '',
-                location: data.location || '',
-                host: data.host || '',
-                startTime: data.startTime || '',
-                endTime: data.endTime || ''
-            };
-            
-            await placeAPI.updatePlace(data.placeId, updateData);
-            
-            // 성공 후 목록 다시 조회
+            // PlaceEditModal에서 이미 API 호출이 완료되었으므로, 
+            // 서버에서 최신 데이터를 다시 조회하여 상태를 업데이트
             const places = await placeAPI.getPlaces();
             setBooths(places.map(defaultBooth));
             showToast('플레이스 정보가 수정되었습니다.');
         } catch (error) {
-            showToast('플레이스 수정에 실패했습니다.');
-            console.error('Failed to update place:', error);
+            showToast('플레이스 정보 업데이트에 실패했습니다.');
+            console.error('Failed to refresh places after update:', error);
         } finally {
             setLoading(false);
         }

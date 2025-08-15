@@ -1,7 +1,7 @@
 // src/utils/api.js
 import axios from 'axios';
 
-const API_HOST = 'http://festabook.woowacourse.com';
+const API_HOST = 'http://festabook.app/api';
 
 const api = axios.create({
   baseURL: API_HOST,
@@ -168,7 +168,7 @@ export const placeAPI = {
   // 플레이스 수정
   updatePlace: async (placeId, placeData) => {
     try {
-      const response = await api.put(`/places/${placeId}`, placeData);
+      const response = await api.patch(`/places/${placeId}`, placeData);
       return response.data;
     } catch (error) {
       console.error('Failed to update place:', error);
