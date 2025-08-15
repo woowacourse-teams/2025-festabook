@@ -5,8 +5,6 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
-import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -25,6 +23,7 @@ public class PlaceAnnouncementService {
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
+    @Transactional
     public PlaceAnnouncementResponse createPlaceAnnouncement(Long placeId, PlaceAnnouncementRequest request) {
         Place place = getPlaceById(placeId);
 
@@ -47,7 +46,6 @@ public class PlaceAnnouncementService {
 
         return PlaceAnnouncementUpdateResponse.from(placeAnnouncement);
     }
-
 
     public void deleteByPlaceAnnouncementId(Long placeAnnouncementId) {
         placeAnnouncementJpaRepository.deleteById(placeAnnouncementId);
