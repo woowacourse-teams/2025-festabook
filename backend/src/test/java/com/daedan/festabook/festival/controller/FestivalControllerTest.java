@@ -241,6 +241,31 @@ class FestivalControllerTest {
                     .body("[1].universityName", equalTo(festival2.getUniversityName()))
                     .body("[1].size()", equalTo(expectedFieldSize));
         }
+
+        @Test
+        void 성공_서로_다른_대학() {
+            String universityName = "한양 대학교";
+            String anotherUniversityName = "서울 대학교";
+            Festival festival1 = FestivalFixture.create(universityName);
+            Festival festival2 = FestivalFixture.create(anotherUniversityName);
+            festivalJpaRepository.saveAll(List.of(festival1, festival2));
+
+            String universityNameToSearch = "한양";
+
+            int expectedSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize))
+
+                    .body("[0].festivalId", equalTo(festival1.getId().intValue()))
+                    .body("[0].universityName", equalTo(festival1.getUniversityName()));
+        }
     }
 
     @Nested
