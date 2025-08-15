@@ -210,6 +210,7 @@ class FestivalControllerTest {
 
     @Nested
     class getUniversitiesByUniversityName {
+        // TODO: 테스트 격리 문제
 
         @Test
         void 성공() {
@@ -244,13 +245,13 @@ class FestivalControllerTest {
 
         @Test
         void 성공_서로_다른_대학() {
-            String universityName = "한양 대학교";
+            String universityName = "한국 대학교";
             String anotherUniversityName = "서울 대학교";
             Festival festival1 = FestivalFixture.create(universityName);
             Festival festival2 = FestivalFixture.create(anotherUniversityName);
             festivalJpaRepository.saveAll(List.of(festival1, festival2));
 
-            String universityNameToSearch = "한양";
+            String universityNameToSearch = "한국";
 
             int expectedSize = 1;
 
