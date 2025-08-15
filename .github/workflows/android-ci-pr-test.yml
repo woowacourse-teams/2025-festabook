@@ -45,6 +45,17 @@ jobs:
           DATA: ${{ secrets.GOOGLE_SERVICES_JSON }}
         run: echo "$DATA" > app/google-services.json
 
+      - name: Restore keystore file
+        run: |
+          mkdir -p app
+          echo "$KEYSTORE_BASE64" | base64 --decode > ./app/festabook_appkey.jks
+          echo "JKS_FILE_PATH=./app/festabook_appkey.jks" >> local.properties
+          echo "STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}" >> local.properties
+          echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> local.properties
+          echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> local.properties
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+
       - name: Clean Project
         run: ./gradlew clean
 
