@@ -24,12 +24,15 @@ import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -110,6 +113,49 @@ class PlaceControllerTest {
                     .body("location", nullValue())
                     .body("host", nullValue())
                     .body("description", nullValue());
+        }
+    }
+
+    @Nested
+    class updatePlace {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create(
+                    PlaceCategory.FOOD_TRUCK,
+                    "수정된 제목",
+                    "수정된 설명",
+                    "수정된 위치",
+                    "수정된 호스트",
+                    LocalTime.of(12, 37),
+                    LocalTime.of(13, 11)
+            );
+
+            int expectedFieldSize = 7;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(placeUpdateRequest)
+                    .patch("/places/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("placeCategory", equalTo(placeUpdateRequest.placeCategory().name()))
+                    .body("title", equalTo(placeUpdateRequest.title()))
+                    .body("description", equalTo(placeUpdateRequest.description()))
+                    .body("location", equalTo(placeUpdateRequest.location()))
+                    .body("host", equalTo(placeUpdateRequest.host()))
+                    .body("startTime", equalTo(placeUpdateRequest.startTime().toString()))
+                    .body("endTime", equalTo(placeUpdateRequest.endTime().toString()));
         }
     }
 
