@@ -55,6 +55,17 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <ImageView
+                    android:id="@+id/iv_back_to_previous"
+                    android:layout_height="30dp"
+                    android:layout_width="30dp"
+                    android:src="@drawable/btn_back_to_previous"
+                    android:clickable="true"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
+                    app:layout_constraintTop_toTopOf="@id/vp_place_images"
+                    />
+
                 <com.daedan.festabook.presentation.placeList.CategoryView
                     android:id="@+id/cv_place_category"
                     android:layout_width="wrap_content"
