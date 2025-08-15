@@ -1,19 +1,19 @@
 package com.daedan.festabook.place.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.assertj.core.api.Assertions.assertThat;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
-import com.daedan.festabook.place.dto.PlaceImageRequest;
-import com.daedan.festabook.place.dto.PlaceImageRequestFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
+import com.daedan.festabook.place.dto.PlaceImageRequest;
+import com.daedan.festabook.place.dto.PlaceImageRequestFixture;
 import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -162,12 +162,12 @@ public class PlaceImageControllerTest {
         @Test
         void 성공_존재하지_않는_플레이스_삭제() {
             // given
-            Long notExistsPlaceId = 0L;
+            Long invalidPlaceImageId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .delete("/places/images/{placeImageId}", notExistsPlaceId)
+                    .delete("/places/images/{placeImageId}", invalidPlaceImageId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }
