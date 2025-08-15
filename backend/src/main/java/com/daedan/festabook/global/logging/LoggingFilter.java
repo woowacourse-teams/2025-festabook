@@ -6,6 +6,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.UUID;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
@@ -17,15 +18,29 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 @Component
 public class LoggingFilter extends OncePerRequestFilter {
 
+    private static final List<String> LOGGING_SKIP_PATH_PREFIX = List.of(
+            "/api/swagger-ui/",
+            "/api/v3/api-docs/",
+            "/api/api-docs",
+            "/api/actuator/"
+
+    );
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
+        String uri = request.getRequestURI();
+        if (isSkipLoggingForPath(uri)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         long startTime = System.currentTimeMillis();
 
         MDC.put("traceId", UUID.randomUUID().toString());
         try {
             String httpMethod = request.getMethod();
-            String uri = request.getRequestURI();
             String queryString = request.getQueryString();
 
             log.info("[API CALL] method={}, uri={}, query={}",
@@ -49,6 +64,11 @@ public class LoggingFilter extends OncePerRequestFilter {
 
             MDC.clear();
         }
+    }
+
+    private boolean isSkipLoggingForPath(String uri) {
+        return LOGGING_SKIP_PATH_PREFIX.stream()
+                .anyMatch(skipPath -> uri.startsWith(skipPath));
     }
 
     private String extractBodyFromCache(HttpServletRequest request) {

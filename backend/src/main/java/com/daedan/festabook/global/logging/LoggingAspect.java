@@ -37,7 +37,11 @@ public class LoggingAspect {
             long end = System.currentTimeMillis();
             long executionTime = end - start;
 
-            log.info("[Method End] Execution Time: {}ms", executionTime);
+            log.info("[Method End] | Class: {} | Method: {} | Execution Time: {}ms",
+                    className,
+                    methodName,
+                    executionTime
+            );
         }
 
         return result;
