@@ -19,11 +19,10 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 public class LoggingFilter extends OncePerRequestFilter {
 
     private static final List<String> LOGGING_SKIP_PATH_PREFIX = List.of(
-            "/api/swagger-ui/",
-            "/api/v3/api-docs/",
+            "/api/swagger-ui",
+            "/api/v3/api-docs",
             "/api/api-docs",
-            "/api/actuator/"
-
+            "/api/actuator"
     );
 
     @Override
