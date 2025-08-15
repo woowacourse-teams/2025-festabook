@@ -62,8 +62,6 @@ jobs:
           check_name: '테스트 결과 🛠️'
           check_run_annotations: 'none'
           comment_mode: 'off'
-      - name: Checkout
-        uses: actions/checkout@v3
 
       - name: Restore keystore file
         run: |
