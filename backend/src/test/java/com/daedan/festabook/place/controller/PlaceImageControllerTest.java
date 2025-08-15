@@ -66,7 +66,7 @@ public class PlaceImageControllerTest {
             placeJpaRepository.save(place);
 
             String imageUrl = "https://example.com/image/1";
-            PlaceImageRequest placeImageRequest = PlaceImageRequestFixture.create(imageUrl);
+            PlaceImageRequest request = PlaceImageRequestFixture.create(imageUrl);
 
             int expectedFieldSize = 3;
             int expectedSequence = 1;
@@ -75,7 +75,7 @@ public class PlaceImageControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .body(placeImageRequest)
+                    .body(request)
                     .post("/places/{placeId}/images", place.getId())
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
