@@ -73,10 +73,12 @@ class PlaceServiceTest {
             Long festivalId = 1L;
             Long expectedPlaceId = 1L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
+            String expectedPlaceTitle = "남문 주차장";
+            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
 
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, festival, expectedPlaceCategory);
+            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, festival, expectedPlaceCategory,
+                    expectedPlaceTitle);
 
             given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));
@@ -90,11 +92,11 @@ class PlaceServiceTest {
             assertSoftly(s -> {
                 s.assertThat(result.placeId()).isEqualTo(expectedPlaceId);
                 s.assertThat(result.category()).isEqualTo(expectedPlaceCategory);
+                s.assertThat(result.title()).isEqualTo(expectedPlaceTitle);
 
                 s.assertThat(result.placeImages().responses()).isEmpty();
                 s.assertThat(result.placeAnnouncements().responses()).isEmpty();
 
-                s.assertThat(result.title()).isNull();
                 s.assertThat(result.startTime()).isNull();
                 s.assertThat(result.endTime()).isNull();
                 s.assertThat(result.location()).isNull();

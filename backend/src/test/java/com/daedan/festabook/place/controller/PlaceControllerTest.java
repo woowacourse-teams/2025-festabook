@@ -87,7 +87,8 @@ class PlaceControllerTest {
             festivalJpaRepository.save(festival);
 
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
+            String expectedPlaceTitle = "동문 주차장";
+            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
 
             int expectedFieldSize = 10;
 
@@ -103,11 +104,11 @@ class PlaceControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("placeId", notNullValue())
                     .body("category", equalTo(expectedPlaceCategory.toString()))
+                    .body("title", equalTo(expectedPlaceTitle))
 
                     .body("placeImages", empty())
                     .body("placeAnnouncements", empty())
 
-                    .body("title", nullValue())
                     .body("startTime", nullValue())
                     .body("endTime", nullValue())
                     .body("location", nullValue())

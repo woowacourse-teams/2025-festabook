@@ -45,12 +45,12 @@ public record PlaceResponse(
                 place.getId(),
                 PlaceImageResponses.from(List.of()),
                 place.getCategory(),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
+                place.getTitle(),
+                place.getStartTime(),
+                place.getEndTime(),
+                place.getLocation(),
+                place.getHost(),
+                place.getDescription(),
                 PlaceAnnouncementResponses.from(List.of())
         );
     }

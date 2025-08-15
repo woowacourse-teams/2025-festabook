@@ -65,16 +65,6 @@ class PlaceTest {
     @Nested
     class validateTitle {
 
-        @Test
-        void 성공_플레이스_이름_null() {
-            // given
-            String title = null;
-
-            // when & then
-            assertThatCode(() -> PlaceFixture.createWithTitle(title))
-                    .doesNotThrowAnyException();
-        }
-
         @ParameterizedTest
         @ValueSource(ints = {1, 5, 10, MAX_TITLE_LENGTH})
         void 성공_플레이스_이름_길이_경계값(int length) {
@@ -87,6 +77,17 @@ class PlaceTest {
         }
 
         @Test
+        void 예외_플레이스_이름_null() {
+            // given
+            String title = null;
+
+            // when & then
+            assertThatThrownBy(() -> PlaceFixture.createWithTitle(title))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 이름은 공백이거나 null일 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_이름_공백() {
             // given
             String title = " ";
@@ -94,7 +95,7 @@ class PlaceTest {
             // when & then
             assertThatThrownBy(() -> PlaceFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 이름은 공백일 수 없습니다.");
+                    .hasMessage("플레이스의 이름은 공백이거나 null일 수 없습니다.");
         }
 
         @Test

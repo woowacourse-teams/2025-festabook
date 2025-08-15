@@ -50,7 +50,7 @@ public class Place {
     @Enumerated(EnumType.STRING)
     private PlaceCategory category;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String title;
 
     @Column(length = 100)
@@ -102,14 +102,14 @@ public class Place {
     public Place(
             Festival festival,
             PlaceCategory category,
-            Coordinate coordinate
+            String title
     ) {
         this(
                 null,
                 festival,
                 category,
-                coordinate,
                 null,
+                title,
                 null,
                 null,
                 null,
@@ -151,12 +151,8 @@ public class Place {
     }
 
     private void validateTitle(String title) {
-        if (title == null) {
-            return;
-        }
-
         if (!StringUtils.hasText(title)) {
-            throw new BusinessException("플레이스의 이름은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스의 이름은 공백이거나 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if (title.length() > MAX_TITLE_LENGTH) {
