@@ -64,7 +64,7 @@ public class PlaceImageService {
 
     private void validateMaxImageCount(Place place) {
         Long imageCount = placeImageJpaRepository.countByPlace(place);
-        if (imageCount > MAX_IMAGE_COUNT) {
+        if (imageCount >= MAX_IMAGE_COUNT) {
             throw new BusinessException(
                     String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_COUNT),
                     HttpStatus.BAD_REQUEST
