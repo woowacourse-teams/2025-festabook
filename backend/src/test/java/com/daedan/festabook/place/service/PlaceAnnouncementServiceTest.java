@@ -12,6 +12,8 @@ import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
+import static org.mockito.BDDMockito.then;
+
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.Optional;
@@ -84,6 +86,23 @@ class PlaceAnnouncementServiceTest {
             assertThatThrownBy(() -> placeAnnouncementService.createPlaceAnnouncement(place.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 공지사항은 %d개까지 작성이 가능합니다.", PLACE_ANNOUNCEMENT_MAX_COUNT));
+        }
+    }
+
+    @Nested
+    class deleteByPlaceAnnouncementId {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeAnnouncementId = 1L;
+
+            // when
+            placeAnnouncementService.deleteByPlaceAnnouncementId(placeAnnouncementId);
+
+            // then
+            then(placeAnnouncementJpaRepository).should()
+                    .deleteById(placeAnnouncementId);
         }
     }
 }

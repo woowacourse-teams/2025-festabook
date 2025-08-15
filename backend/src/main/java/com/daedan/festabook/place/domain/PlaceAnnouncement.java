@@ -46,7 +46,8 @@ public class PlaceAnnouncement {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
-    public PlaceAnnouncement(
+    protected PlaceAnnouncement(
+            Long id,
             Place place,
             String title,
             String content
@@ -54,9 +55,23 @@ public class PlaceAnnouncement {
         validateTitle(title);
         validateContent(content);
 
+        this.id = id;
         this.place = place;
         this.title = title;
         this.content = content;
+    }
+
+    public PlaceAnnouncement(
+            Place place,
+            String title,
+            String content
+    ) {
+        this(
+                null,
+                place,
+                title,
+                content
+        );
     }
 
     private void validateTitle(String title) {

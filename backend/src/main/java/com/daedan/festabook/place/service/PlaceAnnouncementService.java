@@ -45,4 +45,9 @@ public class PlaceAnnouncementService {
         return placeJpaRepository.findById(placeId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스입니다.", HttpStatus.NOT_FOUND));
     }
+
+
+    public void deleteByPlaceAnnouncementId(Long placeAnnouncementId) {
+        placeAnnouncementJpaRepository.deleteById(placeAnnouncementId);
+    }
 }
