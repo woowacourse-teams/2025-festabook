@@ -42,16 +42,6 @@ public class PlaceImageService {
         return PlaceImageResponse.from(savedPlaceImage);
     }
 
-    private void validateMaxImageCount(Place place) {
-        Long imageCount = placeImageJpaRepository.countByPlace(place);
-        if (imageCount > MAX_IMAGE_COUNT) {
-            throw new BusinessException(
-                    String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_COUNT),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-    }
-
     @Transactional
     public PlaceImageSequenceUpdateResponses updatePlaceImagesSequence(List<PlaceImageSequenceUpdateRequest> requests) {
         // TODO: sequence DTO 값 검증 추가
@@ -70,6 +60,16 @@ public class PlaceImageService {
 
     public void deletePlaceImageByPlaceImageId(Long placeImageId) {
         placeImageJpaRepository.deleteById(placeImageId);
+    }
+
+    private void validateMaxImageCount(Place place) {
+        Long imageCount = placeImageJpaRepository.countByPlace(place);
+        if (imageCount > MAX_IMAGE_COUNT) {
+            throw new BusinessException(
+                    String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_COUNT),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     private Place getPlaceById(Long placeId) {
