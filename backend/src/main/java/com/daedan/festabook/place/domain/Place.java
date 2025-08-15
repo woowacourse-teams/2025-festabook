@@ -127,12 +127,8 @@ public class Place {
     }
 
     private void validateTitle(String title) {
-        if (title == null) {
-            return;
-        }
-
         if (!StringUtils.hasText(title)) {
-            throw new BusinessException("플레이스의 이름은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스의 이름은 공백이거나 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if (title.length() > MAX_TITLE_LENGTH) {
