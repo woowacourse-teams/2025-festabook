@@ -2,12 +2,12 @@ package com.daedan.festabook.announcement.controller;
 
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
-import com.daedan.festabook.announcement.service.AnnouncementPinUpdateResponse;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateResponse;
 import com.daedan.festabook.announcement.service.AnnouncementService;
-import com.daedan.festabook.announcement.service.AnnouncementUpdateResponse;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

@@ -1,4 +1,4 @@
-package com.daedan.festabook.announcement.service;
+package com.daedan.festabook.announcement.dto;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 
