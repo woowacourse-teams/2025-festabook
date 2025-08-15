@@ -84,6 +84,7 @@ class PlaceDetailActivity :
 
     private fun setUpObserver() {
         viewModel.placeDetail.observe(this) { result ->
+
             when (result) {
                 is PlaceDetailUiState.Error -> {
                     Timber.w(result.throwable, "PlaceDetailActivity: ${result.throwable.message}")
@@ -112,6 +113,7 @@ class PlaceDetailActivity :
             )
         } else {
             placeImageAdapter.submitList(placeDetail.images)
+            binding.clImageIndicator.setViewPager(binding.vpPlaceImages)
         }
 
         if (placeDetail.notices.isEmpty()) {
