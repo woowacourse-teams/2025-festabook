@@ -103,7 +103,7 @@ class PlaceAnnouncementControllerTest {
             PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
             placeAnnouncementJpaRepository.save(placeAnnouncement);
 
-            int expectedFieldSize = 2;
+            int expectedFieldSize = 3;
 
             PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create("수정된 공지", "수정된 내용");
 
@@ -116,6 +116,7 @@ class PlaceAnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
+                    .body("id", notNullValue())
                     .body("title", equalTo(request.title()))
                     .body("content", equalTo(request.content()));
         }
