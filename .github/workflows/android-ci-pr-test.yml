@@ -62,3 +62,10 @@ jobs:
           check_name: '테스트 결과 🛠️'
           check_run_annotations: 'none'
           comment_mode: 'off'
+
+      - name: Restore keystore file
+        run: |
+          echo "$KEYSTORE_BASE64" | base64 --decode > ./festabook_appkey.jks
+          echo "JKS_FILE_PATH=./app/festabook_appkey.jks" >> ./local.properties
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
