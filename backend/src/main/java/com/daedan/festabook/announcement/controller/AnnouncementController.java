@@ -5,7 +5,9 @@ import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
+import com.daedan.festabook.announcement.service.AnnouncementPinUpdateResponse;
 import com.daedan.festabook.announcement.service.AnnouncementService;
+import com.daedan.festabook.announcement.service.AnnouncementUpdateResponse;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -63,7 +65,7 @@ public class AnnouncementController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public AnnouncementResponse updateAnnouncement(
+    public AnnouncementUpdateResponse updateAnnouncement(
             @PathVariable Long announcementId,
             @RequestBody AnnouncementUpdateRequest request
     ) {
@@ -71,17 +73,17 @@ public class AnnouncementController {
     }
 
     @PatchMapping("/{announcementId}/pin")
-    @ResponseStatus(HttpStatus.NO_CONTENT)
+    @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 공지 고정 형태 수정")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public void updateAnnouncementPin(
+    public AnnouncementPinUpdateResponse updateAnnouncementPin(
             @PathVariable Long announcementId,
             @Parameter(hidden = true) @FestivalId Long festivalId,
             @RequestBody AnnouncementPinUpdateRequest request
     ) {
-        announcementService.updateAnnouncementPin(announcementId, festivalId, request);
+        return announcementService.updateAnnouncementPin(announcementId, festivalId, request);
     }
 
     @DeleteMapping("/{announcementId}")
