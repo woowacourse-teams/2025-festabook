@@ -14,6 +14,16 @@ import com.daedan.festabook.place.dto.PlaceAnnouncementRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
 import static org.mockito.BDDMockito.then;
 
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.BDDMockito.given;
+
+import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.place.domain.PlaceAnnouncement;
+import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequestFixture;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.Optional;
@@ -86,6 +96,54 @@ class PlaceAnnouncementServiceTest {
             assertThatThrownBy(() -> placeAnnouncementService.createPlaceAnnouncement(place.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 공지사항은 %d개까지 작성이 가능합니다.", PLACE_ANNOUNCEMENT_MAX_COUNT));
+        }
+    }
+
+    @Nested
+    class updatePlaceAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeAnnouncementId = 1L;
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create("제목", "내용");
+
+            given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
+                    .willReturn(Optional.of(placeAnnouncement));
+
+            PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create(
+                    "수정된 제목",
+                    "수정된 내용"
+            );
+
+            // when
+            PlaceAnnouncementUpdateResponse result = placeAnnouncementService.updatePlaceAnnouncement(
+                    placeAnnouncementId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.content()).isEqualTo(request.content());
+            });
+        }
+
+        @Test
+        void 예외_플레이스_공지사항이_존재하지_않음() {
+            // given
+            Long placeAnnouncementId = 1L;
+
+            given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
+                    .willReturn(Optional.empty());
+
+            PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create(
+                    "수정된 제목",
+                    "수정된 내용"
+            );
+
+            // when & then
+            assertThatThrownBy(() -> placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 플레이스 공지입니다.");
         }
     }
 

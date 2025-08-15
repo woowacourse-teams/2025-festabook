@@ -74,6 +74,14 @@ public class PlaceAnnouncement {
         );
     }
 
+    public void updatePlaceAnnouncement(String title, String content) {
+        validateTitle(title);
+        validateContent(content);
+
+        this.title = title;
+        this.content = content;
+    }
+
     private void validateTitle(String title) {
         if (!StringUtils.hasText(title)) {
             throw new BusinessException("플레이스 공지의 제목은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);

@@ -2,6 +2,8 @@ package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.service.PlaceAnnouncementService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -15,6 +17,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +44,19 @@ public class PlaceAnnouncementController {
             @RequestBody PlaceAnnouncementRequest request
     ) {
         return placeAnnouncementService.createPlaceAnnouncement(placeId, request);
+    }
+
+    @PatchMapping("/announcements/{placeAnnouncementId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제에 대한 플레이스 공지사항 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public PlaceAnnouncementUpdateResponse updatePlaceAnnouncement(
+            @PathVariable Long placeAnnouncementId,
+            @RequestBody PlaceAnnouncementUpdateRequest request
+    ) {
+        return placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, request);
     }
 
     @DeleteMapping("/announcements/{placeAnnouncementId}")

@@ -9,6 +9,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import static org.hamcrest.Matchers.equalTo;
+
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
@@ -18,6 +22,12 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
+import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceAnnouncement;
+import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
+import com.daedan.festabook.place.domain.PlaceFixture;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
@@ -83,6 +93,39 @@ class PlaceAnnouncementControllerTest {
                     .body("title", equalTo(request.title()))
                     .body("content", equalTo(request.content()))
                     .body("createdAt", notNullValue());
+        }
+    }
+
+    @Nested
+    class updatePlaceAnnouncement {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.save(placeAnnouncement);
+
+            int expectedFieldSize = 2;
+
+            PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create("수정된 공지", "수정된 내용");
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .patch("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("title", equalTo(request.title()))
+                    .body("content", equalTo(request.content()));
         }
     }
 
