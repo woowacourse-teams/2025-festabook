@@ -11,7 +11,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -51,10 +51,8 @@ class AnnouncementTest {
         }
 
         @ParameterizedTest(name = "제목: {0}")
-        @CsvSource(value = {
-                "null",
-                "'    '"
-        }, nullValues = "null")
+        @NullAndEmptySource
+        @ValueSource(strings = "    ")
         void 예외_제목_null_혹은_빈문자열(String invalidTitle) {
             assertThatThrownBy(() -> AnnouncementFixture.createWithTitle(invalidTitle))
                     .isInstanceOf(BusinessException.class)
@@ -99,10 +97,8 @@ class AnnouncementTest {
         }
 
         @ParameterizedTest(name = "내용: {0}")
-        @CsvSource(value = {
-                "null",
-                "'    '"
-        }, nullValues = "null")
+        @NullAndEmptySource
+        @ValueSource(strings = "    ")
         void 예외_내용_null_혹은_빈문자열(String invalidContent) {
             assertThatThrownBy(() -> AnnouncementFixture.createWithContent(invalidContent))
                     .isInstanceOf(BusinessException.class)
