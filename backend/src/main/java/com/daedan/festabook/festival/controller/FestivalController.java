@@ -79,7 +79,7 @@ public class FestivalController {
 
     @GetMapping("/universities")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "대학 이름 기준 축제 조회")
+    @Operation(summary = "대학 이름으로 축제 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
