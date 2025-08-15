@@ -10,6 +10,7 @@ import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -47,12 +48,11 @@ class PlaceAnnouncementTest {
                     .doesNotThrowAnyException();
         }
 
-        @Test
-        void 예외_플레이스_공지_제목_null() {
-            // given
-            String title = null;
-
-            // when & then
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = "    ")
+        void 예외_플레이스_공지_제목_null_공백(String title) {
+            // given & when & then
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
@@ -67,17 +67,6 @@ class PlaceAnnouncementTest {
             assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH);
-        }
-
-        @Test
-        void 예외_플레이스_공지_제목_공백() {
-            // given
-            String title = " ";
-
-            // when & then
-            assertThatThrownBy(() -> PlaceAnnouncementFixture.createWithTitle(title))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
         }
     }
 
@@ -154,36 +143,21 @@ class PlaceAnnouncementTest {
                     .doesNotThrowAnyException();
         }
 
-        @Test
-        void 예외_플레이스_공지_제목_null() {
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = "    ")
+        void 예외_플레이스_공지_제목_null_공백(String invalidTitle) {
             // given
             PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
 
             String content = "수정된 내용";
-
-            String invalidTitle = null;
 
             // when & then
             assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(invalidTitle, content))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
         }
-
-        @Test
-        void 예외_플레이스_공지_제목_공백() {
-            // given
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create();
-
-            String content = "수정된 내용";
-
-            String invalidTitle = " ";
-
-            // when & then
-            assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(invalidTitle, content))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
-        }
-
+        
         @ParameterizedTest
         @ValueSource(ints = {1, 100, 200, MAX_CONTENT_LENGTH})
         void 성공_플레이스_공지_내용_경계값(int length) {
