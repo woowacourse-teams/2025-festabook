@@ -11,4 +11,14 @@ public class PlaceAnnouncementRequestFixture {
                 DEFAULT_CONTENT
         );
     }
+
+    public static PlaceAnnouncementRequest create(
+            String title,
+            String content
+    ) {
+        return new PlaceAnnouncementRequest(
+                title,
+                content
+        );
+    }
 }

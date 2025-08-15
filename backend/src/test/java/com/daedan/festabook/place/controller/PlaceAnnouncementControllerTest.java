@@ -1,31 +1,18 @@
 package com.daedan.festabook.place.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
-import static org.assertj.core.api.Assertions.assertThat;
-
-import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.domain.FestivalFixture;
-import static org.hamcrest.Matchers.equalTo;
-
-import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceAnnouncement;
+import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequestFixture;
-import com.daedan.festabook.place.domain.Place;
-import com.daedan.festabook.place.domain.PlaceAnnouncement;
-import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
-import com.daedan.festabook.place.domain.PlaceFixture;
-import com.daedan.festabook.place.domain.Place;
-import com.daedan.festabook.place.domain.PlaceAnnouncement;
-import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
-import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -76,7 +63,12 @@ class PlaceAnnouncementControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
+            String expectedTitle = "공지입니다.";
+            String expectedContent = "공지내용입니다.";
+            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create(
+                    expectedTitle,
+                    expectedContent
+            );
 
             int expectedFieldSize = 4;
 
@@ -90,8 +82,8 @@ class PlaceAnnouncementControllerTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("id", notNullValue())
-                    .body("title", equalTo(request.title()))
-                    .body("content", equalTo(request.content()))
+                    .body("title", equalTo(expectedTitle))
+                    .body("content", equalTo(expectedContent))
                     .body("createdAt", notNullValue());
         }
     }
