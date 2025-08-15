@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList
 import android.os.Bundle
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -61,6 +62,7 @@ class PlaceListFragment :
     }
 
     override fun onMenuItemReClick() {
+        if (binding.root.isGone || !isResumed || view == null) return
         val layoutParams = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
         val behavior = layoutParams?.behavior as? BottomSheetBehavior
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
@@ -139,7 +141,7 @@ class PlaceListFragment :
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {
-        startActivity(PlaceDetailActivity.newIntent(requireContext(), place))
+        viewModel.selectPlace(place.id, place.category)
     }
 
     private fun showSkeleton() {

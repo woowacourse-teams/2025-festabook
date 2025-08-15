@@ -25,6 +25,8 @@
     <!--green-->
     <color name="green400">#00AB40</color>
 
+    <color name="orange400">#FF9D00</color>
+
     <!--    transparent-->
     <color name="transparent">#00000000</color>
 </resources>

@@ -9,12 +9,14 @@ import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
+import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
 import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewFragment
 import com.naver.maps.map.MapFragment
@@ -25,7 +27,9 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 import kotlin.getValue
 
-class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment_place_map) {
+class PlaceMapFragment :
+    BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment_place_map),
+    OnMenuItemReClickListener {
     private lateinit var naverMap: NaverMap
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
@@ -109,7 +113,7 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
         }
 
         viewModel.backToInitialPositionClicked.observe(viewLifecycleOwner) { event ->
-            mapManager.moveToInitialPosition()
+            mapManager.moveToPosition()
         }
 
         viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
@@ -118,6 +122,30 @@ class PlaceMapFragment : BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment
             } else {
                 mapManager.filterPlace(selectedCategories)
             }
+        }
+
+        viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            when (selectedPlace) {
+                is SelectedPlaceUiState.Success -> {
+                    mapManager.selectMarker(selectedPlace.value.place)
+                }
+                is SelectedPlaceUiState.Empty -> {
+                    mapManager.unselectMarker()
+                }
+                else -> Unit
+            }
+        }
+    }
+
+    override fun onMenuItemReClick() {
+        val childFragments =
+            listOf(
+                placeListFragment,
+                placeDetailPreviewFragment,
+                placeCategoryFragment,
+            )
+        childFragments.forEach { fragment ->
+            (fragment as? OnMenuItemReClickListener)?.onMenuItemReClick()
         }
     }
 

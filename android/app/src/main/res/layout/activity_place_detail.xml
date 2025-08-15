@@ -55,29 +55,15 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
-
-                <com.google.android.material.card.MaterialCardView
+                <com.daedan.festabook.presentation.placeList.CategoryView
                     android:id="@+id/cv_place_category"
-                    android:layout_width="50dp"
-                    android:layout_height="17dp"
-                    android:layout_marginTop="24dp"
-                    app:cardBackgroundColor="@color/gray900"
-                    app:cardCornerRadius="6dp"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     app:category="@{placeDetail.place.category}"
+                    android:layout_marginTop="24dp"
                     app:layout_constraintStart_toStartOf="@id/start_guideline"
                     app:layout_constraintTop_toBottomOf="@id/vp_place_images"
-                    app:strokeWidth="0dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:textAppearance="@style/PretendardRegular10"
-                        android:textColor="@color/gray050"
-                        app:category="@{placeDetail.place.category}"
-                        tools:text="푸드트럭" />
-
-                </com.google.android.material.card.MaterialCardView>
+                    />
 
                 <TextView
                     android:id="@+id/tv_title_place"

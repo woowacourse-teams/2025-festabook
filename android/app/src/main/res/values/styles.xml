@@ -13,6 +13,12 @@
         <item name="android:textSize">20sp</item>
     </style>
 
+    <style name="PretendardBold18">
+        <item name="android:fontFamily">@font/pretendard_bold</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
     <style name="PretendardBold14">
         <item name="android:fontFamily">@font/pretendard_bold</item>
         <item name="android:textStyle">bold</item>
@@ -46,6 +52,12 @@
 
     <style name="PretendardBold12">
         <item name="android:fontFamily">@font/pretendard_bold</item>
+        <item name="android:textStyle">normal</item>
+        <item name="android:textSize">12sp</item>
+    </style>
+
+    <style name="PretendardMedium12">
+        <item name="android:fontFamily">@font/pretendard_medium</item>
         <item name="android:textStyle">normal</item>
         <item name="android:textSize">12sp</item>
     </style>
