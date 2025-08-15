@@ -53,12 +53,17 @@ android {
         }
 
     signingConfigs {
-
-        create("release") {
-            storeFile = file(jksFilePath)
-            storePassword = storePasswordValue
-            keyPassword = keyPasswordValue
-            keyAlias = keyAliasValue
+        if (jksFilePath.isNotBlank() &&
+            storePasswordValue.isNotBlank() &&
+            keyPasswordValue.isNotBlank() &&
+            keyAliasValue.isNotBlank()
+        ) {
+            create("release") {
+                storeFile = file(jksFilePath)
+                storePassword = storePasswordValue
+                keyPassword = keyPasswordValue
+                keyAlias = keyAliasValue
+            }
         }
     }
 
