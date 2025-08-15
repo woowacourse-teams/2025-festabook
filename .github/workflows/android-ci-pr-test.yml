@@ -67,7 +67,7 @@ jobs:
 
       - name: Restore keystore file
         run: |
-          echo "$KEYSTORE_BASE64" | base64 --decode > festabook_appkey.jks
+          echo "$KEYSTORE_BASE64" | base64 --decode > app/festabook_appkey.jks
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
