@@ -1,5 +1,7 @@
 package com.daedan.festabook.place.dto;
 
+import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record PlaceAnnouncementRequest(
@@ -10,4 +12,12 @@ public record PlaceAnnouncementRequest(
         @Schema(description = "공지 내용", example = "우산을 챙겨주세요.")
         String content
 ) {
+
+    public PlaceAnnouncement toEntity(Place place) {
+        return new PlaceAnnouncement(
+                place,
+                title,
+                content
+        );
+    }
 }

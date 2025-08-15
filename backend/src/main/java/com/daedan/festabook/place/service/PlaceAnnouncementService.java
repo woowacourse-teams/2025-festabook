@@ -29,7 +29,7 @@ public class PlaceAnnouncementService {
 
         validatePlaceAnnouncementMaxCount(place);
 
-        PlaceAnnouncement placeAnnouncement = new PlaceAnnouncement(place, request.title(), request.content());
+        PlaceAnnouncement placeAnnouncement = request.toEntity(place);
         PlaceAnnouncement savedPlaceAnnouncement = placeAnnouncementJpaRepository.save(placeAnnouncement);
 
         return PlaceAnnouncementResponse.from(savedPlaceAnnouncement);
