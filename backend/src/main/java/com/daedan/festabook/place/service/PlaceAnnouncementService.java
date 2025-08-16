@@ -22,8 +22,7 @@ public class PlaceAnnouncementService {
 
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
-
-    @Transactional
+    
     public PlaceAnnouncementResponse createPlaceAnnouncement(Long placeId, PlaceAnnouncementRequest request) {
         Place place = getPlaceById(placeId);
 
