@@ -37,6 +37,7 @@ jobs:
           DEPLOY_PATH="/home/ubuntu/2025-festabook/static/frontend"
           SOURCE_PATH="./frontend/dist"
 
+          sudo mkdir -p "${DEPLOY_PATH}"
           sudo rm -rf "${DEPLOY_PATH}/dist"
           sudo cp -r "${SOURCE_PATH}" "${DEPLOY_PATH}"
           sudo chmod -R 755 "${DEPLOY_PATH}"
