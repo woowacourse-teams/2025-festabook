@@ -110,7 +110,7 @@ jobs:
             sleep 1
           done
 
-          NEW_WAS_PID=$(sudo lsof -t -i:${WAS_PORT}|| true)
+          NEW_WAS_PID=$(sudo lsof -t -i:${WAS_PORT} || true)
           if [ -n "$NEW_WAS_PID" ]; then
             echo "Application started with PID: $NEW_WAS_PID."
           else
