@@ -1,6 +1,6 @@
 package com.daedan.festabook.data.repository
 
-import com.daedan.festabook.data.datasource.remote.organization.FestivalDataSource
+import com.daedan.festabook.data.datasource.remote.festival.FestivalDataSource
 import com.daedan.festabook.data.model.response.festival.toDomain
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.Organization

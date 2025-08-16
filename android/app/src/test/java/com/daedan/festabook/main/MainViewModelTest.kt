@@ -1,14 +1,14 @@
 package com.daedan.festabook.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.daedan.festabook.data.datasource.local.AppPreferencesManager
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.presentation.main.MainViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
-import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.just
 import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -28,15 +28,13 @@ class MainViewModelTest {
 
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var deviceRepository: DeviceRepository
-    private lateinit var appPreferencesManager: AppPreferencesManager
     private lateinit var mainViewModel: MainViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         deviceRepository = mockk()
-        appPreferencesManager = mockk()
-        mainViewModel = MainViewModel(deviceRepository, appPreferencesManager)
+        mainViewModel = MainViewModel(deviceRepository)
 
         coEvery {
             deviceRepository.registerDevice(
@@ -46,7 +44,7 @@ class MainViewModelTest {
         } returns Result.success(1)
 
         coEvery {
-            appPreferencesManager.saveDeviceId(1)
+            deviceRepository.saveDeviceId(1)
         } just Runs
     }
 
@@ -59,16 +57,15 @@ class MainViewModelTest {
     fun `uuid와 fcmToken으로 기기를 등록 요청을 할 수 있다`() =
         runTest {
             // given
+            every { deviceRepository.getUuid() } returns FAKE_UUID
+            every { deviceRepository.getFcmToken() } returns FAKE_FCM_TOKEN
 
             // when
-            mainViewModel.registerDevice(
-                FAKE_UUID,
-                FAKE_FCM_TOKEN,
-            )
+            mainViewModel.registerDeviceAndFcmToken()
             advanceUntilIdle()
 
             // then
-            coVerify { deviceRepository.registerDevice(FAKE_UUID, FAKE_FCM_TOKEN) }
-            coVerify { appPreferencesManager.saveDeviceId(1) }
+            verify { deviceRepository.getUuid() }
+            verify { deviceRepository.getFcmToken() }
         }
 }

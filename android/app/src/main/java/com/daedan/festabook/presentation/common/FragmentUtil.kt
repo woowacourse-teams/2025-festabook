@@ -48,10 +48,6 @@ fun View.getSystemBarHeightCompat() =
         rootWindowInsets.systemWindowInsetBottom
     }
 
-fun Fragment.showErrorSnackBar(msg: String) {
-    requireActivity().showErrorSnackBar(msg)
-}
-
 fun Fragment.showErrorSnackBar(exception: Throwable?) {
     requireActivity().showErrorSnackBar(exception)
 }

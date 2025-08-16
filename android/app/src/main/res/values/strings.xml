@@ -47,7 +47,6 @@
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
 
-
     <!-- 아이콘 contentDescription   -->
     <string name="schedule_location">위치</string>
     <string name="schedule_time">시간</string>
@@ -70,11 +69,9 @@
     <string name="setting_app_info_title">앱 정보</string>
     <string name="setting_app_version">앱 버전</string>
     <string name="setting_service_policy">약관 및 정책</string>
-    <string name="setting_contact_us">문의하기</string>
-    <string name="setting_contact_us_email_subject">문의하기</string>
+    <string name="setting_contact_us">개발자 문의하기</string>
+    <string name="setting_contact_us_email_subject">개발자 문의하기</string>
     <string name="setting_contact_us_email">festabook2025@gmail.com</string>
-    <string name="setting_service_policy_url">https://www.notion.so/244a540dc0b780638e56e31c4bdb3c9f</string>
-
 
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
@@ -94,6 +91,13 @@
     <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
     <string name="error_fail_to_load_place_info">정보를 불러오는데 실패했습니다</string>
     <string name="faq_expand">답변 펼치기</string>
+
+
+    <!--다이어로그-->
+    <string name="notification_permission_title">알림 권한 필요</string>
+    <string name="notification_permission_message">새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.</string>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
 
 
 </resources>
