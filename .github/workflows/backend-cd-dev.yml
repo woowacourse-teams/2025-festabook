@@ -48,10 +48,15 @@ jobs:
           echo "BUILD_JAR_NAME=$(basename ${BUILD_JAR_PATH})" >> $GITHUB_OUTPUT
 
       - name: Deploy to EC2
+        env:
+          DEV_BLUE_WAS_PORT: ${{ secrets.DEV_BLUE_WAS_PORT }}
         run: |
+          # 0. WAS 포트
+          WAS_PORT=${DEV_BLUE_WAS_PORT}
+
           # 1. 이전 WAS 종료 (Graceful Shutdown)
           echo "Stopping old Spring WAS..."
-          PID=$(sudo lsof -t -i:80 || true)
+          PID=$(sudo lsof -t -i:${WAS_PORT} || true)
           if [ -n "$PID" ]; then
             echo "Found running process with PID: $PID. Sending SIGTERM."
             sudo kill -SIGTERM $PID
@@ -70,7 +75,7 @@ jobs:
               sleep 3
             fi
           else
-            echo "No process found on port 80."
+            echo "No process found on port ${WAS_PORT}."
           fi
 
           # 2. 이전 JAR 파일 삭제 및 빌드 JAR 파일 복사
@@ -97,15 +102,15 @@ jobs:
           
           sudo nohup java -jar -Duser.timezone=Asia/Seoul "${DEPLOY_JAR_PATH}" --spring.profiles.active=prod &
           for i in $(seq 1 30); do
-            if sudo lsof -t -i:80 > /dev/null; then
-              echo "WAS has started and is listening on port 80."
+            if sudo lsof -t -i:${WAS_PORT} > /dev/null; then
+              echo "WAS has started and is listening on port ${WAS_PORT}."
               break
             fi
-            echo "Waiting for port 80 to be occupied... ($i/30)"
+            echo "Waiting for port ${WAS_PORT} to be occupied... ($i/30)"
             sleep 1
           done
 
-          NEW_WAS_PID=$(sudo lsof -t -i:80|| true)
+          NEW_WAS_PID=$(sudo lsof -t -i:${WAS_PORT}|| true)
           if [ -n "$NEW_WAS_PID" ]; then
             echo "Application started with PID: $NEW_WAS_PID."
           else
