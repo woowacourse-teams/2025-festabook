@@ -9,9 +9,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
-import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
+import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
@@ -19,7 +19,7 @@ import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiMode
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
-import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.toUiModel
 import kotlinx.coroutines.launch
 
@@ -27,12 +27,6 @@ class PlaceListViewModel(
     private val placeListRepository: PlaceListRepository,
     private val placeDetailRepository: PlaceDetailRepository,
 ) : ViewModel() {
-    private var _cachedPlaces = listOf<PlaceUiModel>()
-
-    private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
-        MutableLiveData(PlaceListUiState.Loading())
-    val places: LiveData<PlaceListUiState<List<PlaceUiModel>>> = _places
-
     private val _initialMapSetting: MutableLiveData<PlaceListUiState<InitialMapSettingUiModel>> =
         MutableLiveData()
     val initialMapSetting: LiveData<PlaceListUiState<InitialMapSettingUiModel>> = _initialMapSetting
@@ -42,39 +36,23 @@ class PlaceListViewModel(
     val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
         _placeGeographies
 
-    private val _selectedPlace: MutableLiveData<PlaceDetailUiModel?> = MutableLiveData()
-    val selectedPlace: LiveData<PlaceDetailUiModel?> = _selectedPlace
+    private val _selectedPlace: MutableLiveData<SelectedPlaceUiState> = MutableLiveData()
+    val selectedPlace: LiveData<SelectedPlaceUiState> = _selectedPlace
 
     private val _navigateToDetail = SingleLiveData<PlaceDetailUiModel>()
     val navigateToDetail: LiveData<PlaceDetailUiModel> = _navigateToDetail
 
+    private val _isExceededMaxLength: MutableLiveData<Boolean> = MutableLiveData()
+    val isExceededMaxLength: LiveData<Boolean> = _isExceededMaxLength
+
+    private val _backToInitialPositionClicked: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val backToInitialPositionClicked: LiveData<Event<Unit>> = _backToInitialPositionClicked
+
+    private val _selectedCategories: MutableLiveData<List<PlaceCategoryUiModel>> = MutableLiveData()
+    val selectedCategories: LiveData<List<PlaceCategoryUiModel>> = _selectedCategories
+
     init {
-        loadAllPlaces()
         loadOrganizationGeography()
-    }
-
-    fun filterPlaces(category: List<PlaceCategoryUiModel>) {
-        val secondaryCategories =
-            PlaceCategory.SECONDARY_CATEGORIES.map {
-                it.toUiModel()
-            }
-        val primaryCategoriesSelected = category.any { it !in secondaryCategories }
-
-        if (!primaryCategoriesSelected) {
-            clearPlacesFilter()
-            return
-        }
-
-        val filteredPlaces =
-            _cachedPlaces.filter { place ->
-                place.category in category
-            }
-
-        _places.value = PlaceListUiState.Success(filteredPlaces)
-    }
-
-    fun clearPlacesFilter() {
-        _places.value = PlaceListUiState.Success(_cachedPlaces)
     }
 
     fun selectPlace(
@@ -86,54 +64,52 @@ class PlaceListViewModel(
         }
 
         viewModelScope.launch {
+            _selectedPlace.value = SelectedPlaceUiState.Loading
             placeDetailRepository
                 .getPlaceDetail(placeId = placeId)
                 .onSuccess {
-                    _selectedPlace.value = it.toUiModel()
+                    _selectedPlace.value = SelectedPlaceUiState.Success(it.toUiModel())
+                }.onFailure {
+                    _selectedPlace.value = SelectedPlaceUiState.Error(it)
                 }
         }
     }
 
     fun unselectPlace() {
-        _selectedPlace.value = null
+        _selectedPlace.value = SelectedPlaceUiState.Empty
     }
 
     fun onExpandedStateReached() {
-        val currentPlace = _selectedPlace.value
+        val currentPlace = _selectedPlace.value.let { it as? SelectedPlaceUiState.Success }?.value
         if (currentPlace != null) {
             _navigateToDetail.setValue(currentPlace)
         }
     }
 
-    private fun loadAllPlaces() {
-        viewModelScope.launch {
-            val result = placeListRepository.getPlaces()
-            result
-                .onSuccess { places ->
-                    val placeUiModels = places.map { it.toUiModel() }
-                    _places.value =
-                        PlaceListUiState.Success(
-                            placeUiModels,
-                        )
-                    _cachedPlaces = placeUiModels
-                }.onFailure {
-                    _places.value = PlaceListUiState.Error(it)
-                }
-        }
+    fun onBackToInitialPositionClicked() {
+        _backToInitialPositionClicked.value = Event(Unit)
+    }
+
+    fun setIsExceededMaxLength(isExceededMaxLength: Boolean) {
+        _isExceededMaxLength.value = isExceededMaxLength
+    }
+
+    fun setSelectedCategories(categories: List<PlaceCategoryUiModel>) {
+        _selectedCategories.value = categories
     }
 
     private fun loadOrganizationGeography() {
         viewModelScope.launch {
-            placeListRepository.getOrganizationGeography().onSuccess {
-                _initialMapSetting.value = PlaceListUiState.Success(it.toUiModel())
+            placeListRepository.getOrganizationGeography().onSuccess { organizationGeography ->
+                _initialMapSetting.value = PlaceListUiState.Success(organizationGeography.toUiModel())
             }
 
             launch {
                 placeListRepository
                     .getPlaceGeographies()
-                    .onSuccess {
+                    .onSuccess { placeGeographies ->
                         _placeGeographies.value =
-                            PlaceListUiState.Success(it.map { it.toUiModel() })
+                            PlaceListUiState.Success(placeGeographies.map { it.toUiModel() })
                     }.onFailure {
                         _placeGeographies.value = PlaceListUiState.Error(it)
                     }

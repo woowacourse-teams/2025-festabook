@@ -1,4 +1,4 @@
-package com.daedan.festabook.data.model.response
+package com.daedan.festabook.data.model.response.faq
 
 import com.daedan.festabook.domain.model.FAQItem
 import kotlinx.serialization.SerialName

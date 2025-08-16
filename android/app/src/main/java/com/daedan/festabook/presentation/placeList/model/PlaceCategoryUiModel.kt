@@ -3,7 +3,6 @@ package com.daedan.festabook.presentation.placeList.model
 import com.daedan.festabook.R
 import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.presentation.placeList.placeMap.OverlayImageManager
-import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.OverlayImage
 
 enum class PlaceCategoryUiModel {
@@ -34,9 +33,15 @@ val PlaceCategoryUiModel.Companion.iconResources: List<Int>
             R.drawable.ic_trash,
             R.drawable.ic_toilet,
             R.drawable.ic_smoking_area,
+            R.drawable.ic_food_truck_selected,
+            R.drawable.ic_booth_selected,
+            R.drawable.ic_bar_selected,
+            R.drawable.ic_trash_selected,
+            R.drawable.ic_toilet_selected,
+            R.drawable.ic_smoking_area_selected,
         )
 
-fun OverlayImageManager.getIcon(category: PlaceCategoryUiModel): OverlayImage? =
+fun OverlayImageManager.getNormalIcon(category: PlaceCategoryUiModel): OverlayImage? =
     when (category) {
         PlaceCategoryUiModel.BOOTH -> getImage(R.drawable.ic_booth)
         PlaceCategoryUiModel.FOOD_TRUCK -> getImage(R.drawable.ic_food_truck)
@@ -46,14 +51,15 @@ fun OverlayImageManager.getIcon(category: PlaceCategoryUiModel): OverlayImage? =
         PlaceCategoryUiModel.SMOKING_AREA -> getImage(R.drawable.ic_smoking_area)
     }
 
-fun OverlayImageManager.setIcon(
-    marker: Marker,
-    category: PlaceCategoryUiModel,
-) {
-    getIcon(category)?.let {
-        marker.icon = it
+fun OverlayImageManager.getSelectedIcon(category: PlaceCategoryUiModel): OverlayImage? =
+    when (category) {
+        PlaceCategoryUiModel.BOOTH -> getImage(R.drawable.ic_booth_selected)
+        PlaceCategoryUiModel.FOOD_TRUCK -> getImage(R.drawable.ic_food_truck_selected)
+        PlaceCategoryUiModel.TOILET -> getImage(R.drawable.ic_toilet_selected)
+        PlaceCategoryUiModel.BAR -> getImage(R.drawable.ic_bar_selected)
+        PlaceCategoryUiModel.TRASH_CAN -> getImage(R.drawable.ic_trash_selected)
+        PlaceCategoryUiModel.SMOKING_AREA -> getImage(R.drawable.ic_smoking_area_selected)
     }
-}
 
 fun PlaceCategory.toUiModel() =
     when (this) {

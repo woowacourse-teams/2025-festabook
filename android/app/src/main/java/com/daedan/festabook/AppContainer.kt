@@ -17,6 +17,8 @@ import com.daedan.festabook.data.datasource.remote.festival.FestivalDataSource
 import com.daedan.festabook.data.datasource.remote.festival.FestivalDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.lostitem.LostItemDataSource
+import com.daedan.festabook.data.datasource.remote.lostitem.LostItemDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSource
 import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
@@ -36,6 +38,7 @@ import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.faqService
 import com.daedan.festabook.data.service.api.ApiClient.festivalNotificationService
 import com.daedan.festabook.data.service.api.ApiClient.festivalService
+import com.daedan.festabook.data.service.api.ApiClient.lostItemService
 import com.daedan.festabook.data.service.api.ApiClient.noticeService
 import com.daedan.festabook.data.service.api.ApiClient.placeService
 import com.daedan.festabook.data.service.api.ApiClient.scheduleService
@@ -96,6 +99,10 @@ class AppContainer(
         FestivalDataSourceImpl(festivalService)
     }
 
+    private val lostItemDataSource: LostItemDataSource by lazy {
+        LostItemDataSourceImpl(lostItemService)
+    }
+
     val placeDetailRepository: PlaceDetailRepository by lazy {
         PlaceDetailRepositoryImpl(placeDetailDataSource)
     }
@@ -128,7 +135,7 @@ class AppContainer(
     }
 
     val lostItemRepository: LostItemRepository by lazy {
-        LostItemRepositoryImpl()
+        LostItemRepositoryImpl(lostItemDataSource)
     }
 
     init {

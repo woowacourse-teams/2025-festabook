@@ -8,7 +8,6 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.chip.ChipGroup
 
 class PlaceListBottomSheetBehavior<V : View>(
     context: Context,
@@ -48,7 +47,6 @@ class PlaceListBottomSheetBehavior<V : View>(
         layoutDirection: Int,
     ): Boolean {
         recyclerView = child.findViewById<RecyclerView>(R.id.rv_places)
-        expandedOffset = parent.findViewById<ChipGroup>(R.id.cg_categories).height
         recyclerView.getChildAt(HEADER_POSITION)?.let {
             headerRange = expandedOffset..(expandedOffset + it.height)
         }
@@ -107,6 +105,10 @@ class PlaceListBottomSheetBehavior<V : View>(
         if (!recyclerView.canScrollVertically(-1) && state == STATE_EXPANDED) {
             state = STATE_HALF_EXPANDED
         }
+    }
+
+    fun setOffset(height: Int) {
+        expandedOffset = height
     }
 
     companion object {

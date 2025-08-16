@@ -1,5 +1,7 @@
 package com.daedan.festabook.data.datasource.remote
 
+import kotlinx.coroutines.CancellationException
+import okio.IOException
 import retrofit2.Response
 import timber.log.Timber
 
@@ -44,6 +46,7 @@ sealed class ApiResult<out T> {
                                 Timber.d("RES 200 $requestMethod : $requestUrl \n $body")
                                 Success(body)
                             }
+
                             response.code() == 204 -> {
                                 Timber.d("RES 204 $requestMethod : $requestUrl")
                                 @Suppress("UNCHECKED_CAST")
@@ -77,8 +80,12 @@ sealed class ApiResult<out T> {
                             else -> UnknownError
                         }
                     }
-                }.getOrElse { e ->
-                    NetworkError(e)
+                }.getOrElse { error ->
+                    return when (error) {
+                        is CancellationException -> throw error
+                        is IOException -> NetworkError(error)
+                        else -> UnknownError
+                    }
                 }
     }
 }

@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.news.lost
 
 import android.os.Bundle
 import android.view.View
+import android.widget.GridLayout
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import com.daedan.festabook.R
@@ -27,29 +28,43 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvLostItem.layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
-        binding.rvLostItem.adapter = adapter
-
-        val spacingInPx = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
-        binding.rvLostItem.addItemDecoration(
+        binding.rvLostItemList.layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
+        binding.rvLostItemList.adapter = adapter
+        val spacing = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
+        binding.rvLostItemList.addItemDecoration(
             LostItemDecoration(
                 spanCount = SPAN_COUNT,
-                spacing = spacingInPx,
+                spacing = spacing,
             ),
         )
         setupObservers()
+        onSwipeRefreshLostItemsListener()
+        setupSkeletonView(spacing)
     }
 
     private fun setupObservers() {
         viewModel.lostItemUiState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is LostItemUiState.InitialLoading -> {}
-                is LostItemUiState.Loading -> {}
-                is LostItemUiState.Success -> {
-                    adapter.submitList(state.lostItems)
+                is LostItemUiState.InitialLoading -> {
+                    binding.srlLostItemList.isRefreshing = false
+                    showSkeleton()
                 }
 
-                is LostItemUiState.Error -> {}
+                is LostItemUiState.Refreshing -> {
+                    binding.srlLostItemList.isRefreshing = true
+                    showSkeleton()
+                }
+
+                is LostItemUiState.Success -> {
+                    binding.srlLostItemList.isRefreshing = false
+                    adapter.submitList(state.lostItems)
+                    hideSkeleton()
+                }
+
+                is LostItemUiState.Error -> {
+                    binding.srlLostItemList.isRefreshing = false
+                    hideSkeleton()
+                }
             }
         }
 
@@ -64,6 +79,41 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         LostItemModalDialogFragment
             .newInstance(lostItem)
             .show(childFragmentManager, TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT)
+    }
+
+    private fun onSwipeRefreshLostItemsListener() {
+        binding.srlLostItemList.setOnRefreshListener {
+            viewModel.loadPendingLostItems(LostItemUiState.Refreshing)
+        }
+    }
+
+    private fun setupSkeletonView(spacing: Int) {
+        val itemCount = binding.glLostItemSkeleton.childCount
+        val spanCount = binding.glLostItemSkeleton.columnCount
+        (0 until itemCount).forEach { index ->
+            val child = binding.glLostItemSkeleton.getChildAt(index)
+            val params = child.layoutParams as GridLayout.LayoutParams
+
+            val column = index % spanCount
+
+            val leftMargin = if (column == 0) 0 else spacing / SPAN_COUNT
+            val rightMargin = if (column == spanCount - 1) 0 else spacing / SPAN_COUNT
+            val topMargin = if (index < spanCount) spacing else 0
+            params.setMargins(leftMargin, topMargin, rightMargin, spacing)
+            child.layoutParams = params
+        }
+    }
+
+    private fun showSkeleton() {
+        binding.srlLostItemList.visibility = View.INVISIBLE
+        binding.sflLostItemSkeleton.visibility = View.VISIBLE
+        binding.sflLostItemSkeleton.startShimmer()
+    }
+
+    private fun hideSkeleton() {
+        binding.srlLostItemList.visibility = View.VISIBLE
+        binding.sflLostItemSkeleton.visibility = View.GONE
+        binding.sflLostItemSkeleton.stopShimmer()
     }
 
     companion object {

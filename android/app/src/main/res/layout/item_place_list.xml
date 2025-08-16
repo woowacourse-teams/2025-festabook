@@ -41,30 +41,15 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.google.android.material.card.MaterialCardView
+        <com.daedan.festabook.presentation.placeList.CategoryView
             android:id="@+id/cv_place_category"
-            android:layout_width="50dp"
-            android:layout_height="17dp"
-            android:layout_marginTop="0dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            app:cardBackgroundColor="@color/gray900"
-            app:cardCornerRadius="6dp"
             app:layout_constraintStart_toEndOf="@id/cv_place_image"
             app:layout_constraintTop_toTopOf="@id/cv_place_image"
-            app:strokeWidth="0dp"
-            app:category="@{place.category}">
-
-            <TextView
-                android:id="@+id/tv_place_category"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                app:category="@{place.category}"
-                tools:text="푸드트럭"
-                android:textColor="@color/gray050"
-                android:textAppearance="@style/PretendardRegular10" />
-
-        </com.google.android.material.card.MaterialCardView>
+            app:category="@{place.category}"
+            />
 
         <TextView
             android:id="@+id/tv_title_place"

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout android:layout_height="match_parent"
+    android:layout_width="match_parent"
+    android:paddingHorizontal="4dp"
+    android:paddingVertical="2dp"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ImageView
+        android:id="@+id/iv_category_icon"
+        android:layout_height="12dp"
+        android:layout_width="12dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:src="@drawable/ic_map_category_food_truck" />
+
+    <TextView
+        android:id="@+id/tv_place_category"
+        android:layout_gravity="center"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_width="wrap_content"
+        android:textAppearance="@style/PretendardMedium12"
+        android:textColor="@color/gray900"
+        app:layout_constraintBottom_toBottomOf="@id/iv_category_icon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_category_icon"
+        app:layout_constraintTop_toTopOf="@id/iv_category_icon"
+        tools:text="푸드트럭" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+

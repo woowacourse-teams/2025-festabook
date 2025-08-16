@@ -2,14 +2,13 @@ package com.daedan.festabook.presentation.placeList.behavior
 
 import android.view.View
 import androidx.annotation.IdRes
-import com.daedan.festabook.presentation.placeList.placeMap.MapManager
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class MoveToInitialPositionCallback(
     @IdRes private val viewId: Int,
-    private val mapManager: MapManager,
 ) : BottomSheetBehavior.BottomSheetCallback() {
     private lateinit var child: View
+    private var isExceededMaxLength = true
 
     override fun onStateChanged(
         bottomSheet: View,
@@ -18,7 +17,7 @@ class MoveToInitialPositionCallback(
         if (!::child.isInitialized) {
             child = bottomSheet.rootView.findViewById(viewId) ?: return
         }
-        if (newState == BottomSheetBehavior.STATE_EXPANDED || !mapManager.isExceededMaxLength()) {
+        if (newState == BottomSheetBehavior.STATE_EXPANDED || !isExceededMaxLength) {
             child.visibility = View.GONE
         } else {
             child.visibility = View.VISIBLE
@@ -29,4 +28,8 @@ class MoveToInitialPositionCallback(
         bottomSheet: View,
         slideOffset: Float,
     ) = Unit
+
+    fun setIsExceededMaxLength(isExceededMaxLength: Boolean) {
+        this.isExceededMaxLength = isExceededMaxLength
+    }
 }

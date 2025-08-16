@@ -15,17 +15,23 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
+import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
-import com.daedan.festabook.presentation.placeDetail.adapter.PlaceNoticeAdapter
 import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import timber.log.Timber
 
-class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
-    private val placeNoticeAdapter by lazy {
-        PlaceNoticeAdapter()
+class PlaceDetailActivity :
+    AppCompatActivity(R.layout.activity_place_detail),
+    OnNewsClickListener {
+    private val noticeAdapter by lazy {
+        NoticeAdapter(this)
     }
 
     private val placeImageAdapter by lazy {
@@ -67,7 +73,7 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
 
     private fun setUpBinding() {
         binding.lifecycleOwner = this
-        binding.rvPlaceNotice.adapter = placeNoticeAdapter
+        binding.rvPlaceNotice.adapter = noticeAdapter
         binding.vpPlaceImages.adapter = placeImageAdapter
         binding.tvLocation.setExpandedWhenClicked()
         binding.tvHost.setExpandedWhenClicked()
@@ -109,7 +115,7 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
             binding.rvPlaceNotice.visibility = View.GONE
             binding.tvNoNoticeDescription.visibility = View.VISIBLE
         } else {
-            placeNoticeAdapter.submitList(placeDetail.notices)
+            noticeAdapter.submitList(placeDetail.notices)
         }
     }
 
@@ -136,17 +142,16 @@ class PlaceDetailActivity : AppCompatActivity(R.layout.activity_place_detail) {
         }
     }
 
+    override fun onNoticeClick(notice: NoticeUiModel) = Unit
+
+    override fun onFAQClick(faqItem: FAQItemUiModel) = Unit
+
+    override fun onLostItemClick(lostItem: LostItemUiModel) = Unit
+
     companion object {
         private const val DEFAULT_MAX_LINES = 1
         private const val KEY_PLACE_UI_MODEL = "placeUiModel"
         private const val KEY_PLACE_DETAIL_UI_MODEL = "placeDetailUiModel"
-
-        fun newIntent(
-            context: Context,
-            place: PlaceUiModel,
-        ) = Intent(context, PlaceDetailActivity::class.java).apply {
-            putExtra(KEY_PLACE_UI_MODEL, place)
-        }
 
         fun newIntent(
             context: Context,

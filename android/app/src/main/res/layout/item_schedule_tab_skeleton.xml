@@ -7,6 +7,6 @@
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:background="@drawable/bg_gray300_radius_20dp" />
+        android:background="@drawable/bg_skeleton_radius_20dp" />
 
 </LinearLayout>

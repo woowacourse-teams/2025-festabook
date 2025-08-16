@@ -5,6 +5,7 @@ import com.daedan.festabook.data.service.DeviceService
 import com.daedan.festabook.data.service.FAQService
 import com.daedan.festabook.data.service.FestivalNotificationService
 import com.daedan.festabook.data.service.FestivalService
+import com.daedan.festabook.data.service.LostItemService
 import com.daedan.festabook.data.service.NoticeService
 import com.daedan.festabook.data.service.PlaceService
 import com.daedan.festabook.data.service.ScheduleService
@@ -46,4 +47,6 @@ object ApiClient {
     val faqService: FAQService by lazy { retrofit.create(FAQService::class.java) }
 
     val festivalService: FestivalService = retrofit.create(FestivalService::class.java)
+
+    val lostItemService: LostItemService by lazy { retrofit.create(LostItemService::class.java) }
 }
