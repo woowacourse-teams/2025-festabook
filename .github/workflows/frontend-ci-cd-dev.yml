@@ -5,6 +5,8 @@ on:
     branches: [ frontend ]
     paths: [ 'frontend/**' ]
   workflow_dispatch:
+  pull_request:
+    branches: [ frontend ]
 
 jobs:
   build-and-deploy:
