@@ -31,6 +31,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -266,6 +268,29 @@ class FestivalControllerTest {
 
                     .body("[0].festivalId", equalTo(festival1.getId().intValue()))
                     .body("[0].universityName", equalTo(festival1.getUniversityName()));
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "비, 1",
+                "비타대, 0",
+                "비타 대, 1"
+        })
+        void 성공_여러_검색_범위(String universityNameToSearch, int expectedSize) {
+            String universityName = "비타 대학교";
+            Festival festival = FestivalFixture.create(universityName);
+            festivalJpaRepository.save(festival);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize));
+
+            festivalJpaRepository.delete(festival);
         }
     }
 
