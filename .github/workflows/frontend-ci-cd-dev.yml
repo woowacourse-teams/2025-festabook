@@ -39,5 +39,6 @@ jobs:
 
           sudo rm -rf "${DEPLOY_PATH}/dist"
           sudo cp -r "${SOURCE_PATH}" "${DEPLOY_PATH}"
+          sudo chmod -R 755 "${DEPLOY_PATH}"
 
           echo "Build files moved to ${DEPLOY_PATH}."
