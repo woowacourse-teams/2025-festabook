@@ -23,6 +23,16 @@ class ExploreActivity :
 
     private lateinit var appPreferencesManager: AppPreferencesManager
 
+    override fun onUniversityClick(university: University) {
+        binding.etSearchText.setText(university.universityName)
+        binding.etSearchText.setSelection(university.universityName.length)
+
+        viewModel.onUniversitySelected(university)
+        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
+        setOnSearchIconClickListener()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
@@ -70,22 +80,20 @@ class ExploreActivity :
                     // 검색 결과가 없을 때
                     if (state.value.isEmpty()) {
                         binding.tilSearchInputLayout.isErrorEnabled = true
-                        binding.tilSearchInputLayout.error = "검색 결과가 없습니다."
+                        binding.tilSearchInputLayout.error =
+                            getString(R.string.explore_no_search_result_text)
                         binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
                     } else {
                         // 검색 결과가 있을 때
                         binding.tilSearchInputLayout.isErrorEnabled = false
-//                        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-//                        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
-//                        setOnSearchIconClickListener()
-
                         searchResultAdapter.submitList(state.value)
                     }
                 }
 
                 is SearchUiState.Error -> {
                     binding.tilSearchInputLayout.isErrorEnabled = true
-                    binding.tilSearchInputLayout.error = "오류가 발생했습니다: ${state.throwable.message}"
+                    binding.tilSearchInputLayout.error =
+                        getString(R.string.explore_error_text, state.throwable.message)
                     binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_NONE
                 }
             }
@@ -136,15 +144,5 @@ class ExploreActivity :
             }
         startActivity(intent)
         finish()
-    }
-
-    override fun onUniversityClick(university: University) {
-        binding.etSearchText.setText(university.universityName)
-        binding.etSearchText.setSelection(university.universityName.length)
-
-        viewModel.onUniversitySelected(university)
-        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
-        setOnSearchIconClickListener()
     }
 }

@@ -1,15 +1,17 @@
 package com.daedan.festabook.presentation.explore
 
-sealed interface SearchUiState<T> {
-    class Idle<T> : SearchUiState<T>
+import com.daedan.festabook.domain.model.University
 
-    class Loading<T> : SearchUiState<T>
+sealed interface SearchUiState {
+    data object Idle : SearchUiState
 
-    data class Success<T>(
-        val value: T,
-    ) : SearchUiState<T>
+    data object Loading : SearchUiState
 
-    data class Error<T>(
+    data class Success(
+        val value: List<University>,
+    ) : SearchUiState
+
+    data class Error(
         val throwable: Throwable,
-    ) : SearchUiState<T>
+    ) : SearchUiState
 }
