@@ -1,10 +1,10 @@
-package com.daedan.festabook.util
+package com.daedan.festabook.logging
 
 import android.util.Log
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import timber.log.Timber
 
-class CrashlyticsTree : Timber.Tree() {
+class FirebaseCrashlyticsTree : Timber.Tree() {
     private val crashlytics = FirebaseCrashlytics.getInstance()
 
     override fun log(
