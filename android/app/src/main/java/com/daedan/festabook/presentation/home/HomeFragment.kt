@@ -12,6 +12,7 @@ import com.daedan.festabook.presentation.common.formatFestivalPeriod
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
+import com.daedan.festabook.presentation.home.adapter.LineupAdapter
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 import timber.log.Timber
 
@@ -19,7 +20,8 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     private val viewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 
-    private lateinit var adapter: PosterAdapter
+    private lateinit var posterAdapter: PosterAdapter
+    private lateinit var lineupAdapter: LineupAdapter
 
     override fun onViewCreated(
         view: View,
@@ -41,6 +43,16 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 }
             }
         }
+        viewModel.lineupUiState.observe(viewLifecycleOwner) { lineupUiState ->
+            when (lineupUiState) {
+                is LineupUiState.Loading -> {}
+                is LineupUiState.Success -> setupLineupAdapter(lineupUiState.lineups)
+                is LineupUiState.Error -> {
+                    showErrorSnackBar(lineupUiState.throwable)
+                    Timber.w(lineupUiState.throwable, "HomeFragment: ${lineupUiState.throwable.message}")
+                }
+            }
+        }
     }
 
     private fun handleSuccessState(festivalUiState: FestivalUiState.Success) {
@@ -58,16 +70,21 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             festivalUiState.organization.festival.festivalImages
                 .sortedBy { it.sequence }
                 .map { it.imageUrl }
-        setupAdapter(posterUrls)
+        setupPosterAdapter(posterUrls)
     }
 
-    private fun setupAdapter(posters: List<String> = emptyList()) {
-        adapter = PosterAdapter(posters)
-        binding.rvHomePoster.adapter = adapter
+    private fun setupPosterAdapter(posters: List<String> = emptyList()) {
+        posterAdapter = PosterAdapter(posters)
+        binding.rvHomePoster.adapter = posterAdapter
 
         attachSnapHelper()
         scrollToInitialPosition(posters.size)
         addScrollEffectListener()
+    }
+
+    private fun setupLineupAdapter(lineups: List<LineupItemUiModel> = emptyList()) {
+        lineupAdapter = LineupAdapter(lineups)
+        binding.rvHomeLineup.adapter = lineupAdapter
     }
 
     private fun attachSnapHelper() {
