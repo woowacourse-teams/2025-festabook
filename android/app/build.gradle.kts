@@ -149,6 +149,7 @@ dependencies {
     implementation(libs.timber)
     implementation(libs.lottie)
     implementation(libs.firebase.crashlytics.ndk)
+    implementation(libs.androidx.core.splashscreen)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)
