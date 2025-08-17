@@ -31,6 +31,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -205,6 +207,90 @@ class FestivalControllerTest {
                     .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
                     .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()))
                     .body("festivalImages[2].sequence", equalTo(festivalImage3.getSequence()));
+        }
+    }
+
+    @Nested
+    class getUniversitiesByUniversityName {
+        // TODO: 테스트 격리 문제
+
+        @Test
+        void 성공() {
+            String universityName1 = "한양 대학교";
+            String universityName2 = "한양 에리카 대학교";
+            Festival festival1 = FestivalFixture.create(universityName1);
+            Festival festival2 = FestivalFixture.create(universityName2);
+            festivalJpaRepository.saveAll(List.of(festival1, festival2));
+
+            String universityNameToSearch = "한양";
+
+            int expectedSize = 2;
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize))
+
+                    .body("[0].festivalId", equalTo(festival1.getId().intValue()))
+                    .body("[0].universityName", equalTo(festival1.getUniversityName()))
+                    .body("[0].size()", equalTo(expectedFieldSize))
+
+                    .body("[1].festivalId", equalTo(festival2.getId().intValue()))
+                    .body("[1].universityName", equalTo(festival2.getUniversityName()))
+                    .body("[1].size()", equalTo(expectedFieldSize));
+        }
+
+        @Test
+        void 성공_서로_다른_대학() {
+            String universityName = "한국 대학교";
+            String anotherUniversityName = "서울 대학교";
+            Festival festival1 = FestivalFixture.create(universityName);
+            Festival festival2 = FestivalFixture.create(anotherUniversityName);
+            festivalJpaRepository.saveAll(List.of(festival1, festival2));
+
+            String universityNameToSearch = "한국";
+
+            int expectedSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize))
+
+                    .body("[0].festivalId", equalTo(festival1.getId().intValue()))
+                    .body("[0].universityName", equalTo(festival1.getUniversityName()));
+        }
+
+        @ParameterizedTest
+        @CsvSource({
+                "비, 1",
+                "비타대, 0",
+                "비타 대, 1"
+        })
+        void 성공_여러_검색_범위(String universityNameToSearch, int expectedSize) {
+            String universityName = "비타 대학교";
+            Festival festival = FestivalFixture.create(universityName);
+            festivalJpaRepository.save(festival);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize));
+
+            festivalJpaRepository.delete(festival);
         }
     }
 
