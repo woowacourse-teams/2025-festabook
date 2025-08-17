@@ -48,10 +48,11 @@ class FirebaseAnalyticsTree(
         val durationSec = (durationMs / 1000).toInt()
         val formattedDurationSec = durationSec.formatDurationSec()
 
+        val screenStayTime = "$screen - $formattedDurationSec"
+
         val bundle =
             Bundle().apply {
-                putString("screen", screen)
-                putString("duration_sec", formattedDurationSec)
+                putString("screen_stay_time", screenStayTime)
             }
         analytics.logEvent("screen_stay_time", bundle)
     }
