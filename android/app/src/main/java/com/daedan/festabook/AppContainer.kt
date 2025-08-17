@@ -147,7 +147,7 @@ class AppContainer(
     }
 
     val exploreRepository: ExploreRepository by lazy {
-        ExploreRepositoryImpl()
+        ExploreRepositoryImpl(festivalDataSource)
     }
 
     init {
