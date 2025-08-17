@@ -68,6 +68,7 @@ class ExploreActivity :
                     binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                     binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
                     setOnSearchIconClickListener()
+                    searchResultAdapter.submitList(emptyList())
                 }
 
                 is SearchUiState.Loading -> Unit
