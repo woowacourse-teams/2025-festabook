@@ -71,6 +71,10 @@ class ExploreViewModel(
         }
     }
 
+    fun saveFestivalId(festivalId: Long) {
+        exploreRepository.saveFestivalId(festivalId)
+    }
+
     companion object {
         val Factory: ViewModelProvider.Factory =
             viewModelFactory {

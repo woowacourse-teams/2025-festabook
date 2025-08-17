@@ -6,7 +6,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
-import com.daedan.festabook.data.datasource.local.AppPreferencesManager
 import com.daedan.festabook.databinding.ActivityExploreBinding
 import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.presentation.explore.adapter.OnUniversityClickListener
@@ -21,8 +20,6 @@ class ExploreActivity :
     private val viewModel by viewModels<ExploreViewModel> { ExploreViewModel.Factory }
     private val searchResultAdapter by lazy { SearchResultAdapter(this) }
 
-    private lateinit var appPreferencesManager: AppPreferencesManager
-
     override fun onUniversityClick(university: University) {
         binding.etSearchText.setText(university.universityName)
         binding.etSearchText.setSelection(university.universityName.length)
@@ -36,8 +33,6 @@ class ExploreActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
-        appPreferencesManager = AppPreferencesManager(this)
 
         setupBinding()
         setupRecyclerView()
@@ -125,8 +120,8 @@ class ExploreActivity :
         }
     }
 
-    private fun saveFestivalIdToLocal(it: University) {
-        appPreferencesManager.saveFestivalId(it.festivalId)
+    private fun saveFestivalIdToLocal(selectedUniversity: University) {
+        viewModel.saveFestivalId(selectedUniversity.festivalId)
     }
 
     private fun navigateToMainActivity(festivalId: Long) {
