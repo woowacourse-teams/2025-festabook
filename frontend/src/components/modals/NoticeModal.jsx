@@ -4,10 +4,13 @@ import Modal from "../common/Modal";
 const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [agreePush, setAgreePush] = useState(true); // 푸시 알림 동의 상태 추가
+  
   useEffect(() => {
     setTitle(notice?.title || "");
     setContent(notice?.content || "");
   }, [notice]);
+  
   const handleSave = () => {
     onSave({ title, content });
     onClose();
@@ -31,7 +34,13 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [title, content]); // 의존성 배열에서 isPinned 제거
+  }, [title, content, onClose, handleSave]); // 의존성 배열 수정
+  
+  // 제목과 내용 길이 체크
+  const isTitleOverflow = title.length > 20;
+  const isContentOverflow = content.length > 500;
+  const isSaveDisabled = (!title.trim() || !content.trim()) || isTitleOverflow || isContentOverflow;
+
   return (
     <Modal isOpen={true} onClose={onClose}>
       <h3 className="text-xl font-bold mb-6">
@@ -47,8 +56,13 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="[20자 이내로 작성해주세요]"
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
+              isTitleOverflow ? 'border-red-300' : 'border-gray-300'
+            }`}
           />
+          {isTitleOverflow && (
+            <p className="text-red-500 text-xs mt-1">제목은 20자 이내로 작성해주세요.</p>
+          )}
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -59,8 +73,13 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
             onChange={(e) => setContent(e.target.value)}
             rows="6"
             placeholder="공지 내용을 입력해주세요."
-            className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
+              isContentOverflow ? 'border-red-300' : 'border-gray-300'
+            }`}
           />
+          {isContentOverflow && (
+            <p className="text-red-500 text-xs mt-1">내용은 500자 이내로 작성해주세요.</p>
+          )}
         </div>
         {!notice && isPlaceNotice && (
           <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md">
@@ -71,10 +90,24 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
         )}
       </div>
       {!notice && (
-        <p className="text-xs text-gray-500 mt-4">
-          <i className="fas fa-info-circle mr-1"></i>
-          새롭게 작성된 공지는 사용자에게 푸시 알림으로 전송됩니다.
-        </p>
+        <div className="mt-4 space-y-3">
+          <div className="flex items-center">
+            <input
+              type="checkbox"
+              id="agreePush"
+              checked={agreePush}
+              onChange={(e) => setAgreePush(e.target.checked)}
+              className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+            />
+            <label htmlFor="agreePush" className="ml-2 text-sm text-gray-700">
+              푸시 알림 전송에 동의합니다
+            </label>
+          </div>
+          <p className="text-xs text-gray-500">
+            <i className="fas fa-info-circle mr-1"></i>
+            새롭게 작성된 공지는 사용자에게 푸시 알림으로 전송됩니다.
+          </p>
+        </div>
       )}
       <div className="mt-6 flex justify-between w-full">
         <div className="space-x-3">
@@ -87,11 +120,11 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
           <button
             onClick={handleSave}
             className={`font-bold py-2 px-4 rounded-lg transition-colors duration-200 ${
-              !notice && !agreePush
+              isSaveDisabled
                 ? "bg-gray-300 text-gray-400 cursor-not-allowed"
                 : "bg-gray-800 hover:bg-gray-900 text-white"
             }`}
-            disabled={!notice && !agreePush}
+            disabled={isSaveDisabled}
           >
             저장
           </button>
