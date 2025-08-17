@@ -4,6 +4,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import com.daedan.festabook.global.logging.dto.ApiCallMessage;
 import com.daedan.festabook.global.logging.dto.ApiEndMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +13,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -20,6 +22,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class LoggingFilter extends OncePerRequestFilter {
 
     private static final List<String> LOGGING_SKIP_PATH_PREFIX = List.of(
@@ -28,6 +31,8 @@ public class LoggingFilter extends OncePerRequestFilter {
             "/api/api-docs",
             "/api/actuator"
     );
+
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -54,7 +59,7 @@ public class LoggingFilter extends OncePerRequestFilter {
             long endTime = System.currentTimeMillis();
             long executionTime = endTime - startTime;
             int statusCode = response.getStatus();
-            String requestBody = extractBodyFromCache(request);
+            Object requestBody = extractBodyFromCache(request);
 
             ApiEndMessage apiEndMessage = ApiEndMessage.from(statusCode, requestBody, executionTime);
             log.info("", kv("event", apiEndMessage));
@@ -68,15 +73,21 @@ public class LoggingFilter extends OncePerRequestFilter {
                 .anyMatch(skipPath -> uri.startsWith(skipPath));
     }
 
-    private String extractBodyFromCache(HttpServletRequest request) {
-        String requestBody = "";
+    private Object extractBodyFromCache(HttpServletRequest request) {
         if (request instanceof ContentCachingRequestWrapper) {
             ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
             byte[] content = requestWrapper.getContentAsByteArray();
+
             if (content.length > 0) {
-                requestBody = new String(content, StandardCharsets.UTF_8);
+                String requestBody = new String(content, StandardCharsets.UTF_8);
+                try {
+                    return objectMapper.readTree(requestBody);
+                } catch (IOException e) {
+                    return requestBody;
+                }
             }
         }
-        return requestBody;
+
+        return null;
     }
 }

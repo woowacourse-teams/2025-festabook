@@ -3,13 +3,13 @@ package com.daedan.festabook.global.logging.dto;
 public record ApiEndMessage(
         String type,
         int httpStatusCode,
-        String requestBody,
+        Object requestBody,
         long executionTime
 ) {
 
     public static ApiEndMessage from(
             int httpStatusCode,
-            String requestBody,
+            Object requestBody,
             long executionTime
     ) {
         return new ApiEndMessage(
