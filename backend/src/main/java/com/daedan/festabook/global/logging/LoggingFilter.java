@@ -1,5 +1,9 @@
 package com.daedan.festabook.global.logging;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.ApiCallMessage;
+import com.daedan.festabook.global.logging.dto.ApiEndMessage;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,24 +33,21 @@ public class LoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
+        long startTime = System.currentTimeMillis();
         String uri = request.getRequestURI();
+        String httpMethod = request.getMethod();
+        String queryString = request.getQueryString();
+
         if (isSkipLoggingForPath(uri)) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        long startTime = System.currentTimeMillis();
-
-        MDC.put("traceId", UUID.randomUUID().toString());
         try {
-            String httpMethod = request.getMethod();
-            String queryString = request.getQueryString();
+            MDC.put("traceId", UUID.randomUUID().toString());
 
-            log.info("[API CALL] method={}, uri={}, query={}",
-                    httpMethod,
-                    uri,
-                    queryString
-            );
+            ApiCallMessage apiCallMessage = ApiCallMessage.from(httpMethod, queryString, uri);
+            log.info("", kv("event", apiCallMessage));
 
             filterChain.doFilter(request, response);
         } finally {
@@ -55,11 +56,8 @@ public class LoggingFilter extends OncePerRequestFilter {
             int statusCode = response.getStatus();
             String requestBody = extractBodyFromCache(request);
 
-            log.info("[API END] status={}, duration={}ms, requestBody={}",
-                    statusCode,
-                    executionTime,
-                    requestBody
-            );
+            ApiEndMessage apiEndMessage = ApiEndMessage.from(statusCode, requestBody, executionTime);
+            log.info("", kv("event", apiEndMessage));
 
             MDC.clear();
         }
