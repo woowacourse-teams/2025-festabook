@@ -4,23 +4,16 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
+import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
-import static org.mockito.BDDMockito.then;
-
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
-import static org.mockito.BDDMockito.given;
-
-import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.place.domain.PlaceAnnouncement;
-import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
@@ -161,6 +154,19 @@ class PlaceAnnouncementServiceTest {
             // then
             then(placeAnnouncementJpaRepository).should()
                     .deleteById(placeAnnouncementId);
+        }
+
+        @Test
+        void 성공_존재하지_않는_플레이스_공지() {
+            // given
+            Long invalidPlaceAnnouncementId = 0L;
+
+            // when
+            placeAnnouncementService.deleteByPlaceAnnouncementId(invalidPlaceAnnouncementId);
+
+            // then
+            then(placeAnnouncementJpaRepository).should()
+                    .deleteById(invalidPlaceAnnouncementId);
         }
     }
 }
