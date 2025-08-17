@@ -1,18 +1,23 @@
-name: Frontend Deploy to AWS
+name: Frontend CI/CD PROD
 
 on:
   push:
-    branches:
-      - frontend
+    branches: [ main ]
+    paths: [ 'frontend/**' ]
+  workflow_dispatch:
 
 jobs:
   build-and-deploy-to-AWS:
-    runs-on: self-hosted
+    runs-on: [self-hosted, prod-runner]
 
     steps:
       # 프로젝트 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v4
+
+      - name: Create .env.production
+        run: |
+          echo "VITE_API_HOST=${{ secrets.PROD_API_HOST }}" > ./frontend/.env.production
 
       # 의존성 설치
       - name: Install dependencies

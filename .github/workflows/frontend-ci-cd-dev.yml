@@ -1,0 +1,43 @@
+name: Frontend CI/CD Dev
+
+on:
+  push:
+    branches: [ frontend ]
+    paths: [ 'frontend/**' ]
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: [self-hosted, dev-runner]
+
+    steps:
+      # 프로젝트 체크아웃
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Create .env.production
+        run: |
+          echo "VITE_API_HOST=${{ secrets.DEV_API_HOST }}" > ./frontend/.env.production
+
+      # 의존성 설치
+      - name: Install dependencies
+        run: npm ci
+        working-directory: ./frontend
+
+      # Vite로 빌드
+      - name: Build with Vite
+        run: npx vite build
+        working-directory: ./frontend
+
+      # 빌드 파일 /home/ubuntu/2025-festabook/static/frontend/dist 이동
+      - name: Move build files
+        run: |
+          DEPLOY_PATH="/home/ubuntu/2025-festabook/static/frontend"
+          SOURCE_PATH="./frontend/dist"
+
+          sudo mkdir -p "${DEPLOY_PATH}"
+          sudo rm -rf "${DEPLOY_PATH}/dist"
+          sudo cp -r "${SOURCE_PATH}" "${DEPLOY_PATH}"
+          sudo chmod -R 755 "${DEPLOY_PATH}"
+
+          echo "Build files moved to ${DEPLOY_PATH}."
