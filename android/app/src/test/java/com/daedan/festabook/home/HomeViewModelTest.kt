@@ -35,6 +35,8 @@ class HomeViewModelTest {
         Dispatchers.setMain(testDispatcher)
         festivalRepository = mockk()
         coEvery { festivalRepository.getFestivalInfo() } returns Result.success(FAKE_ORGANIZATION)
+        coEvery { festivalRepository.getLineup() } returns Result.success(FAKE_LINEUP)
+
         homeViewModel = HomeViewModel(festivalRepository)
     }
 
