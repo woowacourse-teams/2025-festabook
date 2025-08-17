@@ -23,7 +23,9 @@
     <!-- 로컬 및 테스트 환경: 콘솔 JSON 출력 -->
     <springProfile name="!prod">
         <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+                <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+            </encoder>
         </appender>
 
         <root level="INFO">
