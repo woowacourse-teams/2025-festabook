@@ -6,8 +6,6 @@ import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.LineupItem
 import com.daedan.festabook.domain.model.Organization
 import com.daedan.festabook.domain.repository.FestivalRepository
-import com.daedan.festabook.presentation.home.LineupItemUiModel
-import com.daedan.festabook.presentation.home.toUiModel
 
 class FestivalRepositoryImpl(
     private val festivalDataSource: FestivalDataSource,
@@ -17,7 +15,7 @@ class FestivalRepositoryImpl(
         return response.mapCatching { it.toDomain() }
     }
 
-    override suspend fun getLineup(): Result<List<LineupItemUiModel>> {
+    override suspend fun getLineup(): Result<List<LineupItem>> {
         val dummyData =
             listOf(
                 LineupItem(
@@ -36,6 +34,6 @@ class FestivalRepositoryImpl(
                     name = "하츠네 미쿠",
                 ),
             )
-        return Result.success(dummyData.map { it.toUiModel() })
+        return Result.success(dummyData)
     }
 }

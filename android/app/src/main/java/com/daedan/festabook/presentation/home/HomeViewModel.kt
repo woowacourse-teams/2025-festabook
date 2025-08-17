@@ -47,7 +47,7 @@ class HomeViewModel(
             val result = festivalRepository.getLineup()
             result
                 .onSuccess { lineups ->
-                    _lineupUiState.value = LineupUiState.Success(lineups)
+                    _lineupUiState.value = LineupUiState.Success(lineups.map { it.toUiModel() })
                 }.onFailure {
                     _lineupUiState.value = LineupUiState.Error(it)
                 }
