@@ -132,7 +132,10 @@ class MapManager(
     private fun isExceededMaxLength(): Boolean {
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()
-        return currentPosition.distanceTo(initialCenter) > maxLength * zoomWeight
+        return currentPosition.distanceTo(initialCenter) >
+            (maxLength * zoomWeight).coerceAtLeast(
+                maxLength,
+            )
     }
 
     fun clearMapManager() {
