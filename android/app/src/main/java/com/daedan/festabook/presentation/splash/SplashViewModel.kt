@@ -4,11 +4,17 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
 import com.daedan.festabook.presentation.common.SingleLiveData
+import timber.log.Timber
 
-class SplashViewModel : ViewModel() {
+class SplashViewModel(
+    private val festivalLocalDataSource: FestivalLocalDataSource,
+) : ViewModel() {
     private val _navigationState = SingleLiveData<NavigationState>()
     val navigationState: LiveData<NavigationState> = _navigationState
 
@@ -16,24 +22,27 @@ class SplashViewModel : ViewModel() {
     val isValidationComplete: LiveData<Boolean> = _isValidationComplete
 
     fun checkFestivalId() {
-        // sharedPreference에서 festivalId 가져오기
-        val festivalId = 1L
+        val festivalId = festivalLocalDataSource.getFestivalId()
+        Timber.d("festival ID : $festivalId")
 
         if (festivalId == null) {
-            _navigationState.postValue(NavigationState.NavigateToExplore)
+            _navigationState.setValue(NavigationState.NavigateToExplore)
         } else {
-            // festival id을 intercepter에 넣어주기
-            _navigationState.postValue(NavigationState.NavigateToMain(festivalId))
+            _navigationState.setValue(NavigationState.NavigateToMain(festivalId))
         }
 
-        _isValidationComplete.postValue(true)
+        _isValidationComplete.value = true
     }
 
     companion object {
         val FACTORY: ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
-                    SplashViewModel()
+                    val festivalLocalDataSource =
+                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.festivalLocalDataSource
+                    SplashViewModel(
+                        festivalLocalDataSource,
+                    )
                 }
             }
     }
