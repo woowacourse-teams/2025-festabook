@@ -2,7 +2,8 @@ package com.daedan.festabook.place.service;
 
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceImage;
-import com.daedan.festabook.place.dto.PlacePreviewResponses;
+import com.daedan.festabook.place.dto.PlaceEtcPreviewResponses;
+import com.daedan.festabook.place.dto.PlaceMainPreviewResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
@@ -21,17 +22,28 @@ public class PlacePreviewService {
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
 
-    public PlacePreviewResponses getAllPreviewPlaceByFestivalId(Long festivalId) {
-        List<Place> places = getMainPlaces(festivalId);
+    public PlaceMainPreviewResponses getAllPreviewMainPlaceByFestivalId(Long festivalId) {
+        List<Place> mainPlaces = getMainPlaces(festivalId);
 
-        Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(places);
+        Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(mainPlaces);
 
-        return PlacePreviewResponses.from(places, placeImages);
+        return PlaceMainPreviewResponses.from(mainPlaces, placeImages);
+    }
+
+    public PlaceEtcPreviewResponses getAllPreviewEtcPlaceByFestivalId(Long festivalId) {
+        List<Place> etcPlaces = getEtcPlaces(festivalId);
+        return PlaceEtcPreviewResponses.from(etcPlaces);
     }
 
     private List<Place> getMainPlaces(Long festivalId) {
         return placeJpaRepository.findAllByFestivalId(festivalId).stream()
                 .filter(Place::isMainPlace)
+                .toList();
+    }
+
+    private List<Place> getEtcPlaces(Long festivalId) {
+        return placeJpaRepository.findAllByFestivalId(festivalId).stream()
+                .filter(Place::isEtcPlace)
                 .toList();
     }
 

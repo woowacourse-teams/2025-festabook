@@ -4,7 +4,7 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceImage;
 
-public record PlacePreviewResponse(
+public record PlaceMainPreviewResponse(
         Long placeId,
         String imageUrl,
         PlaceCategory category,
@@ -13,8 +13,8 @@ public record PlacePreviewResponse(
         String location
 ) {
 
-    public static PlacePreviewResponse from(Place place, PlaceImage placeImage) {
-        return new PlacePreviewResponse(
+    public static PlaceMainPreviewResponse from(Place place, PlaceImage placeImage) {
+        return new PlaceMainPreviewResponse(
                 place.getId(),
                 placeImage != null ? placeImage.getImageUrl() : null,
                 place.getCategory(),

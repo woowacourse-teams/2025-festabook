@@ -1,7 +1,8 @@
 package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
-import com.daedan.festabook.place.dto.PlacePreviewResponses;
+import com.daedan.festabook.place.dto.PlaceEtcPreviewResponses;
+import com.daedan.festabook.place.dto.PlaceMainPreviewResponses;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
@@ -73,16 +74,28 @@ public class PlaceController {
         return placeService.getAllPlaceByFestivalId(festivalId);
     }
 
-    @GetMapping("/previews")
+    @GetMapping("/main/previews")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 모든 플레이스 프리뷰 조회")
+    @Operation(summary = "특정 축제의 메인 플레이스 프리뷰 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlacePreviewResponses getAllPreviewPlaceByFestivalId(
+    public PlaceMainPreviewResponses getAllPreviewMainPlaceByFestivalId(
             @Parameter(hidden = true) @FestivalId Long festivalId
     ) {
-        return placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
+        return placePreviewService.getAllPreviewMainPlaceByFestivalId(festivalId);
+    }
+
+    @GetMapping("/etc/previews")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 기타 플레이스 프리뷰 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public PlaceEtcPreviewResponses getAllPreviewEtcPlaceByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
+    ) {
+        return placePreviewService.getAllPreviewEtcPlaceByFestivalId(festivalId);
     }
 
     @GetMapping("/{placeId}")

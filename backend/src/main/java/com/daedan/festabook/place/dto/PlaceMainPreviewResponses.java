@@ -6,23 +6,23 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 import java.util.Map;
 
-public record PlacePreviewResponses(
-        @JsonValue List<PlacePreviewResponse> responses
+public record PlaceMainPreviewResponses(
+        @JsonValue List<PlaceMainPreviewResponse> responses
 ) {
 
-    public static PlacePreviewResponses from(
-            List<PlacePreviewResponse> responses
+    public static PlaceMainPreviewResponses from(
+            List<PlaceMainPreviewResponse> responses
     ) {
-        return new PlacePreviewResponses(responses);
+        return new PlaceMainPreviewResponses(responses);
     }
 
-    public static PlacePreviewResponses from(
+    public static PlaceMainPreviewResponses from(
             List<Place> places,
             Map<Long, PlaceImage> images
     ) {
-        return new PlacePreviewResponses(
+        return new PlaceMainPreviewResponses(
                 places.stream()
-                        .map(place -> PlacePreviewResponse.from(
+                        .map(place -> PlaceMainPreviewResponse.from(
                                 place,
                                 images.getOrDefault(place.getId(), null)
                         ))

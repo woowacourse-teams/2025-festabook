@@ -122,6 +122,10 @@ public class Place {
         return MAIN_PLACE.contains(this.category);
     }
 
+    public boolean isEtcPlace() {
+        return !isMainPlace();
+    }
+
     public void updateCoordinate(Coordinate coordinate) {
         this.coordinate = coordinate;
     }
