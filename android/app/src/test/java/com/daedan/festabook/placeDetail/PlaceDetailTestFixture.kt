@@ -1,5 +1,7 @@
 package com.daedan.festabook.placeDetail
 
+import com.daedan.festabook.domain.model.Place
+import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.model.PlaceDetail
 import com.daedan.festabook.domain.model.PlaceDetailImage
 import com.daedan.festabook.news.FAKE_NOTICES
@@ -22,4 +24,23 @@ val FAKE_PLACE_DETAIL =
                     sequence = 1,
                 ),
             ),
+    )
+
+val FAKE_ETC_PLACE_DETAIL =
+    PlaceDetail(
+        id = 1,
+        place =
+            Place(
+                id = 1,
+                title = "화장실",
+                category = PlaceCategory.TOILET,
+                imageUrl = null,
+                description = null,
+                location = null,
+            ),
+        notices = emptyList(),
+        host = null,
+        startTime = null,
+        endTime = null,
+        images = emptyList(),
     )

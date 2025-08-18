@@ -90,7 +90,7 @@ class PlaceMapFragment :
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> {
-                    mapManager?.setPlaceLocation(placeGeographies.value + DummyPlaceGeography.VALUE)
+                    mapManager?.setPlaceLocation(placeGeographies.value)
                 }
 
                 is PlaceListUiState.Error -> {
@@ -173,7 +173,7 @@ class PlaceMapFragment :
         childFragments.forEach { fragment ->
             (fragment as? OnMenuItemReClickListener)?.onMenuItemReClick()
         }
-        mapManager.moveToPosition()
+        mapManager?.moveToPosition()
     }
 
     companion object {
