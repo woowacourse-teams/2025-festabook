@@ -148,6 +148,7 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.timber)
     implementation(libs.lottie)
+    implementation(libs.circleindicator)
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.androidx.core.splashscreen)
     testImplementation(libs.junit)

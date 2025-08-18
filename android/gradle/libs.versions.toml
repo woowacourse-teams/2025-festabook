@@ -1,6 +1,7 @@
 [versions]
 agp = "8.9.0"
 assertjCore = "3.27.3"
+circleindicator = "2.1.6"
 coil = "3.3.0"
 coreSplashscreen = "1.0.1"
 coreTesting = "2.2.0"
@@ -37,6 +38,7 @@ androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", versi
 androidx-core-testing = { module = "androidx.arch.core:core-testing", version.ref = "coreTesting" }
 androidx-swiperefreshlayout = { module = "androidx.swiperefreshlayout:swiperefreshlayout", version.ref = "swiperefreshlayout" }
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertjCore" }
+circleindicator = { module = "me.relex:circleindicator", version.ref = "circleindicator" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }

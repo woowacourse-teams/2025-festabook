@@ -55,6 +55,28 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <me.relex.circleindicator.CircleIndicator3
+                    android:id="@+id/cl_image_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="24dp"
+                    app:ci_drawable_unselected="@drawable/bg_gray300_circle_indicator"
+                    app:ci_drawable="@drawable/bg_gray900_circle_indicator"
+                    app:ci_animator="@animator/scale_with_alpha"
+                    app:layout_constraintBottom_toBottomOf="@id/vp_place_images"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"/>
+
+                <ImageView
+                    android:id="@+id/iv_back_to_previous"
+                    android:layout_height="30dp"
+                    android:layout_width="30dp"
+                    android:src="@drawable/btn_back_to_previous"
+                    android:clickable="true"
+                    android:layout_marginTop="16dp"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
+                    app:layout_constraintTop_toTopOf="@id/vp_place_images"
+                    />
+
                 <com.daedan.festabook.presentation.placeList.CategoryView
                     android:id="@+id/cv_place_category"
                     android:layout_width="wrap_content"
