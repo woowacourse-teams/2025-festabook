@@ -28,7 +28,7 @@ class ExploreViewModel(
 
     fun onUniversitySelected(university: University) {
         selectedUniversity.value = university
-        _searchState.value = SearchUiState.Success(listOf(university))
+        _searchState.value = SearchUiState.Success(selectedUniversity = university)
     }
 
     fun onTextInputChanged() {
@@ -54,7 +54,7 @@ class ExploreViewModel(
             result
                 .onSuccess { universitiesFound ->
                     Timber.d("검색 성공 - received: $universitiesFound")
-                    _searchState.value = SearchUiState.Success(universitiesFound)
+                    _searchState.value = SearchUiState.Success(universitiesFound = universitiesFound)
                 }.onFailure {
                     Timber.d(it, "검색 실패")
                     _searchState.value = SearchUiState.Error(it)
@@ -68,11 +68,8 @@ class ExploreViewModel(
         if (selectedUniversity != null) {
             Timber.d("festivalId 로 화면 이동 - ${selectedUniversity.festivalId}")
             _navigateToMain.setValue(selectedUniversity)
+            exploreRepository.saveFestivalId(selectedUniversity.festivalId)
         }
-    }
-
-    fun saveFestivalId(festivalId: Long) {
-        exploreRepository.saveFestivalId(festivalId)
     }
 
     companion object {

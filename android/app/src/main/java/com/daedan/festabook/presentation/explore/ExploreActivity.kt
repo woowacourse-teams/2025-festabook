@@ -74,7 +74,7 @@ class ExploreActivity :
                 is SearchUiState.Loading -> Unit
                 is SearchUiState.Success -> {
                     // 검색 결과가 없을 때
-                    if (state.value.isEmpty()) {
+                    if (state.universitiesFound.isEmpty()) {
                         binding.tilSearchInputLayout.isErrorEnabled = true
                         binding.tilSearchInputLayout.error =
                             getString(R.string.explore_no_search_result_text)
@@ -82,7 +82,7 @@ class ExploreActivity :
                     } else {
                         // 검색 결과가 있을 때
                         binding.tilSearchInputLayout.isErrorEnabled = false
-                        searchResultAdapter.submitList(state.value)
+                        searchResultAdapter.submitList(state.universitiesFound)
                     }
                 }
 
@@ -97,7 +97,6 @@ class ExploreActivity :
 
         viewModel.navigateToMain.observe(this) { university ->
             university?.let {
-                saveFestivalIdToLocal(it)
                 navigateToMainActivity(university.festivalId)
             }
         }
@@ -119,10 +118,6 @@ class ExploreActivity :
                 null -> Unit
             }
         }
-    }
-
-    private fun saveFestivalIdToLocal(selectedUniversity: University) {
-        viewModel.saveFestivalId(selectedUniversity.festivalId)
     }
 
     private fun navigateToMainActivity(festivalId: Long) {
