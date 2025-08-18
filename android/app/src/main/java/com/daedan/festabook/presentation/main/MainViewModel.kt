@@ -1,4 +1,3 @@
-// presentation/main/MainViewModel.kt
 package com.daedan.festabook.presentation.main
 
 import androidx.lifecycle.LiveData
