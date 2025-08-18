@@ -24,10 +24,10 @@ class ExploreViewModel(
     private val _navigateToMain = SingleLiveData<University?>()
     val navigateToMain: LiveData<University?> = _navigateToMain
 
-    private val selectedUniversity = MutableLiveData<University>()
+    private var selectedUniversity: University? = null
 
     fun onUniversitySelected(university: University) {
-        selectedUniversity.value = university
+        selectedUniversity = university
         _searchState.value = SearchUiState.Success(selectedUniversity = university)
     }
 
@@ -63,7 +63,7 @@ class ExploreViewModel(
     }
 
     fun onNavigateIconClicked() {
-        val selectedUniversity = selectedUniversity.value
+        val selectedUniversity = selectedUniversity
 
         if (selectedUniversity != null) {
             Timber.d("festivalId 로 화면 이동 - ${selectedUniversity.festivalId}")
