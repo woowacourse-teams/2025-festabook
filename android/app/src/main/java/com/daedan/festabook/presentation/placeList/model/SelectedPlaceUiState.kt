@@ -7,6 +7,11 @@ sealed interface SelectedPlaceUiState {
 
     data object Empty : SelectedPlaceUiState
 
+    data class Secondary(
+        val placeId: Long,
+        val category: PlaceCategoryUiModel,
+    ) : SelectedPlaceUiState
+
     data class Success(
         val value: PlaceDetailUiModel,
     ) : SelectedPlaceUiState

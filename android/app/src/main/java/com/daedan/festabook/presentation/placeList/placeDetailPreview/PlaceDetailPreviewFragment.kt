@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import coil3.load
 import coil3.request.placeholder
@@ -15,6 +16,7 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
+import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import kotlin.getValue
 
@@ -71,6 +73,7 @@ class PlaceDetailPreviewFragment :
                 is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
                 is SelectedPlaceUiState.Empty -> Unit
+                is SelectedPlaceUiState.Secondary -> updateSelectedSecondaryPlaceUi(selectedPlace.category)
             }
         }
     }
@@ -78,17 +81,58 @@ class PlaceDetailPreviewFragment :
     private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
         with(binding) {
             layoutSelectedPlace.visibility = View.VISIBLE
-            tvSelectedPlaceTitle.text = selectedPlace.place.title ?: getString(R.string.place_list_default_title)
-            tvSelectedPlaceLocation.text = selectedPlace.place.location ?: getString(R.string.place_list_default_location)
-            setFormatDate(binding.tvSelectedPlaceTime, selectedPlace.startTime, selectedPlace.endTime)
-            tvSelectedPlaceHost.text = selectedPlace.host ?: getString(R.string.place_detail_default_host)
-            tvSelectedPlaceDescription.text = selectedPlace.place.description ?: getString(R.string.place_list_default_description)
+            makeChildVisible()
+
+            tvSelectedPlaceTitle.text =
+                selectedPlace.place.title ?: getString(R.string.place_list_default_title)
+            tvSelectedPlaceLocation.text =
+                selectedPlace.place.location ?: getString(R.string.place_list_default_location)
+            setFormatDate(
+                binding.tvSelectedPlaceTime,
+                selectedPlace.startTime,
+                selectedPlace.endTime,
+            )
+            tvSelectedPlaceHost.text =
+                selectedPlace.host ?: getString(R.string.place_detail_default_host)
+            tvSelectedPlaceDescription.text = selectedPlace.place.description
+                ?: getString(R.string.place_list_default_description)
             cvPlaceCategory.setCategory(selectedPlace.place.category)
             ivSelectedPlaceImage.load(
                 selectedPlace.featuredImage,
             ) {
                 placeholder(R.color.gray300)
             }
+        }
+    }
+
+    private fun updateSelectedSecondaryPlaceUi(placeCategory: PlaceCategoryUiModel) {
+        with(binding) {
+            layoutSelectedPlace.visibility = View.VISIBLE
+            makeChildGone()
+            tvSelectedPlaceTitle.visibility = View.VISIBLE
+
+            tvSelectedPlaceTitle.text =
+                when (placeCategory) {
+                    PlaceCategoryUiModel.TRASH_CAN -> getString(R.string.map_category_trash)
+                    PlaceCategoryUiModel.TOILET -> getString(R.string.map_category_toilet)
+                    PlaceCategoryUiModel.SMOKING_AREA -> getString(R.string.map_category_smoking_area)
+                    PlaceCategoryUiModel.PARKING -> getString(R.string.map_category_parking)
+                    PlaceCategoryUiModel.PRIMARY -> getString(R.string.map_category_primary)
+                    PlaceCategoryUiModel.STAGE -> getString(R.string.map_category_stage)
+                    else -> return
+                }
+        }
+    }
+
+    private fun FragmentPlaceDetailPreviewBinding.makeChildGone() {
+        layoutSelectedPlace.children.forEach {
+            it.visibility = View.GONE
+        }
+    }
+
+    private fun FragmentPlaceDetailPreviewBinding.makeChildVisible() {
+        layoutSelectedPlace.children.forEach {
+            it.visibility = View.VISIBLE
         }
     }
 

@@ -34,7 +34,7 @@ class PlaceMapFragment :
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
-    private lateinit var mapManager: MapManager
+    private var mapManager: MapManager? = null
     private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
 
     private val placeListFragment by lazy {
@@ -67,7 +67,7 @@ class PlaceMapFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        mapManager.clearMapManager()
+        mapManager?.clearMapManager()
     }
 
     private suspend fun setUpMapManager() {
@@ -82,7 +82,7 @@ class PlaceMapFragment :
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> {
-                    mapManager.setPlaceLocation(placeGeographies.value)
+                    mapManager?.setPlaceLocation(placeGeographies.value + DummyPlaceGeography.VALUE)
                 }
 
                 is PlaceListUiState.Error -> {
@@ -97,7 +97,7 @@ class PlaceMapFragment :
 
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
-            if (!::mapManager.isInitialized) {
+            if (mapManager == null) {
                 mapManager =
                     MapManager(
                         naverMap,
@@ -105,33 +105,39 @@ class PlaceMapFragment :
                         MapClickListenerImpl(viewModel),
                         initialMapSetting.value,
                     )
-                mapManager.setupMap()
-                mapManager.setupBackToInitialPosition { isExceededMaxLength ->
+                mapManager?.setupMap()
+                mapManager?.setupBackToInitialPosition { isExceededMaxLength ->
                     viewModel.setIsExceededMaxLength(isExceededMaxLength)
                 }
             }
         }
 
         viewModel.backToInitialPositionClicked.observe(viewLifecycleOwner) { event ->
-            mapManager.moveToPosition()
+            mapManager?.moveToPosition()
         }
 
         viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
             if (selectedCategories.isEmpty()) {
-                mapManager.clearFilter()
+                mapManager?.clearFilter()
             } else {
-                mapManager.filterPlace(selectedCategories)
+                mapManager?.filterPlace(selectedCategories)
             }
         }
 
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
             when (selectedPlace) {
                 is SelectedPlaceUiState.Success -> {
-                    mapManager.selectMarker(selectedPlace.value.place)
+                    mapManager?.selectMarker(selectedPlace.value.place.id)
                 }
+
                 is SelectedPlaceUiState.Empty -> {
-                    mapManager.unselectMarker()
+                    mapManager?.unselectMarker()
                 }
+
+                is SelectedPlaceUiState.Secondary -> {
+                    mapManager?.selectMarker(selectedPlace.placeId)
+                }
+
                 else -> Unit
             }
         }

@@ -151,7 +151,7 @@ class PlaceListViewModelTest {
         }
 
     @Test
-    fun `카테고리가 기타시설이라면 플레이스 상세가 선택되지 않는다`() =
+    fun `카테고리가 기타시설일 떄에도 플레이스 상세를 선택할 수 있다`() =
         runTest {
             // given
             coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
@@ -161,7 +161,7 @@ class PlaceListViewModelTest {
             advanceUntilIdle()
 
             // then
-            val expected = null
+            val expected = SelectedPlaceUiState.Secondary(1, PlaceCategoryUiModel.TOILET)
             val actual = placeListViewModel.selectedPlace.value
             assertThat(actual).isEqualTo(expected)
         }

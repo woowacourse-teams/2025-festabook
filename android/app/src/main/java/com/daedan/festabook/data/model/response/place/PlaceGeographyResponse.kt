@@ -30,6 +30,9 @@ data class PlaceGeographyResponse(
         TRASH_CAN,
         TOILET,
         SMOKING,
+        PARKING,
+        PRIMARY,
+        STAGE,
     }
 }
 
@@ -52,4 +55,7 @@ fun PlaceGeographyResponse.PlaceCategory.toDomain() =
         PlaceGeographyResponse.PlaceCategory.SMOKING -> PlaceCategory.SMOKING_AREA
         PlaceGeographyResponse.PlaceCategory.TOILET -> PlaceCategory.TOILET
         PlaceGeographyResponse.PlaceCategory.TRASH_CAN -> PlaceCategory.TRASH_CAN
+        PlaceGeographyResponse.PlaceCategory.PARKING -> PlaceCategory.PARKING
+        PlaceGeographyResponse.PlaceCategory.PRIMARY -> PlaceCategory.PRIMARY
+        PlaceGeographyResponse.PlaceCategory.STAGE -> PlaceCategory.STAGE
     }

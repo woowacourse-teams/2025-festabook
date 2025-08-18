@@ -47,6 +47,9 @@
     <string name="map_category_smoking_area">흡연구역</string>
     <string name="map_category_toilet">화장실</string>
     <string name="map_category_trash">쓰레기통</string>
+    <string name="map_category_stage">공연장</string>
+    <string name="map_category_primary">주요시설</string>
+    <string name="map_category_parking">주차장</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
 
