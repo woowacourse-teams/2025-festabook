@@ -305,4 +305,41 @@ public class PlaceFixture {
                 null
         );
     }
+
+    public static Place createWithNullDefaults(
+            Festival festival,
+            PlaceCategory category
+    ) {
+        return new Place(
+                null,
+                festival,
+                category,
+                null,
+                DEFAULT_TITLE,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
+
+    public static Place createWithNullDefaults(
+            Festival festival,
+            PlaceCategory category,
+            String title
+    ) {
+        return new Place(
+                null,
+                festival,
+                category,
+                null,
+                title,
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+    }
 }

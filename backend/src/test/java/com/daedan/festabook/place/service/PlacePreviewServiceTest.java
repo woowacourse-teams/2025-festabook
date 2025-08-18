@@ -4,11 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.place.domain.Place;
+import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlacePreviewResponses;
+import com.daedan.festabook.place.dto.PlaceEtcPreviewResponses;
+import com.daedan.festabook.place.dto.PlaceMainPreviewResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
@@ -35,7 +39,7 @@ class PlacePreviewServiceTest {
     private PlacePreviewService placePreviewService;
 
     @Nested
-    class getAllPreviewPlaceByFestivalId {
+    class getAllPreviewMainPlaceByFestivalId {
 
         @Test
         void 성공() {
@@ -58,7 +62,7 @@ class PlacePreviewServiceTest {
             int expectedSize = 2;
 
             // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
+            PlaceMainPreviewResponses result = placePreviewService.getAllPreviewMainPlaceByFestivalId(festivalId);
 
             // then
             assertThat(result.responses()).hasSize(expectedSize);
@@ -83,13 +87,65 @@ class PlacePreviewServiceTest {
                     .willReturn(placeImages);
 
             // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
+            PlaceMainPreviewResponses result = placePreviewService.getAllPreviewMainPlaceByFestivalId(festivalId);
 
             // then
             assertSoftly(s -> {
                 s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
                 s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(null);
             });
+        }
+    }
+
+    @Nested
+    class getAllPreviewEtcPlaceByFestivalId {
+
+        @Test
+        void 성공() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            PlaceCategory etcPlaceCategory = PlaceCategory.SMOKING;
+            String expectedTitle = "기타 플레이스입니다.";
+
+            Place etcPlace = PlaceFixture.createWithNullDefaults(festival, etcPlaceCategory, expectedTitle);
+
+            given(placeJpaRepository.findAllByFestivalId(festivalId))
+                    .willReturn(List.of(etcPlace));
+
+            // when
+            PlaceEtcPreviewResponses result = placePreviewService.getAllPreviewEtcPlaceByFestivalId(festivalId);
+
+            // then
+            assertThat(result.responses().get(0).title()).isEqualTo(expectedTitle);
+        }
+
+        @Test
+        void 성공_기타_플레이스만_조회() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            PlaceCategory etcPlaceCategory = PlaceCategory.SMOKING;
+            String expectedTitle = "기타 플레이스입니다.";
+
+            Place etcPlace = PlaceFixture.createWithNullDefaults(festival, etcPlaceCategory, expectedTitle);
+
+            PlaceCategory mainPlaceCategory = PlaceCategory.BAR;
+            Place mainPlace1 = PlaceFixture.create(festival, mainPlaceCategory);
+            Place mainPlace2 = PlaceFixture.create(festival, mainPlaceCategory);
+
+            given(placeJpaRepository.findAllByFestivalId(festivalId))
+                    .willReturn(List.of(etcPlace, mainPlace1, mainPlace2));
+
+            int expectedSize = 1;
+
+            // when
+            PlaceEtcPreviewResponses result = placePreviewService.getAllPreviewEtcPlaceByFestivalId(festivalId);
+
+            // then
+            assertThat(result.responses()).hasSize(expectedSize);
         }
     }
 }

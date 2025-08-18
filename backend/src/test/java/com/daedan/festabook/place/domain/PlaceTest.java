@@ -33,7 +33,6 @@ class PlaceTest {
         @Test
         void 성공() {
             // given
-
             Festival festival = FestivalFixture.create();
             PlaceCategory placeCategory = PlaceCategory.BOOTH;
             Coordinate coordinate = CoordinateFixture.create();
@@ -280,7 +279,7 @@ class PlaceTest {
                     .hasMessage("플레이스의 시작 날짜, 종료 날짜는 모두 비어 있거나 모두 입력되어야 합니다.");
         }
     }
-
+    
     @Nested
     class isMainPlace {
 
@@ -290,14 +289,45 @@ class PlaceTest {
                 "BAR, true",
                 "FOOD_TRUCK, true",
                 "SMOKING, false",
-                "TRASH_CAN, false"
+                "TRASH_CAN, false",
+                "TOILET, false",
+                "PARKING, false",
+                "PRIMARY, false",
+                "STAGE, false",
         })
-        void 성공_카테고리에_따라_상세_정보_유무_반환(PlaceCategory category, boolean expected) {
+        void 성공_카테고리에_메인_플레이스_유무_반환(PlaceCategory category, boolean expected) {
             // given
             Place place = PlaceFixture.create(category);
 
             // when
             boolean result = place.isMainPlace();
+
+            // then
+            assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class isEtcPlace {
+
+        @ParameterizedTest(name = "카테고리: {0}, 예상 결과: {1}")
+        @CsvSource({
+                "BOOTH, false",
+                "BAR, false",
+                "FOOD_TRUCK, false",
+                "SMOKING, true",
+                "TRASH_CAN, true",
+                "TOILET, true",
+                "PARKING, true",
+                "PRIMARY, true",
+                "STAGE, true",
+        })
+        void 성공_카테고리에_따라_기타_플레이스_유무_반환(PlaceCategory category, boolean expected) {
+            // given
+            Place place = PlaceFixture.create(category);
+
+            // when
+            boolean result = place.isEtcPlace();
 
             // then
             assertThat(result).isEqualTo(expected);

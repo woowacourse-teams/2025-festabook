@@ -231,7 +231,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class getAllPreviewPlaceByFestivalId {
+    class getAllPreviewMainPlaceByFestivalId {
 
         @Test
         void 성공() {
@@ -255,7 +255,7 @@ class PlaceControllerTest {
                     .given()
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
-                    .get("/places/previews")
+                    .get("/places/main/previews")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
@@ -293,7 +293,7 @@ class PlaceControllerTest {
                     .given()
                     .header(FESTIVAL_HEADER_NAME, targetFestival.getId())
                     .when()
-                    .get("/places/previews")
+                    .get("/places/main/previews")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
@@ -321,11 +321,71 @@ class PlaceControllerTest {
                     .given()
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
-                    .get("/places/previews")
+                    .get("/places/main/previews")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
                     .body("[1].imageUrl", equalTo(null));
+        }
+    }
+
+    @Nested
+    class getAllPreviewEtcPlaceByFestivalId {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            PlaceCategory etcPlaceCategory = PlaceCategory.SMOKING;
+            String expectedTitle = "기타 플레이스";
+
+            Place etcPlace = PlaceFixture.createWithNullDefaults(festival, etcPlaceCategory, expectedTitle);
+            placeJpaRepository.save(etcPlace);
+
+            int expectedSize = 1;
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .when()
+                    .get("/places/etc/previews")
+                    .then()
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].size()", equalTo(expectedFieldSize))
+                    .body("[0].placeId", equalTo(etcPlace.getId().intValue()))
+                    .body("[0].title", equalTo(expectedTitle));
+        }
+
+        @Test
+        void 성공_기타_플레이스만_조회() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            PlaceCategory etcPlaceCategory = PlaceCategory.SMOKING;
+
+            Place etcPlace = PlaceFixture.createWithNullDefaults(festival, etcPlaceCategory);
+            placeJpaRepository.save(etcPlace);
+
+            PlaceCategory mainPlaceCategory = PlaceCategory.BAR;
+            Place mainPlace1 = PlaceFixture.create(festival, mainPlaceCategory);
+            Place mainPlace2 = PlaceFixture.create(festival, mainPlaceCategory);
+            placeJpaRepository.saveAll(List.of(mainPlace1, mainPlace2));
+
+            int expectedSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .when()
+                    .get("/places/etc/previews")
+                    .then()
+                    .body("$", hasSize(expectedSize));
         }
     }
 
