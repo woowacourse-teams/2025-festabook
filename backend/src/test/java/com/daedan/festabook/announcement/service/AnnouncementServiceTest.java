@@ -15,17 +15,19 @@ import com.daedan.festabook.announcement.domain.AnnouncementFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequestFixture;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementRequestFixture;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateResponse;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -269,7 +271,7 @@ class AnnouncementServiceTest {
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("new title", "new content");
 
             // when
-            AnnouncementResponse result = announcementService.updateAnnouncement(announcement.getId(), request);
+            AnnouncementUpdateResponse result = announcementService.updateAnnouncement(announcement.getId(), request);
 
             // then
             assertSoftly(s -> {
@@ -308,10 +310,11 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(announcement));
 
             // when
-            announcementService.updateAnnouncementPin(announcementId, DEFAULT_FESTIVAL_ID, request);
+            AnnouncementPinUpdateResponse result = announcementService.updateAnnouncementPin(announcementId,
+                    DEFAULT_FESTIVAL_ID, request);
 
             // then
-            assertThat(announcement.isPinned()).isEqualTo(request.pinned());
+            assertThat(result.isPinned()).isEqualTo(request.pinned());
         }
 
         @Test

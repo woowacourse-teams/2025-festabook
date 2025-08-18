@@ -276,6 +276,8 @@ class AnnouncementControllerTest {
 
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("수정된 제목", "수정된 내용");
 
+            int expectedFieldSize = 3;
+
             // when & then
             RestAssured
                     .given()
@@ -285,12 +287,14 @@ class AnnouncementControllerTest {
                     .patch("/announcements/{announcementId}", announcement.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("announcementId", notNullValue())
                     .body("title", equalTo(request.title()))
                     .body("content", equalTo(request.content()));
         }
 
         @Test
-        void 실패_존재하지_않는_공지() {
+        void 예외_존재하지_않는_공지() {
             // given
             Long notExistId = 0L;
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
@@ -326,6 +330,8 @@ class AnnouncementControllerTest {
 
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(expectedPinned);
 
+            int expectedFieldSize = 2;
+
             // when & then
             RestAssured
                     .given()
@@ -335,7 +341,10 @@ class AnnouncementControllerTest {
                     .when()
                     .patch("/announcements/{announcementId}/pin", announcement.getId())
                     .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("announcementId", notNullValue())
+                    .body("isPinned", equalTo(request.pinned()));
 
             Announcement updatedAnnouncement = announcementJpaRepository.findById(announcement.getId()).get();
             assertThat(updatedAnnouncement.isPinned()).isEqualTo(expectedPinned);

@@ -3,15 +3,17 @@ package com.daedan.festabook.announcement.service;
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateResponse;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
-import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.dto.NotificationMessage;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.notification.dto.NotificationMessage;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -62,20 +64,22 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public AnnouncementResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
+    public AnnouncementUpdateResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
         announcement.updateTitleAndContent(request.title(), request.content());
-        return AnnouncementResponse.from(announcement);
+        return AnnouncementUpdateResponse.from(announcement);
     }
 
     @Transactional
-    public void updateAnnouncementPin(Long announcementId, Long festivalId, AnnouncementPinUpdateRequest request) {
+    public AnnouncementPinUpdateResponse updateAnnouncementPin(Long announcementId, Long festivalId,
+                                                               AnnouncementPinUpdateRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
         if (announcement.isUnpinned() && request.pinned()) {
             validatePinnedLimit(festivalId);
         }
-
         announcement.updatePinned(request.pinned());
+
+        return AnnouncementPinUpdateResponse.from(announcement);
     }
 
     public void deleteAnnouncementByAnnouncementId(Long announcementId) {
