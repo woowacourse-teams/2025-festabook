@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../common/Modal";
 
-const NoticeModal = ({ notice, onSave, onClose }) => {
+const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [agreePush, setAgreePush] = useState(false);

@@ -79,10 +79,10 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
     if (noticeToDelete) {
       const updatedNotices = notices.filter(notice => notice.id !== noticeToDelete.id);
       setNotices(updatedNotices);
-      
+
       // 부모 컴포넌트에 업데이트된 공지 목록 전달
       onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
-      
+
       setShowDeleteModal(false);
       setNoticeToDelete(null);
     }

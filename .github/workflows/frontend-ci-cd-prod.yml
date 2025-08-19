@@ -1,12 +1,13 @@
-name: Frontend CI/CD Prod
+name: Frontend CI/CD PROD
 
 on:
   push:
     branches: [ main ]
     paths: [ 'frontend/**' ]
+  workflow_dispatch:
 
 jobs:
-  build-and-deploy:
+  build-and-deploy-to-AWS:
     runs-on: [self-hosted, prod-runner]
 
     steps:
