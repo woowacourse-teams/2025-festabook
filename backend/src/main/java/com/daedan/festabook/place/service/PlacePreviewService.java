@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.service;
 
+import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
@@ -20,13 +21,14 @@ public class PlacePreviewService {
 
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
+    private final ShuffleManager shuffleManager;
 
-    public PlacePreviewResponses getAllPreviewPlaceByFestivalId(Long festivalId) {
+    public PlacePreviewResponses getAllPreviewPlaceByFestivalIdSortByRandom(Long festivalId) {
         List<Place> places = getMainPlaces(festivalId);
+        List<Place> shuffledPlaces = shuffleManager.getShuffledList(places);
+        Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(shuffledPlaces);
 
-        Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(places);
-
-        return PlacePreviewResponses.from(places, placeImages);
+        return PlacePreviewResponses.from(shuffledPlaces, placeImages);
     }
 
     private List<Place> getMainPlaces(Long festivalId) {
