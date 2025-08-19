@@ -111,24 +111,16 @@ class ExploreActivity :
         binding.tilSearchInputLayout.setEndIconOnClickListener {
             val query = binding.etSearchText.text.toString()
             val currentState = viewModel.searchState.value
+            viewModel.search(query)
 
             when (currentState) {
-                is SearchUiState.Idle -> {
-                    viewModel.search(query)
-                }
-
-                is SearchUiState.Loading -> {}
+                is SearchUiState.Idle -> Unit
+                is SearchUiState.Loading -> Unit
                 is SearchUiState.Success -> {
                     viewModel.onNavigateIconClicked()
                 }
-
-                is SearchUiState.Error -> {
-                    viewModel.search(query)
-                }
-
-                null -> {
-                    viewModel.search(query)
-                }
+                is SearchUiState.Error -> Unit
+                null -> Unit
             }
         }
     }
