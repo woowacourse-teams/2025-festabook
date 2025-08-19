@@ -34,6 +34,10 @@ public class CouncilDetails implements UserDetails {
         return council.getUsername();
     }
 
+    public Long getFestivalId() {
+        return council.getFestival().getId();
+    }
+
     @Override
     public boolean isAccountNonExpired() {
         return true;
