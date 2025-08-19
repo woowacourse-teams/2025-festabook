@@ -37,6 +37,7 @@ jobs:
       - name: Create local.properties with BASE_URL
         run: |
           echo BASE_URL=\"${{ secrets.BASE_URL }}\" > local.properties
+          echo BASE_URL_DEV=\"${{ secrets.BASE_URL_DEV }}\" > local.properties
           echo NAVER_MAP_CLIENT_ID=\"${{ secrets.NAVER_MAP_CLIENT_ID }}\" >> local.properties
           echo NAVER_MAP_STYLE_ID=\"${{ secrets.NAVER_MAP_STYLE_ID }}\" >> local.properties
 
@@ -53,6 +54,7 @@ jobs:
           echo "STORE_PASSWORD=${{ secrets.STORE_PASSWORD }}" >> local.properties
           echo "KEY_ALIAS=${{ secrets.KEY_ALIAS }}" >> local.properties
           echo "KEY_PASSWORD=${{ secrets.KEY_PASSWORD }}" >> local.properties
+
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
 
