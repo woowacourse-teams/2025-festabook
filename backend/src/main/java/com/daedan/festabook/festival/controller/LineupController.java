@@ -21,7 +21,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/festivals/lineups")
 @Tag(name = "축제 라인업", description = "축제 라인업 관련 API")
-
 public class LineupController {
 
     private final LineupService lineupService;

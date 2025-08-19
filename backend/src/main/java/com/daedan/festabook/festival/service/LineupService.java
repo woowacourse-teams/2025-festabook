@@ -21,7 +21,7 @@ public class LineupService {
     public LineupResponse addLineup(Long festivalId, LineupRequest request) {
         Festival festival = getFestivalById(festivalId);
 
-        Lineup lineup = request.toLineup(festival);
+        Lineup lineup = request.toEntity(festival);
         Lineup savedLineup = lineupJpaRepository.save(lineup);
 
         return LineupResponse.from(savedLineup);

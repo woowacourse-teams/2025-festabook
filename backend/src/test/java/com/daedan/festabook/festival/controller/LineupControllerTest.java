@@ -58,7 +58,7 @@ class LineupControllerTest {
                     performanceDateTime
             );
 
-            int expectedSize = 4;
+            int expectedFieldSize = 4;
 
             // when & then
             RestAssured
@@ -70,7 +70,7 @@ class LineupControllerTest {
                     .post("/festivals/lineups")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedSize))
+                    .body("size()", equalTo(expectedFieldSize))
                     .body("lineupId", notNullValue())
                     .body("name", equalTo(request.name()))
                     .body("imageUrl", equalTo(request.imageUrl()))

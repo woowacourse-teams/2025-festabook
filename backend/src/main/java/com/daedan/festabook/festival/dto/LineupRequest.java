@@ -10,7 +10,7 @@ public record LineupRequest(
         LocalDateTime performanceAt
 ) {
 
-    public Lineup toLineup(Festival festival) {
+    public Lineup toEntity(Festival festival) {
         return new Lineup(
                 festival,
                 name,
