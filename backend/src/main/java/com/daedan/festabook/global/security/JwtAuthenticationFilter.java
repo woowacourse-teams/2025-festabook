@@ -7,12 +7,14 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
@@ -27,12 +29,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
         try {
             String accessToken = extractTokenFromCookie(request.getCookies());
 
             if (accessToken != null && jwtProvider.isValidToken(accessToken)) {
-                String username = extractUsernameFromToken(accessToken);
+                String username = jwtProvider.extractBody(accessToken).getSubject();
 
                 UserDetails userDetails = councilDetailsService.loadUserByUsername(username);
 
@@ -48,19 +49,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extractTokenFromCookie(Cookie[] cookies) {
-        String accessToken = null;
-        if (cookies != null) {
-            for (Cookie cookie : cookies) {
-                if (cookie.getName().equals(ACCESS_TOKEN_COOKIE_NAME)) {
-                    accessToken = cookie.getValue();
-                    break;
-                }
-            }
+        if (cookies == null) {
+            return null;
         }
-        return accessToken;
-    }
-
-    private String extractUsernameFromToken(String accessToken) {
-        return jwtProvider.extractBody(accessToken).getSubject();
+        return Arrays.stream(cookies)
+                .filter(cookie -> ACCESS_TOKEN_COOKIE_NAME.equals(cookie.getName()))
+                .map(Cookie::getValue)
+                .filter(StringUtils::hasText)
+                .findFirst()
+                .orElseGet(() -> null);
     }
 }
