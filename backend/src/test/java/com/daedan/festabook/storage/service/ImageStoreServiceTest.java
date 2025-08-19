@@ -10,6 +10,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -113,20 +115,30 @@ class ImageStoreServiceTest {
                     .hasMessage("Content-Type이 빈 파일은 업로드 할 수 없습니다.");
         }
 
-        @Test
-        void 예외_image_아닌_콘텐츠타입() {
+        @ParameterizedTest(name = "originalFilename: {0}, contentType: {1}")
+        @CsvSource({
+                "sample.svg, image/svg+xml",
+                "sample.pdf, application/pdf",
+                "sample.text, text/plain",
+                "sample.txt, text/plain",
+                "sample.json, application/json",
+                "sample.mp4, video/mp4",
+                "sample.mp3, audio/mpeg",
+                "sample.zip, application/zip"
+        })
+        void 예외_image_아닌_콘텐츠타입(String originalFilename, String contentType) {
             // given
             MockMultipartFile file = new MockMultipartFile(
                     "image",
-                    "sample.txt",
-                    "text/plain",
+                    originalFilename,
+                    contentType,
                     new byte[10]
             );
 
             // when & then
             assertThatThrownBy(() -> imageStoreService.uploadImage(file))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("이미지 파일만 업로드할 수 있습니다. 업로드 파일 타입: text/plain");
+                    .hasMessageStartingWith("이미지 파일만 업로드할 수 있습니다. 업로드 파일 타입:");
         }
     }
 

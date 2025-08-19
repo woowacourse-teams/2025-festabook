@@ -4,6 +4,7 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.ImageUploadResponse;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -16,6 +17,14 @@ import org.springframework.web.multipart.MultipartFile;
 @Service
 @RequiredArgsConstructor
 public class ImageStoreService {
+
+    private static final Set<String> ALLOWED_IMAGE_TYPES = Set.of(
+            "image/jpeg",
+            "image/jpg",
+            "image/png",
+            "image/gif",
+            "image/webp"
+    );
 
     private final StorageManager storageManager;
 
@@ -54,7 +63,7 @@ public class ImageStoreService {
             throw new BusinessException("Content-Type이 빈 파일은 업로드 할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
-        if (!contentType.startsWith("image/")) {
+        if (!ALLOWED_IMAGE_TYPES.contains(contentType)) {
             throw new BusinessException(
                     String.format("이미지 파일만 업로드할 수 있습니다. 업로드 파일 타입: %s", contentType),
                     HttpStatus.BAD_REQUEST
