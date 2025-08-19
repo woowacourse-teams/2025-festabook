@@ -22,6 +22,12 @@ class PlaceDetailPreviewSecondaryFragment :
     BaseFragment<FragmentPlaceDetailPreviewSecondaryBinding>(R.layout.fragment_place_detail_preview_secondary),
     OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.unselectPlace()
+            }
+        }
 
     override fun onViewCreated(
         view: View,
@@ -33,17 +39,15 @@ class PlaceDetailPreviewSecondaryFragment :
     }
 
     override fun onMenuItemReClick() {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+        viewModel.unselectPlace()
     }
 
     private fun setUpBackPressedCallback() {
-        val callback =
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    viewModel.unselectPlace()
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+    }
+
+    private fun removeBackPressedCallback() {
+        backPressedCallback.remove()
     }
 
     private fun setUpObserver() {
@@ -55,7 +59,7 @@ class PlaceDetailPreviewSecondaryFragment :
                 }
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
                 is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
-                else -> Unit
+                is SelectedPlaceUiState.Empty -> removeBackPressedCallback()
             }
         }
     }
