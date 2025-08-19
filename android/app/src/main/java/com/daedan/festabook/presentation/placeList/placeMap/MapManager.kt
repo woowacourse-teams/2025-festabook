@@ -240,9 +240,19 @@ class MapManager(
             overlayImageManager.getSelectedIcon(category)?.let {
                 marker.icon = it
             }
+            marker.isForceShowCaption = true
+            marker.zIndex = Int.MAX_VALUE
+            marker.captionMinZoom = 0.0
         } else {
             overlayImageManager.getNormalIcon(category)?.let {
                 marker.icon = it
+            }
+            marker.isForceShowCaption = false
+            marker.zIndex = 0
+            if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+                marker.captionMinZoom = SECONDARY_PLACE_ZOOM_LEVEL
+            } else {
+                marker.captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
             }
         }
     }
