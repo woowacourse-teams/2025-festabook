@@ -1,18 +1,18 @@
-package com.daedan.festabook.global.security;
+package com.daedan.festabook.global.security.filter;
 
-import com.daedan.festabook.council.service.CouncilDetailsService;
+import com.daedan.festabook.global.security.council.CouncilDetails;
+import com.daedan.festabook.global.security.council.CouncilDetailsService;
+import com.daedan.festabook.global.security.util.JwtProvider;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.Arrays;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -21,7 +21,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-    private static final String ACCESS_TOKEN_COOKIE_NAME = "ACCESS_TOKEN";
+    private static final String AUTHENTICATION_HEADER = "Authorization";
+    private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
     private final JwtProvider jwtProvider;
     private final CouncilDetailsService councilDetailsService;
@@ -30,33 +31,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         try {
-            String accessToken = extractTokenFromCookie(request.getCookies());
+            String accessToken = extractTokenFromHeader(request);
 
             if (accessToken != null && jwtProvider.isValidToken(accessToken)) {
                 String username = jwtProvider.extractBody(accessToken).getSubject();
 
-                UserDetails userDetails = councilDetailsService.loadUserByUsername(username);
+                CouncilDetails councilDetails = (CouncilDetails) councilDetailsService.loadUserByUsername(username);
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        userDetails, null, userDetails.getAuthorities());
+                        councilDetails, null, councilDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (Exception e) {
+        } catch (AuthenticationException e) {
             SecurityContextHolder.clearContext();
+            throw e;
         }
         filterChain.doFilter(request, response);
     }
 
-    private String extractTokenFromCookie(Cookie[] cookies) {
-        if (cookies == null) {
-            return null;
+    private String extractTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader(AUTHENTICATION_HEADER);
+        if (StringUtils.hasText(token) && token.startsWith(AUTHENTICATION_SCHEME)) {
+            return token.substring(AUTHENTICATION_SCHEME.length());
         }
-        return Arrays.stream(cookies)
-                .filter(cookie -> ACCESS_TOKEN_COOKIE_NAME.equals(cookie.getName()))
-                .map(Cookie::getValue)
-                .filter(StringUtils::hasText)
-                .findFirst()
-                .orElseGet(() -> null);
+        return null;
     }
 }
