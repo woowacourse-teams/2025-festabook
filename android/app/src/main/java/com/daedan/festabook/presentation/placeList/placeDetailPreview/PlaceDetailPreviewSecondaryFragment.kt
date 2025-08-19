@@ -34,8 +34,8 @@ class PlaceDetailPreviewSecondaryFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setUpBackPressedCallback()
         setUpObserver()
+        setUpBackPressedCallback()
     }
 
     override fun onMenuItemReClick() {
@@ -46,12 +46,9 @@ class PlaceDetailPreviewSecondaryFragment :
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
     }
 
-    private fun removeBackPressedCallback() {
-        backPressedCallback.remove()
-    }
-
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            backPressedCallback.isEnabled = true
             when (selectedPlace) {
                 is SelectedPlaceUiState.Success -> {
                     binding.makeChildVisible()
@@ -59,7 +56,7 @@ class PlaceDetailPreviewSecondaryFragment :
                 }
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
                 is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
-                is SelectedPlaceUiState.Empty -> removeBackPressedCallback()
+                is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false
             }
         }
     }

@@ -16,7 +16,6 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
-import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import kotlin.getValue
 import kotlin.sequences.forEach
@@ -28,7 +27,7 @@ class PlaceDetailPreviewFragment :
     OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
     private val backPressedCallback =
-        object : OnBackPressedCallback(true) {
+        object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
                 viewModel.unselectPlace()
             }
@@ -48,6 +47,10 @@ class PlaceDetailPreviewFragment :
         viewModel.unselectPlace()
     }
 
+    private fun setUpBackPressedCallback() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+    }
+
     private fun setupBinding() {
         binding.layoutSelectedPlace.setOnClickListener {
             val selectedPlaceState = viewModel.selectedPlace.value
@@ -57,17 +60,9 @@ class PlaceDetailPreviewFragment :
         }
     }
 
-    private fun setUpBackPressedCallback() {
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
-    }
-
-    private fun removeBackPressedCallback() {
-        backPressedCallback.remove()
-    }
-
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
-            setUpBackPressedCallback()
+            backPressedCallback.isEnabled = true
             binding.layoutSelectedPlace.visibility =
                 if (selectedPlace == SelectedPlaceUiState.Empty) View.GONE else View.VISIBLE
 
@@ -78,7 +73,7 @@ class PlaceDetailPreviewFragment :
 
                 is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
-                is SelectedPlaceUiState.Empty -> removeBackPressedCallback()
+                is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false
             }
         }
     }
@@ -110,32 +105,8 @@ class PlaceDetailPreviewFragment :
         }
     }
 
-    private fun updateSelectedSecondaryPlaceUi(placeCategory: PlaceCategoryUiModel) {
-        with(binding) {
-            layoutSelectedPlace.visibility = View.VISIBLE
-            makeChildGone()
-            tvSelectedPlaceTitle.visibility = View.VISIBLE
-
-            tvSelectedPlaceTitle.text =
-                when (placeCategory) {
-                    PlaceCategoryUiModel.TRASH_CAN -> getString(R.string.map_category_trash)
-                    PlaceCategoryUiModel.TOILET -> getString(R.string.map_category_toilet)
-                    PlaceCategoryUiModel.SMOKING_AREA -> getString(R.string.map_category_smoking_area)
-                    PlaceCategoryUiModel.PARKING -> getString(R.string.map_category_parking)
-                    PlaceCategoryUiModel.PRIMARY -> getString(R.string.map_category_primary)
-                    PlaceCategoryUiModel.STAGE -> getString(R.string.map_category_stage)
-                    else -> return
-                }
-        }
-    }
     private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
         startActivity(PlaceDetailActivity.newIntent(requireContext(), placeDetail))
-    }
-
-    private fun FragmentPlaceDetailPreviewBinding.makeChildGone() {
-        layoutSelectedPlace.children.forEach {
-            it.visibility = View.GONE
-        }
     }
 
     private fun FragmentPlaceDetailPreviewBinding.makeChildVisible() {
