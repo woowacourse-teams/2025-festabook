@@ -10,7 +10,7 @@ import com.daedan.festabook.festival.dto.FestivalResponse;
 import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.festival.infrastructure.LineupRepository;
+import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import java.util.Collections;
 import java.util.List;
@@ -25,7 +25,7 @@ public class FestivalService {
 
     private final FestivalJpaRepository festivalJpaRepository;
     private final FestivalImageJpaRepository festivalImageJpaRepository;
-    private final LineupRepository lineupRepository;
+    private final LineupJpaRepository lineupJpaRepository;
 
     public FestivalGeographyResponse getFestivalGeographyByFestivalId(Long festivalId) {
         Festival festival = getFestivalById(festivalId);
@@ -38,7 +38,7 @@ public class FestivalService {
         List<FestivalImage> festivalImages =
                 festivalImageJpaRepository.findAllByFestivalIdOrderBySequenceAsc(festivalId);
 
-        List<Lineup> lineups = lineupRepository.findByFestivalId(festivalId);
+        List<Lineup> lineups = lineupJpaRepository.findAllByFestivalId(festivalId);
         Collections.sort(lineups);
 
         return FestivalResponse.from(festival, festivalImages, lineups);

@@ -4,7 +4,7 @@ import com.daedan.festabook.festival.domain.Lineup;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface LineupRepository extends JpaRepository<Lineup, Long> {
+public interface LineupJpaRepository extends JpaRepository<Lineup, Long> {
 
-    List<Lineup> findByFestivalId(Long festivalId);
+    List<Lineup> findAllByFestivalId(Long festivalId);
 }
