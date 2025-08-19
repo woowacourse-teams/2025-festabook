@@ -84,7 +84,10 @@ class ScheduleFragment :
 
                 is ScheduleDatesUiState.Error -> {
                     showSkeleton(isLoading = false)
-                    Timber.w(scheduleDatesUiState.throwable, "ScheduleFragment: ${scheduleDatesUiState.throwable.message}")
+                    Timber.w(
+                        scheduleDatesUiState.throwable,
+                        "ScheduleFragment: ${scheduleDatesUiState.throwable.message}",
+                    )
                     showErrorSnackBar(scheduleDatesUiState.throwable)
                 }
             }
@@ -92,16 +95,7 @@ class ScheduleFragment :
     }
 
     private fun showSkeleton(isLoading: Boolean) {
-        if (isLoading) {
-            binding.sflScheduleTabSkeleton.visibility = View.VISIBLE
-            binding.sflScheduleSkeleton.visibility = View.VISIBLE
-        } else {
-            binding.sflScheduleTabSkeleton.visibility = View.GONE
-            binding.sflScheduleSkeleton.visibility = View.GONE
-
-            binding.sflScheduleTabSkeleton.stopShimmer()
-            binding.sflScheduleSkeleton.stopShimmer()
-        }
+        binding.lavScheduleLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     companion object {

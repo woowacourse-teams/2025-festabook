@@ -64,7 +64,10 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                 }
 
                 is ScheduleEventsUiState.Error -> {
-                    Timber.w(schedule.throwable, "ScheduleTabPageFragment: ${schedule.throwable.message}")
+                    Timber.w(
+                        schedule.throwable,
+                        "ScheduleTabPageFragment: ${schedule.throwable.message}",
+                    )
                     showErrorSnackBar(schedule.throwable)
                     showSkeleton(isLoading = false)
                 }
@@ -75,12 +78,12 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
     private fun showSkeleton(isLoading: Boolean) {
         if (isLoading) {
             binding.rvScheduleEvent.visibility = View.INVISIBLE
-            binding.sflScheduleSkeleton.visibility = View.VISIBLE
+            binding.lavScheduleLoading.visibility = View.VISIBLE
         } else {
             binding.rvScheduleEvent.visibility = View.VISIBLE
-            binding.sflScheduleSkeleton.visibility = View.GONE
+            binding.lavScheduleLoading.visibility = View.GONE
         }
-        binding.srlScheduleEvent.isRefreshing = isLoading
+        binding.srlScheduleEvent.isRefreshing = false
     }
 
     private fun scrollToCenterOfCurrentEvent(position: Int) {
