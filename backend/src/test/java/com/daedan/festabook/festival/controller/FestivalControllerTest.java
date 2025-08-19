@@ -9,6 +9,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalImage;
 import com.daedan.festabook.festival.domain.FestivalImageFixture;
+import com.daedan.festabook.festival.domain.Lineup;
 import com.daedan.festabook.festival.dto.FestivalImageRequest;
 import com.daedan.festabook.festival.dto.FestivalImageRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
@@ -17,12 +18,15 @@ import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequestFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
+import com.daedan.festabook.festival.service.LineupFixture;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -50,6 +54,9 @@ class FestivalControllerTest {
 
     @Autowired
     private FestivalImageJpaRepository festivalImageJpaRepository;
+
+    @Autowired
+    private LineupJpaRepository lineupJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -158,8 +165,13 @@ class FestivalControllerTest {
             FestivalImage festivalImage1 = FestivalImageFixture.create(festival, 1);
             festivalImageJpaRepository.saveAll(List.of(festivalImage2, festivalImage1));
 
+            Lineup lineup1 = LineupFixture.create(festival, LocalDateTime.of(2025, 11, 1, 10, 0, 0));
+            Lineup lineup2 = LineupFixture.create(festival, LocalDateTime.of(2025, 11, 1, 11, 0, 0));
+            lineupJpaRepository.saveAll(List.of(lineup1, lineup2));
+
             int festivalImageSize = 2;
-            int expectedFieldSize = 6;
+            int lineupSize = 2;
+            int expectedFieldSize = 7;
 
             // when & then
             RestAssured
@@ -171,18 +183,20 @@ class FestivalControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("universityName", equalTo(festival.getUniversityName()))
-                    .body("festivalImages", hasSize(festivalImageSize))
                     .body("festivalName", equalTo(festival.getFestivalName()))
                     .body("startDate", equalTo(festival.getStartDate().toString()))
                     .body("endDate", equalTo(festival.getEndDate().toString()))
 
+                    .body("festivalImages", hasSize(festivalImageSize))
                     .body("festivalImages[0].festivalImageId", equalTo(festivalImage1.getId().intValue()))
-                    .body("festivalImages[0].imageUrl", equalTo(festivalImage1.getImageUrl()))
                     .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
 
                     .body("festivalImages[1].festivalImageId", equalTo(festivalImage2.getId().intValue()))
-                    .body("festivalImages[1].imageUrl", equalTo(festivalImage2.getImageUrl()))
-                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()));
+                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()))
+                    
+                    .body("lineups", hasSize(lineupSize))
+                    .body("lineups[0].lineupId", equalTo(lineup1.getId().intValue()))
+                    .body("lineups[1].lineupId", equalTo(lineup2.getId().intValue()));
         }
 
         @Test

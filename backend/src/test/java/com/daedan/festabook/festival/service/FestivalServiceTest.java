@@ -9,6 +9,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalImage;
 import com.daedan.festabook.festival.domain.FestivalImageFixture;
+import com.daedan.festabook.festival.domain.Lineup;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
@@ -17,6 +18,7 @@ import com.daedan.festabook.festival.dto.FestivalResponse;
 import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import java.time.LocalDate;
 import java.util.List;
@@ -39,6 +41,9 @@ class FestivalServiceTest {
 
     @Mock
     private FestivalImageJpaRepository festivalImageJpaRepository;
+
+    @Mock
+    private LineupJpaRepository lineupJpaRepository;
 
     @InjectMocks
     private FestivalService festivalService;
@@ -90,11 +95,14 @@ class FestivalServiceTest {
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
             List<FestivalImage> festivalImages = FestivalImageFixture.createList(2, festival);
+            List<Lineup> lineups = LineupFixture.createList(2, festival);
 
             given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));
             given(festivalImageJpaRepository.findAllByFestivalIdOrderBySequenceAsc(festivalId))
                     .willReturn(festivalImages);
+            given(lineupJpaRepository.findAllByFestivalId(festivalId))
+                    .willReturn(lineups);
 
             // when
             FestivalResponse result = festivalService.getFestivalByFestivalId(festivalId);
@@ -109,6 +117,8 @@ class FestivalServiceTest {
                 s.assertThat(result.festivalName()).isEqualTo(festival.getFestivalName());
                 s.assertThat(result.startDate()).isEqualTo(festival.getStartDate());
                 s.assertThat(result.endDate()).isEqualTo(festival.getEndDate());
+                s.assertThat(result.lineups().responses().get(0).name()).isEqualTo(lineups.get(0).getName());
+                s.assertThat(result.lineups().responses().get(1).name()).isEqualTo(lineups.get(1).getName());
             });
         }
 

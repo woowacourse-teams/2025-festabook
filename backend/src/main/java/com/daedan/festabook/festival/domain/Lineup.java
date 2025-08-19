@@ -50,6 +50,21 @@ public class Lineup implements Comparable<Lineup> {
         this.performanceAt = performanceAt;
     }
 
+    public Lineup(
+            Festival festival,
+            String name,
+            String imageUrl,
+            LocalDateTime performanceAt
+    ) {
+        this(
+                null,
+                festival,
+                name,
+                imageUrl,
+                performanceAt
+        );
+    }
+
     @Override
     public int compareTo(Lineup otherLineup) {
         return performanceAt.compareTo(otherLineup.performanceAt);
