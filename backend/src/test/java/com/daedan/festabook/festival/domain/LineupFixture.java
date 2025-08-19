@@ -34,6 +34,19 @@ public class LineupFixture {
         );
     }
 
+    public static Lineup create(
+            Festival festival,
+            String name,
+            LocalDateTime dateTime
+    ) {
+        return new Lineup(
+                festival,
+                name,
+                DEFAULT_IMAGE,
+                dateTime
+        );
+    }
+
     public static List<Lineup> createList(int size, Festival festival) {
         return IntStream.range(0, size)
                 .mapToObj(i -> LineupFixture.create(festival))
