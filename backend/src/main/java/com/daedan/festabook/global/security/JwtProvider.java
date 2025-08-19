@@ -2,6 +2,7 @@ package com.daedan.festabook.global.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.JwtParser;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
@@ -14,43 +15,41 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtProvider {
 
+    private static final String CLAIM_FESTIVAL_ID = "festivalId";
+
     private final Key key;
-    private final Long validityInMilliseconds;
+    private final long validityInMilliseconds;
+    private final JwtParser jwtParser;
 
     public JwtProvider(
             @Value("${secret.jwt-key}") final String secretKey,
-            @Value("${secret.jwt-expiration}") final Long validityInMilliseconds
+            @Value("${secret.jwt-expiration}") final long validityInMilliseconds
     ) {
         this.validityInMilliseconds = validityInMilliseconds;
         this.key = Keys.hmacShaKeyFor(Decoders.BASE64.decode(secretKey));
+        this.jwtParser = Jwts.parserBuilder().setSigningKey(key).build();
     }
 
     public String createToken(String username, Long festivalId) {
         Date now = new Date();
-        Date validity = new Date(now.getTime() + validityInMilliseconds);
+        Date expiry = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .claim("festivalId", festivalId)
-
                 .setSubject(username)
+                .claim(CLAIM_FESTIVAL_ID, festivalId)
                 .setIssuedAt(now)
-                .setExpiration(validity)
-
+                .setExpiration(expiry)
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
     }
 
     public Claims extractBody(String token) {
-        return Jwts.parserBuilder()
-                .setSigningKey(key)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
+        return jwtParser.parseClaimsJws(token).getBody();
     }
 
     public boolean isValidToken(String token) {
         try {
-            Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody();
+            jwtParser.parseClaimsJws(token);
             return true;
         } catch (JwtException e) {
             return false;
