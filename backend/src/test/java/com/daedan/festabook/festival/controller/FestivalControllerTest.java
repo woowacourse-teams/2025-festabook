@@ -10,6 +10,7 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalImage;
 import com.daedan.festabook.festival.domain.FestivalImageFixture;
 import com.daedan.festabook.festival.domain.Lineup;
+import com.daedan.festabook.festival.domain.LineupFixture;
 import com.daedan.festabook.festival.dto.FestivalImageRequest;
 import com.daedan.festabook.festival.dto.FestivalImageRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
@@ -19,7 +20,6 @@ import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequestFixture
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
-import com.daedan.festabook.festival.service.LineupFixture;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -193,7 +193,7 @@ class FestivalControllerTest {
 
                     .body("festivalImages[1].festivalImageId", equalTo(festivalImage2.getId().intValue()))
                     .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()))
-                    
+
                     .body("lineups", hasSize(lineupSize))
                     .body("lineups[0].lineupId", equalTo(lineup1.getId().intValue()))
                     .body("lineups[1].lineupId", equalTo(lineup2.getId().intValue()));

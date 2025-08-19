@@ -1,7 +1,5 @@
-package com.daedan.festabook.festival.service;
+package com.daedan.festabook.festival.domain;
 
-import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.domain.Lineup;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;

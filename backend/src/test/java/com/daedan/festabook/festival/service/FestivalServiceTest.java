@@ -10,6 +10,7 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalImage;
 import com.daedan.festabook.festival.domain.FestivalImageFixture;
 import com.daedan.festabook.festival.domain.Lineup;
+import com.daedan.festabook.festival.domain.LineupFixture;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
