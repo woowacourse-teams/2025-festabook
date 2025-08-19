@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface CouncilJpaRepository extends JpaRepository<Council, Long> {
 
     Optional<Council> findByUsername(String username);
+
+    boolean existsByUsername(String username);
 }

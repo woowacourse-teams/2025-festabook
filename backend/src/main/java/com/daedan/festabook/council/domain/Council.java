@@ -1,5 +1,6 @@
 package com.daedan.festabook.council.domain;
 
+import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -8,6 +9,8 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import java.util.HashSet;
 import java.util.Set;
 import lombok.AccessLevel;
@@ -24,6 +27,10 @@ public class Council {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Festival festival;
+
     @Column(nullable = false, unique = true)
     private String username;
 
@@ -35,26 +42,37 @@ public class Council {
 
     protected Council(
             Long id,
+            Festival festival,
             String username,
             String password
     ) {
+        validateFestival(festival);
         validateUsername(username);
         validatePassword(password);
 
         this.id = id;
+        this.festival = festival;
         this.username = username;
         this.password = password;
     }
 
     public Council(
+            Festival festival,
             String username,
             String password
     ) {
         this(
                 null,
+                festival,
                 username,
                 password
         );
+    }
+
+    private void validateFestival(Festival festival) {
+        if (festival == null) {
+            throw new BusinessException("축제는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private void validateUsername(String username) {
