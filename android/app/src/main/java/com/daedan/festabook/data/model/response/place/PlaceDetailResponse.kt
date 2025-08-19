@@ -1,8 +1,8 @@
 package com.daedan.festabook.data.model.response.place
 
+import com.daedan.festabook.data.model.response.place.PlaceGeographyResponse.PlaceCategory
 import com.daedan.festabook.domain.model.Notice
 import com.daedan.festabook.domain.model.Place
-import com.daedan.festabook.domain.model.PlaceCategory
 import com.daedan.festabook.domain.model.PlaceDetail
 import com.daedan.festabook.domain.model.PlaceDetailImage
 import kotlinx.serialization.SerialName
@@ -72,7 +72,7 @@ private fun PlaceDetailResponse.toPlace() =
     Place(
         id = id,
         title = title,
-        category = category,
+        category = category.toDomain(),
         description = description,
         imageUrl = placeImages.find { it.sequence == 1 }?.imageUrl,
         location = location,

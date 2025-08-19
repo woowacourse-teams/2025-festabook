@@ -17,7 +17,6 @@
             android:layout_height="wrap_content"
             android:background="@drawable/bg_gray050_stroke_gray200_radius_24dp"
             android:paddingVertical="20dp"
-            android:visibility="gone"
             android:paddingHorizontal="16dp">
 
             <com.daedan.festabook.presentation.placeList.CategoryView

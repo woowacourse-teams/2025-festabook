@@ -79,6 +79,32 @@ fun OverlayImageManager.getSelectedIcon(category: PlaceCategoryUiModel): Overlay
         PlaceCategoryUiModel.STAGE -> getImage(R.drawable.ic_stage_selected)
     }
 
+fun PlaceCategoryUiModel.getIconId() =
+    when (this) {
+        PlaceCategoryUiModel.BOOTH -> R.drawable.ic_map_category_booth
+        PlaceCategoryUiModel.FOOD_TRUCK -> R.drawable.ic_map_category_food_truck
+        PlaceCategoryUiModel.TOILET -> R.drawable.ic_map_category_toilet
+        PlaceCategoryUiModel.BAR -> R.drawable.ic_map_category_bar
+        PlaceCategoryUiModel.TRASH_CAN -> R.drawable.ic_map_category_trash
+        PlaceCategoryUiModel.SMOKING_AREA -> R.drawable.ic_map_category_smoking
+        PlaceCategoryUiModel.PRIMARY -> R.drawable.ic_map_category_primary
+        PlaceCategoryUiModel.PARKING -> R.drawable.ic_map_category_parking
+        PlaceCategoryUiModel.STAGE -> R.drawable.ic_map_category_stage
+    }
+
+fun PlaceCategoryUiModel.getTextId() =
+    when (this) {
+        PlaceCategoryUiModel.BOOTH -> R.string.map_category_booth
+        PlaceCategoryUiModel.FOOD_TRUCK -> R.string.map_category_food_truck
+        PlaceCategoryUiModel.TOILET -> R.string.map_category_toilet
+        PlaceCategoryUiModel.BAR -> R.string.map_category_bar
+        PlaceCategoryUiModel.TRASH_CAN -> R.string.map_category_trash
+        PlaceCategoryUiModel.SMOKING_AREA -> R.string.map_category_smoking_area
+        PlaceCategoryUiModel.PRIMARY -> R.string.map_category_primary
+        PlaceCategoryUiModel.PARKING -> R.string.map_category_parking
+        PlaceCategoryUiModel.STAGE -> R.string.map_category_stage
+    }
+
 fun PlaceCategory.toUiModel() =
     when (this) {
         PlaceCategory.BOOTH -> PlaceCategoryUiModel.BOOTH
