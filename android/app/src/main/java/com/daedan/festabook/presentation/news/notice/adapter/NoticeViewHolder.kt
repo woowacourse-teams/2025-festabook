@@ -52,7 +52,6 @@ class NoticeViewHolder(
     }
 
     companion object {
-        private const val DEFAULT_LINE_COUNT = 2
         private const val TOP_MARGIN = 8
 
         fun from(
