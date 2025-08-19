@@ -1,7 +1,6 @@
 package com.daedan.festabook.global.security;
 
 import com.daedan.festabook.council.service.CouncilDetailsService;
-import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
@@ -19,6 +18,8 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
+
+    private static final String ACCESS_TOKEN_COOKIE_NAME = "ACCESS_TOKEN";
 
     private final JwtProvider jwtProvider;
     private final CouncilDetailsService councilDetailsService;
@@ -50,7 +51,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         String accessToken = null;
         if (cookies != null) {
             for (Cookie cookie : cookies) {
-                if (cookie.getName().equals("ACCESS_TOKEN")) {
+                if (cookie.getName().equals(ACCESS_TOKEN_COOKIE_NAME)) {
                     accessToken = cookie.getValue();
                     break;
                 }
@@ -60,8 +61,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String extractUsernameFromToken(String accessToken) {
-        Claims claims = jwtProvider.extractBody(accessToken);
-        String username = claims.getSubject();
-        return username;
+        return jwtProvider.extractBody(accessToken).getSubject();
     }
 }
