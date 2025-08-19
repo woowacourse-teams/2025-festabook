@@ -20,8 +20,12 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     private val viewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 
-    private lateinit var posterAdapter: PosterAdapter
-    private lateinit var lineupAdapter: LineupAdapter
+    private val posterAdapter: PosterAdapter by lazy {
+        PosterAdapter()
+    }
+    private val lineupAdapter: LineupAdapter by lazy {
+        LineupAdapter()
+    }
 
     override fun onViewCreated(
         view: View,
@@ -30,6 +34,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         setupObservers()
+        setupAdapters()
     }
 
     private fun setupObservers() {
@@ -39,20 +44,36 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 is FestivalUiState.Success -> handleSuccessState(festivalUiState)
                 is FestivalUiState.Error -> {
                     showErrorSnackBar(festivalUiState.throwable)
-                    Timber.w(festivalUiState.throwable, "HomeFragment: ${festivalUiState.throwable.message}")
+                    Timber.w(
+                        festivalUiState.throwable,
+                        "HomeFragment: ${festivalUiState.throwable.message}",
+                    )
                 }
             }
         }
         viewModel.lineupUiState.observe(viewLifecycleOwner) { lineupUiState ->
             when (lineupUiState) {
                 is LineupUiState.Loading -> {}
-                is LineupUiState.Success -> setupLineupAdapter(lineupUiState.lineups)
+                is LineupUiState.Success -> {
+                    lineupAdapter.submitList(lineupUiState.lineups)
+                }
+
                 is LineupUiState.Error -> {
                     showErrorSnackBar(lineupUiState.throwable)
-                    Timber.w(lineupUiState.throwable, "HomeFragment: ${lineupUiState.throwable.message}")
+                    Timber.w(
+                        lineupUiState.throwable,
+                        "HomeFragment: ${lineupUiState.throwable.message}",
+                    )
                 }
             }
         }
+    }
+
+    private fun setupAdapters() {
+        binding.rvHomePoster.adapter = posterAdapter
+        binding.rvHomeLineup.adapter = lineupAdapter
+        attachSnapHelper()
+        addScrollEffectListener()
     }
 
     private fun handleSuccessState(festivalUiState: FestivalUiState.Success) {
@@ -70,21 +91,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             festivalUiState.organization.festival.festivalImages
                 .sortedBy { it.sequence }
                 .map { it.imageUrl }
-        setupPosterAdapter(posterUrls)
-    }
 
-    private fun setupPosterAdapter(posters: List<String> = emptyList()) {
-        posterAdapter = PosterAdapter(posters)
-        binding.rvHomePoster.adapter = posterAdapter
-
-        attachSnapHelper()
-        scrollToInitialPosition(posters.size)
-        addScrollEffectListener()
-    }
-
-    private fun setupLineupAdapter(lineups: List<LineupItemUiModel> = emptyList()) {
-        lineupAdapter = LineupAdapter(lineups)
-        binding.rvHomeLineup.adapter = lineupAdapter
+        posterAdapter.submitList(posterUrls) {
+            scrollToInitialPosition(posterUrls.size)
+        }
     }
 
     private fun attachSnapHelper() {
