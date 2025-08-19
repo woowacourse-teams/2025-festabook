@@ -24,11 +24,11 @@ class ExploreViewModel(
     private val _navigateToMain = SingleLiveData<University?>()
     val navigateToMain: LiveData<University?> = _navigateToMain
 
-    private val selectedUniversity = MutableLiveData<University>()
+    private var selectedUniversity: University? = null
 
     fun onUniversitySelected(university: University) {
-        selectedUniversity.value = university
-        _searchState.value = SearchUiState.Success(listOf(university))
+        selectedUniversity = university
+        _searchState.value = SearchUiState.Success(selectedUniversity = university)
     }
 
     fun onTextInputChanged() {
@@ -54,7 +54,7 @@ class ExploreViewModel(
             result
                 .onSuccess { universitiesFound ->
                     Timber.d("검색 성공 - received: $universitiesFound")
-                    _searchState.value = SearchUiState.Success(universitiesFound)
+                    _searchState.value = SearchUiState.Success(universitiesFound = universitiesFound)
                 }.onFailure {
                     Timber.d(it, "검색 실패")
                     _searchState.value = SearchUiState.Error(it)
@@ -63,11 +63,12 @@ class ExploreViewModel(
     }
 
     fun onNavigateIconClicked() {
-        val selectedUniversity = selectedUniversity.value
+        val selectedUniversity = selectedUniversity
 
         if (selectedUniversity != null) {
             Timber.d("festivalId 로 화면 이동 - ${selectedUniversity.festivalId}")
             _navigateToMain.setValue(selectedUniversity)
+            exploreRepository.saveFestivalId(selectedUniversity.festivalId)
         }
     }
 

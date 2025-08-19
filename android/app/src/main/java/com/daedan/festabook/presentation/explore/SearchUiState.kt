@@ -8,7 +8,8 @@ sealed interface SearchUiState {
     data object Loading : SearchUiState
 
     data class Success(
-        val value: List<University>,
+        val universitiesFound: List<University> = emptyList(),
+        val selectedUniversity: University? = null,
     ) : SearchUiState
 
     data class Error(

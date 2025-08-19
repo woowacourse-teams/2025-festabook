@@ -4,8 +4,4 @@ interface FcmDataSource {
     fun saveFcmToken(token: String)
 
     fun getFcmToken(): String?
-
-    companion object {
-        const val KEY_FCM_TOKEN = "fcm_token"
-    }
 }
