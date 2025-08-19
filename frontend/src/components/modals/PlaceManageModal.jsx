@@ -8,18 +8,30 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
   const [editingNotice, setEditingNotice] = useState(null);
   const [newNotice, setNewNotice] = useState({ title: '', content: '' });
   const [isLoading, setIsLoading] = useState(true);
-  const [isCreatingNotice, setIsCreatingNotice] = useState(false);
-  const [isDeletingNotice, setIsDeletingNotice] = useState(false);
-  const [isUpdatingNotice, setIsUpdatingNotice] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
-    if (place?.placeAnnouncements) {
-      setNotices([...place.placeAnnouncements]);
-    }
-    // 로딩 상태 해제
-    setTimeout(() => setIsLoading(false), 800);
+    loadPlaceAnnouncements();
   }, [place]);
+
+  const loadPlaceAnnouncements = async () => {
+    if (!place?.placeId) return;
+    
+    try {
+      setIsLoading(true);
+      const announcements = await placeAPI.getPlaceAnnouncements(place.placeId);
+      setNotices(announcements || []);
+    } catch (error) {
+      console.error('Failed to load place announcements:', error);
+      // API 호출 실패 시 기존 데이터 사용
+      if (place?.placeAnnouncements) {
+        setNotices([...place.placeAnnouncements]);
+      } else {
+        setNotices([]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const handleAddNotice = async () => {
     if (!newNotice.title.trim() || !newNotice.content.trim()) {
@@ -33,29 +45,19 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
     }
 
     try {
-      setIsCreatingNotice(true);
-      
-      // API 호출을 위한 데이터 준비
-      const announcementData = {
+      const newAnnouncement = await placeAPI.createPlaceAnnouncement(place.placeId, {
         title: newNotice.title.trim(),
         content: newNotice.content.trim()
-      };
+      });
 
-      // 서버에 공지사항 생성 요청
-      const createdAnnouncement = await placeAPI.createPlaceAnnouncement(place.placeId, announcementData);
-      
-      // 생성된 공지사항을 로컬 상태에 추가
-      const updatedNotices = [...notices, createdAnnouncement];
+      const updatedNotices = [...notices, newAnnouncement];
       setNotices(updatedNotices);
       setNewNotice({ title: '', content: '' });
       
       // 부모 컴포넌트에 업데이트된 공지 목록 전달
       onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
     } catch (error) {
-      alert(error.message || '공지사항 생성에 실패했습니다.');
-      console.error('Failed to create announcement:', error);
-    } finally {
-      setIsCreatingNotice(false);
+      alert('공지사항 생성에 실패했습니다: ' + error.message);
     }
   };
 
@@ -71,17 +73,13 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
     }
 
     try {
-      setIsUpdatingNotice(true);
-      
-      // API를 통해 서버에서 공지사항 수정
-      const updatedAnnouncement = await placeAPI.updatePlaceAnnouncement(editingNotice.id, {
+      await placeAPI.updatePlaceAnnouncement(editingNotice.id, {
         title: editingNotice.title.trim(),
         content: editingNotice.content.trim()
       });
 
-      // 로컬 상태 업데이트
       const updatedNotices = notices.map(notice => 
-        notice.id === editingNotice.id ? { ...notice, ...updatedAnnouncement } : notice
+        notice.id === editingNotice.id ? editingNotice : notice
       );
       
       setNotices(updatedNotices);
@@ -91,10 +89,7 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
       // 부모 컴포넌트에 업데이트된 공지 목록 전달
       onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
     } catch (error) {
-      alert(error.message || '공지사항 수정에 실패했습니다.');
-      console.error('Failed to update announcement:', error);
-    } finally {
-      setIsUpdatingNotice(false);
+      alert('공지사항 수정에 실패했습니다: ' + error.message);
     }
   };
 
@@ -110,25 +105,18 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
   const confirmDeleteNotice = async () => {
     if (noticeToDelete) {
       try {
-        setIsDeletingNotice(true);
-        
-        // API를 통해 서버에서 공지사항 삭제
         await placeAPI.deletePlaceAnnouncement(noticeToDelete.id);
         
-        // 로컬 상태에서도 삭제
         const updatedNotices = notices.filter(notice => notice.id !== noticeToDelete.id);
         setNotices(updatedNotices);
-        
+
         // 부모 컴포넌트에 업데이트된 공지 목록 전달
         onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
-        
+
         setShowDeleteModal(false);
         setNoticeToDelete(null);
       } catch (error) {
-        alert(error.message || '공지사항 삭제에 실패했습니다.');
-        console.error('Failed to delete announcement:', error);
-      } finally {
-        setIsDeletingNotice(false);
+        alert('공지사항 삭제에 실패했습니다: ' + error.message);
       }
     }
   };
@@ -235,14 +223,14 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
               </div>
               <button 
                 onClick={handleAddNotice}
-                disabled={notices.length >= 3 || !newNotice.title.trim() || !newNotice.content.trim() || isCreatingNotice}
+                disabled={notices.length >= 3 || !newNotice.title.trim() || !newNotice.content.trim()}
                 className={`px-4 py-2 rounded-lg font-medium ${
-                  notices.length >= 3 || !newNotice.title.trim() || !newNotice.content.trim() || isCreatingNotice
+                  notices.length >= 3 || !newNotice.title.trim() || !newNotice.content.trim()
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-blue-600 text-white hover:bg-blue-700'
                 }`}
               >
-                {isCreatingNotice ? '생성 중...' : '공지 생성'}
+                공지 생성
               </button>
             </div>
 
@@ -294,14 +282,9 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
                         </button>
                         <button 
                           onClick={handleSaveEdit}
-                          disabled={isUpdatingNotice}
-                          className={`px-3 py-1 rounded ${
-                            isUpdatingNotice
-                              ? 'bg-green-400 text-white cursor-not-allowed'
-                              : 'bg-green-600 text-white hover:bg-green-700'
-                          }`}
+                          className="px-3 py-1 bg-green-600 text-white rounded hover:bg-green-700"
                         >
-                          {isUpdatingNotice ? '저장 중...' : '저장'}
+                          저장
                         </button>
                       </div>
                     </div>
@@ -368,14 +351,9 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
               </button>
               <button 
                 onClick={confirmDeleteNotice}
-                disabled={isDeletingNotice}
-                className={`px-4 py-2 rounded-lg ${
-                  isDeletingNotice
-                    ? 'bg-red-400 text-white cursor-not-allowed'
-                    : 'bg-red-600 text-white hover:bg-red-700'
-                }`}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
               >
-                {isDeletingNotice ? '삭제 중...' : '삭제'}
+                삭제
               </button>
             </div>
           </div>

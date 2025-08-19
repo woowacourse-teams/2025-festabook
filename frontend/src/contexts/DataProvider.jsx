@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DataContext } from './DataContext';
 import { initialData } from '../data/initialData';
 import { getCurrentDate } from '../utils/date';
-import { scheduleAPI, qnaAPI } from '../utils/api';
+import { scheduleAPI, qnaAPI, lostItemAPI, placeAPI } from '../utils/api';
 
 export const DataProvider = ({ children }) => {
     const [data, setData] = useState(initialData);
@@ -10,6 +10,7 @@ export const DataProvider = ({ children }) => {
     const [isLoadingDates, setIsLoadingDates] = useState(false);
     const [isLoadingEvents, setIsLoadingEvents] = useState(false);
     const [isLoadingQna, setIsLoadingQna] = useState(false);
+    const [isLoadingLostItems, setIsLoadingLostItems] = useState(false);
     
     const fetchEventDates = async () => {
         try {
@@ -28,7 +29,7 @@ export const DataProvider = ({ children }) => {
                 ...prev,
                 schedule: scheduleFromServer
             }));
-        } catch (error) {
+        } catch {
             // 초기 로드 실패 시 빈 배열로 설정
             setEventDates([]);
             setData(prev => ({
@@ -48,7 +49,7 @@ export const DataProvider = ({ children }) => {
                 ...prev,
                 qnaItems: questions
             }));
-        } catch (error) {
+        } catch {
             // 초기 로드 실패 시 빈 배열로 설정
             setData(prev => ({
                 ...prev,
@@ -58,11 +59,31 @@ export const DataProvider = ({ children }) => {
             setIsLoadingQna(false);
         }
     };
+
+    const fetchLostItems = async () => {
+        try {
+            setIsLoadingLostItems(true);
+            const lostItems = await lostItemAPI.getLostItems();
+            setData(prev => ({
+                ...prev,
+                lostItems: lostItems
+            }));
+        } catch {
+            // 초기 로드 실패 시 빈 배열로 설정
+            setData(prev => ({
+                ...prev,
+                lostItems: []
+            }));
+        } finally {
+            setIsLoadingLostItems(false);
+        }
+    };
     
-    // 컴포넌트 마운트 시 축제 날짜 목록과 QnA 조회
+    // 컴포넌트 마운트 시 축제 날짜 목록, QnA, 분실물 조회
     useEffect(() => {
         fetchEventDates();
         fetchQnaItems();
+        fetchLostItems();
     }, []);
 
     const getNextId = (arr) => (arr.length > 0 ? Math.max(...arr.map(item => item.id)) + 1 : 1);
@@ -79,25 +100,86 @@ export const DataProvider = ({ children }) => {
             setData(d => ({ ...d, notices: d.notices.map(n => n.id === id ? { ...n, pinned: !n.pinned } : n)}));
             showToast(notice.pinned ? '공지사항 고정이 해제되었습니다.' : '공지사항이 고정되었습니다.');
         },
-        addLostItem: (item) => setData(d => ({ ...d, lostItems: [{ id: getNextId(d.lostItems), ...item, pickupStatus: 'PENDING', createdAt: new Date().toISOString() }, ...d.lostItems] })),
-        updateLostItem: (id, updated) => setData(d => ({ ...d, lostItems: d.lostItems.map(i => i.id === id ? { ...i, ...updated } : i) })),
-        deleteLostItem: (id) => setData(d => ({ ...d, lostItems: d.lostItems.filter(i => i.id !== id) })),
-        toggleLostItemStatus: (id, showToast) => {
-            let newStatus = '';
-            setData(d => ({ ...d, lostItems: d.lostItems.map(i => {
-                if (i.id === id) { 
-                    newStatus = i.pickupStatus === 'PENDING' ? 'COMPLETED' : 'PENDING'; 
-                    return { ...i, pickupStatus: newStatus }; 
+        // 분실물 등록 (서버 연동) - 전체 재조회 없이 로컬 상태만 갱신
+        addLostItem: async (item, showToast) => {
+            try {
+                const newItem = await lostItemAPI.createLostItem(item);
+                setData(prev => ({
+                    ...prev,
+                    lostItems: [newItem, ...prev.lostItems]
+                }));
+                if (showToast) showToast('분실물이 등록되었습니다.');
+                return newItem;
+            } catch (error) {
+                if (showToast) showToast(error.message || '분실물 등록에 실패했습니다.');
+                throw error;
+            }
+        },
+
+        // 분실물 수정 (서버 연동) - 전체 재조회 없이 해당 항목만 갱신
+        updateLostItem: async (id, updated, showToast) => {
+            try {
+                const result = await lostItemAPI.updateLostItem(id, updated);
+                setData(prev => ({
+                    ...prev,
+                    lostItems: prev.lostItems.map(i =>
+                        i.id === id
+                            ? { ...i, imageUrl: result.imageUrl, storageLocation: result.storageLocation }
+                            : i
+                    )
+                }));
+                if (showToast) showToast('분실물 정보가 수정되었습니다.');
+                return result;
+            } catch (error) {
+                if (showToast) showToast(error.message || '분실물 수정에 실패했습니다.');
+                throw error;
+            }
+        },
+
+        // 분실물 삭제 (서버 연동) - 전체 재조회 없이 로컬에서 제거
+        deleteLostItem: async (id, showToast) => {
+            try {
+                await lostItemAPI.deleteLostItem(id);
+                setData(prev => ({
+                    ...prev,
+                    lostItems: prev.lostItems.filter(i => i.id !== id)
+                }));
+                if (showToast) showToast('분실물이 삭제되었습니다.');
+            } catch (error) {
+                if (showToast) showToast(error.message || '분실물 삭제에 실패했습니다.');
+                throw error;
+            }
+        },
+
+        // 분실물 상태 변경 (서버 연동) - 전체 재조회 없이 해당 항목만 갱신
+        toggleLostItemStatus: async (id, showToast) => {
+            try {
+                const currentItem = data.lostItems.find(item => item.id === id);
+                if (!currentItem) {
+                    if (showToast) showToast('분실물을 찾을 수 없습니다.');
+                    return;
                 }
-                return i;
-            })}));
-            showToast(`상태가 [${newStatus === 'PENDING' ? '보관중' : '수령완료'}]으로 변경되었습니다.`);
+                const newStatus = currentItem.pickupStatus === 'PENDING' ? 'COMPLETED' : 'PENDING';
+                const result = await lostItemAPI.updateLostItemStatus(id, newStatus);
+                setData(prev => ({
+                    ...prev,
+                    lostItems: prev.lostItems.map(i =>
+                        i.id === id ? { ...i, pickupStatus: result.pickupStatus } : i
+                    )
+                }));
+                const statusText = newStatus === 'PENDING' ? '보관중' : '수령완료';
+                if (showToast) showToast(`상태가 [${statusText}]로 변경되었습니다.`);
+                return result;
+            } catch (error) {
+                if (showToast) showToast(error.message || '분실물 상태 변경에 실패했습니다.');
+                throw error;
+            }
         },
         // QnA 관련 액션들 (서버 연동)
         addQnaItem: async (item, showToast) => {
             try {
                 setIsLoadingQna(true);
-                const newQuestions = await qnaAPI.createQuestion(item);
+                await qnaAPI.createQuestion(item);
                 
                 // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
                 const questions = await qnaAPI.getQuestions();
@@ -153,7 +235,7 @@ export const DataProvider = ({ children }) => {
         updateQnaSequences: async (sequences, showToast) => {
             try {
                 setIsLoadingQna(true);
-                const updatedSequences = await qnaAPI.updateQuestionSequences(sequences);
+                await qnaAPI.updateQuestionSequences(sequences);
                 // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
                 const questions = await qnaAPI.getQuestions();
                 setData(prev => ({
@@ -409,9 +491,11 @@ export const DataProvider = ({ children }) => {
         // 새로운 상태 제공
         fetchEventDates,
         fetchQnaItems,
+        fetchLostItems,
         isLoadingDates,
         isLoadingEvents,
         isLoadingQna,
+        isLoadingLostItems,
         eventDates
     };
 

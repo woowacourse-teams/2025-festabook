@@ -127,7 +127,7 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
-                <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">플레이스 관리</button>
+                <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">플레이스 공지사항 관리</button>
                 <button onClick={() => openModal('placeImages', { place: booth, onUpdate: handleImageUpdate })} className="text-purple-600 hover:text-purple-800 text-sm font-semibold">이미지 관리</button>
                 <button onClick={() => openModal('placeEdit', { place: booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">세부사항 수정</button>
                 <button onClick={() => openDeleteModal(booth)}
@@ -284,17 +284,19 @@ const BoothsPage = () => {
     };
 
     // 공지 관리 전용 핸들러
-    const handleNoticeCreate = (data) => {
-        setBooths(prev => prev.map(prevBooth => {
-            if (prevBooth.placeId !== data.placeId) return prevBooth;
-
-            return {
-                ...prevBooth,
-                placeAnnouncements: data.placeAnnouncements || [],
-                notices: data.placeAnnouncements || [],
-            };
-        }));
-        showToast('플레이스 공지가 업데이트되었습니다.');
+    const handleNoticeCreate = async (data) => {
+        try {
+            setLoading(true);
+            // 공지사항이 이미 API를 통해 처리되었으므로, 서버에서 최신 데이터를 다시 조회
+            const places = await placeAPI.getPlaces();
+            setBooths(places.map(defaultBooth));
+            showToast('플레이스 공지가 업데이트되었습니다.');
+        } catch (error) {
+            showToast('플레이스 공지 업데이트에 실패했습니다.');
+            console.error('Failed to update place announcements:', error);
+        } finally {
+            setLoading(false);
+        }
     };
 
     const isMainPlace = (category) => {
