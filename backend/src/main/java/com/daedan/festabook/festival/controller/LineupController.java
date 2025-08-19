@@ -1,5 +1,6 @@
 package com.daedan.festabook.festival.controller;
 
+import com.daedan.festabook.festival.dto.LineupRequest;
 import com.daedan.festabook.festival.dto.LineupResponse;
 import com.daedan.festabook.festival.service.LineupService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;

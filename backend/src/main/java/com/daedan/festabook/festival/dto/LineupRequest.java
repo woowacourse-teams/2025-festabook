@@ -1,4 +1,4 @@
-package com.daedan.festabook.festival.controller;
+package com.daedan.festabook.festival.dto;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.Lineup;

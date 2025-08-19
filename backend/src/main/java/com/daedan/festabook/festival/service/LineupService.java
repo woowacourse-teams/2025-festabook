@@ -1,8 +1,8 @@
 package com.daedan.festabook.festival.service;
 
-import com.daedan.festabook.festival.controller.LineupRequest;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.Lineup;
+import com.daedan.festabook.festival.dto.LineupRequest;
 import com.daedan.festabook.festival.dto.LineupResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
