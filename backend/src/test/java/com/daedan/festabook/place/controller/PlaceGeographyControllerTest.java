@@ -75,7 +75,7 @@ class PlaceGeographyControllerTest {
             placeJpaRepository.saveAll(List.of(place));
 
             int expectedSize = 1;
-            int expectedFieldSize = 3;
+            int expectedFieldSize = 4;
             int expectedMarkerFieldSize = 2;
 
             // when & then
@@ -92,7 +92,8 @@ class PlaceGeographyControllerTest {
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
                     .body("[0].markerCoordinate.latitude", equalTo(place.getCoordinate().getLatitude()))
-                    .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()));
+                    .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()))
+                    .body("[0].title", equalTo(place.getTitle()));
         }
 
         @Test
