@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
+import { placeAPI } from '../../utils/api';
 
 const PlaceManageModal = ({ place, onSave, onClose }) => {
   const [notices, setNotices] = useState([]);
@@ -9,15 +10,30 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    setIsLoading(true);
-    if (place?.placeAnnouncements) {
-      setNotices([...place.placeAnnouncements]);
-    }
-    // 로딩 상태 해제
-    setTimeout(() => setIsLoading(false), 800);
+    loadPlaceAnnouncements();
   }, [place]);
 
-  const handleAddNotice = () => {
+  const loadPlaceAnnouncements = async () => {
+    if (!place?.placeId) return;
+    
+    try {
+      setIsLoading(true);
+      const announcements = await placeAPI.getPlaceAnnouncements(place.placeId);
+      setNotices(announcements || []);
+    } catch (error) {
+      console.error('Failed to load place announcements:', error);
+      // API 호출 실패 시 기존 데이터 사용
+      if (place?.placeAnnouncements) {
+        setNotices([...place.placeAnnouncements]);
+      } else {
+        setNotices([]);
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddNotice = async () => {
     if (!newNotice.title.trim() || !newNotice.content.trim()) {
       alert('제목과 내용을 모두 입력해주세요.');
       return;
@@ -28,19 +44,21 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
       return;
     }
 
-    const notice = {
-      id: Date.now(),
-      title: newNotice.title.trim(),
-      content: newNotice.content.trim(),
-      createdAt: new Date().toISOString()
-    };
+    try {
+      const newAnnouncement = await placeAPI.createPlaceAnnouncement(place.placeId, {
+        title: newNotice.title.trim(),
+        content: newNotice.content.trim()
+      });
 
-    const updatedNotices = [...notices, notice];
-    setNotices(updatedNotices);
-    setNewNotice({ title: '', content: '' });
-    
-    // 부모 컴포넌트에 업데이트된 공지 목록 전달
-    onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
+      const updatedNotices = [...notices, newAnnouncement];
+      setNotices(updatedNotices);
+      setNewNotice({ title: '', content: '' });
+      
+      // 부모 컴포넌트에 업데이트된 공지 목록 전달
+      onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
+    } catch (error) {
+      alert('공지사항 생성에 실패했습니다: ' + error.message);
+    }
   };
 
   const handleEditNotice = (notice) => {
@@ -48,22 +66,31 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
     setIsEditMode(true);
   };
 
-  const handleSaveEdit = () => {
+  const handleSaveEdit = async () => {
     if (!editingNotice.title.trim() || !editingNotice.content.trim()) {
       alert('제목과 내용을 모두 입력해주세요.');
       return;
     }
 
-    const updatedNotices = notices.map(notice => 
-      notice.id === editingNotice.id ? editingNotice : notice
-    );
-    
-    setNotices(updatedNotices);
-    setEditingNotice(null);
-    setIsEditMode(false);
-    
-    // 부모 컴포넌트에 업데이트된 공지 목록 전달
-    onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
+    try {
+      await placeAPI.updatePlaceAnnouncement(editingNotice.id, {
+        title: editingNotice.title.trim(),
+        content: editingNotice.content.trim()
+      });
+
+      const updatedNotices = notices.map(notice => 
+        notice.id === editingNotice.id ? editingNotice : notice
+      );
+      
+      setNotices(updatedNotices);
+      setEditingNotice(null);
+      setIsEditMode(false);
+      
+      // 부모 컴포넌트에 업데이트된 공지 목록 전달
+      onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
+    } catch (error) {
+      alert('공지사항 수정에 실패했습니다: ' + error.message);
+    }
   };
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -75,16 +102,22 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
     setShowDeleteModal(true);
   };
 
-  const confirmDeleteNotice = () => {
+  const confirmDeleteNotice = async () => {
     if (noticeToDelete) {
-      const updatedNotices = notices.filter(notice => notice.id !== noticeToDelete.id);
-      setNotices(updatedNotices);
+      try {
+        await placeAPI.deletePlaceAnnouncement(noticeToDelete.id);
+        
+        const updatedNotices = notices.filter(notice => notice.id !== noticeToDelete.id);
+        setNotices(updatedNotices);
 
-      // 부모 컴포넌트에 업데이트된 공지 목록 전달
-      onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
+        // 부모 컴포넌트에 업데이트된 공지 목록 전달
+        onSave({ placeId: place.placeId, placeAnnouncements: updatedNotices });
 
-      setShowDeleteModal(false);
-      setNoticeToDelete(null);
+        setShowDeleteModal(false);
+        setNoticeToDelete(null);
+      } catch (error) {
+        alert('공지사항 삭제에 실패했습니다: ' + error.message);
+      }
     }
   };
 
