@@ -1,4 +1,4 @@
-package com.daedan.festabook.global.security;
+package com.daedan.festabook.global.security.util;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
