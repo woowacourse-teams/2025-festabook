@@ -4,8 +4,8 @@ import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.data.service.api.ApiClient
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
+import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
-import com.daedan.festabook.util.CrashlyticsTree
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
@@ -51,7 +51,7 @@ class FestaBookApp : Application() {
         } else {
             plantInfoTimberTree()
         }
-        Timber.plant(CrashlyticsTree())
+        Timber.plant(FirebaseCrashlyticsTree())
     }
 
     private fun plantDebugTimberTree() {
