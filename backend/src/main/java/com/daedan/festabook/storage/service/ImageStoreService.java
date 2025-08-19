@@ -28,7 +28,7 @@ public class ImageStoreService {
 
     private final StorageManager storageManager;
 
-    @Value("${storage.image.max-size:10485760}")
+    @Value("${storage.image.max-size}")
     private long maxImageSize;
 
     public ImageUploadResponse uploadImage(MultipartFile file) {
