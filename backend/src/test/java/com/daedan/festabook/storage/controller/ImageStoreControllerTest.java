@@ -56,7 +56,7 @@ class ImageStoreControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedSize))
-                    .body("url", notNullValue());
+                    .body("imageUrl", notNullValue());
         }
     }
 }

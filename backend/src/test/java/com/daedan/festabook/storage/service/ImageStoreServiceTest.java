@@ -42,7 +42,7 @@ class ImageStoreServiceTest {
             ImageUploadResponse response = imageStoreService.uploadImage(file);
 
             // then
-            assertThat(response.url()).isNotBlank();
+            assertThat(response.imageUrl()).isNotBlank();
         }
     }
 
