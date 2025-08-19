@@ -2,8 +2,8 @@ server:
   port: 80
   servlet:
     context-path: /api
-    forward-headers-strategy: native
   shutdown: graceful
+  forward-headers-strategy: native
   tomcat:
     mbeanregistry:
       enabled: true
