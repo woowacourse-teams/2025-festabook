@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DataContext } from './DataContext';
 import { initialData } from '../data/initialData';
 import { getCurrentDate } from '../utils/date';
-import { scheduleAPI, qnaAPI, lostItemAPI } from '../utils/api';
+import { scheduleAPI, qnaAPI, lostItemAPI, placeAPI } from '../utils/api';
 
 export const DataProvider = ({ children }) => {
     const [data, setData] = useState(initialData);

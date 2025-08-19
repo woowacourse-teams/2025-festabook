@@ -1,7 +1,7 @@
 // src/utils/api.js
 import axios from 'axios';
 
-const API_HOST = "https://dev.festabook.app/api";
+const API_HOST = import.meta.env.VITE_API_HOST;
 const api = axios.create({
   baseURL: API_HOST,
   headers: {
@@ -223,6 +223,50 @@ export const placeAPI = {
       console.error('Error response data:', error.response?.data);
       console.error('Error response status:', error.response?.status);
       throw new Error('플레이스 이미지 순서 변경에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 관련 API
+  // 특정 플레이스의 모든 공지사항 조회
+  getPlaceAnnouncements: async (placeId) => {
+    try {
+      const response = await api.get(`/places/${placeId}/announcements`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch place announcements:', error);
+      throw new Error('플레이스 공지사항 조회에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 생성
+  createPlaceAnnouncement: async (placeId, announcementData) => {
+    try {
+      const response = await api.post(`/places/${placeId}/announcements`, announcementData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create place announcement:', error);
+      throw new Error('플레이스 공지사항 생성에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 수정
+  updatePlaceAnnouncement: async (placeAnnouncementId, announcementData) => {
+    try {
+      const response = await api.patch(`/places/announcements/${placeAnnouncementId}`, announcementData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update place announcement:', error);
+      throw new Error('플레이스 공지사항 수정에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 삭제
+  deletePlaceAnnouncement: async (placeAnnouncementId) => {
+    try {
+      await api.delete(`/places/announcements/${placeAnnouncementId}`);
+    } catch (error) {
+      console.error('Failed to delete place announcement:', error);
+      throw new Error('플레이스 공지사항 삭제에 실패했습니다.');
     }
   }
 };
