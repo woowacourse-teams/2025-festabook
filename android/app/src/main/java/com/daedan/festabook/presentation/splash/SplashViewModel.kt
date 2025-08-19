@@ -21,6 +21,10 @@ class SplashViewModel(
     private val _isValidationComplete = MutableLiveData(false)
     val isValidationComplete: LiveData<Boolean> = _isValidationComplete
 
+    init {
+        checkFestivalId()
+    }
+
     fun checkFestivalId() {
         val festivalId = festivalLocalDataSource.getFestivalId()
         Timber.d("festival ID : $festivalId")

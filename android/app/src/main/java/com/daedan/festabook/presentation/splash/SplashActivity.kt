@@ -21,7 +21,6 @@ class SplashActivity : AppCompatActivity() {
         setContentView(R.layout.activity_splash)
 
         setupObserver()
-        viewModel.checkFestivalId()
     }
 
     private fun setupObserver() {
