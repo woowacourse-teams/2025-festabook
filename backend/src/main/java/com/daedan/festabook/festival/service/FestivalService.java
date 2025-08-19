@@ -2,6 +2,7 @@ package com.daedan.festabook.festival.service;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalImage;
+import com.daedan.festabook.festival.domain.Lineup;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
@@ -9,7 +10,9 @@ import com.daedan.festabook.festival.dto.FestivalResponse;
 import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.festival.infrastructure.LineupRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -22,6 +25,7 @@ public class FestivalService {
 
     private final FestivalJpaRepository festivalJpaRepository;
     private final FestivalImageJpaRepository festivalImageJpaRepository;
+    private final LineupRepository lineupRepository;
 
     public FestivalGeographyResponse getFestivalGeographyByFestivalId(Long festivalId) {
         Festival festival = getFestivalById(festivalId);
@@ -34,7 +38,10 @@ public class FestivalService {
         List<FestivalImage> festivalImages =
                 festivalImageJpaRepository.findAllByFestivalIdOrderBySequenceAsc(festivalId);
 
-        return FestivalResponse.from(festival, festivalImages);
+        List<Lineup> lineups = lineupRepository.findByFestivalId(festivalId);
+        Collections.sort(lineups);
+
+        return FestivalResponse.from(festival, festivalImages, lineups);
     }
 
     public FestivalUniversityResponses getUniversitiesByUniversityName(String universityName) {
