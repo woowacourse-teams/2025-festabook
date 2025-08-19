@@ -1,12 +1,11 @@
 package com.daedan.festabook.presentation.home.adapter
 
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.home.LineupItemUiModel
 
-class LineupAdapter(
-    private val lineupItems: List<LineupItemUiModel>,
-) : RecyclerView.Adapter<LineupItemViewHolder>() {
+class LineupAdapter : ListAdapter<LineupItemUiModel, LineupItemViewHolder>(lineupItemDiffUtil) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -16,8 +15,21 @@ class LineupAdapter(
         holder: LineupItemViewHolder,
         position: Int,
     ) {
-        holder.bind(lineupItems[position])
+        holder.bind(currentList[position])
     }
 
-    override fun getItemCount(): Int = lineupItems.size
+    companion object {
+        private val lineupItemDiffUtil =
+            object : DiffUtil.ItemCallback<LineupItemUiModel>() {
+                override fun areItemsTheSame(
+                    oldItem: LineupItemUiModel,
+                    newItem: LineupItemUiModel,
+                ): Boolean = oldItem.id == newItem.id
+
+                override fun areContentsTheSame(
+                    oldItem: LineupItemUiModel,
+                    newItem: LineupItemUiModel,
+                ): Boolean = oldItem == newItem
+            }
+    }
 }
