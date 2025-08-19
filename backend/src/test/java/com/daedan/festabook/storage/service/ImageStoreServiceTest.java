@@ -1,10 +1,10 @@
 package com.daedan.festabook.storage.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.storage.dto.StorageUploadResponse;
+import com.daedan.festabook.storage.dto.ImageUploadResponse;
 import com.daedan.festabook.storage.infrastructure.MockStorageManager;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -37,13 +37,10 @@ class ImageStoreServiceTest {
             );
 
             // when
-            StorageUploadResponse response = imageStoreService.uploadImage(file);
+            ImageUploadResponse response = imageStoreService.uploadImage(file);
 
             // then
-            assertSoftly(s -> {
-                s.assertThat(response.accessUrl()).isNotBlank();
-                s.assertThat(response.storagePath()).endsWith(".png");
-            });
+            assertThat(response.url()).isNotBlank();
         }
     }
 

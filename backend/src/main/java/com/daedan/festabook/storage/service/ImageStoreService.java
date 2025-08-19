@@ -2,8 +2,8 @@ package com.daedan.festabook.storage.service;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.domain.StorageManager;
+import com.daedan.festabook.storage.dto.ImageUploadResponse;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
-import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.apache.commons.io.FilenameUtils;
@@ -22,7 +22,7 @@ public class ImageStoreService {
     @Value("${storage.image.max-size:10485760}")
     private long maxImageSize;
 
-    public StorageUploadResponse uploadImage(MultipartFile file) {
+    public ImageUploadResponse uploadImage(MultipartFile file) {
         validateFile(file);
         validateImageSize(file);
         validateImageType(file);
@@ -30,7 +30,7 @@ public class ImageStoreService {
         String storagePath = generateUniqueFilename(file.getOriginalFilename());
         StorageUploadRequest request = new StorageUploadRequest(file, storagePath);
 
-        return storageManager.uploadFile(request);
+        return new ImageUploadResponse(storageManager.uploadFile(request).accessUrl());
     }
 
     private void validateFile(MultipartFile file) {
