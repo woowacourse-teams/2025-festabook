@@ -6,11 +6,14 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import com.daedan.festabook.storage.infrastructure.MockStorageManager;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ImageStoreServiceTest {
 
     private final ImageStoreService imageStoreService;

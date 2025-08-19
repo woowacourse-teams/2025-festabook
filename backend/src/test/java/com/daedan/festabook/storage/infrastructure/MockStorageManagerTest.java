@@ -4,10 +4,13 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
+import org.junit.jupiter.api.DisplayNameGeneration;
+import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.mock.web.MockMultipartFile;
 
+@DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class MockStorageManagerTest {
 
     private final MockStorageManager mockStorageManager = new MockStorageManager();
