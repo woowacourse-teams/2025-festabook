@@ -9,7 +9,6 @@ import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
-import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.getNormalIcon
 import com.daedan.festabook.presentation.placeList.model.getSelectedIcon
 import com.daedan.festabook.presentation.placeList.model.iconResources
@@ -133,7 +132,10 @@ class MapManager(
     private fun isExceededMaxLength(): Boolean {
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()
-        return currentPosition.distanceTo(initialCenter) > maxLength * zoomWeight
+        return currentPosition.distanceTo(initialCenter) >
+            (maxLength * zoomWeight).coerceAtLeast(
+                maxLength,
+            )
     }
 
     fun clearMapManager() {
@@ -143,10 +145,12 @@ class MapManager(
         }
     }
 
-    fun selectMarker(place: PlaceUiModel) {
+    fun selectMarker(placeId: Long) {
         markers
-            .find { (it.tag as? PlaceCoordinateUiModel)?.placeId == place.id }
-            ?.let {
+            .find {
+                val placeCoordinate = it.tag as? PlaceCoordinateUiModel
+                placeCoordinate?.placeId == placeId
+            }?.let {
                 onMarkerClick(it)
             }
     }

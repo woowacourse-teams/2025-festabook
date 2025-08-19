@@ -60,6 +60,7 @@ class PlaceListViewModel(
         category: PlaceCategoryUiModel,
     ) {
         if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+            _selectedPlace.value = SelectedPlaceUiState.Secondary(placeId, category)
             return
         }
 

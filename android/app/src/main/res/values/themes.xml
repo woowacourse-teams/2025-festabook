@@ -7,6 +7,9 @@
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
+    <style name="Theme.Festabook.Splash" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="android:windowBackground">@color/gray050</item>
+    </style>
 
     <style name="Theme.Festabook" parent="Base.Theme.Festabook" />
 </resources>
