@@ -38,10 +38,10 @@ public class CouncilController {
     }
 
     @PostMapping("/login")
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "학생회 로그인")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
     public CouncilLoginResponse loginCouncil(
             @RequestBody CouncilLoginRequest request
