@@ -55,10 +55,7 @@ class PlaceListViewModel(
         loadOrganizationGeography()
     }
 
-    fun selectPlace(
-        placeId: Long,
-        category: PlaceCategoryUiModel,
-    ) {
+    fun selectPlace(placeId: Long) {
         viewModelScope.launch {
             _selectedPlace.value = SelectedPlaceUiState.Loading
             placeDetailRepository
