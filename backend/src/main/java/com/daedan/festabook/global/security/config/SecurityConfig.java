@@ -53,7 +53,7 @@ public class SecurityConfig {
 
     private static final String[] DELETE_WHITELIST = {
             "/festivals/notification/*",
-            "/place/favorites/*"
+            "/places/favorites/*"
     };
 
     private final CorsFilter corsFilter;
