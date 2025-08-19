@@ -14,7 +14,7 @@ class SplashActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition {
-            !viewModel.isValidationComplete.value!!
+            viewModel.isValidationComplete.value != true
         }
 
         super.onCreate(savedInstanceState)
