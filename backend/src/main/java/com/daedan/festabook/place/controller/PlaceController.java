@@ -75,7 +75,7 @@ public class PlaceController {
 
     @GetMapping("/previews")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 모든 플레이스 프리뷰 조회 랜덤 정렬")
+    @Operation(summary = "특정 축제의 랜덤 정렬된 모든 플레이스 프리뷰 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
