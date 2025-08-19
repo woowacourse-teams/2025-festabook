@@ -18,42 +18,52 @@ import org.springframework.web.filter.CorsFilter;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    private static final String[] SWAGGER_WHITELIST = {
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-resources/**"
+    };
+
+    private static final String[] GET_WHITELIST = {
+            "/event-dates",
+            "/event-dates/*/events",
+            "/announcements",
+            "/places",
+            "/places/*",
+            "/places/previews",
+            "/places/geographies",
+            "/festivals",
+            "/festivals/geography",
+            "/lost-items",
+            "/questions"
+    };
+
+    private static final String[] POST_WHITELIST = {
+            "/festivals/*/notifications",
+            "/places/*/favorites"
+    };
+
+    private static final String[] DELETE_WHITELIST = {
+            "/festivals/notification/*",
+            "/place/favorites/*"
+    };
+
     private final CorsFilter corsFilter;
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         defaultSecuritySetting(http);
+
         http.authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers(
-                                "/swagger-ui/**",
-                                "/v3/api-docs/**",
-                                "/swagger-resources/**"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.GET,
-                                "/event-dates",
-                                "/event-dates/*/events",
-                                "/announcements",
-                                "/places",
-                                "/places/*",
-                                "/places/previews",
-                                "/places/geographies",
-                                "/festivals",
-                                "/festivals/geography",
-                                "/lost-items",
-                                "/questions"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.POST,
-                                "/festivals/*/notifications",
-                                "/places/*/favorites"
-                        ).permitAll()
-                        .requestMatchers(HttpMethod.DELETE,
-                                "/festivals/notification/*",
-                                "/place/favorites/*"
-                        ).permitAll()
-                        .anyRequest().hasRole("COUNCIL")
+                        .requestMatchers(SWAGGER_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.GET, GET_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.POST, POST_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.DELETE, DELETE_WHITELIST).permitAll()
+                        .anyRequest().hasAnyAuthority(RoleType.ROLE_COUNCIL.name())
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
         return http.build();
     }
 
@@ -65,12 +75,8 @@ public class SecurityConfig {
                 .rememberMe(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
                 .anonymous(AbstractHttpConfigurer::disable)
-                .sessionManagement(session -> session.sessionCreationPolicy(
-                        SessionCreationPolicy.STATELESS
-                ))
-                .headers(headers -> headers.frameOptions(
-                        HeadersConfigurer.FrameOptionsConfig::disable
-                ))
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
                 .addFilter(corsFilter);
     }
 }
