@@ -1,4 +1,4 @@
-package com.daedan.festabook.global.security;
+package com.daedan.festabook.global.security.config;
 
 import java.util.List;
 import org.springframework.context.annotation.Bean;
