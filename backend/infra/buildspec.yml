@@ -12,25 +12,28 @@ phases:
   pre_build:
     commands:
       - echo "========== Pre Build Phase =========="
-      - mkdir -p backend/src/main/resources/firebase
-      - echo "$APPLICATION_SECRET_YML" > backend/src/main/resources/application-secret.yml
-      - echo "$FIREBASE_KEY" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
+      - cd backend
+      - mkdir -p src/main/resources/firebase
+      - echo "$APPLICATION_SECRET_YML" > src/main/resources/application-secret.yml
+      - echo "$FIREBASE_KEY" > src/main/resources/firebase/firebase-adminsdk-account.json
 
   build:
     commands:
       - echo "========== Build Phase =========="
+      - cd backend
       - ./gradlew clean build -x test
 
   post_build:
     commands:
       - echo "========== Post Build Phase =========="
-      - BUILD_JAR=$(find build/libs -name "*.jar" ! -name "*plain.jar" | head -n 1)
+      - cd backend
+      - BUILD_JAR=$(find build/libs -name "*.jar" -not -name "*plain.jar" | head -n 1)
       - echo "Build JAR located at: $BUILD_JAR"
       - mkdir -p ../infra/output
-      - cp $BUILD_JAR ../infra/output/
+      - cp "$BUILD_JAR" ../infra/output/
       - cp ../infra/appspec.yml ../infra/output/
       - cp -r ../infra/scripts ../infra/output/
 
 artifacts:
   files:
-    - infra/output/**/*
+    - backend/infra/output/**/*
