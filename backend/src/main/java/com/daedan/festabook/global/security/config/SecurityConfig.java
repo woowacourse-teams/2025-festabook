@@ -45,6 +45,7 @@ public class SecurityConfig {
     };
 
     private static final String[] POST_WHITELIST = {
+            "/devices",
             "/festivals/*/notifications",
             "/places/*/favorites",
             "/councils/login",
