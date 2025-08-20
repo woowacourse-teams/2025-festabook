@@ -16,8 +16,8 @@ import org.junit.jupiter.api.Test;
 class JwtProviderTest {
 
     private static final String CLAIM_FESTIVAL_ID = "festivalId";
-    private static final String VALID_KEY = "dGVzdC10ZXN0LXNlY3JldC1rZXktMzJieXRlcy0xMjM0NTY3OA==";
-    private static final String OTHER_KEY = "b3RoZXItdGVzdC1zZWNyZXQta2V5LTMyYnl0ZXMtMTIzNDU2Nzg=";
+    private static final String VALID_KEY = "dGVzdC10ZXN0LXNlY3JldC1rZXktMzJieXRlcy0xMjM0NTY3OA=="; // gitleaks:allow unit-test secret
+    private static final String OTHER_KEY = "b3RoZXItdGVzdC1zZWNyZXQta2V5LTMyYnl0ZXMtMTIzNDU2Nzg="; // gitleaks:allow unit-test secret
     private static final String USERNAME = "council";
     private static final Long FESTIVAL_ID = 1L;
 
