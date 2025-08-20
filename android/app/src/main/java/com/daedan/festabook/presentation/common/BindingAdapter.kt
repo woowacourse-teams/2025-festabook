@@ -6,6 +6,7 @@ import androidx.core.content.ContextCompat
 import androidx.databinding.BindingAdapter
 import coil3.load
 import coil3.request.crossfade
+import coil3.request.fallback
 import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
@@ -41,9 +42,7 @@ fun setImage(
     view: ImageView,
     imageUrl: String?,
 ) {
-    view.load(imageUrl) {
-        crossfade(true)
-    }
+    view.loadImage(imageUrl)
 }
 
 @BindingAdapter("timeLineCircleStatus")
