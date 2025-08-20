@@ -18,8 +18,6 @@ import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.lineup.domain.Lineup;
-import com.daedan.festabook.lineup.domain.LineupFixture;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -92,7 +90,6 @@ class FestivalServiceTest {
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
             List<FestivalImage> festivalImages = FestivalImageFixture.createList(2, festival);
-            List<Lineup> lineups = LineupFixture.createList(2, festival);
 
             given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));

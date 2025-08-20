@@ -17,16 +17,12 @@ import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequestFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.lineup.domain.Lineup;
-import com.daedan.festabook.lineup.domain.LineupFixture;
-import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
 import io.restassured.path.json.config.JsonPathConfig;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -54,9 +50,6 @@ class FestivalControllerTest {
 
     @Autowired
     private FestivalImageJpaRepository festivalImageJpaRepository;
-
-    @Autowired
-    private LineupJpaRepository lineupJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -164,10 +157,6 @@ class FestivalControllerTest {
             FestivalImage festivalImage2 = FestivalImageFixture.create(festival, 2);
             FestivalImage festivalImage1 = FestivalImageFixture.create(festival, 1);
             festivalImageJpaRepository.saveAll(List.of(festivalImage2, festivalImage1));
-
-            Lineup lineup1 = LineupFixture.create(festival, LocalDateTime.of(2025, 11, 1, 10, 0, 0));
-            Lineup lineup2 = LineupFixture.create(festival, LocalDateTime.of(2025, 11, 1, 11, 0, 0));
-            lineupJpaRepository.saveAll(List.of(lineup1, lineup2));
 
             int festivalImageSize = 2;
             int expectedFieldSize = 6;
