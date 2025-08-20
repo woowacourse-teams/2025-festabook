@@ -2,9 +2,13 @@ name: Android CI Pull-Request Gradle Test
 
 on:
   pull_request:
+    # 'main' 또는 'android' 브랜치로 PR이 병합될 때 트리거
     branches:
       - main
       - android
+      # 'android' 디렉토리 내의 파일이 변경되었을 때만 워크플로우를 실행
+    path:
+      - 'android/**'
 
 jobs:
   Run-PR-Test:
