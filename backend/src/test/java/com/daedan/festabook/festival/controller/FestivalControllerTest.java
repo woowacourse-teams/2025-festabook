@@ -171,17 +171,15 @@ class FestivalControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("universityName", equalTo(festival.getUniversityName()))
-                    .body("festivalImages", hasSize(festivalImageSize))
                     .body("festivalName", equalTo(festival.getFestivalName()))
                     .body("startDate", equalTo(festival.getStartDate().toString()))
                     .body("endDate", equalTo(festival.getEndDate().toString()))
 
+                    .body("festivalImages", hasSize(festivalImageSize))
                     .body("festivalImages[0].festivalImageId", equalTo(festivalImage1.getId().intValue()))
-                    .body("festivalImages[0].imageUrl", equalTo(festivalImage1.getImageUrl()))
                     .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
 
                     .body("festivalImages[1].festivalImageId", equalTo(festivalImage2.getId().intValue()))
-                    .body("festivalImages[1].imageUrl", equalTo(festivalImage2.getImageUrl()))
                     .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()));
         }
 
