@@ -47,7 +47,7 @@ class CouncilControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String username = "test";
+            String username = "hello";
             CouncilRequest request = CouncilRequestFixture.create(festival.getId(), username, "1234");
 
             // when & then
