@@ -2,41 +2,42 @@ APP_HOME="/home/ubuntu/app"
 JAR_NAME=$(find $APP_HOME -name "*.jar" | head -n 1)
 LOG_PATH="$APP_HOME/application.log"
 
-echo "========== Deployment Script Started =========="
+echo "🚀========== 배포 스크립트 시작 =========="
 
 # 1. 이전 프로세스 종료
-echo ">>> Stopping old Spring WAS..."
+echo "🛑 기존 Spring WAS 종료 중..."
 PID=$(lsof -t -i:80 || true)
 if [ -n "$PID" ]; then
   kill -SIGTERM $PID
   sleep 5
   if ps -p $PID > /dev/null; then
-    echo ">>> Process $PID still alive. Force killing..."
+    echo "⚠️ 프로세스 $PID 가 아직 종료되지 않음. 강제 종료합니다..."
     kill -9 $PID
   fi
 else
-  echo ">>> No process found on port 80."
+  echo "✅ 80 포트에서 실행 중인 프로세스가 없습니다."
 fi
 
 # 2. 최신 JAR 실행
-echo ">>> Starting new Spring WAS..."
+echo "▶️ 새로운 Spring WAS 실행 중..."
 if [ -f "$JAR_NAME" ]; then
   nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" --spring.profiles.active=prod > "$LOG_PATH" 2>&1 &
+  echo "📦 실행 파일: $JAR_NAME"
 else
-  echo ">>> ERROR: No JAR file found in $APP_HOME"
+  echo "❌ 오류: $APP_HOME 경로에서 JAR 파일을 찾을 수 없습니다."
   exit 1
 fi
 
 # 3. Health Check
-echo ">>> Validating application health..."
+echo "🩺 애플리케이션 상태 확인 중..."
 for i in {1..30}; do
   if curl -s http://localhost:80/actuator/health | grep '"status":"UP"' > /dev/null; then
-    echo ">>> Application is healthy!"
+    echo "✅ 애플리케이션이 정상적으로 실행되었습니다!"
     exit 0
   fi
-  echo "Waiting for application to be UP... ($i/30)"
+  echo "⏳ 애플리케이션 실행 대기 중... ($i/30)"
   sleep 2
 done
 
-echo ">>> ERROR: Application failed to start."
+echo "🚨 오류: 애플리케이션이 시작되지 않았습니다."
 exit 1
