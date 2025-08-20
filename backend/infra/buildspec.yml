@@ -32,7 +32,7 @@ phases:
       - mkdir -p infra/output
       - cp "$BUILD_JAR" infra/output/
       - cp infra/appspec.yml infra/output/
-      - cp -r infra/scripts infra/output/
+      - cp -r infra/deploy.sh infra/output/
       - echo "✅ [Post Build Phase] 완료"
 
 artifacts:
