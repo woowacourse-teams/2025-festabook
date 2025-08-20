@@ -69,4 +69,18 @@ public class CouncilFixture {
                 password
         );
     }
+
+    public static Council create(
+            Long councilId,
+            Festival festival,
+            String username,
+            String password
+    ) {
+        return new Council(
+                councilId,
+                festival,
+                username,
+                password
+        );
+    }
 }
