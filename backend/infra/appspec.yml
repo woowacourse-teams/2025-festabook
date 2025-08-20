@@ -1,0 +1,11 @@
+version: 0.0
+os: linux
+files:
+  - source: /infra/output/
+    destination: /home/ubuntu/app
+
+hooks:
+  AfterInstall:
+    - location: infra/deploy.sh
+      timeout: 180
+      runas: ubuntu
