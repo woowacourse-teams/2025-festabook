@@ -1,7 +1,6 @@
 package com.daedan.festabook.global.security.filter;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.global.security.council.CouncilDetailsService;
 import com.daedan.festabook.global.security.util.JwtProvider;
 import jakarta.servlet.FilterChain;
@@ -14,6 +13,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -37,10 +37,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if (accessToken != null && jwtProvider.isValidToken(accessToken)) {
                 String username = jwtProvider.extractBody(accessToken).getSubject();
 
-                CouncilDetails councilDetails = (CouncilDetails) councilDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = councilDetailsService.loadUserByUsername(username);
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
-                        councilDetails, null, councilDetails.getAuthorities());
+                        userDetails, null, userDetails.getAuthorities());
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
