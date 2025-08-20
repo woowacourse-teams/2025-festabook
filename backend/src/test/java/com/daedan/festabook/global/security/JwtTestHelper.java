@@ -28,7 +28,7 @@ public class JwtTestHelper {
 
         festivalRepository.save(festival);
         Council council = new Council(festival, randomUsername, randomPassword);
-        council.updateRole(Set.of(RoleType.ROLE_COUNCIL.name()));
+        council.updateRole(Set.of(RoleType.ROLE_COUNCIL));
         councilRepository.save(council);
 
         return jwtProvider.createToken(randomUsername, festival.getId());

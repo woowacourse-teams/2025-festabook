@@ -2,9 +2,12 @@ package com.daedan.festabook.council.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.security.role.RoleType;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -12,6 +15,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -38,7 +42,8 @@ public class Council {
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
-    private Set<String> roles = new HashSet<>();
+    @Enumerated(EnumType.STRING)
+    private Set<RoleType> roles = new HashSet<>();
 
     protected Council(
             Long id,
@@ -69,8 +74,14 @@ public class Council {
         );
     }
 
-    public void updateRole(Set<String> roles) {
-        this.roles.addAll(roles);
+    public void updateRole(Set<RoleType> roles) {
+        if (roles == null || roles.isEmpty()) {
+            return;
+        }
+
+        roles.stream()
+                .filter(Objects::nonNull)
+                .forEach(this.roles::add);
     }
 
     private void validateFestival(Festival festival) {

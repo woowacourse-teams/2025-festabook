@@ -1,8 +1,9 @@
 package com.daedan.festabook.global.security.council;
 
 import com.daedan.festabook.council.domain.Council;
+import com.daedan.festabook.global.security.role.RoleType;
 import java.util.Collection;
-import java.util.Set;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -18,8 +19,9 @@ public class CouncilDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<String> roles = council.getRoles();
-        return roles.stream()
+        return council.getRoles().stream()
+                .filter(Objects::nonNull)
+                .map(RoleType::name)
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toSet());
     }
