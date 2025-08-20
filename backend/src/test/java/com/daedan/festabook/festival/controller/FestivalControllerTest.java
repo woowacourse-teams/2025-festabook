@@ -170,8 +170,7 @@ class FestivalControllerTest {
             lineupJpaRepository.saveAll(List.of(lineup1, lineup2));
 
             int festivalImageSize = 2;
-            int lineupSize = 2;
-            int expectedFieldSize = 7;
+            int expectedFieldSize = 6;
 
             // when & then
             RestAssured
@@ -192,11 +191,7 @@ class FestivalControllerTest {
                     .body("festivalImages[0].sequence", equalTo(festivalImage1.getSequence()))
 
                     .body("festivalImages[1].festivalImageId", equalTo(festivalImage2.getId().intValue()))
-                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()))
-
-                    .body("lineups", hasSize(lineupSize))
-                    .body("lineups[0].lineupId", equalTo(lineup1.getId().intValue()))
-                    .body("lineups[1].lineupId", equalTo(lineup2.getId().intValue()));
+                    .body("festivalImages[1].sequence", equalTo(festivalImage2.getSequence()));
         }
 
         @Test

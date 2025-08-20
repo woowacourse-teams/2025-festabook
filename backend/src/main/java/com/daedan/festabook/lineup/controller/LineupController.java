@@ -1,9 +1,10 @@
 package com.daedan.festabook.lineup.controller;
 
-import com.daedan.festabook.festival.service.LineupService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.lineup.dto.LineupRequest;
 import com.daedan.festabook.lineup.dto.LineupResponse;
+import com.daedan.festabook.lineup.dto.LineupResponses;
+import com.daedan.festabook.lineup.service.LineupService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -11,6 +12,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +38,17 @@ public class LineupController {
             @RequestBody LineupRequest request
     ) {
         return lineupService.addLineup(festivalId, request);
+    }
+
+    @GetMapping
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 라인업 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public LineupResponses getAllLineupByFestivalId(
+            @Parameter(hidden = true) @FestivalId Long festivalId
+    ) {
+        return lineupService.getAllLineupByFestivalId(festivalId);
     }
 }

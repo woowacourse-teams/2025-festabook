@@ -20,11 +20,7 @@ import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.lineup.domain.Lineup;
 import com.daedan.festabook.lineup.domain.LineupFixture;
-import com.daedan.festabook.lineup.dto.LineupResponse;
-import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -45,9 +41,6 @@ class FestivalServiceTest {
 
     @Mock
     private FestivalImageJpaRepository festivalImageJpaRepository;
-
-    @Mock
-    private LineupJpaRepository lineupJpaRepository;
 
     @InjectMocks
     private FestivalService festivalService;
@@ -105,8 +98,6 @@ class FestivalServiceTest {
                     .willReturn(Optional.of(festival));
             given(festivalImageJpaRepository.findAllByFestivalIdOrderBySequenceAsc(festivalId))
                     .willReturn(festivalImages);
-            given(lineupJpaRepository.findAllByFestivalId(festivalId))
-                    .willReturn(lineups);
 
             // when
             FestivalResponse result = festivalService.getFestivalByFestivalId(festivalId);
@@ -121,36 +112,7 @@ class FestivalServiceTest {
                 s.assertThat(result.festivalName()).isEqualTo(festival.getFestivalName());
                 s.assertThat(result.startDate()).isEqualTo(festival.getStartDate());
                 s.assertThat(result.endDate()).isEqualTo(festival.getEndDate());
-                s.assertThat(result.lineups().responses().get(0).name()).isEqualTo(lineups.get(0).getName());
-                s.assertThat(result.lineups().responses().get(1).name()).isEqualTo(lineups.get(1).getName());
             });
-        }
-
-        @Test
-        void 성공_라인업_날짜_오름차순_정렬() {
-            // given
-            Long festivalId = 1L;
-            Festival festival = FestivalFixture.create(festivalId);
-
-            Lineup lineup1 = LineupFixture.create(festival, "후유", LocalDateTime.of(2024, 5, 3, 12, 0, 0));
-            Lineup lineup2 = LineupFixture.create(festival, "미소", LocalDateTime.of(2024, 5, 1, 12, 0, 0));
-            Lineup lineup3 = LineupFixture.create(festival, "밀러", LocalDateTime.of(2024, 5, 2, 12, 0, 0));
-            Lineup lineup4 = LineupFixture.create(festival, "부기", LocalDateTime.of(2024, 5, 2, 11, 0, 0));
-
-            List<Lineup> unsortedLineups = new ArrayList<>(List.of(lineup1, lineup2, lineup3, lineup4));
-
-            given(festivalJpaRepository.findById(festivalId)).willReturn(Optional.of(festival));
-            given(lineupJpaRepository.findAllByFestivalId(festivalId)).willReturn(unsortedLineups);
-
-            // when
-            FestivalResponse result = festivalService.getFestivalByFestivalId(festivalId);
-
-            // then
-            List<String> lineupNames = result.lineups().responses().stream()
-                    .map(LineupResponse::name)
-                    .toList();
-
-            assertThat(lineupNames).containsExactly("미소", "부기", "밀러", "후유");
         }
 
         @Test

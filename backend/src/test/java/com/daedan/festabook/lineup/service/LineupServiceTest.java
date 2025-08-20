@@ -1,5 +1,7 @@
 package com.daedan.festabook.lineup.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -7,14 +9,17 @@ import static org.mockito.BDDMockito.given;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.festival.service.LineupService;
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.lineup.domain.Lineup;
 import com.daedan.festabook.lineup.domain.LineupFixture;
 import com.daedan.festabook.lineup.dto.LineupRequest;
 import com.daedan.festabook.lineup.dto.LineupRequestFixture;
 import com.daedan.festabook.lineup.dto.LineupResponse;
+import com.daedan.festabook.lineup.dto.LineupResponses;
 import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -68,6 +73,50 @@ class LineupServiceTest {
                 s.assertThat(result.lineupId()).isEqualTo(lineup.getId());
                 s.assertThat(result.name()).isEqualTo(lineup.getName());
             });
+        }
+
+        @Test
+        void 예외_존재하지_않는_축제() {
+            // given
+            Long invalidFestivalId = 0L;
+            LineupRequest request = LineupRequestFixture.create();
+
+            given(festivalJpaRepository.findById(invalidFestivalId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> lineupService.addLineup(invalidFestivalId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 축제입니다.");
+        }
+    }
+
+    @Nested
+    class getAllLineupByFestivalId {
+
+        @Test
+        void 성공_정렬되어_반환() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Lineup lineup1 = LineupFixture.create(festival, "이미소", LocalDateTime.of(2025, 5, 3, 20, 0));
+            Lineup lineup2 = LineupFixture.create(festival, "부기", LocalDateTime.of(2025, 5, 2, 20, 0));
+            Lineup lineup3 = LineupFixture.create(festival, "후유", LocalDateTime.of(2025, 5, 2, 19, 0));
+            Lineup lineup4 = LineupFixture.create(festival, "타마", LocalDateTime.of(2025, 5, 1, 20, 0));
+
+            given(lineupJpaRepository.findAllByFestivalId(festivalId))
+                    .willReturn(new ArrayList<>(List.of(lineup1, lineup2, lineup3, lineup4)));
+
+            // when
+            LineupResponses result = lineupService.getAllLineupByFestivalId(festivalId);
+
+            // then
+            List<String> names = result.responses().stream()
+                    .map(LineupResponse::name)
+                    .toList();
+
+            assertThat(names).containsExactly("타마", "후유", "부기", "이미소");
         }
     }
 }

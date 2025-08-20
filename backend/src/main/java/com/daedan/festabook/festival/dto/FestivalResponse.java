@@ -2,8 +2,6 @@ package com.daedan.festabook.festival.dto;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalImage;
-import com.daedan.festabook.lineup.domain.Lineup;
-import com.daedan.festabook.lineup.dto.LineupResponses;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -13,19 +11,17 @@ public record FestivalResponse(
         FestivalImageResponses festivalImages,
         String festivalName,
         LocalDate startDate,
-        LocalDate endDate,
-        LineupResponses lineups
+        LocalDate endDate
 ) {
 
-    public static FestivalResponse from(Festival festival, List<FestivalImage> festivalImages, List<Lineup> lineups) {
+    public static FestivalResponse from(Festival festival, List<FestivalImage> festivalImages) {
         return new FestivalResponse(
                 festival.getId(),
                 festival.getUniversityName(),
                 FestivalImageResponses.from(festivalImages),
                 festival.getFestivalName(),
                 festival.getStartDate(),
-                festival.getEndDate(),
-                LineupResponses.from(lineups)
+                festival.getEndDate()
         );
     }
 }
