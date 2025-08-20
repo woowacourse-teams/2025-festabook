@@ -69,6 +69,10 @@ public class Council {
         );
     }
 
+    public void updateRole(Set<String> roles) {
+        this.roles.addAll(roles);
+    }
+
     private void validateFestival(Festival festival) {
         if (festival == null) {
             throw new BusinessException("축제는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
