@@ -2,7 +2,8 @@ package com.daedan.festabook.festival.dto;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalImage;
-import com.daedan.festabook.festival.domain.Lineup;
+import com.daedan.festabook.lineup.domain.Lineup;
+import com.daedan.festabook.lineup.dto.LineupResponses;
 import java.time.LocalDate;
 import java.util.List;
 

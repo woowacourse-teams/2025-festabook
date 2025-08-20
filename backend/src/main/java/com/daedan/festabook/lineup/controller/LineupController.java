@@ -1,9 +1,9 @@
-package com.daedan.festabook.festival.controller;
+package com.daedan.festabook.lineup.controller;
 
-import com.daedan.festabook.festival.dto.LineupRequest;
-import com.daedan.festabook.festival.dto.LineupResponse;
 import com.daedan.festabook.festival.service.LineupService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.lineup.dto.LineupRequest;
+import com.daedan.festabook.lineup.dto.LineupResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/festivals/lineups")
+@RequestMapping("/lineups")
 @Tag(name = "축제 라인업", description = "축제 라인업 관련 API")
 public class LineupController {
 

@@ -1,6 +1,6 @@
-package com.daedan.festabook.festival.infrastructure;
+package com.daedan.festabook.lineup.infrastructure;
 
-import com.daedan.festabook.festival.domain.Lineup;
+import com.daedan.festabook.lineup.domain.Lineup;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 

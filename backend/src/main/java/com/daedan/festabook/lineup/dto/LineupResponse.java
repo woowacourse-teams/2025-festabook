@@ -1,6 +1,6 @@
-package com.daedan.festabook.festival.dto;
+package com.daedan.festabook.lineup.dto;
 
-import com.daedan.festabook.festival.domain.Lineup;
+import com.daedan.festabook.lineup.domain.Lineup;
 import java.time.LocalDateTime;
 
 public record LineupResponse(

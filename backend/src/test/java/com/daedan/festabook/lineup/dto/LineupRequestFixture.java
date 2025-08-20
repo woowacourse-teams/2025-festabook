@@ -1,6 +1,5 @@
-package com.daedan.festabook.festival.domain;
+package com.daedan.festabook.lineup.dto;
 
-import com.daedan.festabook.festival.dto.LineupRequest;
 import java.time.LocalDateTime;
 
 public class LineupRequestFixture {

@@ -1,13 +1,13 @@
-package com.daedan.festabook.festival.controller;
+package com.daedan.festabook.lineup.controller;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
-import com.daedan.festabook.festival.domain.LineupRequestFixture;
-import com.daedan.festabook.festival.dto.LineupRequest;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.lineup.dto.LineupRequest;
+import com.daedan.festabook.lineup.dto.LineupRequestFixture;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.LocalDateTime;
@@ -67,7 +67,7 @@ class LineupControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/festivals/lineups")
+                    .post("/lineups")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))

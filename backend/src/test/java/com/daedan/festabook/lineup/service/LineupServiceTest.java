@@ -1,4 +1,4 @@
-package com.daedan.festabook.festival.service;
+package com.daedan.festabook.lineup.service;
 
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
@@ -6,13 +6,14 @@ import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
-import com.daedan.festabook.festival.domain.Lineup;
-import com.daedan.festabook.festival.domain.LineupFixture;
-import com.daedan.festabook.festival.domain.LineupRequestFixture;
-import com.daedan.festabook.festival.dto.LineupRequest;
-import com.daedan.festabook.festival.dto.LineupResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
+import com.daedan.festabook.festival.service.LineupService;
+import com.daedan.festabook.lineup.domain.Lineup;
+import com.daedan.festabook.lineup.domain.LineupFixture;
+import com.daedan.festabook.lineup.dto.LineupRequest;
+import com.daedan.festabook.lineup.dto.LineupRequestFixture;
+import com.daedan.festabook.lineup.dto.LineupResponse;
+import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;

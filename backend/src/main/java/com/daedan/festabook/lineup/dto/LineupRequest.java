@@ -1,7 +1,7 @@
-package com.daedan.festabook.festival.dto;
+package com.daedan.festabook.lineup.dto;
 
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.domain.Lineup;
+import com.daedan.festabook.lineup.domain.Lineup;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 

@@ -1,5 +1,6 @@
-package com.daedan.festabook.festival.domain;
+package com.daedan.festabook.lineup.domain;
 
+import com.daedan.festabook.festival.domain.Festival;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;

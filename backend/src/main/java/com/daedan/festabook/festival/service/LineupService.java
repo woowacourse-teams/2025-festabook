@@ -1,12 +1,12 @@
 package com.daedan.festabook.festival.service;
 
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.domain.Lineup;
-import com.daedan.festabook.festival.dto.LineupRequest;
-import com.daedan.festabook.festival.dto.LineupResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.lineup.domain.Lineup;
+import com.daedan.festabook.lineup.dto.LineupRequest;
+import com.daedan.festabook.lineup.dto.LineupResponse;
+import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

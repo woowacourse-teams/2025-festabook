@@ -2,7 +2,6 @@ package com.daedan.festabook.festival.service;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalImage;
-import com.daedan.festabook.festival.domain.Lineup;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
@@ -10,8 +9,9 @@ import com.daedan.festabook.festival.dto.FestivalResponse;
 import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.festival.infrastructure.LineupJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.lineup.domain.Lineup;
+import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
