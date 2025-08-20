@@ -1,6 +1,7 @@
-// presentation/main/MainViewModel.kt
 package com.daedan.festabook.presentation.main
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -9,6 +10,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.DeviceRepository
+import com.daedan.festabook.presentation.common.Event
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -16,6 +18,11 @@ import timber.log.Timber
 class MainViewModel(
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
+    private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
+    val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
+
+    private var lastBackPressedTime: Long = 0
+
     fun registerDeviceAndFcmToken() {
         val uuid = deviceRepository.getUuid().orEmpty()
         val fcmToken = deviceRepository.getFcmToken()
@@ -43,6 +50,16 @@ class MainViewModel(
         }
     }
 
+    fun onBackPressed() {
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastBackPressedTime < BACK_PRESS_INTERVAL) {
+            _backPressEvent.value = Event(true)
+        } else {
+            lastBackPressedTime = currentTime
+            _backPressEvent.value = Event(false)
+        }
+    }
+
     private fun registerDevice(
         uuid: String,
         fcmToken: String,
@@ -61,6 +78,7 @@ class MainViewModel(
     }
 
     companion object {
+        private const val BACK_PRESS_INTERVAL: Long = 2000L
         val Factory: ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
