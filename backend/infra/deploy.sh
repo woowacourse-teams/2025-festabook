@@ -1,4 +1,4 @@
-APP_HOME="/home/ubuntu/app"
+APP_HOME="/home/ubuntu/festabook"
 JAR_NAME=$(find $APP_HOME -name "*.jar" | head -n 1)
 LOG_PATH="$APP_HOME/application.log"
 
@@ -31,7 +31,7 @@ fi
 # 3. Health Check
 echo "🩺 애플리케이션 상태 확인 중..."
 for i in {1..30}; do
-  if curl -s http://localhost:80/actuator/health | grep '"status":"UP"' > /dev/null; then
+  if curl -s http://localhost/api/actuator/health | grep '"status":"UP"' > /dev/null; then
     echo "✅ 애플리케이션이 정상적으로 실행되었습니다!"
     exit 0
   fi
