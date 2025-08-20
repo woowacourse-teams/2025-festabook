@@ -47,7 +47,12 @@ public class S3StorageManager implements StorageManager {
             RequestBody requestBody = RequestBody.fromBytes(storeFile.getBytes());
             s3Client.putObject(putObjectRequest, requestBody);
 
-            return new StorageUploadResponse(buildFileUrl(s3Key), s3Key);
+            StorageUploadResponse response = new StorageUploadResponse(
+                    buildFileUrl(s3Key),
+                    convertStoragePathToRelativePath(storeFile.getStoragePath()),
+                    s3Key
+            );
+            return response;
         } catch (S3Exception e) {
             throw new RuntimeException(String.format(
                     "S3 업로드 실패 {%s}:{%s}",
@@ -71,5 +76,12 @@ public class S3StorageManager implements StorageManager {
                 s3Client.serviceClientConfiguration().region().id(),
                 encodedKey
         );
+    }
+
+    private String convertStoragePathToRelativePath(String storagePath) {
+        if (storagePath.startsWith("/")) {
+            return storagePath;
+        }
+        return String.format("/%s", storagePath);
     }
 }
