@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!--grayscale-->
-    <color name="gray900">#FF000000</color>
+    <color name="gray900">#FF17171B</color>
     <color name="gray800">#FF1F1F1F</color>
     <color name="gray700">#FF333333</color>
     <color name="gray600">#FF474747</color>
