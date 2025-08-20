@@ -14,3 +14,7 @@ springdoc:
   swagger-ui:
     path: /api-docs
     persist-authorization: true
+
+secret:
+  jwt-key: asidjiogorepgkpoergkorepgkopergkgopkregopqwrokgro
+  jwt-expiration: 9023859840385093458
