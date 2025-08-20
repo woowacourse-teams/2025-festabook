@@ -13,7 +13,6 @@ phases:
   pre_build:
     commands:
       - echo "⚙️ [Pre Build Phase] 환경파일 생성 시작"
-      - cd backend
       - mkdir -p src/main/resources/firebase
       - echo "$SECRET_YML" > src/main/resources/application-secret.yml
       - echo "$FIREBASE_ADMINSDK_ACCOUNT_KEY" > src/main/resources/firebase/firebase-adminsdk-account.json
