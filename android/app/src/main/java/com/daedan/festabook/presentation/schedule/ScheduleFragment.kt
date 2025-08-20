@@ -73,17 +73,17 @@ class ScheduleFragment :
 
             when (scheduleDatesUiState) {
                 is ScheduleDatesUiState.Loading -> {
-                    showSkeleton(isLoading = true)
+                    showLoadingView(isLoading = true)
                 }
 
                 is ScheduleDatesUiState.Success -> {
-                    showSkeleton(isLoading = false)
+                    showLoadingView(isLoading = false)
                     setupScheduleTabLayout(scheduleDatesUiState.initialDatePosition)
                     adapter.submitList(scheduleDatesUiState.dates)
                 }
 
                 is ScheduleDatesUiState.Error -> {
-                    showSkeleton(isLoading = false)
+                    showLoadingView(isLoading = false)
                     Timber.w(
                         scheduleDatesUiState.throwable,
                         "ScheduleFragment: ${scheduleDatesUiState.throwable.message}",
@@ -94,7 +94,7 @@ class ScheduleFragment :
         }
     }
 
-    private fun showSkeleton(isLoading: Boolean) {
+    private fun showLoadingView(isLoading: Boolean) {
         binding.lavScheduleLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 

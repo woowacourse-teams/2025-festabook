@@ -54,13 +54,13 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
             when (schedule) {
                 is ScheduleEventsUiState.Loading,
                 -> {
-                    showSkeleton(isLoading = true)
+                    showLoadingView(isLoading = true)
                 }
 
                 is ScheduleEventsUiState.Success -> {
                     adapter.submitList(schedule.events)
                     scrollToCenterOfCurrentEvent(schedule.currentEventPosition)
-                    showSkeleton(isLoading = false)
+                    showLoadingView(isLoading = false)
                 }
 
                 is ScheduleEventsUiState.Error -> {
@@ -69,13 +69,13 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                         "ScheduleTabPageFragment: ${schedule.throwable.message}",
                     )
                     showErrorSnackBar(schedule.throwable)
-                    showSkeleton(isLoading = false)
+                    showLoadingView(isLoading = false)
                 }
             }
         }
     }
 
-    private fun showSkeleton(isLoading: Boolean) {
+    private fun showLoadingView(isLoading: Boolean) {
         if (isLoading) {
             binding.rvScheduleEvent.visibility = View.INVISIBLE
             binding.lavScheduleLoading.visibility = View.VISIBLE
