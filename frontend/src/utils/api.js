@@ -14,8 +14,27 @@ api.interceptors.request.use((config) => {
   if (festivalId) {
     config.headers['festival'] = festivalId;
   }
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
   return config;
 });
+
+// Unauthorized handling centralized here as well
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401 || status === 403) {
+      try {
+        localStorage.clear();
+        window.location.replace('/');
+      } catch (_) {}
+    }
+    return Promise.reject(error);
+  }
+);
 
 // 축제 관련 API
 export const festivalAPI = {
