@@ -1,28 +1,47 @@
 package com.daedan.festabook.storage.service;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.ImageUploadResponse;
+import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.infrastructure.MockStorageManager;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.test.util.ReflectionTestUtils;
 
+@ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ImageStoreServiceTest {
 
-    private final ImageStoreService imageStoreService;
+    @Captor
+    private ArgumentCaptor<StorageUploadRequest> requestCaptor;
 
-    public ImageStoreServiceTest() {
-        this.imageStoreService = new ImageStoreService(new MockStorageManager());
+    @Spy
+    private StorageManager mockStorageManager = new MockStorageManager();
+
+    @InjectMocks
+    private ImageStoreService imageStoreService;
+
+    @BeforeEach
+    void setUp() {
         ReflectionTestUtils.setField(imageStoreService, "maxImageSize", 10 * 1024 * 1024);
+        ReflectionTestUtils.setField(imageStoreService, "imagePathPrefix", "images");
     }
 
     @Nested
@@ -37,12 +56,19 @@ class ImageStoreServiceTest {
                     "image/png",
                     new byte[100]
             );
+            String expectedStoragePathPrefix = "images/";
 
             // when
             ImageUploadResponse response = imageStoreService.uploadImage(file);
 
             // then
-            assertThat(response.imageUrl()).isNotBlank();
+            then(mockStorageManager).should()
+                    .uploadFile(requestCaptor.capture());
+            StorageUploadRequest captureRequest = requestCaptor.getValue();
+            assertSoftly(s -> {
+                s.assertThat(response.imageUrl()).isNotBlank();
+                s.assertThat(captureRequest.storagePath()).startsWith(expectedStoragePathPrefix);
+            });
         }
     }
 

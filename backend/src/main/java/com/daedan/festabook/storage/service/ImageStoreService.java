@@ -4,6 +4,7 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.ImageUploadResponse;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
+import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
@@ -31,15 +32,19 @@ public class ImageStoreService {
     @Value("${storage.image.max-size}")
     private long maxImageSize;
 
+    @Value("${storage.image.path-prefix}")
+    private String imagePathPrefix;
+
     public ImageUploadResponse uploadImage(MultipartFile file) {
         validateFile(file);
         validateImageSize(file);
         validateImageType(file);
 
-        String storagePath = generateUniqueFilename(file.getOriginalFilename());
+        String storagePath = generateUniqueFilePath(file.getOriginalFilename());
         StorageUploadRequest request = new StorageUploadRequest(file, storagePath);
 
-        return new ImageUploadResponse(storageManager.uploadFile(request).accessUrl());
+        StorageUploadResponse response = storageManager.uploadFile(request);
+        return new ImageUploadResponse(response.accessUrl());
     }
 
     private void validateFile(MultipartFile file) {
@@ -69,6 +74,11 @@ public class ImageStoreService {
                     HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    private String generateUniqueFilePath(String originalFilename) {
+        String uniqueFilename = generateUniqueFilename(originalFilename);
+        return String.format("%s/%s", imagePathPrefix, uniqueFilename);
     }
 
     private String generateUniqueFilename(String originalFilename) {
