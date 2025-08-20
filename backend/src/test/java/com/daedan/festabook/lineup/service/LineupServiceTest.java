@@ -95,7 +95,7 @@ class LineupServiceTest {
     class getAllLineupByFestivalId {
 
         @Test
-        void 성공_정렬되어_반환() {
+        void 성공_날짜_오름차순_정렬_반환() {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);

@@ -89,7 +89,7 @@ class LineupControllerTest {
     class getAllLineupByFestivalId {
 
         @Test
-        void 성공_정렬되어_반환() {
+        void 성공_날짜_오름차순_정렬_반환() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
