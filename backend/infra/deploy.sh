@@ -4,7 +4,6 @@ LOG_PATH="$APP_HOME/application.log"
 
 echo "🚀========== 배포 스크립트 시작 =========="
 
-# 1. 이전 프로세스 종료
 echo "🛑 기존 Spring WAS 종료 중..."
 PID=$(lsof -t -i:80 || true)
 if [ -n "$PID" ]; then
@@ -18,7 +17,6 @@ else
   echo "✅ 80 포트에서 실행 중인 프로세스가 없습니다."
 fi
 
-# 2. 최신 JAR 실행
 echo "▶️ 새로운 Spring WAS 실행 중..."
 if [ -f "$JAR_NAME" ]; then
   nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" --spring.profiles.active=prod > "$LOG_PATH" 2>&1 &
@@ -28,7 +26,6 @@ else
   exit 1
 fi
 
-# 3. Health Check
 echo "🩺 애플리케이션 상태 확인 중..."
 for i in {1..30}; do
   if curl -s http://localhost/api/actuator/health | grep '"status":"UP"' > /dev/null; then
