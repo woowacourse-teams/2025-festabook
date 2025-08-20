@@ -21,7 +21,6 @@ phases:
   build:
     commands:
       - echo "🚀 [Build Phase] Gradle 빌드 시작"
-      - cd ..
       - ./gradlew clean build -x test
       - echo "✅ [Build Phase] 빌드 성공"
 
