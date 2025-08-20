@@ -67,7 +67,7 @@ public class EventController {
         eventService.deleteEventByEventId(eventId);
     }
 
-    @GetMapping("{eventDateId}/events")
+    @GetMapping("/{eventDateId}/events")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 일정 날짜의 모든 일정 조회")
     @ApiResponses(value = {
