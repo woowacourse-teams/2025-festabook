@@ -1,7 +1,6 @@
 package com.daedan.festabook.presentation.main
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -67,7 +66,6 @@ class MainActivity :
         notificationPermissionManager.requestNotificationPermission(this)
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
-        setupObservers()
         onMenuItemClick()
         onMenuItemReClick()
         onBackPress()
@@ -92,10 +90,30 @@ class MainActivity :
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
     private fun setupObservers() {
+        binding.lifecycleOwner = this
+
         viewModel.backPressEvent.observe(this) { event ->
             event.getContentIfNotHandled()?.let { isDoublePress ->
                 if (isDoublePress) finish() else showToast(getString(R.string.back_press_exit_message))
             }
+        }
+
+        viewModel.selectedItemId.observe(this) { itemId ->
+            val tag =
+                when (itemId) {
+                    R.id.item_menu_home -> TAG_HOME_FRAGMENT
+                    R.id.item_menu_schedule -> TAG_SCHEDULE_FRAGMENT
+                    R.id.item_menu_news -> TAG_NEW_FRAGMENT
+                    R.id.item_menu_setting -> TAG_SETTING_FRAGMENT
+                    R.id.item_menu_map -> TAG_PLACE_MAP_FRAGMENT
+                    else -> ""
+                }
+
+            if (tag.isNotEmpty()) {
+                switchFragmentByTag(tag)
+            }
+
+            binding.bnvMenu.selectedItemId = itemId
         }
     }
 
@@ -116,28 +134,6 @@ class MainActivity :
         }
     }
 
-  private fun setupObservers() {
-        binding.lifecycleOwner = this
-
-        viewModel.selectedItemId.observe(this) { itemId ->
-            val tag =
-                when (itemId) {
-                    R.id.item_menu_home -> TAG_HOME_FRAGMENT
-                    R.id.item_menu_schedule -> TAG_SCHEDULE_FRAGMENT
-                    R.id.item_menu_news -> TAG_NEW_FRAGMENT
-                    R.id.item_menu_setting -> TAG_SETTING_FRAGMENT
-                    R.id.item_menu_map -> TAG_PLACE_MAP_FRAGMENT
-                    else -> ""
-                }
-
-            if (tag.isNotEmpty()) {
-                switchFragmentByTag(tag)
-            }
-
-            binding.bnvMenu.selectedItemId = itemId
-        }
-    }
-  
     private fun onBackPress() {
         onBackPressedDispatcher.addCallback(
             this,
