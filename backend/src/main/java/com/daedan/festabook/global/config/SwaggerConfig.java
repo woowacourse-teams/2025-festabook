@@ -28,7 +28,8 @@ public class SwaggerConfig {
             new String[]{"FAQ API", "/questions/**"},
             new String[]{"분실물 API", "/lost-items/**"},
             new String[]{"축제 API", "/festivals/**"},
-            new String[]{"디바이스 API", "/devices/**"}
+            new String[]{"디바이스 API", "/devices/**"},
+            new String[]{"이미지 저장 API", "/images/**"}
     );
 
     private final BuildProperties buildProperties;
