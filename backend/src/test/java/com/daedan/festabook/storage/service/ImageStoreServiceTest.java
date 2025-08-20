@@ -45,7 +45,7 @@ class ImageStoreServiceTest {
     }
 
     @Nested
-    class UploadImage {
+    class uploadImage {
 
         @Test
         void 성공() {
@@ -73,7 +73,7 @@ class ImageStoreServiceTest {
     }
 
     @Nested
-    class ValidateFile {
+    class validateFile {
 
         @Test
         void 예외_null_파일() {
@@ -101,7 +101,7 @@ class ImageStoreServiceTest {
     }
 
     @Nested
-    class ValidateImageSize {
+    class validateImageSize {
 
         @Test
         void 예외_이미지_크기_초과() {
@@ -123,7 +123,7 @@ class ImageStoreServiceTest {
     }
 
     @Nested
-    class ValidateImageType {
+    class validateImageType {
 
         @Test
         void 예외_null_콘텐츠타입() {
@@ -169,7 +169,7 @@ class ImageStoreServiceTest {
     }
 
     @Nested
-    class GenerateUniqueFilename {
+    class generateUniqueFilename {
 
         @Test
         void 예외_null_파일이름() {
