@@ -18,13 +18,13 @@ public class MockStorageManager implements StorageManager {
 
         StorageUploadResponse response = new StorageUploadResponse(
                 MOCK_ACCESS_URL,
-                convertStoragePathToRelativePath(storeFile.getStoragePath()),
+                ensureLeadingSlash(storeFile.getStoragePath()),
                 storeFile.getStoragePath()
         );
         return response;
     }
 
-    private String convertStoragePathToRelativePath(String storagePath) {
+    private String ensureLeadingSlash(String storagePath) {
         if (storagePath.startsWith("/")) {
             return storagePath;
         }

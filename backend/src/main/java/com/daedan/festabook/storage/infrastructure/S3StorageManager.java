@@ -49,7 +49,7 @@ public class S3StorageManager implements StorageManager {
 
             StorageUploadResponse response = new StorageUploadResponse(
                     buildFileUrl(s3Key),
-                    convertStoragePathToRelativePath(storeFile.getStoragePath()),
+                    ensureLeadingSlash(storeFile.getStoragePath()),
                     s3Key
             );
             return response;
@@ -78,7 +78,7 @@ public class S3StorageManager implements StorageManager {
         );
     }
 
-    private String convertStoragePathToRelativePath(String storagePath) {
+    private String ensureLeadingSlash(String storagePath) {
         if (storagePath.startsWith("/")) {
             return storagePath;
         }
