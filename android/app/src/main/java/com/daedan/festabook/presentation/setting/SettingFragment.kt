@@ -1,13 +1,13 @@
 package com.daedan.festabook.presentation.setting
 
 import android.content.Intent
-import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.viewModels
+import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentSettingBinding
 import com.daedan.festabook.presentation.NotificationPermissionManager
@@ -55,12 +55,19 @@ class SettingFragment :
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.btnNoticeAllow.isChecked = viewModel.isAllowed
+        setupBindings()
+
         setupNoticeAllowButtonClickListener()
         setupServicePolicyClickListener()
         setupContactUsButtonClickListener()
 
         setupObservers()
+    }
+
+    private fun setupBindings() {
+        binding.btnNoticeAllow.isChecked = viewModel.isAllowed
+        val versionName = BuildConfig.VERSION_NAME
+        binding.tvSettingAppVersionName.text = versionName
     }
 
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
@@ -91,12 +98,7 @@ class SettingFragment :
 
     private fun setupContactUsButtonClickListener() {
         binding.tvSettingContactUs.setOnClickListener {
-            val emailAddress = getString(R.string.setting_contact_us_email)
-            val subject = R.string.setting_contact_us_email_subject
-
-            val uri = "mailto:$emailAddress?subject=${Uri.encode(subject.toString())}".toUri()
-            val intent = Intent(Intent.ACTION_SENDTO, uri)
-
+            val intent = Intent(Intent.ACTION_VIEW, CONTACT_US_URL.toUri())
             startActivity(intent)
         }
     }
@@ -110,5 +112,8 @@ class SettingFragment :
     companion object {
         private const val POLICY_URL: String =
             "https://www.notion.so/244a540dc0b780638e56e31c4bdb3c9f"
+
+        private const val CONTACT_US_URL =
+            "https://forms.gle/XjqJFfQrTPgkZzGZ9"
     }
 }
