@@ -84,10 +84,14 @@ class CouncilServiceTest {
 
             // then
             ArgumentCaptor<Council> captor = forClass(Council.class);
-            then(councilJpaRepository).should().existsByUsername(username);
-            then(festivalJpaRepository).should().findById(festivalId);
-            then(passwordEncoder).should().encode(rawPassword);
-            then(councilJpaRepository).should().save(captor.capture());
+            then(councilJpaRepository).should()
+                    .existsByUsername(username);
+            then(festivalJpaRepository).should().
+                    findById(festivalId);
+            then(passwordEncoder).should()
+                    .encode(rawPassword);
+            then(councilJpaRepository).should()
+                    .save(captor.capture());
 
             Council savedCouncil = captor.getValue();
             assertSoftly(s -> {
@@ -152,9 +156,12 @@ class CouncilServiceTest {
             Festival festival = FestivalFixture.create(festivalId);
             Council council = CouncilFixture.create(festival, username, encodedPassword);
 
-            given(councilJpaRepository.findByUsername(username)).willReturn(Optional.of(council));
-            given(passwordEncoder.matches(rawPassword, encodedPassword)).willReturn(true);
-            given(jwtProvider.createToken(username, festivalId)).willReturn(expectedToken);
+            given(councilJpaRepository.findByUsername(username))
+                    .willReturn(Optional.of(council));
+            given(passwordEncoder.matches(rawPassword, encodedPassword))
+                    .willReturn(true);
+            given(jwtProvider.createToken(username, festivalId))
+                    .willReturn(expectedToken);
 
             CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, rawPassword);
 
@@ -162,8 +169,10 @@ class CouncilServiceTest {
             CouncilLoginResponse response = councilService.loginCouncil(request);
 
             // then
-            then(passwordEncoder).should().matches(rawPassword, encodedPassword);
-            then(jwtProvider).should().createToken(username, festivalId);
+            then(passwordEncoder).should()
+                    .matches(rawPassword, encodedPassword);
+            then(jwtProvider).should()
+                    .createToken(username, festivalId);
             assertThat(response).isNotNull();
         }
 
