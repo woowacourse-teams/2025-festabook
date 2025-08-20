@@ -2,6 +2,7 @@ package com.daedan.festabook.place.domain;
 
 import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -25,7 +26,7 @@ import org.springframework.util.StringUtils;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Place {
+public class Place extends BaseEntity {
 
     private static final Set<PlaceCategory> MAIN_PLACE = Set.of(
             PlaceCategory.BAR,

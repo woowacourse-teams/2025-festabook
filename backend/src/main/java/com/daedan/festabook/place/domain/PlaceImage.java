@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceImage implements Comparable<PlaceImage> {
+public class PlaceImage extends BaseEntity implements Comparable<PlaceImage> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

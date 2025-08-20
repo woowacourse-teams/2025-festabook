@@ -1,6 +1,7 @@
 package com.daedan.festabook.place.domain;
 
 import com.daedan.festabook.device.domain.Device;
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceFavorite {
+public class PlaceFavorite extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,24 +30,11 @@ public class PlaceFavorite {
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
-    protected PlaceFavorite(
-            Long id,
-            Place place,
-            Device device
-    ) {
-        this.id = id;
-        this.place = place;
-        this.device = device;
-    }
-
     public PlaceFavorite(
             Place place,
             Device device
     ) {
-        this(
-                null,
-                place,
-                device
-        );
+        this.place = place;
+        this.device = device;
     }
 }

@@ -1,5 +1,6 @@
 package com.daedan.festabook.festival.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -22,7 +23,7 @@ import org.springframework.http.HttpStatus;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Festival {
+public class Festival extends BaseEntity {
 
     private static final int MAX_NAME_LENGTH = 50;
     private static final int MIN_ZOOM = 0;

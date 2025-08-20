@@ -1,6 +1,7 @@
 package com.daedan.festabook.place.domain;
 
 import com.daedan.festabook.device.domain.Device;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 
 public class PlaceFavoriteFixture {
 
@@ -9,11 +10,8 @@ public class PlaceFavoriteFixture {
             Place place,
             Device device
     ) {
-        return new PlaceFavorite(
-                placeFavoriteId,
-                place,
-                device
-        );
+        PlaceFavorite placeFavorite = new PlaceFavorite(place, device);
+        return BaseEntityTestHelper.setId(placeFavorite, placeFavoriteId);
     }
 
     public static PlaceFavorite create(

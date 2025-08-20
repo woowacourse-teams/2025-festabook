@@ -1,6 +1,7 @@
 package com.daedan.festabook.event.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -17,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class EventDate implements Comparable<EventDate> {
+public class EventDate extends BaseEntity implements Comparable<EventDate> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

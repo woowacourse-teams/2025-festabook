@@ -1,29 +1,25 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceAnnouncement {
+public class PlaceAnnouncement extends BaseEntity {
 
     private static final int MAX_TITLE_LENGTH = 20;
     private static final int MAX_CONTENT_LENGTH = 250;
@@ -42,12 +38,7 @@ public class PlaceAnnouncement {
     @Column(nullable = false)
     private String content;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    protected PlaceAnnouncement(
-            Long id,
+    public PlaceAnnouncement(
             Place place,
             String title,
             String content
@@ -55,23 +46,9 @@ public class PlaceAnnouncement {
         validateTitle(title);
         validateContent(content);
 
-        this.id = id;
         this.place = place;
         this.title = title;
         this.content = content;
-    }
-
-    public PlaceAnnouncement(
-            Place place,
-            String title,
-            String content
-    ) {
-        this(
-                null,
-                place,
-                title,
-                content
-        );
     }
 
     public void updatePlaceAnnouncement(String title, String content) {

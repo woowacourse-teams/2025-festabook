@@ -1,6 +1,7 @@
 package com.daedan.festabook.festival.domain;
 
 import com.daedan.festabook.device.domain.Device;
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -15,7 +16,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class FestivalNotification {
+public class FestivalNotification extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

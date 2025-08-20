@@ -2,6 +2,7 @@ package com.daedan.festabook.festival.domain;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 
 public class FestivalNotificationFixture {
 
@@ -11,22 +12,26 @@ public class FestivalNotificationFixture {
     public static FestivalNotification create(
             Long festivalNotificationId
     ) {
-        return new FestivalNotification(
-                festivalNotificationId,
+        FestivalNotification festivalNotification = new FestivalNotification(
+                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_DEVICE
         );
+        BaseEntityTestHelper.setId(festivalNotification, festivalNotificationId);
+        return festivalNotification;
     }
 
     public static FestivalNotification create(
             Long festivalNotificationId,
             Festival festival
     ) {
-        return new FestivalNotification(
-                festivalNotificationId,
+        FestivalNotification festivalNotification = new FestivalNotification(
+                null,
                 festival,
                 DEFAULT_DEVICE
         );
+        BaseEntityTestHelper.setId(festivalNotification, festivalNotificationId);
+        return festivalNotification;
     }
 
     public static FestivalNotification create(
@@ -34,11 +39,13 @@ public class FestivalNotificationFixture {
             Festival festival,
             Device device
     ) {
-        return new FestivalNotification(
-                festivalNotificationId,
+        FestivalNotification festivalNotification = new FestivalNotification(
+                null,
                 festival,
                 device
         );
+        BaseEntityTestHelper.setId(festivalNotification, festivalNotificationId);
+        return festivalNotification;
     }
 
     public static FestivalNotification create(

@@ -1,30 +1,26 @@
 package com.daedan.festabook.announcement.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
-@EntityListeners(AuditingEntityListener.class)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Announcement {
+public class Announcement extends BaseEntity {
 
     private static final int MAX_TITLE_LENGTH = 50;
     private static final int MAX_CONTENT_LENGTH = 1000;
@@ -46,37 +42,20 @@ public class Announcement {
     @Column(nullable = false)
     private boolean isPinned;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    protected Announcement(
-            Long id,
-            String title,
-            String content,
-            boolean isPinned,
-            Festival festival,
-            LocalDateTime createdAt
-    ) {
-        validateTitle(title);
-        validateContent(content);
-        validateFestival(festival);
-
-        this.id = id;
-        this.title = title;
-        this.content = content;
-        this.isPinned = isPinned;
-        this.festival = festival;
-        this.createdAt = createdAt;
-    }
-
     public Announcement(
             String title,
             String content,
             boolean isPinned,
             Festival festival
     ) {
-        this(null, title, content, isPinned, festival, null);
+        validateTitle(title);
+        validateContent(content);
+        validateFestival(festival);
+
+        this.title = title;
+        this.content = content;
+        this.isPinned = isPinned;
+        this.festival = festival;
     }
 
     public boolean isUnpinned() {

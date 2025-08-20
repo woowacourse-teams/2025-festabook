@@ -1,5 +1,6 @@
 package com.daedan.festabook.event.domain;
 
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,14 +22,16 @@ public class EventFixture {
             String title,
             String location
     ) {
-        return new Event(
-                eventId,
+        Event event = new Event(
+                null,
                 eventDate,
                 startTime,
                 endTime,
                 title,
                 location
         );
+        BaseEntityTestHelper.setId(event, eventId);
+        return event;
     }
 
     public static Event create(

@@ -1,5 +1,7 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
+
 public class PlaceImageFixture {
 
     private static final Place DEFAULT_PLACE = PlaceFixture.create();
@@ -19,12 +21,13 @@ public class PlaceImageFixture {
             Place place,
             int sequence
     ) {
-        return new PlaceImage(
-                id,
+        PlaceImage placeImage = new PlaceImage(
                 place,
                 DEFAULT_IMAGE_URL,
                 sequence
         );
+        BaseEntityTestHelper.setId(placeImage, id);
+        return placeImage;
     }
 
     public static PlaceImage create(
@@ -52,12 +55,13 @@ public class PlaceImageFixture {
             Long placeImageId,
             Integer sequence
     ) {
-        return new PlaceImage(
-                placeImageId,
+        PlaceImage placeImage = new PlaceImage(
                 DEFAULT_PLACE,
                 DEFAULT_IMAGE_URL,
                 sequence
         );
+        BaseEntityTestHelper.setId(placeImage, placeImageId);
+        return placeImage;
     }
 
     public static PlaceImage create(
