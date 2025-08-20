@@ -21,6 +21,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -75,7 +76,7 @@ public class Council {
     }
 
     public void updateRole(Set<RoleType> roles) {
-        if (roles == null || roles.isEmpty()) {
+        if (!StringUtils.hasText(username)) {
             return;
         }
 
