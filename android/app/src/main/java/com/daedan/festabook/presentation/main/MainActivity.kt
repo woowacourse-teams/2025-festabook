@@ -35,26 +35,6 @@ class MainActivity :
     }
     private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
 
-    private val placeMapFragment by lazy {
-        PlaceMapFragment().newInstance()
-    }
-
-    private val homeFragment by lazy {
-        HomeFragment().newInstance()
-    }
-
-    private val scheduleFragment by lazy {
-        ScheduleFragment().newInstance()
-    }
-
-    private val newFragment by lazy {
-        NewsFragment().newInstance()
-    }
-
-    private val settingFragment by lazy {
-        SettingFragment().newInstance()
-    }
-
     private val notificationPermissionManager by lazy {
         NotificationPermissionManager(this)
     }
@@ -79,6 +59,7 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setupBinding()
+        setupObservers()
 
         viewModel.registerDeviceAndFcmToken()
         notificationPermissionManager.requestNotificationPermission(this)
@@ -115,49 +96,49 @@ class MainActivity :
         }
     }
 
-    private fun setUpBottomNavigation() {
-        binding.fabMap.post {
-            binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
-            binding.fcvFragmentContainer.updatePadding(
-                bottom = binding.babMenu.height + binding.babMenu.marginBottom,
-            )
-            binding.bnvMenu.x /= 2
-        }
-        binding.babMenu.setOnApplyWindowInsetsListener(null)
-        binding.babMenu.setPadding(0, 0, 0, 0)
-        binding.bnvMenu.setOnApplyWindowInsetsListener(null)
-        binding.bnvMenu.setPadding(0, 0, 0, 0)
-    }
-
     private fun setupHomeFragment(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             supportFragmentManager.commit {
-                add(R.id.fcv_fragment_container, homeFragment, TAG_HOME_FRAGMENT)
+                add(R.id.fcv_fragment_container, HomeFragment().newInstance(), TAG_HOME_FRAGMENT)
             }
+        }
+    }
+
+    private fun setupObservers() {
+        binding.lifecycleOwner = this
+
+        viewModel.selectedItemId.observe(this) { itemId ->
+            val tag =
+                when (itemId) {
+                    R.id.item_menu_home -> TAG_HOME_FRAGMENT
+                    R.id.item_menu_schedule -> TAG_SCHEDULE_FRAGMENT
+                    R.id.item_menu_news -> TAG_NEW_FRAGMENT
+                    R.id.item_menu_setting -> TAG_SETTING_FRAGMENT
+                    R.id.item_menu_map -> TAG_PLACE_MAP_FRAGMENT
+                    else -> ""
+                }
+
+            if (tag.isNotEmpty()) {
+                switchFragmentByTag(tag)
+            }
+
+            binding.bnvMenu.selectedItemId = itemId
         }
     }
 
     private fun onMenuItemClick() {
-        binding.bnvMenu.setOnItemSelectedListener { icon ->
-            when (icon.itemId) {
-                R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
-                R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
-                R.id.item_menu_news -> switchFragment(newFragment, TAG_NEW_FRAGMENT)
-                R.id.item_menu_setting -> switchFragment(settingFragment, TAG_SETTING_FRAGMENT)
-            }
+        binding.bnvMenu.setOnItemSelectedListener { item ->
+            viewModel.selectItem(item.itemId)
             true
         }
         binding.fabMap.setOnClickListener {
-            binding.bnvMenu.selectedItemId = R.id.item_menu_map
-            val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_MAP_FRAGMENT)
-            if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
-            switchFragment(placeMapFragment, TAG_PLACE_MAP_FRAGMENT)
+            viewModel.selectItem(R.id.item_menu_map)
         }
     }
 
     private fun onMenuItemReClick() {
-        binding.bnvMenu.setOnItemReselectedListener { icon ->
-            when (icon.itemId) {
+        binding.bnvMenu.setOnItemReselectedListener { menuItem ->
+            when (menuItem.itemId) {
                 R.id.item_menu_home -> Unit
                 R.id.item_menu_schedule -> {
                     val fragment = supportFragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT)
@@ -170,21 +151,51 @@ class MainActivity :
         }
     }
 
-    private fun switchFragment(
-        fragment: Fragment,
-        tag: String,
-    ) {
-        supportFragmentManager.commit {
-            supportFragmentManager.fragments.forEach { fragment -> hide(fragment) }
+    private fun switchFragmentByTag(tag: String) {
+        // 기존 프래그먼트 찾기
+        val fragment =
+            supportFragmentManager.findFragmentByTag(tag)
+                ?: getFragmentByTag(tag) // 없으면 새로 생성
 
-            val existing = supportFragmentManager.findFragmentByTag(tag)
-            if (existing != null) {
-                show(existing)
+        supportFragmentManager.commit {
+            // 다른 프래그먼트는 숨기기
+            supportFragmentManager.fragments.forEach { currentFragment ->
+                if (currentFragment != fragment) hide(currentFragment)
+            }
+
+            if (fragment.isAdded) {
+                show(fragment)
             } else {
                 add(R.id.fcv_fragment_container, fragment, tag)
             }
-            setReorderingAllowed(true)
         }
+    }
+
+    private fun getFragmentByTag(tag: String): Fragment {
+        val fragment =
+            when (tag) {
+                TAG_HOME_FRAGMENT -> HomeFragment().newInstance()
+                TAG_SCHEDULE_FRAGMENT -> ScheduleFragment().newInstance()
+                TAG_PLACE_MAP_FRAGMENT -> PlaceMapFragment().newInstance()
+                TAG_NEW_FRAGMENT -> NewsFragment().newInstance()
+                TAG_SETTING_FRAGMENT -> SettingFragment().newInstance()
+                else -> throw IllegalArgumentException("Invalid fragment tag: $tag")
+            }
+        return fragment
+    }
+
+    private fun setUpBottomNavigation() {
+        binding.fabMap.post {
+            binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
+            binding.fcvFragmentContainer.updatePadding(
+                bottom = binding.babMenu.height + binding.babMenu.marginBottom,
+            )
+            binding.bnvMenu.x /= 2
+        }
+        binding.babMenu.setOnApplyWindowInsetsListener(null)
+        binding.babMenu.setPadding(0, 0, 0, 0)
+        binding.bnvMenu.setOnApplyWindowInsetsListener(null)
+        binding.bnvMenu.setPadding(0, 0, 0, 0)
     }
 
     companion object {

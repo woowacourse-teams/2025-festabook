@@ -1,6 +1,7 @@
-// presentation/main/MainViewModel.kt
 package com.daedan.festabook.presentation.main
 
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -16,6 +17,14 @@ import timber.log.Timber
 class MainViewModel(
     private val deviceRepository: DeviceRepository,
 ) : ViewModel() {
+    private val _selectedItemId = MutableLiveData<Int>()
+    val selectedItemId: LiveData<Int> get() = _selectedItemId
+
+    // item-> bottom navigation의 item
+    fun selectItem(navMenuItemId: Int) {
+        _selectedItemId.value = navMenuItemId
+    }
+
     fun registerDeviceAndFcmToken() {
         val uuid = deviceRepository.getUuid().orEmpty()
         val fcmToken = deviceRepository.getFcmToken()

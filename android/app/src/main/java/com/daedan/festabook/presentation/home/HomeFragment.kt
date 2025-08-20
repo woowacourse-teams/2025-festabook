@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.home
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
@@ -14,9 +15,11 @@ import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import com.daedan.festabook.presentation.home.adapter.LineupAdapter
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
+import com.daedan.festabook.presentation.main.MainViewModel
 import timber.log.Timber
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
+    private val mainViewModel: MainViewModel by activityViewModels { MainViewModel.Factory }
     private val viewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 
@@ -33,6 +36,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     ) {
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
+
+        binding.btnNavigateSchedule.setOnClickListener {
+            mainViewModel.selectItem(R.id.item_menu_schedule)
+        }
         setupObservers()
         setupAdapters()
     }
