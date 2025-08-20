@@ -21,21 +21,20 @@ phases:
   build:
     commands:
       - echo "🚀 [Build Phase] Gradle 빌드 시작"
-      - cd backend
+      - cd ..
       - ./gradlew clean build -x test
       - echo "✅ [Build Phase] 빌드 성공"
 
   post_build:
     commands:
       - echo "📤 [Post Build Phase] 산출물 패키징 시작"
-      - cd backend
       - BUILD_JAR=$(find build/libs -name "*.jar" -not -name "*plain.jar" | head -n 1)
-      - echo "🎯 Build JAR located at - $BUILD_JAR"
-      - mkdir -p ../infra/output
-      - cp "$BUILD_JAR" ../infra/output/
-      - cp ../infra/appspec.yml ../infra/output/
-      - cp -r ../infra/scripts ../infra/output/
-      - echo "✅ [Post Build Phase] 산출물 패키징 완료"
+      - echo "📌 Build JAR located at: $BUILD_JAR"
+      - mkdir -p infra/output
+      - cp "$BUILD_JAR" infra/output/
+      - cp infra/appspec.yml infra/output/
+      - cp -r infra/scripts infra/output/
+      - echo "✅ [Post Build Phase] 완료"
 
 artifacts:
   files:
