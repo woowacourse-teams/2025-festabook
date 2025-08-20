@@ -1,5 +1,6 @@
 package com.daedan.festabook.global.security.filter;
 
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.global.security.council.CouncilDetailsService;
 import com.daedan.festabook.global.security.util.JwtProvider;
@@ -43,7 +44,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 SecurityContextHolder.getContext().setAuthentication(authentication);
             }
-        } catch (AuthenticationException e) {
+        } catch (AuthenticationException | BusinessException e) {
             SecurityContextHolder.clearContext();
             throw e;
         }
