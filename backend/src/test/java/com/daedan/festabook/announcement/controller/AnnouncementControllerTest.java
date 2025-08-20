@@ -305,7 +305,7 @@ class AnnouncementControllerTest {
         }
 
         @Test
-        void 실패_존재하지_않는_공지() {
+        void 예외_존재하지_않는_공지() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);

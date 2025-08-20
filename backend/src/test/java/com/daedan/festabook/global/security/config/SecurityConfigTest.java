@@ -196,7 +196,7 @@ class SecurityConfigTest {
         }
 
         @Test
-        void 실패_CORS_허용되지않은_origin() {
+        void 예외_CORS_허용되지않은_origin() {
             // given
             String invalidOrigin = "https://naver.com";
 
