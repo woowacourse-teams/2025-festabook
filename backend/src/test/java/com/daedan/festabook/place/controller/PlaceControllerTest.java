@@ -33,6 +33,7 @@ import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -50,8 +51,6 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceControllerTest {
 
-    private static final String AUTHENTICATION_HEADER = "Authorization";
-    private static final String AUTHENTICATION_SCHEME = "Bearer ";
     private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
@@ -92,7 +91,7 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
             String expectedPlaceTitle = "동문 주차장";
@@ -104,7 +103,7 @@ class PlaceControllerTest {
             RestAssured
                     .given()
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(placeRequest)
                     .post("/places")
@@ -135,7 +134,7 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -155,7 +154,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(placeUpdateRequest)
                     .patch("/places/{placeId}", place.getId())
@@ -494,7 +493,7 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -518,7 +517,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/places/{placeId}", place.getId())
@@ -545,14 +544,14 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Long invalidPlaceId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/places/{placeId}", invalidPlaceId)

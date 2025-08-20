@@ -26,6 +26,7 @@ import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -45,8 +46,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AnnouncementControllerTest {
 
-    private static final String AUTHENTICATION_HEADER = "Authorization";
-    private static final String AUTHENTICATION_SCHEME = "Bearer ";
     private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
@@ -78,7 +77,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             AnnouncementRequest request = new AnnouncementRequest(
                     "폭우가 내립니다.",
@@ -91,7 +90,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -115,7 +114,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             boolean isPinned = true;
             announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, festival));
@@ -125,7 +124,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -283,7 +282,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
@@ -295,7 +294,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -314,7 +313,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Long notExistId = 0L;
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
@@ -322,7 +321,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -346,7 +345,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Announcement announcement = AnnouncementFixture.create(initialPinned, festival);
             announcementJpaRepository.save(announcement);
@@ -358,7 +357,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -384,7 +383,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
@@ -392,7 +391,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .when()
                     .delete("/announcements/{announcementId}", announcement.getId())
                     .then()
@@ -405,14 +404,14 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Long notExistId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .when()
                     .delete("/announcements/{announcementId}", notExistId)
                     .then()

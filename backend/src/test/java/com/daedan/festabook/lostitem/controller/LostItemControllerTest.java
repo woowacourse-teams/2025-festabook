@@ -20,6 +20,7 @@ import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequestFixture;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -37,8 +38,6 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LostItemControllerTest {
 
-    private static final String AUTHENTICATION_HEADER = "Authorization";
-    private static final String AUTHENTICATION_SCHEME = "Bearer ";
     private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
@@ -67,7 +66,7 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             LostItemRequest request = LostItemRequestFixture.create();
 
@@ -75,8 +74,8 @@ class LostItemControllerTest {
 
             // when & then
             given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -169,7 +168,7 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);
@@ -184,7 +183,7 @@ class LostItemControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -213,7 +212,7 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             LostItem lostItem = LostItemFixture.create(festival, previousStatus);
             lostItemJpaRepository.save(lostItem);
@@ -225,7 +224,7 @@ class LostItemControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -247,7 +246,7 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);
@@ -255,7 +254,7 @@ class LostItemControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .when()
                     .delete("/lost-items/{lostItemId}", lostItem.getId())
                     .then()
@@ -270,14 +269,14 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
-            
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long notExistId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .when()
                     .delete("/lost-items/{lostItemId}", notExistId)
                     .then()

@@ -18,6 +18,7 @@ import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import io.restassured.path.json.config.JsonPathConfig;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -36,9 +37,6 @@ import org.springframework.http.HttpStatus;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceGeographyControllerTest {
-
-    private static final String AUTHENTICATION_HEADER = "Authorization";
-    private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
@@ -158,7 +156,7 @@ class PlaceGeographyControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -171,7 +169,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -192,7 +190,7 @@ class PlaceGeographyControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Long invalidPlaceId = 0L;
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
@@ -200,7 +198,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()

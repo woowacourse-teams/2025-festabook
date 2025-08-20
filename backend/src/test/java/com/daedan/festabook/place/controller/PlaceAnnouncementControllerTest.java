@@ -20,6 +20,7 @@ import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -34,9 +35,6 @@ import org.springframework.http.HttpStatus;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceAnnouncementControllerTest {
-
-    private static final String AUTHENTICATION_HEADER = "Authorization";
-    private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
@@ -67,7 +65,7 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -84,7 +82,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .post("/places/{placeId}/announcements", place.getId())
@@ -107,7 +105,7 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -122,7 +120,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .patch("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
@@ -144,7 +142,7 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -155,7 +153,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .when()
                     .delete("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
                     .then()
@@ -170,14 +168,14 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Long notExistsPlaceAnnouncementId = 0L;
 
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .delete("/places/announcements/{placeAnnouncementId}", notExistsPlaceAnnouncementId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());

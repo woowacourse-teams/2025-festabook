@@ -8,6 +8,7 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
 import io.restassured.RestAssured;
+import io.restassured.http.Header;
 import java.io.IOException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -23,9 +24,6 @@ import org.springframework.mock.web.MockMultipartFile;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ImageStoreControllerTest {
-
-    private static final String AUTHENTICATION_HEADER = "Authorization";
-    private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
@@ -50,7 +48,7 @@ class ImageStoreControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            String token = jwtTestHelper.createCouncilAndLogin(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             MockMultipartFile file = new MockMultipartFile(
                     "image",
@@ -64,7 +62,7 @@ class ImageStoreControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
+                    .header(authorizationHeader)
                     .multiPart(
                             "image",
                             file.getOriginalFilename(),
