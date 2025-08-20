@@ -20,6 +20,7 @@ import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import java.time.Clock;
@@ -46,6 +47,8 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventControllerTest {
 
+    private static final String AUTHENTICATION_HEADER = "Authorization";
+    private static final String AUTHENTICATION_SCHEME = "Bearer ";
     private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
@@ -56,6 +59,9 @@ class EventControllerTest {
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
+
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
 
     @MockitoBean
     private Clock clock;
@@ -79,6 +85,8 @@ class EventControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
@@ -89,6 +97,7 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .contentType(ContentType.JSON)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
@@ -117,6 +126,8 @@ class EventControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
@@ -138,6 +149,7 @@ class EventControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
@@ -163,6 +175,8 @@ class EventControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
@@ -172,6 +186,7 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/events/{eventId}", event.getId())
@@ -186,11 +201,14 @@ class EventControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             Long invalidEventId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/events/{eventId}", invalidEventId)

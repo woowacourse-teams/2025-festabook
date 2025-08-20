@@ -22,7 +22,10 @@ public class TestSecurityConfig {
                 .securityMatcher("/test/**")
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/test/addCorsMappings/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/test/addArgumentResolvers/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/test/addArgumentResolvers").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/test/resolveArgument").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/test/business-exception-test").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/test/runtime-exception-test").permitAll()
                 );
 
         return http.build();
