@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -34,6 +35,9 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceAnnouncementControllerTest {
 
+    private static final String AUTHENTICATION_HEADER = "Authorization";
+    private static final String AUTHENTICATION_SCHEME = "Bearer ";
+
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
@@ -42,6 +46,9 @@ class PlaceAnnouncementControllerTest {
 
     @Autowired
     private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
+
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
 
     @LocalServerPort
     private int port;
@@ -60,6 +67,8 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -75,6 +84,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .post("/places/{placeId}/announcements", place.getId())
@@ -97,6 +107,8 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -110,6 +122,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .patch("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
@@ -131,6 +144,8 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -140,6 +155,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .when()
                     .delete("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
                     .then()
@@ -151,11 +167,17 @@ class PlaceAnnouncementControllerTest {
         @Test
         void 성공_존재하지_않는_플레이스_공지() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             Long notExistsPlaceAnnouncementId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .delete("/places/announcements/{placeAnnouncementId}", notExistsPlaceAnnouncementId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());

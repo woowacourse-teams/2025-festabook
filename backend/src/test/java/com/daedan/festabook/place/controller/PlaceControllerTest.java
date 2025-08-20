@@ -135,6 +135,8 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            String token = jwtTestHelper.createCouncilAndLogin(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -153,6 +155,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(AUTHENTICATION_HEADER, AUTHENTICATION_SCHEME + token)
                     .contentType(ContentType.JSON)
                     .body(placeUpdateRequest)
                     .patch("/places/{placeId}", place.getId())
