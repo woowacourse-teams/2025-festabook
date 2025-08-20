@@ -3,6 +3,7 @@ package com.daedan.festabook.storage.infrastructure;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
+import com.daedan.festabook.storage.dto.StorageUploadRequestFixture;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -29,7 +30,7 @@ class MockStorageManagerTest {
                     "image/png",
                     new byte[10]
             );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, storagePath);
+            StorageUploadRequest request = StorageUploadRequestFixture.create(mockFile, storagePath);
 
             // when
             StorageUploadResponse response = mockStorageManager.uploadFile(request);
