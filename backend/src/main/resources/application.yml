@@ -3,6 +3,7 @@ server:
   servlet:
     context-path: /api
   shutdown: graceful
+  forward-headers-strategy: native
   tomcat:
     mbeanregistry:
       enabled: true
@@ -20,6 +21,16 @@ spring:
   lifecycle:
     # WAS 종료 대기 시간 15초로 설정
     timeout-per-shutdown-phase: 15s
+  servlet:
+    # multipart 요청 최대 크기 설정
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 11MB
+
+storage:
+  image:
+    max-size: 10485760 # 10 * 1024 * 1024, 10MB
+    path-prefix: images
 
 # Swagger
 springdoc:

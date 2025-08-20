@@ -23,10 +23,14 @@ import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlaceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.PlaceUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -69,10 +73,12 @@ class PlaceServiceTest {
             Long festivalId = 1L;
             Long expectedPlaceId = 1L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
-            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory);
+            String expectedPlaceTitle = "남문 주차장";
+            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
 
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, festival, expectedPlaceCategory);
+            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, festival, expectedPlaceCategory,
+                    expectedPlaceTitle);
 
             given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));
@@ -86,11 +92,11 @@ class PlaceServiceTest {
             assertSoftly(s -> {
                 s.assertThat(result.placeId()).isEqualTo(expectedPlaceId);
                 s.assertThat(result.category()).isEqualTo(expectedPlaceCategory);
+                s.assertThat(result.title()).isEqualTo(expectedPlaceTitle);
 
                 s.assertThat(result.placeImages().responses()).isEmpty();
                 s.assertThat(result.placeAnnouncements().responses()).isEmpty();
 
-                s.assertThat(result.title()).isNull();
                 s.assertThat(result.startTime()).isNull();
                 s.assertThat(result.endTime()).isNull();
                 s.assertThat(result.location()).isNull();
@@ -116,6 +122,44 @@ class PlaceServiceTest {
 
             then(placeJpaRepository).should(never())
                     .save(any());
+        }
+    }
+
+    @Nested
+    class updatePlace {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeId = 1L;
+            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create(
+                    PlaceCategory.BAR,
+                    "수정된 플레이스 이름",
+                    "수정된 플레이스 설명",
+                    "수정된 위치",
+                    "수정된 호스트",
+                    LocalTime.of(12, 00),
+                    LocalTime.of(13, 00)
+            );
+
+            Place place = PlaceFixture.create(placeId);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+
+            // when
+            PlaceUpdateResponse result = placeService.updatePlace(placeId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.placeCategory()).isEqualTo(request.placeCategory());
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.description()).isEqualTo(request.description());
+                s.assertThat(result.location()).isEqualTo(request.location());
+                s.assertThat(result.host()).isEqualTo(request.host());
+                s.assertThat(result.startTime()).isEqualTo(request.startTime());
+                s.assertThat(result.endTime()).isEqualTo(request.endTime());
+            });
         }
     }
 

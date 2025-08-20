@@ -15,6 +15,19 @@ public class PlaceImageFixture {
     }
 
     public static PlaceImage create(
+            Long id,
+            Place place,
+            int sequence
+    ) {
+        return new PlaceImage(
+                id,
+                place,
+                DEFAULT_IMAGE_URL,
+                sequence
+        );
+    }
+
+    public static PlaceImage create(
             Place place
     ) {
         return new PlaceImage(
@@ -30,6 +43,18 @@ public class PlaceImageFixture {
     ) {
         return new PlaceImage(
                 place,
+                DEFAULT_IMAGE_URL,
+                sequence
+        );
+    }
+
+    public static PlaceImage create(
+            Long placeImageId,
+            Integer sequence
+    ) {
+        return new PlaceImage(
+                placeImageId,
+                DEFAULT_PLACE,
                 DEFAULT_IMAGE_URL,
                 sequence
         );

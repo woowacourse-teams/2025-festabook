@@ -3,6 +3,7 @@ package com.daedan.festabook.place.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.CoordinateFixture;
@@ -63,16 +64,6 @@ class PlaceTest {
     @Nested
     class validateTitle {
 
-        @Test
-        void 성공_플레이스_이름_null() {
-            // given
-            String title = null;
-
-            // when & then
-            assertThatCode(() -> PlaceFixture.createWithTitle(title))
-                    .doesNotThrowAnyException();
-        }
-
         @ParameterizedTest
         @ValueSource(ints = {1, 5, 10, MAX_TITLE_LENGTH})
         void 성공_플레이스_이름_길이_경계값(int length) {
@@ -85,6 +76,17 @@ class PlaceTest {
         }
 
         @Test
+        void 예외_플레이스_이름_null() {
+            // given
+            String title = null;
+
+            // when & then
+            assertThatThrownBy(() -> PlaceFixture.createWithTitle(title))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 이름은 공백이거나 null일 수 없습니다.");
+        }
+
+        @Test
         void 예외_플레이스_이름_공백() {
             // given
             String title = " ";
@@ -92,7 +94,7 @@ class PlaceTest {
             // when & then
             assertThatThrownBy(() -> PlaceFixture.createWithTitle(title))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("플레이스의 이름은 공백일 수 없습니다.");
+                    .hasMessage("플레이스의 이름은 공백이거나 null일 수 없습니다.");
         }
 
         @Test
@@ -298,6 +300,196 @@ class PlaceTest {
 
             // then
             assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class updatePlace {
+
+        @Test
+        void 성공() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            // when
+            place.updatePlace(
+                    placeCategory,
+                    title,
+                    description,
+                    location,
+                    host,
+                    startTime,
+                    endTime
+            );
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(place.getCategory()).isEqualTo(placeCategory);
+                s.assertThat(place.getTitle()).isEqualTo(title);
+                s.assertThat(place.getDescription()).isEqualTo(description);
+                s.assertThat(place.getLocation()).isEqualTo(location);
+                s.assertThat(place.getHost()).isEqualTo(host);
+                s.assertThat(place.getStartTime()).isEqualTo(startTime);
+                s.assertThat(place.getEndTime()).isEqualTo(endTime);
+            });
+        }
+
+        @Test
+        void 예외_제목() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            String invalidTitle = "m".repeat(MAX_TITLE_LENGTH + 1);
+
+            Place place = PlaceFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.updatePlace(
+                        placeCategory,
+                        invalidTitle,
+                        description,
+                        location,
+                        host,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 이름의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH);
+        }
+
+        @Test
+        void 예외_설명() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            String invalidDescription = "m".repeat(MAX_DESCRIPTION_LENGTH + 1);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.updatePlace(
+                        placeCategory,
+                        title,
+                        invalidDescription,
+                        location,
+                        host,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 설명의 길이는 %d자를 초과할 수 없습니다.", MAX_DESCRIPTION_LENGTH);
+        }
+
+        @Test
+        void 예외_위치() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            String invalidLocation = "m".repeat(MAX_LOCATION_LENGTH + 1);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.updatePlace(
+                        placeCategory,
+                        title,
+                        description,
+                        invalidLocation,
+                        host,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 위치의 길이는 %d자를 초과할 수 없습니다.", MAX_LOCATION_LENGTH);
+        }
+
+        @Test
+        void 예외_호스트() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            LocalTime startTime = LocalTime.of(9, 10);
+            LocalTime endTime = LocalTime.of(23, 14);
+
+            Place place = PlaceFixture.create();
+
+            String invalidHost = "m".repeat(MAX_HOST_LENGTH + 1);
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.updatePlace(
+                        placeCategory,
+                        title,
+                        description,
+                        location,
+                        invalidHost,
+                        startTime,
+                        endTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스 호스트의 길이는 %d자를 초과할 수 없습니다.", MAX_HOST_LENGTH);
+        }
+
+        @Test
+        void 예외_시간() {
+            // given
+            PlaceCategory placeCategory = PlaceCategory.FOOD_TRUCK;
+            String title = "수정된 이름";
+            String description = "수정된 설명";
+            String location = "수정된 위치";
+            String host = "수정된 호스트";
+            LocalTime startTime = LocalTime.of(9, 10);
+
+            Place place = PlaceFixture.create();
+
+            LocalTime invalidTime = null;
+
+            // when & then
+            assertThatThrownBy(() -> {
+                place.updatePlace(
+                        placeCategory,
+                        title,
+                        description,
+                        location,
+                        host,
+                        startTime,
+                        invalidTime
+                );
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("플레이스의 시작 날짜, 종료 날짜는 모두 비어 있거나 모두 입력되어야 합니다.");
         }
     }
 }

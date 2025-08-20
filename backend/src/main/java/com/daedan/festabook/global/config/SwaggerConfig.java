@@ -26,11 +26,12 @@ public class SwaggerConfig {
             new String[]{"일정 API", "/event-dates/**"},
             new String[]{"플레이스 API", "/places/**"},
             new String[]{"공지 API", "/announcements/**"},
-            new String[]{"질문 API", "/questions/**"},
+            new String[]{"FAQ API", "/questions/**"},
             new String[]{"분실물 API", "/lost-items/**"},
             new String[]{"축제 API", "/festivals/**"},
             new String[]{"디바이스 API", "/devices/**"},
-            new String[]{"학생회 API", "/councils/**"}
+            new String[]{"학생회 API", "/councils/**"},
+            new String[]{"이미지 저장 API", "/images/**"}
     );
 
     private final BuildProperties buildProperties;

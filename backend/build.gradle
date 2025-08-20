@@ -46,9 +46,15 @@ dependencies {
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
 
+    // Logging
+    implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
+
     // Dev Tools
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
+
+    // Utilities
+    implementation 'commons-io:commons-io:2.20.0'
 
     // Monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'

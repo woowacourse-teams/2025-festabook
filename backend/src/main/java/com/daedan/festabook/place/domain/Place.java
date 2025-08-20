@@ -50,7 +50,7 @@ public class Place {
     @Enumerated(EnumType.STRING)
     private PlaceCategory category;
 
-    @Column(length = 20)
+    @Column(length = 20, nullable = false)
     private String title;
 
     @Column(length = 100)
@@ -102,14 +102,14 @@ public class Place {
     public Place(
             Festival festival,
             PlaceCategory category,
-            Coordinate coordinate
+            String title
     ) {
         this(
                 null,
                 festival,
                 category,
-                coordinate,
                 null,
+                title,
                 null,
                 null,
                 null,
@@ -126,13 +126,33 @@ public class Place {
         this.coordinate = coordinate;
     }
 
-    private void validateTitle(String title) {
-        if (title == null) {
-            return;
-        }
+    public void updatePlace(
+            PlaceCategory category,
+            String title,
+            String description,
+            String location,
+            String host,
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        validateTitle(title);
+        validateDescription(description);
+        validateLocation(location);
+        validateHost(host);
+        validateTime(startTime, endTime);
 
+        this.category = category;
+        this.title = title;
+        this.description = description;
+        this.location = location;
+        this.host = host;
+        this.startTime = startTime;
+        this.endTime = endTime;
+    }
+
+    private void validateTitle(String title) {
         if (!StringUtils.hasText(title)) {
-            throw new BusinessException("플레이스의 이름은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("플레이스의 이름은 공백이거나 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if (title.length() > MAX_TITLE_LENGTH) {

@@ -1,12 +1,19 @@
 package com.daedan.festabook.global.logging;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.ApiCallMessage;
+import com.daedan.festabook.global.logging.dto.ApiEndMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
@@ -15,51 +22,72 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class LoggingFilter extends OncePerRequestFilter {
+
+    private static final List<String> LOGGING_SKIP_PATH_PREFIX = List.of(
+            "/api/swagger-ui",
+            "/api/v3/api-docs",
+            "/api/api-docs",
+            "/api/actuator"
+    );
+
+    private final ObjectMapper objectMapper;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+
         long startTime = System.currentTimeMillis();
+        String uri = request.getRequestURI();
+        String httpMethod = request.getMethod();
+        String queryString = request.getQueryString();
 
-        MDC.put("traceId", UUID.randomUUID().toString());
+        if (isSkipLoggingForPath(uri)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
-            String httpMethod = request.getMethod();
-            String uri = request.getRequestURI();
-            String queryString = request.getQueryString();
+            MDC.put("traceId", UUID.randomUUID().toString());
 
-            log.info("[API CALL] method={}, uri={}, query={}",
-                    httpMethod,
-                    uri,
-                    queryString
-            );
+            ApiCallMessage apiCallMessage = ApiCallMessage.from(httpMethod, queryString, uri);
+            log.info("", kv("event", apiCallMessage));
 
             filterChain.doFilter(request, response);
         } finally {
             long endTime = System.currentTimeMillis();
             long executionTime = endTime - startTime;
             int statusCode = response.getStatus();
-            String requestBody = extractBodyFromCache(request);
+            Object requestBody = extractBodyFromCache(request);
 
-            log.info("[API END] status={}, duration={}ms, requestBody={}",
-                    statusCode,
-                    executionTime,
-                    requestBody
-            );
+            ApiEndMessage apiEndMessage = ApiEndMessage.from(statusCode, requestBody, executionTime);
+            log.info("", kv("event", apiEndMessage));
 
             MDC.clear();
         }
     }
 
-    private String extractBodyFromCache(HttpServletRequest request) {
-        String requestBody = "";
+    private boolean isSkipLoggingForPath(String uri) {
+        return LOGGING_SKIP_PATH_PREFIX.stream()
+                .anyMatch(skipPath -> uri.startsWith(skipPath));
+    }
+
+    private Object extractBodyFromCache(HttpServletRequest request) {
         if (request instanceof ContentCachingRequestWrapper) {
             ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
             byte[] content = requestWrapper.getContentAsByteArray();
+
             if (content.length > 0) {
-                requestBody = new String(content, StandardCharsets.UTF_8);
+                String requestBody = new String(content, StandardCharsets.UTF_8);
+                try {
+                    return objectMapper.readTree(requestBody);
+                } catch (IOException e) {
+                    return requestBody;
+                }
             }
         }
-        return requestBody;
+
+        return null;
     }
 }
