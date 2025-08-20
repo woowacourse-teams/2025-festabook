@@ -108,7 +108,7 @@ class CouncilServiceTest {
             given(councilJpaRepository.existsByUsername(username))
                     .willReturn(true);
 
-            CouncilRequest request = CouncilRequestFixture.create(festivalId, username, password); // 확실하지 않습니다
+            CouncilRequest request = CouncilRequestFixture.create(festivalId, username, password);
 
             // when & then
             assertThatThrownBy(() -> councilService.createCouncil(request))
@@ -128,7 +128,7 @@ class CouncilServiceTest {
             given(festivalJpaRepository.findById(invalidFestivalId))
                     .willReturn(Optional.empty());
 
-            CouncilRequest request = CouncilRequestFixture.create(invalidFestivalId, username, password); // 확실하지 않습니다
+            CouncilRequest request = CouncilRequestFixture.create(invalidFestivalId, username, password);
 
             // when & then
             assertThatThrownBy(() -> councilService.createCouncil(request))
@@ -156,7 +156,7 @@ class CouncilServiceTest {
             given(passwordEncoder.matches(rawPassword, encodedPassword)).willReturn(true);
             given(jwtProvider.createToken(username, festivalId)).willReturn(expectedToken);
 
-            CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, rawPassword); // 확실하지 않습니다
+            CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, rawPassword);
 
             // when
             CouncilLoginResponse response = councilService.loginCouncil(request);
@@ -176,7 +176,7 @@ class CouncilServiceTest {
             given(councilJpaRepository.findByUsername(username))
                     .willReturn(Optional.empty());
 
-            CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, password); // 확실하지 않습니다
+            CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, password);
 
             // when & then
             assertThatThrownBy(() -> councilService.loginCouncil(request))
@@ -200,7 +200,7 @@ class CouncilServiceTest {
             given(passwordEncoder.matches(rawPassword, encodedPassword))
                     .willReturn(false);
 
-            CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, rawPassword); // 확실하지 않습니다
+            CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, rawPassword);
 
             // when & then
             assertThatThrownBy(() -> councilService.loginCouncil(request))
