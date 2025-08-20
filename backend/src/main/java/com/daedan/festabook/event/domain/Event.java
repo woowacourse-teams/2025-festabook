@@ -40,22 +40,6 @@ public class Event extends BaseEntity implements Comparable<Event> {
     @Column(nullable = false)
     private String location;
 
-    protected Event(
-            Long id,
-            EventDate eventDate,
-            LocalTime startTime,
-            LocalTime endTime,
-            String title,
-            String location
-    ) {
-        this.id = id;
-        this.eventDate = eventDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.title = title;
-        this.location = location;
-    }
-
     public Event(
             EventDate eventDate,
             LocalTime startTime,
@@ -63,14 +47,11 @@ public class Event extends BaseEntity implements Comparable<Event> {
             String title,
             String location
     ) {
-        this(
-                null,
-                eventDate,
-                startTime,
-                endTime,
-                title,
-                location
-        );
+        this.eventDate = eventDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.title = title;
+        this.location = location;
     }
 
     public EventStatus determineStatus(Clock clock) {

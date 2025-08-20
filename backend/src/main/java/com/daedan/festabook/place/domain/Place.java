@@ -70,8 +70,7 @@ public class Place extends BaseEntity {
     @Embedded
     private Coordinate coordinate;
 
-    protected Place(
-            Long id,
+    public Place(
             Festival festival,
             PlaceCategory category,
             Coordinate coordinate,
@@ -88,7 +87,6 @@ public class Place extends BaseEntity {
         validateHost(host);
         validateTime(startTime, endTime);
 
-        this.id = id;
         this.festival = festival;
         this.category = category;
         this.coordinate = coordinate;
@@ -106,7 +104,6 @@ public class Place extends BaseEntity {
             String title
     ) {
         this(
-                null,
                 festival,
                 category,
                 null,

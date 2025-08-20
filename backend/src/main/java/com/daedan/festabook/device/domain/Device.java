@@ -27,28 +27,15 @@ public class Device extends BaseEntity {
     @Column(nullable = false)
     private String fcmToken;
 
-    protected Device(
-            Long id,
+    public Device(
             String deviceIdentifier,
             String fcmToken
     ) {
         validateDeviceIdentifier(deviceIdentifier);
         validateFcmToken(fcmToken);
-
-        this.id = id;
+        
         this.deviceIdentifier = deviceIdentifier;
         this.fcmToken = fcmToken;
-    }
-
-    public Device(
-            String deviceIdentifier,
-            String fcmToken
-    ) {
-        this(
-                null,
-                deviceIdentifier,
-                fcmToken
-        );
     }
 
     private void validateDeviceIdentifier(String deviceIdentifier) {

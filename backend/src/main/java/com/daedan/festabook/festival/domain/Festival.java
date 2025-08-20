@@ -59,8 +59,7 @@ public class Festival extends BaseEntity {
     )
     private List<Coordinate> polygonHoleBoundary = new ArrayList<>();
 
-    protected Festival(
-            Long id,
+    public Festival(
             String universityName,
             String festivalName,
             LocalDate startDate,
@@ -74,7 +73,6 @@ public class Festival extends BaseEntity {
         validateCenterCoordinate(centerCoordinate);
         validatePolygonHoleBoundary(polygonHoleBoundary);
 
-        this.id = id;
         this.universityName = universityName;
         this.festivalName = festivalName;
         this.startDate = startDate;
@@ -82,27 +80,6 @@ public class Festival extends BaseEntity {
         this.zoom = zoom;
         this.centerCoordinate = centerCoordinate;
         this.polygonHoleBoundary = polygonHoleBoundary;
-    }
-
-    public Festival(
-            String universityName,
-            String festivalName,
-            LocalDate startDate,
-            LocalDate endDate,
-            Integer zoom,
-            Coordinate centerCoordinate,
-            List<Coordinate> polygonHoleBoundary
-    ) {
-        this(
-                null,
-                universityName,
-                festivalName,
-                startDate,
-                endDate,
-                zoom,
-                centerCoordinate,
-                polygonHoleBoundary
-        );
     }
 
     public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate) {

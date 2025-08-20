@@ -37,7 +37,6 @@ public class FestivalImageFixture {
             Integer sequence
     ) {
         FestivalImage festivalImage = new FestivalImage(
-                null,
                 festival,
                 DEFAULT_IMAGE_URL,
                 sequence

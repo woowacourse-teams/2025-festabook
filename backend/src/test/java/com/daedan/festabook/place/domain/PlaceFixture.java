@@ -22,7 +22,6 @@ public class PlaceFixture {
 
     public static Place create() {
         return new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -39,7 +38,6 @@ public class PlaceFixture {
             Long placeId
     ) {
         Place place = new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -58,7 +56,6 @@ public class PlaceFixture {
             Festival festival
     ) {
         return new Place(
-                null,
                 festival,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -75,7 +72,6 @@ public class PlaceFixture {
             PlaceCategory placeCategory
     ) {
         Place place = new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 placeCategory,
                 DEFAULT_COORDINATE,
@@ -95,7 +91,6 @@ public class PlaceFixture {
             PlaceCategory category
     ) {
         return new Place(
-                null,
                 festival,
                 category,
                 DEFAULT_COORDINATE,
@@ -115,7 +110,6 @@ public class PlaceFixture {
             Double longitude
     ) {
         return new Place(
-                null,
                 festival,
                 category,
                 CoordinateFixture.create(latitude, longitude),
@@ -134,7 +128,6 @@ public class PlaceFixture {
             Coordinate coordinate
     ) {
         return new Place(
-                null,
                 festival,
                 category,
                 coordinate,
@@ -153,8 +146,7 @@ public class PlaceFixture {
             Double latitude,
             Double longitude
     ) {
-        return new Place(
-                placeId,
+        Place place = new Place(
                 festival,
                 DEFAULT_CATEGORY,
                 CoordinateFixture.create(latitude, longitude),
@@ -165,6 +157,8 @@ public class PlaceFixture {
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME
         );
+        BaseEntityTestHelper.setId(place, placeId);
+        return place;
     }
 
     public static Place create(
@@ -175,8 +169,7 @@ public class PlaceFixture {
             LocalTime startTime,
             LocalTime endTime
     ) {
-        return new Place(
-                1L,
+        Place place = new Place(
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -187,6 +180,8 @@ public class PlaceFixture {
                 startTime,
                 endTime
         );
+        BaseEntityTestHelper.setId(place, 1L);
+        return place;
     }
 
     public static Place create(
@@ -200,8 +195,7 @@ public class PlaceFixture {
             LocalTime startTime,
             LocalTime endTime
     ) {
-        return new Place(
-                1L,
+        Place place = new Place(
                 festival,
                 placeCategory,
                 coordinate,
@@ -212,13 +206,14 @@ public class PlaceFixture {
                 startTime,
                 endTime
         );
+        BaseEntityTestHelper.setId(place, 1L);
+        return place;
     }
 
     public static Place createWithTitle(
             String title
     ) {
         Place place = new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -235,7 +230,6 @@ public class PlaceFixture {
 
     public static Place createWithDescription(String description) {
         Place place = new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -252,7 +246,6 @@ public class PlaceFixture {
 
     public static Place createWithLocation(String location) {
         Place place = new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -269,7 +262,6 @@ public class PlaceFixture {
 
     public static Place createWithHost(String host) {
         Place place = new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -286,7 +278,6 @@ public class PlaceFixture {
 
     public static Place createWithTime(LocalTime startTime, LocalTime endTime) {
         Place place = new Place(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -308,7 +299,6 @@ public class PlaceFixture {
             String title
     ) {
         Place place = new Place(
-                null,
                 festival,
                 placeCategory,
                 null,

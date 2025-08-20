@@ -90,7 +90,6 @@ public class FestivalFixture {
             Long festivalId
     ) {
         Festival festival = new Festival(
-                null,
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,

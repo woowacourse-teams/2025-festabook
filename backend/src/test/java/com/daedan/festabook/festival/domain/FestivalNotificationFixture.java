@@ -13,7 +13,6 @@ public class FestivalNotificationFixture {
             Long festivalNotificationId
     ) {
         FestivalNotification festivalNotification = new FestivalNotification(
-                null,
                 DEFAULT_FESTIVAL,
                 DEFAULT_DEVICE
         );
@@ -26,7 +25,6 @@ public class FestivalNotificationFixture {
             Festival festival
     ) {
         FestivalNotification festivalNotification = new FestivalNotification(
-                null,
                 festival,
                 DEFAULT_DEVICE
         );
@@ -40,7 +38,6 @@ public class FestivalNotificationFixture {
             Device device
     ) {
         FestivalNotification festivalNotification = new FestivalNotification(
-                null,
                 festival,
                 device
         );

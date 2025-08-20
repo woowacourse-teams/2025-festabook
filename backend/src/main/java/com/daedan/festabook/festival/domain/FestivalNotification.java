@@ -30,24 +30,11 @@ public class FestivalNotification extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     private Device device;
 
-    protected FestivalNotification(
-            Long id,
-            Festival festival,
-            Device device
-    ) {
-        this.id = id;
-        this.festival = festival;
-        this.device = device;
-    }
-
     public FestivalNotification(
             Festival festival,
             Device device
     ) {
-        this(
-                null,
-                festival,
-                device
-        );
+        this.festival = festival;
+        this.device = device;
     }
 }

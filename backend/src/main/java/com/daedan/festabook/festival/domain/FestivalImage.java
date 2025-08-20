@@ -32,29 +32,14 @@ public class FestivalImage extends BaseEntity implements Comparable<FestivalImag
     @Column(nullable = false)
     private Integer sequence;
 
-    protected FestivalImage(
-            Long id,
-            Festival festival,
-            String imageUrl,
-            Integer sequence
-    ) {
-        this.id = id;
-        this.festival = festival;
-        this.imageUrl = imageUrl;
-        this.sequence = sequence;
-    }
-
     public FestivalImage(
             Festival festival,
             String imageUrl,
             Integer sequence
     ) {
-        this(
-                null,
-                festival,
-                imageUrl,
-                sequence
-        );
+        this.festival = festival;
+        this.imageUrl = imageUrl;
+        this.sequence = sequence;
     }
 
     public void updateSequence(Integer sequence) {

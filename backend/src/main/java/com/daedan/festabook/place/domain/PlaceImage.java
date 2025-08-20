@@ -32,29 +32,14 @@ public class PlaceImage extends BaseEntity implements Comparable<PlaceImage> {
     @Column(nullable = false)
     private Integer sequence;
 
-    protected PlaceImage(
-            Long id,
-            Place place,
-            String imageUrl,
-            Integer sequence
-    ) {
-        this.id = id;
-        this.place = place;
-        this.imageUrl = imageUrl;
-        this.sequence = sequence;
-    }
-
     public PlaceImage(
             Place place,
             String imageUrl,
             Integer sequence
     ) {
-        this(
-                null,
-                place,
-                imageUrl,
-                sequence
-        );
+        this.place = place;
+        this.imageUrl = imageUrl;
+        this.sequence = sequence;
     }
 
     public void updateSequence(int sequence) {

@@ -31,25 +31,12 @@ public class EventDate extends BaseEntity implements Comparable<EventDate> {
     @Column(nullable = false)
     private LocalDate date;
 
-    protected EventDate(
-            Long id,
-            Festival festival,
-            LocalDate date
-    ) {
-        this.id = id;
-        this.festival = festival;
-        this.date = date;
-    }
-
     public EventDate(
             Festival festival,
             LocalDate date
     ) {
-        this(
-                null,
-                festival,
-                date
-        );
+        this.festival = festival;
+        this.date = date;
     }
 
     public void updateDate(LocalDate date) {

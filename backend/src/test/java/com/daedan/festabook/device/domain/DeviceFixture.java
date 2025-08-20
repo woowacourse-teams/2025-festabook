@@ -36,7 +36,6 @@ public class DeviceFixture {
             Long deviceId
     ) {
         Device device = new Device(
-                null,
                 DEFAULT_DEVICE_IDENTIFIER,
                 DEFAULT_FCM_TOKEN
         );

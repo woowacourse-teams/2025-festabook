@@ -23,7 +23,6 @@ public class EventFixture {
             String location
     ) {
         Event event = new Event(
-                null,
                 eventDate,
                 startTime,
                 endTime,
