@@ -7,11 +7,5 @@ interface DeviceLocalDataSource {
 
     fun saveDeviceId(deviceId: Long)
 
-    fun getDeviceId(): Long
-
-    companion object {
-        const val DEFAULT_DEVICE_ID = -1L
-        const val KEY_UUID = "device_uuid"
-        const val KEY_DEVICE_ID = "server_device_id"
-    }
+    fun getDeviceId(): Long?
 }

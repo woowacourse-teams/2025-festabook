@@ -14,7 +14,7 @@ class FestivalNotificationRepositoryImpl(
 ) : FestivalNotificationRepository {
     override suspend fun saveFestivalNotification(): Result<Unit> {
         val deviceId = deviceLocalDataSource.getDeviceId()
-        if (deviceId == DeviceLocalDataSource.DEFAULT_DEVICE_ID) {
+        if (deviceId == null) {
             Timber.e("${::FestivalNotificationRepositoryImpl.name}: DeviceId가 없습니다.")
             return Result.failure(IllegalStateException())
         }

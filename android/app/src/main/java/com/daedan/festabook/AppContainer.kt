@@ -7,6 +7,8 @@ import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
 import com.daedan.festabook.data.datasource.local.DeviceLocalDataSourceImpl
 import com.daedan.festabook.data.datasource.local.FcmDataSource
 import com.daedan.festabook.data.datasource.local.FcmDataSourceImpl
+import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
+import com.daedan.festabook.data.datasource.local.FestivalLocalDataSourceImpl
 import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource
 import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
@@ -75,6 +77,10 @@ class AppContainer(
         FestivalNotificationLocalDataSourceImpl(prefs)
     }
 
+    val festivalLocalDataSource: FestivalLocalDataSource by lazy {
+        FestivalLocalDataSourceImpl(prefs)
+    }
+
     private val scheduleDataSource: ScheduleDataSource by lazy {
         ScheduleDataSourceImpl(scheduleService)
     }
@@ -141,7 +147,10 @@ class AppContainer(
     }
 
     val exploreRepository: ExploreRepository by lazy {
-        ExploreRepositoryImpl()
+        ExploreRepositoryImpl(
+            festivalDataSource,
+            festivalLocalDataSource,
+        )
     }
 
     init {

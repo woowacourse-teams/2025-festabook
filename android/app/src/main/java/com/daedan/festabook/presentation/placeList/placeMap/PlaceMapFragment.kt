@@ -19,6 +19,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
 import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewFragment
+import com.daedan.festabook.presentation.placeList.placeDetailPreview.PlaceDetailPreviewSecondaryFragment
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
@@ -34,7 +35,7 @@ class PlaceMapFragment :
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
-    private lateinit var mapManager: MapManager
+    private var mapManager: MapManager? = null
     private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
 
     private val placeListFragment by lazy {
@@ -49,6 +50,10 @@ class PlaceMapFragment :
         PlaceCategoryFragment().newInstance()
     }
 
+    private val placeDetailPreviewSecondaryFragment by lazy {
+        PlaceDetailPreviewSecondaryFragment().newInstance()
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -57,7 +62,10 @@ class PlaceMapFragment :
         childFragmentManager.commit {
             add(R.id.fcv_place_list_container, placeListFragment, null)
             add(R.id.fcv_map_container, placeDetailPreviewFragment, null)
-            add(R.id.fcv_place_category_container, placeCategoryFragment, null)
+            add(R.id.fcv_map_container, placeCategoryFragment, null)
+            add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment, null)
+            hide(placeDetailPreviewFragment)
+            hide(placeDetailPreviewSecondaryFragment)
         }
         lifecycleScope.launch {
             setUpMapManager()
@@ -67,7 +75,7 @@ class PlaceMapFragment :
 
     override fun onDestroy() {
         super.onDestroy()
-        mapManager.clearMapManager()
+        mapManager?.clearMapManager()
     }
 
     private suspend fun setUpMapManager() {
@@ -82,7 +90,7 @@ class PlaceMapFragment :
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> {
-                    mapManager.setPlaceLocation(placeGeographies.value)
+                    mapManager?.setPlaceLocation(placeGeographies.value)
                 }
 
                 is PlaceListUiState.Error -> {
@@ -97,7 +105,7 @@ class PlaceMapFragment :
 
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
-            if (!::mapManager.isInitialized) {
+            if (mapManager == null) {
                 mapManager =
                     MapManager(
                         naverMap,
@@ -105,34 +113,52 @@ class PlaceMapFragment :
                         MapClickListenerImpl(viewModel),
                         initialMapSetting.value,
                     )
-                mapManager.setupMap()
-                mapManager.setupBackToInitialPosition { isExceededMaxLength ->
+                mapManager?.setupMap()
+                mapManager?.setupBackToInitialPosition { isExceededMaxLength ->
                     viewModel.setIsExceededMaxLength(isExceededMaxLength)
                 }
             }
         }
 
         viewModel.backToInitialPositionClicked.observe(viewLifecycleOwner) { event ->
-            mapManager.moveToPosition()
+            mapManager?.moveToPosition()
         }
 
         viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
             if (selectedCategories.isEmpty()) {
-                mapManager.clearFilter()
+                mapManager?.clearFilter()
             } else {
-                mapManager.filterPlace(selectedCategories)
+                mapManager?.filterPlace(selectedCategories)
             }
         }
 
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
-            when (selectedPlace) {
-                is SelectedPlaceUiState.Success -> {
-                    mapManager.selectMarker(selectedPlace.value.place)
+            childFragmentManager.commit {
+                setReorderingAllowed(true)
+
+                when (selectedPlace) {
+                    is SelectedPlaceUiState.Success -> {
+                        mapManager?.selectMarker(selectedPlace.value.place.id)
+                        if (selectedPlace.isSecondary) {
+                            hide(placeListFragment)
+                            hide(placeDetailPreviewFragment)
+                            show(placeDetailPreviewSecondaryFragment)
+                        } else {
+                            hide(placeListFragment)
+                            hide(placeDetailPreviewSecondaryFragment)
+                            show(placeDetailPreviewFragment)
+                        }
+                    }
+
+                    is SelectedPlaceUiState.Empty -> {
+                        mapManager?.unselectMarker()
+                        hide(placeDetailPreviewFragment)
+                        hide(placeDetailPreviewSecondaryFragment)
+                        show(placeListFragment)
+                    }
+
+                    else -> Unit
                 }
-                is SelectedPlaceUiState.Empty -> {
-                    mapManager.unselectMarker()
-                }
-                else -> Unit
             }
         }
     }
@@ -147,6 +173,7 @@ class PlaceMapFragment :
         childFragments.forEach { fragment ->
             (fragment as? OnMenuItemReClickListener)?.onMenuItemReClick()
         }
+        mapManager?.moveToPosition()
     }
 
     companion object {

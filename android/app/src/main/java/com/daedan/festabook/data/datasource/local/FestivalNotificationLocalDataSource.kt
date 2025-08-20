@@ -12,10 +12,4 @@ interface FestivalNotificationLocalDataSource {
     fun saveFestivalNotificationIsAllowed(isAllowed: Boolean)
 
     fun getFestivalNotificationIsAllowed(): Boolean
-
-    companion object {
-        const val KEY_FESTIVAL_NOTIFICATION_ID = "festival_notification_id"
-        const val DEFAULT_FESTIVAL_NOTIFICATION_ID = -1L
-        const val KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED = "key_festival_notification_allowed"
-    }
 }

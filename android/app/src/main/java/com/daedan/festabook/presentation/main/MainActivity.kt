@@ -1,6 +1,8 @@
 package com.daedan.festabook.presentation.main
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -65,8 +67,10 @@ class MainActivity :
         notificationPermissionManager.requestNotificationPermission(this)
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
+        setupObservers()
         onMenuItemClick()
         onMenuItemReClick()
+        onBackPress()
     }
 
     override fun onRequestPermissionsResult(
@@ -87,6 +91,14 @@ class MainActivity :
 
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
+    private fun setupObservers() {
+        viewModel.backPressEvent.observe(this) { event ->
+            event.getContentIfNotHandled()?.let { isDoublePress ->
+                if (isDoublePress) finish() else showToast(getString(R.string.back_press_exit_message))
+            }
+        }
+    }
+
     private fun setupBinding() {
         setContentView(binding.root)
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
@@ -104,7 +116,7 @@ class MainActivity :
         }
     }
 
-    private fun setupObservers() {
+  private fun setupObservers() {
         binding.lifecycleOwner = this
 
         viewModel.selectedItemId.observe(this) { itemId ->
@@ -124,6 +136,17 @@ class MainActivity :
 
             binding.bnvMenu.selectedItemId = itemId
         }
+    }
+  
+    private fun onBackPress() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.onBackPressed()
+                }
+            },
+        )
     }
 
     private fun onMenuItemClick() {

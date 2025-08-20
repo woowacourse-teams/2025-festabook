@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import coil3.load
 import coil3.request.placeholder
@@ -17,6 +18,7 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import kotlin.getValue
+import kotlin.sequences.forEach
 
 class PlaceDetailPreviewFragment :
     BaseFragment<FragmentPlaceDetailPreviewBinding>(
@@ -24,6 +26,12 @@ class PlaceDetailPreviewFragment :
     ),
     OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val backPressedCallback =
+        object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                viewModel.unselectPlace()
+            }
+        }
 
     override fun onViewCreated(
         view: View,
@@ -36,7 +44,11 @@ class PlaceDetailPreviewFragment :
     }
 
     override fun onMenuItemReClick() {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+        viewModel.unselectPlace()
+    }
+
+    private fun setUpBackPressedCallback() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
     }
 
     private fun setupBinding() {
@@ -48,18 +60,9 @@ class PlaceDetailPreviewFragment :
         }
     }
 
-    private fun setUpBackPressedCallback() {
-        val callback =
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    viewModel.unselectPlace()
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
-
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            backPressedCallback.isEnabled = true
             binding.layoutSelectedPlace.visibility =
                 if (selectedPlace == SelectedPlaceUiState.Empty) View.GONE else View.VISIBLE
 
@@ -70,7 +73,7 @@ class PlaceDetailPreviewFragment :
 
                 is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
-                is SelectedPlaceUiState.Empty -> Unit
+                is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false
             }
         }
     }
@@ -78,11 +81,21 @@ class PlaceDetailPreviewFragment :
     private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
         with(binding) {
             layoutSelectedPlace.visibility = View.VISIBLE
-            tvSelectedPlaceTitle.text = selectedPlace.place.title ?: getString(R.string.place_list_default_title)
-            tvSelectedPlaceLocation.text = selectedPlace.place.location ?: getString(R.string.place_list_default_location)
-            setFormatDate(binding.tvSelectedPlaceTime, selectedPlace.startTime, selectedPlace.endTime)
-            tvSelectedPlaceHost.text = selectedPlace.host ?: getString(R.string.place_detail_default_host)
-            tvSelectedPlaceDescription.text = selectedPlace.place.description ?: getString(R.string.place_list_default_description)
+            makeChildVisible()
+
+            tvSelectedPlaceTitle.text =
+                selectedPlace.place.title ?: getString(R.string.place_list_default_title)
+            tvSelectedPlaceLocation.text =
+                selectedPlace.place.location ?: getString(R.string.place_list_default_location)
+            setFormatDate(
+                binding.tvSelectedPlaceTime,
+                selectedPlace.startTime,
+                selectedPlace.endTime,
+            )
+            tvSelectedPlaceHost.text =
+                selectedPlace.host ?: getString(R.string.place_detail_default_host)
+            tvSelectedPlaceDescription.text = selectedPlace.place.description
+                ?: getString(R.string.place_list_default_description)
             cvPlaceCategory.setCategory(selectedPlace.place.category)
             ivSelectedPlaceImage.load(
                 selectedPlace.featuredImage,
@@ -94,5 +107,11 @@ class PlaceDetailPreviewFragment :
 
     private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
         startActivity(PlaceDetailActivity.newIntent(requireContext(), placeDetail))
+    }
+
+    private fun FragmentPlaceDetailPreviewBinding.makeChildVisible() {
+        layoutSelectedPlace.children.forEach {
+            it.visibility = View.VISIBLE
+        }
     }
 }

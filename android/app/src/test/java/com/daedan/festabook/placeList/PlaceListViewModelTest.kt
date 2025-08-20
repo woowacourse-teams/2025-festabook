@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
+import com.daedan.festabook.placeDetail.FAKE_ETC_PLACE_DETAIL
 import com.daedan.festabook.placeDetail.FAKE_PLACE_DETAIL
 import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
@@ -151,18 +152,18 @@ class PlaceListViewModelTest {
         }
 
     @Test
-    fun `카테고리가 기타시설이라면 플레이스 상세가 선택되지 않는다`() =
+    fun `카테고리가 기타시설일 떄에도 플레이스 상세를 선택할 수 있다`() =
         runTest {
             // given
-            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
+            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_ETC_PLACE_DETAIL)
 
             // when
             placeListViewModel.selectPlace(1, PlaceCategoryUiModel.TOILET)
             advanceUntilIdle()
 
             // then
-            val expected = null
-            val actual = placeListViewModel.selectedPlace.value
+            val expected = SelectedPlaceUiState.Success(FAKE_ETC_PLACE_DETAIL.toUiModel())
+            val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
             assertThat(actual).isEqualTo(expected)
         }
 

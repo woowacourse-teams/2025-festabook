@@ -54,7 +54,7 @@ class CategoryView
                     )
                 }
 
-                PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET, PlaceCategoryUiModel.TRASH_CAN -> Unit
+                else -> Unit
             }
         }
 

@@ -58,6 +58,7 @@ class NotificationPermissionManager(
                 Timber.d("Notification permission denied")
                 onPermissionDenied()
                 dialog.dismiss()
-            }.show()
+            }.setCancelable(false)
+            .show()
     }
 }

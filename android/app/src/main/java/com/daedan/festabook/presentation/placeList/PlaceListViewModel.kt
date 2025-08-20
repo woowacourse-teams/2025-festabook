@@ -59,10 +59,6 @@ class PlaceListViewModel(
         placeId: Long,
         category: PlaceCategoryUiModel,
     ) {
-        if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
-            return
-        }
-
         viewModelScope.launch {
             _selectedPlace.value = SelectedPlaceUiState.Loading
             placeDetailRepository

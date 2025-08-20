@@ -9,7 +9,9 @@ sealed interface SelectedPlaceUiState {
 
     data class Success(
         val value: PlaceDetailUiModel,
-    ) : SelectedPlaceUiState
+    ) : SelectedPlaceUiState {
+        val isSecondary = value.place.category in PlaceCategoryUiModel.SECONDARY_CATEGORIES
+    }
 
     data class Error(
         val throwable: Throwable,

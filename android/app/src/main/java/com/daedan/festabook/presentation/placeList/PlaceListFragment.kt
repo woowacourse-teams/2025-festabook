@@ -20,7 +20,6 @@ import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCal
 import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
-import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
@@ -112,10 +111,6 @@ class PlaceListFragment :
         viewModel.isExceededMaxLength.observe(viewLifecycleOwner) { isExceededMaxLength ->
             moveToInitialPositionCallback.setIsExceededMaxLength(isExceededMaxLength)
             binding.chipBackToInitialPosition.visibility = if (isExceededMaxLength) View.VISIBLE else View.GONE
-        }
-
-        viewModel.selectedPlace.observe(viewLifecycleOwner) {
-            binding.root.visibility = if (it != SelectedPlaceUiState.Empty) View.GONE else View.VISIBLE
         }
     }
 

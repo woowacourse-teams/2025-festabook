@@ -31,6 +31,9 @@
 
     <!-- 탐색 화면 -->
     <string name="explore_search_hint_text">어떤 축제로 떠나볼까요?</string>
+    <string name="explore_festabook_logo">explore_festabook_logo</string>
+    <string name="explore_no_search_result_text">검색 결과가 없습니다.</string>
+    <string name="explore_error_text">오류가 발생했습니다: %1$s</string>
 
     <!--일정 화면-->
     <string name="schedule_title">일정 타임라인</string>
@@ -47,6 +50,9 @@
     <string name="map_category_smoking_area">흡연구역</string>
     <string name="map_category_toilet">화장실</string>
     <string name="map_category_trash">쓰레기통</string>
+    <string name="map_category_stage">공연장</string>
+    <string name="map_category_primary">주요시설</string>
+    <string name="map_category_parking">주차장</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
 
@@ -94,10 +100,6 @@
     <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
     <string name="error_fail_to_load_place_info">정보를 불러오는데 실패했습니다</string>
     <string name="faq_expand">답변 펼치기</string>
-    <string name="explore_festabook_logo">explore_festabook_logo</string>
-    <string name="explore_no_search_result_text">검색 결과가 없습니다.</string>
-    <string name="explore_error_text">오류가 발생했습니다: %1$s</string>
-
 
     <!--다이어로그-->
     <string name="notification_permission_title">알림 권한 필요</string>
@@ -107,6 +109,9 @@
     <string name="item_lineup_image">item_lineup_image</string>
     <string name="home_check_schedule_text">일정 확인하기</string>
     <string name="home_lineup_title">축제 라인업</string>
+
+    <!--토스트 메시지-->
+    <string name="back_press_exit_message">뒤로가기를 한 번 더 누르면 종료됩니다.</string>
 
 
 </resources>
