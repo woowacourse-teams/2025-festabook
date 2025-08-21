@@ -1,4 +1,4 @@
-name: Frontend CI/CD PROD
+name: Frontend CI/CD Prod
 
 on:
   pull_request:
@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: [self-hosted, prod-runner]
+    runs-on: [self-hosted, dev-runner]
 
     steps:
       # 프로젝트 체크아웃
