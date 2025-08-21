@@ -56,6 +56,7 @@ class ImageStoreServiceTest {
                     "image/png",
                     new byte[100]
             );
+            String expectedImageUrlPrefix = "/images/";
             String expectedStoragePathPrefix = "images/";
 
             // when
@@ -67,6 +68,7 @@ class ImageStoreServiceTest {
             StorageUploadRequest captureRequest = requestCaptor.getValue();
             assertSoftly(s -> {
                 s.assertThat(response.imageUrl()).isNotBlank();
+                s.assertThat(response.imageUrl()).startsWith(expectedImageUrlPrefix);
                 s.assertThat(captureRequest.storagePath()).startsWith(expectedStoragePathPrefix);
             });
         }

@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!prod")
+@Profile("!prod & !dev")
 public class MockStorageManager implements StorageManager {
 
     private static final String MOCK_ACCESS_URL = "https://picsum.photos/200/300";
@@ -15,6 +15,19 @@ public class MockStorageManager implements StorageManager {
     @Override
     public StorageUploadResponse uploadFile(StorageUploadRequest request) {
         StoreFile storeFile = new StoreFile(request.file(), request.storagePath());
-        return new StorageUploadResponse(MOCK_ACCESS_URL, storeFile.getStoragePath());
+
+        StorageUploadResponse response = new StorageUploadResponse(
+                MOCK_ACCESS_URL,
+                ensureLeadingSlash(storeFile.getStoragePath()),
+                storeFile.getStoragePath()
+        );
+        return response;
+    }
+
+    private String ensureLeadingSlash(String storagePath) {
+        if (storagePath.startsWith("/")) {
+            return storagePath;
+        }
+        return String.format("/%s", storagePath);
     }
 }

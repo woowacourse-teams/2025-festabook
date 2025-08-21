@@ -16,6 +16,7 @@ import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
@@ -36,6 +37,7 @@ import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.time.LocalTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -74,6 +76,9 @@ class PlaceControllerTest {
     @Autowired
     private DeviceJpaRepository deviceJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+  
     @MockitoBean
     private ShuffleManager shuffleManager;
 
@@ -94,6 +99,8 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
             String expectedPlaceTitle = "동문 주차장";
             PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
@@ -104,6 +111,7 @@ class PlaceControllerTest {
             RestAssured
                     .given()
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(placeRequest)
                     .post("/places")
@@ -134,6 +142,8 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -152,6 +162,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(placeUpdateRequest)
                     .patch("/places/{placeId}", place.getId())
@@ -505,6 +516,8 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -527,6 +540,7 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/places/{placeId}", place.getId())
@@ -553,11 +567,14 @@ class PlaceControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long invalidPlaceId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/places/{placeId}", invalidPlaceId)

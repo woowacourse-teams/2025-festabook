@@ -8,6 +8,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
@@ -20,6 +21,7 @@ import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -45,6 +47,9 @@ public class PlaceImageControllerTest {
     @Autowired
     private PlaceImageJpaRepository placeImageJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @LocalServerPort
     private int port;
 
@@ -62,6 +67,8 @@ public class PlaceImageControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -74,6 +81,7 @@ public class PlaceImageControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .post("/places/{placeId}/images", place.getId())
@@ -95,6 +103,8 @@ public class PlaceImageControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -114,6 +124,7 @@ public class PlaceImageControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(requests)
                     .when()
@@ -142,6 +153,8 @@ public class PlaceImageControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -151,6 +164,7 @@ public class PlaceImageControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/places/images/{placeImageId}", placeImage.getId())
                     .then()
@@ -162,11 +176,17 @@ public class PlaceImageControllerTest {
         @Test
         void 성공_존재하지_않는_플레이스_삭제() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long invalidPlaceImageId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .delete("/places/images/{placeImageId}", invalidPlaceImageId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());

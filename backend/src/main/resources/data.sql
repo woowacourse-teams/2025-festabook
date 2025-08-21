@@ -7,6 +7,18 @@ VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', '2025-
         '1970-01-01 00:00:00', '1970-01-01 00:00:00', false);
 
 -- ========================
+-- 학생회 (Council)
+-- ========================
+INSERT INTO council (festival_id, username, password)
+VALUES (1, 'council', '$2a$10$eS22cSyLdvjc.lzD6RsEEe3mGie6QfznOt9Yb2cfL2gYmDHv.w5AG');
+
+-- ========================
+-- 학생회 (Council) 권한
+-- ========================
+INSERT INTO council_roles (council_id, roles)
+VALUES (1, 'ROLE_COUNCIL');
+
+-- ========================
 -- 축제 이미지 (FestivalImage)
 -- ========================
 INSERT INTO festival_image (festival_id, image_url, sequence, created_at, updated_at, deleted)
@@ -618,3 +630,12 @@ VALUES (1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOxQ7Mf7RZq74s
         '2025-08-03 19:10:00', '1970-01-01 00:00:00', false),
        (1, 'https://www.techm.kr/news/photo/202404/123772_159101_1219.jpg', '카페테리아 입구', 'PENDING',
         '2025-08-04 12:20:00', '1970-01-01 00:00:00', false);
+
+-- ========================
+-- 라인업 (Lineup)
+-- ========================
+INSERT INTO lineup (festival_id, name, image_url, performance_at)
+VALUES (1, '워니', 'https://kr.object.ncloudstorage.com/matilda/1.png', '2025-01-19 20:00:00'),
+       (1, '레아', 'https://kr.object.ncloudstorage.com/matilda/2.png', '2025-01-20 20:00:00'),
+       (1, '구구', 'https://kr.object.ncloudstorage.com/matilda/3.png', '2025-01-21 20:00:00'),
+       (1, '제임스', 'https://kr.object.ncloudstorage.com/matilda/4.png', '2025-01-22 20:00:00');

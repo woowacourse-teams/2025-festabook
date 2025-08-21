@@ -43,3 +43,7 @@ firebase:
   adminsdk:
     account:
       path: classpath:firebase/firebase-adminsdk-account.json
+
+secret:
+  jwt-key: asidjiogorepgkpoergkorepgkopergkgopkregopqwrokgro
+  jwt-expiration: 9023859840385093458
