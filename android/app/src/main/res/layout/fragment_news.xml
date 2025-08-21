@@ -21,6 +21,8 @@
             android:layout_marginTop="40dp"
             android:layout_marginBottom="8dp"
             android:text="@string/news_title"
+            android:textColor="@color/gray900"
+            app:layout_constraintBottom_toTopOf="@id/tl_news"
             app:layout_constraintTop_toTopOf="parent" />
 
         <com.google.android.material.tabs.TabLayout

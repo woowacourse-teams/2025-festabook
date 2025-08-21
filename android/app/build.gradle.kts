@@ -82,6 +82,12 @@ android {
             "NAVER_MAP_STYLE_ID",
             naverMapStyleId,
         )
+
+        buildConfigField(
+            "String",
+            "VERSION_NAME",
+            "\"${versionName}\"",
+        )
     }
 
     buildTypes {
