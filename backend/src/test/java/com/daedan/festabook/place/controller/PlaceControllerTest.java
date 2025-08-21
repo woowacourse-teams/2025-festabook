@@ -6,6 +6,9 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -14,6 +17,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -46,6 +50,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -73,6 +78,9 @@ class PlaceControllerTest {
 
     @Autowired
     private JwtTestHelper jwtTestHelper;
+  
+    @MockitoBean
+    private ShuffleManager shuffleManager;
 
     @LocalServerPort
     private int port;
@@ -258,6 +266,9 @@ class PlaceControllerTest {
             PlaceImage placeImage = PlaceImageFixture.create(place, representativeSequence);
             placeImageJpaRepository.save(placeImage);
 
+            given(shuffleManager.getShuffledList(anyList()))
+                    .willReturn(List.of(place));
+
             int expectedSize = 1;
             int expectedFieldSize = 6;
 
@@ -277,6 +288,8 @@ class PlaceControllerTest {
                     .body("[0].title", equalTo(place.getTitle()))
                     .body("[0].description", equalTo(place.getDescription()))
                     .body("[0].location", equalTo(place.getLocation()));
+            then(shuffleManager).should()
+                    .getShuffledList(anyList());
         }
 
         @Test
@@ -290,6 +303,9 @@ class PlaceControllerTest {
             Place targetPlace2 = PlaceFixture.create(targetFestival);
             Place anotherPlace = PlaceFixture.create(anotherFestival);
             placeJpaRepository.saveAll(List.of(targetPlace1, targetPlace2, anotherPlace));
+
+            given(shuffleManager.getShuffledList(anyList()))
+                    .willReturn(List.of(targetPlace1, targetPlace2));
 
             int representativeSequence = 1;
             PlaceImage placeImage1 = PlaceImageFixture.create(targetPlace1, representativeSequence);
@@ -308,6 +324,8 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize));
+            then(shuffleManager).should()
+                    .getShuffledList(anyList());
         }
 
         @Test
@@ -327,6 +345,9 @@ class PlaceControllerTest {
             PlaceImage placeImage2 = PlaceImageFixture.create(place2, anotherSequence);
             placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
 
+            given(shuffleManager.getShuffledList(anyList()))
+                    .willReturn(List.of(place1, place2));
+
             // when & then
             RestAssured
                     .given()
@@ -337,6 +358,8 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].imageUrl", equalTo(placeImage1.getImageUrl()))
                     .body("[1].imageUrl", equalTo(null));
+            then(shuffleManager).should()
+                    .getShuffledList(anyList());
         }
     }
 

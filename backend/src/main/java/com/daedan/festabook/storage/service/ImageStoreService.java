@@ -44,7 +44,7 @@ public class ImageStoreService {
         StorageUploadRequest request = new StorageUploadRequest(file, storagePath);
 
         StorageUploadResponse response = storageManager.uploadFile(request);
-        return new ImageUploadResponse(response.accessUrl());
+        return new ImageUploadResponse(response.accessRelativePath());
     }
 
     private void validateFile(MultipartFile file) {
