@@ -50,6 +50,11 @@ export const councilLogin = async ({ username, password }) => {
     throw new Error('토큰 발급에 실패했습니다.');
   }
   setAccessToken(token);
+  // Store festivalId from login response if provided
+  const festivalId = res?.data?.festivalId;
+  if (festivalId !== undefined && festivalId !== null) {
+    localStorage.setItem('festivalId', String(festivalId));
+  }
   return token;
 };
 
