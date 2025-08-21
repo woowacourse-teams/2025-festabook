@@ -1,4 +1,4 @@
-name: Android CI Pull-Request Gradle Test
+name: Android CI
 
 on:
   pull_request:
