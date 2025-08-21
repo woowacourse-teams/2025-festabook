@@ -136,7 +136,7 @@ class PlaceListFragment :
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {
-        viewModel.selectPlace(place.id, place.category)
+        viewModel.selectPlace(place.id)
     }
 
     private fun showSkeleton() {

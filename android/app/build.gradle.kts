@@ -20,11 +20,6 @@ android {
             .inputStream()
             .use { Properties().apply { load(it) } }
 
-    val baseUrl =
-        checkNotNull(localProperties["BASE_URL"] as? String) {
-            "BASE_URL is missing or not a String in local.properties"
-        }
-
     val naverMapClientId =
         checkNotNull(localProperties["NAVER_MAP_CLIENT_ID"] as? String) {
             "NAVER_MAP_CLIENT_ID is missing or not a String in local.properties"
@@ -78,12 +73,6 @@ android {
 
         buildConfigField(
             "String",
-            "FESTABOOK_URL",
-            baseUrl,
-        )
-
-        buildConfigField(
-            "String",
             "NAVER_MAP_CLIENT_ID",
             naverMapClientId,
         )
@@ -100,6 +89,17 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             resValue("string", "app_name", "(Debug)Festabook")
+
+            val baseUrl =
+                checkNotNull(localProperties["BASE_URL_DEV"] as? String) {
+                    "BASE_URL is missing or not a String in local.properties"
+                }
+
+            buildConfigField(
+                "String",
+                "FESTABOOK_URL",
+                baseUrl,
+            )
         }
 
         release {
@@ -111,6 +111,17 @@ android {
             )
             resValue("string", "app_name", "Festabook")
             signingConfig = signingConfigs["release"]
+
+            val baseUrl =
+                checkNotNull(localProperties["BASE_URL"] as? String) {
+                    "BASE_URL is missing or not a String in local.properties"
+                }
+
+            buildConfigField(
+                "String",
+                "FESTABOOK_URL",
+                baseUrl,
+            )
         }
     }
     compileOptions {

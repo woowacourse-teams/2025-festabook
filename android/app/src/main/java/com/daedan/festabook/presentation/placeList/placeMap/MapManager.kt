@@ -217,6 +217,14 @@ class MapManager(
             icon = it
         }
         tag = place
+        captionText = place.title
+        isHideCollidedCaptions = true
+        if (place.category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+            captionMinZoom = SECONDARY_PLACE_ZOOM_LEVEL
+        } else {
+            captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
+        }
+
         setOnClickListener {
             mapClickListener.onMarkerListener(place.placeId, place.category)
         }
@@ -232,9 +240,19 @@ class MapManager(
             overlayImageManager.getSelectedIcon(category)?.let {
                 marker.icon = it
             }
+            marker.isForceShowCaption = true
+            marker.zIndex = Int.MAX_VALUE
+            marker.captionMinZoom = 0.0
         } else {
             overlayImageManager.getNormalIcon(category)?.let {
                 marker.icon = it
+            }
+            marker.isForceShowCaption = false
+            marker.zIndex = 0
+            if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
+                marker.captionMinZoom = SECONDARY_PLACE_ZOOM_LEVEL
+            } else {
+                marker.captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
             }
         }
     }
@@ -258,6 +276,8 @@ class MapManager(
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
         private const val DEFAULT_ZOOM_LEVEL = 15
+        private const val PRIMARY_PLACE_ZOOM_LEVEL = 16.5
+        private const val SECONDARY_PLACE_ZOOM_LEVEL = 17.5
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다
         private val EDGE_COORS =

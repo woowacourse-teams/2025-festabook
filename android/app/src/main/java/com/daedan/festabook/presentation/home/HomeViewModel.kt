@@ -18,8 +18,12 @@ class HomeViewModel(
     private val _festivalUiState = MutableLiveData<FestivalUiState>()
     val festivalUiState: LiveData<FestivalUiState> get() = _festivalUiState
 
+    private val _lineupUiState = MutableLiveData<LineupUiState>()
+    val lineupUiState: LiveData<LineupUiState> get() = _lineupUiState
+
     init {
         loadFestival()
+        loadLineup()
     }
 
     fun loadFestival() {
@@ -32,6 +36,20 @@ class HomeViewModel(
                     _festivalUiState.value = FestivalUiState.Success(festival)
                 }.onFailure {
                     _festivalUiState.value = FestivalUiState.Error(it)
+                }
+        }
+    }
+
+    fun loadLineup() {
+        viewModelScope.launch {
+            _lineupUiState.value = LineupUiState.Loading
+
+            val result = festivalRepository.getLineup()
+            result
+                .onSuccess { lineups ->
+                    _lineupUiState.value = LineupUiState.Success(lineups.map { it.toUiModel() })
+                }.onFailure {
+                    _lineupUiState.value = LineupUiState.Error(it)
                 }
         }
     }
