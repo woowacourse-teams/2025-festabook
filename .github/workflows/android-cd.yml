@@ -3,7 +3,7 @@ name: Android CD
 on:
   push:
     branches:
-      - an/600-feat
+      - prod/android
 jobs:
   build_and_distribute:
     runs-on: ubuntu-latest
@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Repository Checkout
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
@@ -59,8 +61,15 @@ jobs:
       - name: Grant Gradle execute permission
         run: chmod +x ./gradlew
 
+      - name: Set Automatic Version Code
+        run: |
+          VERSION_CODE="$(git rev-list --count --first-parent HEAD)"
+          echo "VERSION_CODE=$VERSION_CODE" >> $GITHUB_ENV
+
       - name: Build Android App Bundle (AAB)
         run: ./gradlew bundleRelease
+        env:
+          VERSION_CODE: ${{ env.VERSION_CODE }}
 
       - name: Deploy to Firebase App Distribution
         env:

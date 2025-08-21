@@ -92,7 +92,12 @@ android {
         applicationId = "com.daedan.festabook"
         minSdk = 28
         targetSdk = 36
-        versionCode = getGitRevisionCount()
+        versionCode =
+            if (System.getenv("GITHUB_ACTIONS") == "true") {
+                System.getenv("VERSION_CODE")?.toIntOrNull()
+            } else {
+                getGitRevisionCount()
+            }
         versionName = semanticVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
