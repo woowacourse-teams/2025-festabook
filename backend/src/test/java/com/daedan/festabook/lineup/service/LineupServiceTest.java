@@ -5,6 +5,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
@@ -16,6 +17,8 @@ import com.daedan.festabook.lineup.dto.LineupRequest;
 import com.daedan.festabook.lineup.dto.LineupRequestFixture;
 import com.daedan.festabook.lineup.dto.LineupResponse;
 import com.daedan.festabook.lineup.dto.LineupResponses;
+import com.daedan.festabook.lineup.dto.LineupUpdateRequest;
+import com.daedan.festabook.lineup.dto.LineupUpdateRequestFixture;
 import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -117,6 +120,64 @@ class LineupServiceTest {
                     .toList();
 
             assertThat(names).containsExactly("타마", "후유", "부기", "이미소");
+        }
+    }
+
+    @Nested
+    class updateLineup {
+
+        @Test
+        void 성공() {
+            // given
+            Long lineupId = 1L;
+            Lineup lineup = LineupFixture.create(lineupId);
+            LineupUpdateRequest request = LineupUpdateRequestFixture.create("후유", "https://example.com/image.png",
+                    LocalDateTime.of(2025, 10, 15, 12, 0, 0));
+
+            given(lineupJpaRepository.findById(lineupId))
+                    .willReturn(Optional.of(lineup));
+
+            // when
+            LineupResponse result = lineupService.updateLineup(lineupId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.lineupId()).isEqualTo(lineupId);
+                s.assertThat(result.name()).isEqualTo(request.name());
+                s.assertThat(result.imageUrl()).isEqualTo(request.imageUrl());
+                s.assertThat(result.performanceAt()).isEqualTo(request.performanceAt());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_라인업() {
+            // given
+            Long invalidLineupId = 0L;
+            LineupUpdateRequest request = LineupUpdateRequestFixture.create();
+
+            given(lineupJpaRepository.findById(invalidLineupId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> lineupService.updateLineup(invalidLineupId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 라인업입니다.");
+        }
+    }
+
+    @Nested
+    class deleteLineupByLineupId {
+
+        @Test
+        void 성공() {
+            // given
+            Long lineupId = 1L;
+
+            // when
+            lineupService.deleteLineupByLineupId(lineupId);
+
+            // then
+            then(lineupJpaRepository).should().deleteById(lineupId);
         }
     }
 }

@@ -66,6 +66,12 @@ public class Lineup implements Comparable<Lineup> {
         );
     }
 
+    public void updateLineup(String name, String imageUrl, LocalDateTime performanceAt) {
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.performanceAt = performanceAt;
+    }
+
     @Override
     public int compareTo(Lineup otherLineup) {
         return performanceAt.compareTo(otherLineup.performanceAt);
