@@ -42,7 +42,9 @@ class SettingFragment :
             }
         }
 
-    override fun onPermissionGranted() = Unit
+    override fun onPermissionGranted() {
+        viewModel.saveNotificationId()
+    }
 
     override fun onPermissionDenied() {
         binding.btnNoticeAllow.isChecked = false

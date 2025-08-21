@@ -40,7 +40,7 @@ class SettingViewModel(
         isAllowed = allowed
     }
 
-    private fun saveNotificationId() {
+    fun saveNotificationId() {
         viewModelScope.launch {
             val result =
                 festivalNotificationRepository.saveFestivalNotification()
@@ -50,7 +50,7 @@ class SettingViewModel(
                     saveNotificationIsAllowed(isAllowed)
                 }.onFailure {
                     _error.value = Event(it)
-                    Timber.e(it, "${::SettingViewModel.name} NotificationId 저장 실패")
+                    Timber.e(it, "${::SettingViewModel.javaClass.simpleName} NotificationId 저장 실패")
                 }
         }
     }
