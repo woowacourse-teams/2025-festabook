@@ -25,16 +25,17 @@
         </root>
     </springProfile>
 
-    <!-- 로컬 및 테스트 환경: 콘솔 JSON 출력 -->
+    <!-- 로컬 및 테스트 환경: 콘솔 JSON 출력 @formatter:off-->
     <springProfile name="!prod">
-        <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %green(%logger{36}) - %msg%n
+                </pattern>
             </encoder>
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="JSON_CONSOLE"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 
