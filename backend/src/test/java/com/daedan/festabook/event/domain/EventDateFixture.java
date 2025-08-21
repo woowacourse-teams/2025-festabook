@@ -2,6 +2,7 @@ package com.daedan.festabook.event.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -15,22 +16,24 @@ public class EventDateFixture {
             Long eventDateId,
             LocalDate date
     ) {
-        return new EventDate(
-                eventDateId,
+        EventDate eventDate = new EventDate(
                 DEFAULT_FESTIVAL,
                 date
         );
+        BaseEntityTestHelper.setId(eventDate, eventDateId);
+        return eventDate;
     }
 
     public static EventDate create(
             Long eventDateId,
             Festival festival
     ) {
-        return new EventDate(
-                eventDateId,
+        EventDate eventDate = new EventDate(
                 festival,
                 DEFAULT_DATE
         );
+        BaseEntityTestHelper.setId(eventDate, eventDateId);
+        return eventDate;
     }
 
     public static EventDate create() {

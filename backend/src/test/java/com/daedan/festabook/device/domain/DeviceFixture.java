@@ -1,5 +1,7 @@
 package com.daedan.festabook.device.domain;
 
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
+
 public class DeviceFixture {
 
     private static final String DEFAULT_DEVICE_IDENTIFIER = "f47ac10b...";
@@ -33,10 +35,11 @@ public class DeviceFixture {
     public static Device create(
             Long deviceId
     ) {
-        return new Device(
-                deviceId,
+        Device device = new Device(
                 DEFAULT_DEVICE_IDENTIFIER,
                 DEFAULT_FCM_TOKEN
         );
+        BaseEntityTestHelper.setId(device, deviceId);
+        return device;
     }
 }

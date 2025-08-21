@@ -1,5 +1,6 @@
 package com.daedan.festabook.festival.domain;
 
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -35,12 +36,13 @@ public class FestivalImageFixture {
             Festival festival,
             Integer sequence
     ) {
-        return new FestivalImage(
-                festivalImageId,
+        FestivalImage festivalImage = new FestivalImage(
                 festival,
                 DEFAULT_IMAGE_URL,
                 sequence
         );
+        BaseEntityTestHelper.setId(festivalImage, festivalImageId);
+        return festivalImage;
     }
 
     public static List<FestivalImage> createList(int size, Festival festival) {

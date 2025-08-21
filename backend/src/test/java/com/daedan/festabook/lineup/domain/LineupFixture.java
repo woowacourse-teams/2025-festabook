@@ -2,6 +2,7 @@ package com.daedan.festabook.lineup.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,13 +18,14 @@ public class LineupFixture {
     public static Lineup create(
             Long lineupId
     ) {
-        return new Lineup(
-                lineupId,
+        Lineup lineup = new Lineup(
                 DEFAULT_FESTIVAL,
                 DEFAULT_LINEUP_NAME,
                 DEFAULT_IMAGE_URL,
                 DEFAULT_PERFORM_AT
         );
+        BaseEntityTestHelper.setId(lineup, lineupId);
+        return lineup;
     }
 
     public static Lineup create(
@@ -69,13 +71,14 @@ public class LineupFixture {
             String imageUrl,
             LocalDateTime dateTime
     ) {
-        return new Lineup(
-                lineupId,
+        Lineup lineup = new Lineup(
                 festival,
                 name,
                 imageUrl,
                 dateTime
         );
+        BaseEntityTestHelper.setId(lineup, lineupId);
+        return lineup;
     }
 
     public static List<Lineup> createList(int size, Festival festival) {

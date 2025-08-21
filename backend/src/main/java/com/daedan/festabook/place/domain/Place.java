@@ -2,6 +2,7 @@ package com.daedan.festabook.place.domain;
 
 import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -19,13 +20,17 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE place SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Place {
+public class Place extends BaseEntity {
 
     private static final Set<PlaceCategory> MAIN_PLACE = Set.of(
             PlaceCategory.BAR,
@@ -69,8 +74,7 @@ public class Place {
     @Embedded
     private Coordinate coordinate;
 
-    protected Place(
-            Long id,
+    public Place(
             Festival festival,
             PlaceCategory category,
             Coordinate coordinate,
@@ -87,7 +91,6 @@ public class Place {
         validateHost(host);
         validateTime(startTime, endTime);
 
-        this.id = id;
         this.festival = festival;
         this.category = category;
         this.coordinate = coordinate;
@@ -105,7 +108,6 @@ public class Place {
             String title
     ) {
         this(
-                null,
                 festival,
                 category,
                 null,

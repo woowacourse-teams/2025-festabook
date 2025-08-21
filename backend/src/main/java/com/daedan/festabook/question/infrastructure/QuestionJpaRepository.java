@@ -13,6 +13,6 @@ public interface QuestionJpaRepository extends JpaRepository<Question, Long> {
 
     Integer countByFestivalId(Long festivalId);
 
-    @Query("SELECT MAX(q.sequence) FROM Question q WHERE q.festival.id = :festivalId")
+    @Query("SELECT MAX(q.sequence) FROM Question q WHERE q.festival.id = :festivalId AND q.deleted = false")
     Optional<Integer> findMaxSequenceByFestivalId(@Param("festivalId") Long festivalId);
 }

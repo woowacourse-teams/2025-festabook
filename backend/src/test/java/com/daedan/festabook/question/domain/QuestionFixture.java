@@ -2,6 +2,7 @@ package com.daedan.festabook.question.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -108,26 +109,26 @@ public class QuestionFixture {
     public static Question create(
             Long questionId
     ) {
-        return new Question(
-                questionId,
+        Question question = new Question(
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
         );
+        return BaseEntityTestHelper.setId(question, questionId);
     }
 
     public static Question create(
             Long questionId,
             Integer sequence
     ) {
-        return new Question(
-                questionId,
+        Question question = new Question(
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 sequence
         );
+        return BaseEntityTestHelper.setId(question, questionId);
     }
 
     public static List<Question> createList(int size, Festival festival) {
