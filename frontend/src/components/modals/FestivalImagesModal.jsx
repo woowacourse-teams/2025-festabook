@@ -12,15 +12,6 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, onUpdate })
     const [selectedImageToDelete, setSelectedImageToDelete] = useState(null);
     const [showAddImageModal, setShowAddImageModal] = useState(false);
 
-    // 이미지 데이터 정규화 함수
-    const normalizeImageData = useCallback((imageData) => {
-        return imageData.map(image => ({
-            ...image,
-            id: image.festivalImageId || image.id,
-            festivalImageId: image.festivalImageId || image.id
-        }));
-    }, []);
-
     const handleCancelMode = useCallback(() => {
         setIsReorderMode(false);
         setIsDeleteMode(false);
@@ -63,8 +54,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, onUpdate })
     useEffect(() => {
         if (isOpen) {
             if (festival?.festivalImages) {
-                const normalizedImages = normalizeImageData(festival.festivalImages);
-                setImages(normalizedImages);
+                setImages([...festival.festivalImages]);
             }
         } else {
             // 모달이 닫힐 때 모든 상태 초기화
@@ -75,7 +65,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, onUpdate })
             setSelectedImageToDelete(null);
             setShowAddImageModal(false);
         }
-    }, [festival, isOpen, normalizeImageData]);
+    }, [festival, isOpen]);
 
     const handleImageClick = (image) => {
         if (!isReorderMode && !isDeleteMode) {
@@ -150,12 +140,11 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, onUpdate })
             
             // 상태 업데이트
             if (onUpdate && response) {
-                const normalizedResponseImages = normalizeImageData(response);
                 onUpdate(prev => ({
                     ...prev,
-                    festivalImages: normalizedResponseImages
+                    festivalImages: response
                 }));
-                setImages(normalizedResponseImages);
+                setImages(response);
             }
             
             showToast('이미지 순서가 저장되었습니다.');
@@ -397,7 +386,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, onUpdate })
                     try {
                         // 서버에서 최신 축제 데이터를 다시 가져와서 업데이트
                         const updatedFestival = await festivalAPI.getFestival();
-                        const updatedImages = normalizeImageData(updatedFestival.festivalImages || []);
+                        const updatedImages = updatedFestival.festivalImages || [];
                         setImages(updatedImages);
                         
                         // 부모 컴포넌트에 업데이트 전달
