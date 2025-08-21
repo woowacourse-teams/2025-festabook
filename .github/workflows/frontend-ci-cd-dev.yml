@@ -8,7 +8,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: [self-hosted, dev-runner]
+    runs-on: [self-hosted]
 
     steps:
       # 프로젝트 체크아웃
