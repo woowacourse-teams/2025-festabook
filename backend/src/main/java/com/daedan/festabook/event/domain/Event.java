@@ -14,9 +14,13 @@ import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE event SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event extends BaseEntity implements Comparable<Event> {
 

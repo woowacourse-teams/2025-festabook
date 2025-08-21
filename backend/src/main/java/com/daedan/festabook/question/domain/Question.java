@@ -14,10 +14,14 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE question SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question extends BaseEntity implements Comparable<Question> {
 

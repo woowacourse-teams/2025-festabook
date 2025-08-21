@@ -10,10 +10,14 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE device SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Device extends BaseEntity {
 
@@ -33,7 +37,7 @@ public class Device extends BaseEntity {
     ) {
         validateDeviceIdentifier(deviceIdentifier);
         validateFcmToken(fcmToken);
-        
+
         this.deviceIdentifier = deviceIdentifier;
         this.fcmToken = fcmToken;
     }

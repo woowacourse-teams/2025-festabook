@@ -13,11 +13,15 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE place_announcement SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class PlaceAnnouncement extends BaseEntity {
 
