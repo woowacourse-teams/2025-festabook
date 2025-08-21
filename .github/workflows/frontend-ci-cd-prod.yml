@@ -1,8 +1,9 @@
 name: Frontend CI/CD Prod
 
 on:
-  pull_request:
-    branches: [ frontend ]
+  push:
+    branches: [ main ]
+    paths: [ 'frontend/**' ]
   workflow_dispatch:
 
 jobs:
