@@ -73,6 +73,7 @@ jobs:
         run: echo "VERSION=$( grep "VERSION=" version.properties | cut -d'=' -f2)" >> $GITHUB_ENV
 
       - name: Create Git Tag and Push
+        if: success()
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
