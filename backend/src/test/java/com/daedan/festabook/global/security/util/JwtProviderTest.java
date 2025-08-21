@@ -2,6 +2,7 @@ package com.daedan.festabook.global.security.util;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.within;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import io.jsonwebtoken.Claims;
@@ -20,6 +21,7 @@ class JwtProviderTest {
     private static final String OTHER_KEY = "b3RoZXItdGVzdC1zZWNyZXQta2V5LTMyYnl0ZXMtMTIzNDU2Nzg="; // gitleaks:allow unit-test secret
     private static final String USERNAME = "council";
     private static final Long FESTIVAL_ID = 1L;
+    private static final long EXPIRY = TimeUnit.MINUTES.toMillis(10);
 
     private JwtProvider newProvider(String key, long validityMs) {
         return new JwtProvider(key, validityMs);
@@ -33,7 +35,7 @@ class JwtProviderTest {
             // given
             String username = "council";
             Long festivalId = 1L;
-            JwtProvider jwtProvider = newProvider(VALID_KEY, TimeUnit.MINUTES.toMillis(10));
+            JwtProvider jwtProvider = newProvider(VALID_KEY, EXPIRY);
 
             // when
             String token = jwtProvider.createToken(username, festivalId);
@@ -46,6 +48,8 @@ class JwtProviderTest {
                 s.assertThat(username).isEqualTo(claims.getSubject());
                 s.assertThat(festivalId).isEqualTo(claims.get(CLAIM_FESTIVAL_ID, Long.class));
                 s.assertThat(claims.getExpiration()).isNotNull();
+                s.assertThat(claims.getExpiration().getTime())
+                        .isCloseTo(System.currentTimeMillis() + EXPIRY, within(1000L));
             });
         }
     }
