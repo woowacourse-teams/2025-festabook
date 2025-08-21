@@ -19,6 +19,7 @@ import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.isGranted
+import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
 import com.daedan.festabook.presentation.home.HomeFragment
@@ -60,7 +61,11 @@ class MainActivity :
     }
 
     private val notificationPermissionManager by lazy {
-        NotificationPermissionManager(this)
+        NotificationPermissionManager(
+            requester = this,
+            onPermissionGranted = { onPermissionGranted() },
+            onPermissionDenied = { onPermissionDenied() },
+        )
     }
 
     override val permissionLauncher: ActivityResultLauncher<String> =
@@ -69,9 +74,10 @@ class MainActivity :
         ) { isGranted: Boolean ->
             if (isGranted) {
                 Timber.d("Notification permission granted")
+                mainViewModel.saveNotificationId()
             } else {
                 Timber.d("Notification permission denied")
-                // 사용자에게 알림 권한이 필요한 이유를 설명하거나, 설정 화면으로 유도
+                showNotificationDeniedSnackbar(binding.main, this)
             }
         }
 

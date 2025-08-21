@@ -29,6 +29,7 @@ class SettingViewModel(
     fun notificationAllowClick() {
         updateNotificationIsAllowed(!isAllowed)
         _allowClickEvent.value = Event(Unit)
+        Timber.d("$isAllowed")
         if (isAllowed) saveNotificationId() else deleteNotificationId()
     }
 
@@ -40,7 +41,7 @@ class SettingViewModel(
         isAllowed = allowed
     }
 
-    fun saveNotificationId() {
+    private fun saveNotificationId() {
         viewModelScope.launch {
             val result =
                 festivalNotificationRepository.saveFestivalNotification()
