@@ -1,5 +1,6 @@
 package com.daedan.festabook.storage.infrastructure;
 
+import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
@@ -10,6 +11,7 @@ import java.nio.file.Paths;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Slf4j
@@ -37,10 +39,10 @@ public class LocalStorageManager implements StorageManager {
             );
             return response;
         } catch (IOException e) {
-            throw new RuntimeException(String.format(
-                    "로컬 저장소 파일 저장 실패 %s",
-                    e.getMessage()
-            ));
+            throw new BusinessException(
+                    String.format("로컬 저장소 파일 저장 실패 %s", e.getMessage()),
+                    HttpStatus.INTERNAL_SERVER_ERROR
+            );
         }
     }
 
