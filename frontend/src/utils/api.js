@@ -504,4 +504,50 @@ export const lostItemAPI = {
     }
 };
 
+// 라인업 관련 API
+export const lineupAPI = {
+  // 특정 축제의 모든 라인업 조회
+  getLineups: async () => {
+    try {
+      const response = await api.get('/lineups');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch lineups:', error);
+      throw new Error('라인업 조회에 실패했습니다.');
+    }
+  },
+
+  // 라인업 추가
+  addLineup: async (lineupData) => {
+    try {
+      const response = await api.post('/lineups', lineupData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to add lineup:', error);
+      throw new Error('라인업 추가에 실패했습니다.');
+    }
+  },
+
+  // 라인업 수정
+  updateLineup: async (lineupId, lineupData) => {
+    try {
+      const response = await api.patch(`/lineups/${lineupId}`, lineupData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update lineup:', error);
+      throw new Error('라인업 수정에 실패했습니다.');
+    }
+  },
+
+  // 라인업 삭제
+  deleteLineup: async (lineupId) => {
+    try {
+      await api.delete(`/lineups/${lineupId}`);
+    } catch (error) {
+      console.error('Failed to delete lineup:', error);
+      throw new Error('라인업 삭제에 실패했습니다.');
+    }
+  }
+};
+
 export default api;

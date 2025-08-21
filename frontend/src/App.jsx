@@ -35,6 +35,8 @@ import AddImageModal from './components/modals/AddImageModal';
 import ConfirmModal from './components/common/ConfirmModal';
 import Modal from './components/common/Modal';
 import { NoticeDetailModal } from './components/modals/NoticeModal';
+import LineupAddModal from './components/modals/LineupAddModal';
+import LineupEditModal from './components/modals/LineupEditModal';
 
 // Common Components
 import Toast from './components/common/Toast';
@@ -88,8 +90,10 @@ function App() {
             case 'placeEdit': return <PlaceEditModal {...allProps} />;
             case 'confirm': return <ConfirmModal {...allProps} onConfirm={() => { props.onConfirm(); closeModal(); }} onCancel={closeModal} />;
             case 'image': return <Modal isOpen={true} onClose={closeModal} maxWidth="max-w-4xl"><div className="relative"><img src={props.src} className="max-w-full max-h-[80vh] rounded-lg mx-auto" alt="상세 이미지" /><button onClick={closeModal} className="absolute top-2 right-2 text-white text-3xl bg-black bg-opacity-50 rounded-full w-8 h-8 flex items-center justify-center">&times;</button></div></Modal>;
-            case 'festival':
-                return <FestivalPage {...allProps} />;
+            case 'festival': return <FestivalPage {...allProps} />;
+            case 'lineup-add': return <LineupAddModal isOpen={true} {...allProps} />;
+            case 'lineup-edit': return <LineupEditModal isOpen={true} {...allProps} />;
+            
             default: return null;
         }
     };
