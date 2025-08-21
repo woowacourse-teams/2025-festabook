@@ -97,6 +97,7 @@ class CouncilControllerTest {
                     .post("/councils/login")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
+                    .body("festivalId", equalTo(festival.getId().intValue()))
                     .body("accessToken", notNullValue());
         }
     }
