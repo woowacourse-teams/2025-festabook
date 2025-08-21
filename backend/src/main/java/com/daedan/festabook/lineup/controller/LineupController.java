@@ -63,11 +63,10 @@ public class LineupController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public LineupResponse updateLineup(
-            @Parameter(hidden = true) @FestivalId Long festivalId,
             @PathVariable Long lineupId,
             @RequestBody LineupUpdateRequest request
     ) {
-        return lineupService.updateLineup(festivalId, lineupId, request);
+        return lineupService.updateLineup(lineupId, request);
     }
 
     @DeleteMapping("/{lineupId}")

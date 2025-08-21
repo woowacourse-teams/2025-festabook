@@ -1,5 +1,6 @@
 package com.daedan.festabook.lineup.controller;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -10,6 +11,8 @@ import com.daedan.festabook.lineup.domain.Lineup;
 import com.daedan.festabook.lineup.domain.LineupFixture;
 import com.daedan.festabook.lineup.dto.LineupRequest;
 import com.daedan.festabook.lineup.dto.LineupRequestFixture;
+import com.daedan.festabook.lineup.dto.LineupUpdateRequest;
+import com.daedan.festabook.lineup.dto.LineupUpdateRequestFixture;
 import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -123,6 +126,83 @@ class LineupControllerTest {
 
                     .body("[2].performanceAt", notNullValue())
                     .body("[2].name", equalTo("이미소"));
+        }
+    }
+
+    @Nested
+    class updateLineup {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Lineup lineup = LineupFixture.create(festival);
+            lineupJpaRepository.save(lineup);
+
+            LineupUpdateRequest request = LineupUpdateRequestFixture.create(
+                    "수정된이름",
+                    "https://updated-image.example/image.jpg",
+                    LocalDateTime.of(2025, 5, 21, 21, 0)
+            );
+
+            int expectedFieldSize = 4;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/lineups/{lineupId}", lineup.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("lineupId", equalTo(lineup.getId().intValue()))
+                    .body("name", equalTo(request.name()))
+                    .body("imageUrl", equalTo(request.imageUrl()))
+                    .body("performanceAt", notNullValue());
+        }
+    }
+
+    @Nested
+    class deleteLineupByLineupId {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Lineup lineup = LineupFixture.create(festival);
+            lineupJpaRepository.save(lineup);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/lineups/{lineupId}", lineup.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            // 실제 삭제 확인
+            assertThat(lineupJpaRepository.findById(lineup.getId())).isEmpty();
+        }
+
+        @Test
+        void 성공_존재하지_않는_라인업() {
+            // given
+            Long invalidLineupId = 0L;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .delete("/lineups/{lineupId}", invalidLineupId)
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }
