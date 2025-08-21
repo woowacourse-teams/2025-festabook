@@ -3,6 +3,11 @@ package com.daedan.festabook.global.security.config;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
+import com.daedan.festabook.council.dto.CouncilLoginRequest;
+import com.daedan.festabook.council.dto.CouncilLoginRequestFixture;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.config.TestSecurityConfig;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
@@ -10,6 +15,7 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
 import org.springframework.context.annotation.Import;
@@ -29,6 +35,9 @@ class SecurityConfigTest {
 
     private static final String ORIGIN_LOCALHOST = "http://localhost:5173";
     private static final String ORIGIN_LOCALHOST_IP = "http://127.0.0.1:5173";
+
+    @Autowired
+    private FestivalJpaRepository festivalJpaRepository;
 
     @LocalServerPort
     int port;
@@ -216,10 +225,14 @@ class SecurityConfigTest {
 
         @Test
         void 성공_GET_화이트리스트_허용() {
-            // given & when & then
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            // when & then
             RestAssured
                     .given()
-                    .header("festival", 1L)
+                    .header("festival", festival.getId())
                     .when()
                     .get("/announcements")
                     .then()
@@ -228,12 +241,15 @@ class SecurityConfigTest {
 
         @Test
         void 성공_POST_화이트리스트_허용() {
-            // given & when & then
+            // given &
+            CouncilLoginRequest request = CouncilLoginRequestFixture.create("test", "1234");
+
+            // when & then
             RestAssured
                     .given()
                     .header("festival", 1L)
                     .contentType("application/json")
-                    .body("{\"username\":\"test\",\"password\":\"1234\"}")
+                    .body(request)
                     .when()
                     .post("/councils/login")
                     .then()
