@@ -590,4 +590,13 @@ VALUES (1, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOxQ7Mf7RZq74s
         '기숙사 B동 세탁실', 'PENDING',
         '2025-08-03 19:10:00'),
        (1, 'https://www.techm.kr/news/photo/202404/123772_159101_1219.jpg', '카페테리아 입구', 'PENDING',
-        '2025-08-04 12:20:00')
+        '2025-08-04 12:20:00');
+
+-- ========================
+-- 라인업 (Lineup)
+-- ========================
+INSERT INTO lineup (festival_id, name, image_url, performance_at)
+VALUES (1, '워니', 'https://kr.object.ncloudstorage.com/matilda/1.png', '2025-01-19 20:00:00'),
+       (1, '레아', 'https://kr.object.ncloudstorage.com/matilda/2.png', '2025-01-20 20:00:00'),
+       (1, '구구', 'https://kr.object.ncloudstorage.com/matilda/3.png', '2025-01-21 20:00:00'),
+       (1, '제임스', 'https://kr.object.ncloudstorage.com/matilda/4.png', '2025-01-22 20:00:00');
