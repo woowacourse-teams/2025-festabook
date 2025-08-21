@@ -27,7 +27,7 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
         return () => {
             document.removeEventListener('keydown', handleEscKey);
         };
-    }, [isReorderMode, isDeleteMode]);
+    }, [isReorderMode, isDeleteMode, onClose]);
 
     // 이미지 데이터 초기화
     useEffect(() => {
@@ -223,28 +223,25 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
         setShowAddImageModal(true);
     };
 
-    const handleAddImage = async (newImage) => {
+    const handleAddImage = async () => {
         try {
             // 서버에서 최신 데이터를 다시 가져와서 업데이트
             const response = await placeAPI.getPlaces();
             const updatedPlace = response.find(p => p.placeId === place.placeId);
             if (updatedPlace) {
-                onUpdate({ placeId: place.placeId, placeImages: updatedPlace.placeImages || [] });
-                // 로컬 상태도 업데이트
-                setImages(updatedPlace.placeImages || []);
+                const normalizedImages = updatedPlace.placeImages?.map((image, index) => ({
+                    ...image,
+                    id: image.id || image.placeImageId,
+                    sequence: image.sequence || index + 1
+                })) || [];
+                
+                onUpdate({ placeId: place.placeId, placeImages: normalizedImages });
+                setImages(normalizedImages);
             }
             setShowAddImageModal(false);
+            console.log('플레이스 이미지가 성공적으로 추가되었습니다.');
         } catch (error) {
             console.error('Failed to refresh images after adding:', error);
-            // 에러가 발생해도 로컬 상태는 업데이트
-            const maxSequence = images.length > 0 ? Math.max(...images.map(img => img.sequence)) : 0;
-            const newImageWithSequence = {
-                ...newImage,
-                sequence: maxSequence + 1
-            };
-            
-            const updatedImages = [...images, newImageWithSequence];
-            setImages(updatedImages);
             setShowAddImageModal(false);
         }
     };

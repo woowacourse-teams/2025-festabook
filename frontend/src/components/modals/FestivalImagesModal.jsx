@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '../common/Modal';
 import AddImageModal from './AddImageModal';
 import { festivalAPI } from '../../utils/api';
 
-const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, onUpdate }) => {
+const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, onUpdate }) => {
     const [selectedImage, setSelectedImage] = useState(null);
     const [isReorderMode, setIsReorderMode] = useState(false);
     const [isDeleteMode, setIsDeleteMode] = useState(false);
@@ -11,6 +11,30 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
     const [draggedItem, setDraggedItem] = useState(null);
     const [selectedImageToDelete, setSelectedImageToDelete] = useState(null);
     const [showAddImageModal, setShowAddImageModal] = useState(false);
+
+    // 이미지 데이터 정규화 함수
+    const normalizeImageData = useCallback((imageData) => {
+        return imageData.map(image => ({
+            ...image,
+            id: image.festivalImageId || image.id,
+            festivalImageId: image.festivalImageId || image.id
+        }));
+    }, []);
+
+    const handleCancelMode = useCallback(() => {
+        setIsReorderMode(false);
+        setIsDeleteMode(false);
+        setDraggedItem(null);
+        setSelectedImageToDelete(null);
+        // 원본 데이터로 복원
+        if (festival?.festivalImages) {
+            setImages([...festival.festivalImages]);
+        }
+    }, [festival?.festivalImages]);
+
+    const handleCloseDetail = () => {
+        setSelectedImage(null);
+    };
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
@@ -33,16 +57,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
         return () => {
             document.removeEventListener('keydown', handleEscKey);
         };
-    }, [selectedImage, isReorderMode, isDeleteMode, onClose, isOpen]);
-
-    // 이미지 데이터 정규화 함수
-    const normalizeImageData = (imageData) => {
-        return imageData.map(image => ({
-            ...image,
-            id: image.festivalImageId || image.id,
-            festivalImageId: image.festivalImageId || image.id
-        }));
-    };
+    }, [selectedImage, isReorderMode, isDeleteMode, onClose, isOpen, handleCancelMode]);
 
     // 이미지 데이터 초기화 및 모달 상태 관리
     useEffect(() => {
@@ -60,16 +75,12 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
             setSelectedImageToDelete(null);
             setShowAddImageModal(false);
         }
-    }, [festival, isOpen]);
+    }, [festival, isOpen, normalizeImageData]);
 
     const handleImageClick = (image) => {
         if (!isReorderMode && !isDeleteMode) {
             setSelectedImage(image);
         }
-    };
-
-    const handleCloseDetail = () => {
-        setSelectedImage(null);
     };
 
     // 드래그 앤 드롭 함수들 (HTML5 기반)
@@ -150,6 +161,7 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
             showToast('이미지 순서가 저장되었습니다.');
             setIsReorderMode(false);
         } catch (error) {
+            console.error('Failed to save image order:', error);
             showToast('순서 저장에 실패했습니다.');
         }
     };
@@ -182,18 +194,8 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
             setIsDeleteMode(false);
             showToast('이미지가 삭제되었습니다.');
         } catch (error) {
+            console.error('Failed to delete image:', error);
             showToast('삭제에 실패했습니다.');
-        }
-    };
-
-    const handleCancelMode = () => {
-        setIsReorderMode(false);
-        setIsDeleteMode(false);
-        setDraggedItem(null);
-        setSelectedImageToDelete(null);
-        // 원본 데이터로 복원
-        if (festival?.festivalImages) {
-            setImages([...festival.festivalImages]);
         }
     };
 
@@ -390,21 +392,25 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, openModal, 
                     setSelectedImageToDelete(null);
                 }}
                 showToast={showToast}
-                onImageAdded={(newImage) => {
-                    const normalizedNewImage = {
-                        ...newImage,
-                        id: newImage.festivalImageId || newImage.id,
-                        festivalImageId: newImage.festivalImageId || newImage.id
-                    };
-                    const updatedImages = [...images, normalizedNewImage];
-                    setImages(updatedImages);
-                    if (onUpdate) {
-                        onUpdate(prev => ({
-                            ...prev,
-                            festivalImages: updatedImages
-                        }));
+                isPlaceImage={false} // 축제 이미지임을 명시
+                onImageAdded={async () => {
+                    try {
+                        // 서버에서 최신 축제 데이터를 다시 가져와서 업데이트
+                        const updatedFestival = await festivalAPI.getFestival();
+                        const updatedImages = normalizeImageData(updatedFestival.festivalImages || []);
+                        setImages(updatedImages);
+                        
+                        // 부모 컴포넌트에 업데이트 전달
+                        if (onUpdate) {
+                            onUpdate(updatedFestival);
+                        }
+                        
+                        setShowAddImageModal(false);
+                        showToast('축제 이미지가 성공적으로 추가되었습니다.');
+                    } catch (error) {
+                        console.error('Failed to refresh festival data:', error);
+                        showToast('이미지 추가 후 데이터 새로고침에 실패했습니다.');
                     }
-                    setShowAddImageModal(false);
                 }}
             />
             )}

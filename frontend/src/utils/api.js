@@ -9,7 +9,28 @@ const api = axios.create({
   },
 });
 
+// 파일 업로드용 별도 인스턴스
+const fileApi = axios.create({
+  baseURL: API_HOST,
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+});
+
 api.interceptors.request.use((config) => {
+  const festivalId = localStorage.getItem('festivalId');
+  if (festivalId) {
+    config.headers['festival'] = festivalId;
+  }
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// 파일 업로드용 인터셉터
+fileApi.interceptors.request.use((config) => {
   const festivalId = localStorage.getItem('festivalId');
   if (festivalId) {
     config.headers['festival'] = festivalId;
@@ -30,11 +51,47 @@ api.interceptors.response.use(
       try {
         localStorage.clear();
         window.location.replace('/');
-      } catch (_) {}
+      } catch (error) {
+        // 에러 처리 시 로그만 출력
+        console.error('Error during logout redirect:', error);
+      }
     }
     return Promise.reject(error);
   }
 );
+
+fileApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401 || status === 403) {
+      try {
+        localStorage.clear();
+        window.location.replace('/');
+      } catch (error) {
+        console.error('Error during logout redirect:', error);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// 공통 이미지 업로드 API
+export const imageAPI = {
+  // 이미지 파일 업로드
+  uploadImage: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fileApi.post('/images', formData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      throw new Error('이미지 업로드에 실패했습니다.');
+    }
+  }
+};
 
 // 축제 관련 API
 export const festivalAPI = {
