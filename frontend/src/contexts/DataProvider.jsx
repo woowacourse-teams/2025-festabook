@@ -41,19 +41,19 @@ export const DataProvider = ({ children }) => {
         }
     };
 
-    const fetchQnaItems = async () => {
+    const fetchFaqItems = async () => {
         try {
             setIsLoadingQna(true);
             const questions = await qnaAPI.getQuestions();
             setData(prev => ({
                 ...prev,
-                qnaItems: questions
+                faqItems: questions
             }));
         } catch {
             // 초기 로드 실패 시 빈 배열로 설정
             setData(prev => ({
                 ...prev,
-                qnaItems: []
+                faqItems: []
             }));
         } finally {
             setIsLoadingQna(false);
@@ -79,10 +79,10 @@ export const DataProvider = ({ children }) => {
         }
     };
     
-    // 컴포넌트 마운트 시 축제 날짜 목록, QnA, 분실물 조회
+    // 컴포넌트 마운트 시 축제 날짜 목록, FAQ, 분실물 조회
     useEffect(() => {
         fetchEventDates();
-        fetchQnaItems();
+        fetchFaqItems();
         fetchLostItems();
     }, []);
 
@@ -175,76 +175,76 @@ export const DataProvider = ({ children }) => {
                 throw error;
             }
         },
-        // QnA 관련 액션들 (서버 연동)
-        addQnaItem: async (item, showToast) => {
+        // FAQ 관련 액션들 (서버 연동)
+        addFaqItem: async (item, showToast) => {
             try {
                 setIsLoadingQna(true);
                 await qnaAPI.createQuestion(item);
                 
-                // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
+                // 서버에서 전체 FAQ 목록을 다시 조회하여 최신 상태로 업데이트
                 const questions = await qnaAPI.getQuestions();
                 
                 setData(prev => ({
                     ...prev,
-                    qnaItems: questions
+                    faqItems: questions
                 }));
-                showToast('새 QnA가 등록되었습니다.');
+                showToast('새 FAQ가 등록되었습니다.');
             } catch (error) {
-                showToast(error.message || 'QnA 추가에 실패했습니다.');
+                showToast(error.message || 'FAQ 추가에 실패했습니다.');
             } finally {
                 setIsLoadingQna(false);
             }
         },
         
-        updateQnaItem: async (id, updated, showToast) => {
+        updateFaqItem: async (id, updated, showToast) => {
             try {
                 setIsLoadingQna(true);
                 await qnaAPI.updateQuestion(id, updated);
                 
-                // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
+                // 서버에서 전체 FAQ 목록을 다시 조회하여 최신 상태로 업데이트
                 const questions = await qnaAPI.getQuestions();
                 
                 setData(prev => ({
                     ...prev,
-                    qnaItems: questions
+                    faqItems: questions
                 }));
-                showToast('QnA가 수정되었습니다.');
+                showToast('FAQ가 수정되었습니다.');
             } catch (error) {
-                showToast(error.message || 'QnA 수정에 실패했습니다.');
+                showToast(error.message || 'FAQ 수정에 실패했습니다.');
             } finally {
                 setIsLoadingQna(false);
             }
         },
         
-        deleteQnaItem: async (questionId, showToast) => {
+        deleteFaqItem: async (questionId, showToast) => {
             try {
                 setIsLoadingQna(true);
                 await qnaAPI.deleteQuestion(questionId);
                 setData(prev => ({
                     ...prev,
-                    qnaItems: prev.qnaItems.filter(q => q.questionId !== questionId)
+                    faqItems: prev.faqItems.filter(q => q.questionId !== questionId)
                 }));
-                showToast('QnA가 삭제되었습니다.');
+                showToast('FAQ가 삭제되었습니다.');
             } catch (error) {
-                showToast(error.message || 'QnA 삭제에 실패했습니다.');
+                showToast(error.message || 'FAQ 삭제에 실패했습니다.');
             } finally {
                 setIsLoadingQna(false);
             }
         },
 
-        updateQnaSequences: async (sequences, showToast) => {
+        updateFaqSequences: async (sequences, showToast) => {
             try {
                 setIsLoadingQna(true);
                 await qnaAPI.updateQuestionSequences(sequences);
-                // 서버에서 전체 QnA 목록을 다시 조회하여 최신 상태로 업데이트
+                // 서버에서 전체 FAQ 목록을 다시 조회하여 최신 상태로 업데이트
                 const questions = await qnaAPI.getQuestions();
                 setData(prev => ({
                     ...prev,
-                    qnaItems: questions
+                    faqItems: questions
                 }));
-                showToast('QnA 순서가 저장되었습니다.');
+                showToast('FAQ 순서가 저장되었습니다.');
             } catch (error) {
-                showToast(error.message || 'QnA 순서 변경에 실패했습니다.');
+                showToast(error.message || 'FAQ 순서 변경에 실패했습니다.');
             } finally {
                 setIsLoadingQna(false);
             }
@@ -490,7 +490,7 @@ export const DataProvider = ({ children }) => {
         
         // 새로운 상태 제공
         fetchEventDates,
-        fetchQnaItems,
+        fetchFaqItems,
         fetchLostItems,
         isLoadingDates,
         isLoadingEvents,

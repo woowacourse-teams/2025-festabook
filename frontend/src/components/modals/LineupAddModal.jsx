@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Modal from '../common/Modal';
-import { lineupAPI } from '../../utils/api';
+import { lineupAPI, imageAPI } from '../../utils/api';
 
 const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
     const [formData, setFormData] = useState({
@@ -117,14 +117,11 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
         setIsUploading(true);
         
         try {
-            // 파일을 base64로 변환
-            const reader = new FileReader();
-            const imageUrl = await new Promise((resolve, reject) => {
-                reader.onload = () => resolve(reader.result);
-                reader.onerror = reject;
-                reader.readAsDataURL(selectedFile);
-            });
+            // 1단계: 이미지 파일을 백엔드 이미지 업로드 API로 전송
+            const uploadResponse = await imageAPI.uploadImage(selectedFile);
+            const imageUrl = uploadResponse.imageUrl;
 
+            // 2단계: 라인업 API에 이미지 URL과 함께 데이터 전송
             const response = await lineupAPI.addLineup({
                 name: formData.name,
                 imageUrl: imageUrl,
@@ -140,7 +137,7 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             onClose();
         } catch (error) {
             console.error('Lineup add error:', error);
-            showToast('라인업 추가에 실패했습니다.');
+            showToast(error.message || '라인업 추가에 실패했습니다.');
         } finally {
             setIsUploading(false);
         }

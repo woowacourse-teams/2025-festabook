@@ -3,32 +3,32 @@ import FlipMove from 'react-flip-move';
 import { useData } from '../hooks/useData';
 import { useModal } from '../hooks/useModal';
 
-const QnaPage = () => {
-    const { qnaItems, addQnaItem, updateQnaItem, deleteQnaItem, updateQnaSequences, fetchQnaItems } = useData();
+const FaqPage = () => {
+    const { faqItems, addFaqItem, updateFaqItem, deleteFaqItem, updateFaqSequences, fetchFaqItems } = useData();
     const { openModal, showToast } = useModal();
     const [isEditingOrder, setIsEditingOrder] = useState(false);
-    const [tempItems, setTempItems] = useState(qnaItems || []);
+    const [tempItems, setTempItems] = useState(faqItems || []);
 
-    // qnaItems가 변경될 때 tempItems도 업데이트
+    // faqItems가 변경될 때 tempItems도 업데이트
     useEffect(() => {
-        setTempItems(qnaItems || []);
-    }, [qnaItems]);
+        setTempItems(faqItems || []);
+    }, [faqItems]);
 
-    // 컴포넌트 마운트 시 QnA 데이터 새로 조회
+    // 컴포넌트 마운트 시 FAQ 데이터 새로 조회
     useEffect(() => {
-        fetchQnaItems();
-    }, []);
+        fetchFaqItems();
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleSave = async (id, data) => {
         if (!data.question || !data.answer) { showToast('질문과 답변을 모두 입력해주세요.'); return; }
         try {
             if (id) {
-                await updateQnaItem(id, data, showToast);
+                await updateFaqItem(id, data, showToast);
             } else {
-                await addQnaItem(data, showToast);
+                await addFaqItem(data, showToast);
             }
-        } catch (error) {
-            showToast('QnA 저장 중 오류가 발생했습니다.');
+        } catch {
+            showToast('FAQ 저장 중 오류가 발생했습니다.');
         }
     };
 
@@ -45,19 +45,19 @@ const QnaPage = () => {
             questionId: item.questionId,
             sequence: index + 1
         }));
-        await updateQnaSequences(sequences, showToast);
+        await updateFaqSequences(sequences, showToast);
         setIsEditingOrder(false);
     };
 
     const handleCancelOrder = () => {
-        setTempItems(qnaItems || []);
+        setTempItems(faqItems || []);
         setIsEditingOrder(false);
     };
 
     return (
         <div>
             <div className="flex justify-between items-center mb-6">
-                <h2 className="text-3xl font-bold">QnA 관리</h2>
+                <h2 className="text-3xl font-bold">FAQ 관리</h2>
                 <div className="flex items-center space-x-2">
                     {isEditingOrder ? (
                         <>
@@ -67,13 +67,13 @@ const QnaPage = () => {
                     ) : (
                         <>
                             <button onClick={() => setIsEditingOrder(true)} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">순서 변경</button>
-                            <button onClick={() => openModal('qna', { onSave: (data) => handleSave(null, data) })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> QnA 등록</button>
+                            <button onClick={() => openModal('faq', { onSave: (data) => handleSave(null, data) })} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg flex items-center"><i className="fas fa-plus mr-2"></i> FAQ 등록</button>
                         </>
                     )}
                 </div>
             </div>
             <FlipMove className="space-y-4">
-                {(isEditingOrder ? tempItems : qnaItems || []).map((item, index) => (
+                {(isEditingOrder ? tempItems : faqItems || []).map((item, index) => (
                     <div key={item.questionId} data-id={item.questionId} className="bg-white rounded-lg shadow-sm border border-gray-200 p-5">
                         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
                             <p className="font-semibold flex-1 truncate" title={item.question}><span className="text-blue-600 mr-2">Q.</span>{item.question}</p>
@@ -85,13 +85,13 @@ const QnaPage = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={() => openModal('qna', { qna: item, onSave: (data) => handleSave(item.questionId, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
+                                        <button onClick={() => openModal('faq', { faq: item, onSave: (data) => handleSave(item.questionId, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
                                         <button onClick={() => {
                                             openModal('confirm', {
-                                                title: 'QnA 삭제 확인',
+                                                title: 'FAQ 삭제 확인',
                                                 message: `정말로 삭제하시겠습니까?`,
                                                 onConfirm: async () => {
-                                                    await deleteQnaItem(item.questionId, showToast);
+                                                    await deleteFaqItem(item.questionId, showToast);
                                                 }
                                             });
                                         }} className="text-red-600 hover:text-red-800 font-bold">삭제</button>
@@ -103,16 +103,16 @@ const QnaPage = () => {
                     </div>
                 ))}
                 
-                {/* QnA가 없을 때 */}
-                {(!isEditingOrder && (!qnaItems || qnaItems.length === 0)) && (
+                {/* FAQ가 없을 때 */}
+                {(!isEditingOrder && (!faqItems || faqItems.length === 0)) && (
                     <div className="text-center py-12">
                         <i className="fas fa-question-circle text-4xl text-gray-400 mb-4"></i>
-                        <p className="text-gray-500 mb-4">등록된 QnA가 없습니다</p>
+                        <p className="text-gray-500 mb-4">등록된 FAQ가 없습니다</p>
                         <button
-                            onClick={() => openModal('qna', { onSave: (data) => handleSave(null, data) })}
+                            onClick={() => openModal('faq', { onSave: (data) => handleSave(null, data) })}
                             className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
                         >
-                            첫 번째 QnA 등록
+                            첫 번째 FAQ 등록
                         </button>
                     </div>
                 )}
@@ -121,4 +121,4 @@ const QnaPage = () => {
     );
 };
 
-export default QnaPage;
+export default FaqPage;
