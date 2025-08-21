@@ -1,7 +1,6 @@
 package com.daedan.festabook.presentation.main
 
 import android.os.Bundle
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
@@ -23,10 +22,12 @@ import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
 import com.daedan.festabook.presentation.home.HomeFragment
+import com.daedan.festabook.presentation.home.HomeViewModel
 import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.placeMap.PlaceMapFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import timber.log.Timber
 
 class MainActivity :
@@ -35,7 +36,8 @@ class MainActivity :
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
-    private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
+    private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
+    private val homeViewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
 
     private val placeMapFragment by lazy {
         PlaceMapFragment().newInstance()
@@ -82,8 +84,8 @@ class MainActivity :
         enableEdgeToEdge()
         setupBinding()
 
-        viewModel.registerDeviceAndFcmToken()
-        notificationPermissionManager.requestNotificationPermission(this)
+        mainViewModel.registerDeviceAndFcmToken()
+        setupAlarmDialog()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         setupObservers()
@@ -111,10 +113,13 @@ class MainActivity :
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
     private fun setupObservers() {
-        viewModel.backPressEvent.observe(this) { event ->
+        mainViewModel.backPressEvent.observe(this) { event ->
             event.getContentIfNotHandled()?.let { isDoublePress ->
                 if (isDoublePress) finish() else showToast(getString(R.string.back_press_exit_message))
             }
+        }
+        homeViewModel.navigateToScheduleEvent.observe(this) {
+            binding.bnvMenu.selectedItemId = R.id.item_menu_schedule
         }
     }
 
@@ -154,7 +159,7 @@ class MainActivity :
             this,
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    viewModel.onBackPressed()
+                    mainViewModel.onBackPressed()
                 }
             },
         )
@@ -210,6 +215,29 @@ class MainActivity :
         }
     }
 
+    private fun setupAlarmDialog() {
+        if (!isMainActivityInitialized()) {
+            showAlarmDialog()
+        }
+    }
+
+    private fun showAlarmDialog() {
+        val dialog =
+            MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
+                .setView(R.layout.main_alarm_view)
+                .setPositiveButton(R.string.main_alarm_dialog_confirm_button) { _, _ ->
+                    notificationPermissionManager.requestNotificationPermission(this)
+                }.setNegativeButton(R.string.main_alarm_dialog_cancel_button) { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
+        dialog.show()
+    }
+
+    private fun isMainActivityInitialized(): Boolean {
+        val initialValue = intent.getLongExtra("festival_id", INITIALIZED_FESTIVAL_ID)
+        return initialValue == INITIALIZED_FESTIVAL_ID
+    }
+
     companion object {
         private const val TAG_HOME_FRAGMENT = "homeFragment"
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
@@ -217,6 +245,7 @@ class MainActivity :
         private const val TAG_NEW_FRAGMENT = "newFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
+        private const val INITIALIZED_FESTIVAL_ID = -1L
 
         fun Fragment.newInstance(): Fragment =
             this.apply {

@@ -17,7 +17,7 @@ import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 import timber.log.Timber
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
-    private val viewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
+    private val viewModel: HomeViewModel by viewModels({ requireActivity() }) { HomeViewModel.Factory }
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 
     private val posterAdapter: PosterAdapter by lazy {
@@ -35,6 +35,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
         binding.lifecycleOwner = viewLifecycleOwner
         setupObservers()
         setupAdapters()
+        setupNavigateToScheduleButton()
+    }
+
+    private fun setupNavigateToScheduleButton() {
+        binding.btnNavigateToSchedule.setOnClickListener {
+            viewModel.navigateToScheduleClick()
+        }
     }
 
     private fun setupObservers() {
