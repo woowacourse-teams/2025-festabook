@@ -92,13 +92,13 @@ public class Council {
     }
 
     private void validateUsername(String username) {
-        if (username == null || username.trim().isEmpty()) {
+        if (!StringUtils.hasText(username)) {
             throw new BusinessException("아이디는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
     private void validatePassword(String password) {
-        if (password == null || password.trim().isEmpty()) {
+        if (!StringUtils.hasText(password)) {
             throw new BusinessException("비밀번호는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
