@@ -65,7 +65,7 @@
     <!-- 소식 화면 -->
     <string name="news_title">소식</string>
     <string name="tab_notice">공지</string>
-    <string name="tab_faq">Q&amp;A</string>
+    <string name="tab_faq">FAQ</string>
     <string name="tab_lost_item">분실물</string>
     <string name="tab_faq_question">Q. %1$s</string>
     <string name="modal_lost_item">보관 장소 : %1$s</string>

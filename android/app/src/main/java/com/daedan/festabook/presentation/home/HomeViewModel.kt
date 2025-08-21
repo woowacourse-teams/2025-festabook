@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.FestivalRepository
+import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import kotlinx.coroutines.launch
 
@@ -20,6 +21,9 @@ class HomeViewModel(
 
     private val _lineupUiState = MutableLiveData<LineupUiState>()
     val lineupUiState: LiveData<LineupUiState> get() = _lineupUiState
+
+    private val _navigateToScheduleEvent: SingleLiveData<Unit> = SingleLiveData()
+    val navigateToScheduleEvent: LiveData<Unit> get() = _navigateToScheduleEvent
 
     init {
         loadFestival()
@@ -40,7 +44,11 @@ class HomeViewModel(
         }
     }
 
-    fun loadLineup() {
+    fun navigateToScheduleClick() {
+        _navigateToScheduleEvent.setValue(Unit)
+    }
+
+    private fun loadLineup() {
         viewModelScope.launch {
             _lineupUiState.value = LineupUiState.Loading
 
