@@ -45,6 +45,7 @@ class JwtProviderTest {
                 s.assertThat(token).isNotNull();
                 s.assertThat(username).isEqualTo(claims.getSubject());
                 s.assertThat(festivalId).isEqualTo(claims.get(CLAIM_FESTIVAL_ID, Long.class));
+                s.assertThat(claims.getExpiration()).isNotNull();
             });
         }
     }
