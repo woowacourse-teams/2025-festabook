@@ -106,6 +106,9 @@
     <string name="notification_permission_message">새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.</string>
     <string name="confirm">확인</string>
     <string name="cancel">취소</string>
+    <string name="item_lineup_image">item_lineup_image</string>
+    <string name="home_check_schedule_text">일정 확인하기</string>
+    <string name="home_lineup_title">축제 라인업</string>
 
     <!--토스트 메시지-->
     <string name="back_press_exit_message">뒤로가기를 한 번 더 누르면 종료됩니다.</string>

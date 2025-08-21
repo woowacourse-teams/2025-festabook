@@ -1,6 +1,7 @@
 package com.daedan.festabook.home
 
 import com.daedan.festabook.domain.model.Festival
+import com.daedan.festabook.domain.model.LineupItem
 import com.daedan.festabook.domain.model.Organization
 import com.daedan.festabook.domain.model.Poster
 import java.time.LocalDate
@@ -23,4 +24,13 @@ val FAKE_ORGANIZATION =
                 startDate = LocalDate.of(2025, 1, 1),
                 endDate = LocalDate.of(2025, 1, 3),
             ),
+    )
+
+val FAKE_LINEUP =
+    listOf(
+        LineupItem(
+            id = 1L,
+            imageUrl = "aa.com",
+            name = "SINGER",
+        ),
     )
