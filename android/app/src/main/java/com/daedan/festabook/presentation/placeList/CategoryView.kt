@@ -23,7 +23,7 @@ class CategoryView
             CategoryViewBinding.inflate(LayoutInflater.from(context), this, true)
 
         init {
-            radius = 6f
+            radius = 12f
             cardElevation = 0f
             strokeWidth = 0
         }
