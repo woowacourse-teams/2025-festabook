@@ -1,3 +1,4 @@
+import java.io.ByteArrayOutputStream
 import java.util.Properties
 
 plugins {
@@ -10,7 +11,21 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
+fun getGitRevisionCount(): Int {
+    val process =
+        ProcessBuilder("git", "rev-list", "--count", "--first-parent", "HEAD")
+            .redirectErrorStream(true)
+            .start()
+
+    val outputStream = ByteArrayOutputStream()
+    process.inputStream.use { it.copyTo(outputStream) }
+    process.waitFor()
+
+    return outputStream.toString(Charsets.UTF_8).trim().toIntOrNull() ?: 0
+}
+
 android {
+
     namespace = "com.daedan.festabook"
     compileSdk = 36
 
@@ -77,7 +92,7 @@ android {
         applicationId = "com.daedan.festabook"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
+        versionCode = getGitRevisionCount()
         versionName = semanticVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
