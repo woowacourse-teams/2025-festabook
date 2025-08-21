@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,14 +41,15 @@ public class CouncilService {
         return CouncilResponse.from(savedCouncil);
     }
 
+    @Transactional(readOnly = true)
     public CouncilLoginResponse loginCouncil(CouncilLoginRequest request) {
         Council council = getCouncilByUsername(request.username());
 
         validatePassword(request, council);
 
         String accessToken = jwtProvider.createToken(council.getUsername(), council.getFestival().getId());
-        
-        return CouncilLoginResponse.from(accessToken);
+
+        return CouncilLoginResponse.from(council.getFestival().getId(), accessToken);
     }
 
     // TODO: JWT 기반 로그아웃 구현
