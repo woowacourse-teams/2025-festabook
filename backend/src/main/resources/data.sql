@@ -5,6 +5,18 @@ INSERT INTO festival (university_name, festival_name, start_date, end_date, zoom
 VALUES ('서울시립대학교', '2025 시립 Water Festival: AQUA WAVE', '2025-08-04', '2025-08-06', 15, 37.583585, 127.0588862);
 
 -- ========================
+-- 학생회 (Council)
+-- ========================
+INSERT INTO council (festival_id, username, password)
+VALUES (1, 'council', '$2a$10$eS22cSyLdvjc.lzD6RsEEe3mGie6QfznOt9Yb2cfL2gYmDHv.w5AG');
+
+-- ========================
+-- 학생회 (Council) 권한
+-- ========================
+INSERT INTO council_roles (council_id, roles)
+VALUES (1, 'ROLE_COUNCIL');
+
+-- ========================
 -- 축제 이미지 (FestivalImage)
 -- ========================
 INSERT INTO festival_image (festival_id, image_url, sequence)

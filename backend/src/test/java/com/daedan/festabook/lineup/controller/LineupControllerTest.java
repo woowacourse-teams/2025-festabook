@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.lineup.domain.Lineup;
 import com.daedan.festabook.lineup.domain.LineupFixture;
 import com.daedan.festabook.lineup.dto.LineupRequest;
@@ -16,6 +17,7 @@ import com.daedan.festabook.lineup.dto.LineupUpdateRequestFixture;
 import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.time.LocalDateTime;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
@@ -41,6 +43,9 @@ class LineupControllerTest {
     @Autowired
     private LineupJpaRepository lineupJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @LocalServerPort
     private int port;
 
@@ -58,6 +63,8 @@ class LineupControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+
             String lineupName = "이미소";
             String imageUrl = "https://image.example/a.jpg";
             LocalDateTime performanceDateTime = LocalDateTime.of(2025, 5, 20, 20, 0);
@@ -73,6 +80,7 @@ class LineupControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(header)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -97,6 +105,8 @@ class LineupControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+
             LocalDateTime dateTime1 = LocalDateTime.of(2025, 5, 20, 20, 0);
             LocalDateTime dateTime2 = LocalDateTime.of(2025, 5, 19, 20, 0);
             LocalDateTime dateTime3 = LocalDateTime.of(2025, 5, 18, 20, 0);
@@ -112,6 +122,7 @@ class LineupControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(header)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/lineups")
@@ -138,6 +149,8 @@ class LineupControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+
             Lineup lineup = LineupFixture.create(festival);
             lineupJpaRepository.save(lineup);
 
@@ -152,6 +165,7 @@ class LineupControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(header)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -176,12 +190,15 @@ class LineupControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+
             Lineup lineup = LineupFixture.create(festival);
             lineupJpaRepository.save(lineup);
 
             // when & then
             RestAssured
                     .given()
+                    .header(header)
                     .when()
                     .delete("/lineups/{lineupId}", lineup.getId())
                     .then()
@@ -194,11 +211,17 @@ class LineupControllerTest {
         @Test
         void 성공_존재하지_않는_라인업() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long invalidLineupId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(header)
                     .when()
                     .delete("/lineups/{lineupId}", invalidLineupId)
                     .then()

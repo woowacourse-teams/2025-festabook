@@ -17,10 +17,12 @@ import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequestFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import io.restassured.path.json.config.JsonPathConfig;
 import java.time.LocalDate;
 import java.util.List;
@@ -51,6 +53,9 @@ class FestivalControllerTest {
     @Autowired
     private FestivalImageJpaRepository festivalImageJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @LocalServerPort
     private int port;
 
@@ -80,6 +85,8 @@ class FestivalControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             FestivalImageRequest request = FestivalImageRequestFixture.create("이미지 URL");
 
             Integer count = festivalImageJpaRepository.findMaxSequenceByFestivalId(festival.getId())
@@ -91,6 +98,7 @@ class FestivalControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -301,6 +309,8 @@ class FestivalControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             String changedFestivalName = "수정 후 제목";
             LocalDate changedStartDate = LocalDate.of(2025, 11, 1);
             LocalDate changedEndDate = LocalDate.of(2025, 11, 2);
@@ -315,6 +325,7 @@ class FestivalControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -339,6 +350,8 @@ class FestivalControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             FestivalImage festivalImage1 = FestivalImageFixture.create(festival, 1);
             FestivalImage festivalImage2 = FestivalImageFixture.create(festival, 2);
             FestivalImage festivalImage3 = FestivalImageFixture.create(festival, 3);
@@ -353,6 +366,7 @@ class FestivalControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(requests)
@@ -380,12 +394,15 @@ class FestivalControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             FestivalImage festivalImage = FestivalImageFixture.create(festival, 1);
             festivalImageJpaRepository.save(festivalImage);
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .when()
@@ -403,11 +420,14 @@ class FestivalControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long invalidFestivalImageId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .when()

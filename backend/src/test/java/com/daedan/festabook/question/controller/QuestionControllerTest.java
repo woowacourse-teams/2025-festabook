@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.hasSize;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
 import com.daedan.festabook.question.dto.QuestionRequest;
@@ -16,6 +17,7 @@ import com.daedan.festabook.question.dto.QuestionSequenceUpdateRequestFixture;
 import com.daedan.festabook.question.infrastructure.QuestionJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -40,6 +42,9 @@ class QuestionControllerTest {
     @Autowired
     private QuestionJpaRepository questionJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @LocalServerPort
     private int port;
 
@@ -56,6 +61,8 @@ class QuestionControllerTest {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
@@ -74,6 +81,7 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -179,6 +187,8 @@ class QuestionControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
 
@@ -190,6 +200,7 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -211,6 +222,8 @@ class QuestionControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Question question1 = QuestionFixture.create(festival, 1);
             Question question2 = QuestionFixture.create(festival, 2);
             Question question3 = QuestionFixture.create(festival, 3);
@@ -224,6 +237,7 @@ class QuestionControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(requests)
                     .when()
@@ -250,12 +264,15 @@ class QuestionControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/questions/{questionId}", question.getId())
                     .then()
@@ -267,11 +284,17 @@ class QuestionControllerTest {
         @Test
         void 성공_없는_리소스_삭제() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long invalidQuestionId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/questions/{questionId}", invalidQuestionId)
                     .then()

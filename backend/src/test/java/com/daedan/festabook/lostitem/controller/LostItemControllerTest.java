@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
@@ -19,6 +20,7 @@ import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequestFixture;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -44,6 +46,9 @@ class LostItemControllerTest {
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @LocalServerPort
     private int port;
 
@@ -61,12 +66,15 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             LostItemRequest request = LostItemRequestFixture.create();
 
             int expectedFieldSize = 5;
 
             // when & then
             given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
@@ -160,6 +168,8 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);
 
@@ -173,6 +183,7 @@ class LostItemControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -201,6 +212,8 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             LostItem lostItem = LostItemFixture.create(festival, previousStatus);
             lostItemJpaRepository.save(lostItem);
 
@@ -211,6 +224,7 @@ class LostItemControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -232,12 +246,15 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/lost-items/{lostItemId}", lostItem.getId())
                     .then()
@@ -249,11 +266,17 @@ class LostItemControllerTest {
         @Test
         void 성공_존재하지_않는_분실물_삭제() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long notExistId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/lost-items/{lostItemId}", notExistId)
                     .then()

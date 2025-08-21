@@ -17,8 +17,10 @@ import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
@@ -49,6 +51,9 @@ class EventDateControllerTest {
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @MockitoBean
     private Clock clock;
 
@@ -69,6 +74,8 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             EventDateRequest request = EventDateRequestFixture.create();
 
             int expectedSize = 2;
@@ -77,6 +84,7 @@ class EventDateControllerTest {
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
@@ -94,6 +102,8 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             EventDate existingEventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(existingEventDate);
 
@@ -102,8 +112,9 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .contentType(ContentType.JSON)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .post("/event-dates")
@@ -122,6 +133,8 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
@@ -132,8 +145,9 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .contentType(ContentType.JSON)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .patch("/event-dates/{eventDateId}", eventDate.getId())
@@ -155,14 +169,17 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long notExistingEventDateId = 0L;
             EventDateRequest request = EventDateRequestFixture.create();
 
             // when & then
             RestAssured
                     .given()
-                    .contentType(ContentType.JSON)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .patch("/event-dates/{eventDateId}", notExistingEventDateId)
@@ -177,6 +194,8 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             List<EventDate> eventDates = EventDateFixture.createList(2, festival);
             eventDateJpaRepository.saveAll(eventDates);
 
@@ -185,8 +204,9 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .contentType(ContentType.JSON)
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .patch("/event-dates/{eventDateId}", eventDates.get(0).getId())
@@ -205,6 +225,8 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
@@ -214,6 +236,7 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/{eventDateId}", eventDate.getId())
@@ -231,11 +254,14 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long invalidEventDateId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/{eventDateId}", invalidEventDateId)
