@@ -18,13 +18,11 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
-@ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LocalStorageManagerTest {
 
@@ -35,7 +33,8 @@ class LocalStorageManagerTest {
 
     @BeforeEach
     void setUp() {
-        localStorageManager = new LocalStorageManager(tempDirectory.toString());
+        localStorageManager = new LocalStorageManager();
+        ReflectionTestUtils.setField(localStorageManager, "basePath", tempDirectory.toString());
     }
 
     @Nested

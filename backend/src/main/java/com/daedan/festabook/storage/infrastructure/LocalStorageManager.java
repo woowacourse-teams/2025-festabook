@@ -17,13 +17,8 @@ import org.springframework.stereotype.Component;
 @Profile("dev")
 public class LocalStorageManager implements StorageManager {
 
-    private final String basePath;
-
-    public LocalStorageManager(
-            @Value("${local.storage.base-path}") String basePath
-    ) {
-        this.basePath = basePath;
-    }
+    @Value("${local.storage.base-path}")
+    private String basePath;
 
     @Override
     public StorageUploadResponse uploadFile(StorageUploadRequest request) {
