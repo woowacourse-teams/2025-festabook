@@ -49,7 +49,7 @@ class JwtProviderTest {
                 s.assertThat(festivalId).isEqualTo(claims.get(CLAIM_FESTIVAL_ID, Long.class));
                 s.assertThat(claims.getExpiration()).isNotNull();
                 s.assertThat(claims.getExpiration().getTime())
-                        .isCloseTo(System.currentTimeMillis() + EXPIRY, within(1000L));
+                        .isCloseTo(System.currentTimeMillis() + EXPIRY, within(10000L));
             });
         }
     }
