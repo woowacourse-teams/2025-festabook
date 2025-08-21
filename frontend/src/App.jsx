@@ -56,6 +56,9 @@ function App() {
     const openModal = (type, props = {}) => setModalState({ type, props });
     const closeModal = () => setModalState({ type: null, props: {} });
 
+
+    
+
     const renderPage = () => {
         switch (page) {
 
