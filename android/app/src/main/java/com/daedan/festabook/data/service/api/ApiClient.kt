@@ -6,6 +6,7 @@ import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
 import com.daedan.festabook.data.datasource.local.FestivalLocalDataSourceImpl
 import com.daedan.festabook.data.service.DeviceService
 import com.daedan.festabook.data.service.FAQService
+import com.daedan.festabook.data.service.FestivalLineupService
 import com.daedan.festabook.data.service.FestivalNotificationService
 import com.daedan.festabook.data.service.FestivalService
 import com.daedan.festabook.data.service.LostItemService
@@ -52,6 +53,7 @@ object ApiClient {
     val faqService: FAQService by lazy { retrofit.create(FAQService::class.java) }
     val festivalService: FestivalService by lazy { retrofit.create(FestivalService::class.java) }
     val lostItemService: LostItemService by lazy { retrofit.create(LostItemService::class.java) }
+    val festivalLineupService: FestivalLineupService by lazy { retrofit.create(FestivalLineupService::class.java) }
 
     fun initialize(context: Context) {
         if (!this::festivalLocalDataSource.isInitialized) {
