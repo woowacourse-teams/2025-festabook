@@ -16,7 +16,6 @@ import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.getIconId
 import com.daedan.festabook.presentation.placeList.model.getTextId
-import kotlin.getValue
 
 class PlaceDetailPreviewSecondaryFragment :
     BaseFragment<FragmentPlaceDetailPreviewSecondaryBinding>(R.layout.fragment_place_detail_preview_secondary),
@@ -54,6 +53,7 @@ class PlaceDetailPreviewSecondaryFragment :
                     binding.makeChildVisible()
                     updateSelectedPlaceUi(selectedPlace.value)
                 }
+
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
                 is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
                 is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false

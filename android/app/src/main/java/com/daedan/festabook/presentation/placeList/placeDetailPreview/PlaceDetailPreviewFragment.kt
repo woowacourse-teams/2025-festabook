@@ -5,20 +5,17 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.core.view.children
 import androidx.fragment.app.viewModels
-import coil3.load
-import coil3.request.placeholder
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
+import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.common.setFormatDate
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
-import kotlin.getValue
-import kotlin.sequences.forEach
 
 class PlaceDetailPreviewFragment :
     BaseFragment<FragmentPlaceDetailPreviewBinding>(
@@ -97,11 +94,7 @@ class PlaceDetailPreviewFragment :
             tvSelectedPlaceDescription.text = selectedPlace.place.description
                 ?: getString(R.string.place_list_default_description)
             cvPlaceCategory.setCategory(selectedPlace.place.category)
-            ivSelectedPlaceImage.load(
-                selectedPlace.featuredImage,
-            ) {
-                placeholder(R.color.gray300)
-            }
+            ivSelectedPlaceImage.loadImage(selectedPlace.featuredImage)
         }
     }
 

@@ -23,29 +23,17 @@
 
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
-        <com.facebook.shimmer.ShimmerFrameLayout
-            android:id="@+id/sfl_schedule_skeleton"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:importantForAccessibility="no"
-            app:shimmer_auto_start="true">
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lav_schedule_loading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:lottie_autoPlay="true"
+            app:lottie_loop="true"
+            app:lottie_rawRes="@raw/loading" />
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <include layout="@layout/item_schedule_tab_page_skeleton" />
-
-                <include layout="@layout/item_schedule_tab_page_skeleton" />
-
-                <include layout="@layout/item_schedule_tab_page_skeleton" />
-
-                <include layout="@layout/item_schedule_tab_page_skeleton" />
-
-                <include layout="@layout/item_schedule_tab_page_skeleton" />
-
-            </LinearLayout>
-        </com.facebook.shimmer.ShimmerFrameLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
