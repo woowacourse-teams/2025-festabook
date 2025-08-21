@@ -1,5 +1,6 @@
 package com.daedan.festabook.device.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,12 +10,16 @@ import jakarta.persistence.Id;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE device SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Device {
+public class Device extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,28 +31,15 @@ public class Device {
     @Column(nullable = false)
     private String fcmToken;
 
-    protected Device(
-            Long id,
+    public Device(
             String deviceIdentifier,
             String fcmToken
     ) {
         validateDeviceIdentifier(deviceIdentifier);
         validateFcmToken(fcmToken);
 
-        this.id = id;
         this.deviceIdentifier = deviceIdentifier;
         this.fcmToken = fcmToken;
-    }
-
-    public Device(
-            String deviceIdentifier,
-            String fcmToken
-    ) {
-        this(
-                null,
-                deviceIdentifier,
-                fcmToken
-        );
     }
 
     private void validateDeviceIdentifier(String deviceIdentifier) {

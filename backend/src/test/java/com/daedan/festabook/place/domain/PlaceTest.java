@@ -33,7 +33,6 @@ class PlaceTest {
         @Test
         void 성공() {
             // given
-
             Festival festival = FestivalFixture.create();
             PlaceCategory placeCategory = PlaceCategory.BOOTH;
             Coordinate coordinate = CoordinateFixture.create();

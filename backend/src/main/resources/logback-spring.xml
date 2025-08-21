@@ -7,10 +7,15 @@
         <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
             <file>${LOG_FILE_PATH}/application.json</file>
 
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${LOG_FILE_PATH}/application.%d{yyyy-MM-dd}.json</fileNamePattern>
-                <maxHistory>7</maxHistory>
+            <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                <fileNamePattern>${LOG_FILE_PATH}/application.%i.json</fileNamePattern>
+                <minIndex>1</minIndex>
+                <maxIndex>10</maxIndex> <!-- 100MB * 10개 = 최대 1GB 보관 -->
             </rollingPolicy>
+
+            <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                <maxFileSize>100MB</maxFileSize> <!-- 100MB 단위 롤링 -->
+            </triggeringPolicy>
 
             <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>
@@ -20,16 +25,17 @@
         </root>
     </springProfile>
 
-    <!-- 로컬 및 테스트 환경: 콘솔 JSON 출력 -->
+    <!-- 로컬 및 테스트 환경: 콘솔 JSON 출력 @formatter:off-->
     <springProfile name="!prod">
-        <appender name="JSON_CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-            <encoder class="net.logstash.logback.encoder.LogstashEncoder">
-                <jsonGeneratorDecorator class="net.logstash.logback.decorate.PrettyPrintingJsonGeneratorDecorator"/>
+        <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <pattern>%cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %green(%logger{36}) - %msg%n
+                </pattern>
             </encoder>
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="JSON_CONSOLE"/>
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 

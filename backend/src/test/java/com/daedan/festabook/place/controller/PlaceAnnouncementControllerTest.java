@@ -7,6 +7,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -19,6 +20,7 @@ import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -43,6 +45,9 @@ class PlaceAnnouncementControllerTest {
     @Autowired
     private PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @LocalServerPort
     private int port;
 
@@ -60,6 +65,8 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -75,6 +82,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .post("/places/{placeId}/announcements", place.getId())
@@ -97,6 +105,8 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -110,6 +120,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .patch("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
@@ -131,6 +142,8 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -140,6 +153,7 @@ class PlaceAnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/places/announcements/{placeAnnouncementId}", placeAnnouncement.getId())
                     .then()
@@ -151,11 +165,17 @@ class PlaceAnnouncementControllerTest {
         @Test
         void 성공_존재하지_않는_플레이스_공지() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long notExistsPlaceAnnouncementId = 0L;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .delete("/places/announcements/{placeAnnouncementId}", notExistsPlaceAnnouncementId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());

@@ -9,6 +9,7 @@ import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.mock;
 
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
+import com.daedan.festabook.storage.dto.StorageUploadRequestFixture;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -67,17 +68,19 @@ class S3StorageManagerTest {
                     mockRegion,
                     BASE_PATH
             );
+            String expectedRelativePath = "/" + fileName;
             String expectedS3Key = String.format("%s/%s", BASE_PATH, fileName);
 
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
+            StorageUploadRequest request = StorageUploadRequestFixture.create(mockFile, fileName);
 
             // when
-            StorageUploadResponse result = s3StorageManager.uploadFile(request);
+            StorageUploadResponse response = s3StorageManager.uploadFile(request);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.accessUrl()).isEqualTo(expectedFileUrl);
-                s.assertThat(result.storagePath()).isEqualTo(expectedS3Key);
+                s.assertThat(response.accessUrl()).isEqualTo(expectedFileUrl);
+                s.assertThat(response.accessRelativePath()).isEqualTo(expectedRelativePath);
+                s.assertThat(response.storagePath()).isEqualTo(expectedS3Key);
             });
             then(s3Client).should()
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));
@@ -93,7 +96,7 @@ class S3StorageManagerTest {
                     "image/jpeg",
                     new byte[10]
             );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
+            StorageUploadRequest request = StorageUploadRequestFixture.create(mockFile, fileName);
 
             S3Exception s3Exception = mock(S3Exception.class, Answers.RETURNS_DEEP_STUBS);
             String mockErrorCode = "AccessDenied";
@@ -128,7 +131,7 @@ class S3StorageManagerTest {
                     "image/jpeg",
                     new byte[10]
             );
-            StorageUploadRequest request = new StorageUploadRequest(mockFile, fileName);
+            StorageUploadRequest request = StorageUploadRequestFixture.create(mockFile, fileName);
 
             SdkClientException sdkClientException = mock(SdkClientException.class, Answers.RETURNS_DEEP_STUBS);
             String mockMessage = "Network error";

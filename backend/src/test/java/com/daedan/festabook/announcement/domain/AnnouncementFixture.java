@@ -2,6 +2,7 @@ package com.daedan.festabook.announcement.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -30,8 +31,8 @@ public class AnnouncementFixture {
     public static Announcement create(
             boolean isPinned
     ) {
-        return new Announcement(null, DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL,
-                DEFAULT_CREATED_AT);
+        Announcement announcement = new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL);
+        return BaseEntityTestHelper.setCreatedAt(announcement, DEFAULT_CREATED_AT);
     }
 
     public static Announcement create(
@@ -44,15 +45,17 @@ public class AnnouncementFixture {
             Long announcementId,
             boolean isPinned
     ) {
-        return new Announcement(announcementId, DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL,
-                DEFAULT_CREATED_AT);
+        Announcement announcement = new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL);
+        BaseEntityTestHelper.setId(announcement, announcementId);
+        return BaseEntityTestHelper.setCreatedAt(announcement, DEFAULT_CREATED_AT);
     }
 
     public static Announcement create(
             boolean isPinned,
             LocalDateTime createdAt
     ) {
-        return new Announcement(null, DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL, createdAt);
+        Announcement announcement = new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL);
+        return BaseEntityTestHelper.setCreatedAt(announcement, createdAt);
     }
 
     public static Announcement create(

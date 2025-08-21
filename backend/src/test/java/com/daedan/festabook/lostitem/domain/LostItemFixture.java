@@ -2,6 +2,7 @@ package com.daedan.festabook.lostitem.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.time.LocalDateTime;
 
 public class LostItemFixture {
@@ -81,14 +82,14 @@ public class LostItemFixture {
             Long lostItemId,
             PickupStatus status
     ) {
-        return new LostItem(
-                lostItemId,
+        LostItem lostItem = new LostItem(
                 DEFAULT_FESTIVAL,
                 DEFAULT_IMAGE_URL,
                 DEFAULT_STORAGE_LOCATION,
-                status,
-                DEFAULT_CREATED_AT
+                status
         );
+        BaseEntityTestHelper.setId(lostItem, lostItemId);
+        return BaseEntityTestHelper.setCreatedAt(lostItem, DEFAULT_CREATED_AT);
     }
 
     public static LostItem create(
@@ -96,14 +97,14 @@ public class LostItemFixture {
             String imageUrl,
             String storageLocation
     ) {
-        return new LostItem(
-                lostItemId,
+        LostItem lostItem = new LostItem(
                 DEFAULT_FESTIVAL,
                 imageUrl,
                 storageLocation,
-                DEFAULT_PICK_UP_STATUS,
-                DEFAULT_CREATED_AT
+                DEFAULT_PICK_UP_STATUS
         );
+        BaseEntityTestHelper.setId(lostItem, lostItemId);
+        return BaseEntityTestHelper.setCreatedAt(lostItem, DEFAULT_CREATED_AT);
     }
 
     public static LostItem create(

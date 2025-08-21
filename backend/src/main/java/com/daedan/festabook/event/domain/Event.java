@@ -1,5 +1,6 @@
 package com.daedan.festabook.event.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,11 +14,15 @@ import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE event SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Event implements Comparable<Event> {
+public class Event extends BaseEntity implements Comparable<Event> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,22 +44,6 @@ public class Event implements Comparable<Event> {
     @Column(nullable = false)
     private String location;
 
-    protected Event(
-            Long id,
-            EventDate eventDate,
-            LocalTime startTime,
-            LocalTime endTime,
-            String title,
-            String location
-    ) {
-        this.id = id;
-        this.eventDate = eventDate;
-        this.startTime = startTime;
-        this.endTime = endTime;
-        this.title = title;
-        this.location = location;
-    }
-
     public Event(
             EventDate eventDate,
             LocalTime startTime,
@@ -62,14 +51,11 @@ public class Event implements Comparable<Event> {
             String title,
             String location
     ) {
-        this(
-                null,
-                eventDate,
-                startTime,
-                endTime,
-                title,
-                location
-        );
+        this.eventDate = eventDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.title = title;
+        this.location = location;
     }
 
     public EventStatus determineStatus(Clock clock) {
