@@ -27,6 +27,7 @@ val FAKE_PLACE_GEOGRAPHIES =
                 latitude = 1.0,
                 longitude = 1.0,
             ),
+            "푸드트럭",
         ),
         PlaceGeography(
             id = 1,
@@ -35,6 +36,7 @@ val FAKE_PLACE_GEOGRAPHIES =
                 latitude = 1.0,
                 longitude = 1.0,
             ),
+            "부스",
         ),
         PlaceGeography(
             id = 1,
@@ -43,6 +45,7 @@ val FAKE_PLACE_GEOGRAPHIES =
                 latitude = 1.0,
                 longitude = 1.0,
             ),
+            "주점",
         ),
     )
 

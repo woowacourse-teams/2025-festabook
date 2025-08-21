@@ -26,6 +26,12 @@ class PlaceDetailPreviewFragment :
     ),
     OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val backPressedCallback =
+        object : OnBackPressedCallback(false) {
+            override fun handleOnBackPressed() {
+                viewModel.unselectPlace()
+            }
+        }
 
     override fun onViewCreated(
         view: View,
@@ -38,7 +44,11 @@ class PlaceDetailPreviewFragment :
     }
 
     override fun onMenuItemReClick() {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+        viewModel.unselectPlace()
+    }
+
+    private fun setUpBackPressedCallback() {
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
     }
 
     private fun setupBinding() {
@@ -50,32 +60,29 @@ class PlaceDetailPreviewFragment :
         }
     }
 
-    private fun setUpBackPressedCallback() {
-        val callback =
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    viewModel.unselectPlace()
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
-
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            backPressedCallback.isEnabled = true
+            binding.layoutSelectedPlace.visibility =
+                if (selectedPlace == SelectedPlaceUiState.Empty) View.GONE else View.VISIBLE
+
             when (selectedPlace) {
-                is SelectedPlaceUiState.Success -> {
-                    binding.makeChildVisible()
-                    updateSelectedPlaceUi(selectedPlace.value)
+                is SelectedPlaceUiState.Loading -> {
+                    binding.layoutSelectedPlace.visibility = View.INVISIBLE
                 }
+
+                is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
-                is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
-                else -> Unit
+                is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false
             }
         }
     }
 
     private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
         with(binding) {
+            layoutSelectedPlace.visibility = View.VISIBLE
+            makeChildVisible()
+
             tvSelectedPlaceTitle.text =
                 selectedPlace.place.title ?: getString(R.string.place_list_default_title)
             tvSelectedPlaceLocation.text =
@@ -100,12 +107,6 @@ class PlaceDetailPreviewFragment :
 
     private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
         startActivity(PlaceDetailActivity.newIntent(requireContext(), placeDetail))
-    }
-
-    private fun FragmentPlaceDetailPreviewBinding.makeChildInvisible() {
-        layoutSelectedPlace.children.forEach {
-            it.visibility = View.INVISIBLE
-        }
     }
 
     private fun FragmentPlaceDetailPreviewBinding.makeChildVisible() {

@@ -107,5 +107,8 @@
     <string name="confirm">확인</string>
     <string name="cancel">취소</string>
 
+    <!--토스트 메시지-->
+    <string name="back_press_exit_message">뒤로가기를 한 번 더 누르면 종료됩니다.</string>
+
 
 </resources>

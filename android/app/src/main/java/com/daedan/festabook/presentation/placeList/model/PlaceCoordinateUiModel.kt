@@ -6,6 +6,7 @@ data class PlaceCoordinateUiModel(
     val placeId: Long,
     val coordinate: CoordinateUiModel,
     val category: PlaceCategoryUiModel,
+    val title: String,
 )
 
 fun PlaceGeography.toUiModel() =
@@ -13,4 +14,5 @@ fun PlaceGeography.toUiModel() =
         placeId = id,
         coordinate = markerCoordinate.toUiModel(),
         category = category.toUiModel(),
+        title = title,
     )

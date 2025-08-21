@@ -14,6 +14,8 @@ data class PlaceGeographyResponse(
     val id: Long,
     @SerialName("markerCoordinate")
     val markerCoordinate: MarkerCoordinate,
+    @SerialName("title")
+    val title: String,
 ) {
     @Serializable
     data class MarkerCoordinate(
@@ -45,6 +47,7 @@ fun PlaceGeographyResponse.toDomain() =
                 latitude = markerCoordinate.latitude,
                 longitude = markerCoordinate.longitude,
             ),
+        title = title,
     )
 
 fun PlaceGeographyResponse.PlaceCategory.toDomain() =

@@ -1,6 +1,8 @@
 package com.daedan.festabook.presentation.main
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
@@ -84,8 +86,10 @@ class MainActivity :
         notificationPermissionManager.requestNotificationPermission(this)
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
+        setupObservers()
         onMenuItemClick()
         onMenuItemReClick()
+        onBackPress()
     }
 
     override fun onRequestPermissionsResult(
@@ -105,6 +109,14 @@ class MainActivity :
     }
 
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
+
+    private fun setupObservers() {
+        viewModel.backPressEvent.observe(this) { event ->
+            event.getContentIfNotHandled()?.let { isDoublePress ->
+                if (isDoublePress) finish() else showToast(getString(R.string.back_press_exit_message))
+            }
+        }
+    }
 
     private fun setupBinding() {
         setContentView(binding.root)
@@ -135,6 +147,17 @@ class MainActivity :
                 add(R.id.fcv_fragment_container, homeFragment, TAG_HOME_FRAGMENT)
             }
         }
+    }
+
+    private fun onBackPress() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    viewModel.onBackPressed()
+                }
+            },
+        )
     }
 
     private fun onMenuItemClick() {
