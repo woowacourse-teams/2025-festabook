@@ -37,7 +37,7 @@ const CouncilLoginPage = ({ onSuccess }) => {
       </div>
 
       {/* Background logo and tagline */}
-      <div className="absolute inset-0 flex flex-col items-center justify-start pt-12 pointer-events-none">
+      <div className="absolute inset-0 flex flex-col items-center justify-start pt-20 pointer-events-none">
         <img src="/festabook-logo.png" alt="FestaBook" className="h-96 w-auto object-contain mb-4" />
         
       </div>
