@@ -3,7 +3,7 @@ name: Android CD
 on:
   push:
     branches:
-      - prod/android
+      - an/600-feat
 jobs:
   build_and_distribute:
     runs-on: ubuntu-latest
@@ -67,3 +67,18 @@ jobs:
           FIREBASE_APP_ID: ${{ secrets.FIREBASE_APP_ID }}
           GOOGLE_APPLICATION_CREDENTIALS: app/festabook-firebase-admin-sdk.json
         run: firebase appdistribution:distribute app/build/outputs/bundle/release/app-release.aab --app ${{ env.FIREBASE_APP_ID }}
+
+      - name: Get Version from properties
+        id: get_version
+        run: echo "VERSION=$( grep "VERSION=" version.properties | cut -d'=' -f2)" >> $GITHUB_ENV
+
+      - name: Create Git Tag and Push
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+          git tag "android-v${{ env.VERSION }}"
+          git push origin "android-v${{ env.VERSION }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+
