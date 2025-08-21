@@ -222,29 +222,28 @@ const HomePage = () => {
                         onMouseUp={handleMouseUp}
                         onMouseLeave={handleMouseLeave}
                     >
-                        <div className="flex space-x-6 w-max select-none">
+                        <div className="flex space-x-6 w-max select-none py-2">
                             {lineups.map((lineup, index) => (
                                 <div
                                     key={lineup.lineupId}
-                                    className="relative flex-shrink-0 text-center cursor-pointer hover:opacity-80 transition-opacity duration-200"
+                                    className="relative flex-shrink-0 text-center cursor-pointer hover:scale-105 transition-transform duration-300 ease-out"
                                     onClick={() => openModal('lineup-edit', { 
                                         lineup, 
                                         onUpdate: setLineups 
                                     })}
                                 >
-                                    {/* 개선된 프로필 이미지 - 오른쪽 하단 장식 효과 */}
-                                    <div className="relative w-24 h-24 mb-3">
-                                        <div className="w-full h-full bg-gray-200 overflow-hidden relative border-3 border-gray-300" style={{borderRadius: '50% 50% 50% 15%'}}>
+                                    {/* 개선된 프로필 이미지 - 축제 분위기 */}
+                                    <div className="relative w-24 h-24 mb-3 mt-2">
+                                        {/* 회색 테두리로 복구 */}
+                                        <div className="w-full h-full bg-white overflow-hidden relative border-2 border-gray-300 shadow-2xl hover:shadow-black transition-shadow duration-300" style={{borderRadius: '50% 50% 50% 15%', boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3), 0 6px 10px rgba(0, 0, 0, 0.2)'}}>
                                             <img
                                                 src={lineup.imageUrl}
                                                 alt={lineup.name}
                                                 className="w-full h-full object-cover"
                                             />
-
                                         </div>
                                     </div>
-                                    <p className="text-sm font-medium text-gray-900 mb-1">{lineup.name}</p>
-                                    <p className="text-xs text-gray-500">{formatDateTime(lineup.performanceAt)}</p>
+                                    <p className="text-sm font-medium text-gray-900">{lineup.name}</p>
                                 </div>
                             ))}
                         </div>
