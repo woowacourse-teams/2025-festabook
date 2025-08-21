@@ -32,12 +32,11 @@ public class LocalStorageManager implements StorageManager {
 
             request.file().transferTo(fileStorePath);
 
-            StorageUploadResponse response = new StorageUploadResponse(
+            return new StorageUploadResponse(
                     ensureLeadingSlash(storeFile.getStoragePath()),
                     ensureLeadingSlash(storeFile.getStoragePath()),
                     request.storagePath()
             );
-            return response;
         } catch (IOException e) {
             throw new BusinessException(
                     String.format("로컬 저장소 파일 저장 실패 %s", e.getMessage()),
