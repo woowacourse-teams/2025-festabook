@@ -106,6 +106,10 @@
     <string name="notification_permission_message">새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.</string>
     <string name="confirm">확인</string>
     <string name="cancel">취소</string>
+    <string name="main_alarm_dialog_title">우리 학교 축제의\n최신 정보를 놓치지 마세요!</string>
+    <string name="main_alarm_dialog_message">연예인 공연 정보, 우천 취소, 일정 변경 등 축제의 중요한 소식을 가장 빠르게 알려드릴게요.</string>
+    <string name="main_alarm_dialog_confirm_button">알림 받기</string>
+    <string name="main_alarm_dialog_cancel_button">다음에</string>
     <string name="item_lineup_image">item_lineup_image</string>
     <string name="home_check_schedule_text">일정 확인하기</string>
     <string name="home_lineup_title">축제 라인업</string>
