@@ -20,6 +20,17 @@ android {
             .inputStream()
             .use { Properties().apply { load(it) } }
 
+    val versionProperties =
+        gradle.rootProject
+            .file("version.properties")
+            .inputStream()
+            .use { Properties().apply { load(it) } }
+
+    val semanticVersion =
+        checkNotNull(versionProperties["VERSION"] as? String) {
+            "버전 정보가 version.properties에 존재하지 않습니다"
+        }
+
     val naverMapClientId =
         checkNotNull(localProperties["NAVER_MAP_CLIENT_ID"] as? String) {
             "NAVER_MAP_CLIENT_ID is missing or not a String in local.properties"
@@ -67,7 +78,7 @@ android {
         minSdk = 28
         targetSdk = 36
         versionCode = 1
-        versionName = "1.0"
+        versionName = semanticVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
