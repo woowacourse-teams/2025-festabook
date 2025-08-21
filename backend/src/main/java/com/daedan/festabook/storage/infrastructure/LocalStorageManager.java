@@ -52,7 +52,7 @@ public class LocalStorageManager implements StorageManager {
     private void createDirectoryIfNotExists(Path directoryPath) throws IOException {
         if (directoryPath != null && !Files.exists(directoryPath)) {
             Files.createDirectories(directoryPath);
-            log.info("디렉토리가 생성되었습니다: {}", directoryPath);
+            log.debug("디렉토리가 생성되었습니다: {}", directoryPath);
         }
     }
 
