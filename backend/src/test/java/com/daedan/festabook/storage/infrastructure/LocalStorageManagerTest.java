@@ -29,13 +29,13 @@ import org.springframework.web.multipart.MultipartFile;
 class LocalStorageManagerTest {
 
     @TempDir
-    private Path tempDir;
+    private Path tempDirectory;
 
     private LocalStorageManager localStorageManager;
 
     @BeforeEach
     void setUp() {
-        localStorageManager = new LocalStorageManager(tempDir.toString());
+        localStorageManager = new LocalStorageManager(tempDirectory.toString());
     }
 
     @Nested
@@ -65,7 +65,7 @@ class LocalStorageManagerTest {
                 s.assertThat(response.accessRelativePath()).startsWith(expectedRelativePath);
                 s.assertThat(response.storagePath()).isEqualTo(storagePath);
             });
-            Path expectedFilePath = tempDir.resolve(response.storagePath());
+            Path expectedFilePath = tempDirectory.resolve(response.storagePath());
             assertThat(Files.exists(expectedFilePath)).isTrue();
         }
 
