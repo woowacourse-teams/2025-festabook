@@ -1,4 +1,4 @@
-name: Frontend CI/CD PROD
+name: Frontend CI/CD Prod
 
 on:
   push:
@@ -7,14 +7,15 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-and-deploy-to-AWS:
-    runs-on: [self-hosted, prod-runner]
+  build-and-deploy:
+    runs-on: [self-hosted]
 
     steps:
       # 프로젝트 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 환경 변수 주입
       - name: Create .env.production
         run: |
           echo "VITE_API_HOST=${{ secrets.PROD_API_HOST }}" > ./frontend/.env.production
@@ -40,3 +41,12 @@ jobs:
       - name: Upload build files to S3
         run: |
           aws s3 cp ./frontend/dist ${{ secrets.PROD_S3_BUCKET }} --recursive
+
+      # CloudFront 캐시 무효화
+      - name: Invalidate CloudFront cache
+        env:
+          DISTRIBUTION_ID: ${{ secrets.PROD_CLOUDFRONT_DISTRIBUTION_ID }}
+        run: |
+          aws cloudfront create-invalidation \
+          --distribution-id "$DISTRIBUTION_ID" \
+          --paths "/index.html" "/"

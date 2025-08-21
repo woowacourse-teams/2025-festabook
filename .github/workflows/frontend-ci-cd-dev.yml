@@ -8,13 +8,14 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: [self-hosted, dev-runner]
+    runs-on: [self-hosted]
 
     steps:
       # 프로젝트 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      # 환경 변수 주입
       - name: Create .env.production
         run: |
           echo "VITE_API_HOST=${{ secrets.DEV_API_HOST }}" > ./frontend/.env.production
