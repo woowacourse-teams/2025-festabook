@@ -140,7 +140,7 @@ class PlaceListViewModelTest {
             coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
 
             // when
-            placeListViewModel.selectPlace(1, PlaceCategoryUiModel.FOOD_TRUCK)
+            placeListViewModel.selectPlace(1)
             advanceUntilIdle()
 
             // then
@@ -158,7 +158,7 @@ class PlaceListViewModelTest {
             coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_ETC_PLACE_DETAIL)
 
             // when
-            placeListViewModel.selectPlace(1, PlaceCategoryUiModel.TOILET)
+            placeListViewModel.selectPlace(1)
             advanceUntilIdle()
 
             // then
@@ -172,7 +172,7 @@ class PlaceListViewModelTest {
         runTest {
             // given
             coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
-            placeListViewModel.selectPlace(1, PlaceCategoryUiModel.FOOD_TRUCK)
+            placeListViewModel.selectPlace(1)
             advanceUntilIdle()
 
             // when

@@ -62,7 +62,7 @@ class PlaceMapFragment :
         childFragmentManager.commit {
             add(R.id.fcv_place_list_container, placeListFragment, null)
             add(R.id.fcv_map_container, placeDetailPreviewFragment, null)
-            add(R.id.fcv_map_container, placeCategoryFragment, null)
+            add(R.id.fcv_place_category_container, placeCategoryFragment, null)
             add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment, null)
             hide(placeDetailPreviewFragment)
             hide(placeDetailPreviewSecondaryFragment)

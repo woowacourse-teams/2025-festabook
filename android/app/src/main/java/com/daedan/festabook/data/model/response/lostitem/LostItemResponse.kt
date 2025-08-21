@@ -15,9 +15,9 @@ data class LostItemResponse(
     val imageUrl: String,
     @SerialName("storageLocation")
     val storageLocation: String,
-    @SerialName("status")
     @Serializable(with = LostItemStatusSerializer::class)
-    val status: LostItemStatus,
+    @SerialName("pickupStatus")
+    val pickupStatus: LostItemStatus,
     @SerialName("createdAt")
     val createdAt: String,
 )
@@ -28,6 +28,6 @@ fun LostItemResponse.toDomain(): LostItem =
         imageUrl = imageUrl,
         storageLocation = storageLocation,
         status =
-            status.also { if (it == LostItemStatus.UNKNOWN) Timber.e("${::toDomain.name}: 알 수 없는 분실물 상태") },
+            pickupStatus.also { if (it == LostItemStatus.UNKNOWN) Timber.e("${::toDomain.name}: 알 수 없는 분실물 상태") },
         createdAt = createdAt.toLocalDateTime(),
     )

@@ -28,7 +28,11 @@ class ExploreViewModel(
 
     fun onUniversitySelected(university: University) {
         selectedUniversity = university
-        _searchState.value = SearchUiState.Success(selectedUniversity = university)
+        _searchState.value =
+            SearchUiState.Success(
+                universitiesFound = listOf(university),
+//                selectedUniversity = university,
+            )
     }
 
     fun onTextInputChanged() {

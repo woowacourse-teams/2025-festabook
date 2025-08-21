@@ -16,46 +16,47 @@ import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.getIconId
 import com.daedan.festabook.presentation.placeList.model.getTextId
-import kotlin.getValue
 
 class PlaceDetailPreviewSecondaryFragment :
     BaseFragment<FragmentPlaceDetailPreviewSecondaryBinding>(R.layout.fragment_place_detail_preview_secondary),
     OnMenuItemReClickListener {
     private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val backPressedCallback =
+        object : OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                viewModel.unselectPlace()
+            }
+        }
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        setUpBackPressedCallback()
         setUpObserver()
+        setUpBackPressedCallback()
     }
 
     override fun onMenuItemReClick() {
-        requireActivity().onBackPressedDispatcher.onBackPressed()
+        viewModel.unselectPlace()
     }
 
     private fun setUpBackPressedCallback() {
-        val callback =
-            object : OnBackPressedCallback(true) {
-                override fun handleOnBackPressed() {
-                    viewModel.unselectPlace()
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
     }
 
     private fun setUpObserver() {
         viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
+            backPressedCallback.isEnabled = true
             when (selectedPlace) {
                 is SelectedPlaceUiState.Success -> {
                     binding.makeChildVisible()
                     updateSelectedPlaceUi(selectedPlace.value)
                 }
+
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
                 is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
-                else -> Unit
+                is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false
             }
         }
     }

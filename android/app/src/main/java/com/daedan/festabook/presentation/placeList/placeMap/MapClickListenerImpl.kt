@@ -12,7 +12,7 @@ class MapClickListenerImpl(
         category: PlaceCategoryUiModel,
     ): Boolean {
         Timber.d("Marker CLick : placeID: $placeId categoty: $category")
-        viewModel.selectPlace(placeId, category)
+        viewModel.selectPlace(placeId)
         return true
     }
 

@@ -1,25 +1,38 @@
 package com.daedan.festabook.presentation.news.notice.adapter
 
-import android.text.TextUtils
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemNoticeBinding
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
+import timber.log.Timber
 
 class NoticeViewHolder(
     private val binding: ItemNoticeBinding,
     private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
+    private var noticeItem: NoticeUiModel? = null
+
+    init {
+        binding.layoutNoticeItem.setOnClickListener {
+            noticeItem?.let {
+                onNewsClickListener.onNoticeClick(it)
+            } ?: run {
+                Timber.w("${::NoticeViewHolder.name} 공지 아이템이 null입니다.")
+            }
+        }
+    }
+
     fun bind(notice: NoticeUiModel) {
         setupTopMargin()
+        noticeItem = notice
         binding.notice = notice
+        binding.tvNoticeDescription.visibility =
+            if (notice.isExpanded) View.VISIBLE else View.GONE
 
-        binding.layoutNoticeItem.setOnClickListener {
-            onNewsClickListener.onNoticeClick(notice)
-        }
         if (notice.isPinned) {
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_pin)
             binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_gray100_stroke_gray200_radius_16dp)
@@ -27,11 +40,6 @@ class NoticeViewHolder(
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_speaker)
             binding.layoutNoticeItem.setBackgroundResource(R.drawable.bg_stroke_gray200_radius_16dp)
         }
-
-        binding.tvNoticeDescription.maxLines =
-            if (notice.isExpanded) Integer.MAX_VALUE else DEFAULT_LINE_COUNT
-        binding.tvNoticeDescription.ellipsize =
-            if (notice.isExpanded) null else TextUtils.TruncateAt.END
     }
 
     private fun setupTopMargin() {
@@ -44,7 +52,6 @@ class NoticeViewHolder(
     }
 
     companion object {
-        private const val DEFAULT_LINE_COUNT = 2
         private const val TOP_MARGIN = 8
 
         fun from(
