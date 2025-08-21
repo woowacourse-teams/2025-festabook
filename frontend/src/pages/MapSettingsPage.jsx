@@ -287,11 +287,6 @@ const MapSettingsPage = () => {
                       <div>
                         <p className="font-semibold">
                           {(() => {
-                            // etcPlace 카테고리들은 카테고리명을 제목으로 사용
-                            const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
-                            if (etcPlaceCategories.includes(booth.category)) {
-                              return placeCategories[booth.category];
-                            }
                             // 일반 플레이스는 기존 로직 사용
                             return booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.';
                           })()}
