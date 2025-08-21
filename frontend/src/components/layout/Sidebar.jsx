@@ -148,13 +148,6 @@ const Sidebar = ({ open, setOpen }) => {
                         >
                             Festabook
                         </h1>
-                        <button
-                            className="text-gray-500 hover:text-gray-800 focus:outline-none"
-                            title="Festival ID 변경"
-                            onClick={() => openModal('festival')}
-                        >
-                            <i className="fas fa-lock text-lg" />
-                        </button>
                     </div>
                 </div>
             ) : (
