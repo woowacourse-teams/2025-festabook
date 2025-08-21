@@ -42,7 +42,6 @@ jobs:
           SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[$PR_REVIEWER]:-$PR_REVIEWER}
           SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-$PR_AUTHOR}
 
-          SLACK_REVIEWER_MENTION="<@$SLACK_REVIEWER_ID>"
           SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
 
           if [[ "$PR_REVIEWER" == *"[bot]" ]]; then
@@ -57,5 +56,5 @@ jobs:
           esac
 
           curl -X POST -H 'Content-type: application/json' \
-            --data "{\"text\": \"${ICON} *리뷰 완료 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${SLACK_REVIEWER_MENTION}\n*상태:* ${REVIEW_STATE}\n*링크:* ${PR_URL}\"}" \
+            --data "{\"text\": \"${ICON} *리뷰 완료 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*상태:* ${REVIEW_STATE}\n*링크:* ${PR_URL}\"}" \
             $SLACK_WEBHOOK_URL
