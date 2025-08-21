@@ -20,7 +20,7 @@
             android:scaleType="centerCrop"
             app:layout_constraintDimensionRatio="1:1"
             app:layout_constraintTop_toTopOf="parent"
-            app:shapeAppearanceOverlay="@style/CustomShapeAppearance"
+            app:shapeAppearanceOverlay="@style/LineupItemCustomShapeAppearance"
             app:strokeColor="@color/gray300"
             app:strokeWidth="1dp"
             tools:src="@drawable/sample_poster" />

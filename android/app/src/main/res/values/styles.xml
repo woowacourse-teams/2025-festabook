@@ -85,7 +85,7 @@
         <item name="android:windowNoTitle">true</item>
     </style>
 
-    <style name="CustomShapeAppearance" parent="ShapeAppearance.MaterialComponents.SmallComponent">
+    <style name="LineupItemCustomShapeAppearance" parent="ShapeAppearance.MaterialComponents.SmallComponent">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSizeBottomLeft">5%</item>
         <item name="cornerSizeBottomRight">50%</item>
