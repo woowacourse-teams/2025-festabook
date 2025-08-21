@@ -16,12 +16,12 @@ import BoothsPage from './pages/BoothsPage';
 import MapSettingsPage from './pages/MapSettingsPage';
 import NoticesPage from './pages/NoticesPage';
 import LostFoundPage from './pages/LostFoundPage';
-import QnaPage from './pages/QnaPage';
+import FaqPage from './pages/FaqPage';
 
 // Modals
 import NoticeModal from './components/modals/NoticeModal';
 import LostItemModal from './components/modals/LostItemModal';
-import QnaModal from './components/modals/QnaModal';
+import FaqModal from './components/modals/FaqModal';
 import ScheduleModal from './components/modals/ScheduleModal';
 import DatePromptModal from './components/modals/DatePromptModal';
 import BoothModal from './components/modals/BoothModal';
@@ -68,7 +68,7 @@ function App() {
             case 'map-settings': return <MapSettingsPage />;
             case 'notices': return <NoticesPage />;
             case 'lost-found': return <LostFoundPage />;
-            case 'qna': return <QnaPage />;
+            case 'faq': return <FaqPage />;
             default: return <HomePage />;
         }
     };
@@ -80,7 +80,7 @@ function App() {
             case 'notice': return <NoticeModal {...allProps} isPlaceNotice={props.isPlaceNotice} />;
             case 'notice-detail': return <NoticeDetailModal {...allProps} />;
             case 'lostItem': return <LostItemModal {...allProps} />;
-            case 'qna': return <QnaModal {...allProps} />;
+            case 'faq': return <FaqModal {...allProps} />;
             case 'schedule': return <ScheduleModal {...allProps} />;
             case 'datePrompt': return <DatePromptModal {...allProps} />;
             case 'booth': return <BoothModal {...allProps} />;

@@ -441,60 +441,60 @@ export const scheduleAPI = {
     }
 };
 
-// QnA 관련 API
+// FAQ 관련 API
 export const qnaAPI = {
-  // 모든 QnA 조회
+  // 모든 FAQ 조회
   getQuestions: async () => {
     try {
       const response = await api.get('/questions');
       return response.data;
     } catch (error) {
       console.error('Failed to fetch questions:', error);
-      throw new Error('QnA 조회에 실패했습니다.');
+      throw new Error('FAQ 조회에 실패했습니다.');
     }
   },
 
-  // 새 QnA 추가
+  // 새 FAQ 추가
   createQuestion: async (questionData) => {
     try {
       const response = await api.post('/questions', questionData);
       return response.data;
     } catch (error) {
       console.error('Failed to create question:', error);
-      throw new Error('QnA 추가에 실패했습니다.');
+      throw new Error('FAQ 추가에 실패했습니다.');
     }
   },
 
-  // QnA 수정
+  // FAQ 수정
   updateQuestion: async (questionId, questionData) => {
     try {
       const response = await api.patch(`/questions/${questionId}`, questionData);
       return response.data;
     } catch (error) {
       console.error('Failed to update question:', error);
-      throw new Error('QnA 수정에 실패했습니다.');
+      throw new Error('FAQ 수정에 실패했습니다.');
     }
   },
 
-  // QnA 삭제
+  // FAQ 삭제
   deleteQuestion: async (questionId) => {
     try {
       await api.delete(`/questions/${questionId}`);
       // 성공 시 204 응답, body 없음
     } catch (error) {
       console.error('Failed to delete question:', error);
-      throw new Error('QnA 삭제에 실패했습니다.');
+      throw new Error('FAQ 삭제에 실패했습니다.');
     }
   },
 
-  // QnA 순서 변경
+  // FAQ 순서 변경
   updateQuestionSequences: async (sequences) => {
     try {
       const response = await api.patch('/questions/sequences', sequences);
       return response.data;
     } catch (error) {
       console.error('Failed to update question sequences:', error);
-      throw new Error('QnA 순서 변경에 실패했습니다.');
+      throw new Error('FAQ 순서 변경에 실패했습니다.');
     }
   }
 };
