@@ -1,6 +1,7 @@
 package com.daedan.festabook.lineup.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,11 +14,15 @@ import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE lineup SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Lineup implements Comparable<Lineup> {
+public class Lineup extends BaseEntity implements Comparable<Lineup> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,33 +42,16 @@ public class Lineup implements Comparable<Lineup> {
     @Column(nullable = false)
     private LocalDateTime performanceAt;
 
-    protected Lineup(
-            Long id,
-            Festival festival,
-            String name,
-            String imageUrl,
-            LocalDateTime performanceAt
-    ) {
-        this.id = id;
-        this.festival = festival;
-        this.name = name;
-        this.imageUrl = imageUrl;
-        this.performanceAt = performanceAt;
-    }
-
     public Lineup(
             Festival festival,
             String name,
             String imageUrl,
             LocalDateTime performanceAt
     ) {
-        this(
-                null,
-                festival,
-                name,
-                imageUrl,
-                performanceAt
-        );
+        this.festival = festival;
+        this.name = name;
+        this.imageUrl = imageUrl;
+        this.performanceAt = performanceAt;
     }
 
     public void updateLineup(String name, String imageUrl, LocalDateTime performanceAt) {

@@ -1,6 +1,7 @@
 package com.daedan.festabook.council.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.global.security.role.RoleType;
 import jakarta.persistence.Column;
@@ -20,13 +21,17 @@ import java.util.Set;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE council SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Council {
+public class Council extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -46,8 +51,7 @@ public class Council {
     @Enumerated(EnumType.STRING)
     private Set<RoleType> roles = new HashSet<>();
 
-    protected Council(
-            Long id,
+    public Council(
             Festival festival,
             String username,
             String password
@@ -56,23 +60,9 @@ public class Council {
         validateUsername(username);
         validatePassword(password);
 
-        this.id = id;
         this.festival = festival;
         this.username = username;
         this.password = password;
-    }
-
-    public Council(
-            Festival festival,
-            String username,
-            String password
-    ) {
-        this(
-                null,
-                festival,
-                username,
-                password
-        );
     }
 
     public void updateRole(Set<RoleType> roles) {

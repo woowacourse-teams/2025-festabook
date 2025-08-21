@@ -2,6 +2,7 @@ package com.daedan.festabook.council.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 
 public class CouncilFixture {
 
@@ -76,11 +77,12 @@ public class CouncilFixture {
             String username,
             String password
     ) {
-        return new Council(
-                councilId,
+        Council council = new Council(
                 festival,
                 username,
                 password
         );
+        BaseEntityTestHelper.setId(council, councilId);
+        return council;
     }
 }
