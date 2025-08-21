@@ -9,7 +9,7 @@ sealed interface SearchUiState {
 
     data class Success(
         val universitiesFound: List<University> = emptyList(),
-        val selectedUniversity: University? = null,
+//        val selectedUniversity: University? = null,
     ) : SearchUiState
 
     data class Error(

@@ -27,6 +27,7 @@ import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.placeMap.PlaceMapFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import timber.log.Timber
 
 class MainActivity :
@@ -83,7 +84,7 @@ class MainActivity :
         setupBinding()
 
         viewModel.registerDeviceAndFcmToken()
-        notificationPermissionManager.requestNotificationPermission(this)
+        setupAlarmDialog()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         setupObservers()
@@ -210,6 +211,29 @@ class MainActivity :
         }
     }
 
+    private fun setupAlarmDialog() {
+        if (!isMainActivityInitialized()) {
+            showAlarmDialog()
+        }
+    }
+
+    private fun showAlarmDialog() {
+        val dialog =
+            MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
+                .setView(R.layout.main_alarm_view)
+                .setPositiveButton(R.string.main_alarm_dialog_confirm_button) { dialog, _ ->
+                    notificationPermissionManager.requestNotificationPermission(this)
+                }.setNegativeButton(R.string.main_alarm_dialog_cancel_button) { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
+        dialog.show()
+    }
+
+    private fun isMainActivityInitialized(): Boolean {
+        val initialValue = intent.getLongExtra("festival_id", INITIALIZED_FESTIVAL_ID)
+        return initialValue == INITIALIZED_FESTIVAL_ID
+    }
+
     companion object {
         private const val TAG_HOME_FRAGMENT = "homeFragment"
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
@@ -217,6 +241,7 @@ class MainActivity :
         private const val TAG_NEW_FRAGMENT = "newFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
+        private const val INITIALIZED_FESTIVAL_ID = -1L
 
         fun Fragment.newInstance(): Fragment =
             this.apply {

@@ -16,8 +16,10 @@ object LostItemStatusSerializer : KSerializer<LostItemStatus> {
                 .STRING,
         )
 
-    override fun deserialize(decoder: Decoder): LostItemStatus =
-        LostItemStatus.entries.find { it.name == decoder.decodeString() } ?: LostItemStatus.UNKNOWN
+    override fun deserialize(decoder: Decoder): LostItemStatus {
+        val decoded = decoder.decodeString()
+        return LostItemStatus.entries.find { it.name == decoded } ?: LostItemStatus.UNKNOWN
+    }
 
     override fun serialize(
         encoder: Encoder,

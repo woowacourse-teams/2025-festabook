@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="68dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp">
+
+        <ImageView
+            android:id="@+id/item_lineup_image"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="@drawable/bg_stroke_gray300_radius50dp"
+            android:clipToOutline="true"
+            android:contentDescription="@string/item_lineup_image"
+            android:scaleType="centerCrop"
+            app:layout_constraintDimensionRatio="1:1"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@drawable/sample_poster" />
+
+        <TextView
+            android:id="@+id/tv_lineup_name"
+            style="@style/PretendardBold12"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textColor="@color/gray600"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/item_lineup_image"
+            tools:text="실리카겔" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

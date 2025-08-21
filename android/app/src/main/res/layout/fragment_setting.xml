@@ -37,7 +37,7 @@
 
         <TextView
             android:id="@+id/tv_setting_current_university_notice"
-            style="@style/PretendardMedium18"
+            style="@style/PretendardMedium16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -59,7 +59,7 @@
 
         <TextView
             android:id="@+id/tv_setting_notice_detail"
-            style="@style/PretendardMedium18"
+            style="@style/PretendardMedium16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -90,7 +90,7 @@
 
         <TextView
             android:id="@+id/tv_setting_app_version_text"
-            style="@style/PretendardMedium18"
+            style="@style/PretendardMedium16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -100,7 +100,7 @@
             app:layout_constraintTop_toBottomOf="@id/tv_setting_app_info_title" />
 
         <TextView
-            android:id="@+id/tv_setting_app_version_number"
+            android:id="@+id/tv_setting_app_version_name"
             style="@style/PretendardRegular14"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -111,7 +111,7 @@
 
         <TextView
             android:id="@+id/tv_setting_service_policy"
-            style="@style/PretendardMedium18"
+            style="@style/PretendardMedium16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
@@ -132,7 +132,7 @@
 
         <TextView
             android:id="@+id/tv_setting_contact_us"
-            style="@style/PretendardMedium18"
+            style="@style/PretendardMedium16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"

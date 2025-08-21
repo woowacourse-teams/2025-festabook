@@ -4,9 +4,12 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
+import coil3.request.fallback
 import coil3.request.transformations
 import coil3.transform.RoundedCornersTransformation
+import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemLostBinding
+import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
@@ -19,7 +22,8 @@ class LostItemViewHolder(
         binding.root.setOnClickListener {
             onNewsClickListener.onLostItemClick(item)
         }
-        binding.ivLostItem.load(item.imageUrl) {
+
+        binding.ivLostItem.loadImage(item.imageUrl) {
             transformations(
                 RoundedCornersTransformation(
                     LOST_ITEM_IMAGE_RADIUS.toPx(binding.ivLostItem.context).toFloat(),
