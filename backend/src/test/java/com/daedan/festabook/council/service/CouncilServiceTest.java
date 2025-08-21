@@ -173,7 +173,9 @@ class CouncilServiceTest {
                     .matches(rawPassword, encodedPassword);
             then(jwtProvider).should()
                     .createToken(username, festivalId);
-            assertThat(response).isNotNull();
+
+            assertThat(response.accessToken()).isNotNull();
+            assertThat(response.festivalId()).isEqualTo(festival.getId());
         }
 
         @Test
