@@ -68,17 +68,19 @@ class S3StorageManagerTest {
                     mockRegion,
                     BASE_PATH
             );
+            String expectedRelativePath = "/" + fileName;
             String expectedS3Key = String.format("%s/%s", BASE_PATH, fileName);
 
             StorageUploadRequest request = StorageUploadRequestFixture.create(mockFile, fileName);
 
             // when
-            StorageUploadResponse result = s3StorageManager.uploadFile(request);
+            StorageUploadResponse response = s3StorageManager.uploadFile(request);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.accessUrl()).isEqualTo(expectedFileUrl);
-                s.assertThat(result.storagePath()).isEqualTo(expectedS3Key);
+                s.assertThat(response.accessUrl()).isEqualTo(expectedFileUrl);
+                s.assertThat(response.accessRelativePath()).isEqualTo(expectedRelativePath);
+                s.assertThat(response.storagePath()).isEqualTo(expectedS3Key);
             });
             then(s3Client).should()
                     .putObject(any(PutObjectRequest.class), any(RequestBody.class));

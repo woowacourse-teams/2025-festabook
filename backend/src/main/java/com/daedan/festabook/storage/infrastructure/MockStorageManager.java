@@ -7,7 +7,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("!prod")
+@Profile("!prod & !dev")
 public class MockStorageManager implements StorageManager {
 
     private static final String MOCK_ACCESS_URL = "https://picsum.photos/200/300";
