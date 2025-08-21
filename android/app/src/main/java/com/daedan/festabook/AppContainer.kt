@@ -19,6 +19,8 @@ import com.daedan.festabook.data.datasource.remote.festival.FestivalDataSource
 import com.daedan.festabook.data.datasource.remote.festival.FestivalDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSourceImpl
+import com.daedan.festabook.data.datasource.remote.lineup.LineupDataSource
+import com.daedan.festabook.data.datasource.remote.lineup.LineupDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.lostitem.LostItemDataSource
 import com.daedan.festabook.data.datasource.remote.lostitem.LostItemDataSourceImpl
 import com.daedan.festabook.data.datasource.remote.notice.NoticeDataSource
@@ -39,6 +41,7 @@ import com.daedan.festabook.data.repository.PlaceListRepositoryImpl
 import com.daedan.festabook.data.repository.ScheduleRepositoryImpl
 import com.daedan.festabook.data.service.api.ApiClient.deviceService
 import com.daedan.festabook.data.service.api.ApiClient.faqService
+import com.daedan.festabook.data.service.api.ApiClient.festivalLineupService
 import com.daedan.festabook.data.service.api.ApiClient.festivalNotificationService
 import com.daedan.festabook.data.service.api.ApiClient.festivalService
 import com.daedan.festabook.data.service.api.ApiClient.lostItemService
@@ -111,6 +114,10 @@ class AppContainer(
         LostItemDataSourceImpl(lostItemService)
     }
 
+    private val lineupDataSource: LineupDataSource by lazy {
+        LineupDataSourceImpl(festivalLineupService)
+    }
+
     val placeDetailRepository: PlaceDetailRepository by lazy {
         PlaceDetailRepositoryImpl(placeDetailDataSource)
     }
@@ -136,7 +143,7 @@ class AppContainer(
         )
     }
     val festivalRepository: FestivalRepository by lazy {
-        FestivalRepositoryImpl(festivalDataSource)
+        FestivalRepositoryImpl(festivalDataSource, lineupDataSource)
     }
     val faqRepository: FAQRepository by lazy {
         FAQRepositoryImpl(faqDataSource)
