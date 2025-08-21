@@ -17,7 +17,7 @@ jobs:
       - name: Create application-secret.yml file
         run: |
           mkdir -p backend/src/main/resources
-          echo "${{ secrets.SECRET_YML }}" > backend/src/main/resources/application-secret.yml
+          echo "${{ secrets.DEV_SECRET_YML }}" > backend/src/main/resources/application-secret.yml
 
       - name: Create firebase-adminsdk-account.json file
         run: |
