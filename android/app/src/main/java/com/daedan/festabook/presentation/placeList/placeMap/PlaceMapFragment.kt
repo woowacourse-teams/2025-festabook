@@ -100,6 +100,8 @@ class PlaceMapFragment :
                     )
                     showErrorSnackBar(placeGeographies.throwable)
                 }
+
+                else -> Unit
             }
         }
 
