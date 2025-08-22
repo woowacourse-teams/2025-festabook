@@ -242,7 +242,7 @@ class SecurityConfigTest {
         @Test
         void 성공_POST_화이트리스트_허용() {
             // given &
-            CouncilLoginRequest request = CouncilLoginRequestFixture.create("test", "1234");
+            CouncilLoginRequest request = CouncilLoginRequestFixture.create("test123456", "1234");
 
             // when & then
             RestAssured
