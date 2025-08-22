@@ -147,7 +147,9 @@ class PlaceDetailActivity :
         }
     }
 
-    override fun onNoticeClick(notice: NoticeUiModel) = Unit
+    override fun onNoticeClick(notice: NoticeUiModel) {
+        viewModel.toggleNoticeExpanded(notice)
+    }
 
     override fun onFAQClick(faqItem: FAQItemUiModel) = Unit
 
