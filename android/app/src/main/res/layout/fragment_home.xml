@@ -7,108 +7,115 @@
 
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".presentation.home.HomeFragment">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/tv_home_organization_title"
-            style="@style/PretendardBold24"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="40dp"
-            android:textColor="@color/gray900"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:text="가천대학교" />
+            android:layout_height="match_parent"
+            android:paddingBottom="120dp"
+            tools:context=".presentation.home.HomeFragment">
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_home_poster"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_home_organization_title"
-            tools:listitem="@layout/item_home_poster" />
+            <TextView
+                android:id="@+id/tv_home_organization_title"
+                style="@style/PretendardBold24"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="40dp"
+                android:textColor="@color/gray900"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:text="가천대학교" />
 
-        <TextView
-            android:id="@+id/tv_home_festival_title"
-            style="@style/PretendardBold20"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="16dp"
-            android:textColor="@color/gray900"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@id/rv_home_poster"
-            tools:text="2025 가천 Water Festival\n: AQUA WAVE" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_home_poster"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_home_organization_title"
+                tools:listitem="@layout/item_home_poster" />
 
-        <TextView
-            android:id="@+id/tv_home_festival_date"
-            style="@style/PretendardMedium14"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="8dp"
-            android:textColor="@color/gray500"
-            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_title"
-            tools:text="2025년 10월 15일 - 10월 17일" />
+            <TextView
+                android:id="@+id/tv_home_festival_title"
+                style="@style/PretendardBold20"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="16dp"
+                android:textColor="@color/gray900"
+                android:textStyle="bold"
+                app:layout_constraintTop_toBottomOf="@id/rv_home_poster"
+                tools:text="2025 가천 Water Festival\n: AQUA WAVE" />
 
-        <com.google.android.material.divider.MaterialDivider
-            android:id="@+id/view_divider"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginHorizontal="16dp"
-            android:layout_marginTop="16dp"
-            app:dividerColor="@color/gray200"
-            app:dividerThickness="1dp"
-            app:layout_constraintTop_toBottomOf="@id/tv_home_festival_date" />
+            <TextView
+                android:id="@+id/tv_home_festival_date"
+                style="@style/PretendardMedium14"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="20dp"
+                android:layout_marginTop="8dp"
+                android:textColor="@color/gray500"
+                app:layout_constraintTop_toBottomOf="@id/tv_home_festival_title"
+                tools:text="2025년 10월 15일 - 10월 17일" />
 
-        <TextView
-            android:id="@+id/tv_home_lineup_title"
-            style="@style/PretendardBold18"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="20dp"
-            android:text="@string/home_lineup_title"
-            android:textColor="@color/gray900"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/view_divider" />
+            <com.google.android.material.divider.MaterialDivider
+                android:id="@+id/view_divider"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="16dp"
+                app:dividerColor="@color/gray200"
+                app:dividerThickness="1dp"
+                app:layout_constraintTop_toBottomOf="@id/tv_home_festival_date" />
 
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btn_navigate_to_schedule"
-            style="@style/PretendardRegular12"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/transparent"
-            android:paddingHorizontal="16dp"
-            android:paddingVertical="4dp"
-            android:text="@string/home_check_schedule_text"
-            android:textColor="@color/gray400"
-            app:icon="@drawable/ic_arrow_forward_right"
-            app:iconGravity="end"
-            app:iconSize="12dp"
-            app:iconTint="@color/gray400"
-            app:layout_constraintBottom_toBottomOf="@id/tv_home_lineup_title"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="@id/tv_home_lineup_title" />
+            <TextView
+                android:id="@+id/tv_home_lineup_title"
+                style="@style/PretendardBold18"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/home_lineup_title"
+                android:textColor="@color/gray900"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/view_divider" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rv_home_lineup"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/tv_home_lineup_title"
-            tools:listitem="@layout/item_home_lineup" />
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_navigate_to_schedule"
+                style="@style/PretendardRegular12"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@color/transparent"
+                android:paddingHorizontal="16dp"
+                android:paddingVertical="4dp"
+                android:text="@string/home_check_schedule_text"
+                android:textColor="@color/gray400"
+                app:icon="@drawable/ic_arrow_forward_right"
+                app:iconGravity="end"
+                app:iconSize="12dp"
+                app:iconTint="@color/gray400"
+                app:layout_constraintBottom_toBottomOf="@id/tv_home_lineup_title"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="@id/tv_home_lineup_title" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_home_lineup"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tv_home_lineup_title"
+                tools:listitem="@layout/item_home_lineup" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
 </layout>
