@@ -9,10 +9,10 @@ import android.view.ViewGroup
 import androidx.core.graphics.drawable.toDrawable
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
-import coil3.load
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemModalDialogBinding
 import com.daedan.festabook.presentation.common.getObject
+import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
 import timber.log.Timber
 
@@ -55,7 +55,7 @@ class LostItemModalDialogFragment : DialogFragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
         lostItem?.let {
-            binding.ivModalLostItemImage.load(it.imageUrl)
+            binding.ivModalLostItemImage.loadImage(it.imageUrl)
             binding.tvModalLostItemStorageLocation.text =
                 binding.tvModalLostItemStorageLocation.context.getString(
                     R.string.modal_lost_item,
