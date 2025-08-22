@@ -12,7 +12,6 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import coil3.ImageLoader
 import coil3.asImage
 import coil3.request.ImageRequest
-import coil3.request.ImageResult
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -29,13 +28,9 @@ import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
-import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class PlaceListFragment :
@@ -186,7 +181,6 @@ class PlaceListFragment :
         maxSize: Int = 20,
     ) {
         val imageLoader = ImageLoader(context)
-        val deferredList = mutableListOf<Deferred<ImageResult?>>()
         val defaultImage =
             ContextCompat
                 .getDrawable(
@@ -199,29 +193,19 @@ class PlaceListFragment :
                 .take(maxSize)
                 .filterNotNull()
                 .forEach { place ->
-                    val deferred =
-                        async {
-                            val request =
-                                ImageRequest
-                                    .Builder(context)
-                                    .data(place.imageUrl)
-                                    .error {
-                                        defaultImage
-                                    }.fallback {
-                                        defaultImage
-                                    }.build()
-
-                            runCatching {
-                                withTimeout(2000) {
-                                    imageLoader.execute(request)
-                                }
-                            }.onFailure {
-                                imageLoader.shutdown()
-                            }.getOrNull()
-                        }
-                    deferredList.add(deferred)
+                    launch {
+                        val request =
+                            ImageRequest
+                                .Builder(context)
+                                .data(place.imageUrl)
+                                .error {
+                                    defaultImage
+                                }.fallback {
+                                    defaultImage
+                                }.build()
+                        imageLoader.execute(request)
+                    }
                 }
-            deferredList.awaitAll()
             withContext(Dispatchers.Main) {
                 childViewModel.setPlacesStateComplete()
             }
