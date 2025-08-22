@@ -105,7 +105,7 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
     }
 
     private fun showSkeleton() {
-        binding.srlLostItemList.visibility = View.GONE
+        binding.srlLostItemList.visibility = View.INVISIBLE
         binding.sflLostItemSkeleton.visibility = View.VISIBLE
         binding.sflLostItemSkeleton.startShimmer()
     }
