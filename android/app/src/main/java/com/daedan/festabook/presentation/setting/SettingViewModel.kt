@@ -29,6 +29,7 @@ class SettingViewModel(
     fun notificationAllowClick() {
         updateNotificationIsAllowed(!isAllowed)
         _allowClickEvent.value = Event(Unit)
+        Timber.d("$isAllowed")
         if (isAllowed) saveNotificationId() else deleteNotificationId()
     }
 
@@ -50,7 +51,7 @@ class SettingViewModel(
                     saveNotificationIsAllowed(isAllowed)
                 }.onFailure {
                     _error.value = Event(it)
-                    Timber.e(it, "${::SettingViewModel.name} NotificationId 저장 실패")
+                    Timber.e(it, "${::SettingViewModel.javaClass.simpleName} NotificationId 저장 실패")
                 }
         }
     }

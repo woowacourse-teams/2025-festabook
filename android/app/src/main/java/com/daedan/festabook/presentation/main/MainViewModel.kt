@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.DeviceRepository
+import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.presentation.common.Event
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ import timber.log.Timber
 
 class MainViewModel(
     private val deviceRepository: DeviceRepository,
+    private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
@@ -60,6 +62,19 @@ class MainViewModel(
         }
     }
 
+    fun saveNotificationId() {
+        viewModelScope.launch {
+            val result = festivalNotificationRepository.saveFestivalNotification()
+
+            result
+                .onSuccess {
+                    festivalNotificationRepository.setFestivalNotificationIsAllow(true)
+                }.onFailure {
+                    Timber.e("${::MainViewModel.javaClass.simpleName}: FestivalNotificationId 저장에 실패했습니다.")
+                }
+        }
+    }
+
     private fun registerDevice(
         uuid: String,
         fcmToken: String,
@@ -84,7 +99,9 @@ class MainViewModel(
                 initializer {
                     val app = this[APPLICATION_KEY] as FestaBookApp
                     val deviceRepository = app.appContainer.deviceRepository
-                    MainViewModel(deviceRepository)
+                    val festivalNotificationRepository =
+                        app.appContainer.festivalNotificationRepository
+                    MainViewModel(deviceRepository, festivalNotificationRepository)
                 }
             }
     }

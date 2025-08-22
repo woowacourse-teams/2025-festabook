@@ -9,12 +9,12 @@ class FestivalNotificationDataSourceImpl(
     private val festivalNotificationService: FestivalNotificationService,
 ) : FestivalNotificationDataSource {
     override suspend fun saveFestivalNotification(
-        festivalNotificationId: Long,
+        festivalId: Long,
         deviceId: Long,
     ): ApiResult<FestivalNotificationResponse> =
         ApiResult.toApiResult {
             festivalNotificationService.saveFestivalNotification(
-                festivalNotificationId,
+                festivalId,
                 FestivalNotificationRequest(deviceId = deviceId),
             )
         }

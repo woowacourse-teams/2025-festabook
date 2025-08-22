@@ -2,6 +2,8 @@ package com.daedan.festabook.presentation.explore
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.doOnTextChanged
@@ -27,7 +29,6 @@ class ExploreActivity :
         viewModel.onUniversitySelected(university)
         binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
         binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
-        setOnSearchIconClickListener()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,8 +41,6 @@ class ExploreActivity :
     }
 
     private fun setupBinding() {
-        setOnSearchIconClickListener()
-
         binding.etSearchText.setOnFocusChangeListener { _, hasFocus ->
             if (hasFocus) {
                 binding.tilSearchInputLayout.boxStrokeColor = getColor(R.color.blue400)
@@ -53,6 +52,38 @@ class ExploreActivity :
         binding.etSearchText.doOnTextChanged { _, _, _, _ ->
             viewModel.onTextInputChanged()
         }
+
+        // 키보드 엔터(검색) 리스너
+        binding.etSearchText.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_SEARCH) {
+                handleSearchAction()
+                return@setOnEditorActionListener true
+            }
+            return@setOnEditorActionListener false
+        }
+
+        binding.tilSearchInputLayout.setEndIconOnClickListener {
+            handleSearchAction()
+        }
+    }
+
+    private fun handleSearchAction() {
+        val query = binding.etSearchText.text.toString()
+        val currentState = viewModel.searchState.value
+
+        when (currentState) {
+            is SearchUiState.Idle,
+            is SearchUiState.Error,
+            is SearchUiState.Loading,
+            null,
+            -> viewModel.search(query)
+
+            is SearchUiState.Success -> {
+                viewModel.onNavigateIconClicked()
+            }
+        }
+
+        hideKeyboard()
     }
 
     private fun setupRecyclerView() {
@@ -67,7 +98,6 @@ class ExploreActivity :
                     binding.tilSearchInputLayout.error = null
                     binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                     binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
-                    setOnSearchIconClickListener()
                     searchResultAdapter.submitList(emptyList())
                 }
 
@@ -102,22 +132,9 @@ class ExploreActivity :
         }
     }
 
-    private fun setOnSearchIconClickListener() {
-        binding.tilSearchInputLayout.setEndIconOnClickListener {
-            val query = binding.etSearchText.text.toString()
-            val currentState = viewModel.searchState.value
-            viewModel.search(query)
-
-            when (currentState) {
-                is SearchUiState.Idle -> Unit
-                is SearchUiState.Loading -> Unit
-                is SearchUiState.Success -> {
-                    viewModel.onNavigateIconClicked()
-                }
-                is SearchUiState.Error -> Unit
-                null -> Unit
-            }
-        }
+    private fun hideKeyboard() {
+        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
     }
 
     private fun navigateToMainActivity(festivalId: Long) {

@@ -35,6 +35,7 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class PlaceListFragment :
@@ -185,13 +186,13 @@ class PlaceListFragment :
         maxSize: Int = 20,
     ) {
         val imageLoader = ImageLoader(context)
+        val deferredList = mutableListOf<Deferred<ImageResult?>>()
         val defaultImage =
             ContextCompat
                 .getDrawable(
                     requireContext(),
                     R.drawable.img_fallback,
                 )?.asImage()
-        val deferredList = mutableListOf<Deferred<ImageResult>>()
 
         lifecycleScope.launch(Dispatchers.IO) {
             places
@@ -209,7 +210,14 @@ class PlaceListFragment :
                                     }.fallback {
                                         defaultImage
                                     }.build()
-                            imageLoader.execute(request)
+
+                            runCatching {
+                                withTimeout(2000) {
+                                    imageLoader.execute(request)
+                                }
+                            }.onFailure {
+                                imageLoader.shutdown()
+                            }.getOrNull()
                         }
                     deferredList.add(deferred)
                 }

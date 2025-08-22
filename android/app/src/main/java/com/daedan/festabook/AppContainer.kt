@@ -140,6 +140,7 @@ class AppContainer(
             festivalNotificationDataSource,
             deviceLocalDataSource,
             festivalNotificationLocalDataSource,
+            festivalLocalDataSource,
         )
     }
     val festivalRepository: FestivalRepository by lazy {

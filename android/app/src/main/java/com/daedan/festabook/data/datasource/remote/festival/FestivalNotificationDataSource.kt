@@ -5,7 +5,7 @@ import com.daedan.festabook.data.model.response.festival.FestivalNotificationRes
 
 interface FestivalNotificationDataSource {
     suspend fun saveFestivalNotification(
-        festivalNotificationId: Long,
+        festivalId: Long,
         deviceId: Long,
     ): ApiResult<FestivalNotificationResponse>
 

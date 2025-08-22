@@ -116,6 +116,9 @@
 
     <!--토스트 메시지-->
     <string name="back_press_exit_message">뒤로가기를 한 번 더 누르면 종료됩니다.</string>
+    <!--알림 권한-->
+    <string name="notification_permission_denied_message">알림이 비활성화되어 있습니다 [설정]에서 다시 켤 수 있어요.</string>
+    <string name="move_to_setting_text">설정으로 이동</string>
 
 
 </resources>
