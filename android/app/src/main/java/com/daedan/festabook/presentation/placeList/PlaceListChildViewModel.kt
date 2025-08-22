@@ -54,6 +54,10 @@ class PlaceListChildViewModel(
         _places.value = PlaceListUiState.Success(_cachedPlaces)
     }
 
+    fun setPlacesStateComplete() {
+        _places.value = PlaceListUiState.Complete()
+    }
+
     private fun loadAllPlaces() {
         viewModelScope.launch {
             val result = placeListRepository.getPlaces()
