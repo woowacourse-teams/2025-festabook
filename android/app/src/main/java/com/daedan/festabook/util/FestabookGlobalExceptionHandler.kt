@@ -4,6 +4,8 @@ import android.app.Activity
 import android.app.Application
 import android.content.Intent
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.os.Process
 import com.daedan.festabook.presentation.common.showToast
 import timber.log.Timber
@@ -61,7 +63,10 @@ class FestabookGlobalExceptionHandler(
                     addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
                 },
             )
-            showToast(e.stackTraceToString())
+            Handler(Looper.getMainLooper()).post {
+                showToast(e.stackTraceToString())
+            }
+
             finish()
         }
         defaultExceptionHandler?.uncaughtException(t, e)
