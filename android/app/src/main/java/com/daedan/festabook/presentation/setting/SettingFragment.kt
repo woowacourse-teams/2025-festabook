@@ -14,6 +14,7 @@ import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
 import timber.log.Timber
 
 class SettingFragment :
@@ -26,6 +27,7 @@ class SettingFragment :
     private val notificationPermissionManager by lazy {
         NotificationPermissionManager(
             requester = this,
+            onPermissionGranted = { onPermissionGranted() },
             onPermissionDenied = { onPermissionDenied() },
         )
     }
@@ -38,17 +40,16 @@ class SettingFragment :
                 Timber.d("Notification permission granted")
             } else {
                 Timber.d("Notification permission denied")
-                // 사용자에게 알림 권한이 필요한 이유를 설명하거나, 설정 화면으로 유도
+                showNotificationDeniedSnackbar(binding.root, requireContext())
+                binding.btnNoticeAllow.isChecked = false
+                viewModel.updateNotificationIsAllowed(false)
+                viewModel.saveNotificationIsAllowed(false)
             }
         }
 
     override fun onPermissionGranted() = Unit
 
-    override fun onPermissionDenied() {
-        binding.btnNoticeAllow.isChecked = false
-        viewModel.updateNotificationIsAllowed(false)
-        viewModel.saveNotificationIsAllowed(false)
-    }
+    override fun onPermissionDenied() = Unit
 
     override fun onViewCreated(
         view: View,

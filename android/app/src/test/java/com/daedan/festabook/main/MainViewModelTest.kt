@@ -2,6 +2,7 @@ package com.daedan.festabook.main
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.daedan.festabook.domain.repository.DeviceRepository
+import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.presentation.main.MainViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -29,12 +30,14 @@ class MainViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var deviceRepository: DeviceRepository
     private lateinit var mainViewModel: MainViewModel
+    private lateinit var festivalNotificationRepository: FestivalNotificationRepository
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         deviceRepository = mockk()
-        mainViewModel = MainViewModel(deviceRepository)
+        festivalNotificationRepository = mockk()
+        mainViewModel = MainViewModel(deviceRepository, festivalNotificationRepository)
 
         coEvery {
             deviceRepository.registerDevice(
