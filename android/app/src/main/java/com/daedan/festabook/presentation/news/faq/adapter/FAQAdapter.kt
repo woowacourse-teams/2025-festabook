@@ -8,19 +8,7 @@ import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
 class FAQAdapter(
     private val onNewsClickListener: OnNewsClickListener,
-) : ListAdapter<FAQItemUiModel, FAQViewHolder>(
-        object : DiffUtil.ItemCallback<FAQItemUiModel>() {
-            override fun areItemsTheSame(
-                oldItem: FAQItemUiModel,
-                newItem: FAQItemUiModel,
-            ): Boolean = newItem.questionId == oldItem.questionId
-
-            override fun areContentsTheSame(
-                oldItem: FAQItemUiModel,
-                newItem: FAQItemUiModel,
-            ): Boolean = newItem == oldItem
-        },
-    ) {
+) : ListAdapter<FAQItemUiModel, FAQViewHolder>(faqItemDiffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -31,5 +19,20 @@ class FAQAdapter(
         position: Int,
     ) {
         holder.bind(getItem(position))
+    }
+
+    companion object {
+        private val faqItemDiffCallback =
+            object : DiffUtil.ItemCallback<FAQItemUiModel>() {
+                override fun areItemsTheSame(
+                    oldItem: FAQItemUiModel,
+                    newItem: FAQItemUiModel,
+                ): Boolean = newItem.questionId == oldItem.questionId
+
+                override fun areContentsTheSame(
+                    oldItem: FAQItemUiModel,
+                    newItem: FAQItemUiModel,
+                ): Boolean = newItem == oldItem
+            }
     }
 }
