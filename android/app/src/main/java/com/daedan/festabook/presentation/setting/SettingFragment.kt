@@ -84,6 +84,9 @@ class SettingFragment :
         viewModel.error.observe(viewLifecycleOwner) { throwable ->
             showErrorSnackBar(throwable)
         }
+        viewModel.isLoading.observe(viewLifecycleOwner) { loading ->
+            binding.btnNoticeAllow.isEnabled = !loading
+        }
     }
 
     private fun setupServicePolicyClickListener() {

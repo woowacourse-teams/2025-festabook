@@ -26,13 +26,15 @@ class SettingViewModel(
     private val _error: SingleLiveData<Throwable> = SingleLiveData()
     val error: LiveData<Throwable> get() = _error
 
-    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData()
+    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
     fun notificationAllowClick() {
+        if (_isLoading.value == true) return
         updateNotificationIsAllowed(!isAllowed)
         _allowClickEvent.setValue(Unit)
-        Timber.d("$isAllowed")
+
+        _isLoading.value = true
         if (isAllowed) saveNotificationId() else deleteNotificationId()
     }
 
@@ -55,6 +57,8 @@ class SettingViewModel(
                 }.onFailure {
                     _error.setValue(it)
                     Timber.e(it, "${::SettingViewModel.javaClass.simpleName} NotificationId 저장 실패")
+                }.also {
+                    _isLoading.value = false
                 }
         }
     }
@@ -70,6 +74,8 @@ class SettingViewModel(
                 }.onFailure {
                     _error.setValue(it)
                     Timber.e(it, "${::SettingViewModel.name} NotificationId 삭제 실패")
+                }.also {
+                    _isLoading.value = false
                 }
         }
     }
