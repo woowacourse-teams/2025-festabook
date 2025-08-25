@@ -75,18 +75,14 @@ class SettingFragment :
 
     private fun setupObservers() {
         viewModel.allowClickEvent.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let {
-                if (viewModel.isAllowed) {
-                    notificationPermissionManager.requestNotificationPermission(
-                        requireContext(),
-                    )
-                }
+            if (viewModel.isAllowed) {
+                notificationPermissionManager.requestNotificationPermission(
+                    requireContext(),
+                )
             }
         }
-        viewModel.error.observe(viewLifecycleOwner) {
-            it.getContentIfNotHandled()?.let { throwable ->
-                showErrorSnackBar(throwable)
-            }
+        viewModel.error.observe(viewLifecycleOwner) { throwable ->
+            showErrorSnackBar(throwable)
         }
     }
 
