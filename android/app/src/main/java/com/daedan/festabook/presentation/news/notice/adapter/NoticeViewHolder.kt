@@ -23,7 +23,7 @@ class NoticeViewHolder(
             noticeItem?.let {
                 onNewsClickListener.onNoticeClick(it)
             } ?: run {
-                Timber.w("${::NoticeViewHolder.javaClass.simpleName} 공지 아이템이 null입니다.")
+                Timber.w("${this::class.java.simpleName} 공지 아이템이 null입니다.")
             }
         }
     }

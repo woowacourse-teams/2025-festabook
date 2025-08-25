@@ -23,7 +23,7 @@ class FAQViewHolder(
             faqItem?.let {
                 onNewsClickListener.onFAQClick(it)
             } ?: run {
-                Timber.w("${::FAQViewHolder.javaClass.simpleName} : FAQ 아이템이 null입니다.")
+                Timber.w("${this::class.java.simpleName} : FAQ 아이템이 null입니다.")
             }
         }
     }
