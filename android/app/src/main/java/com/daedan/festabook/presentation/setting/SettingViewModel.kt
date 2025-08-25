@@ -56,7 +56,7 @@ class SettingViewModel(
                     saveNotificationIsAllowed(isAllowed)
                 }.onFailure {
                     _error.setValue(it)
-                    Timber.e(it, "${::SettingViewModel.javaClass.simpleName} NotificationId 저장 실패")
+                    Timber.e(it, "${this::class.java.simpleName} NotificationId 저장 실패")
                 }.also {
                     _isLoading.value = false
                 }
@@ -73,7 +73,7 @@ class SettingViewModel(
                     saveNotificationIsAllowed(isAllowed)
                 }.onFailure {
                     _error.setValue(it)
-                    Timber.e(it, "${::SettingViewModel.name} NotificationId 삭제 실패")
+                    Timber.e(it, "${this::class.java.simpleName} NotificationId 삭제 실패")
                 }.also {
                     _isLoading.value = false
                 }
