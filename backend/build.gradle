@@ -45,8 +45,6 @@ dependencies {
 
     // Database
     runtimeOnly 'com.mysql:mysql-connector-j'
-    implementation 'org.flywaydb:flyway-core'
-    implementation 'org.flywaydb:flyway-mysql'
 
     // Logging
     implementation 'net.logstash.logback:logstash-logback-encoder:8.1'
@@ -71,8 +69,12 @@ dependencies {
     testAnnotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+
+    // Test DB
     testImplementation 'org.testcontainers:testcontainers'
     testImplementation 'org.testcontainers:mysql'
+    testRuntimeOnly 'org.flywaydb:flyway-core'
+    testRuntimeOnly 'org.flywaydb:flyway-mysql'
 }
 
 tasks.named('test') {
