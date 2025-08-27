@@ -24,16 +24,6 @@ jobs:
           mkdir -p backend/src/main/resources/firebase
           echo "${{ secrets.FIREBASE_ADMINSDK_ACCOUNT_KEY }}" > backend/src/main/resources/firebase/firebase-adminsdk-account.json
 
-      - name: Gradle cache
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('backend/**/*.gradle*', 'backend/**/gradle-wrapper.properties') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-
       - name: Gradle build
         run: |
           chmod +x ./gradlew
