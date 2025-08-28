@@ -4,8 +4,6 @@ on:
   push:
     branches: [ backend ]
     paths: [ 'backend/**' ]
-  pull_request:
-    branches: [ backend ]
   workflow_dispatch:
 
 jobs:
