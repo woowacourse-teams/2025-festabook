@@ -4,6 +4,8 @@ on:
   push:
     branches: [ backend ]
     paths: [ 'backend/**' ]
+  pull_request:
+    branches: [ backend ]
   workflow_dispatch:
 
 jobs:
@@ -105,5 +107,7 @@ jobs:
             echo "Application started with PID: $NEW_WAS_PID."
           else
             echo "Error: Application failed to start."
+            # git action failed 처리
+            exit 1
           fi
           echo "Deployment complete."
