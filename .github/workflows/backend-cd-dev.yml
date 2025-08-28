@@ -13,6 +13,10 @@ jobs:
     runs-on: [self-hosted, dev-runner]
 
     steps:
+      - name: Initialize workspace permissions
+        run:|
+          sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner/_work
+
       - name: Checkout project repository
         uses: actions/checkout@v4
 
@@ -29,7 +33,7 @@ jobs:
       - name: Gradle build
         run: |
           chmod +x ./gradlew
-          ./gradlew clean build
+          sudo ./gradlew clean build
         working-directory: ./backend
 
       - name: Get build jar file info
