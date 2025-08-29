@@ -314,7 +314,6 @@ class EventServiceTest {
                     .deleteById(eventId);
         }
 
-
         @Test
         void 예외_다른_축제의_일정일_경우() {
             // given
