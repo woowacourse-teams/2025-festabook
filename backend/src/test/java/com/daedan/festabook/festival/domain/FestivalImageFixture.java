@@ -21,6 +21,19 @@ public class FestivalImageFixture {
     }
 
     public static FestivalImage create(
+            Long festivalImageId,
+            Festival festival
+    ) {
+        FestivalImage festivalImage = new FestivalImage(
+                festival,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_SEQUENCE
+        );
+        BaseEntityTestHelper.setId(festivalImage, festivalImageId);
+        return festivalImage;
+    }
+
+    public static FestivalImage create(
             Festival festival,
             Integer sequence
     ) {

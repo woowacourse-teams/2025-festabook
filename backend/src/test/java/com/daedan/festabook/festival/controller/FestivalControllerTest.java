@@ -99,7 +99,6 @@ class FestivalControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -326,7 +325,6 @@ class FestivalControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -367,7 +365,6 @@ class FestivalControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(requests)
                     .when()
@@ -403,7 +400,6 @@ class FestivalControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .when()
                     .delete("/festivals/images/{festivalImageId}", festivalImage.getId())
@@ -412,28 +408,6 @@ class FestivalControllerTest {
 
             assertThat(festivalImageJpaRepository.findAllByFestivalIdOrderBySequenceAsc(festival.getId()))
                     .isEmpty();
-        }
-
-        @Test
-        void 성공_없는_리소스_삭제() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long invalidFestivalImageId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .contentType(ContentType.JSON)
-                    .when()
-                    .delete("/festivals/images/{festivalImageId}", invalidFestivalImageId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

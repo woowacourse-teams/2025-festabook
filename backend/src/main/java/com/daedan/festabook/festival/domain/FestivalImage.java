@@ -50,6 +50,10 @@ public class FestivalImage extends BaseEntity implements Comparable<FestivalImag
         this.sequence = sequence;
     }
 
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.getFestival().getId().equals(festivalId);
+    }
+
     @Override
     public int compareTo(FestivalImage otherFestivalImage) {
         return sequence.compareTo(otherFestivalImage.sequence);

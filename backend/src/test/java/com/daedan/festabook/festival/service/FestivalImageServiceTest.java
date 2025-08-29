@@ -92,6 +92,7 @@ class FestivalImageServiceTest {
         @Test
         void 성공_수정_후_응답값_오름차순_정렬() {
             // given
+            Long festivalId = 1L;
             Festival festival = FestivalFixture.create();
 
             Long festivalImageId1 = 1L;
@@ -116,7 +117,7 @@ class FestivalImageServiceTest {
                     .willReturn(Optional.of(festivalImage3));
 
             // when
-            FestivalImageResponses result = festivalImageService.updateFestivalImagesSequence(requests);
+            FestivalImageResponses result = festivalImageService.updateFestivalImagesSequence(festivalId, requests);
 
             // then
             assertSoftly(s -> {
@@ -134,12 +135,34 @@ class FestivalImageServiceTest {
         @Test
         void 예외_존재하지_않는_축제_이미지() {
             // given
-            List<FestivalImageSequenceUpdateRequest> requests = FestivalImageSequenceUpdateRequestFixture.createList(1);
+            Long festivalId = 1L;
+            List<FestivalImageSequenceUpdateRequest> requests = FestivalImageSequenceUpdateRequestFixture.createList(3);
 
             // when & then
-            assertThatThrownBy(() -> festivalImageService.updateFestivalImagesSequence(requests))
+            assertThatThrownBy(() -> festivalImageService.updateFestivalImagesSequence(festivalId, requests))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제 이미지입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_축제_이미지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Long festivalImageId = 1L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            FestivalImage festivalImage = FestivalImageFixture.create(festivalImageId, requestFestival);
+
+            given(festivalImageJpaRepository.findById(festivalImage.getId()))
+                    .willReturn(Optional.of(festivalImage));
+
+            List<FestivalImageSequenceUpdateRequest> requests = FestivalImageSequenceUpdateRequestFixture.createList(3);
+
+            // when & then
+            assertThatThrownBy(() -> festivalImageService.updateFestivalImagesSequence(otherFestival.getId(), requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 축제 이미지가 아닙니다.");
         }
     }
 
@@ -150,13 +173,40 @@ class FestivalImageServiceTest {
         void 성공() {
             // given
             Long festivalImageId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            FestivalImage festivalImage = FestivalImageFixture.create(festival);
+
+            given(festivalImageJpaRepository.findById(festivalImageId))
+                    .willReturn(Optional.of(festivalImage));
 
             // when
-            festivalImageService.removeFestivalImage(1L);
+            festivalImageService.removeFestivalImage(festivalImageId, festivalId);
 
             // then
             then(festivalImageJpaRepository).should()
                     .deleteById(festivalImageId);
+        }
+
+        @Test
+        void 예외_다른_축제의_축제_이미지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Long festivalImageId = 1L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            FestivalImage festivalImage = FestivalImageFixture.create(festivalImageId, requestFestival);
+
+            given(festivalImageJpaRepository.findById(festivalImage.getId()))
+                    .willReturn(Optional.of(festivalImage));
+
+            // when & then
+            assertThatThrownBy(
+                    () -> festivalImageService.removeFestivalImage(festivalImage.getId(), otherFestival.getId())
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 축제 이미지가 아닙니다.");
         }
     }
 }
