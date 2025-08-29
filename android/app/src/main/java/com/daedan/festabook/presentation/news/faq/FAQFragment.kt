@@ -5,7 +5,7 @@ import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
-import com.daedan.festabook.databinding.FragmentFAQBinding
+import com.daedan.festabook.databinding.FragmentFaqBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.NewsViewModel
@@ -13,7 +13,7 @@ import com.daedan.festabook.presentation.news.faq.adapter.FAQAdapter
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import timber.log.Timber
 
-class FAQFragment : BaseFragment<FragmentFAQBinding>(R.layout.fragment_f_a_q) {
+class FAQFragment : BaseFragment<FragmentFaqBinding>(R.layout.fragment_faq) {
     private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
     private val adapter by lazy {
         FAQAdapter(requireParentFragment() as OnNewsClickListener)
