@@ -48,8 +48,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventControllerTest {
 
-    private static final String FESTIVAL_HEADER_NAME = "festival";
-
     @Autowired
     private EventDateJpaRepository eventDateJpaRepository;
 
@@ -98,7 +96,6 @@ class EventControllerTest {
                     .given()
                     .header(authorizationHeader)
                     .contentType(ContentType.JSON)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .post("/event-dates/events")
@@ -149,7 +146,6 @@ class EventControllerTest {
                     .given()
                     .contentType(ContentType.JSON)
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .patch("/event-dates/events/{eventId}", eventId)
@@ -186,34 +182,11 @@ class EventControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/event-dates/events/{eventId}", event.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
             assertThat(eventJpaRepository.findById(event.getId())).isEmpty();
-        }
-
-        @Test
-        void 성공_존재하지_않는_일정_ID() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long invalidEventId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .when()
-                    .delete("/event-dates/events/{eventId}", invalidEventId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-            assertThat(eventJpaRepository.findById(invalidEventId)).isEmpty();
         }
     }
 

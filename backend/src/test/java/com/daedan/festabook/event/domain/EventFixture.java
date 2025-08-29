@@ -56,6 +56,21 @@ public class EventFixture {
     }
 
     public static Event create(
+            Long eventId,
+            EventDate eventDate
+    ) {
+        Event event = new Event(
+                eventDate,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION
+        );
+        BaseEntityTestHelper.setId(event, eventId);
+        return event;
+    }
+
+    public static Event create(
             EventDate eventDate
     ) {
         return new Event(
