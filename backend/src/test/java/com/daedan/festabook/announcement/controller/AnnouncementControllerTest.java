@@ -91,7 +91,6 @@ class AnnouncementControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -125,7 +124,6 @@ class AnnouncementControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -358,7 +356,6 @@ class AnnouncementControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
