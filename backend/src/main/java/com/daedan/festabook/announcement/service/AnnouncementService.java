@@ -130,7 +130,7 @@ public class AnnouncementService {
     }
 
     private void validateAnnouncementBelongsToFestival(Announcement announcement, Long festivalId) {
-        if (!announcement.getFestival().getId().equals(festivalId)) {
+        if (!announcement.isFestivalIdEqualTo(festivalId)) {
             throw new BusinessException("해당 축제의 공지가 아닙니다.", HttpStatus.FORBIDDEN);
         }
     }
