@@ -344,6 +344,8 @@ class AnnouncementServiceTest {
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId))
+                    .willReturn(0L);
 
             // when
             AnnouncementPinUpdateResponse result = announcementService.updateAnnouncementPin(
