@@ -95,22 +95,6 @@ public class AnnouncementService {
         announcementJpaRepository.delete(announcement);
     }
 
-    private void validatePinnedLimit(Long festivalId) {
-        Long pinnedCount = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId);
-        if (pinnedCount >= MAX_PINNED_ANNOUNCEMENTS) {
-            throw new BusinessException(
-                    String.format("공지글은 최대 %d개까지 고정할 수 있습니다.", MAX_PINNED_ANNOUNCEMENTS),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
-    }
-
-    private void validateAnnouncementBelongsToFestival(Announcement announcement, Long festivalId) {
-        if (!announcement.getFestival().getId().equals(festivalId)) {
-            throw new BusinessException("해당 축제의 공지가 아닙니다.", HttpStatus.FORBIDDEN);
-        }
-    }
-
     private Announcement getAnnouncementById(Long announcementId) {
         return announcementJpaRepository.findById(announcementId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 공지입니다.", HttpStatus.BAD_REQUEST));
@@ -133,5 +117,21 @@ public class AnnouncementService {
 
     private Comparator<Announcement> createdAtDescending() {
         return Comparator.comparing(Announcement::getCreatedAt).reversed();
+    }
+
+    private void validatePinnedLimit(Long festivalId) {
+        Long pinnedCount = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId);
+        if (pinnedCount >= MAX_PINNED_ANNOUNCEMENTS) {
+            throw new BusinessException(
+                    String.format("공지글은 최대 %d개까지 고정할 수 있습니다.", MAX_PINNED_ANNOUNCEMENTS),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    private void validateAnnouncementBelongsToFestival(Announcement announcement, Long festivalId) {
+        if (!announcement.getFestival().getId().equals(festivalId)) {
+            throw new BusinessException("해당 축제의 공지가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }
