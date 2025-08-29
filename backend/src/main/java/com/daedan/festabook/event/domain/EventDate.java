@@ -47,6 +47,10 @@ public class EventDate extends BaseEntity implements Comparable<EventDate> {
         this.date = date;
     }
 
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.getFestival().getId().equals(festivalId);
+    }
+
     @Override
     public int compareTo(EventDate otherEventDate) {
         return this.date.compareTo(otherEventDate.date);

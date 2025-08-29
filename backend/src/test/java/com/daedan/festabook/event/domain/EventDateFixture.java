@@ -26,6 +26,19 @@ public class EventDateFixture {
 
     public static EventDate create(
             Long eventDateId,
+            Festival festival,
+            LocalDate date
+    ) {
+        EventDate eventDate = new EventDate(
+                festival,
+                date
+        );
+        BaseEntityTestHelper.setId(eventDate, eventDateId);
+        return eventDate;
+    }
+
+    public static EventDate create(
+            Long eventDateId,
             Festival festival
     ) {
         EventDate eventDate = new EventDate(
