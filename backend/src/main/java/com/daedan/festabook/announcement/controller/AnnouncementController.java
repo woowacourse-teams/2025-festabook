@@ -9,13 +9,16 @@ import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateResponse;
 import com.daedan.festabook.announcement.service.AnnouncementService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -41,15 +44,15 @@ public class AnnouncementController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public AnnouncementResponse createAnnouncement(
-            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody AnnouncementRequest request
     ) {
-        return announcementService.createAnnouncement(festivalId, request);
+        return announcementService.createAnnouncement(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "모든 공지 조회")
+    @Operation(summary = "모든 공지 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -67,9 +70,10 @@ public class AnnouncementController {
     })
     public AnnouncementUpdateResponse updateAnnouncement(
             @PathVariable Long announcementId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody AnnouncementUpdateRequest request
     ) {
-        return announcementService.updateAnnouncement(announcementId, request);
+        return announcementService.updateAnnouncement(announcementId, councilDetails.getFestivalId(), request);
     }
 
     @PatchMapping("/{announcementId}/pin")
@@ -80,10 +84,10 @@ public class AnnouncementController {
     })
     public AnnouncementPinUpdateResponse updateAnnouncementPin(
             @PathVariable Long announcementId,
-            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody AnnouncementPinUpdateRequest request
     ) {
-        return announcementService.updateAnnouncementPin(announcementId, festivalId, request);
+        return announcementService.updateAnnouncementPin(announcementId, councilDetails.getFestivalId(), request);
     }
 
     @DeleteMapping("/{announcementId}")
@@ -93,8 +97,9 @@ public class AnnouncementController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deleteAnnouncementByAnnouncementId(
-            @PathVariable Long announcementId
+            @PathVariable Long announcementId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        announcementService.deleteAnnouncementByAnnouncementId(announcementId);
+        announcementService.deleteAnnouncementByAnnouncementId(announcementId, councilDetails.getFestivalId());
     }
 }

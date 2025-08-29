@@ -34,14 +34,16 @@ public class AnnouncementService {
 
     @Transactional
     public AnnouncementResponse createAnnouncement(Long festivalId, AnnouncementRequest request) {
+        Festival festival = getFestivalById(festivalId);
+        Announcement announcement = request.toEntity(festival);
         if (request.isPinned()) {
             validatePinnedLimit(festivalId);
         }
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
 
-        Festival festival = getFestivalById(festivalId);
-        Announcement announcement = request.toEntity(festival);
         announcementJpaRepository.save(announcement);
 
+        // TODO: 로직 분리
         NotificationMessage notificationMessage = new NotificationMessage(
                 request.title(),
                 request.content()
@@ -64,8 +66,11 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public AnnouncementUpdateResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
+    public AnnouncementUpdateResponse updateAnnouncement(Long announcementId, Long festivalId,
+                                                         AnnouncementUpdateRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
+
         announcement.updateTitleAndContent(request.title(), request.content());
         return AnnouncementUpdateResponse.from(announcement);
     }
@@ -74,16 +79,37 @@ public class AnnouncementService {
     public AnnouncementPinUpdateResponse updateAnnouncementPin(Long announcementId, Long festivalId,
                                                                AnnouncementPinUpdateRequest request) {
         Announcement announcement = getAnnouncementById(announcementId);
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
         if (announcement.isUnpinned() && request.pinned()) {
             validatePinnedLimit(festivalId);
         }
-        announcement.updatePinned(request.pinned());
 
+        announcement.updatePinned(request.pinned());
         return AnnouncementPinUpdateResponse.from(announcement);
     }
 
-    public void deleteAnnouncementByAnnouncementId(Long announcementId) {
-        announcementJpaRepository.deleteById(announcementId);
+    @Transactional
+    public void deleteAnnouncementByAnnouncementId(Long announcementId, Long festivalId) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
+
+        announcementJpaRepository.delete(announcement);
+    }
+
+    private void validatePinnedLimit(Long festivalId) {
+        Long pinnedCount = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId);
+        if (pinnedCount >= MAX_PINNED_ANNOUNCEMENTS) {
+            throw new BusinessException(
+                    String.format("공지글은 최대 %d개까지 고정할 수 있습니다.", MAX_PINNED_ANNOUNCEMENTS),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    private void validateAnnouncementBelongsToFestival(Announcement announcement, Long festivalId) {
+        if (!announcement.getFestival().getId().equals(festivalId)) {
+            throw new BusinessException("해당 축제의 공지가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 
     private Announcement getAnnouncementById(Long announcementId) {
@@ -104,16 +130,6 @@ public class AnnouncementService {
                 .filter(filter)
                 .sorted(createdAtDescending())
                 .toList();
-    }
-
-    private void validatePinnedLimit(Long festivalId) {
-        Long pinnedCount = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId);
-        if (pinnedCount >= MAX_PINNED_ANNOUNCEMENTS) {
-            throw new BusinessException(
-                    String.format("공지글은 최대 %d개까지 고정할 수 있습니다.", MAX_PINNED_ANNOUNCEMENTS),
-                    HttpStatus.BAD_REQUEST
-            );
-        }
     }
 
     private Comparator<Announcement> createdAtDescending() {
