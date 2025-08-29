@@ -42,7 +42,8 @@ public class SecurityConfig {
             "/festivals/geography",
             "/lost-items",
             "/questions",
-            "/lineups"
+            "/lineups",
+            "/actuator/health"
     };
 
     private static final String[] POST_WHITELIST = {
