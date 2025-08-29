@@ -39,7 +39,6 @@ public class AnnouncementService {
         if (request.isPinned()) {
             validatePinnedLimit(festivalId);
         }
-        validateAnnouncementBelongsToFestival(announcement, festivalId);
 
         announcementJpaRepository.save(announcement);
 

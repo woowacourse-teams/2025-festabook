@@ -171,25 +171,6 @@ class AnnouncementServiceTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
         }
-
-        @Test
-        void 예외_다른_축제의_공지일_경우() {
-            // given
-            Long requestFestivalId = 1L;
-            Long otherFestivalId = 999L;
-            Festival requestFestival = FestivalFixture.create(requestFestivalId);
-            Festival otherFestival = FestivalFixture.create(otherFestivalId);
-
-            given(festivalJpaRepository.findById(otherFestival.getId()))
-                    .willReturn(Optional.of(requestFestival));
-
-            AnnouncementRequest request = AnnouncementRequestFixture.create();
-
-            // when & then
-            assertThatThrownBy(() -> announcementService.createAnnouncement(otherFestivalId, request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("해당 축제의 공지가 아닙니다.");
-        }
     }
 
     @Nested
