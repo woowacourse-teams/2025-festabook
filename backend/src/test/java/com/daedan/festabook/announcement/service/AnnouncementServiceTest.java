@@ -152,9 +152,7 @@ class AnnouncementServiceTest {
         }
 
         @ParameterizedTest(name = "고정 공지 개수: {0}")
-        @ValueSource(longs = {
-                3L, 4L, 10L
-        })
+        @ValueSource(longs = {3L, 4L, 10L})
         void 예외_고정_공지_개수_제한_초과(Long maxPinnedCount) {
             // given
             Long festivalId = 1L;
