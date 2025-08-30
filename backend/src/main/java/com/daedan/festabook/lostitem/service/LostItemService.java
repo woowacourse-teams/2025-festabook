@@ -48,8 +48,11 @@ public class LostItemService {
     }
 
     @Transactional
-    public LostItemStatusUpdateResponse updateLostItemStatus(Long lostItemId, Long festivalId,
-                                                             LostItemStatusUpdateRequest request) {
+    public LostItemStatusUpdateResponse updateLostItemStatus(
+            Long lostItemId,
+            Long festivalId,
+            LostItemStatusUpdateRequest request
+    ) {
         LostItem lostItem = getLostItemById(lostItemId);
         validateLostItemBelongsToFestival(lostItem, festivalId);
 
