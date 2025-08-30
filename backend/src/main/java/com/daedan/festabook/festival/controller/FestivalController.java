@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -57,7 +58,7 @@ public class FestivalController {
 
     @GetMapping("/geography")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 초기 지리 정보 조회")
+    @Operation(summary = "특정 축제의 초기 지리 정보 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -69,7 +70,7 @@ public class FestivalController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 정보 조회")
+    @Operation(summary = "특정 축제의 정보 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -81,7 +82,7 @@ public class FestivalController {
 
     @GetMapping("/universities")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "대학 이름으로 축제 조회")
+    @Operation(summary = "대학 이름으로 축제 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
