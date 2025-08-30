@@ -109,7 +109,11 @@ class PlaceGeographyServiceTest {
                     .willReturn(Optional.of(place));
 
             // when
-            PlaceCoordinateResponse result = placeGeographyService.updatePlaceCoordinate(placeId, request);
+            PlaceCoordinateResponse result = placeGeographyService.updatePlaceCoordinate(
+                    placeId,
+                    festival.getId(),
+                    request
+            );
 
             // then
             assertSoftly(s -> {
@@ -123,15 +127,38 @@ class PlaceGeographyServiceTest {
         void 예외_존재하지_않는_플레이스() {
             // given
             Long placeId = 1L;
+            Long festivalId = 1L;
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeGeographyService.updatePlaceCoordinate(placeId, request))
+            assertThatThrownBy(() -> placeGeographyService.updatePlaceCoordinate(placeId, festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+
+            given(placeJpaRepository.findById(place.getId()))
+                    .willReturn(Optional.of(place));
+
+            PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(
+                    () -> placeGeographyService.updatePlaceCoordinate(place.getId(), otherFestival.getId(), request)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
     }
 }

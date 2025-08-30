@@ -38,6 +38,8 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceGeographyControllerTest {
 
+    private static final String FESTIVAL_HEADER_NAME = "festival";
+
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
@@ -86,7 +88,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -116,7 +118,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -138,7 +140,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
