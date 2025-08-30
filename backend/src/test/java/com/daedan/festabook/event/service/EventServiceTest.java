@@ -107,9 +107,9 @@ class EventServiceTest {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-
             Long notExistingEventDateId = 0L;
             EventRequest request = EventRequestFixture.create(notExistingEventDateId);
+
             given(eventDateJpaRepository.findById(request.eventDateId()))
                     .willReturn(Optional.empty());
 
@@ -255,7 +255,8 @@ class EventServiceTest {
         void 예외_존재하지_않는_이벤트() {
             // given
             Long eventId = 1L;
-            Festival festival = FestivalFixture.create();
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
             EventUpdateRequest request = EventUpdateRequestFixture.create();
 
             given(eventJpaRepository.findById(eventId))

@@ -12,6 +12,8 @@ import com.daedan.festabook.event.domain.EventDateFixture;
 import com.daedan.festabook.event.domain.EventFixture;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateRequestFixture;
+import com.daedan.festabook.event.dto.EventDateUpdateRequest;
+import com.daedan.festabook.event.dto.EventDateUpdateRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
@@ -282,7 +284,7 @@ class EventDateControllerTest {
             List<EventDate> eventDates = EventDateFixture.createList(2, festival);
             eventDateJpaRepository.saveAll(eventDates);
 
-            EventDateRequest request = EventDateRequestFixture.create(eventDates.get(1).getDate());
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create(eventDates.get(1).getDate());
 
             // when & then
             RestAssured

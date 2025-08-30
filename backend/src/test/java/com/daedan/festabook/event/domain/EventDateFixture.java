@@ -86,7 +86,7 @@ public class EventDateFixture {
 
     public static List<EventDate> createList(int size, Festival festival) {
         return IntStream.range(0, size)
-                .mapToObj(i -> create(festival))
+                .mapToObj(i -> create(festival, LocalDate.now().plusDays(i)))
                 .toList();
     }
 
