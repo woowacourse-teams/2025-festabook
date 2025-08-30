@@ -25,7 +25,6 @@ public class FestivalService {
 
     public FestivalGeographyResponse getFestivalGeographyByFestivalId(Long festivalId) {
         Festival festival = getFestivalById(festivalId);
-
         return FestivalGeographyResponse.from(festival);
     }
 
@@ -43,8 +42,10 @@ public class FestivalService {
     }
 
     @Transactional
-    public FestivalInformationResponse updateFestivalInformation(Long festivalId,
-                                                                 FestivalInformationUpdateRequest request) {
+    public FestivalInformationResponse updateFestivalInformation(
+            Long festivalId,
+            FestivalInformationUpdateRequest request
+    ) {
         Festival festival = getFestivalById(festivalId);
         festival.updateFestival(request.festivalName(), request.startDate(), request.endDate());
         return FestivalInformationResponse.from(festival);

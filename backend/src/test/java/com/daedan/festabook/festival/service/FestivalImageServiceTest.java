@@ -79,8 +79,7 @@ class FestivalImageServiceTest {
             FestivalImageRequest request = FestivalImageRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(
-                    () -> festivalImageService.addFestivalImage(invalidFestivalId, request))
+            assertThatThrownBy(() -> festivalImageService.addFestivalImage(invalidFestivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제입니다.");
         }

@@ -39,8 +39,10 @@ public class FestivalImageService {
     }
 
     @Transactional
-    public FestivalImageResponses updateFestivalImagesSequence(Long festivalId,
-                                                               List<FestivalImageSequenceUpdateRequest> requests) {
+    public FestivalImageResponses updateFestivalImagesSequence(
+            Long festivalId,
+            List<FestivalImageSequenceUpdateRequest> requests
+    ) {
         // TODO: sequence DTO 값 검증 추가
         List<FestivalImage> festivalImages = new ArrayList<>();
 
