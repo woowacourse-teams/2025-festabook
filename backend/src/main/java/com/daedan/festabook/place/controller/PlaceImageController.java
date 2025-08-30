@@ -1,13 +1,10 @@
 package com.daedan.festabook.place.controller;
 
-import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
-import com.daedan.festabook.place.service.PlaceImageService;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.place.dto.PlaceImageRequest;
 import com.daedan.festabook.place.dto.PlaceImageResponse;
+import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
 import com.daedan.festabook.place.service.PlaceImageService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -16,10 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,9 +39,10 @@ public class PlaceImageController {
     })
     public PlaceImageResponse addPlaceImage(
             @PathVariable Long placeId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceImageRequest request
     ) {
-        return placeImageService.addPlaceImage(placeId, request);
+        return placeImageService.addPlaceImage(placeId, councilDetails.getFestivalId(), request);
     }
 
     @PatchMapping("/images/sequences")
@@ -55,9 +52,10 @@ public class PlaceImageController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public PlaceImageSequenceUpdateResponses updateFestivalImagesSequence(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody List<PlaceImageSequenceUpdateRequest> requests
     ) {
-        return placeImageService.updatePlaceImagesSequence(requests);
+        return placeImageService.updatePlaceImagesSequence(councilDetails.getFestivalId(), requests);
     }
 
     @DeleteMapping("/images/{placeImageId}")
@@ -67,8 +65,9 @@ public class PlaceImageController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deletePlaceImageByPlaceImageId(
-            @PathVariable Long placeImageId
+            @PathVariable Long placeImageId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        placeImageService.deletePlaceImageByPlaceImageId(placeImageId);
+        placeImageService.deletePlaceImageByPlaceImageId(placeImageId, councilDetails.getFestivalId());
     }
 }

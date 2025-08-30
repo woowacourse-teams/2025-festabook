@@ -28,8 +28,9 @@ public class PlaceImageService {
 
     // TODO: sequence 동시성 해결
     @Transactional
-    public PlaceImageResponse addPlaceImage(Long placeId, PlaceImageRequest request) {
+    public PlaceImageResponse addPlaceImage(Long placeId, Long festivalId, PlaceImageRequest request) {
         Place place = getPlaceById(placeId);
+        validatePlaceBelongsToFestival(place, festivalId);
 
         int currentMaxSequence = placeImageJpaRepository.findMaxSequenceByPlace(place)
                 .orElseGet(() -> 0);
@@ -43,12 +44,16 @@ public class PlaceImageService {
     }
 
     @Transactional
-    public PlaceImageSequenceUpdateResponses updatePlaceImagesSequence(List<PlaceImageSequenceUpdateRequest> requests) {
+    public PlaceImageSequenceUpdateResponses updatePlaceImagesSequence(
+            Long festivalId,
+            List<PlaceImageSequenceUpdateRequest> requests
+    ) {
         // TODO: sequence DTO 값 검증 추가
         List<PlaceImage> placeImages = new ArrayList<>();
 
         for (PlaceImageSequenceUpdateRequest request : requests) {
             PlaceImage placeImage = getPlaceImageById(request.placeImageId());
+            validatePlaceImageBelongsToFestival(placeImage, festivalId);
             placeImage.updateSequence(request.sequence());
             placeImages.add(placeImage);
         }
@@ -58,7 +63,11 @@ public class PlaceImageService {
         return PlaceImageSequenceUpdateResponses.from(placeImages);
     }
 
-    public void deletePlaceImageByPlaceImageId(Long placeImageId) {
+    @Transactional
+    public void deletePlaceImageByPlaceImageId(Long placeImageId, Long festivalId) {
+        PlaceImage placeImage = getPlaceImageById(placeImageId);
+        validatePlaceImageBelongsToFestival(placeImage, festivalId);
+
         placeImageJpaRepository.deleteById(placeImageId);
     }
 
@@ -80,5 +89,17 @@ public class PlaceImageService {
     private PlaceImage getPlaceImageById(Long placeImageId) {
         return placeImageJpaRepository.findById(placeImageId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스 이미지입니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private void validatePlaceImageBelongsToFestival(PlaceImage placeImage, Long festivalId) {
+        if (!placeImage.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 플레이스 이미지가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validatePlaceBelongsToFestival(Place place, Long festivalId) {
+        if (!place.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 플레이스가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }

@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceFixture;
@@ -52,7 +54,9 @@ public class PlaceImageServiceTest {
         void 성공() {
             // given
             Long placeId = 1L;
-            Place place = PlaceFixture.create(placeId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(placeId, festival);
 
             int maxSequence = 1;
             int newSequence = maxSequence + 1;
@@ -70,7 +74,7 @@ public class PlaceImageServiceTest {
             PlaceImageRequest placeImageRequest = new PlaceImageRequest(savedPlaceImage.getImageUrl());
 
             // when
-            PlaceImageResponse result = placeImageService.addPlaceImage(placeId, placeImageRequest);
+            PlaceImageResponse result = placeImageService.addPlaceImage(placeId, festivalId, placeImageRequest);
 
             // then
             assertSoftly(s -> {
@@ -84,6 +88,7 @@ public class PlaceImageServiceTest {
         void 예외_존재하지_않는_플레이스() {
             // given
             Long invalidPlaceId = 1L;
+            Long festivalId = 1L;
 
             given(placeJpaRepository.findById(invalidPlaceId))
                     .willReturn(Optional.empty());
@@ -91,7 +96,7 @@ public class PlaceImageServiceTest {
             PlaceImageRequest placeImageRequest = PlaceImageRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeImageService.addPlaceImage(invalidPlaceId, placeImageRequest))
+            assertThatThrownBy(() -> placeImageService.addPlaceImage(invalidPlaceId, festivalId, placeImageRequest))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
@@ -100,7 +105,9 @@ public class PlaceImageServiceTest {
         void 예외_최대_이미지_수_초과() {
             // given
             Long placeId = 1L;
-            Place place = PlaceFixture.create(placeId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(placeId, festival);
 
             int sequence = 10;
             Long imageCount = MAX_IMAGE_COUNT + 1;
@@ -112,12 +119,32 @@ public class PlaceImageServiceTest {
             given(placeImageJpaRepository.countByPlace(place))
                     .willReturn(imageCount);
 
-            PlaceImageRequest placeImageRequest = PlaceImageRequestFixture.create();
+            PlaceImageRequest request = PlaceImageRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeImageService.addPlaceImage(placeId, placeImageRequest))
+            assertThatThrownBy(() -> placeImageService.addPlaceImage(placeId, festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_COUNT));
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+
+            given(placeJpaRepository.findById(place.getId()))
+                    .willReturn(Optional.of(place));
+
+            PlaceImageRequest request = PlaceImageRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> placeImageService.addPlaceImage(place.getId(), otherFestival.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
     }
 
@@ -127,13 +154,17 @@ public class PlaceImageServiceTest {
         @Test
         void 성공_수정_후_응답값_오름차순_정렬() {
             // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+
             Long placeImageId1 = 1L;
             Long placeImageId2 = 2L;
             Long placeImageId3 = 3L;
 
-            PlaceImage placeImage1 = PlaceImageFixture.create(placeImageId1, 1);
-            PlaceImage placeImage2 = PlaceImageFixture.create(placeImageId2, 2);
-            PlaceImage placeImage3 = PlaceImageFixture.create(placeImageId3, 3);
+            PlaceImage placeImage1 = PlaceImageFixture.create(placeImageId1, place, 1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(placeImageId2, place, 2);
+            PlaceImage placeImage3 = PlaceImageFixture.create(placeImageId3, place, 3);
 
             List<PlaceImageSequenceUpdateRequest> requests = List.of(
                     PlaceImageSequenceUpdateRequestFixture.create(placeImageId1, 3),
@@ -149,7 +180,10 @@ public class PlaceImageServiceTest {
                     .willReturn(Optional.of(placeImage3));
 
             // when
-            PlaceImageSequenceUpdateResponses result = placeImageService.updatePlaceImagesSequence(requests);
+            PlaceImageSequenceUpdateResponses result = placeImageService.updatePlaceImagesSequence(
+                    festival.getId(),
+                    requests
+            );
 
             // then
             assertSoftly(s -> {
@@ -167,12 +201,35 @@ public class PlaceImageServiceTest {
         @Test
         void 예외_존재하지_않는_플레이스_이미지() {
             // given
+            Long festivalId = 1L;
             List<PlaceImageSequenceUpdateRequest> requests = PlaceImageSequenceUpdateRequestFixture.createList(1);
 
             // when & then
-            assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(requests))
+            assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(festivalId, requests))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스 이미지입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스_이미지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Long placeImageId = 1L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+            PlaceImage placeImage = PlaceImageFixture.create(placeImageId, place);
+
+            given(placeImageJpaRepository.findById(placeImage.getId()))
+                    .willReturn(Optional.of(placeImage));
+
+            List<PlaceImageSequenceUpdateRequest> requests = PlaceImageSequenceUpdateRequestFixture.createList(1);
+
+            // when & then
+            assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(otherFestival.getId(), requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스 이미지가 아닙니다.");
         }
     }
 
@@ -183,13 +240,41 @@ public class PlaceImageServiceTest {
         void 성공() {
             // given
             Long placeImageId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+            PlaceImage placeImage = PlaceImageFixture.create(placeImageId, place);
+
+            given(placeImageJpaRepository.findById(placeImageId))
+                    .willReturn(Optional.of(placeImage));
 
             // when
-            placeImageService.deletePlaceImageByPlaceImageId(placeImageId);
+            placeImageService.deletePlaceImageByPlaceImageId(placeImageId, festivalId);
 
             // then
             then(placeImageJpaRepository).should()
                     .deleteById(placeImageId);
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스_이미지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+            PlaceImage placeImage = PlaceImageFixture.create(place);
+
+            given(placeImageJpaRepository.findById(placeImage.getId()))
+                    .willReturn(Optional.of(placeImage));
+
+            // when & then
+            assertThatThrownBy(
+                    () -> placeImageService.deletePlaceImageByPlaceImageId(placeImage.getId(), otherFestival.getId())
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스 이미지가 아닙니다.");
         }
     }
 }

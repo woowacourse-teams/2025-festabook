@@ -172,24 +172,5 @@ public class PlaceImageControllerTest {
 
             assertThat(placeImageJpaRepository.findById(placeImage.getId())).isEmpty();
         }
-
-        @Test
-        void 성공_존재하지_않는_플레이스_삭제() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long invalidPlaceImageId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .delete("/places/images/{placeImageId}", invalidPlaceImageId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-        }
     }
 }
