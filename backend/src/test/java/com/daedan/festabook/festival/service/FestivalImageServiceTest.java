@@ -93,7 +93,7 @@ class FestivalImageServiceTest {
         void 성공_수정_후_응답값_오름차순_정렬() {
             // given
             Long festivalId = 1L;
-            Festival festival = FestivalFixture.create();
+            Festival festival = FestivalFixture.create(festivalId);
 
             Long festivalImageId1 = 1L;
             Long festivalImageId2 = 2L;
