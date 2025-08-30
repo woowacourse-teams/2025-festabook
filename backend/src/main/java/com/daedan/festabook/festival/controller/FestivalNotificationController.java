@@ -6,6 +6,7 @@ import com.daedan.festabook.festival.service.FestivalNotificationService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class FestivalNotificationController {
 
     @PostMapping("/{festivalId}/notifications")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 축제의 알림 구독 (FCM 토픽 구독)")
+    @Operation(summary = "특정 축제의 알림 구독 (FCM 토픽 구독)", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
@@ -40,7 +41,7 @@ public class FestivalNotificationController {
 
     @DeleteMapping("/notifications/{festivalNotificationId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "특정 축제의 알림 구독 취소 (FCM 토픽 구독 취소)")
+    @Operation(summary = "특정 축제의 알림 구독 취소 (FCM 토픽 구독 취소)", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
