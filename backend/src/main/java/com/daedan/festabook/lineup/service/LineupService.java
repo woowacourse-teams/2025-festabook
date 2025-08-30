@@ -39,13 +39,18 @@ public class LineupService {
     }
 
     @Transactional
-    public LineupResponse updateLineup(Long lineupId, LineupUpdateRequest request) {
+    public LineupResponse updateLineup(Long lineupId, Long festivalId, LineupUpdateRequest request) {
         Lineup lineup = getLineupById(lineupId);
+        validateLineupBelongsToFestival(lineup, festivalId);
+
         lineup.updateLineup(request.name(), request.imageUrl(), request.performanceAt());
         return LineupResponse.from(lineup);
     }
 
-    public void deleteLineupByLineupId(Long lineupId) {
+    public void deleteLineupByLineupId(Long lineupId, Long festivalId) {
+        Lineup lineup = getLineupById(lineupId);
+        validateLineupBelongsToFestival(lineup, festivalId);
+
         lineupJpaRepository.deleteById(lineupId);
     }
 
@@ -57,5 +62,11 @@ public class LineupService {
     private Lineup getLineupById(Long lineupId) {
         return lineupJpaRepository.findById(lineupId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 라인업입니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private void validateLineupBelongsToFestival(Lineup lineup, Long festivalId) {
+        if (!lineup.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 라인업이 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }

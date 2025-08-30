@@ -1,5 +1,6 @@
 package com.daedan.festabook.lineup.domain;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.festival.domain.Festival;
@@ -39,6 +40,39 @@ class LineupTest {
                 s.assertThat(lineup.getImageUrl()).isEqualTo(updatedImageUrl);
                 s.assertThat(lineup.getPerformanceAt()).isEqualTo(updatedPerformanceAt);
             });
+        }
+    }
+
+    @Nested
+    class isFestivalIdEqualTo {
+
+        @Test
+        void 같은_축제의_id이면_true() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Lineup lineup = LineupFixture.create(festival);
+
+            // when
+            boolean result = lineup.isFestivalIdEqualTo(festivalId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 다른_축제의_id이면_false() {
+            // given
+            Long festivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Lineup lineup = LineupFixture.create(festival);
+
+            // when
+            boolean result = lineup.isFestivalIdEqualTo(otherFestivalId);
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 }

@@ -81,7 +81,6 @@ class LineupControllerTest {
             RestAssured
                     .given()
                     .header(header)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -105,8 +104,6 @@ class LineupControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header header = jwtTestHelper.createAuthorizationHeader(festival);
-
             LocalDateTime dateTime1 = LocalDateTime.of(2025, 5, 20, 20, 0);
             LocalDateTime dateTime2 = LocalDateTime.of(2025, 5, 19, 20, 0);
             LocalDateTime dateTime3 = LocalDateTime.of(2025, 5, 18, 20, 0);
@@ -122,7 +119,6 @@ class LineupControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(header)
                     .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/lineups")
@@ -166,7 +162,6 @@ class LineupControllerTest {
             RestAssured
                     .given()
                     .header(header)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -206,26 +201,6 @@ class LineupControllerTest {
 
             // 실제 삭제 확인
             assertThat(lineupJpaRepository.findById(lineup.getId())).isEmpty();
-        }
-
-        @Test
-        void 성공_존재하지_않는_라인업() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header header = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long invalidLineupId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(header)
-                    .when()
-                    .delete("/lineups/{lineupId}", invalidLineupId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

@@ -60,6 +60,10 @@ public class Lineup extends BaseEntity implements Comparable<Lineup> {
         this.performanceAt = performanceAt;
     }
 
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.getFestival().getId().equals(festivalId);
+    }
+
     @Override
     public int compareTo(Lineup otherLineup) {
         return performanceAt.compareTo(otherLineup.performanceAt);

@@ -130,7 +130,9 @@ class LineupServiceTest {
         void 성공() {
             // given
             Long lineupId = 1L;
-            Lineup lineup = LineupFixture.create(lineupId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Lineup lineup = LineupFixture.create(lineupId, festival);
             LineupUpdateRequest request = LineupUpdateRequestFixture.create("후유", "https://example.com/image.png",
                     LocalDateTime.of(2025, 10, 15, 12, 0, 0));
 
@@ -138,7 +140,7 @@ class LineupServiceTest {
                     .willReturn(Optional.of(lineup));
 
             // when
-            LineupResponse result = lineupService.updateLineup(lineupId, request);
+            LineupResponse result = lineupService.updateLineup(lineupId, festivalId, request);
 
             // then
             assertSoftly(s -> {
@@ -153,15 +155,36 @@ class LineupServiceTest {
         void 예외_존재하지_않는_라인업() {
             // given
             Long invalidLineupId = 0L;
+            Long festivalId = 1L;
             LineupUpdateRequest request = LineupUpdateRequestFixture.create();
 
             given(lineupJpaRepository.findById(invalidLineupId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> lineupService.updateLineup(invalidLineupId, request))
+            assertThatThrownBy(() -> lineupService.updateLineup(invalidLineupId, festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 라인업입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_라인업일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Lineup lineup = LineupFixture.create(requestFestival);
+
+            given(lineupJpaRepository.findById(lineup.getId()))
+                    .willReturn(Optional.of(lineup));
+
+            LineupUpdateRequest request = LineupUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> lineupService.updateLineup(lineup.getId(), otherFestival.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 라인업이 아닙니다.");
         }
     }
 
@@ -172,12 +195,37 @@ class LineupServiceTest {
         void 성공() {
             // given
             Long lineupId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Lineup lineup = LineupFixture.create(lineupId, festival);
+
+            given(lineupJpaRepository.findById(lineupId))
+                    .willReturn(Optional.of(lineup));
 
             // when
-            lineupService.deleteLineupByLineupId(lineupId);
+            lineupService.deleteLineupByLineupId(lineupId, festival.getId());
 
             // then
-            then(lineupJpaRepository).should().deleteById(lineupId);
+            then(lineupJpaRepository).should()
+                    .deleteById(lineupId);
+        }
+
+        @Test
+        void 예외_다른_축제의_라인업일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Lineup lineup = LineupFixture.create(requestFestival);
+
+            given(lineupJpaRepository.findById(lineup.getId()))
+                    .willReturn(Optional.of(lineup));
+
+            // when & then
+            assertThatThrownBy(() -> lineupService.deleteLineupByLineupId(lineup.getId(), otherFestival.getId()))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 라인업이 아닙니다.");
         }
     }
 }
