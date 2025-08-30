@@ -47,7 +47,9 @@ public class EventService {
     public EventUpdateResponse updateEvent(Long eventId, Long festivalId, EventUpdateRequest request) {
         Event event = getEventById(eventId);
         validateEventBelongsToFestival(event, festivalId);
-        Event newEvent = request.toEntity(event.getEventDate());
+        EventDate newEventDate = getEventDateById(request.eventDateId());
+        validateEventDateBelongsToFestival(newEventDate, festivalId);
+        Event newEvent = request.toEntity(newEventDate);
 
         event.updateEvent(newEvent);
         return EventUpdateResponse.from(event, clock);

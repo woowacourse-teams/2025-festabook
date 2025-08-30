@@ -224,6 +224,8 @@ class EventServiceTest {
             );
             given(eventJpaRepository.findById(eventId))
                     .willReturn(Optional.of(event));
+            given(eventDateJpaRepository.findById(eventDateId))
+                    .willReturn(Optional.of(eventDate));
 
             Event updatedEvent = EventFixture.create(
                     LocalTime.of(3, 0),
@@ -287,6 +289,35 @@ class EventServiceTest {
             assertThatThrownBy(() -> eventService.updateEvent(event.getId(), otherFestival.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 일정이 아닙니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_일정_날짜로_변경_요청() {
+            // given
+            Long currentFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival currentFestival = FestivalFixture.create(currentFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+
+            Long currentEventDateId = 10L;
+            Long otherEventDateId = 20L;
+            EventDate currentEventDate = EventDateFixture.create(currentEventDateId, currentFestival);
+            EventDate otherEventDate = EventDateFixture.create(otherEventDateId, otherFestival);
+
+            Long eventId = 1L;
+            Event event = EventFixture.create(eventId, currentEventDate);
+
+            given(eventJpaRepository.findById(eventId))
+                    .willReturn(Optional.of(event));
+            given(eventDateJpaRepository.findById(otherEventDateId))
+                    .willReturn(Optional.of(otherEventDate));
+
+            EventUpdateRequest request = EventUpdateRequestFixture.create(otherEventDate.getId());
+
+            // when & then
+            assertThatThrownBy(() -> eventService.updateEvent(event.getId(), currentFestival.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 일정 날짜가 아닙니다.");
         }
     }
 
