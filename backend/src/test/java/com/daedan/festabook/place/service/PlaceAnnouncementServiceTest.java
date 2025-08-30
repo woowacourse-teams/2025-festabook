@@ -96,8 +96,8 @@ class PlaceAnnouncementServiceTest {
             PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(
-                    () -> placeAnnouncementService.createPlaceAnnouncement(place.getId(), festival.getId(), request)
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.createPlaceAnnouncement(place.getId(), festival.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 공지사항은 %d개까지 작성이 가능합니다.", PLACE_ANNOUNCEMENT_MAX_COUNT));
@@ -108,18 +108,19 @@ class PlaceAnnouncementServiceTest {
             // given
             Long requestFestivalId = 1L;
             Long otherFestivalId = 999L;
+            Long placeId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            Place place = PlaceFixture.create(requestFestival);
+            Place place = PlaceFixture.create(placeId, requestFestival);
 
-            given(placeJpaRepository.findById(place.getId()))
+            given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
 
             PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(
-                    () -> placeAnnouncementService.createPlaceAnnouncement(
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.createPlaceAnnouncement(
                             place.getId(),
                             otherFestival.getId(),
                             request
@@ -179,8 +180,8 @@ class PlaceAnnouncementServiceTest {
             );
 
             // when & then
-            assertThatThrownBy(
-                    () -> placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, festivalId, request)
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, festivalId, request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스 공지입니다.");
@@ -191,19 +192,20 @@ class PlaceAnnouncementServiceTest {
             // given
             Long requestFestivalId = 1L;
             Long otherFestivalId = 999L;
+            Long placeAnnouncementId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
             Place place = PlaceFixture.create(requestFestival);
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
 
-            given(placeAnnouncementJpaRepository.findById(placeAnnouncement.getId()))
+            given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
                     .willReturn(Optional.of(placeAnnouncement));
 
             PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(
-                    () -> placeAnnouncementService.updatePlaceAnnouncement(
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.updatePlaceAnnouncement(
                             placeAnnouncement.getId(),
                             otherFestival.getId(),
                             request
@@ -242,17 +244,18 @@ class PlaceAnnouncementServiceTest {
             // given
             Long requestFestivalId = 1L;
             Long otherFestivalId = 999L;
+            Long placeAnnouncementId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
             Place place = PlaceFixture.create(requestFestival);
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
 
             given(placeAnnouncementJpaRepository.findById(placeAnnouncement.getId()))
                     .willReturn(Optional.of(placeAnnouncement));
 
             // when & then
-            assertThatThrownBy(
-                    () -> placeAnnouncementService.deleteByPlaceAnnouncementId(
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.deleteByPlaceAnnouncementId(
                             placeAnnouncement.getId(),
                             otherFestival.getId()
                     )

@@ -10,9 +10,9 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
-import com.daedan.festabook.place.domain.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
+import com.daedan.festabook.place.dto.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateResponse;
 import com.daedan.festabook.place.dto.PlaceGeographyResponses;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
@@ -154,8 +154,8 @@ class PlaceGeographyServiceTest {
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(
-                    () -> placeGeographyService.updatePlaceCoordinate(place.getId(), otherFestival.getId(), request)
+            assertThatThrownBy(() ->
+                    placeGeographyService.updatePlaceCoordinate(place.getId(), otherFestival.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");

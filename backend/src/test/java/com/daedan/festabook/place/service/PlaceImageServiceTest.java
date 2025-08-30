@@ -132,11 +132,12 @@ public class PlaceImageServiceTest {
             // given
             Long requestFestivalId = 1L;
             Long otherFestivalId = 999L;
+            Long placeId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            Place place = PlaceFixture.create(requestFestival);
+            Place place = PlaceFixture.create(placeId, requestFestival);
 
-            given(placeJpaRepository.findById(place.getId()))
+            given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
 
             PlaceImageRequest request = PlaceImageRequestFixture.create();
@@ -261,17 +262,18 @@ public class PlaceImageServiceTest {
             // given
             Long requestFestivalId = 1L;
             Long otherFestivalId = 999L;
+            Long placeImageId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
             Place place = PlaceFixture.create(requestFestival);
-            PlaceImage placeImage = PlaceImageFixture.create(place);
+            PlaceImage placeImage = PlaceImageFixture.create(placeImageId, place);
 
-            given(placeImageJpaRepository.findById(placeImage.getId()))
+            given(placeImageJpaRepository.findById(placeImageId))
                     .willReturn(Optional.of(placeImage));
 
             // when & then
-            assertThatThrownBy(
-                    () -> placeImageService.deletePlaceImageByPlaceImageId(placeImage.getId(), otherFestival.getId())
+            assertThatThrownBy(() ->
+                    placeImageService.deletePlaceImageByPlaceImageId(placeImage.getId(), otherFestival.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스 이미지가 아닙니다.");
