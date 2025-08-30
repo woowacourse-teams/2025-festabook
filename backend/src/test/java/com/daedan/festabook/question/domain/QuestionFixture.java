@@ -66,6 +66,26 @@ public class QuestionFixture {
         );
     }
 
+    public static Question create(
+            Integer sequence
+    ) {
+        return new Question(
+                DEFAULT_FESTIVAL,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                sequence
+        );
+    }
+
+    public static Question create() {
+        return new Question(
+                DEFAULT_FESTIVAL,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                DEFAULT_SEQUENCE
+        );
+    }
+
     public static Question createWithQuestion(
             String question
     ) {
@@ -84,26 +104,6 @@ public class QuestionFixture {
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 answer,
-                DEFAULT_SEQUENCE
-        );
-    }
-
-    public static Question create(
-            Integer sequence
-    ) {
-        return new Question(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
-                sequence
-        );
-    }
-
-    public static Question create() {
-        return new Question(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
         );
     }

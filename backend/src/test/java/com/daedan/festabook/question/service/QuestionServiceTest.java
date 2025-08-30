@@ -189,8 +189,8 @@ class QuestionServiceTest {
             QuestionRequest request = QuestionRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(
-                    () -> questionService.updateQuestionAndAnswer(question.getId(), otherFestival.getId(), request)
+            assertThatThrownBy(() ->
+                    questionService.updateQuestionAndAnswer(question.getId(), otherFestival.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 질문이 아닙니다.");
@@ -311,8 +311,8 @@ class QuestionServiceTest {
                     .willReturn(Optional.of(question));
 
             // when & then
-            assertThatThrownBy(
-                    () -> questionService.deleteQuestionByQuestionId(question.getId(), otherFestival.getId())
+            assertThatThrownBy(() ->
+                    questionService.deleteQuestionByQuestionId(question.getId(), otherFestival.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 질문이 아닙니다.");
