@@ -218,11 +218,12 @@ class EventDateServiceTest {
             // given
             Long requestFestivalId = 1L;
             Long otherFestivalId = 999L;
+            Long eventDateId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            EventDate eventDate = EventDateFixture.create(requestFestival);
+            EventDate eventDate = EventDateFixture.create(eventDateId, requestFestival);
 
-            given(eventDateJpaRepository.findById(eventDate.getId()))
+            given(eventDateJpaRepository.findById(eventDateId))
                     .willReturn(Optional.of(eventDate));
 
             EventDateUpdateRequest request = EventDateUpdateRequestFixture.create();
