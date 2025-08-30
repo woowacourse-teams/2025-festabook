@@ -65,8 +65,11 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public AnnouncementUpdateResponse updateAnnouncement(Long announcementId, Long festivalId,
-                                                         AnnouncementUpdateRequest request) {
+    public AnnouncementUpdateResponse updateAnnouncement(
+            Long announcementId,
+            Long festivalId,
+            AnnouncementUpdateRequest request
+    ) {
         Announcement announcement = getAnnouncementById(announcementId);
         validateAnnouncementBelongsToFestival(announcement, festivalId);
 
@@ -75,8 +78,11 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public AnnouncementPinUpdateResponse updateAnnouncementPin(Long announcementId, Long festivalId,
-                                                               AnnouncementPinUpdateRequest request) {
+    public AnnouncementPinUpdateResponse updateAnnouncementPin(
+            Long announcementId,
+            Long festivalId,
+            AnnouncementPinUpdateRequest request
+    ) {
         Announcement announcement = getAnnouncementById(announcementId);
         validateAnnouncementBelongsToFestival(announcement, festivalId);
         if (announcement.isUnpinned() && request.pinned()) {

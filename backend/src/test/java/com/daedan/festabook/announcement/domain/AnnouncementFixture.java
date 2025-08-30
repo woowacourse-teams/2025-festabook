@@ -16,15 +16,6 @@ public class AnnouncementFixture {
     private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final LocalDateTime DEFAULT_CREATED_AT = LocalDateTime.now();
 
-    public static Announcement create() {
-        return new Announcement(
-                DEFAULT_TITLE,
-                DEFAULT_CONTENT,
-                DEFAULT_IS_PINNED,
-                DEFAULT_FESTIVAL
-        );
-    }
-
     public static Announcement createWithTitle(
             String title
     ) {
@@ -69,21 +60,6 @@ public class AnnouncementFixture {
                 DEFAULT_IS_PINNED,
                 festival
         );
-    }
-
-    public static Announcement create(
-            Long announcementId,
-            boolean isPinned
-    ) {
-        Announcement announcement = new Announcement(
-                DEFAULT_TITLE,
-                DEFAULT_CONTENT,
-                isPinned,
-                DEFAULT_FESTIVAL
-        );
-        BaseEntityTestHelper.setId(announcement, announcementId);
-        BaseEntityTestHelper.setCreatedAt(announcement, DEFAULT_CREATED_AT);
-        return announcement;
     }
 
     public static Announcement create(
