@@ -29,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/lineups")
-@Tag(name = "축제 라인업", description = "축제 라인업 관련 API")
+@Tag(name = "라인업", description = "라인업 관련 API")
 public class LineupController {
 
     private final LineupService lineupService;
