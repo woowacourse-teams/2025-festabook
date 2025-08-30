@@ -241,8 +241,8 @@ class LostItemServiceTest {
             LostItemStatusUpdateRequest request = LostItemStatusUpdateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(
-                    () -> lostItemService.updateLostItemStatus(lostItem.getId(), otherFestival.getId(), request)
+            assertThatThrownBy(() ->
+                    lostItemService.updateLostItemStatus(lostItem.getId(), otherFestival.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 분실물이 아닙니다.");
@@ -284,8 +284,8 @@ class LostItemServiceTest {
                     .willReturn(Optional.of(lostItem));
 
             // when & then
-            assertThatThrownBy(
-                    () -> lostItemService.deleteLostItemByLostItemId(lostItem.getId(), otherFestival.getId())
+            assertThatThrownBy(() ->
+                    lostItemService.deleteLostItemByLostItemId(lostItem.getId(), otherFestival.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 분실물이 아닙니다.");

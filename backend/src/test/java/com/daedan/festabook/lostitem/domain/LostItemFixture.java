@@ -33,28 +33,6 @@ public class LostItemFixture {
         );
     }
 
-    public static LostItem createWithImageUrl(
-            String imageUrl
-    ) {
-        return new LostItem(
-                DEFAULT_FESTIVAL,
-                imageUrl,
-                DEFAULT_STORAGE_LOCATION,
-                DEFAULT_PICK_UP_STATUS
-        );
-    }
-
-    public static LostItem createWithStorageLocation(
-            String storageLocation
-    ) {
-        return new LostItem(
-                DEFAULT_FESTIVAL,
-                DEFAULT_IMAGE_URL,
-                storageLocation,
-                DEFAULT_PICK_UP_STATUS
-        );
-    }
-
     public static LostItem create(
             PickupStatus status
     ) {
@@ -147,6 +125,28 @@ public class LostItemFixture {
                 imageUrl,
                 storageLocation,
                 status
+        );
+    }
+
+    public static LostItem createWithImageUrl(
+            String imageUrl
+    ) {
+        return new LostItem(
+                DEFAULT_FESTIVAL,
+                imageUrl,
+                DEFAULT_STORAGE_LOCATION,
+                DEFAULT_PICK_UP_STATUS
+        );
+    }
+
+    public static LostItem createWithStorageLocation(
+            String storageLocation
+    ) {
+        return new LostItem(
+                DEFAULT_FESTIVAL,
+                DEFAULT_IMAGE_URL,
+                storageLocation,
+                DEFAULT_PICK_UP_STATUS
         );
     }
 }
