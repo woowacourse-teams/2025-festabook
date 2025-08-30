@@ -126,44 +126,6 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class updatePlace {
-
-        @Test
-        void 성공() {
-            // given
-            Long placeId = 1L;
-            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create(
-                    PlaceCategory.BAR,
-                    "수정된 플레이스 이름",
-                    "수정된 플레이스 설명",
-                    "수정된 위치",
-                    "수정된 호스트",
-                    LocalTime.of(12, 00),
-                    LocalTime.of(13, 00)
-            );
-
-            Place place = PlaceFixture.create(placeId);
-
-            given(placeJpaRepository.findById(placeId))
-                    .willReturn(Optional.of(place));
-
-            // when
-            PlaceUpdateResponse result = placeService.updatePlace(placeId, request);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.placeCategory()).isEqualTo(request.placeCategory());
-                s.assertThat(result.title()).isEqualTo(request.title());
-                s.assertThat(result.description()).isEqualTo(request.description());
-                s.assertThat(result.location()).isEqualTo(request.location());
-                s.assertThat(result.host()).isEqualTo(request.host());
-                s.assertThat(result.startTime()).isEqualTo(request.startTime());
-                s.assertThat(result.endTime()).isEqualTo(request.endTime());
-            });
-        }
-    }
-
-    @Nested
     class getAllPlaceByFestivalId {
 
         @Test
@@ -198,9 +160,8 @@ class PlaceServiceTest {
         @Test
         void 성공() {
             // given
-            Long expectedPlaceId = 1L;
-
-            Place place = PlaceFixture.create(expectedPlaceId);
+            Long placeId = 1L;
+            Place place = PlaceFixture.create(placeId);
 
             PlaceImage image1 = PlaceImageFixture.create(place);
             PlaceImage image2 = PlaceImageFixture.create(place);
@@ -208,19 +169,19 @@ class PlaceServiceTest {
             PlaceAnnouncement announcement1 = PlaceAnnouncementFixture.create(place);
             PlaceAnnouncement announcement2 = PlaceAnnouncementFixture.create(place);
 
-            given(placeJpaRepository.findById(expectedPlaceId))
+            given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
-            given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(expectedPlaceId))
+            given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId))
                     .willReturn(List.of(image1, image2));
-            given(placeAnnouncementJpaRepository.findAllByPlaceId(expectedPlaceId))
+            given(placeAnnouncementJpaRepository.findAllByPlaceId(placeId))
                     .willReturn(List.of(announcement1, announcement2));
 
             // when
-            PlaceResponse result = placeService.getPlaceByPlaceId(expectedPlaceId);
+            PlaceResponse result = placeService.getPlaceByPlaceId(placeId);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.placeId()).isEqualTo(expectedPlaceId);
+                s.assertThat(result.placeId()).isEqualTo(placeId);
                 s.assertThat(result.category()).isEqualTo(place.getCategory());
 
                 s.assertThat(result.description()).isEqualTo(place.getDescription());
@@ -248,25 +209,109 @@ class PlaceServiceTest {
     }
 
     @Nested
+    class updatePlace {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(placeId, festival);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+
+            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create(
+                    PlaceCategory.BAR,
+                    "수정된 플레이스 이름",
+                    "수정된 플레이스 설명",
+                    "수정된 위치",
+                    "수정된 호스트",
+                    LocalTime.of(12, 00),
+                    LocalTime.of(13, 00)
+            );
+
+            // when
+            PlaceUpdateResponse result = placeService.updatePlace(placeId, festivalId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.placeCategory()).isEqualTo(request.placeCategory());
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.description()).isEqualTo(request.description());
+                s.assertThat(result.location()).isEqualTo(request.location());
+                s.assertThat(result.host()).isEqualTo(request.host());
+                s.assertThat(result.startTime()).isEqualTo(request.startTime());
+                s.assertThat(result.endTime()).isEqualTo(request.endTime());
+            });
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+
+            given(placeJpaRepository.findById(place.getId()))
+                    .willReturn(Optional.of(place));
+
+            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> placeService.updatePlace(place.getId(), otherFestival.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스가 아닙니다.");
+        }
+    }
+
+    @Nested
     class deleteByPlaceId {
 
         @Test
         void 성공() {
             // given
-            Long expectedPlaceId = 1L;
+            Long placeId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(placeId, festival);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
 
             // when
-            placeService.deleteByPlaceId(expectedPlaceId);
+            placeService.deleteByPlaceId(placeId, festivalId);
 
             // then
             then(placeImageJpaRepository).should()
-                    .deleteAllByPlaceId(expectedPlaceId);
+                    .deleteAllByPlaceId(placeId);
             then(placeAnnouncementJpaRepository).should()
-                    .deleteAllByPlaceId(expectedPlaceId);
+                    .deleteAllByPlaceId(placeId);
             then(placeFavoriteJpaRepository).should()
-                    .deleteAllByPlaceId(expectedPlaceId);
+                    .deleteAllByPlaceId(placeId);
             then(placeJpaRepository).should()
-                    .deleteById(expectedPlaceId);
+                    .deleteById(placeId);
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+
+            given(placeJpaRepository.findById(place.getId()))
+                    .willReturn(Optional.of(place));
+
+            // when & then
+            assertThatThrownBy(() -> placeService.deleteByPlaceId(place.getId(), otherFestival.getId()))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
     }
 }

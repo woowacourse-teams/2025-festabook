@@ -151,6 +151,10 @@ public class Place extends BaseEntity {
         this.startTime = startTime;
         this.endTime = endTime;
     }
+    
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.getFestival().getId().equals(festivalId);
+    }
 
     private void validateTitle(String title) {
         if (!StringUtils.hasText(title)) {
