@@ -56,7 +56,6 @@ public class FestivalImageService {
         return FestivalImageResponses.from(festivalImages);
     }
 
-    @Transactional
     public void removeFestivalImage(Long festivalImageId, Long festivalId) {
         FestivalImage festivalImage = getFestivalImageById(festivalImageId);
         validateFestivalImageBelongsToFestival(festivalImage, festivalId);
