@@ -47,7 +47,9 @@ public class EventDateService {
     public EventDateUpdateResponse updateEventDate(Long eventDateId, Long festivalId, EventDateUpdateRequest request) {
         EventDate eventDate = getEventDateById(eventDateId);
         validateEventDateBelongsToFestival(eventDate, festivalId);
-        validateDuplicatedEventDate(festivalId, request.date());
+        if (!eventDate.getDate().isEqual(request.date())) {
+            validateDuplicatedEventDate(festivalId, request.date());
+        }
 
         eventDate.updateDate(request.date());
         return EventDateUpdateResponse.from(eventDate);
