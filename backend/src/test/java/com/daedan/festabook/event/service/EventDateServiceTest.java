@@ -57,7 +57,7 @@ class EventDateServiceTest {
         void 성공() {
             // given
             Long festivalId = 1L;
-            Festival festival = FestivalFixture.create(1L);
+            Festival festival = FestivalFixture.create(festivalId);
             EventDateRequest request = EventDateRequestFixture.create();
             EventDate eventDate = EventDateFixture.create(request.date());
 

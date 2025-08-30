@@ -225,7 +225,7 @@ class EventDateControllerTest {
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
-            EventDateRequest request = EventDateRequestFixture.create(eventDate.getDate().plusDays(1));
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create(eventDate.getDate().plusDays(1));
 
             int expectedSize = 2;
 
@@ -258,7 +258,7 @@ class EventDateControllerTest {
             Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             Long notExistingEventDateId = 0L;
-            EventDateRequest request = EventDateRequestFixture.create();
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create();
 
             // when & then
             RestAssured
