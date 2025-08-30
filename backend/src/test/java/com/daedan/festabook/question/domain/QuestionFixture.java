@@ -40,6 +40,35 @@ public class QuestionFixture {
     }
 
     public static Question create(
+            Long questionId,
+            Festival festival
+    ) {
+        Question question = create(
+                festival,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                DEFAULT_SEQUENCE
+        );
+        BaseEntityTestHelper.setId(question, questionId);
+        return question;
+    }
+
+    public static Question create(
+            Long questionId,
+            Festival festival,
+            Integer sequence
+    ) {
+        Question question = create(
+                festival,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                sequence
+        );
+        BaseEntityTestHelper.setId(question, questionId);
+        return question;
+    }
+
+    public static Question create(
             Festival festival,
             Integer sequence
     ) {

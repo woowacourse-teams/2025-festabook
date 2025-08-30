@@ -1,6 +1,7 @@
 package com.daedan.festabook.question.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
@@ -11,10 +12,12 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -40,15 +43,15 @@ public class QuestionController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public QuestionResponse createQuestion(
-            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody QuestionRequest request
     ) {
-        return questionService.createQuestion(festivalId, request);
+        return questionService.createQuestion(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 모든 FAQ 조회")
+    @Operation(summary = "특정 축제의 모든 FAQ 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -66,9 +69,10 @@ public class QuestionController {
     })
     public QuestionResponse updateQuestionAndAnswer(
             @PathVariable Long questionId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody QuestionRequest request
     ) {
-        return questionService.updateQuestionAndAnswer(questionId, request);
+        return questionService.updateQuestionAndAnswer(questionId, councilDetails.getFestivalId(), request);
     }
 
     @PatchMapping("/sequences")
@@ -78,9 +82,10 @@ public class QuestionController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public QuestionSequenceUpdateResponses updateSequence(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody List<QuestionSequenceUpdateRequest> requests
     ) {
-        return questionService.updateSequence(requests);
+        return questionService.updateSequence(councilDetails.getFestivalId(), requests);
     }
 
     @DeleteMapping("/{questionId}")
@@ -90,8 +95,9 @@ public class QuestionController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deleteQuestionByQuestionId(
-            @PathVariable Long questionId
+            @PathVariable Long questionId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        questionService.deleteQuestionByQuestionId(questionId);
+        questionService.deleteQuestionByQuestionId(questionId, councilDetails.getFestivalId());
     }
 }

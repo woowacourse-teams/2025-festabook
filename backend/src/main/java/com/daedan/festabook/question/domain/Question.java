@@ -72,6 +72,10 @@ public class Question extends BaseEntity implements Comparable<Question> {
         this.sequence = sequence;
     }
 
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.getFestival().getId().equals(festivalId);
+    }
+
     @Override
     public int compareTo(Question otherQuestion) {
         return sequence.compareTo(otherQuestion.sequence);

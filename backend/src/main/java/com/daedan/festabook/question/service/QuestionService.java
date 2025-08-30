@@ -45,18 +45,22 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionResponse updateQuestionAndAnswer(Long questionId, QuestionRequest request) {
+    public QuestionResponse updateQuestionAndAnswer(Long questionId, Long festivalId, QuestionRequest request) {
         Question question = getQuestionById(questionId);
+        validateLineupBelongsToFestival(question, festivalId);
+
         question.updateQuestionAndAnswer(request.question(), request.answer());
         return QuestionResponse.from(question);
     }
 
     @Transactional
-    public QuestionSequenceUpdateResponses updateSequence(List<QuestionSequenceUpdateRequest> requests) {
+    public QuestionSequenceUpdateResponses updateSequence(Long festivalId,
+                                                          List<QuestionSequenceUpdateRequest> requests) {
         List<Question> questions = new ArrayList<>();
 
         for (QuestionSequenceUpdateRequest request : requests) {
             Question question = getQuestionById(request.questionId());
+            validateLineupBelongsToFestival(question, festivalId);
             question.updateSequence(request.sequence());
             questions.add(question);
         }
@@ -66,7 +70,10 @@ public class QuestionService {
         return QuestionSequenceUpdateResponses.from(questions);
     }
 
-    public void deleteQuestionByQuestionId(Long questionId) {
+    public void deleteQuestionByQuestionId(Long questionId, Long festivalId) {
+        Question question = getQuestionById(questionId);
+        validateLineupBelongsToFestival(question, festivalId);
+
         questionJpaRepository.deleteById(questionId);
     }
 
@@ -78,5 +85,11 @@ public class QuestionService {
     private Festival getFestivalById(Long festivalId) {
         return festivalJpaRepository.findById(festivalId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private void validateLineupBelongsToFestival(Question question, Long festivalId) {
+        if (!question.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 질문이 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }
