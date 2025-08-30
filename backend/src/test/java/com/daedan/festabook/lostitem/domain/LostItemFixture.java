@@ -80,10 +80,25 @@ public class LostItemFixture {
 
     public static LostItem create(
             Long lostItemId,
+            Festival festival
+    ) {
+        LostItem lostItem = new LostItem(
+                festival,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_STORAGE_LOCATION,
+                DEFAULT_PICK_UP_STATUS
+        );
+        BaseEntityTestHelper.setId(lostItem, lostItemId);
+        return BaseEntityTestHelper.setCreatedAt(lostItem, DEFAULT_CREATED_AT);
+    }
+
+    public static LostItem create(
+            Long lostItemId,
+            Festival festival,
             PickupStatus status
     ) {
         LostItem lostItem = new LostItem(
-                DEFAULT_FESTIVAL,
+                festival,
                 DEFAULT_IMAGE_URL,
                 DEFAULT_STORAGE_LOCATION,
                 status
@@ -94,11 +109,12 @@ public class LostItemFixture {
 
     public static LostItem create(
             Long lostItemId,
+            Festival festival,
             String imageUrl,
             String storageLocation
     ) {
         LostItem lostItem = new LostItem(
-                DEFAULT_FESTIVAL,
+                festival,
                 imageUrl,
                 storageLocation,
                 DEFAULT_PICK_UP_STATUS
