@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.controller;
 
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
@@ -11,15 +12,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -40,10 +37,11 @@ public class PlaceAnnouncementController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public PlaceAnnouncementResponse createPlaceAnnouncement(
-            @PathVariable("placeId") Long placeId,
+            @PathVariable Long placeId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceAnnouncementRequest request
     ) {
-        return placeAnnouncementService.createPlaceAnnouncement(placeId, request);
+        return placeAnnouncementService.createPlaceAnnouncement(placeId, councilDetails.getFestivalId(), request);
     }
 
     @PatchMapping("/announcements/{placeAnnouncementId}")
@@ -54,9 +52,14 @@ public class PlaceAnnouncementController {
     })
     public PlaceAnnouncementUpdateResponse updatePlaceAnnouncement(
             @PathVariable Long placeAnnouncementId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceAnnouncementUpdateRequest request
     ) {
-        return placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, request);
+        return placeAnnouncementService.updatePlaceAnnouncement(
+                placeAnnouncementId,
+                councilDetails.getFestivalId(),
+                request
+        );
     }
 
     @DeleteMapping("/announcements/{placeAnnouncementId}")
@@ -66,8 +69,9 @@ public class PlaceAnnouncementController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deleteByPlaceAnnouncementId(
-            @PathVariable Long placeAnnouncementId
+            @PathVariable Long placeAnnouncementId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        placeAnnouncementService.deleteByPlaceAnnouncementId(placeAnnouncementId);
+        placeAnnouncementService.deleteByPlaceAnnouncementId(placeAnnouncementId, councilDetails.getFestivalId());
     }
 }

@@ -2,8 +2,11 @@ package com.daedan.festabook.place.domain;
 
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.global.exception.BusinessException;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -157,7 +160,7 @@ class PlaceAnnouncementTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지의 제목은 비어있을 수 없습니다.");
         }
-        
+
         @ParameterizedTest
         @ValueSource(ints = {1, 100, 200, MAX_CONTENT_LENGTH})
         void 성공_플레이스_공지_내용_경계값(int length) {
@@ -201,6 +204,41 @@ class PlaceAnnouncementTest {
             assertThatThrownBy(() -> placeAnnouncement.updatePlaceAnnouncement(title, invalidContent))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스 공지 내용의 길이는 %d자를 초과할 수 없습니다.", MAX_CONTENT_LENGTH);
+        }
+    }
+
+    @Nested
+    class isFestivalIdEqualTo {
+
+        @Test
+        void 같은_축제의_id이면_true() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
+
+            // when
+            boolean result = placeAnnouncement.isFestivalIdEqualTo(festivalId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 다른_축제의_id이면_false() {
+            // given
+            Long festivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place);
+
+            // when
+            boolean result = placeAnnouncement.isFestivalIdEqualTo(otherFestivalId);
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 }

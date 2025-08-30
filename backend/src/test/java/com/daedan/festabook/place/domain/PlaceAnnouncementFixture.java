@@ -16,15 +16,6 @@ public class PlaceAnnouncementFixture {
         );
     }
 
-    public static PlaceAnnouncement create(Long id) {
-        PlaceAnnouncement placeAnnouncement = new PlaceAnnouncement(
-                DEFAULT_PLACE,
-                DEFAULT_TITLE,
-                DEFAULT_CONTENT
-        );
-        return BaseEntityTestHelper.setId(placeAnnouncement, id);
-    }
-
     public static PlaceAnnouncement create(
             Place place
     ) {
@@ -56,6 +47,19 @@ public class PlaceAnnouncementFixture {
                 title,
                 content
         );
+    }
+
+    public static PlaceAnnouncement create(
+            Long placeAnnouncementId,
+            Place place
+    ) {
+        PlaceAnnouncement placeAnnouncement = new PlaceAnnouncement(
+                place,
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT
+        );
+        BaseEntityTestHelper.setId(placeAnnouncement, placeAnnouncementId);
+        return placeAnnouncement;
     }
 
     public static PlaceAnnouncement createWithTitle(

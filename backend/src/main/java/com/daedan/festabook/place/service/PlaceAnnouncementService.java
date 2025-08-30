@@ -22,10 +22,14 @@ public class PlaceAnnouncementService {
 
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
-    
-    public PlaceAnnouncementResponse createPlaceAnnouncement(Long placeId, PlaceAnnouncementRequest request) {
-        Place place = getPlaceById(placeId);
 
+    public PlaceAnnouncementResponse createPlaceAnnouncement(
+            Long placeId,
+            Long festivalId,
+            PlaceAnnouncementRequest request
+    ) {
+        Place place = getPlaceById(placeId);
+        validatePlaceBelongsToFestival(place, festivalId);
         validatePlaceAnnouncementMaxCount(place);
 
         PlaceAnnouncement placeAnnouncement = request.toEntity(place);
@@ -37,16 +41,21 @@ public class PlaceAnnouncementService {
     @Transactional
     public PlaceAnnouncementUpdateResponse updatePlaceAnnouncement(
             Long placeAnnouncementId,
+            Long festivalId,
             PlaceAnnouncementUpdateRequest request
     ) {
         PlaceAnnouncement placeAnnouncement = getPlaceAnnouncementById(placeAnnouncementId);
+        validatePlaceAnnouncementBelongsToFestival(placeAnnouncement, festivalId);
 
         placeAnnouncement.updatePlaceAnnouncement(request.title(), request.content());
-
         return PlaceAnnouncementUpdateResponse.from(placeAnnouncement);
     }
 
-    public void deleteByPlaceAnnouncementId(Long placeAnnouncementId) {
+    @Transactional
+    public void deleteByPlaceAnnouncementId(Long placeAnnouncementId, Long festivalId) {
+        PlaceAnnouncement placeAnnouncement = getPlaceAnnouncementById(placeAnnouncementId);
+        validatePlaceAnnouncementBelongsToFestival(placeAnnouncement, festivalId);
+
         placeAnnouncementJpaRepository.deleteById(placeAnnouncementId);
     }
 
@@ -67,6 +76,18 @@ public class PlaceAnnouncementService {
                     String.format("플레이스 공지사항은 %d개까지 작성이 가능합니다.", PLACE_ANNOUNCEMENT_MAX_COUNT),
                     HttpStatus.BAD_REQUEST
             );
+        }
+    }
+
+    private void validatePlaceAnnouncementBelongsToFestival(PlaceAnnouncement placeAnnouncement, Long festivalId) {
+        if (!placeAnnouncement.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 플레이스 공지가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validatePlaceBelongsToFestival(Place place, Long festivalId) {
+        if (!place.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 플레이스가 아닙니다.", HttpStatus.FORBIDDEN);
         }
     }
 }
