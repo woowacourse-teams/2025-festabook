@@ -15,24 +15,10 @@ public class QuestionFixture {
     private static final Integer DEFAULT_SEQUENCE = 3;
 
     public static Question create(
-            Festival festival,
-            String question,
-            String answer,
-            Integer sequence
+            Festival festival
     ) {
         return new Question(
                 festival,
-                question,
-                answer,
-                sequence
-        );
-    }
-
-    public static Question create(
-            Festival festival
-    ) {
-        return create(
-                festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
@@ -43,7 +29,7 @@ public class QuestionFixture {
             Long questionId,
             Festival festival
     ) {
-        Question question = create(
+        Question question = new Question(
                 festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
@@ -58,7 +44,7 @@ public class QuestionFixture {
             Festival festival,
             Integer sequence
     ) {
-        Question question = create(
+        Question question = new Question(
                 festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
@@ -72,7 +58,7 @@ public class QuestionFixture {
             Festival festival,
             Integer sequence
     ) {
-        return create(
+        return new Question(
                 festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
@@ -83,7 +69,7 @@ public class QuestionFixture {
     public static Question createWithQuestion(
             String question
     ) {
-        return create(
+        return new Question(
                 DEFAULT_FESTIVAL,
                 question,
                 DEFAULT_ANSWER,
@@ -94,7 +80,7 @@ public class QuestionFixture {
     public static Question createWithAnswer(
             String answer
     ) {
-        return create(
+        return new Question(
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 answer,
@@ -103,22 +89,9 @@ public class QuestionFixture {
     }
 
     public static Question create(
-            String question,
-            String answer,
             Integer sequence
     ) {
-        return create(
-                DEFAULT_FESTIVAL,
-                question,
-                answer,
-                sequence
-        );
-    }
-
-    public static Question create(
-            Integer sequence
-    ) {
-        return create(
+        return new Question(
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
@@ -127,37 +100,12 @@ public class QuestionFixture {
     }
 
     public static Question create() {
-        return create(
+        return new Question(
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
                 DEFAULT_SEQUENCE
         );
-    }
-
-    public static Question create(
-            Long questionId
-    ) {
-        Question question = new Question(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
-                DEFAULT_SEQUENCE
-        );
-        return BaseEntityTestHelper.setId(question, questionId);
-    }
-
-    public static Question create(
-            Long questionId,
-            Integer sequence
-    ) {
-        Question question = new Question(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
-                sequence
-        );
-        return BaseEntityTestHelper.setId(question, questionId);
     }
 
     public static List<Question> createList(int size, Festival festival) {

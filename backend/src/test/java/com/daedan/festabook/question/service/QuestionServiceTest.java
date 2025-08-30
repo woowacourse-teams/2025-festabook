@@ -125,8 +125,10 @@ class QuestionServiceTest {
             QuestionResponses result = questionService.getAllQuestionByFestivalId(festivalId);
 
             // then
-            assertThat(result.responses().getFirst().sequence()).isEqualTo(question1.getSequence());
-            assertThat(result.responses().getLast().sequence()).isEqualTo(question2.getSequence());
+            assertSoftly(s -> {
+                s.assertThat(result.responses().getFirst().sequence()).isEqualTo(question1.getSequence());
+                s.assertThat(result.responses().getLast().sequence()).isEqualTo(question2.getSequence());
+            });
         }
     }
 

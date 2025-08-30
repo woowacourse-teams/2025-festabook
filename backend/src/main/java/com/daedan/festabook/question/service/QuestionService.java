@@ -54,8 +54,10 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionSequenceUpdateResponses updateSequence(Long festivalId,
-                                                          List<QuestionSequenceUpdateRequest> requests) {
+    public QuestionSequenceUpdateResponses updateSequence(
+            Long festivalId,
+            List<QuestionSequenceUpdateRequest> requests
+    ) {
         List<Question> questions = new ArrayList<>();
 
         for (QuestionSequenceUpdateRequest request : requests) {
