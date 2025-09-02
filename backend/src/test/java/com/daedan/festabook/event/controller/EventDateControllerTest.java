@@ -80,7 +80,7 @@ class EventDateControllerTest {
 
             EventDateRequest request = EventDateRequestFixture.create();
 
-            int expectedSize = 2;
+            int expectedFieldSize = 2;
 
             // when & then
             RestAssured
@@ -92,7 +92,7 @@ class EventDateControllerTest {
                     .post("/event-dates")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
-                    .body("size()", equalTo(expectedSize))
+                    .body("size()", equalTo(expectedFieldSize))
                     .body("eventDateId", notNullValue())
                     .body("date", equalTo(request.date().toString()));
         }
@@ -227,7 +227,7 @@ class EventDateControllerTest {
 
             EventDateUpdateRequest request = EventDateUpdateRequestFixture.create(eventDate.getDate().plusDays(1));
 
-            int expectedSize = 2;
+            int expectedFieldSize = 2;
 
             // when & then
             RestAssured
@@ -239,7 +239,7 @@ class EventDateControllerTest {
                     .patch("/event-dates/{eventDateId}", eventDate.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("size()", equalTo(expectedSize))
+                    .body("size()", equalTo(expectedFieldSize))
                     .body("eventDateId", equalTo(eventDate.getId().intValue()))
                     .body("date", equalTo(request.date().toString()));
 
