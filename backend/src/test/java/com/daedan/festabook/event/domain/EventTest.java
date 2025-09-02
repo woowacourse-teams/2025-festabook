@@ -10,7 +10,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -106,7 +105,7 @@ class EventTest {
             boolean result = event.isFestivalIdEqualTo(festivalId);
 
             // then
-            AssertionsForClassTypes.assertThat(result).isTrue();
+            assertThat(result).isTrue();
         }
 
         @Test
@@ -122,7 +121,7 @@ class EventTest {
             boolean result = event.isFestivalIdEqualTo(otherFestivalId);
 
             // then
-            AssertionsForClassTypes.assertThat(result).isFalse();
+            assertThat(result).isFalse();
         }
     }
 }

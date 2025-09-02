@@ -5,7 +5,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.LocalDate;
-import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -70,7 +69,7 @@ class EventDateTest {
             boolean result = eventDate.isFestivalIdEqualTo(festivalId);
 
             // then
-            AssertionsForClassTypes.assertThat(result).isTrue();
+            assertThat(result).isTrue();
         }
 
         @Test
@@ -85,7 +84,7 @@ class EventDateTest {
             boolean result = eventDate.isFestivalIdEqualTo(otherFestivalId);
 
             // then
-            AssertionsForClassTypes.assertThat(result).isFalse();
+            assertThat(result).isFalse();
         }
     }
 }
