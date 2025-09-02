@@ -164,11 +164,12 @@ class EventServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.responses().getFirst().status()).isEqualTo(EventStatus.ONGOING);
-                s.assertThat(result.responses().getFirst().startTime()).isEqualTo(event.getStartTime());
-                s.assertThat(result.responses().getFirst().endTime()).isEqualTo(event.getEndTime());
-                s.assertThat(result.responses().getFirst().title()).isEqualTo(event.getTitle());
-                s.assertThat(result.responses().getFirst().location()).isEqualTo(event.getLocation());
+                EventResponse firstResult = result.responses().getFirst();
+                s.assertThat(firstResult.status()).isEqualTo(EventStatus.ONGOING);
+                s.assertThat(firstResult.startTime()).isEqualTo(event.getStartTime());
+                s.assertThat(firstResult.endTime()).isEqualTo(event.getEndTime());
+                s.assertThat(firstResult.title()).isEqualTo(event.getTitle());
+                s.assertThat(firstResult.location()).isEqualTo(event.getLocation());
             });
         }
 
