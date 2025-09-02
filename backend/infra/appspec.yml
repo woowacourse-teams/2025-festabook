@@ -1,11 +1,11 @@
 version: 0.0
 os: linux
 files:
-  - source: infra/output/
+  - source: backend/infra/output/
     destination: /home/ubuntu/app
 
 hooks:
   AfterInstall:
-    - location: deploy.sh
+    - location: backend/infra/output/deploy.sh
       timeout: 180
       runas: ubuntu
