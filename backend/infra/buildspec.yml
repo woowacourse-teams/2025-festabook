@@ -32,10 +32,10 @@ phases:
       - mkdir -p infra/output
       - cp "$BUILD_JAR" infra/output/
       - cp infra/deploy.sh infra/output/
-      - cp infra/appspec.yml ./
+      - cp infra/appspec.yml ../appspec.yml
       - echo "✅ [Post Build Phase] 완료"
 
 artifacts:
   files:
     - backend/infra/output/**/*
-    - backend/infra/appspec.yml
+    - appspec.yml
