@@ -1,6 +1,6 @@
 package com.daedan.festabook.lineup.domain;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.festival.domain.Festival;
