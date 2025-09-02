@@ -1,4 +1,4 @@
-APP_HOME="/home/ubuntu/festabook"
+APP_HOME="/home/ubuntu/app"
 JAR_NAME=$(find $APP_HOME -name "*.jar" | head -n 1)
 LOG_PATH="$APP_HOME/application.log"
 
