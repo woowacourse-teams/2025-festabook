@@ -1,6 +1,5 @@
 APP_HOME="/home/ubuntu/app"
 JAR_NAME=$(find $APP_HOME -name "*.jar" | head -n 1)
-LOG_PATH="$APP_HOME/application.log"
 
 echo "🚀========== 배포 스크립트 시작 =========="
 
@@ -19,7 +18,7 @@ fi
 
 echo "▶️ 새로운 Spring WAS 실행 중..."
 if [ -f "$JAR_NAME" ]; then
-  nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" --spring.profiles.active=prod > "$LOG_PATH" 2>&1 &
+  nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" --spring.profiles.active=prod &
   echo "📦 실행 파일: $JAR_NAME"
 else
   echo "❌ 오류: $APP_HOME 경로에서 JAR 파일을 찾을 수 없습니다."
