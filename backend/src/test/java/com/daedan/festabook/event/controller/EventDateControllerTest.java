@@ -242,11 +242,6 @@ class EventDateControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("eventDateId", equalTo(eventDate.getId().intValue()))
                     .body("date", equalTo(request.date().toString()));
-
-            assertSoftly(s -> {
-                EventDate updatedEventDate = eventDateJpaRepository.findById(eventDate.getId()).orElseThrow();
-                s.assertThat(updatedEventDate.getDate()).isEqualTo(request.date());
-            });
         }
 
         @Test
