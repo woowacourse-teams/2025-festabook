@@ -71,10 +71,10 @@ public class PlaceImageServiceTest {
             given(placeImageJpaRepository.save(any()))
                     .willReturn(savedPlaceImage);
 
-            PlaceImageRequest placeImageRequest = new PlaceImageRequest(savedPlaceImage.getImageUrl());
+            PlaceImageRequest request = new PlaceImageRequest(savedPlaceImage.getImageUrl());
 
             // when
-            PlaceImageResponse result = placeImageService.addPlaceImage(placeId, festivalId, placeImageRequest);
+            PlaceImageResponse result = placeImageService.addPlaceImage(placeId, festivalId, request);
 
             // then
             assertSoftly(s -> {
@@ -93,10 +93,10 @@ public class PlaceImageServiceTest {
             given(placeJpaRepository.findById(invalidPlaceId))
                     .willReturn(Optional.empty());
 
-            PlaceImageRequest placeImageRequest = PlaceImageRequestFixture.create();
+            PlaceImageRequest request = PlaceImageRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeImageService.addPlaceImage(invalidPlaceId, festivalId, placeImageRequest))
+            assertThatThrownBy(() -> placeImageService.addPlaceImage(invalidPlaceId, festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
