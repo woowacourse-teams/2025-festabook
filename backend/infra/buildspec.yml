@@ -38,3 +38,4 @@ phases:
 artifacts:
   files:
     - backend/infra/output/**/*
+    - backend/infra/appspec.yml
