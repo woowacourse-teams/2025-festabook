@@ -58,7 +58,7 @@ public class FestivalImageService {
         return FestivalImageResponses.from(festivalImages);
     }
 
-    public void removeFestivalImage(Long festivalImageId, Long festivalId) {
+    public void removeFestivalImage(Long festivalId, Long festivalImageId) {
         FestivalImage festivalImage = getFestivalImageById(festivalImageId);
         validateFestivalImageBelongsToFestival(festivalImage, festivalId);
 

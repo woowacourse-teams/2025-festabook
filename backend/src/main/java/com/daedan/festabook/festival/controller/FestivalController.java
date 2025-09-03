@@ -128,6 +128,6 @@ public class FestivalController {
             @PathVariable Long festivalImageId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        festivalImageService.removeFestivalImage(festivalImageId, councilDetails.getFestivalId());
+        festivalImageService.removeFestivalImage(councilDetails.getFestivalId(), festivalImageId);
     }
 }

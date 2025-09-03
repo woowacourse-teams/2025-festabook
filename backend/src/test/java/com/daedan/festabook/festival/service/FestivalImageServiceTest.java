@@ -180,7 +180,7 @@ class FestivalImageServiceTest {
                     .willReturn(Optional.of(festivalImage));
 
             // when
-            festivalImageService.removeFestivalImage(festivalImageId, festivalId);
+            festivalImageService.removeFestivalImage(festivalId, festivalImageId);
 
             // then
             then(festivalImageJpaRepository).should()
@@ -202,7 +202,7 @@ class FestivalImageServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    festivalImageService.removeFestivalImage(festivalImage.getId(), otherFestival.getId())
+                    festivalImageService.removeFestivalImage(otherFestival.getId(), festivalImage.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 축제 이미지가 아닙니다.");
