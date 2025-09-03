@@ -44,7 +44,7 @@ public class EventService {
     }
 
     @Transactional
-    public EventUpdateResponse updateEvent(Long eventId, Long festivalId, EventUpdateRequest request) {
+    public EventUpdateResponse updateEvent(Long festivalId, Long eventId, EventUpdateRequest request) {
         Event event = getEventById(eventId);
         validateEventBelongsToFestival(event, festivalId);
         EventDate newEventDate = getEventDateById(request.eventDateId());
@@ -56,7 +56,7 @@ public class EventService {
     }
 
     @Transactional
-    public void deleteEventByEventId(Long eventId, Long festivalId) {
+    public void deleteEventByEventId(Long festivalId, Long eventId) {
         Event event = getEventById(eventId);
         validateEventBelongsToFestival(event, festivalId);
 

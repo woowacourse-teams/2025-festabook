@@ -70,7 +70,7 @@ public class Event extends BaseEntity implements Comparable<Event> {
     }
 
     public boolean isFestivalIdEqualTo(Long festivalId) {
-        return this.getEventDate().getFestival().getId().equals(festivalId);
+        return this.eventDate.isFestivalIdEqualTo(festivalId);
     }
 
     @Override

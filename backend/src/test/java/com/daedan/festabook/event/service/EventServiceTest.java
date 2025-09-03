@@ -243,7 +243,7 @@ class EventServiceTest {
             );
 
             // when
-            EventUpdateResponse result = eventService.updateEvent(eventId, festival.getId(), eventUpdateRequest);
+            EventUpdateResponse result = eventService.updateEvent(festival.getId(), eventId, eventUpdateRequest);
 
             // then
             assertSoftly(s -> {
@@ -266,7 +266,7 @@ class EventServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> eventService.updateEvent(eventId, festival.getId(), request))
+            assertThatThrownBy(() -> eventService.updateEvent(festival.getId(), eventId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 일정입니다.");
         }
@@ -287,7 +287,7 @@ class EventServiceTest {
             EventUpdateRequest request = EventUpdateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> eventService.updateEvent(event.getId(), otherFestival.getId(), request))
+            assertThatThrownBy(() -> eventService.updateEvent(otherFestival.getId(), event.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 일정이 아닙니다.");
         }
@@ -316,7 +316,7 @@ class EventServiceTest {
             EventUpdateRequest request = EventUpdateRequestFixture.create(otherEventDate.getId());
 
             // when & then
-            assertThatThrownBy(() -> eventService.updateEvent(event.getId(), currentFestival.getId(), request))
+            assertThatThrownBy(() -> eventService.updateEvent(currentFestival.getId(), event.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 일정 날짜가 아닙니다.");
         }
@@ -340,7 +340,7 @@ class EventServiceTest {
                     .willReturn(Optional.of(event));
 
             // when
-            eventService.deleteEventByEventId(eventId, festival.getId());
+            eventService.deleteEventByEventId(festival.getId(), eventId);
 
             // then
             then(eventJpaRepository).should()
@@ -361,7 +361,7 @@ class EventServiceTest {
                     .willReturn(Optional.of(event));
 
             // when & then
-            assertThatThrownBy(() -> eventService.deleteEventByEventId(event.getId(), otherFestival.getId()))
+            assertThatThrownBy(() -> eventService.deleteEventByEventId(otherFestival.getId(), event.getId()))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 일정이 아닙니다.");
         }

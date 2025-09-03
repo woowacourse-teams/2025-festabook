@@ -44,7 +44,7 @@ public class EventDateService {
     }
 
     @Transactional
-    public EventDateUpdateResponse updateEventDate(Long eventDateId, Long festivalId, EventDateUpdateRequest request) {
+    public EventDateUpdateResponse updateEventDate(Long festivalId, Long eventDateId, EventDateUpdateRequest request) {
         EventDate eventDate = getEventDateById(eventDateId);
         validateEventDateBelongsToFestival(eventDate, festivalId);
         if (!eventDate.getDate().isEqual(request.date())) {
@@ -56,7 +56,7 @@ public class EventDateService {
     }
 
     @Transactional
-    public void deleteEventDateByEventDateId(Long eventDateId, Long festivalId) {
+    public void deleteEventDateByEventDateId(Long festivalId, Long eventDateId) {
         EventDate eventDate = getEventDateById(eventDateId);
         validateEventDateBelongsToFestival(eventDate, festivalId);
 

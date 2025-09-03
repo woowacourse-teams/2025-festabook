@@ -69,7 +69,7 @@ public class EventController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody EventUpdateRequest request
     ) {
-        return eventService.updateEvent(eventId, councilDetails.getFestivalId(), request);
+        return eventService.updateEvent(councilDetails.getFestivalId(), eventId, request);
     }
 
     @DeleteMapping("/events/{eventId}")
@@ -82,6 +82,6 @@ public class EventController {
             @PathVariable Long eventId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        eventService.deleteEventByEventId(eventId, councilDetails.getFestivalId());
+        eventService.deleteEventByEventId(councilDetails.getFestivalId(), eventId);
     }
 }

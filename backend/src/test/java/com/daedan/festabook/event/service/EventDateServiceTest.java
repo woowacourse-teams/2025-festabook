@@ -230,7 +230,7 @@ class EventDateServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    eventDateService.updateEventDate(eventDate.getId(), otherFestival.getId(), request)
+                    eventDateService.updateEventDate(otherFestival.getId(), eventDate.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 일정 날짜가 아닙니다.");
@@ -252,7 +252,7 @@ class EventDateServiceTest {
                     .willReturn(Optional.of(eventDate));
 
             // when
-            eventDateService.deleteEventDateByEventDateId(eventDateId, festivalId);
+            eventDateService.deleteEventDateByEventDateId(festivalId, eventDateId);
 
             // then
             then(eventDateJpaRepository).should()
@@ -275,7 +275,7 @@ class EventDateServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    eventDateService.deleteEventDateByEventDateId(eventDate.getId(), otherFestival.getId())
+                    eventDateService.deleteEventDateByEventDateId(otherFestival.getId(), eventDate.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 일정 날짜가 아닙니다.");
