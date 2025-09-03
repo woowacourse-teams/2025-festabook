@@ -72,7 +72,7 @@ public class QuestionController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody QuestionRequest request
     ) {
-        return questionService.updateQuestionAndAnswer(questionId, councilDetails.getFestivalId(), request);
+        return questionService.updateQuestionAndAnswer(councilDetails.getFestivalId(), questionId, request);
     }
 
     @PatchMapping("/sequences")
@@ -98,6 +98,6 @@ public class QuestionController {
             @PathVariable Long questionId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        questionService.deleteQuestionByQuestionId(questionId, councilDetails.getFestivalId());
+        questionService.deleteQuestionByQuestionId(councilDetails.getFestivalId(), questionId);
     }
 }

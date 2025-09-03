@@ -45,7 +45,7 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionResponse updateQuestionAndAnswer(Long questionId, Long festivalId, QuestionRequest request) {
+    public QuestionResponse updateQuestionAndAnswer(Long festivalId, Long questionId, QuestionRequest request) {
         Question question = getQuestionById(questionId);
         validateLineupBelongsToFestival(question, festivalId);
 
@@ -72,7 +72,7 @@ public class QuestionService {
         return QuestionSequenceUpdateResponses.from(questions);
     }
 
-    public void deleteQuestionByQuestionId(Long questionId, Long festivalId) {
+    public void deleteQuestionByQuestionId(Long festivalId, Long questionId) {
         Question question = getQuestionById(questionId);
         validateLineupBelongsToFestival(question, festivalId);
 
