@@ -276,8 +276,8 @@ class AnnouncementServiceTest {
 
             // when
             AnnouncementUpdateResponse result = announcementService.updateAnnouncement(
-                    announcement.getId(),
                     festival.getId(),
+                    announcement.getId(),
                     request
             );
 
@@ -300,7 +300,7 @@ class AnnouncementServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    announcementService.updateAnnouncement(invalidAnnouncementId, festival.getId(), request)
+                    announcementService.updateAnnouncement(festival.getId(), invalidAnnouncementId, request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
@@ -322,7 +322,7 @@ class AnnouncementServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    announcementService.updateAnnouncement(announcement.getId(), otherFestival.getId(), request)
+                    announcementService.updateAnnouncement(otherFestival.getId(), announcement.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 공지가 아닙니다.");
@@ -348,8 +348,8 @@ class AnnouncementServiceTest {
 
             // when
             AnnouncementPinUpdateResponse result = announcementService.updateAnnouncementPin(
-                    announcementId,
                     festivalId,
+                    announcementId,
                     request
             );
 
@@ -370,8 +370,8 @@ class AnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     announcementService.updateAnnouncementPin(
-                            invalidAnnouncementId,
                             festivalId,
+                            invalidAnnouncementId,
                             request
                     )
             )
@@ -398,8 +398,8 @@ class AnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     announcementService.updateAnnouncementPin(
-                            announcementId,
                             festivalId,
+                            announcementId,
                             request
                     )
             )
@@ -420,7 +420,7 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(announcement));
 
             // when
-            announcementService.updateAnnouncementPin(announcementId, festivalId, request);
+            announcementService.updateAnnouncementPin(festivalId, announcementId, request);
 
             // then
             then(announcementJpaRepository).should(never())
@@ -443,7 +443,7 @@ class AnnouncementServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    announcementService.updateAnnouncementPin(announcement.getId(), otherFestival.getId(), request)
+                    announcementService.updateAnnouncementPin(otherFestival.getId(), announcement.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 공지가 아닙니다.");
@@ -465,7 +465,7 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.of(announcement));
 
             // when
-            announcementService.deleteAnnouncementByAnnouncementId(announcementId, festivalId);
+            announcementService.deleteAnnouncementByAnnouncementId(festivalId, announcementId);
 
             // then
             then(announcementJpaRepository).should()
@@ -487,8 +487,8 @@ class AnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     announcementService.deleteAnnouncementByAnnouncementId(
-                            announcement.getId(),
-                            otherFestival.getId()
+                            otherFestival.getId(),
+                            announcement.getId()
                     )
             )
                     .isInstanceOf(BusinessException.class)

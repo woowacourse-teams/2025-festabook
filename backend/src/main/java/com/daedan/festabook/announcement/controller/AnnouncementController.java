@@ -73,7 +73,7 @@ public class AnnouncementController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody AnnouncementUpdateRequest request
     ) {
-        return announcementService.updateAnnouncement(announcementId, councilDetails.getFestivalId(), request);
+        return announcementService.updateAnnouncement(councilDetails.getFestivalId(), announcementId, request);
     }
 
     @PatchMapping("/{announcementId}/pin")
@@ -87,7 +87,7 @@ public class AnnouncementController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody AnnouncementPinUpdateRequest request
     ) {
-        return announcementService.updateAnnouncementPin(announcementId, councilDetails.getFestivalId(), request);
+        return announcementService.updateAnnouncementPin(councilDetails.getFestivalId(), announcementId, request);
     }
 
     @DeleteMapping("/{announcementId}")
@@ -100,6 +100,6 @@ public class AnnouncementController {
             @PathVariable Long announcementId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        announcementService.deleteAnnouncementByAnnouncementId(announcementId, councilDetails.getFestivalId());
+        announcementService.deleteAnnouncementByAnnouncementId(councilDetails.getFestivalId(), announcementId);
     }
 }

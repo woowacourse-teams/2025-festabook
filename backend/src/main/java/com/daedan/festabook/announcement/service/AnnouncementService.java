@@ -66,8 +66,8 @@ public class AnnouncementService {
 
     @Transactional
     public AnnouncementUpdateResponse updateAnnouncement(
-            Long announcementId,
             Long festivalId,
+            Long announcementId,
             AnnouncementUpdateRequest request
     ) {
         Announcement announcement = getAnnouncementById(announcementId);
@@ -79,8 +79,8 @@ public class AnnouncementService {
 
     @Transactional
     public AnnouncementPinUpdateResponse updateAnnouncementPin(
-            Long announcementId,
             Long festivalId,
+            Long announcementId,
             AnnouncementPinUpdateRequest request
     ) {
         Announcement announcement = getAnnouncementById(announcementId);
@@ -94,7 +94,7 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public void deleteAnnouncementByAnnouncementId(Long announcementId, Long festivalId) {
+    public void deleteAnnouncementByAnnouncementId(Long festivalId, Long announcementId) {
         Announcement announcement = getAnnouncementById(announcementId);
         validateAnnouncementBelongsToFestival(announcement, festivalId);
 
