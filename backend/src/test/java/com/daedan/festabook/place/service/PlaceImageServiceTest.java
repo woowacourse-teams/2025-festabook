@@ -74,7 +74,7 @@ public class PlaceImageServiceTest {
             PlaceImageRequest request = new PlaceImageRequest(savedPlaceImage.getImageUrl());
 
             // when
-            PlaceImageResponse result = placeImageService.addPlaceImage(placeId, festivalId, request);
+            PlaceImageResponse result = placeImageService.addPlaceImage(festivalId, placeId, request);
 
             // then
             assertSoftly(s -> {
@@ -96,7 +96,7 @@ public class PlaceImageServiceTest {
             PlaceImageRequest request = PlaceImageRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeImageService.addPlaceImage(invalidPlaceId, festivalId, request))
+            assertThatThrownBy(() -> placeImageService.addPlaceImage(festivalId, invalidPlaceId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
@@ -122,7 +122,7 @@ public class PlaceImageServiceTest {
             PlaceImageRequest request = PlaceImageRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeImageService.addPlaceImage(placeId, festivalId, request))
+            assertThatThrownBy(() -> placeImageService.addPlaceImage(festivalId, placeId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 이미지는 최대 %d개까지 저장할 수 있습니다.", MAX_IMAGE_COUNT));
         }
@@ -143,7 +143,7 @@ public class PlaceImageServiceTest {
             PlaceImageRequest request = PlaceImageRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeImageService.addPlaceImage(place.getId(), otherFestival.getId(), request))
+            assertThatThrownBy(() -> placeImageService.addPlaceImage(otherFestival.getId(), placeId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
@@ -250,7 +250,7 @@ public class PlaceImageServiceTest {
                     .willReturn(Optional.of(placeImage));
 
             // when
-            placeImageService.deletePlaceImageByPlaceImageId(placeImageId, festivalId);
+            placeImageService.deletePlaceImageByPlaceImageId(festivalId, placeImageId);
 
             // then
             then(placeImageJpaRepository).should()
@@ -273,7 +273,7 @@ public class PlaceImageServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    placeImageService.deletePlaceImageByPlaceImageId(placeImage.getId(), otherFestival.getId())
+                    placeImageService.deletePlaceImageByPlaceImageId(otherFestival.getId(), placeImage.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스 이미지가 아닙니다.");

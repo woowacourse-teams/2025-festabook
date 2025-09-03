@@ -26,8 +26,8 @@ public class PlaceGeographyService {
 
     @Transactional
     public PlaceCoordinateResponse updatePlaceCoordinate(
-            Long placeId,
             Long festivalId,
+            Long placeId,
             PlaceCoordinateRequest request
     ) {
         Place place = getPlaceById(placeId);

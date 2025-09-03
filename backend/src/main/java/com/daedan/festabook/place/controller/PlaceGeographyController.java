@@ -54,6 +54,6 @@ public class PlaceGeographyController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceCoordinateRequest request
     ) {
-        return placeGeographyService.updatePlaceCoordinate(placeId, councilDetails.getFestivalId(), request);
+        return placeGeographyService.updatePlaceCoordinate(councilDetails.getFestivalId(), placeId, request);
     }
 }

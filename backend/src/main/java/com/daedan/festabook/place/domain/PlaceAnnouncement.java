@@ -64,7 +64,7 @@ public class PlaceAnnouncement extends BaseEntity {
     }
 
     public boolean isFestivalIdEqualTo(Long festivalId) {
-        return this.place.getFestival().getId().equals(festivalId);
+        return this.place.isFestivalIdEqualTo(festivalId);
     }
 
     private void validateTitle(String title) {

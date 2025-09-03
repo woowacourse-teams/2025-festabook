@@ -233,7 +233,7 @@ class PlaceServiceTest {
             );
 
             // when
-            PlaceUpdateResponse result = placeService.updatePlace(placeId, festivalId, request);
+            PlaceUpdateResponse result = placeService.updatePlace(festivalId, placeId, request);
 
             // then
             assertSoftly(s -> {
@@ -262,7 +262,7 @@ class PlaceServiceTest {
             PlaceUpdateRequest request = PlaceUpdateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeService.updatePlace(place.getId(), otherFestival.getId(), request))
+            assertThatThrownBy(() -> placeService.updatePlace(otherFestival.getId(), place.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
@@ -283,7 +283,7 @@ class PlaceServiceTest {
                     .willReturn(Optional.of(place));
 
             // when
-            placeService.deleteByPlaceId(placeId, festivalId);
+            placeService.deleteByPlaceId(festivalId, placeId);
 
             // then
             then(placeImageJpaRepository).should()
@@ -309,7 +309,7 @@ class PlaceServiceTest {
                     .willReturn(Optional.of(place));
 
             // when & then
-            assertThatThrownBy(() -> placeService.deleteByPlaceId(place.getId(), otherFestival.getId()))
+            assertThatThrownBy(() -> placeService.deleteByPlaceId(otherFestival.getId(), place.getId()))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }

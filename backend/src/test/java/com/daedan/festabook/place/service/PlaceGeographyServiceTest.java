@@ -110,8 +110,8 @@ class PlaceGeographyServiceTest {
 
             // when
             PlaceCoordinateResponse result = placeGeographyService.updatePlaceCoordinate(
-                    placeId,
                     festival.getId(),
+                    placeId,
                     request
             );
 
@@ -134,7 +134,7 @@ class PlaceGeographyServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> placeGeographyService.updatePlaceCoordinate(placeId, festivalId, request))
+            assertThatThrownBy(() -> placeGeographyService.updatePlaceCoordinate(festivalId, placeId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스입니다.");
         }
@@ -155,7 +155,7 @@ class PlaceGeographyServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    placeGeographyService.updatePlaceCoordinate(place.getId(), otherFestival.getId(), request)
+                    placeGeographyService.updatePlaceCoordinate(otherFestival.getId(), place.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");

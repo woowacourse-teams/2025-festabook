@@ -28,7 +28,7 @@ public class PlaceImageService {
 
     // TODO: sequence 동시성 해결
     @Transactional
-    public PlaceImageResponse addPlaceImage(Long placeId, Long festivalId, PlaceImageRequest request) {
+    public PlaceImageResponse addPlaceImage(Long festivalId, Long placeId, PlaceImageRequest request) {
         Place place = getPlaceById(placeId);
         validatePlaceBelongsToFestival(place, festivalId);
 
@@ -64,7 +64,7 @@ public class PlaceImageService {
     }
 
     @Transactional
-    public void deletePlaceImageByPlaceImageId(Long placeImageId, Long festivalId) {
+    public void deletePlaceImageByPlaceImageId(Long festivalId, Long placeImageId) {
         PlaceImage placeImage = getPlaceImageById(placeImageId);
         validatePlaceImageBelongsToFestival(placeImage, festivalId);
 

@@ -42,7 +42,7 @@ public class PlaceImageController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceImageRequest request
     ) {
-        return placeImageService.addPlaceImage(placeId, councilDetails.getFestivalId(), request);
+        return placeImageService.addPlaceImage(councilDetails.getFestivalId(), placeId, request);
     }
 
     @PatchMapping("/images/sequences")
@@ -68,6 +68,6 @@ public class PlaceImageController {
             @PathVariable Long placeImageId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        placeImageService.deletePlaceImageByPlaceImageId(placeImageId, councilDetails.getFestivalId());
+        placeImageService.deletePlaceImageByPlaceImageId(councilDetails.getFestivalId(), placeImageId);
     }
 }

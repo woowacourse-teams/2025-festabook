@@ -56,7 +56,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceUpdateResponse updatePlace(Long placeId, Long festivalId, PlaceUpdateRequest request) {
+    public PlaceUpdateResponse updatePlace(Long festivalId, Long placeId, PlaceUpdateRequest request) {
         Place place = getPlaceById(placeId);
         validatePlaceBelongsToFestival(place, festivalId);
 
@@ -74,7 +74,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public void deleteByPlaceId(Long placeId, Long festivalId) {
+    public void deleteByPlaceId(Long festivalId, Long placeId) {
         Place place = getPlaceById(placeId);
         validatePlaceBelongsToFestival(place, festivalId);
 

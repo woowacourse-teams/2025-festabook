@@ -41,7 +41,7 @@ public class PlaceAnnouncementController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceAnnouncementRequest request
     ) {
-        return placeAnnouncementService.createPlaceAnnouncement(placeId, councilDetails.getFestivalId(), request);
+        return placeAnnouncementService.createPlaceAnnouncement(councilDetails.getFestivalId(), placeId, request);
     }
 
     @PatchMapping("/announcements/{placeAnnouncementId}")
@@ -56,8 +56,8 @@ public class PlaceAnnouncementController {
             @RequestBody PlaceAnnouncementUpdateRequest request
     ) {
         return placeAnnouncementService.updatePlaceAnnouncement(
-                placeAnnouncementId,
                 councilDetails.getFestivalId(),
+                placeAnnouncementId,
                 request
         );
     }
@@ -72,6 +72,6 @@ public class PlaceAnnouncementController {
             @PathVariable Long placeAnnouncementId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        placeAnnouncementService.deleteByPlaceAnnouncementId(placeAnnouncementId, councilDetails.getFestivalId());
+        placeAnnouncementService.deleteByPlaceAnnouncementId(councilDetails.getFestivalId(), placeAnnouncementId);
     }
 }

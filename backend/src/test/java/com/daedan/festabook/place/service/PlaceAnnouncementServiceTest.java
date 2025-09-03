@@ -69,8 +69,8 @@ class PlaceAnnouncementServiceTest {
 
             // when
             PlaceAnnouncementResponse result = placeAnnouncementService.createPlaceAnnouncement(
-                    place.getId(),
                     festival.getId(),
+                    place.getId(),
                     request
             );
 
@@ -97,7 +97,7 @@ class PlaceAnnouncementServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    placeAnnouncementService.createPlaceAnnouncement(place.getId(), festival.getId(), request)
+                    placeAnnouncementService.createPlaceAnnouncement(festival.getId(), place.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 공지사항은 %d개까지 작성이 가능합니다.", PLACE_ANNOUNCEMENT_MAX_COUNT));
@@ -121,8 +121,8 @@ class PlaceAnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     placeAnnouncementService.createPlaceAnnouncement(
-                            place.getId(),
                             otherFestival.getId(),
+                            place.getId(),
                             request
                     )
             )
@@ -153,8 +153,8 @@ class PlaceAnnouncementServiceTest {
 
             // when
             PlaceAnnouncementUpdateResponse result = placeAnnouncementService.updatePlaceAnnouncement(
-                    placeAnnouncementId,
                     festivalId,
+                    placeAnnouncementId,
                     request
             );
 
@@ -181,7 +181,7 @@ class PlaceAnnouncementServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, festivalId, request)
+                    placeAnnouncementService.updatePlaceAnnouncement(festivalId, placeAnnouncementId, request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스 공지입니다.");
@@ -206,8 +206,8 @@ class PlaceAnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     placeAnnouncementService.updatePlaceAnnouncement(
-                            placeAnnouncement.getId(),
                             otherFestival.getId(),
+                            placeAnnouncement.getId(),
                             request
                     )
             )
@@ -232,7 +232,7 @@ class PlaceAnnouncementServiceTest {
                     .willReturn(Optional.of(placeAnnouncement));
 
             // when
-            placeAnnouncementService.deleteByPlaceAnnouncementId(placeAnnouncementId, festivalId);
+            placeAnnouncementService.deleteByPlaceAnnouncementId(festivalId, placeAnnouncementId);
 
             // then
             then(placeAnnouncementJpaRepository).should()
@@ -256,8 +256,8 @@ class PlaceAnnouncementServiceTest {
             // when & then
             assertThatThrownBy(() ->
                     placeAnnouncementService.deleteByPlaceAnnouncementId(
-                            placeAnnouncement.getId(),
-                            otherFestival.getId()
+                            otherFestival.getId(),
+                            placeAnnouncement.getId()
                     )
             )
                     .isInstanceOf(BusinessException.class)

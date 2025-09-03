@@ -98,7 +98,7 @@ public class PlaceController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceUpdateRequest request
     ) {
-        return placeService.updatePlace(placeId, councilDetails.getFestivalId(), request);
+        return placeService.updatePlace(councilDetails.getFestivalId(), placeId, request);
     }
 
     @DeleteMapping("/{placeId}")
@@ -111,6 +111,6 @@ public class PlaceController {
             @PathVariable Long placeId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        placeService.deleteByPlaceId(placeId, councilDetails.getFestivalId());
+        placeService.deleteByPlaceId(councilDetails.getFestivalId(), placeId);
     }
 }

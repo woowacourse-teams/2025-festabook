@@ -24,8 +24,8 @@ public class PlaceAnnouncementService {
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
 
     public PlaceAnnouncementResponse createPlaceAnnouncement(
-            Long placeId,
             Long festivalId,
+            Long placeId,
             PlaceAnnouncementRequest request
     ) {
         Place place = getPlaceById(placeId);
@@ -40,8 +40,8 @@ public class PlaceAnnouncementService {
 
     @Transactional
     public PlaceAnnouncementUpdateResponse updatePlaceAnnouncement(
-            Long placeAnnouncementId,
             Long festivalId,
+            Long placeAnnouncementId,
             PlaceAnnouncementUpdateRequest request
     ) {
         PlaceAnnouncement placeAnnouncement = getPlaceAnnouncementById(placeAnnouncementId);
@@ -52,7 +52,7 @@ public class PlaceAnnouncementService {
     }
 
     @Transactional
-    public void deleteByPlaceAnnouncementId(Long placeAnnouncementId, Long festivalId) {
+    public void deleteByPlaceAnnouncementId(Long festivalId, Long placeAnnouncementId) {
         PlaceAnnouncement placeAnnouncement = getPlaceAnnouncementById(placeAnnouncementId);
         validatePlaceAnnouncementBelongsToFestival(placeAnnouncement, festivalId);
 
