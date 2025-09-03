@@ -39,7 +39,7 @@ public class LostItemService {
     }
 
     @Transactional
-    public LostItemUpdateResponse updateLostItem(Long lostItemId, Long festivalId, LostItemRequest request) {
+    public LostItemUpdateResponse updateLostItem(Long festivalId, Long lostItemId, LostItemRequest request) {
         LostItem lostItem = getLostItemById(lostItemId);
         validateLostItemBelongsToFestival(lostItem, festivalId);
 
@@ -49,8 +49,8 @@ public class LostItemService {
 
     @Transactional
     public LostItemStatusUpdateResponse updateLostItemStatus(
-            Long lostItemId,
             Long festivalId,
+            Long lostItemId,
             LostItemStatusUpdateRequest request
     ) {
         LostItem lostItem = getLostItemById(lostItemId);
@@ -60,7 +60,7 @@ public class LostItemService {
         return LostItemStatusUpdateResponse.from(lostItem);
     }
 
-    public void deleteLostItemByLostItemId(Long lostItemId, Long festivalId) {
+    public void deleteLostItemByLostItemId(Long festivalId, Long lostItemId) {
         LostItem lostItem = getLostItemById(lostItemId);
         validateLostItemBelongsToFestival(lostItem, festivalId);
 

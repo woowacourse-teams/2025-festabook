@@ -72,7 +72,7 @@ class LostItemController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody LostItemRequest request
     ) {
-        return lostItemService.updateLostItem(lostItemId, councilDetails.getFestivalId(), request);
+        return lostItemService.updateLostItem(councilDetails.getFestivalId(), lostItemId, request);
     }
 
     @PatchMapping("/{lostItemId}/status")
@@ -86,7 +86,7 @@ class LostItemController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody LostItemStatusUpdateRequest request
     ) {
-        return lostItemService.updateLostItemStatus(lostItemId, councilDetails.getFestivalId(), request);
+        return lostItemService.updateLostItemStatus(councilDetails.getFestivalId(), lostItemId, request);
     }
 
     @DeleteMapping("/{lostItemId}")
@@ -99,6 +99,6 @@ class LostItemController {
             @PathVariable Long lostItemId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        lostItemService.deleteLostItemByLostItemId(lostItemId, councilDetails.getFestivalId());
+        lostItemService.deleteLostItemByLostItemId(councilDetails.getFestivalId(), lostItemId);
     }
 }

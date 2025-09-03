@@ -37,8 +37,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LostItemServiceTest {
 
-    private static final Long DEFAULT_FESTIVAL_ID = 1L;
-
     @Mock
     private LostItemJpaRepository lostItemJpaRepository;
 
@@ -54,18 +52,19 @@ class LostItemServiceTest {
         @Test
         void 성공() {
             // given
+            Long festivalId = 1L;
             LostItemRequest request = LostItemRequestFixture.create(
                     "https://example.com/image.jpg",
                     "서울특별시 강남구"
             );
 
-            Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
+            Festival festival = FestivalFixture.create(festivalId);
 
-            given(festivalJpaRepository.findById(DEFAULT_FESTIVAL_ID))
+            given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));
 
             // when
-            LostItemResponse result = lostItemService.createLostItem(DEFAULT_FESTIVAL_ID, request);
+            LostItemResponse result = lostItemService.createLostItem(festivalId, request);
 
             // then
             assertSoftly(s -> {
@@ -96,17 +95,18 @@ class LostItemServiceTest {
         @Test
         void 성공() {
             // given
+            Long festivalId = 1L;
             LostItem lostItem1 = LostItemFixture.create();
             LostItem lostItem2 = LostItemFixture.create();
             List<LostItem> lostItems = List.of(lostItem1, lostItem2);
 
-            given(lostItemJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
+            given(lostItemJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(lostItems);
 
             int expectedSize = 2;
 
             // when
-            LostItemResponses result = lostItemService.getAllLostItemByFestivalId(DEFAULT_FESTIVAL_ID);
+            LostItemResponses result = lostItemService.getAllLostItemByFestivalId(festivalId);
 
             // then
             assertThat(result.responses()).hasSize(expectedSize);
@@ -135,7 +135,7 @@ class LostItemServiceTest {
                     .willReturn(Optional.of(lostItem));
 
             // when
-            LostItemUpdateResponse result = lostItemService.updateLostItem(lostItemId, festivalId, request);
+            LostItemUpdateResponse result = lostItemService.updateLostItem(festivalId, lostItemId, request);
 
             // then
             assertSoftly(s -> {
@@ -156,7 +156,7 @@ class LostItemServiceTest {
                     .willReturn(Optional.empty());
 
             // then
-            assertThatThrownBy(() -> lostItemService.updateLostItem(invalidLostItemId, festivalId, request))
+            assertThatThrownBy(() -> lostItemService.updateLostItem(festivalId, invalidLostItemId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 분실물입니다.");
         }
@@ -176,7 +176,7 @@ class LostItemServiceTest {
             LostItemRequest request = LostItemRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> lostItemService.updateLostItem(lostItem.getId(), otherFestival.getId(), request))
+            assertThatThrownBy(() -> lostItemService.updateLostItem(otherFestival.getId(), lostItem.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 분실물이 아닙니다.");
         }
@@ -201,7 +201,7 @@ class LostItemServiceTest {
                     .willReturn(Optional.of(lostItem));
 
             // when
-            LostItemStatusUpdateResponse result = lostItemService.updateLostItemStatus(lostItemId, festivalId, request);
+            LostItemStatusUpdateResponse result = lostItemService.updateLostItemStatus(festivalId, lostItemId, request);
 
             // then
             assertSoftly(s -> {
@@ -221,7 +221,7 @@ class LostItemServiceTest {
                     .willReturn(Optional.empty());
 
             // then
-            assertThatThrownBy(() -> lostItemService.updateLostItemStatus(invalidLostItemId, festivalId, request))
+            assertThatThrownBy(() -> lostItemService.updateLostItemStatus(festivalId, invalidLostItemId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 분실물입니다.");
         }
@@ -242,7 +242,7 @@ class LostItemServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    lostItemService.updateLostItemStatus(lostItem.getId(), otherFestival.getId(), request)
+                    lostItemService.updateLostItemStatus(otherFestival.getId(), lostItem.getId(), request)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 분실물이 아닙니다.");
@@ -264,7 +264,7 @@ class LostItemServiceTest {
                     .willReturn(Optional.of(lostItem));
 
             // when
-            lostItemService.deleteLostItemByLostItemId(lostItem.getId(), festival.getId());
+            lostItemService.deleteLostItemByLostItemId(festival.getId(), lostItem.getId());
 
             // then
             then(lostItemJpaRepository).should()
@@ -285,7 +285,7 @@ class LostItemServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    lostItemService.deleteLostItemByLostItemId(lostItem.getId(), otherFestival.getId())
+                    lostItemService.deleteLostItemByLostItemId(otherFestival.getId(), lostItem.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 분실물이 아닙니다.");
