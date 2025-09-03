@@ -70,7 +70,7 @@ public class LineupController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody LineupUpdateRequest request
     ) {
-        return lineupService.updateLineup(lineupId, councilDetails.getFestivalId(), request);
+        return lineupService.updateLineup(councilDetails.getFestivalId(), lineupId, request);
     }
 
     @DeleteMapping("/{lineupId}")
@@ -83,6 +83,6 @@ public class LineupController {
             @PathVariable Long lineupId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        lineupService.deleteLineupByLineupId(lineupId, councilDetails.getFestivalId());
+        lineupService.deleteLineupByLineupId(councilDetails.getFestivalId(), lineupId);
     }
 }

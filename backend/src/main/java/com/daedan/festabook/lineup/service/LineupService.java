@@ -39,7 +39,7 @@ public class LineupService {
     }
 
     @Transactional
-    public LineupResponse updateLineup(Long lineupId, Long festivalId, LineupUpdateRequest request) {
+    public LineupResponse updateLineup(Long festivalId, Long lineupId, LineupUpdateRequest request) {
         Lineup lineup = getLineupById(lineupId);
         validateLineupBelongsToFestival(lineup, festivalId);
 
@@ -47,7 +47,7 @@ public class LineupService {
         return LineupResponse.from(lineup);
     }
 
-    public void deleteLineupByLineupId(Long lineupId, Long festivalId) {
+    public void deleteLineupByLineupId(Long festivalId, Long lineupId) {
         Lineup lineup = getLineupById(lineupId);
         validateLineupBelongsToFestival(lineup, festivalId);
 

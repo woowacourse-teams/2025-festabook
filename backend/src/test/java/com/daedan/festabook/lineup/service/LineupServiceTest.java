@@ -140,7 +140,7 @@ class LineupServiceTest {
                     .willReturn(Optional.of(lineup));
 
             // when
-            LineupResponse result = lineupService.updateLineup(lineupId, festivalId, request);
+            LineupResponse result = lineupService.updateLineup(festivalId, lineupId, request);
 
             // then
             assertSoftly(s -> {
@@ -162,7 +162,7 @@ class LineupServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> lineupService.updateLineup(invalidLineupId, festivalId, request))
+            assertThatThrownBy(() -> lineupService.updateLineup(festivalId, invalidLineupId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 라인업입니다.");
         }
@@ -182,7 +182,7 @@ class LineupServiceTest {
             LineupUpdateRequest request = LineupUpdateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> lineupService.updateLineup(lineup.getId(), otherFestival.getId(), request))
+            assertThatThrownBy(() -> lineupService.updateLineup(otherFestival.getId(), lineup.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 라인업이 아닙니다.");
         }
@@ -203,7 +203,7 @@ class LineupServiceTest {
                     .willReturn(Optional.of(lineup));
 
             // when
-            lineupService.deleteLineupByLineupId(lineupId, festival.getId());
+            lineupService.deleteLineupByLineupId(festival.getId(), lineupId);
 
             // then
             then(lineupJpaRepository).should()
@@ -223,7 +223,7 @@ class LineupServiceTest {
                     .willReturn(Optional.of(lineup));
 
             // when & then
-            assertThatThrownBy(() -> lineupService.deleteLineupByLineupId(lineup.getId(), otherFestival.getId()))
+            assertThatThrownBy(() -> lineupService.deleteLineupByLineupId(otherFestival.getId(), lineup.getId()))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 라인업이 아닙니다.");
         }
