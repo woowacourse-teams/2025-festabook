@@ -6,12 +6,15 @@ import com.daedan.festabook.event.dto.EventResponses;
 import com.daedan.festabook.event.dto.EventUpdateRequest;
 import com.daedan.festabook.event.dto.EventUpdateResponse;
 import com.daedan.festabook.event.service.EventService;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -37,9 +40,22 @@ public class EventController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true)
     })
     public EventResponse createEvent(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody EventRequest request
     ) {
-        return eventService.createEvent(request);
+        return eventService.createEvent(councilDetails.getFestivalId(), request);
+    }
+
+    @GetMapping("/{eventDateId}/events")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 일정 날짜의 모든 일정 조회", security = @SecurityRequirement(name = "none"))
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
+    })
+    public EventResponses getAllEventByEventDateId(
+            @PathVariable Long eventDateId
+    ) {
+        return eventService.getAllEventByEventDateId(eventDateId);
     }
 
     @PatchMapping("/events/{eventId}")
@@ -50,9 +66,10 @@ public class EventController {
     })
     public EventUpdateResponse updateEvent(
             @PathVariable Long eventId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody EventUpdateRequest request
     ) {
-        return eventService.updateEvent(eventId, request);
+        return eventService.updateEvent(councilDetails.getFestivalId(), eventId, request);
     }
 
     @DeleteMapping("/events/{eventId}")
@@ -62,20 +79,9 @@ public class EventController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true)
     })
     public void deleteEventByEventId(
-            @PathVariable Long eventId
+            @PathVariable Long eventId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        eventService.deleteEventByEventId(eventId);
-    }
-
-    @GetMapping("/{eventDateId}/events")
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 일정 날짜의 모든 일정 조회")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
-    })
-    public EventResponses getAllEventByEventDateId(
-            @PathVariable Long eventDateId
-    ) {
-        return eventService.getAllEventByEventDateId(eventDateId);
+        eventService.deleteEventByEventId(councilDetails.getFestivalId(), eventId);
     }
 }

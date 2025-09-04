@@ -6,6 +6,7 @@ import com.daedan.festabook.place.service.PlaceFavoriteService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,7 +28,7 @@ public class PlaceFavoriteController {
 
     @PostMapping("/{placeId}/favorites")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 플레이스의 즐겨찾기 추가")
+    @Operation(summary = "특정 플레이스의 즐겨찾기 추가", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
@@ -40,7 +41,7 @@ public class PlaceFavoriteController {
 
     @DeleteMapping("/favorites/{placeFavoriteId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "특정 플레이스의 즐겨찾기 취소")
+    @Operation(summary = "특정 플레이스의 즐겨찾기 취소", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })

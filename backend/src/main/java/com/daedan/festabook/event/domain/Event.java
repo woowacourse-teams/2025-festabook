@@ -69,6 +69,10 @@ public class Event extends BaseEntity implements Comparable<Event> {
         this.location = newEvent.location;
     }
 
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.eventDate.isFestivalIdEqualTo(festivalId);
+    }
+
     @Override
     public int compareTo(Event otherEvent) {
         if (startTime.equals(otherEvent.startTime)) {

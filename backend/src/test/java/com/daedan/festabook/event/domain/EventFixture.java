@@ -12,7 +12,6 @@ public class EventFixture {
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(13, 0, 0);
     private static final String DEFAULT_TITLE = "title";
     private static final String DEFAULT_LOCATION = "location";
-    private static final EventDate DEFAULT_EVENT_DATE = EventDateFixture.create();
 
     public static Event create(
             Long eventId,
@@ -34,25 +33,18 @@ public class EventFixture {
     }
 
     public static Event create(
-            String title
+            Long eventId,
+            EventDate eventDate
     ) {
-        return new Event(
-                DEFAULT_EVENT_DATE,
-                DEFAULT_START_TIME,
-                DEFAULT_END_TIME,
-                title,
-                DEFAULT_LOCATION
-        );
-    }
-
-    public static Event create() {
-        return new Event(
-                DEFAULT_EVENT_DATE,
+        Event event = new Event(
+                eventDate,
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME,
                 DEFAULT_TITLE,
                 DEFAULT_LOCATION
         );
+        BaseEntityTestHelper.setId(event, eventId);
+        return event;
     }
 
     public static Event create(

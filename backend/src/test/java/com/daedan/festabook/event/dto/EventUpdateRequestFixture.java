@@ -26,6 +26,18 @@ public class EventUpdateRequestFixture {
         );
     }
 
+    public static EventUpdateRequest create(
+            Long eventDateId
+    ) {
+        return new EventUpdateRequest(
+                eventDateId,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION
+        );
+    }
+
     public static EventUpdateRequest create() {
         return new EventUpdateRequest(
                 DEFAULT_EVENT_DATE_ID,

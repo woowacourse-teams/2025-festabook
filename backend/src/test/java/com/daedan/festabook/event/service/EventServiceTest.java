@@ -21,6 +21,8 @@ import com.daedan.festabook.event.dto.EventUpdateRequestFixture;
 import com.daedan.festabook.event.dto.EventUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.global.exception.BusinessException;
 import java.time.Clock;
 import java.time.LocalDate;
@@ -66,7 +68,11 @@ class EventServiceTest {
             // given
             setFixedClock();
 
-            EventDate eventDate = EventDateFixture.create();
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long eventDateId = 1L;
+            EventDate eventDate = EventDateFixture.create(eventDateId, festival);
             EventRequest request = EventRequestFixture.create(eventDate.getId());
             given(eventDateJpaRepository.findById(request.eventDateId()))
                     .willReturn(Optional.of(eventDate));
@@ -84,7 +90,7 @@ class EventServiceTest {
                     .willReturn(event);
 
             // when
-            EventResponse result = eventService.createEvent(request);
+            EventResponse result = eventService.createEvent(festival.getId(), request);
 
             // then
             assertSoftly(s -> {
@@ -99,97 +105,37 @@ class EventServiceTest {
         @Test
         void 예외_존재하지_않는_일정_날짜() {
             // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
             Long notExistingEventDateId = 0L;
             EventRequest request = EventRequestFixture.create(notExistingEventDateId);
+
             given(eventDateJpaRepository.findById(request.eventDateId()))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> eventService.createEvent(request))
+            assertThatThrownBy(() -> eventService.createEvent(festival.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 일정 날짜입니다.");
         }
-    }
-
-    @Nested
-    class updateEvent {
 
         @Test
-        void 성공() {
+        void 예외_다른_축제의_일정_날짜일_경우() {
             // given
-            setFixedClock();
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            EventDate eventDate = EventDateFixture.create(1L, requestFestival, LocalDate.of(2025, 5, 5));
 
-            Long eventDateId = 1L;
-            EventDate eventDate = EventDateFixture.create(
-                    eventDateId,
-                    LocalDate.of(2025, 5, 5)
-            );
+            given(eventDateJpaRepository.findById(eventDate.getId()))
+                    .willReturn(Optional.of(eventDate));
 
-            Long eventId = 1L;
-            Event event = EventFixture.create(
-                    LocalTime.of(1, 0),
-                    LocalTime.of(2, 0),
-                    eventDate
-            );
-            given(eventJpaRepository.findById(eventId))
-                    .willReturn(Optional.of(event));
-
-            Event updatedEvent = EventFixture.create(
-                    LocalTime.of(3, 0),
-                    LocalTime.of(4, 0),
-                    eventDate
-            );
-
-            EventUpdateRequest eventUpdateRequest = EventUpdateRequestFixture.create(
-                    eventDateId,
-                    updatedEvent.getStartTime(),
-                    updatedEvent.getEndTime(),
-                    updatedEvent.getTitle(),
-                    updatedEvent.getLocation()
-            );
-
-            // when
-            EventUpdateResponse result = eventService.updateEvent(eventId, eventUpdateRequest);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.startTime()).isEqualTo(updatedEvent.getStartTime());
-                s.assertThat(result.endTime()).isEqualTo(updatedEvent.getEndTime());
-                s.assertThat(result.title()).isEqualTo(updatedEvent.getTitle());
-                s.assertThat(result.location()).isEqualTo(updatedEvent.getLocation());
-            });
-        }
-
-        @Test
-        void 예외_존재하지_않는_이벤트() {
-            // given
-            Long eventId = 1L;
-            EventUpdateRequest request = EventUpdateRequestFixture.create();
-
-            given(eventJpaRepository.findById(eventId))
-                    .willReturn(Optional.empty());
+            EventRequest request = EventRequestFixture.create(eventDate.getId());
 
             // when & then
-            assertThatThrownBy(() -> eventService.updateEvent(eventId, request))
+            assertThatThrownBy(() -> eventService.createEvent(otherFestivalId, request))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 일정입니다.");
-        }
-    }
-
-    @Nested
-    class deleteEventByEventId {
-
-        @Test
-        void 성공() {
-            // given
-            Long eventId = 1L;
-
-            // when
-            eventService.deleteEventByEventId(eventId);
-
-            // then
-            then(eventJpaRepository).should()
-                    .deleteById(eventId);
+                    .hasMessage("해당 축제의 일정 날짜가 아닙니다.");
         }
     }
 
@@ -218,11 +164,12 @@ class EventServiceTest {
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.responses().getFirst().status()).isEqualTo(EventStatus.ONGOING);
-                s.assertThat(result.responses().getFirst().startTime()).isEqualTo(event.getStartTime());
-                s.assertThat(result.responses().getFirst().endTime()).isEqualTo(event.getEndTime());
-                s.assertThat(result.responses().getFirst().title()).isEqualTo(event.getTitle());
-                s.assertThat(result.responses().getFirst().location()).isEqualTo(event.getLocation());
+                EventResponse firstResult = result.responses().getFirst();
+                s.assertThat(firstResult.status()).isEqualTo(EventStatus.ONGOING);
+                s.assertThat(firstResult.startTime()).isEqualTo(event.getStartTime());
+                s.assertThat(firstResult.endTime()).isEqualTo(event.getEndTime());
+                s.assertThat(firstResult.title()).isEqualTo(event.getTitle());
+                s.assertThat(firstResult.location()).isEqualTo(event.getLocation());
             });
         }
 
@@ -249,6 +196,174 @@ class EventServiceTest {
 
             // then
             assertThat(result.responses().getFirst().status()).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class updateEvent {
+
+        @Test
+        void 성공() {
+            // given
+            setFixedClock();
+
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long eventDateId = 1L;
+            EventDate eventDate = EventDateFixture.create(
+                    eventDateId,
+                    festival,
+                    LocalDate.of(2025, 5, 5)
+            );
+
+            Long eventId = 1L;
+            Event event = EventFixture.create(
+                    LocalTime.of(1, 0),
+                    LocalTime.of(2, 0),
+                    eventDate
+            );
+            given(eventJpaRepository.findById(eventId))
+                    .willReturn(Optional.of(event));
+            given(eventDateJpaRepository.findById(eventDateId))
+                    .willReturn(Optional.of(eventDate));
+
+            Event updatedEvent = EventFixture.create(
+                    LocalTime.of(3, 0),
+                    LocalTime.of(4, 0),
+                    eventDate
+            );
+
+            EventUpdateRequest eventUpdateRequest = EventUpdateRequestFixture.create(
+                    eventDateId,
+                    updatedEvent.getStartTime(),
+                    updatedEvent.getEndTime(),
+                    updatedEvent.getTitle(),
+                    updatedEvent.getLocation()
+            );
+
+            // when
+            EventUpdateResponse result = eventService.updateEvent(festival.getId(), eventId, eventUpdateRequest);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.startTime()).isEqualTo(updatedEvent.getStartTime());
+                s.assertThat(result.endTime()).isEqualTo(updatedEvent.getEndTime());
+                s.assertThat(result.title()).isEqualTo(updatedEvent.getTitle());
+                s.assertThat(result.location()).isEqualTo(updatedEvent.getLocation());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_이벤트() {
+            // given
+            Long eventId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            EventUpdateRequest request = EventUpdateRequestFixture.create();
+
+            given(eventJpaRepository.findById(eventId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> eventService.updateEvent(festival.getId(), eventId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 일정입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_일정일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            EventDate eventDate = EventDateFixture.create(requestFestival);
+            Event event = EventFixture.create(eventDate);
+
+            given(eventJpaRepository.findById(event.getId()))
+                    .willReturn(Optional.of(event));
+
+            EventUpdateRequest request = EventUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> eventService.updateEvent(otherFestival.getId(), event.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 일정이 아닙니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_일정_날짜로_변경_요청() {
+            // given
+            Long currentFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival currentFestival = FestivalFixture.create(currentFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+
+            Long currentEventDateId = 10L;
+            Long otherEventDateId = 20L;
+            EventDate currentEventDate = EventDateFixture.create(currentEventDateId, currentFestival);
+            EventDate otherEventDate = EventDateFixture.create(otherEventDateId, otherFestival);
+
+            Long eventId = 1L;
+            Event event = EventFixture.create(eventId, currentEventDate);
+
+            given(eventJpaRepository.findById(eventId))
+                    .willReturn(Optional.of(event));
+            given(eventDateJpaRepository.findById(otherEventDateId))
+                    .willReturn(Optional.of(otherEventDate));
+
+            EventUpdateRequest request = EventUpdateRequestFixture.create(otherEventDate.getId());
+
+            // when & then
+            assertThatThrownBy(() -> eventService.updateEvent(currentFestival.getId(), event.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 일정 날짜가 아닙니다.");
+        }
+    }
+
+    @Nested
+    class deleteEventByEventId {
+
+        @Test
+        void 성공() {
+            // given
+            Long festivalId = 12L;
+            Long eventDateId = 77L;
+            Long eventId = 1L;
+
+            Festival festival = FestivalFixture.create(festivalId);
+            EventDate eventDate = EventDateFixture.create(eventDateId, festival);
+            Event event = EventFixture.create(eventId, eventDate);
+
+            given(eventJpaRepository.findById(eventId))
+                    .willReturn(Optional.of(event));
+
+            // when
+            eventService.deleteEventByEventId(festival.getId(), eventId);
+
+            // then
+            then(eventJpaRepository).should()
+                    .deleteById(eventId);
+        }
+
+        @Test
+        void 예외_다른_축제의_일정일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            EventDate eventDate = EventDateFixture.create(requestFestival);
+            Event event = EventFixture.create(eventDate);
+
+            given(eventJpaRepository.findById(event.getId()))
+                    .willReturn(Optional.of(event));
+
+            // when & then
+            assertThatThrownBy(() -> eventService.deleteEventByEventId(otherFestival.getId(), event.getId()))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 일정이 아닙니다.");
         }
     }
 
