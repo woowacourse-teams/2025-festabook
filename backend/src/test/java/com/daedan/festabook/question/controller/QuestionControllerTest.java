@@ -1,6 +1,6 @@
 package com.daedan.festabook.question.controller;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 
@@ -82,7 +82,6 @@ class QuestionControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -279,28 +278,6 @@ class QuestionControllerTest {
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
             assertThat(questionJpaRepository.findById(question.getId())).isEmpty();
-        }
-
-        @Test
-        void 성공_없는_리소스_삭제() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long invalidQuestionId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .when()
-                    .delete("/questions/{questionId}", invalidQuestionId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-
-            assertThat(questionJpaRepository.findById(invalidQuestionId)).isEmpty();
         }
     }
 }

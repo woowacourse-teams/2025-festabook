@@ -15,23 +15,9 @@ public class QuestionFixture {
     private static final Integer DEFAULT_SEQUENCE = 3;
 
     public static Question create(
-            Festival festival,
-            String question,
-            String answer,
-            Integer sequence
-    ) {
-        return new Question(
-                festival,
-                question,
-                answer,
-                sequence
-        );
-    }
-
-    public static Question create(
             Festival festival
     ) {
-        return create(
+        return new Question(
                 festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
@@ -40,10 +26,39 @@ public class QuestionFixture {
     }
 
     public static Question create(
+            Long questionId,
+            Festival festival
+    ) {
+        Question question = new Question(
+                festival,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                DEFAULT_SEQUENCE
+        );
+        BaseEntityTestHelper.setId(question, questionId);
+        return question;
+    }
+
+    public static Question create(
+            Long questionId,
             Festival festival,
             Integer sequence
     ) {
-        return create(
+        Question question = new Question(
+                festival,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                sequence
+        );
+        BaseEntityTestHelper.setId(question, questionId);
+        return question;
+    }
+
+    public static Question create(
+            Festival festival,
+            Integer sequence
+    ) {
+        return new Question(
                 festival,
                 DEFAULT_QUESTION,
                 DEFAULT_ANSWER,
@@ -51,10 +66,30 @@ public class QuestionFixture {
         );
     }
 
+    public static Question create(
+            Integer sequence
+    ) {
+        return new Question(
+                DEFAULT_FESTIVAL,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                sequence
+        );
+    }
+
+    public static Question create() {
+        return new Question(
+                DEFAULT_FESTIVAL,
+                DEFAULT_QUESTION,
+                DEFAULT_ANSWER,
+                DEFAULT_SEQUENCE
+        );
+    }
+
     public static Question createWithQuestion(
             String question
     ) {
-        return create(
+        return new Question(
                 DEFAULT_FESTIVAL,
                 question,
                 DEFAULT_ANSWER,
@@ -65,70 +100,12 @@ public class QuestionFixture {
     public static Question createWithAnswer(
             String answer
     ) {
-        return create(
+        return new Question(
                 DEFAULT_FESTIVAL,
                 DEFAULT_QUESTION,
                 answer,
                 DEFAULT_SEQUENCE
         );
-    }
-
-    public static Question create(
-            String question,
-            String answer,
-            Integer sequence
-    ) {
-        return create(
-                DEFAULT_FESTIVAL,
-                question,
-                answer,
-                sequence
-        );
-    }
-
-    public static Question create(
-            Integer sequence
-    ) {
-        return create(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
-                sequence
-        );
-    }
-
-    public static Question create() {
-        return create(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
-                DEFAULT_SEQUENCE
-        );
-    }
-
-    public static Question create(
-            Long questionId
-    ) {
-        Question question = new Question(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
-                DEFAULT_SEQUENCE
-        );
-        return BaseEntityTestHelper.setId(question, questionId);
-    }
-
-    public static Question create(
-            Long questionId,
-            Integer sequence
-    ) {
-        Question question = new Question(
-                DEFAULT_FESTIVAL,
-                DEFAULT_QUESTION,
-                DEFAULT_ANSWER,
-                sequence
-        );
-        return BaseEntityTestHelper.setId(question, questionId);
     }
 
     public static List<Question> createList(int size, Festival festival) {
