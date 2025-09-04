@@ -74,8 +74,7 @@ class FestivalServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(
-                    () -> festivalService.getFestivalGeographyByFestivalId(invalidFestivalId))
+            assertThatThrownBy(() -> festivalService.getFestivalGeographyByFestivalId(invalidFestivalId))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제입니다.");
         }

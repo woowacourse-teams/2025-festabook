@@ -12,14 +12,17 @@ import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.service.FestivalImageService;
 import com.daedan.festabook.festival.service.FestivalService;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -47,15 +50,15 @@ public class FestivalController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public FestivalImageResponse addFestivalImage(
-            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody FestivalImageRequest request
     ) {
-        return festivalImageService.addFestivalImage(festivalId, request);
+        return festivalImageService.addFestivalImage(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping("/geography")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 초기 지리 정보 조회")
+    @Operation(summary = "특정 축제의 초기 지리 정보 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -67,7 +70,7 @@ public class FestivalController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 정보 조회")
+    @Operation(summary = "특정 축제의 정보 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -79,7 +82,7 @@ public class FestivalController {
 
     @GetMapping("/universities")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "대학 이름으로 축제 조회")
+    @Operation(summary = "대학 이름으로 축제 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -96,10 +99,10 @@ public class FestivalController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public FestivalInformationResponse updateFestivalInformation(
-            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody FestivalInformationUpdateRequest request
     ) {
-        return festivalService.updateFestivalInformation(festivalId, request);
+        return festivalService.updateFestivalInformation(councilDetails.getFestivalId(), request);
     }
 
     @PatchMapping("/images/sequences")
@@ -109,9 +112,10 @@ public class FestivalController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public FestivalImageResponses updateFestivalImagesSequence(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody List<FestivalImageSequenceUpdateRequest> requests
     ) {
-        return festivalImageService.updateFestivalImagesSequence(requests);
+        return festivalImageService.updateFestivalImagesSequence(councilDetails.getFestivalId(), requests);
     }
 
     @DeleteMapping("/images/{festivalImageId}")
@@ -121,8 +125,9 @@ public class FestivalController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void removeFestivalImage(
-            @PathVariable Long festivalImageId
+            @PathVariable Long festivalImageId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        festivalImageService.removeFestivalImage(festivalImageId);
+        festivalImageService.removeFestivalImage(councilDetails.getFestivalId(), festivalImageId);
     }
 }
