@@ -14,26 +14,6 @@ public class AnnouncementRequestFixture {
         );
     }
 
-    public static AnnouncementRequest createWithTitle(
-            String title
-    ) {
-        return new AnnouncementRequest(
-                title,
-                DEFAULT_CONTENT,
-                DEFAULT_IS_PINNED
-        );
-    }
-
-    public static AnnouncementRequest createWithContent(
-            String content
-    ) {
-        return new AnnouncementRequest(
-                DEFAULT_TITLE,
-                content,
-                DEFAULT_IS_PINNED
-        );
-    }
-
     public static AnnouncementRequest create(
             boolean isPinned
     ) {

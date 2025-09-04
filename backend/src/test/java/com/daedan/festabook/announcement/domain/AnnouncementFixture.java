@@ -16,53 +16,105 @@ public class AnnouncementFixture {
     private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final LocalDateTime DEFAULT_CREATED_AT = LocalDateTime.now();
 
-    public static Announcement create() {
-        return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, DEFAULT_IS_PINNED, DEFAULT_FESTIVAL);
+    public static Announcement createWithTitle(
+            String title
+    ) {
+        return new Announcement(
+                title,
+                DEFAULT_CONTENT,
+                DEFAULT_IS_PINNED,
+                DEFAULT_FESTIVAL
+        );
     }
 
-    public static Announcement createWithTitle(String title) {
-        return new Announcement(title, DEFAULT_CONTENT, DEFAULT_IS_PINNED, DEFAULT_FESTIVAL);
-    }
-
-    public static Announcement createWithContent(String content) {
-        return new Announcement(DEFAULT_TITLE, content, DEFAULT_IS_PINNED, DEFAULT_FESTIVAL);
+    public static Announcement createWithContent(
+            String content
+    ) {
+        return new Announcement(
+                DEFAULT_TITLE,
+                content,
+                DEFAULT_IS_PINNED,
+                DEFAULT_FESTIVAL
+        );
     }
 
     public static Announcement create(
             boolean isPinned
     ) {
-        Announcement announcement = new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL);
-        return BaseEntityTestHelper.setCreatedAt(announcement, DEFAULT_CREATED_AT);
+        Announcement announcement = new Announcement(
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT,
+                isPinned,
+                DEFAULT_FESTIVAL
+        );
+        BaseEntityTestHelper.setCreatedAt(announcement, DEFAULT_CREATED_AT);
+        return announcement;
     }
 
     public static Announcement create(
             Festival festival
     ) {
-        return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, DEFAULT_IS_PINNED, festival);
-    }
-
-    public static Announcement create(
-            Long announcementId,
-            boolean isPinned
-    ) {
-        Announcement announcement = new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL);
-        BaseEntityTestHelper.setId(announcement, announcementId);
-        return BaseEntityTestHelper.setCreatedAt(announcement, DEFAULT_CREATED_AT);
+        return new Announcement(
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT,
+                DEFAULT_IS_PINNED,
+                festival
+        );
     }
 
     public static Announcement create(
             boolean isPinned,
             LocalDateTime createdAt
     ) {
-        Announcement announcement = new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, DEFAULT_FESTIVAL);
-        return BaseEntityTestHelper.setCreatedAt(announcement, createdAt);
+        Announcement announcement = new Announcement(
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT,
+                isPinned,
+                DEFAULT_FESTIVAL
+        );
+        BaseEntityTestHelper.setCreatedAt(announcement, createdAt);
+        return announcement;
+    }
+
+    public static Announcement create(
+            Long announcementId,
+            Festival festival
+    ) {
+        Announcement announcement = new Announcement(
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT,
+                DEFAULT_IS_PINNED,
+                festival
+        );
+        BaseEntityTestHelper.setId(announcement, announcementId);
+        return announcement;
+    }
+
+    public static Announcement create(
+            Long announcementId,
+            boolean isPinned,
+            Festival festival
+    ) {
+        Announcement announcement = new Announcement(
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT,
+                isPinned,
+                festival
+        );
+        BaseEntityTestHelper.setId(announcement, announcementId);
+        return announcement;
     }
 
     public static Announcement create(
             boolean isPinned,
             Festival festival
     ) {
-        return new Announcement(DEFAULT_TITLE, DEFAULT_CONTENT, isPinned, festival);
+        return new Announcement(
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT,
+                isPinned,
+                festival
+        );
     }
 
     public static Announcement create(
@@ -71,7 +123,12 @@ public class AnnouncementFixture {
             boolean isPinned,
             Festival festival
     ) {
-        return new Announcement(title, content, isPinned, festival);
+        return new Announcement(
+                title,
+                content,
+                isPinned,
+                festival
+        );
     }
 
     public static List<Announcement> createList(

@@ -75,6 +75,10 @@ public class Announcement extends BaseEntity {
         this.isPinned = isPinned;
     }
 
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.festival.getId().equals(festivalId);
+    }
+
     private void validateTitle(String title) {
         if (!StringUtils.hasText(title)) {
             throw new BusinessException("공지사항 제목은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);

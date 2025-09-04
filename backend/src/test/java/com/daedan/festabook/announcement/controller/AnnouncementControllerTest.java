@@ -91,7 +91,6 @@ class AnnouncementControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -125,7 +124,6 @@ class AnnouncementControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -358,7 +356,6 @@ class AnnouncementControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -394,26 +391,6 @@ class AnnouncementControllerTest {
                     .header(authorizationHeader)
                     .when()
                     .delete("/announcements/{announcementId}", announcement.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-        }
-
-        @Test
-        void 성공_존재하지_않는_공지지만_예외_없음() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long notExistId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .when()
-                    .delete("/announcements/{announcementId}", notExistId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }

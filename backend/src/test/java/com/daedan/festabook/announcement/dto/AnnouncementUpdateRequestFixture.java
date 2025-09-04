@@ -12,20 +12,6 @@ public class AnnouncementUpdateRequestFixture {
         );
     }
 
-    public static AnnouncementUpdateRequest createWithTitle(String title) {
-        return new AnnouncementUpdateRequest(
-                title,
-                DEFAULT_CONTENT
-        );
-    }
-
-    public static AnnouncementUpdateRequest createWithContent(String content) {
-        return new AnnouncementUpdateRequest(
-                DEFAULT_TITLE,
-                content
-        );
-    }
-
     public static AnnouncementUpdateRequest create(String title, String content) {
         return new AnnouncementUpdateRequest(
                 title,

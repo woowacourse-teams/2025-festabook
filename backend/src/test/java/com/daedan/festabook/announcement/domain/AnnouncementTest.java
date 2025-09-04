@@ -1,5 +1,6 @@
 package com.daedan.festabook.announcement.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
@@ -151,6 +152,39 @@ class AnnouncementTest {
             assertThatThrownBy(() -> AnnouncementFixture.create(festival))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("축제는 null일 수 없습니다.");
+        }
+    }
+
+    @Nested
+    class isFestivalIdEqualTo {
+
+        @Test
+        void 같은_축제의_id이면_true() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(festival);
+
+            // when
+            boolean result = announcement.isFestivalIdEqualTo(festivalId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 다른_축제의_id이면_false() {
+            // given
+            Long festivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(festival);
+
+            // when
+            boolean result = announcement.isFestivalIdEqualTo(otherFestivalId);
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 }

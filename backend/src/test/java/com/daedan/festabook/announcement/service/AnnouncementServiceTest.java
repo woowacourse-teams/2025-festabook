@@ -1,12 +1,11 @@
 package com.daedan.festabook.announcement.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.never;
 
@@ -48,8 +47,6 @@ import org.springframework.http.HttpStatus;
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class AnnouncementServiceTest {
-
-    private static final Long DEFAULT_FESTIVAL_ID = 1L;
 
     @Mock
     private AnnouncementJpaRepository announcementJpaRepository;
@@ -94,6 +91,30 @@ class AnnouncementServiceTest {
                     .sendToFestivalTopic(any(), any());
         }
 
+        @ParameterizedTest(name = "고정 공지 개수: {0}")
+        @ValueSource(longs = {0L, 1L, 2L})
+        void 성공_고정_공지_개수_제한_미만(Long pinnedCount) {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
+
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId))
+                    .willReturn(pinnedCount);
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
+
+            // when
+            announcementService.createAnnouncement(festivalId, request);
+
+            // then
+            then(announcementJpaRepository).should()
+                    .save(any(Announcement.class));
+
+            then(festivalNotificationManager).should()
+                    .sendToFestivalTopic(any(), any());
+        }
+
         @Test
         void 예외_존재하지_않는_축제_ID() {
             // given
@@ -131,41 +152,20 @@ class AnnouncementServiceTest {
         }
 
         @ParameterizedTest(name = "고정 공지 개수: {0}")
-        @ValueSource(longs = {0L, 1L, 2L})
-        void 성공_고정_공지_개수_제한_미만(Long pinnedCount) {
-            // given
-            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
-            Festival festival = FestivalFixture.create(DEFAULT_FESTIVAL_ID);
-
-            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID))
-                    .willReturn(pinnedCount);
-            given(festivalJpaRepository.findById(DEFAULT_FESTIVAL_ID))
-                    .willReturn(Optional.of(festival));
-
-            // when
-            announcementService.createAnnouncement(DEFAULT_FESTIVAL_ID, request);
-
-            // then
-            then(announcementJpaRepository).should()
-                    .save(any(Announcement.class));
-
-            then(festivalNotificationManager).should()
-                    .sendToFestivalTopic(any(), any());
-        }
-
-        @ParameterizedTest(name = "고정 공지 개수: {0}")
-        @ValueSource(longs = {
-                3L, 4L, 10L
-        })
+        @ValueSource(longs = {3L, 4L, 10L})
         void 예외_고정_공지_개수_제한_초과(Long maxPinnedCount) {
             // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
             AnnouncementRequest request = AnnouncementRequestFixture.create(true);
 
-            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID))
+            given(festivalJpaRepository.findById(festival.getId()))
+                    .willReturn(Optional.of(festival));
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId))
                     .willReturn(maxPinnedCount);
 
             // when & then
-            assertThatThrownBy(() -> announcementService.createAnnouncement(DEFAULT_FESTIVAL_ID, request))
+            assertThatThrownBy(() -> announcementService.createAnnouncement(festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
         }
@@ -177,6 +177,7 @@ class AnnouncementServiceTest {
         @Test
         void 성공_고정_분류() {
             // given
+            Long festivalId = 1L;
             int expectedPinedSize = 1;
             int expectedUnPinedSize = 2;
 
@@ -187,12 +188,11 @@ class AnnouncementServiceTest {
             allAnnouncements.addAll(pinnedAnnouncements);
             allAnnouncements.addAll(unPinnedAnnouncements);
 
-            given(announcementJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
+            given(announcementJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(allAnnouncements);
 
             // when
-            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(
-                    DEFAULT_FESTIVAL_ID);
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(festivalId);
 
             // then
             assertSoftly(s -> {
@@ -204,6 +204,8 @@ class AnnouncementServiceTest {
         @Test
         void 성공_생성_날짜_시간_역순으로_정렬() {
             // given
+            Long festivalId = 1L;
+
             // pinned 공지
             Announcement announcement1 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 5, 2, 10, 0));
             Announcement announcement2 = AnnouncementFixture.create(true, LocalDateTime.of(2025, 5, 3, 10, 0));
@@ -214,15 +216,14 @@ class AnnouncementServiceTest {
             Announcement announcement5 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 5, 3, 10, 0));
             Announcement announcement6 = AnnouncementFixture.create(false, LocalDateTime.of(2025, 6, 2, 10, 0));
 
-            given(announcementJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
+            given(announcementJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(List.of(
                             announcement1, announcement2, announcement3,
                             announcement4, announcement5, announcement6
                     ));
 
             // when
-            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(
-                    DEFAULT_FESTIVAL_ID);
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(festivalId);
 
             // then
             assertSoftly(s -> {
@@ -242,12 +243,13 @@ class AnnouncementServiceTest {
         @Test
         void 성공_빈_컬렉션() {
             // given
-            given(announcementJpaRepository.findAllByFestivalId(DEFAULT_FESTIVAL_ID))
+            Long festivalId = 1L;
+
+            given(announcementJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(List.of());
 
             // when
-            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(
-                    DEFAULT_FESTIVAL_ID);
+            AnnouncementGroupedResponses result = announcementService.getGroupedAnnouncementByFestivalId(festivalId);
 
             // then
             assertSoftly(s -> {
@@ -263,7 +265,9 @@ class AnnouncementServiceTest {
         @Test
         void 성공() {
             // given
-            Announcement announcement = AnnouncementFixture.create();
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(festival);
 
             given(announcementJpaRepository.findById(announcement.getId()))
                     .willReturn(Optional.of(announcement));
@@ -271,7 +275,11 @@ class AnnouncementServiceTest {
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("new title", "new content");
 
             // when
-            AnnouncementUpdateResponse result = announcementService.updateAnnouncement(announcement.getId(), request);
+            AnnouncementUpdateResponse result = announcementService.updateAnnouncement(
+                    festival.getId(),
+                    announcement.getId(),
+                    request
+            );
 
             // then
             assertSoftly(s -> {
@@ -284,15 +292,40 @@ class AnnouncementServiceTest {
         void 예외_존재하지_않는_공지사항_ID() {
             // given
             Long invalidAnnouncementId = 0L;
+            Festival festival = FestivalFixture.create();
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
 
             given(announcementJpaRepository.findById(invalidAnnouncementId))
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> announcementService.updateAnnouncement(invalidAnnouncementId, request))
+            assertThatThrownBy(() ->
+                    announcementService.updateAnnouncement(festival.getId(), invalidAnnouncementId, request)
+            )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_공지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Announcement announcement = AnnouncementFixture.create(requestFestival);
+
+            given(announcementJpaRepository.findById(announcement.getId()))
+                    .willReturn(Optional.of(announcement));
+
+            AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.updateAnnouncement(otherFestival.getId(), announcement.getId(), request)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 공지가 아닙니다.");
         }
     }
 
@@ -302,16 +335,23 @@ class AnnouncementServiceTest {
         @Test
         void 성공() {
             // given
+            Long festivalId = 1L;
             Long announcementId = 1L;
-            Announcement announcement = AnnouncementFixture.create(announcementId, false);
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(announcementId, false, festival);
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId))
+                    .willReturn(0L);
 
             // when
-            AnnouncementPinUpdateResponse result = announcementService.updateAnnouncementPin(announcementId,
-                    DEFAULT_FESTIVAL_ID, request);
+            AnnouncementPinUpdateResponse result = announcementService.updateAnnouncementPin(
+                    festivalId,
+                    announcementId,
+                    request
+            );
 
             // then
             assertThat(result.isPinned()).isEqualTo(request.pinned());
@@ -320,6 +360,7 @@ class AnnouncementServiceTest {
         @Test
         void 예외_존재하지_않는_공지사항_ID() {
             // given
+            Long festivalId = 1L;
             Long invalidAnnouncementId = 0L;
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create();
 
@@ -327,10 +368,12 @@ class AnnouncementServiceTest {
                     .willReturn(Optional.empty());
 
             // when & then
-            assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
-                    invalidAnnouncementId,
-                    DEFAULT_FESTIVAL_ID,
-                    request)
+            assertThatThrownBy(() ->
+                    announcementService.updateAnnouncementPin(
+                            festivalId,
+                            invalidAnnouncementId,
+                            request
+                    )
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
@@ -339,22 +382,26 @@ class AnnouncementServiceTest {
         @Test
         void 예외_고정_공지_개수_제한_초과() {
             // given
+            Long festivalId = 1L;
             Long announcementId = 1L;
-            Announcement announcement = AnnouncementFixture.create(announcementId, false);
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(announcementId, false, festival);
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
 
             Long pinnedCountLimit = 3L;
-            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID))
+            given(announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId))
                     .willReturn(pinnedCountLimit);
 
             // when & then
-            assertThatThrownBy(() -> announcementService.updateAnnouncementPin(
-                    announcementId,
-                    DEFAULT_FESTIVAL_ID,
-                    request)
+            assertThatThrownBy(() ->
+                    announcementService.updateAnnouncementPin(
+                            festivalId,
+                            announcementId,
+                            request
+                    )
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("공지글은 최대 3개까지 고정할 수 있습니다.");
@@ -363,19 +410,43 @@ class AnnouncementServiceTest {
         @Test
         void 성공_고정된_공지는_고정_공지_개수_제한_검증_안함() {
             // given
+            Long festivalId = 1L;
             Long announcementId = 1L;
-            Announcement announcement = AnnouncementFixture.create(announcementId, true);
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(announcementId, true, festival);
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
 
             // when
-            announcementService.updateAnnouncementPin(announcementId, DEFAULT_FESTIVAL_ID, request);
+            announcementService.updateAnnouncementPin(festivalId, announcementId, request);
 
             // then
             then(announcementJpaRepository).should(never())
-                    .countByFestivalIdAndIsPinnedTrue(DEFAULT_FESTIVAL_ID);
+                    .countByFestivalIdAndIsPinnedTrue(festivalId);
+        }
+
+        @Test
+        void 예외_다른_축제의_공지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Announcement announcement = AnnouncementFixture.create(requestFestival);
+
+            given(announcementJpaRepository.findById(announcement.getId()))
+                    .willReturn(Optional.of(announcement));
+
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.updateAnnouncementPin(otherFestival.getId(), announcement.getId(), request)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 공지가 아닙니다.");
         }
     }
 
@@ -386,15 +457,42 @@ class AnnouncementServiceTest {
         void 성공() {
             // given
             Long announcementId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(announcementId, festival);
 
-            willDoNothing().given(announcementJpaRepository).deleteById(announcementId);
+            given(announcementJpaRepository.findById(announcementId))
+                    .willReturn(Optional.of(announcement));
 
             // when
-            announcementService.deleteAnnouncementByAnnouncementId(announcementId);
+            announcementService.deleteAnnouncementByAnnouncementId(festivalId, announcementId);
 
             // then
             then(announcementJpaRepository).should()
-                    .deleteById(announcementId);
+                    .delete(announcement);
+        }
+
+        @Test
+        void 예외_다른_축제의_공지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Announcement announcement = AnnouncementFixture.create(requestFestival);
+
+            given(announcementJpaRepository.findById(announcement.getId()))
+                    .willReturn(Optional.of(announcement));
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.deleteAnnouncementByAnnouncementId(
+                            otherFestival.getId(),
+                            announcement.getId()
+                    )
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 공지가 아닙니다.");
         }
     }
 }
