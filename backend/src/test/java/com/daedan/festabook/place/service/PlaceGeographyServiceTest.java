@@ -102,7 +102,7 @@ class PlaceGeographyServiceTest {
             // given
             Long placeId = 1L;
             Festival festival = FestivalFixture.create(1L);
-            Place place = PlaceFixture.create(placeId, festival, 37.0, 127.0);
+            Place place = PlaceFixture.create(festival, 37.0, 127.0, placeId);
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
             given(placeJpaRepository.findById(placeId))

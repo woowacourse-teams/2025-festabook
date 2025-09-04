@@ -62,9 +62,7 @@ class FestivalNotificationServiceTest {
             Device device = DeviceFixture.create(deviceId);
             Long festivalNotificationId = 100L;
             FestivalNotification festivalNotification = FestivalNotificationFixture.create(
-                    festivalNotificationId,
-                    festival,
-                    device
+                    festival, device, festivalNotificationId
             );
             FestivalNotificationRequest request = FestivalNotificationRequestFixture.create(deviceId);
 
@@ -158,9 +156,7 @@ class FestivalNotificationServiceTest {
             Device device = DeviceFixture.create(deviceId);
             Festival festival = FestivalFixture.create(festivalId);
             FestivalNotification festivalNotification = FestivalNotificationFixture.create(
-                    festivalNotificationId,
-                    festival,
-                    device
+                    festival, device, festivalNotificationId
             );
 
             given(festivalNotificationJpaRepository.findById(festivalNotificationId))
@@ -207,9 +203,7 @@ class FestivalNotificationServiceTest {
             Device device = DeviceFixture.create(invalidDeviceId);
             Festival festival = FestivalFixture.create(festivalId);
             FestivalNotification festivalNotification = FestivalNotificationFixture.create(
-                    festivalNotificationId,
-                    festival,
-                    device
+                    festival, device, festivalNotificationId
             );
 
             given(festivalNotificationJpaRepository.findById(festivalNotificationId))

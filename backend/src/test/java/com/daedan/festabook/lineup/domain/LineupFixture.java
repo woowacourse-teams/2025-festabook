@@ -11,8 +11,19 @@ public class LineupFixture {
     private static final LocalDateTime DEFAULT_PERFORM_AT = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
 
     public static Lineup create(
-            Long lineupId,
             Festival festival
+    ) {
+        return new Lineup(
+                festival,
+                DEFAULT_LINEUP_NAME,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_PERFORM_AT
+        );
+    }
+
+    public static Lineup create(
+            Festival festival,
+            Long lineupId
     ) {
         Lineup lineup = new Lineup(
                 festival,
@@ -22,17 +33,6 @@ public class LineupFixture {
         );
         BaseEntityTestHelper.setId(lineup, lineupId);
         return lineup;
-    }
-
-    public static Lineup create(
-            Festival festival
-    ) {
-        return new Lineup(
-                festival,
-                DEFAULT_LINEUP_NAME,
-                DEFAULT_IMAGE_URL,
-                DEFAULT_PERFORM_AT
-        );
     }
 
     public static Lineup create(
@@ -49,11 +49,11 @@ public class LineupFixture {
     }
 
     public static Lineup create(
-            Long lineupId,
             Festival festival,
             String name,
             String imageUrl,
-            LocalDateTime dateTime
+            LocalDateTime dateTime,
+            Long lineupId
     ) {
         Lineup lineup = new Lineup(
                 festival,

@@ -72,19 +72,14 @@ class EventServiceTest {
             Festival festival = FestivalFixture.create(festivalId);
 
             Long eventDateId = 1L;
-            EventDate eventDate = EventDateFixture.create(eventDateId, festival);
+            EventDate eventDate = EventDateFixture.create(festival, eventDateId);
             EventRequest request = EventRequestFixture.create(eventDate.getId());
             given(eventDateJpaRepository.findById(request.eventDateId()))
                     .willReturn(Optional.of(eventDate));
 
             Long eventId = 1L;
             Event event = EventFixture.create(
-                    eventId,
-                    eventDate,
-                    request.startTime(),
-                    request.endTime(),
-                    request.title(),
-                    request.location()
+                    eventDate, request.startTime(), request.endTime(), request.title(), request.location(), eventId
             );
             given(eventJpaRepository.save(any()))
                     .willReturn(event);
@@ -125,7 +120,7 @@ class EventServiceTest {
             Long requestFestivalId = 1L;
             Long otherFestivalId = 999L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
-            EventDate eventDate = EventDateFixture.create(1L, requestFestival, LocalDate.of(2025, 5, 5));
+            EventDate eventDate = EventDateFixture.create(requestFestival, LocalDate.of(2025, 5, 5), 1L);
 
             given(eventDateJpaRepository.findById(eventDate.getId()))
                     .willReturn(Optional.of(eventDate));
@@ -212,9 +207,7 @@ class EventServiceTest {
 
             Long eventDateId = 1L;
             EventDate eventDate = EventDateFixture.create(
-                    eventDateId,
-                    festival,
-                    LocalDate.of(2025, 5, 5)
+                    festival, LocalDate.of(2025, 5, 5), eventDateId
             );
 
             Long eventId = 1L;
@@ -302,11 +295,11 @@ class EventServiceTest {
 
             Long currentEventDateId = 10L;
             Long otherEventDateId = 20L;
-            EventDate currentEventDate = EventDateFixture.create(currentEventDateId, currentFestival);
-            EventDate otherEventDate = EventDateFixture.create(otherEventDateId, otherFestival);
+            EventDate currentEventDate = EventDateFixture.create(currentFestival, currentEventDateId);
+            EventDate otherEventDate = EventDateFixture.create(otherFestival, otherEventDateId);
 
             Long eventId = 1L;
-            Event event = EventFixture.create(eventId, currentEventDate);
+            Event event = EventFixture.create(currentEventDate, eventId);
 
             given(eventJpaRepository.findById(eventId))
                     .willReturn(Optional.of(event));
@@ -333,8 +326,8 @@ class EventServiceTest {
             Long eventId = 1L;
 
             Festival festival = FestivalFixture.create(festivalId);
-            EventDate eventDate = EventDateFixture.create(eventDateId, festival);
-            Event event = EventFixture.create(eventId, eventDate);
+            EventDate eventDate = EventDateFixture.create(festival, eventDateId);
+            Event event = EventFixture.create(eventDate, eventId);
 
             given(eventJpaRepository.findById(eventId))
                     .willReturn(Optional.of(event));

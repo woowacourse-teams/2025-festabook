@@ -27,18 +27,6 @@ public class PlaceAnnouncementFixture {
     }
 
     public static PlaceAnnouncement create(
-            Place place,
-            String title,
-            String content
-    ) {
-        return new PlaceAnnouncement(
-                place,
-                title,
-                content
-        );
-    }
-
-    public static PlaceAnnouncement create(
             String title,
             String content
     ) {
@@ -50,8 +38,8 @@ public class PlaceAnnouncementFixture {
     }
 
     public static PlaceAnnouncement create(
-            Long placeAnnouncementId,
-            Place place
+            Place place,
+            Long placeAnnouncementId
     ) {
         PlaceAnnouncement placeAnnouncement = new PlaceAnnouncement(
                 place,
@@ -60,6 +48,18 @@ public class PlaceAnnouncementFixture {
         );
         BaseEntityTestHelper.setId(placeAnnouncement, placeAnnouncementId);
         return placeAnnouncement;
+    }
+
+    public static PlaceAnnouncement create(
+            Place place,
+            String title,
+            String content
+    ) {
+        return new PlaceAnnouncement(
+                place,
+                title,
+                content
+        );
     }
 
     public static PlaceAnnouncement createWithTitle(

@@ -6,15 +6,6 @@ import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 public class PlaceFavoriteFixture {
 
     public static PlaceFavorite create(
-            Long placeFavoriteId,
-            Place place,
-            Device device
-    ) {
-        PlaceFavorite placeFavorite = new PlaceFavorite(place, device);
-        return BaseEntityTestHelper.setId(placeFavorite, placeFavoriteId);
-    }
-
-    public static PlaceFavorite create(
             Place place,
             Device device
     ) {
@@ -22,5 +13,14 @@ public class PlaceFavoriteFixture {
                 place,
                 device
         );
+    }
+
+    public static PlaceFavorite create(
+            Place place,
+            Device device,
+            Long placeFavoriteId
+    ) {
+        PlaceFavorite placeFavorite = new PlaceFavorite(place, device);
+        return BaseEntityTestHelper.setId(placeFavorite, placeFavoriteId);
     }
 }

@@ -12,7 +12,10 @@ public class AnnouncementUpdateRequestFixture {
         );
     }
 
-    public static AnnouncementUpdateRequest create(String title, String content) {
+    public static AnnouncementUpdateRequest create(
+            String title,
+            String content
+    ) {
         return new AnnouncementUpdateRequest(
                 title,
                 content

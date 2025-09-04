@@ -14,6 +14,17 @@ public class DeviceFixture {
         );
     }
 
+    public static Device create(
+            Long deviceId
+    ) {
+        Device device = new Device(
+                DEFAULT_DEVICE_IDENTIFIER,
+                DEFAULT_FCM_TOKEN
+        );
+        BaseEntityTestHelper.setId(device, deviceId);
+        return device;
+    }
+
     public static Device createWithDeviceIdentifier(
             String deviceIdentifier
     ) {
@@ -30,16 +41,5 @@ public class DeviceFixture {
                 DEFAULT_DEVICE_IDENTIFIER,
                 fcmToken
         );
-    }
-
-    public static Device create(
-            Long deviceId
-    ) {
-        Device device = new Device(
-                DEFAULT_DEVICE_IDENTIFIER,
-                DEFAULT_FCM_TOKEN
-        );
-        BaseEntityTestHelper.setId(device, deviceId);
-        return device;
     }
 }

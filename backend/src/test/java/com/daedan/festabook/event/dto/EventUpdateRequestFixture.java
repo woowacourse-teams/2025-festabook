@@ -10,19 +10,13 @@ public class EventUpdateRequestFixture {
     private final static String DEFAULT_TITLE = "title";
     private final static String DEFAULT_LOCATION = "location";
 
-    public static EventUpdateRequest create(
-            Long eventDateId,
-            LocalTime startTime,
-            LocalTime endTime,
-            String title,
-            String location
-    ) {
+    public static EventUpdateRequest create() {
         return new EventUpdateRequest(
-                eventDateId,
-                startTime,
-                endTime,
-                title,
-                location
+                DEFAULT_EVENT_DATE_ID,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION
         );
     }
 
@@ -38,13 +32,19 @@ public class EventUpdateRequestFixture {
         );
     }
 
-    public static EventUpdateRequest create() {
+    public static EventUpdateRequest create(
+            Long eventDateId,
+            LocalTime startTime,
+            LocalTime endTime,
+            String title,
+            String location
+    ) {
         return new EventUpdateRequest(
-                DEFAULT_EVENT_DATE_ID,
-                DEFAULT_START_TIME,
-                DEFAULT_END_TIME,
-                DEFAULT_TITLE,
-                DEFAULT_LOCATION
+                eventDateId,
+                startTime,
+                endTime,
+                title,
+                location
         );
     }
 }

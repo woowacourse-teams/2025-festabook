@@ -57,8 +57,8 @@ public class LostItemFixture {
     }
 
     public static LostItem create(
-            Long lostItemId,
-            Festival festival
+            Festival festival,
+            Long lostItemId
     ) {
         LostItem lostItem = new LostItem(
                 festival,
@@ -71,31 +71,15 @@ public class LostItemFixture {
     }
 
     public static LostItem create(
-            Long lostItemId,
             Festival festival,
-            PickupStatus status
+            PickupStatus status,
+            Long lostItemId
     ) {
         LostItem lostItem = new LostItem(
                 festival,
                 DEFAULT_IMAGE_URL,
                 DEFAULT_STORAGE_LOCATION,
                 status
-        );
-        BaseEntityTestHelper.setId(lostItem, lostItemId);
-        return BaseEntityTestHelper.setCreatedAt(lostItem, DEFAULT_CREATED_AT);
-    }
-
-    public static LostItem create(
-            Long lostItemId,
-            Festival festival,
-            String imageUrl,
-            String storageLocation
-    ) {
-        LostItem lostItem = new LostItem(
-                festival,
-                imageUrl,
-                storageLocation,
-                DEFAULT_PICK_UP_STATUS
         );
         BaseEntityTestHelper.setId(lostItem, lostItemId);
         return BaseEntityTestHelper.setCreatedAt(lostItem, DEFAULT_CREATED_AT);
@@ -112,6 +96,22 @@ public class LostItemFixture {
                 storageLocation,
                 status
         );
+    }
+
+    public static LostItem create(
+            Festival festival,
+            String imageUrl,
+            String storageLocation,
+            Long lostItemId
+    ) {
+        LostItem lostItem = new LostItem(
+                festival,
+                imageUrl,
+                storageLocation,
+                DEFAULT_PICK_UP_STATUS
+        );
+        BaseEntityTestHelper.setId(lostItem, lostItemId);
+        return BaseEntityTestHelper.setCreatedAt(lostItem, DEFAULT_CREATED_AT);
     }
 
     public static LostItem create(

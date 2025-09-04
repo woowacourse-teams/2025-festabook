@@ -77,8 +77,8 @@ class PlaceServiceTest {
             PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
 
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.createWithNullDefaults(expectedPlaceId, festival, expectedPlaceCategory,
-                    expectedPlaceTitle);
+            Place place = PlaceFixture.createWithNullDefaults(festival, expectedPlaceCategory, expectedPlaceTitle,
+                    expectedPlaceId);
 
             given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));
@@ -217,7 +217,7 @@ class PlaceServiceTest {
             Long placeId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(placeId, festival);
+            Place place = PlaceFixture.create(festival, placeId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
@@ -277,7 +277,7 @@ class PlaceServiceTest {
             Long placeId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(placeId, festival);
+            Place place = PlaceFixture.create(festival, placeId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));

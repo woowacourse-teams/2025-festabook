@@ -111,7 +111,7 @@ class PlaceAnnouncementServiceTest {
             Long placeId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            Place place = PlaceFixture.create(placeId, requestFestival);
+            Place place = PlaceFixture.create(requestFestival, placeId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
@@ -196,7 +196,7 @@ class PlaceAnnouncementServiceTest {
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
             Place place = PlaceFixture.create(requestFestival);
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place, placeAnnouncementId);
 
             given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
                     .willReturn(Optional.of(placeAnnouncement));
@@ -226,7 +226,7 @@ class PlaceAnnouncementServiceTest {
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
             Place place = PlaceFixture.create(festival);
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place, placeAnnouncementId);
 
             given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
                     .willReturn(Optional.of(placeAnnouncement));
@@ -248,7 +248,7 @@ class PlaceAnnouncementServiceTest {
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
             Place place = PlaceFixture.create(requestFestival);
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place, placeAnnouncementId);
 
             given(placeAnnouncementJpaRepository.findById(placeAnnouncement.getId()))
                     .willReturn(Optional.of(placeAnnouncement));

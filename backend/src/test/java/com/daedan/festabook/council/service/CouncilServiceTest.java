@@ -66,7 +66,7 @@ class CouncilServiceTest {
             String rawPassword = "1234";
             String encodedPassword = "{encoded}1234";
             Long councilId = 10L;
-            Council council = CouncilFixture.create(councilId, festival, username, encodedPassword);
+            Council council = CouncilFixture.create(festival, username, encodedPassword, councilId);
 
             given(councilJpaRepository.existsByUsername(username))
                     .willReturn(false);

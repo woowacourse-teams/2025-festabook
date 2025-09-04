@@ -21,8 +21,8 @@ public class FestivalImageFixture {
     }
 
     public static FestivalImage create(
-            Long festivalImageId,
-            Festival festival
+            Festival festival,
+            Long festivalImageId
     ) {
         FestivalImage festivalImage = new FestivalImage(
                 festival,
@@ -45,9 +45,9 @@ public class FestivalImageFixture {
     }
 
     public static FestivalImage create(
-            Long festivalImageId,
             Festival festival,
-            Integer sequence
+            Integer sequence,
+            Long festivalImageId
     ) {
         FestivalImage festivalImage = new FestivalImage(
                 festival,

@@ -16,7 +16,11 @@ public class LineupUpdateRequestFixture {
         );
     }
 
-    public static LineupUpdateRequest create(String name, String imageUrl, LocalDateTime performAt) {
+    public static LineupUpdateRequest create(
+            String name,
+            String imageUrl,
+            LocalDateTime performAt
+    ) {
         return new LineupUpdateRequest(
                 name,
                 imageUrl,

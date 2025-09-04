@@ -98,9 +98,9 @@ class FestivalImageServiceTest {
             Long festivalImageId2 = 2L;
             Long festivalImageId3 = 3L;
 
-            FestivalImage festivalImage1 = FestivalImageFixture.create(festivalImageId1, festival, 1);
-            FestivalImage festivalImage2 = FestivalImageFixture.create(festivalImageId2, festival, 2);
-            FestivalImage festivalImage3 = FestivalImageFixture.create(festivalImageId3, festival, 3);
+            FestivalImage festivalImage1 = FestivalImageFixture.create(festival, 1, festivalImageId1);
+            FestivalImage festivalImage2 = FestivalImageFixture.create(festival, 2, festivalImageId2);
+            FestivalImage festivalImage3 = FestivalImageFixture.create(festival, 3, festivalImageId3);
 
             List<FestivalImageSequenceUpdateRequest> requests = List.of(
                     FestivalImageSequenceUpdateRequestFixture.create(festivalImageId1, 3),
@@ -151,7 +151,7 @@ class FestivalImageServiceTest {
             Long festivalImageId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            FestivalImage festivalImage = FestivalImageFixture.create(festivalImageId, requestFestival);
+            FestivalImage festivalImage = FestivalImageFixture.create(requestFestival, festivalImageId);
 
             given(festivalImageJpaRepository.findById(festivalImage.getId()))
                     .willReturn(Optional.of(festivalImage));
@@ -195,7 +195,7 @@ class FestivalImageServiceTest {
             Long festivalImageId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            FestivalImage festivalImage = FestivalImageFixture.create(festivalImageId, requestFestival);
+            FestivalImage festivalImage = FestivalImageFixture.create(requestFestival, festivalImageId);
 
             given(festivalImageJpaRepository.findById(festivalImage.getId()))
                     .willReturn(Optional.of(festivalImage));

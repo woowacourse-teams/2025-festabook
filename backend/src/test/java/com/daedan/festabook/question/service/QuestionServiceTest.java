@@ -140,7 +140,7 @@ class QuestionServiceTest {
             Long questionId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Question question = QuestionFixture.create(questionId, festival);
+            Question question = QuestionFixture.create(festival, questionId);
 
             given(questionJpaRepository.findById(questionId))
                     .willReturn(Optional.of(question));
@@ -209,9 +209,9 @@ class QuestionServiceTest {
             Long question2Id = 2L;
             Long question3Id = 3L;
 
-            Question question1 = QuestionFixture.create(question1Id, festival, 1);
-            Question question2 = QuestionFixture.create(question2Id, festival, 2);
-            Question question3 = QuestionFixture.create(question3Id, festival, 3);
+            Question question1 = QuestionFixture.create(festival, 1, question1Id);
+            Question question2 = QuestionFixture.create(festival, 2, question2Id);
+            Question question3 = QuestionFixture.create(festival, 3, question3Id);
 
             given(questionJpaRepository.findById(question1Id))
                     .willReturn(Optional.of(question1));
@@ -261,7 +261,7 @@ class QuestionServiceTest {
             Long questionId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            Question question = QuestionFixture.create(questionId, requestFestival);
+            Question question = QuestionFixture.create(requestFestival, questionId);
 
             given(questionJpaRepository.findById(question.getId()))
                     .willReturn(Optional.of(question));
@@ -284,7 +284,7 @@ class QuestionServiceTest {
             Long festivalId = 1L;
             Long questionId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Question question = QuestionFixture.create(questionId, festival);
+            Question question = QuestionFixture.create(festival, questionId);
 
             given(questionJpaRepository.findById(questionId))
                     .willReturn(Optional.of(question));

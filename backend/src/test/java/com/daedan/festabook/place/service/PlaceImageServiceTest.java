@@ -56,13 +56,13 @@ public class PlaceImageServiceTest {
             Long placeId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(placeId, festival);
+            Place place = PlaceFixture.create(festival, placeId);
 
             int maxSequence = 1;
             int newSequence = maxSequence + 1;
 
             Long savePlaceImageId = 2L;
-            PlaceImage savedPlaceImage = PlaceImageFixture.create(savePlaceImageId, place, newSequence);
+            PlaceImage savedPlaceImage = PlaceImageFixture.create(place, newSequence, savePlaceImageId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
@@ -107,7 +107,7 @@ public class PlaceImageServiceTest {
             Long placeId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(placeId, festival);
+            Place place = PlaceFixture.create(festival, placeId);
 
             int sequence = 10;
             Long imageCount = MAX_IMAGE_COUNT + 1;
@@ -135,7 +135,7 @@ public class PlaceImageServiceTest {
             Long placeId = 1L;
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
-            Place place = PlaceFixture.create(placeId, requestFestival);
+            Place place = PlaceFixture.create(requestFestival, placeId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
@@ -163,9 +163,9 @@ public class PlaceImageServiceTest {
             Long placeImageId2 = 2L;
             Long placeImageId3 = 3L;
 
-            PlaceImage placeImage1 = PlaceImageFixture.create(placeImageId1, place, 1);
-            PlaceImage placeImage2 = PlaceImageFixture.create(placeImageId2, place, 2);
-            PlaceImage placeImage3 = PlaceImageFixture.create(placeImageId3, place, 3);
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, 1, placeImageId1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, 2, placeImageId2);
+            PlaceImage placeImage3 = PlaceImageFixture.create(place, 3, placeImageId3);
 
             List<PlaceImageSequenceUpdateRequest> requests = List.of(
                     PlaceImageSequenceUpdateRequestFixture.create(placeImageId1, 3),
@@ -220,7 +220,7 @@ public class PlaceImageServiceTest {
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
             Place place = PlaceFixture.create(requestFestival);
-            PlaceImage placeImage = PlaceImageFixture.create(placeImageId, place);
+            PlaceImage placeImage = PlaceImageFixture.create(place, placeImageId);
 
             given(placeImageJpaRepository.findById(placeImage.getId()))
                     .willReturn(Optional.of(placeImage));
@@ -244,7 +244,7 @@ public class PlaceImageServiceTest {
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
             Place place = PlaceFixture.create(festival);
-            PlaceImage placeImage = PlaceImageFixture.create(placeImageId, place);
+            PlaceImage placeImage = PlaceImageFixture.create(place, placeImageId);
 
             given(placeImageJpaRepository.findById(placeImageId))
                     .willReturn(Optional.of(placeImage));
@@ -266,7 +266,7 @@ public class PlaceImageServiceTest {
             Festival requestFestival = FestivalFixture.create(requestFestivalId);
             Festival otherFestival = FestivalFixture.create(otherFestivalId);
             Place place = PlaceFixture.create(requestFestival);
-            PlaceImage placeImage = PlaceImageFixture.create(placeImageId, place);
+            PlaceImage placeImage = PlaceImageFixture.create(place, placeImageId);
 
             given(placeImageJpaRepository.findById(placeImageId))
                     .willReturn(Optional.of(placeImage));
