@@ -1,8 +1,11 @@
 package com.daedan.festabook.lostitem.domain;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.global.exception.BusinessException;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -132,6 +135,39 @@ class LostItemTest {
             assertThatThrownBy(() -> LostItemFixture.create(status))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("수령 상태는 null일 수 없습니다.");
+        }
+    }
+
+    @Nested
+    class isFestivalIdEqualTo {
+
+        @Test
+        void 같은_축제의_id이면_true() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            LostItem lostItem = LostItemFixture.create(festival);
+
+            // when
+            boolean result = lostItem.isFestivalIdEqualTo(festivalId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 다른_축제의_id이면_false() {
+            // given
+            Long festivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival festival = FestivalFixture.create(festivalId);
+            LostItem lostItem = LostItemFixture.create(festival);
+
+            // when
+            boolean result = lostItem.isFestivalIdEqualTo(otherFestivalId);
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 }

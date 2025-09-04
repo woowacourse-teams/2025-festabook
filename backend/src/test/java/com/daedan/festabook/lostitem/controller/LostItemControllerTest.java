@@ -75,7 +75,6 @@ class LostItemControllerTest {
             // when & then
             given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -261,26 +260,6 @@ class LostItemControllerTest {
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
             assertThat(lostItemJpaRepository.findById(lostItem.getId())).isEmpty();
-        }
-
-        @Test
-        void 성공_존재하지_않는_분실물_삭제() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long notExistId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .when()
-                    .delete("/lost-items/{lostItemId}", notExistId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }
