@@ -10,9 +10,9 @@ import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
-import com.daedan.festabook.place.domain.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
+import com.daedan.festabook.place.dto.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
@@ -37,6 +37,8 @@ import org.springframework.http.HttpStatus;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceGeographyControllerTest {
+
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
@@ -86,7 +88,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -116,7 +118,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -138,7 +140,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()

@@ -63,6 +63,10 @@ public class PlaceAnnouncement extends BaseEntity {
         this.content = content;
     }
 
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.place.isFestivalIdEqualTo(festivalId);
+    }
+
     private void validateTitle(String title) {
         if (!StringUtils.hasText(title)) {
             throw new BusinessException("플레이스 공지의 제목은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);

@@ -40,23 +40,6 @@ public class PlaceService {
         return PlaceResponse.from(savedPlace);
     }
 
-    @Transactional
-    public PlaceUpdateResponse updatePlace(Long placeId, PlaceUpdateRequest request) {
-        Place place = getPlaceById(placeId);
-
-        place.updatePlace(
-                request.placeCategory(),
-                request.title(),
-                request.description(),
-                request.location(),
-                request.host(),
-                request.startTime(),
-                request.endTime()
-        );
-
-        return PlaceUpdateResponse.from(place);
-    }
-
     @Transactional(readOnly = true)
     public PlaceResponses getAllPlaceByFestivalId(Long festivalId) {
         return PlaceResponses.from(
@@ -72,6 +55,45 @@ public class PlaceService {
         return convertPlaceToResponse(place);
     }
 
+    @Transactional
+    public PlaceUpdateResponse updatePlace(Long festivalId, Long placeId, PlaceUpdateRequest request) {
+        Place place = getPlaceById(placeId);
+        validatePlaceBelongsToFestival(place, festivalId);
+
+        place.updatePlace(
+                request.placeCategory(),
+                request.title(),
+                request.description(),
+                request.location(),
+                request.host(),
+                request.startTime(),
+                request.endTime()
+        );
+
+        return PlaceUpdateResponse.from(place);
+    }
+
+    @Transactional
+    public void deleteByPlaceId(Long festivalId, Long placeId) {
+        Place place = getPlaceById(placeId);
+        validatePlaceBelongsToFestival(place, festivalId);
+
+        placeImageJpaRepository.deleteAllByPlaceId(placeId);
+        placeAnnouncementJpaRepository.deleteAllByPlaceId(placeId);
+        placeFavoriteJpaRepository.deleteAllByPlaceId(placeId);
+        placeJpaRepository.deleteById(placeId);
+    }
+
+    private Place getPlaceById(Long placeId) {
+        return placeJpaRepository.findById(placeId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스입니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private Festival getFestivalById(Long festivalId) {
+        return festivalJpaRepository.findById(festivalId)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
+    }
+
     private PlaceResponse convertPlaceToResponse(Place place) {
         if (place.isMainPlace()) {
             Long placeId = place.getId();
@@ -83,22 +105,9 @@ public class PlaceService {
         return PlaceResponse.from(place, List.of(), List.of());
     }
 
-    @Transactional
-    public void deleteByPlaceId(Long placeId) {
-        placeImageJpaRepository.deleteAllByPlaceId(placeId);
-        placeAnnouncementJpaRepository.deleteAllByPlaceId(placeId);
-        placeFavoriteJpaRepository.deleteAllByPlaceId(placeId);
-        placeJpaRepository.deleteById(placeId);
-    }
-
-    // TODO: ExceptionHandler 등록 후 예외 변경
-    private Place getPlaceById(Long placeId) {
-        return placeJpaRepository.findById(placeId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 플레이스입니다.", HttpStatus.NOT_FOUND));
-    }
-
-    private Festival getFestivalById(Long festivalId) {
-        return festivalJpaRepository.findById(festivalId)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
+    private void validatePlaceBelongsToFestival(Place place, Long festivalId) {
+        if (!place.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 플레이스가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }

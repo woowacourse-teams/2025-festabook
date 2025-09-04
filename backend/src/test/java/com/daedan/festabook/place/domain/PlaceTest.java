@@ -492,4 +492,37 @@ class PlaceTest {
                     .hasMessage("플레이스의 시작 날짜, 종료 날짜는 모두 비어 있거나 모두 입력되어야 합니다.");
         }
     }
+
+    @Nested
+    class isFestivalIdEqualTo {
+
+        @Test
+        void 같은_축제의_id이면_true() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+
+            // when
+            boolean result = place.isFestivalIdEqualTo(festivalId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 다른_축제의_id이면_false() {
+            // given
+            Long festivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+
+            // when
+            boolean result = place.isFestivalIdEqualTo(otherFestivalId);
+
+            // then
+            assertThat(result).isFalse();
+        }
+    }
 }

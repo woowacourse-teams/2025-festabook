@@ -1,6 +1,7 @@
 package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
 import com.daedan.festabook.place.dto.PlaceCoordinateResponse;
 import com.daedan.festabook.place.dto.PlaceGeographyResponses;
@@ -9,9 +10,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,7 +33,7 @@ public class PlaceGeographyController {
 
     @GetMapping("/geographies")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 플레이스 모든 지리 정보 조회")
+    @Operation(summary = "특정 축제의 플레이스 모든 지리 정보 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -48,8 +51,9 @@ public class PlaceGeographyController {
     })
     public PlaceCoordinateResponse updatePlaceCoordinate(
             @PathVariable Long placeId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceCoordinateRequest request
     ) {
-        return placeGeographyService.updatePlaceCoordinate(placeId, request);
+        return placeGeographyService.updatePlaceCoordinate(councilDetails.getFestivalId(), placeId, request);
     }
 }

@@ -16,8 +16,8 @@ import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.global.infrastructure.ShuffleManager;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -78,7 +78,7 @@ class PlaceControllerTest {
 
     @Autowired
     private JwtTestHelper jwtTestHelper;
-  
+
     @MockitoBean
     private ShuffleManager shuffleManager;
 
@@ -110,7 +110,6 @@ class PlaceControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(placeRequest)
@@ -130,52 +129,6 @@ class PlaceControllerTest {
                     .body("location", nullValue())
                     .body("host", nullValue())
                     .body("description", nullValue());
-        }
-    }
-
-    @Nested
-    class updatePlace {
-
-        @Test
-        void 성공() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Place place = PlaceFixture.create(festival);
-            placeJpaRepository.save(place);
-
-            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create(
-                    PlaceCategory.FOOD_TRUCK,
-                    "수정된 제목",
-                    "수정된 설명",
-                    "수정된 위치",
-                    "수정된 호스트",
-                    LocalTime.of(12, 37),
-                    LocalTime.of(13, 11)
-            );
-
-            int expectedFieldSize = 7;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .contentType(ContentType.JSON)
-                    .body(placeUpdateRequest)
-                    .patch("/places/{placeId}", place.getId())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("placeCategory", equalTo(placeUpdateRequest.placeCategory().name()))
-                    .body("title", equalTo(placeUpdateRequest.title()))
-                    .body("description", equalTo(placeUpdateRequest.description()))
-                    .body("location", equalTo(placeUpdateRequest.location()))
-                    .body("host", equalTo(placeUpdateRequest.host()))
-                    .body("startTime", equalTo(placeUpdateRequest.startTime().toString()))
-                    .body("endTime", equalTo(placeUpdateRequest.endTime().toString()));
         }
     }
 
@@ -508,6 +461,52 @@ class PlaceControllerTest {
     }
 
     @Nested
+    class updatePlace {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create(
+                    PlaceCategory.FOOD_TRUCK,
+                    "수정된 제목",
+                    "수정된 설명",
+                    "수정된 위치",
+                    "수정된 호스트",
+                    LocalTime.of(12, 37),
+                    LocalTime.of(13, 11)
+            );
+
+            int expectedFieldSize = 7;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(placeUpdateRequest)
+                    .patch("/places/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("placeCategory", equalTo(placeUpdateRequest.placeCategory().name()))
+                    .body("title", equalTo(placeUpdateRequest.title()))
+                    .body("description", equalTo(placeUpdateRequest.description()))
+                    .body("location", equalTo(placeUpdateRequest.location()))
+                    .body("host", equalTo(placeUpdateRequest.host()))
+                    .body("startTime", equalTo(placeUpdateRequest.startTime().toString()))
+                    .body("endTime", equalTo(placeUpdateRequest.endTime().toString()));
+        }
+    }
+
+    @Nested
     class deleteByPlaceId {
 
         @Test
@@ -541,7 +540,6 @@ class PlaceControllerTest {
             RestAssured
                     .given()
                     .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .delete("/places/{placeId}", place.getId())
                     .then()
@@ -559,27 +557,6 @@ class PlaceControllerTest {
                 s.assertThat(placeFavoriteJpaRepository.findById(placeFavorite1.getId())).isEmpty();
                 s.assertThat(placeFavoriteJpaRepository.findById(placeFavorite2.getId())).isEmpty();
             });
-        }
-
-        @Test
-        void 성공_place가_존재하지_않는_경우_204를_응답() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long invalidPlaceId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .when()
-                    .delete("/places/{placeId}", invalidPlaceId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

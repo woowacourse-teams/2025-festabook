@@ -161,24 +161,5 @@ class PlaceAnnouncementControllerTest {
 
             assertThat(placeAnnouncementJpaRepository.findById(placeAnnouncement.getId())).isEmpty();
         }
-
-        @Test
-        void 성공_존재하지_않는_플레이스_공지() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
-            Long notExistsPlaceAnnouncementId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(authorizationHeader)
-                    .delete("/places/announcements/{placeAnnouncementId}", notExistsPlaceAnnouncementId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-        }
     }
 }

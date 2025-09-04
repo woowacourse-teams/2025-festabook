@@ -6,6 +6,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
@@ -50,7 +52,9 @@ class PlaceAnnouncementServiceTest {
         @Test
         void 성공() {
             // given
-            Place place = PlaceFixture.create();
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
 
             PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
 
@@ -64,7 +68,11 @@ class PlaceAnnouncementServiceTest {
                     .willReturn(placeAnnouncement);
 
             // when
-            PlaceAnnouncementResponse result = placeAnnouncementService.createPlaceAnnouncement(place.getId(), request);
+            PlaceAnnouncementResponse result = placeAnnouncementService.createPlaceAnnouncement(
+                    festival.getId(),
+                    place.getId(),
+                    request
+            );
 
             // then
             assertSoftly(s -> {
@@ -76,19 +84,50 @@ class PlaceAnnouncementServiceTest {
         @Test
         void 예외_공지_최대_개수_초과() {
             // given
-            Place place = PlaceFixture.create();
-
-            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
 
             given(placeJpaRepository.findById(place.getId()))
                     .willReturn(Optional.of(place));
             given(placeAnnouncementJpaRepository.countByPlace(place))
                     .willReturn(PLACE_ANNOUNCEMENT_MAX_COUNT);
 
+            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
+
             // when & then
-            assertThatThrownBy(() -> placeAnnouncementService.createPlaceAnnouncement(place.getId(), request))
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.createPlaceAnnouncement(festival.getId(), place.getId(), request)
+            )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage(String.format("플레이스 공지사항은 %d개까지 작성이 가능합니다.", PLACE_ANNOUNCEMENT_MAX_COUNT));
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Long placeId = 1L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(placeId, requestFestival);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+
+            PlaceAnnouncementRequest request = PlaceAnnouncementRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.createPlaceAnnouncement(
+                            otherFestival.getId(),
+                            place.getId(),
+                            request
+                    )
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
     }
 
@@ -99,7 +138,10 @@ class PlaceAnnouncementServiceTest {
         void 성공() {
             // given
             Long placeAnnouncementId = 1L;
-            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create("제목", "내용");
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(place, "제목", "내용");
 
             given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
                     .willReturn(Optional.of(placeAnnouncement));
@@ -111,7 +153,10 @@ class PlaceAnnouncementServiceTest {
 
             // when
             PlaceAnnouncementUpdateResponse result = placeAnnouncementService.updatePlaceAnnouncement(
-                    placeAnnouncementId, request);
+                    festivalId,
+                    placeAnnouncementId,
+                    request
+            );
 
             // then
             assertSoftly(s -> {
@@ -124,6 +169,7 @@ class PlaceAnnouncementServiceTest {
         void 예외_플레이스_공지사항이_존재하지_않음() {
             // given
             Long placeAnnouncementId = 1L;
+            Long festivalId = 1L;
 
             given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
                     .willReturn(Optional.empty());
@@ -134,9 +180,39 @@ class PlaceAnnouncementServiceTest {
             );
 
             // when & then
-            assertThatThrownBy(() -> placeAnnouncementService.updatePlaceAnnouncement(placeAnnouncementId, request))
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.updatePlaceAnnouncement(festivalId, placeAnnouncementId, request)
+            )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 플레이스 공지입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스_공지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Long placeAnnouncementId = 1L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
+
+            given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
+                    .willReturn(Optional.of(placeAnnouncement));
+
+            PlaceAnnouncementUpdateRequest request = PlaceAnnouncementUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.updatePlaceAnnouncement(
+                            otherFestival.getId(),
+                            placeAnnouncement.getId(),
+                            request
+                    )
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스 공지가 아닙니다.");
         }
     }
 
@@ -147,9 +223,16 @@ class PlaceAnnouncementServiceTest {
         void 성공() {
             // given
             Long placeAnnouncementId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
+
+            given(placeAnnouncementJpaRepository.findById(placeAnnouncementId))
+                    .willReturn(Optional.of(placeAnnouncement));
 
             // when
-            placeAnnouncementService.deleteByPlaceAnnouncementId(placeAnnouncementId);
+            placeAnnouncementService.deleteByPlaceAnnouncementId(festivalId, placeAnnouncementId);
 
             // then
             then(placeAnnouncementJpaRepository).should()
@@ -157,16 +240,28 @@ class PlaceAnnouncementServiceTest {
         }
 
         @Test
-        void 성공_존재하지_않는_플레이스_공지() {
+        void 예외_다른_축제의_플레이스_공지일_경우() {
             // given
-            Long invalidPlaceAnnouncementId = 0L;
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Long placeAnnouncementId = 1L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+            PlaceAnnouncement placeAnnouncement = PlaceAnnouncementFixture.create(placeAnnouncementId, place);
 
-            // when
-            placeAnnouncementService.deleteByPlaceAnnouncementId(invalidPlaceAnnouncementId);
+            given(placeAnnouncementJpaRepository.findById(placeAnnouncement.getId()))
+                    .willReturn(Optional.of(placeAnnouncement));
 
-            // then
-            then(placeAnnouncementJpaRepository).should()
-                    .deleteById(invalidPlaceAnnouncementId);
+            // when & then
+            assertThatThrownBy(() ->
+                    placeAnnouncementService.deleteByPlaceAnnouncementId(
+                            otherFestival.getId(),
+                            placeAnnouncement.getId()
+                    )
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스 공지가 아닙니다.");
         }
     }
 }
