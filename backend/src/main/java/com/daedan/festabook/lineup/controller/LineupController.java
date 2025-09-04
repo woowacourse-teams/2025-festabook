@@ -1,6 +1,7 @@
 package com.daedan.festabook.lineup.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.lineup.dto.LineupRequest;
 import com.daedan.festabook.lineup.dto.LineupResponse;
 import com.daedan.festabook.lineup.dto.LineupResponses;
@@ -10,9 +11,11 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -26,7 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/lineups")
-@Tag(name = "축제 라인업", description = "축제 라인업 관련 API")
+@Tag(name = "라인업", description = "라인업 관련 API")
 public class LineupController {
 
     private final LineupService lineupService;
@@ -38,15 +41,15 @@ public class LineupController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public LineupResponse addLineup(
-            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody LineupRequest request
     ) {
-        return lineupService.addLineup(festivalId, request);
+        return lineupService.addLineup(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 라인업 조회")
+    @Operation(summary = "특정 축제의 라인업 조회", security = @SecurityRequirement(name = "none"))
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -64,9 +67,10 @@ public class LineupController {
     })
     public LineupResponse updateLineup(
             @PathVariable Long lineupId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody LineupUpdateRequest request
     ) {
-        return lineupService.updateLineup(lineupId, request);
+        return lineupService.updateLineup(councilDetails.getFestivalId(), lineupId, request);
     }
 
     @DeleteMapping("/{lineupId}")
@@ -76,8 +80,9 @@ public class LineupController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deleteLineupByLineupId(
-            @PathVariable Long lineupId
+            @PathVariable Long lineupId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        lineupService.deleteLineupByLineupId(lineupId);
+        lineupService.deleteLineupByLineupId(councilDetails.getFestivalId(), lineupId);
     }
 }
