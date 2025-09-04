@@ -47,7 +47,7 @@ public class QuestionService {
     @Transactional
     public QuestionResponse updateQuestionAndAnswer(Long festivalId, Long questionId, QuestionRequest request) {
         Question question = getQuestionById(questionId);
-        validateLineupBelongsToFestival(question, festivalId);
+        validateQuestionBelongsToFestival(question, festivalId);
 
         question.updateQuestionAndAnswer(request.question(), request.answer());
         return QuestionResponse.from(question);
@@ -62,7 +62,7 @@ public class QuestionService {
 
         for (QuestionSequenceUpdateRequest request : requests) {
             Question question = getQuestionById(request.questionId());
-            validateLineupBelongsToFestival(question, festivalId);
+            validateQuestionBelongsToFestival(question, festivalId);
             question.updateSequence(request.sequence());
             questions.add(question);
         }
@@ -74,7 +74,7 @@ public class QuestionService {
 
     public void deleteQuestionByQuestionId(Long festivalId, Long questionId) {
         Question question = getQuestionById(questionId);
-        validateLineupBelongsToFestival(question, festivalId);
+        validateQuestionBelongsToFestival(question, festivalId);
 
         questionJpaRepository.deleteById(questionId);
     }
@@ -89,7 +89,7 @@ public class QuestionService {
                 .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
     }
 
-    private void validateLineupBelongsToFestival(Question question, Long festivalId) {
+    private void validateQuestionBelongsToFestival(Question question, Long festivalId) {
         if (!question.isFestivalIdEqualTo(festivalId)) {
             throw new BusinessException("해당 축제의 질문이 아닙니다.", HttpStatus.FORBIDDEN);
         }
