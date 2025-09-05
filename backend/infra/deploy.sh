@@ -18,7 +18,7 @@ fi
 
 echo "▶️ 새로운 Spring WAS 실행 중..."
 if [ -f "$JAR_NAME" ]; then
-  sudo nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" --spring.profiles.active=prod > /home/ubuntu/app/app.log 2>&1 &
+  sudo nohup java -jar "$JAR_NAME" --spring.profiles.active=prod 2>&1 | sudo tee -a /home/ubuntu/app/app.log > /dev/null &
   echo "📦 실행 파일: $JAR_NAME"
 else
   echo "❌ 오류: $APP_HOME 경로에서 JAR 파일을 찾을 수 없습니다."
