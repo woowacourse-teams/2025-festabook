@@ -5,10 +5,13 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
+import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalImage;
 import com.daedan.festabook.festival.domain.FestivalImageFixture;
+import com.daedan.festabook.festival.dto.FestivalCreateRequest;
+import com.daedan.festabook.festival.dto.FestivalCreateRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalImageRequest;
 import com.daedan.festabook.festival.dto.FestivalImageRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
@@ -74,6 +77,46 @@ class FestivalControllerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    @Nested
+    class createFestival {
+
+        @Test
+        void 성공() {
+            // given
+            FestivalCreateRequest request = FestivalCreateRequestFixture.create(
+                    "서울시립대학교",
+                    "2025 시립 Water Festival\n: AQUA WAVE",
+                    LocalDate.of(2025, 8, 23),
+                    LocalDate.of(2025, 8, 25),
+                    7,
+                    new Coordinate(37.5862037, 127.0565152),
+                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
+            );
+
+            int expectedFieldSize = 8;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/festivals")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("festivalId", notNullValue())
+                    .body("universityName", equalTo(request.universityName()))
+                    .body("festivalName", equalTo(request.festivalName()))
+                    .body("startDate", equalTo(request.startDate().toString()))
+                    .body("endDate", equalTo(request.endDate().toString()))
+                    .body("zoom", equalTo(request.zoom()))
+                    .body("centerCoordinate.latitude", equalTo(request.centerCoordinate().getLatitude()))
+                    .body("centerCoordinate.longitude", equalTo(request.centerCoordinate().getLongitude()))
+                    .body("polygonHoleBoundary", notNullValue());
+        }
     }
 
     @Nested
