@@ -7,7 +7,7 @@ public class LostItemStatusUpdateRequestFixture {
     private static final PickupStatus DEFAULT_STATUS = PickupStatus.PENDING;
 
     public static LostItemStatusUpdateRequest create() {
-        return create(
+        return new LostItemStatusUpdateRequest(
                 DEFAULT_STATUS
         );
     }

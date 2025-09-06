@@ -124,7 +124,7 @@ class LostItemServiceTest {
             Festival festival = FestivalFixture.create(festivalId);
             String previousImageUrl = "https://example.com/previous.jpg";
             String previousStorageLocation = "서울특별시 강남구";
-            LostItem lostItem = LostItemFixture.create(lostItemId, festival, previousImageUrl, previousStorageLocation);
+            LostItem lostItem = LostItemFixture.create(festival, previousImageUrl, previousStorageLocation, lostItemId);
 
             LostItemRequest request = LostItemRequestFixture.create(
                     "https://example.com/change.jpg",
@@ -192,7 +192,7 @@ class LostItemServiceTest {
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
             PickupStatus previousStatus = PickupStatus.PENDING;
-            LostItem lostItem = LostItemFixture.create(lostItemId, festival, previousStatus);
+            LostItem lostItem = LostItemFixture.create(festival, previousStatus, lostItemId);
 
             PickupStatus updateStatus = PickupStatus.COMPLETED;
             LostItemStatusUpdateRequest request = LostItemStatusUpdateRequestFixture.create(updateStatus);
@@ -258,7 +258,7 @@ class LostItemServiceTest {
             Long lostItemId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            LostItem lostItem = LostItemFixture.create(lostItemId, festival);
+            LostItem lostItem = LostItemFixture.create(festival, lostItemId);
 
             given(lostItemJpaRepository.findById(lostItemId))
                     .willReturn(Optional.of(lostItem));

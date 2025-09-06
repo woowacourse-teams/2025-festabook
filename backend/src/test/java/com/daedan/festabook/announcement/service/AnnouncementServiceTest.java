@@ -338,7 +338,7 @@ class AnnouncementServiceTest {
             Long festivalId = 1L;
             Long announcementId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Announcement announcement = AnnouncementFixture.create(announcementId, false, festival);
+            Announcement announcement = AnnouncementFixture.create(false, festival, announcementId);
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
@@ -385,7 +385,7 @@ class AnnouncementServiceTest {
             Long festivalId = 1L;
             Long announcementId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Announcement announcement = AnnouncementFixture.create(announcementId, false, festival);
+            Announcement announcement = AnnouncementFixture.create(false, festival, announcementId);
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
@@ -413,7 +413,7 @@ class AnnouncementServiceTest {
             Long festivalId = 1L;
             Long announcementId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Announcement announcement = AnnouncementFixture.create(announcementId, true, festival);
+            Announcement announcement = AnnouncementFixture.create(true, festival, announcementId);
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(true);
 
             given(announcementJpaRepository.findById(announcementId))
@@ -459,7 +459,7 @@ class AnnouncementServiceTest {
             Long announcementId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Announcement announcement = AnnouncementFixture.create(announcementId, festival);
+            Announcement announcement = AnnouncementFixture.create(festival, announcementId);
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));

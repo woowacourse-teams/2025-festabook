@@ -59,7 +59,7 @@ class LineupServiceTest {
             String name = "이미소";
             String imageUrl = "https://example.com/image.png";
             LocalDateTime performanceAt = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
-            Lineup lineup = LineupFixture.create(lineupId, festival, name, imageUrl, performanceAt);
+            Lineup lineup = LineupFixture.create(festival, name, imageUrl, performanceAt, lineupId);
 
             given(festivalJpaRepository.findById(festivalId))
                     .willReturn(Optional.of(festival));
@@ -132,7 +132,7 @@ class LineupServiceTest {
             Long lineupId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Lineup lineup = LineupFixture.create(lineupId, festival);
+            Lineup lineup = LineupFixture.create(festival, lineupId);
             LineupUpdateRequest request = LineupUpdateRequestFixture.create("후유", "https://example.com/image.png",
                     LocalDateTime.of(2025, 10, 15, 12, 0, 0));
 
@@ -197,7 +197,7 @@ class LineupServiceTest {
             Long lineupId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Lineup lineup = LineupFixture.create(lineupId, festival);
+            Lineup lineup = LineupFixture.create(festival, lineupId);
 
             given(lineupJpaRepository.findById(lineupId))
                     .willReturn(Optional.of(lineup));

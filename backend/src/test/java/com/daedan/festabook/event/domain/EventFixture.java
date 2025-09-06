@@ -14,40 +14,6 @@ public class EventFixture {
     private static final String DEFAULT_LOCATION = "location";
 
     public static Event create(
-            Long eventId,
-            EventDate eventDate,
-            LocalTime startTime,
-            LocalTime endTime,
-            String title,
-            String location
-    ) {
-        Event event = new Event(
-                eventDate,
-                startTime,
-                endTime,
-                title,
-                location
-        );
-        BaseEntityTestHelper.setId(event, eventId);
-        return event;
-    }
-
-    public static Event create(
-            Long eventId,
-            EventDate eventDate
-    ) {
-        Event event = new Event(
-                eventDate,
-                DEFAULT_START_TIME,
-                DEFAULT_END_TIME,
-                DEFAULT_TITLE,
-                DEFAULT_LOCATION
-        );
-        BaseEntityTestHelper.setId(event, eventId);
-        return event;
-    }
-
-    public static Event create(
             EventDate eventDate
     ) {
         return new Event(
@@ -57,6 +23,21 @@ public class EventFixture {
                 DEFAULT_TITLE,
                 DEFAULT_LOCATION
         );
+    }
+
+    public static Event create(
+            EventDate eventDate,
+            Long eventId
+    ) {
+        Event event = new Event(
+                eventDate,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                DEFAULT_LOCATION
+        );
+        BaseEntityTestHelper.setId(event, eventId);
+        return event;
     }
 
     public static Event create(
@@ -87,6 +68,25 @@ public class EventFixture {
                 title,
                 location
         );
+    }
+
+    public static Event create(
+            EventDate eventDate,
+            LocalTime startTime,
+            LocalTime endTime,
+            String title,
+            String location,
+            Long eventId
+    ) {
+        Event event = new Event(
+                eventDate,
+                startTime,
+                endTime,
+                title,
+                location
+        );
+        BaseEntityTestHelper.setId(event, eventId);
+        return event;
     }
 
     public static List<Event> createList(int size, EventDate eventDate) {

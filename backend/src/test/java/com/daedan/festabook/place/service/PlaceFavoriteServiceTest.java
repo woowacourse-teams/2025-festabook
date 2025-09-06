@@ -57,7 +57,7 @@ class PlaceFavoriteServiceTest {
             Long deviceId = 10L;
             Device device = DeviceFixture.create(deviceId);
             Long placeFavoriteId = 100L;
-            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(place, device, placeFavoriteId);
             PlaceFavoriteRequest request = new PlaceFavoriteRequest(deviceId);
 
             given(placeJpaRepository.findById(placeId))
@@ -140,7 +140,7 @@ class PlaceFavoriteServiceTest {
 
             Device device = DeviceFixture.create(deviceId);
             Place place = PlaceFixture.create(placeId);
-            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(place, device, placeFavoriteId);
 
             given(placeFavoriteJpaRepository.findById(placeFavoriteId))
                     .willReturn(Optional.of(placeFavorite));
@@ -177,7 +177,7 @@ class PlaceFavoriteServiceTest {
 
             Device device = DeviceFixture.create(invalidDeviceId);
             Place place = PlaceFixture.create(placeId);
-            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(place, device, placeFavoriteId);
 
             given(placeFavoriteJpaRepository.findById(placeFavoriteId))
                     .willReturn(Optional.of(placeFavorite));

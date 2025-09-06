@@ -1,8 +1,8 @@
 package com.daedan.festabook.council.service;
 
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentCaptor.forClass;
 import static org.mockito.ArgumentMatchers.any;
@@ -66,7 +66,7 @@ class CouncilServiceTest {
             String rawPassword = "1234";
             String encodedPassword = "{encoded}1234";
             Long councilId = 10L;
-            Council council = CouncilFixture.create(councilId, festival, username, encodedPassword);
+            Council council = CouncilFixture.create(festival, username, encodedPassword, councilId);
 
             given(councilJpaRepository.existsByUsername(username))
                     .willReturn(false);

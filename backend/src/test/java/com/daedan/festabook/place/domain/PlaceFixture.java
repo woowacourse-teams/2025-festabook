@@ -9,7 +9,6 @@ import java.time.LocalTime;
 
 public class PlaceFixture {
 
-    private static final Long DEFAULT_ID = 1L;
     private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final PlaceCategory DEFAULT_CATEGORY = PlaceCategory.BAR;
     private static final Coordinate DEFAULT_COORDINATE = CoordinateFixture.create();
@@ -71,7 +70,7 @@ public class PlaceFixture {
     public static Place create(
             PlaceCategory placeCategory
     ) {
-        Place place = new Place(
+        return new Place(
                 DEFAULT_FESTIVAL,
                 placeCategory,
                 DEFAULT_COORDINATE,
@@ -82,13 +81,11 @@ public class PlaceFixture {
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME
         );
-        BaseEntityTestHelper.setId(place, DEFAULT_ID);
-        return place;
     }
 
     public static Place create(
-            Long placeId,
-            Festival festival
+            Festival festival,
+            Long placeId
     ) {
         Place place = new Place(
                 festival,
@@ -103,6 +100,24 @@ public class PlaceFixture {
         );
         BaseEntityTestHelper.setId(place, placeId);
         return place;
+    }
+
+    public static Place create(
+            Festival festival,
+            PlaceCategory category,
+            Coordinate coordinate
+    ) {
+        return new Place(
+                festival,
+                category,
+                coordinate,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME
+        );
     }
 
     public static Place create(
@@ -126,27 +141,9 @@ public class PlaceFixture {
 
     public static Place create(
             Festival festival,
-            PlaceCategory category,
-            Coordinate coordinate
-    ) {
-        return new Place(
-                festival,
-                category,
-                coordinate,
-                DEFAULT_TITLE,
-                DEFAULT_DESCRIPTION,
-                DEFAULT_LOCATION,
-                DEFAULT_HOST,
-                DEFAULT_START_TIME,
-                DEFAULT_END_TIME
-        );
-    }
-
-    public static Place create(
-            Long placeId,
-            Festival festival,
             Double latitude,
-            Double longitude
+            Double longitude,
+            Long placeId
     ) {
         Place place = new Place(
                 festival,
@@ -174,7 +171,7 @@ public class PlaceFixture {
             LocalTime startTime,
             LocalTime endTime
     ) {
-        Place place = new Place(
+        return new Place(
                 festival,
                 placeCategory,
                 coordinate,
@@ -185,14 +182,12 @@ public class PlaceFixture {
                 startTime,
                 endTime
         );
-        BaseEntityTestHelper.setId(place, 1L);
-        return place;
     }
 
     public static Place createWithTitle(
             String title
     ) {
-        Place place = new Place(
+        return new Place(
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -203,12 +198,12 @@ public class PlaceFixture {
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME
         );
-        BaseEntityTestHelper.setId(place, DEFAULT_ID);
-        return place;
     }
 
-    public static Place createWithDescription(String description) {
-        Place place = new Place(
+    public static Place createWithDescription(
+            String description
+    ) {
+        return new Place(
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -219,12 +214,12 @@ public class PlaceFixture {
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME
         );
-        BaseEntityTestHelper.setId(place, DEFAULT_ID);
-        return place;
     }
 
-    public static Place createWithLocation(String location) {
-        Place place = new Place(
+    public static Place createWithLocation(
+            String location
+    ) {
+        return new Place(
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -235,12 +230,12 @@ public class PlaceFixture {
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME
         );
-        BaseEntityTestHelper.setId(place, DEFAULT_ID);
-        return place;
     }
 
-    public static Place createWithHost(String host) {
-        Place place = new Place(
+    public static Place createWithHost(
+            String host
+    ) {
+        return new Place(
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -251,12 +246,13 @@ public class PlaceFixture {
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME
         );
-        BaseEntityTestHelper.setId(place, DEFAULT_ID);
-        return place;
     }
 
-    public static Place createWithTime(LocalTime startTime, LocalTime endTime) {
-        Place place = new Place(
+    public static Place createWithTime(
+            LocalTime startTime,
+            LocalTime endTime
+    ) {
+        return new Place(
                 DEFAULT_FESTIVAL,
                 DEFAULT_CATEGORY,
                 DEFAULT_COORDINATE,
@@ -267,15 +263,13 @@ public class PlaceFixture {
                 startTime,
                 endTime
         );
-        BaseEntityTestHelper.setId(place, DEFAULT_ID);
-        return place;
     }
 
     public static Place createWithNullDefaults(
-            Long placeId,
             Festival festival,
             PlaceCategory placeCategory,
-            String title
+            String title,
+            Long placeId
     ) {
         Place place = new Place(
                 festival,

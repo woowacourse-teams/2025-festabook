@@ -30,13 +30,29 @@ public class CouncilFixture {
 
     public static Council create(
             Festival festival,
-            String username
+            String username,
+            String password
     ) {
         return new Council(
                 festival,
                 username,
-                DEFAULT_PASSWORD
+                password
         );
+    }
+
+    public static Council create(
+            Festival festival,
+            String username,
+            String password,
+            Long councilId
+    ) {
+        Council council = new Council(
+                festival,
+                username,
+                password
+        );
+        BaseEntityTestHelper.setId(council, councilId);
+        return council;
     }
 
     public static Council createWithUsername(
@@ -57,32 +73,5 @@ public class CouncilFixture {
                 DEFAULT_USERNAME,
                 password
         );
-    }
-
-    public static Council create(
-            Festival festival,
-            String username,
-            String password
-    ) {
-        return new Council(
-                festival,
-                username,
-                password
-        );
-    }
-
-    public static Council create(
-            Long councilId,
-            Festival festival,
-            String username,
-            String password
-    ) {
-        Council council = new Council(
-                festival,
-                username,
-                password
-        );
-        BaseEntityTestHelper.setId(council, councilId);
-        return council;
     }
 }

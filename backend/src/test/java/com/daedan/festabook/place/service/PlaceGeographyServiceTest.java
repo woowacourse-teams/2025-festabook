@@ -1,7 +1,7 @@
 package com.daedan.festabook.place.service;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
@@ -102,7 +102,7 @@ class PlaceGeographyServiceTest {
             // given
             Long placeId = 1L;
             Festival festival = FestivalFixture.create(1L);
-            Place place = PlaceFixture.create(placeId, festival, 37.0, 127.0);
+            Place place = PlaceFixture.create(festival, 37.0, 127.0, placeId);
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
             given(placeJpaRepository.findById(placeId))

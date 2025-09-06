@@ -8,13 +8,19 @@ public class PlaceRequestFixture {
     private static final String DEFAULT_TITLE = "후문 주차장";
 
     public static PlaceRequest create() {
-        return new PlaceRequest(DEFAULT_PLACE_CATEGORY, DEFAULT_TITLE);
+        return new PlaceRequest(
+                DEFAULT_PLACE_CATEGORY,
+                DEFAULT_TITLE
+        );
     }
 
     public static PlaceRequest create(
             PlaceCategory placeCategory,
             String title
     ) {
-        return new PlaceRequest(placeCategory, title);
+        return new PlaceRequest(
+                placeCategory,
+                title
+        );
     }
 }
