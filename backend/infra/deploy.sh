@@ -19,7 +19,7 @@ fi
 
 echo "▶️ 새로운 Spring WAS 실행 중..."
 if [ -f "$JAR_NAME" ]; then
-  sudo nohup java -jar "$JAR_NAME" -Duser.timezone=Asia/Seoul --spring.profiles.active=prod > $LOG_FILE 2>&1 &
+  sudo nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" --spring.profiles.active=prod > $LOG_FILE 2>&1 &
   echo "📦 실행 파일: $JAR_NAME"
 else
   echo "❌ 오류: $APP_HOME 경로에서 JAR 파일을 찾을 수 없습니다."
@@ -27,13 +27,13 @@ else
 fi
 
 echo "🩺 애플리케이션 상태 확인 중..."
-for i in {1..30}; do
+for i in {1..90}; do
   if curl -s http://localhost/api/actuator/health | grep '"status":"UP"' > /dev/null; then
     echo "✅ 애플리케이션이 정상적으로 실행되었습니다!"
     exit 0
   fi
-  echo "⏳ 애플리케이션 실행 대기 중... ($i/30)"
-  sleep 2
+  echo "⏳ 애플리케이션 실행 대기 중... ($i/90)"
+  sleep 1
 done
 
 echo "🚨 오류: 애플리케이션이 시작되지 않았습니다."
