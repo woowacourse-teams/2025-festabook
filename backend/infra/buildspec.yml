@@ -39,8 +39,3 @@ artifacts:
   files:
     - backend/infra/output/**/*
     - appspec.yml
-
-cache:
-  paths:
-    - '/root/.gradle/caches'
-    - '/root/.gradle/wrapper'
