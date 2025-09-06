@@ -5,10 +5,10 @@ phases:
     runtime-versions:
       java: corretto21
     commands:
-      - echo "📦 [Install Phase] 의존성 설치 시작"
+      - echo "⚙️ [Setup Phase] 빌드 환경 준비 시작"
       - cd backend
       - chmod +x ./gradlew
-      - echo "✅ [Install Phase] 완료"
+      - echo "✅ [Setup Phase] 완료"
 
   pre_build:
     commands:
@@ -42,5 +42,5 @@ artifacts:
 
 cache:
   paths:
-    - '/root/.gradle/caches/**/*'
-    - '/root/.gradle/wrapper/**/*'
+    - '/root/.gradle/caches'
+    - '/root/.gradle/wrapper'
