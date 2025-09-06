@@ -1,6 +1,6 @@
 <configuration>
 
-    <!-- PROD 전용: JSON 형식으로 로그 파일 기록 -->
+    <!-- DEV, PROD: JSON 형식으로 로그 파일 기록 -->
     <springProfile name="prod | dev">
         <property name="LOG_FILE_PATH" value="/home/ubuntu/2025-festabook/spring-logs"/>
 
