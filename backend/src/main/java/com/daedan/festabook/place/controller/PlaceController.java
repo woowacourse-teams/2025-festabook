@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -53,7 +52,7 @@ public class PlaceController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제에 대한 플레이스 전체 조회", security = @SecurityRequirement(name = "none"))
+    @Operation(summary = "특정 축제에 대한 플레이스 전체 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -65,7 +64,7 @@ public class PlaceController {
 
     @GetMapping("/previews")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제의 랜덤 정렬된 모든 플레이스 프리뷰 조회", security = @SecurityRequirement(name = "none"))
+    @Operation(summary = "특정 축제의 랜덤 정렬된 모든 플레이스 프리뷰 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
@@ -77,7 +76,7 @@ public class PlaceController {
 
     @GetMapping("/{placeId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 플레이스의 세부 정보와 함께 조회", security = @SecurityRequirement(name = "none"))
+    @Operation(summary = "특정 플레이스의 세부 정보와 함께 조회")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
