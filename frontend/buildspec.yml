@@ -13,14 +13,12 @@ phases:
   pre_build:
     commands:
       - echo "⚙️ [Pre Build Phase] 환경 변수 생성"
-      - cd frontend
       - echo "VITE_API_HOST=https://festabook.app/api" > ./frontend/.env.production
       - echo "✅ [Pre Build Phase] 완료"
 
   build:
     commands:
       - echo "🚀 [Build Phase] Vite 빌드 시작"
-      - cd frontend
       - npx vite build
       - echo "✅ [Build Phase] 빌드 성공"
 
