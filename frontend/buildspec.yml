@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+    commands:
+      - echo "📦 [Install Phase] 의존성 설치 시작"
+      - cd frontend
+      - npm ci
+      - echo "✅ [Install Phase] 완료"
+
+  pre_build:
+    commands:
+      - echo "⚙️ [Pre Build Phase] 환경 변수 생성"
+      - cd frontend
+      - echo "VITE_API_HOST=https://festabook.app/api" > ./frontend/.env.production
+      - echo "✅ [Pre Build Phase] 완료"
+
+  build:
+    commands:
+      - echo "🚀 [Build Phase] Vite 빌드 시작"
+      - cd frontend
+      - npx vite build
+      - echo "✅ [Build Phase] 빌드 성공"
+
+artifacts:
+  files:
+    - frontend/dist/**
+
+cache:
+  paths:
+    - frontend/node_modules/**/*
