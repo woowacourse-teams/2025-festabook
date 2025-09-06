@@ -23,9 +23,9 @@ phases:
       - echo "✅ [Build Phase] 빌드 성공"
 
 artifacts:
-  base-directory: frontend/dist
+  base-directory: frontend
   files:
-    - '**/*'
+    - 'dist/**/*'
 
 cache:
   paths:
