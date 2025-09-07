@@ -101,4 +101,19 @@ public class FestivalFixture {
         BaseEntityTestHelper.setId(festival, festivalId);
         return festival;
     }
+
+    public static Festival create(
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return new Festival(
+                DEFAULT_UNIVERSITY_NAME,
+                DEFAULT_FESTIVAL_NAME,
+                startDate,
+                endDate,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY
+        );
+    }
 }
