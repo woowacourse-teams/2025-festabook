@@ -1,11 +1,11 @@
 package com.daedan.festabook.global.exception;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class ConflictExceptionTest {
@@ -20,8 +20,10 @@ class ConflictExceptionTest {
         ConflictException conflictException = new ConflictException(clazz);
 
         // then
-        assertAll(() -> assertEquals(expectedMessage, conflictException.getMessage()),
-                () -> assertEquals(clazz, conflictException.getClazz()),
-                () -> assertEquals(409, conflictException.getStatus().value()));
+        assertSoftly(s -> {
+            s.assertThat(conflictException.getClazz()).isEqualTo(clazz);
+            s.assertThat(conflictException.getMessage()).isEqualTo(expectedMessage);
+            s.assertThat(conflictException.getStatus()).isEqualTo(HttpStatus.CONFLICT);
+        });
     }
 }

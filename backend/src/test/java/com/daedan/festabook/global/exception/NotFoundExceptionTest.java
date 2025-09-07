@@ -1,11 +1,11 @@
 package com.daedan.festabook.global.exception;
 
-import static org.junit.jupiter.api.Assertions.assertAll;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class NotFoundExceptionTest {
@@ -20,10 +20,10 @@ class NotFoundExceptionTest {
         NotFoundException notFoundException = new NotFoundException(clazz);
 
         // then
-        assertAll(
-                () -> assertEquals(expectedMessage, notFoundException.getMessage()),
-                () -> assertEquals(clazz, notFoundException.getClazz()),
-                () -> assertEquals(404, notFoundException.getStatus().value())
-        );
+        assertSoftly(s -> {
+            s.assertThat(notFoundException.getClazz()).isEqualTo(clazz);
+            s.assertThat(notFoundException.getMessage()).isEqualTo(expectedMessage);
+            s.assertThat(notFoundException.getStatus()).isEqualTo(HttpStatus.NOT_FOUND);
+        });
     }
 }
