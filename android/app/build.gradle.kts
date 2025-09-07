@@ -20,11 +20,6 @@ android {
             .inputStream()
             .use { Properties().apply { load(it) } }
 
-    val baseUrl =
-        checkNotNull(localProperties["BASE_URL"] as? String) {
-            "BASE_URL is missing or not a String in local.properties"
-        }
-
     val naverMapClientId =
         checkNotNull(localProperties["NAVER_MAP_CLIENT_ID"] as? String) {
             "NAVER_MAP_CLIENT_ID is missing or not a String in local.properties"
@@ -34,6 +29,38 @@ android {
         checkNotNull(localProperties["NAVER_MAP_STYLE_ID"] as? String) {
             "NAVER_MAP_STYLE_ID is missing or not a String in local.properties"
         }
+
+    val jksFilePath =
+        checkNotNull(localProperties["JKS_FILE_PATH"] as? String) {
+            "JKS_FILE_PATH가 local.properties에 존재하지 않습니다."
+        }
+    val storePasswordValue =
+        checkNotNull(localProperties["STORE_PASSWORD"] as? String) {
+            "STORE_PASSWORD가 local.properties에 존재하지 않습니다."
+        }
+    val keyPasswordValue =
+        checkNotNull(localProperties["KEY_PASSWORD"] as? String) {
+            "KEY_PASSWORD가 local.properties에 존재하지 않습니다."
+        }
+    val keyAliasValue =
+        checkNotNull(localProperties["KEY_ALIAS"] as? String) {
+            "KEY_ALIAS가 local.properties에 존재하지 않습니다."
+        }
+
+    signingConfigs {
+        if (jksFilePath.isNotBlank() &&
+            storePasswordValue.isNotBlank() &&
+            keyPasswordValue.isNotBlank() &&
+            keyAliasValue.isNotBlank()
+        ) {
+            create("release") {
+                storeFile = file(jksFilePath)
+                storePassword = storePasswordValue
+                keyPassword = keyPasswordValue
+                keyAlias = keyAliasValue
+            }
+        }
+    }
 
     defaultConfig {
         applicationId = "com.daedan.festabook"
@@ -46,12 +73,6 @@ android {
 
         buildConfigField(
             "String",
-            "FESTABOOK_URL",
-            baseUrl,
-        )
-
-        buildConfigField(
-            "String",
             "NAVER_MAP_CLIENT_ID",
             naverMapClientId,
         )
@@ -61,6 +82,12 @@ android {
             "NAVER_MAP_STYLE_ID",
             naverMapStyleId,
         )
+
+        buildConfigField(
+            "String",
+            "VERSION_NAME",
+            "\"${versionName}\"",
+        )
     }
 
     buildTypes {
@@ -68,15 +95,39 @@ android {
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
             resValue("string", "app_name", "(Debug)Festabook")
+
+            val baseUrl =
+                checkNotNull(localProperties["BASE_URL_DEV"] as? String) {
+                    "BASE_URL is missing or not a String in local.properties"
+                }
+
+            buildConfigField(
+                "String",
+                "FESTABOOK_URL",
+                baseUrl,
+            )
         }
 
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
             resValue("string", "app_name", "Festabook")
+            signingConfig = signingConfigs["release"]
+
+            val baseUrl =
+                checkNotNull(localProperties["BASE_URL"] as? String) {
+                    "BASE_URL is missing or not a String in local.properties"
+                }
+
+            buildConfigField(
+                "String",
+                "FESTABOOK_URL",
+                baseUrl,
+            )
         }
     }
     compileOptions {
@@ -115,7 +166,9 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.timber)
     implementation(libs.lottie)
+    implementation(libs.circleindicator)
     implementation(libs.firebase.crashlytics.ndk)
+    implementation(libs.androidx.core.splashscreen)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)

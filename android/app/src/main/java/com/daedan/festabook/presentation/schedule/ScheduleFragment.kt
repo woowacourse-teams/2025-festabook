@@ -73,35 +73,29 @@ class ScheduleFragment :
 
             when (scheduleDatesUiState) {
                 is ScheduleDatesUiState.Loading -> {
-                    showSkeleton(isLoading = true)
+                    showLoadingView(isLoading = true)
                 }
 
                 is ScheduleDatesUiState.Success -> {
-                    showSkeleton(isLoading = false)
+                    showLoadingView(isLoading = false)
                     setupScheduleTabLayout(scheduleDatesUiState.initialDatePosition)
                     adapter.submitList(scheduleDatesUiState.dates)
                 }
 
                 is ScheduleDatesUiState.Error -> {
-                    showSkeleton(isLoading = false)
-                    Timber.w(scheduleDatesUiState.throwable, "ScheduleFragment: ${scheduleDatesUiState.throwable.message}")
+                    showLoadingView(isLoading = false)
+                    Timber.w(
+                        scheduleDatesUiState.throwable,
+                        "ScheduleFragment: ${scheduleDatesUiState.throwable.message}",
+                    )
                     showErrorSnackBar(scheduleDatesUiState.throwable)
                 }
             }
         }
     }
 
-    private fun showSkeleton(isLoading: Boolean) {
-        if (isLoading) {
-            binding.sflScheduleTabSkeleton.visibility = View.VISIBLE
-            binding.sflScheduleSkeleton.visibility = View.VISIBLE
-        } else {
-            binding.sflScheduleTabSkeleton.visibility = View.GONE
-            binding.sflScheduleSkeleton.visibility = View.GONE
-
-            binding.sflScheduleTabSkeleton.stopShimmer()
-            binding.sflScheduleSkeleton.stopShimmer()
-        }
+    private fun showLoadingView(isLoading: Boolean) {
+        binding.lavScheduleLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
     }
 
     companion object {

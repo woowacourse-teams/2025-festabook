@@ -1,20 +1,22 @@
 package com.daedan.festabook.presentation.placeList
 
+import android.content.Context
 import android.os.Bundle
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
-import androidx.core.view.children
-import androidx.core.widget.NestedScrollView
+import androidx.core.content.ContextCompat
+import androidx.core.view.isGone
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
-import coil3.load
-import coil3.request.placeholder
+import coil3.ImageLoader
+import coil3.asImage
+import coil3.request.ImageRequest
+import coil3.request.ImageResult
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
-import com.daedan.festabook.presentation.common.initialPadding
 import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
@@ -22,18 +24,18 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
 import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
-import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
-import com.daedan.festabook.presentation.placeList.placeMap.MapClickListener
-import com.daedan.festabook.presentation.placeList.placeMap.MapManager
-import com.daedan.festabook.presentation.placeList.placeMap.getMap
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import com.google.android.material.chip.Chip
-import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
-import com.naver.maps.map.util.FusedLocationSource
+import com.naver.maps.map.OnMapReadyCallback
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class PlaceListFragment :
@@ -41,48 +43,28 @@ class PlaceListFragment :
         R.layout.fragment_place_list,
     ),
     PlaceClickListener,
-    OnMenuItemReClickListener {
-    private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
+    OnMenuItemReClickListener,
+    OnMapReadyCallback {
+    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val childViewModel by viewModels<PlaceListChildViewModel> { PlaceListChildViewModel.Factory }
 
     private val placeAdapter by lazy {
         PlaceListAdapter(this)
     }
 
-    private val locationSource by lazy {
-        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
-    }
-
-    private lateinit var selectedPlaceBottomSheetBehavior: BottomSheetBehavior<NestedScrollView>
-    private lateinit var mapManager: MapManager
-
-    private lateinit var naverMap: NaverMap
+    private lateinit var moveToInitialPositionCallback: MoveToInitialPositionCallback
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        selectedPlaceBottomSheetBehavior = BottomSheetBehavior.from(binding.nsSelectedPlace)
-
-        val bottomSheetCallback = PlaceListBottomSheetCallback(viewModel)
-        selectedPlaceBottomSheetBehavior.addBottomSheetCallback(bottomSheetCallback)
-
         lifecycleScope.launch {
             setUpPlaceAdapter()
-            setUpMapManager()
+            setBehaviorCallback()
             setUpObserver()
             setUpBinding()
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_COLLAPSED
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        mapManager.clearMapManager()
     }
 
     override fun onPlaceClicked(place: PlaceUiModel) {
@@ -91,52 +73,14 @@ class PlaceListFragment :
     }
 
     override fun onMenuItemReClick() {
+        if (binding.root.isGone || !isResumed || view == null) return
         val layoutParams = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
         val behavior = layoutParams?.behavior as? BottomSheetBehavior
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
     }
 
-    private fun setUpBinding() {
-        binding.cgCategories.setOnCheckedStateChangeListener { group, checkedIds ->
-            val selectedCategories =
-                checkedIds.mapNotNull {
-                    val category = group.findViewById<Chip>(it).tag
-                    category as? PlaceCategoryUiModel
-                }
-
-            mapManager.unselectMarker()
-            viewModel.unselectPlace()
-
-            binding.chipCategoryAll.isChecked = selectedCategories.isEmpty()
-
-            if (selectedCategories.isEmpty()) {
-                viewModel.clearPlacesFilter()
-                mapManager.clearFilter()
-            } else {
-                viewModel.filterPlaces(selectedCategories)
-                mapManager.filterPlace(selectedCategories)
-            }
-        }
-        binding.chipBackToInitialPosition.setOnClickListener {
-            mapManager.moveToInitialPosition()
-        }
-        setUpChipCategoryAllListener()
-    }
-
-    private fun setUpChipCategoryAllListener() {
-        binding.chipCategoryAll.setOnClickListener {
-            binding.cgCategories.children.forEach {
-                val chip = (it as? Chip) ?: return@forEach
-                chip.isChecked = chip.id == binding.chipCategoryAll.id
-            }
-        }
-    }
-
-    private suspend fun setUpMapManager() {
-        val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
-        naverMap = mapFragment.getMap()
+    override fun onMapReady(naverMap: NaverMap) {
         binding.lbvCurrentLocation.map = naverMap
-        naverMap.locationSource = locationSource
     }
 
     private fun setUpPlaceAdapter() {
@@ -145,15 +89,21 @@ class PlaceListFragment :
     }
 
     private fun setUpObserver() {
-        viewModel.places.observe(viewLifecycleOwner) { places ->
+        childViewModel.places.observe(viewLifecycleOwner) { places ->
             when (places) {
                 is PlaceListUiState.Loading -> showSkeleton()
                 is PlaceListUiState.Success -> {
-                    hideSkeleton()
+                    preloadImages(
+                        requireContext(),
+                        places.value,
+                    )
                     placeAdapter.submitList(places.value) {
-                        binding.rvPlaces.itemAnimator = null
                         binding.rvPlaces.scrollToPosition(0)
                     }
+                }
+
+                is PlaceListUiState.Complete -> {
+                    hideSkeleton()
                 }
 
                 is PlaceListUiState.Error -> {
@@ -165,76 +115,36 @@ class PlaceListFragment :
             }
         }
 
-        viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
-            when (placeGeographies) {
-                is PlaceListUiState.Loading -> Unit
-                is PlaceListUiState.Success -> {
-                    hideSkeleton()
-                    mapManager.setPlaceLocation(placeGeographies.value)
-                }
-
-                is PlaceListUiState.Error -> {
-                    Timber.w(placeGeographies.throwable, "PlaceListFragment: ${placeGeographies.throwable.message}")
-                    showErrorSnackBar(placeGeographies.throwable)
-                }
-            }
-        }
-
-        viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
-            if (initialMapSetting !is PlaceListUiState.Success) return@observe
-            if (!::mapManager.isInitialized) {
-                mapManager =
-                    MapManager(
-                        naverMap,
-                        binding.initialPadding(),
-                        object : MapClickListener {
-                            override fun onMarkerListener(
-                                placeId: Long,
-                                category: PlaceCategoryUiModel,
-                            ): Boolean {
-                                Timber.d("Marker CLick : placeID: $placeId categoty: $category")
-                                if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
-                                    return true
-                                }
-                                viewModel.selectPlace(placeId, category)
-                                binding.layoutPlaceList.visibility = View.GONE
-                                return true
-                            }
-
-                            override fun onMapClickListener() {
-                                Timber.d("Map CLick")
-                                viewModel.unselectPlace()
-                                binding.layoutPlaceList.visibility = View.VISIBLE
-                            }
-                        },
-                        initialMapSetting.value,
-                    )
-            }
-            mapManager.setupMap()
-            mapManager.setupBackToInitialPosition { isExceededMaxLength ->
-                if (isExceededMaxLength) {
-                    binding.chipBackToInitialPosition.visibility = View.VISIBLE
-                } else {
-                    binding.chipBackToInitialPosition.visibility = View.GONE
-                }
-            }
-            setBehaviorCallback()
-        }
-
-        viewModel.selectedPlace.observe(viewLifecycleOwner) { selectedPlace ->
-            if (selectedPlace == null) {
-                binding.nsSelectedPlace.visibility = View.GONE
-            } else {
-                binding.nsSelectedPlace.visibility = View.VISIBLE
-                updateSelectedPlaceUi(selectedPlace)
-            }
-        }
         viewModel.navigateToDetail.observe(viewLifecycleOwner) { selectedPlace ->
             startPlaceDetailActivity(selectedPlace)
         }
+
+        viewModel.selectedCategories.observe(viewLifecycleOwner) { selectedCategories ->
+            if (selectedCategories.isEmpty()) {
+                childViewModel.clearPlacesFilter()
+            } else {
+                childViewModel.filterPlaces(selectedCategories)
+            }
+        }
+
+        viewModel.isExceededMaxLength.observe(viewLifecycleOwner) { isExceededMaxLength ->
+            moveToInitialPositionCallback.setIsExceededMaxLength(isExceededMaxLength)
+            binding.chipBackToInitialPosition.visibility =
+                if (isExceededMaxLength) View.VISIBLE else View.GONE
+        }
+    }
+
+    private fun setUpBinding() {
+        binding.chipBackToInitialPosition.setOnClickListener {
+            viewModel.onBackToInitialPositionClicked()
+        }
+        binding.rvPlaces.itemAnimator = null
     }
 
     private fun setBehaviorCallback() {
+        moveToInitialPositionCallback =
+            MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id)
+
         binding.lbvCurrentLocation
             .placeListBottomSheetFollowBehavior()
             ?.setCallback(
@@ -243,66 +153,78 @@ class PlaceListFragment :
 
         binding.chipBackToInitialPosition
             .placeListBottomSheetFollowBehavior()
-            ?.setCallback(
-                MoveToInitialPositionCallback(binding.chipBackToInitialPosition.id, mapManager),
-            )
+            ?.setCallback(moveToInitialPositionCallback)
     }
 
     private fun startPlaceDetailActivity(place: PlaceUiModel) {
-        startActivity(PlaceDetailActivity.newIntent(requireContext(), place))
+        viewModel.selectPlace(place.id)
     }
 
     private fun showSkeleton() {
         binding.tvErrorToLoadPlaceInfo.visibility = View.GONE
+        binding.rvPlaces.visibility = View.GONE
         binding.sflScheduleSkeleton.visibility = View.VISIBLE
         binding.sflScheduleSkeleton.startShimmer()
     }
 
     private fun hideSkeleton() {
+        binding.rvPlaces.visibility = View.VISIBLE
         binding.sflScheduleSkeleton.visibility = View.GONE
         binding.sflScheduleSkeleton.stopShimmer()
-    }
-
-    private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
-        with(binding) {
-            tvSelectedPlaceTitle.text = selectedPlace.place.title
-            tvSelectedPlaceLocation.text = selectedPlace.place.location
-            tvSelectedPlaceTime.text = selectedPlace.operatingHours
-            tvSelectedPlaceHost.text = selectedPlace.host
-            tvSelectedPlaceDescription.text = selectedPlace.place.description
-
-            tvSelectedPlaceCategory.text =
-                when (selectedPlace.place.category) {
-                    PlaceCategoryUiModel.FOOD_TRUCK -> getString(R.string.map_category_food_truck)
-                    PlaceCategoryUiModel.BAR -> getString(R.string.map_category_bar)
-                    PlaceCategoryUiModel.BOOTH -> getString(R.string.map_category_booth)
-                    else -> ""
-                }
-
-            ivSelectedPlaceImage.load(
-                selectedPlace.featuredImage,
-            ) {
-                placeholder(R.color.gray300)
-            }
-        }
     }
 
     private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
         Timber.d("start detail activity")
         val intent = PlaceDetailActivity.newIntent(requireContext(), placeDetail)
-
-//        val options =
-//            ActivityOptionsCompat.makeSceneTransitionAnimation(
-//                requireActivity(),
-//                Pair(binding.tvSelectedPlaceTitle, "selected_place_title_transition"),
-//                Pair(binding.ivSelectedPlaceImage, "selected_place_image_transition"),
-//            )
-
         startActivity(intent)
-        selectedPlaceBottomSheetBehavior.state = BottomSheetBehavior.STATE_HIDDEN
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
+    // OOM 주의 !! 추후 페이징 처리 및 chunk 단위로 나눠서 로드합니다
+    private fun preloadImages(
+        context: Context,
+        places: List<PlaceUiModel?>,
+        maxSize: Int = 20,
+    ) {
+        val imageLoader = ImageLoader(context)
+        val deferredList = mutableListOf<Deferred<ImageResult?>>()
+        val defaultImage =
+            ContextCompat
+                .getDrawable(
+                    requireContext(),
+                    R.drawable.img_fallback,
+                )?.asImage()
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            places
+                .take(maxSize)
+                .filterNotNull()
+                .forEach { place ->
+                    val deferred =
+                        async {
+                            val request =
+                                ImageRequest
+                                    .Builder(context)
+                                    .data(place.imageUrl)
+                                    .error {
+                                        defaultImage
+                                    }.fallback {
+                                        defaultImage
+                                    }.build()
+
+                            runCatching {
+                                withTimeout(2000) {
+                                    imageLoader.execute(request)
+                                }
+                            }.onFailure {
+                                imageLoader.shutdown()
+                            }.getOrNull()
+                        }
+                    deferredList.add(deferred)
+                }
+            deferredList.awaitAll()
+            withContext(Dispatchers.Main) {
+                childViewModel.setPlacesStateComplete()
+            }
+        }
     }
 }

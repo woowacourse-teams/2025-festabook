@@ -17,7 +17,7 @@ class NoticeAdapter(
         holder: NoticeViewHolder,
         position: Int,
     ) {
-        holder.bind(currentList[position])
+        holder.bind(getItem(position))
     }
 
     companion object {

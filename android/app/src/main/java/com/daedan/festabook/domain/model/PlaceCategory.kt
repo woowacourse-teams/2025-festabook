@@ -7,6 +7,9 @@ enum class PlaceCategory {
     TRASH_CAN,
     TOILET,
     SMOKING_AREA,
+    PARKING,
+    PRIMARY,
+    STAGE,
     ;
 
     companion object {
@@ -15,6 +18,9 @@ enum class PlaceCategory {
                 TRASH_CAN,
                 TOILET,
                 SMOKING_AREA,
+                PARKING,
+                PRIMARY,
+                STAGE,
             )
     }
 }

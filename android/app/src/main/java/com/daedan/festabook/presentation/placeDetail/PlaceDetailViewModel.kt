@@ -9,6 +9,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
+import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
@@ -47,6 +48,25 @@ class PlaceDetailViewModel(
                     _placeDetail.value = PlaceDetailUiState.Error(it)
                 }
         }
+    }
+
+    fun toggleNoticeExpanded(notice: NoticeUiModel) {
+        val currentState = _placeDetail.value ?: return
+        if (currentState !is PlaceDetailUiState.Success) return
+        _placeDetail.value =
+            currentState.copy(
+                placeDetail =
+                    currentState.placeDetail.copy(
+                        notices =
+                            currentState.placeDetail.notices.map {
+                                if (notice.id == it.id) {
+                                    it.copy(isExpanded = !it.isExpanded)
+                                } else {
+                                    it
+                                }
+                            },
+                    ),
+            )
     }
 
     companion object {

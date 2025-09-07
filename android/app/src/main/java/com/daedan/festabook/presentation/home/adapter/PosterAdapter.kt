@@ -1,11 +1,10 @@
 package com.daedan.festabook.presentation.home.adapter
 
 import android.view.ViewGroup
-import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.DiffUtil
+import androidx.recyclerview.widget.ListAdapter
 
-class PosterAdapter(
-    private val posters: List<String>,
-) : RecyclerView.Adapter<PosterItemViewHolder>() {
+class PosterAdapter : ListAdapter<String, PosterItemViewHolder>(posterDiffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -15,11 +14,27 @@ class PosterAdapter(
         holder: PosterItemViewHolder,
         position: Int,
     ) {
-        if (posters.isEmpty()) return
+        val posterList = currentList
+        if (posterList.isEmpty()) return
 
-        val actualIndex = position % posters.size
-        holder.bind(posters[actualIndex])
+        val actualIndex = position % posterList.size
+        holder.bind(posterList[actualIndex])
     }
 
     override fun getItemCount(): Int = Int.MAX_VALUE
+
+    companion object {
+        private val posterDiffCallback =
+            object : DiffUtil.ItemCallback<String>() {
+                override fun areItemsTheSame(
+                    oldItem: String,
+                    newItem: String,
+                ): Boolean = oldItem == newItem
+
+                override fun areContentsTheSame(
+                    oldItem: String,
+                    newItem: String,
+                ): Boolean = oldItem == newItem
+            }
+    }
 }

@@ -29,6 +29,12 @@
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <!-- 탐색 화면 -->
+    <string name="explore_search_hint_text">어떤 축제로 떠나볼까요?</string>
+    <string name="explore_festabook_logo">explore_festabook_logo</string>
+    <string name="explore_no_search_result_text">검색 결과가 없습니다.</string>
+    <string name="explore_error_text">오류가 발생했습니다: %1$s</string>
+
     <!--일정 화면-->
     <string name="schedule_title">일정 타임라인</string>
     <string name="schedule_status_upcoming">예정</string>
@@ -44,8 +50,10 @@
     <string name="map_category_smoking_area">흡연구역</string>
     <string name="map_category_toilet">화장실</string>
     <string name="map_category_trash">쓰레기통</string>
+    <string name="map_category_stage">공연장</string>
+    <string name="map_category_primary">주요시설</string>
+    <string name="map_category_parking">주차장</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
-
 
 
     <!-- 아이콘 contentDescription   -->
@@ -57,7 +65,7 @@
     <!-- 소식 화면 -->
     <string name="news_title">소식</string>
     <string name="tab_notice">공지</string>
-    <string name="tab_faq">Q&amp;A</string>
+    <string name="tab_faq">FAQ</string>
     <string name="tab_lost_item">분실물</string>
     <string name="tab_faq_question">Q. %1$s</string>
     <string name="modal_lost_item">보관 장소 : %1$s</string>
@@ -70,11 +78,9 @@
     <string name="setting_app_info_title">앱 정보</string>
     <string name="setting_app_version">앱 버전</string>
     <string name="setting_service_policy">약관 및 정책</string>
-    <string name="setting_contact_us">문의하기</string>
-    <string name="setting_contact_us_email_subject">문의하기</string>
+    <string name="setting_contact_us">개발자 문의하기</string>
+    <string name="setting_contact_us_email_subject">개발자 문의하기</string>
     <string name="setting_contact_us_email">festabook2025@gmail.com</string>
-    <string name="setting_service_policy_url">https://www.notion.so/244a540dc0b780638e56e31c4bdb3c9f</string>
-
 
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
@@ -94,6 +100,25 @@
     <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
     <string name="error_fail_to_load_place_info">정보를 불러오는데 실패했습니다</string>
     <string name="faq_expand">답변 펼치기</string>
+
+    <!--다이어로그-->
+    <string name="notification_permission_title">알림 권한 필요</string>
+    <string name="notification_permission_message">새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.</string>
+    <string name="confirm">확인</string>
+    <string name="cancel">취소</string>
+    <string name="main_alarm_dialog_title">우리 학교 축제의\n최신 정보를 놓치지 마세요!</string>
+    <string name="main_alarm_dialog_message">연예인 공연 정보, 우천 취소, 일정 변경 등 축제의 중요한 소식을 가장 빠르게 알려드릴게요.</string>
+    <string name="main_alarm_dialog_confirm_button">알림 받기</string>
+    <string name="main_alarm_dialog_cancel_button">다음에</string>
+    <string name="item_lineup_image">item_lineup_image</string>
+    <string name="home_check_schedule_text">일정 확인하기</string>
+    <string name="home_lineup_title">축제 라인업</string>
+
+    <!--토스트 메시지-->
+    <string name="back_press_exit_message">뒤로가기를 한 번 더 누르면 종료됩니다.</string>
+    <!--알림 권한-->
+    <string name="notification_permission_denied_message">알림이 비활성화되어 있습니다 [설정]에서 다시 켤 수 있어요.</string>
+    <string name="move_to_setting_text">설정으로 이동</string>
 
 
 </resources>

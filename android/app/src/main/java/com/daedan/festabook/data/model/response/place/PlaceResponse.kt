@@ -1,13 +1,13 @@
 package com.daedan.festabook.data.model.response.place
 
+import com.daedan.festabook.data.model.response.place.PlaceGeographyResponse.PlaceCategory
 import com.daedan.festabook.domain.model.Place
-import com.daedan.festabook.domain.model.PlaceCategory
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class PlaceResponse(
-    @SerialName("id")
+    @SerialName("placeId")
     val id: Long,
     @SerialName("title")
     val title: String?,
@@ -25,7 +25,7 @@ fun PlaceResponse.toDomain() =
     Place(
         id = id,
         title = title,
-        category = category,
+        category = category.toDomain(),
         description = description,
         imageUrl = imageUrl,
         location = location,

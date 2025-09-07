@@ -1,44 +1,47 @@
 package com.daedan.festabook.presentation.main
 
-import android.Manifest
-import android.content.pm.PackageManager
-import android.os.Build
 import android.os.Bundle
+import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
-import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
-import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.presentation.NotificationPermissionManager
+import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.isGranted
+import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
 import com.daedan.festabook.presentation.home.HomeFragment
+import com.daedan.festabook.presentation.home.HomeViewModel
 import com.daedan.festabook.presentation.news.NewsFragment
-import com.daedan.festabook.presentation.placeList.PlaceListFragment
+import com.daedan.festabook.presentation.placeList.placeMap.PlaceMapFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
-import com.google.firebase.messaging.FirebaseMessaging
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import timber.log.Timber
 
-class MainActivity : AppCompatActivity() {
+class MainActivity :
+    AppCompatActivity(),
+    NotificationPermissionRequester {
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
-    private val viewModel: MainViewModel by viewModels { MainViewModel.Factory }
+    private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
+    private val homeViewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
 
-    private val placeListFragment by lazy {
-        PlaceListFragment().newInstance()
+    private val placeMapFragment by lazy {
+        PlaceMapFragment().newInstance()
     }
 
     private val homeFragment by lazy {
@@ -57,29 +60,44 @@ class MainActivity : AppCompatActivity() {
         SettingFragment().newInstance()
     }
 
-    private val requestPermissionLauncher =
+    private val notificationPermissionManager by lazy {
+        NotificationPermissionManager(
+            requester = this,
+            onPermissionGranted = { onPermissionGranted() },
+            onPermissionDenied = { onPermissionDenied() },
+        )
+    }
+
+    override val permissionLauncher: ActivityResultLauncher<String> =
         registerForActivityResult(
             ActivityResultContracts.RequestPermission(),
         ) { isGranted: Boolean ->
             if (isGranted) {
                 Timber.d("Notification permission granted")
+                mainViewModel.saveNotificationId()
             } else {
                 Timber.d("Notification permission denied")
-                // 사용자에게 알림 권한이 필요한 이유를 설명하거나, 설정 화면으로 유도
+                showNotificationDeniedSnackbar(binding.main, this)
             }
         }
+
+    override fun onPermissionGranted() = Unit
+
+    override fun onPermissionDenied() = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setupBinding()
 
-        registerDeviceAndFcmToken()
-        requestNotificationPermission()
+        mainViewModel.registerDeviceAndFcmToken()
+        setupAlarmDialog()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
+        setupObservers()
         onMenuItemClick()
         onMenuItemReClick()
+        onBackPress()
     }
 
     override fun onRequestPermissionsResult(
@@ -98,34 +116,16 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun registerDeviceAndFcmToken() {
-        val app = application as FestaBookApp
-        val prefsManager = app.appContainer.preferencesManager
+    override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
-        val uuid = prefsManager.getUuid().orEmpty()
-        val fcmToken = prefsManager.getFcmToken()
-
-        Timber.d("registerDeviceAndFcmToken() UUID: $uuid, FCM: $fcmToken")
-
-        // UUID는 항상 있으므로, FCM 없으면 기다렸다가 호출
-        if (uuid.isNotBlank() && fcmToken.isNullOrBlank()) {
-            FirebaseMessaging
-                .getInstance()
-                .token
-                .addOnSuccessListener { token ->
-                    prefsManager.saveFcmToken(token)
-                    Timber.d("🪄 받은 FCM 토큰으로 디바이스 등록: $token")
-                    viewModel.registerDevice(uuid, token)
-                }.addOnFailureListener {
-                    Timber.w(it, "❌ FCM 토큰 받기 실패")
-                }
-        } else if (fcmToken != null) {
-            if (uuid.isNotBlank() && fcmToken.isNotBlank()) {
-                Timber.d("✅ 기존 값으로 디바이스 등록 실행")
-                viewModel.registerDevice(uuid, fcmToken)
-            } else {
-                Timber.w("❌ UUID 생성 전 or FCM 토큰 없음")
+    private fun setupObservers() {
+        mainViewModel.backPressEvent.observe(this) { event ->
+            event.getContentIfNotHandled()?.let { isDoublePress ->
+                if (isDoublePress) finish() else showToast(getString(R.string.back_press_exit_message))
             }
+        }
+        homeViewModel.navigateToScheduleEvent.observe(this) {
+            binding.bnvMenu.selectedItemId = R.id.item_menu_schedule
         }
     }
 
@@ -135,46 +135,6 @@ class MainActivity : AppCompatActivity() {
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
-        }
-    }
-
-    private fun requestNotificationPermission() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            when {
-                ContextCompat.checkSelfPermission(
-                    this,
-                    Manifest.permission.POST_NOTIFICATIONS,
-                ) == PackageManager.PERMISSION_GRANTED -> {
-                    // 이미 권한이 허용됨
-                    Timber.d("Notification permission already granted")
-                }
-
-                shouldShowRequestPermissionRationale(Manifest.permission.POST_NOTIFICATIONS) -> {
-                    // 이전에 거부했지만 "다시 묻지 않음"을 선택하지 않은 경우
-                    // 권한이 필요한 이유를 설명하는 UI(예: AlertDialog)를 표시
-                    Timber.d("Show rationale for notification permission")
-                    AlertDialog
-                        .Builder(this)
-                        .setTitle("알림 권한 필요")
-                        .setMessage("새로운 소식 및 중요한 정보를 받기 위해 알림 권한이 필요합니다.")
-                        .setPositiveButton("확인") { dialog, _ ->
-                            requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                            dialog.dismiss()
-                        }.setNegativeButton("취소") { dialog, _ ->
-                            showToast("알림 권한이 거부되었습니다.")
-                            dialog.dismiss()
-                        }.show()
-                }
-
-                else -> {
-                    // 권한이 없으며, 이전에 "다시 묻지 않음"을 선택하지 않았거나 첫 요청인 경우
-                    // 바로 권한 요청 다이얼로그 표시
-                    Timber.d("Requesting notification permission for the first time or after 'don't ask again'")
-                    requestPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                }
-            }
-        } else {
-            Timber.d("Notification permission not required for API < 33")
         }
     }
 
@@ -200,6 +160,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun onBackPress() {
+        onBackPressedDispatcher.addCallback(
+            this,
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    mainViewModel.onBackPressed()
+                }
+            },
+        )
+    }
+
     private fun onMenuItemClick() {
         binding.bnvMenu.setOnItemSelectedListener { icon ->
             when (icon.itemId) {
@@ -212,9 +183,9 @@ class MainActivity : AppCompatActivity() {
         }
         binding.fabMap.setOnClickListener {
             binding.bnvMenu.selectedItemId = R.id.item_menu_map
-            val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_LIST_FRAGMENT)
-            if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
-            switchFragment(placeListFragment, TAG_PLACE_LIST_FRAGMENT)
+            val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_MAP_FRAGMENT)
+            if (fragment is OnMenuItemReClickListener && !fragment.isHidden) fragment.onMenuItemReClick()
+            switchFragment(placeMapFragment, TAG_PLACE_MAP_FRAGMENT)
         }
     }
 
@@ -226,6 +197,7 @@ class MainActivity : AppCompatActivity() {
                     val fragment = supportFragmentManager.findFragmentByTag(TAG_SCHEDULE_FRAGMENT)
                     if (fragment is OnMenuItemReClickListener) fragment.onMenuItemReClick()
                 }
+
                 R.id.item_menu_news -> Unit
                 R.id.item_menu_setting -> Unit
             }
@@ -249,13 +221,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun setupAlarmDialog() {
+        if (!isMainActivityInitialized()) {
+            showAlarmDialog()
+        }
+    }
+
+    private fun showAlarmDialog() {
+        val dialog =
+            MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
+                .setView(R.layout.main_alarm_view)
+                .setPositiveButton(R.string.main_alarm_dialog_confirm_button) { _, _ ->
+                    notificationPermissionManager.requestNotificationPermission(this)
+                }.setNegativeButton(R.string.main_alarm_dialog_cancel_button) { dialog, _ ->
+                    dialog.dismiss()
+                }.create()
+        dialog.show()
+    }
+
+    private fun isMainActivityInitialized(): Boolean {
+        val initialValue = intent.getLongExtra("festival_id", INITIALIZED_FESTIVAL_ID)
+        return initialValue == INITIALIZED_FESTIVAL_ID
+    }
+
     companion object {
         private const val TAG_HOME_FRAGMENT = "homeFragment"
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
-        private const val TAG_PLACE_LIST_FRAGMENT = "placeListFragment"
+        private const val TAG_PLACE_MAP_FRAGMENT = "placeMapFragment"
         private const val TAG_NEW_FRAGMENT = "newFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
+        private const val INITIALIZED_FESTIVAL_ID = -1L
 
         fun Fragment.newInstance(): Fragment =
             this.apply {

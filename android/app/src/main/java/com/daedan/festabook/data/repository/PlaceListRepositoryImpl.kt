@@ -1,7 +1,7 @@
 package com.daedan.festabook.data.repository
 
 import com.daedan.festabook.data.datasource.remote.place.PlaceDataSource
-import com.daedan.festabook.data.model.response.organization.toDomain
+import com.daedan.festabook.data.model.response.festival.toDomain
 import com.daedan.festabook.data.model.response.place.toDomain
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.OrganizationGeography
