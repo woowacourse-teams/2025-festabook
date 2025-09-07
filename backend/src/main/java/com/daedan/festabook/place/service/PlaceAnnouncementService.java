@@ -5,10 +5,12 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
+import com.daedan.festabook.place.dto.PlaceAnnouncementResponses;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -36,6 +38,11 @@ public class PlaceAnnouncementService {
         PlaceAnnouncement savedPlaceAnnouncement = placeAnnouncementJpaRepository.save(placeAnnouncement);
 
         return PlaceAnnouncementResponse.from(savedPlaceAnnouncement);
+    }
+
+    public PlaceAnnouncementResponses getAllPlaceAnnouncements(Long placeId) {
+        List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
+        return PlaceAnnouncementResponses.from(placeAnnouncements);
     }
 
     @Transactional

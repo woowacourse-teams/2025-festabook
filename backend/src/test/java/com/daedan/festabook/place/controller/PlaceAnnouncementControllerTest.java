@@ -2,6 +2,7 @@ package com.daedan.festabook.place.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.festival.domain.Festival;
@@ -21,6 +22,7 @@ import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -93,6 +95,73 @@ class PlaceAnnouncementControllerTest {
                     .body("title", equalTo(expectedTitle))
                     .body("content", equalTo(expectedContent))
                     .body("createdAt", notNullValue());
+        }
+    }
+
+    @Nested
+    class getAllPlaceAnnouncements {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
+
+            int expectedSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/places/{placeId}/announcements", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize))
+
+                    .body("[0].id", notNullValue())
+                    .body("[0].title", equalTo(placeAnnouncement1.getTitle()))
+                    .body("[0].content", equalTo(placeAnnouncement1.getContent()))
+                    .body("[0].createdAt", notNullValue())
+
+                    .body("[1].id", notNullValue())
+                    .body("[1].title", equalTo(placeAnnouncement2.getTitle()))
+                    .body("[1].content", equalTo(placeAnnouncement2.getContent()))
+                    .body("[1].createdAt", notNullValue());
+        }
+
+        @Test
+        void 성공_다른_플레이스_공지는_조회되지_않음() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place1 = PlaceFixture.create(festival);
+            placeJpaRepository.save(place1);
+
+            Place place2 = PlaceFixture.create(festival);
+            placeJpaRepository.save(place2);
+
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place1);
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place2);
+            placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
+
+            int expectedSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/places/{placeId}/announcements", place1.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
         }
     }
 
