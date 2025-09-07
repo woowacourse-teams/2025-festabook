@@ -4,6 +4,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import androidx.transition.AutoTransition
+import androidx.transition.TransitionManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemNoticeBinding
 import com.daedan.festabook.presentation.common.toPx
@@ -21,7 +23,7 @@ class NoticeViewHolder(
             noticeItem?.let {
                 onNewsClickListener.onNoticeClick(it)
             } ?: run {
-                Timber.w("${::NoticeViewHolder.name} 공지 아이템이 null입니다.")
+                Timber.w("${this::class.java.simpleName} 공지 아이템이 null입니다.")
             }
         }
     }
@@ -32,6 +34,7 @@ class NoticeViewHolder(
         binding.notice = notice
         binding.tvNoticeDescription.visibility =
             if (notice.isExpanded) View.VISIBLE else View.GONE
+        TransitionManager.beginDelayedTransition(binding.layoutNoticeItem, AutoTransition())
 
         if (notice.isPinned) {
             binding.ivNoticeIcon.setImageResource(R.drawable.ic_pin)

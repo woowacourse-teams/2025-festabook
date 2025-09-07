@@ -10,6 +10,7 @@ import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import timber.log.Timber
 
 class LostItemViewHolder private constructor(
     private val binding: ItemLostBinding,
@@ -22,7 +23,9 @@ class LostItemViewHolder private constructor(
             lostItem
                 ?.let {
                     onNewsClickListener.onLostItemClick(it)
-                }
+                } ?: run {
+                Timber.w("${this::class.java.simpleName} LostItem이 null입니다.")
+            }
         }
     }
 
