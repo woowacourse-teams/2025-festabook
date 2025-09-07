@@ -1,16 +1,20 @@
 package com.daedan.festabook.council.dto;
 
 import com.daedan.festabook.council.domain.Council;
+import com.daedan.festabook.global.security.role.RoleType;
+import java.util.Set;
 
 public record CouncilResponse(
         Long festivalId,
-        String username
+        String username,
+        Set<RoleType> roleTypes
 ) {
 
     public static CouncilResponse from(Council council) {
         return new CouncilResponse(
                 council.getFestival().getId(),
-                council.getUsername()
+                council.getUsername(),
+                council.getRoles()
         );
     }
 }

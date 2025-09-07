@@ -9,7 +9,9 @@ import com.daedan.festabook.council.infrastructure.CouncilJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.global.security.util.JwtProvider;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,6 +39,9 @@ public class CouncilService {
                 encodedPassword
         );
         Council savedCouncil = councilJpaRepository.save(council);
+
+        // TODO: 추후 회원가입 방식이 생긴다면 삭제
+        council.updateRole(Set.of(RoleType.ROLE_COUNCIL));
 
         return CouncilResponse.from(savedCouncil);
     }
