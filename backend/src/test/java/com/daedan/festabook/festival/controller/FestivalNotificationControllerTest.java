@@ -1,6 +1,6 @@
 package com.daedan.festabook.festival.controller;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
@@ -82,7 +82,7 @@ class FestivalNotificationControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue());
+                    .body("festivalNotificationId", notNullValue());
 
             then(fcmNotificationManager).should()
                     .subscribeFestivalTopic(any(), any());

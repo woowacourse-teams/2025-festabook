@@ -1,6 +1,6 @@
 package com.daedan.festabook.place.controller;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
 
@@ -84,7 +84,7 @@ class PlaceFavoriteControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue());
+                    .body("placeFavoriteId", notNullValue());
         }
 
         @Test

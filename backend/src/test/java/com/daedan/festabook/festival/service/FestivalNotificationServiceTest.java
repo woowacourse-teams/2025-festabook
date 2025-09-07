@@ -1,8 +1,8 @@
 package com.daedan.festabook.festival.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -10,7 +10,6 @@ import static org.mockito.BDDMockito.then;
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalNotification;
@@ -21,6 +20,7 @@ import com.daedan.festabook.festival.dto.FestivalNotificationRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -62,9 +62,7 @@ class FestivalNotificationServiceTest {
             Device device = DeviceFixture.create(deviceId);
             Long festivalNotificationId = 100L;
             FestivalNotification festivalNotification = FestivalNotificationFixture.create(
-                    festivalNotificationId,
-                    festival,
-                    device
+                    festival, device, festivalNotificationId
             );
             FestivalNotificationRequest request = FestivalNotificationRequestFixture.create(deviceId);
 
@@ -80,7 +78,7 @@ class FestivalNotificationServiceTest {
                     festivalId, request);
 
             // then
-            assertThat(result.id()).isEqualTo(festivalNotificationId);
+            assertThat(result.festivalNotificationId()).isEqualTo(festivalNotificationId);
             then(festivalNotificationJpaRepository).should()
                     .save(any());
             then(festivalNotificationManager).should()
@@ -158,9 +156,7 @@ class FestivalNotificationServiceTest {
             Device device = DeviceFixture.create(deviceId);
             Festival festival = FestivalFixture.create(festivalId);
             FestivalNotification festivalNotification = FestivalNotificationFixture.create(
-                    festivalNotificationId,
-                    festival,
-                    device
+                    festival, device, festivalNotificationId
             );
 
             given(festivalNotificationJpaRepository.findById(festivalNotificationId))
@@ -207,9 +203,7 @@ class FestivalNotificationServiceTest {
             Device device = DeviceFixture.create(invalidDeviceId);
             Festival festival = FestivalFixture.create(festivalId);
             FestivalNotification festivalNotification = FestivalNotificationFixture.create(
-                    festivalNotificationId,
-                    festival,
-                    device
+                    festival, device, festivalNotificationId
             );
 
             given(festivalNotificationJpaRepository.findById(festivalNotificationId))

@@ -1,12 +1,128 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Modal from '../common/Modal';
-import api from '../../utils/api';
+import { festivalAPI, placeAPI, imageAPI } from '../../utils/api';
+import { validateImageFile } from '../../utils/imageUpload';
 
-const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
-    const [selectedFile, setSelectedFile] = useState(null);
-    const [isDragging, setIsDragging] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
+const AddImageModal = ({ 
+    isOpen, 
+    onClose, 
+    showToast, 
+    onImageAdded, 
+    placeId, 
+    isPlaceImage = false, 
+    isImageOnly = false, // 이미지만 업로드하고 URL만 반환할지 여부
+    onImageUploaded // 이미지 URL만 필요한 경우 사용할 콜백
+}) => {
+    // showToast가 없을 경우 기본 함수 사용
+    const handleToast = showToast || ((message) => console.log(message));
     const fileInputRef = useRef(null);
+
+    // 상태 관리
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isDragging, setIsDragging] = useState(false);
+
+    // 파일 검증 함수
+    const validateFile = (file) => {
+        const validation = validateImageFile(file);
+        if (!validation.isValid) {
+            handleToast(validation.message);
+            return false;
+        }
+        return true;
+    };
+
+    // 파일 업로드 함수
+    const uploadFile = async () => {
+        if (!selectedFile) return;
+
+        setIsUploading(true);
+        try {
+            // 1단계: 이미지 업로드
+            const response = await imageAPI.uploadImage(selectedFile);
+            const imageUrl = response.imageUrl;
+
+            // 이미지만 업로드하고 URL만 반환하는 경우
+            if (isImageOnly && onImageUploaded) {
+                onImageUploaded(imageUrl);
+                handleToast('이미지가 성공적으로 업로드되었습니다.');
+                onClose();
+                return;
+            }
+            
+            // 2단계: 반환된 URL을 목적별 API에 전송
+            let apiResponse;
+            if (isPlaceImage && placeId) {
+                // 플레이스 이미지인 경우
+                apiResponse = await placeAPI.createPlaceImage(placeId, {
+                    imageUrl: imageUrl
+                });
+            } else {
+                // 축제 이미지인 경우
+                apiResponse = await festivalAPI.addFestivalImage({
+                    imageUrl: imageUrl
+                });
+            }
+            
+            handleToast('이미지가 성공적으로 업로드되었습니다.');
+            
+            // 새로 추가된 이미지를 부모 컴포넌트에 전달
+            if (onImageAdded && apiResponse) {
+                onImageAdded(apiResponse);
+            } else {
+                onClose();
+            }
+        } catch (error) {
+            console.error('Image upload error:', error);
+            handleToast(error.message || '이미지 업로드에 실패했습니다.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    // 상태 초기화
+    const reset = () => {
+        setSelectedFile(null);
+        setIsUploading(false);
+        setIsDragging(false);
+    };
+
+    // 드래그 이벤트 핸들러
+    const handleDragOver = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(true);
+    };
+
+    const handleDragLeave = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+    };
+
+    const handleDrop = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setIsDragging(false);
+
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+            const file = files[0];
+            if (validateFile(file)) {
+                setSelectedFile(file);
+            }
+        }
+    };
+
+    // 파일 입력 변경 핸들러
+    const handleFileInputChange = (e) => {
+        const file = e.target.files[0];
+        if (file && validateFile(file)) {
+            setSelectedFile(file);
+        }
+        // input value 초기화 (같은 파일 다시 선택 가능하게)
+        e.target.value = '';
+    };
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
@@ -30,9 +146,7 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
     // 모달이 닫힐 때 상태 초기화
     useEffect(() => {
         if (!isOpen) {
-            setSelectedFile(null);
-            setIsDragging(false);
-            setIsUploading(false);
+            reset();
         }
     }, [isOpen]);
 
@@ -42,88 +156,12 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
         }
     };
 
-    const validateFile = (file) => {
-        const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
-        const maxSize = 5 * 1024 * 1024; // 5MB
-
-        if (!allowedTypes.includes(file.type)) {
-            showToast('PNG, JPG, JPEG 파일만 업로드 가능합니다.');
-            return false;
-        }
-
-        if (file.size > maxSize) {
-            showToast('파일 크기는 5MB 이하여야 합니다.');
-            return false;
-        }
-
-        return true;
-    };
-
-    const handleFileSelect = (file) => {
-        if (validateFile(file)) {
-            setSelectedFile(file);
-        }
-    };
-
-    const handleFileInputChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            handleFileSelect(file);
-        }
-    };
-
-    const handleDragOver = (e) => {
-        e.preventDefault();
-        setIsDragging(true);
-    };
-
-    const handleDragLeave = (e) => {
-        e.preventDefault();
-        setIsDragging(false);
-    };
-
-    const handleDrop = (e) => {
-        e.preventDefault();
-        setIsDragging(false);
-        
-        const files = e.dataTransfer.files;
-        if (files.length > 0) {
-            handleFileSelect(files[0]);
-        }
-    };
-
     const handleUploadClick = () => {
         fileInputRef.current?.click();
     };
 
     const handleUpload = async () => {
-        if (!selectedFile) {
-            showToast('업로드할 이미지를 선택해주세요.');
-            return;
-        }
-
-        setIsUploading(true);
-        
-        try {
-            const imageUrl = URL.createObjectURL(selectedFile);
-            
-            const response = await api.post('/festivals/images', {
-                imageUrl: imageUrl
-            });
-            
-            showToast('이미지가 성공적으로 업로드되었습니다.');
-            
-            // 새로 추가된 이미지를 부모 컴포넌트에 전달
-            if (onImageAdded && response.data) {
-                onImageAdded(response.data);
-            } else {
-                onClose();
-            }
-        } catch (error) {
-            showToast('이미지 업로드에 실패했습니다.');
-        } finally {
-            setIsUploading(false);
-        }
+        await uploadFile();
     };
 
     return (
@@ -218,4 +256,4 @@ const AddImageModal = ({ isOpen, onClose, showToast, onImageAdded }) => {
     );
 };
 
-export default AddImageModal; 
+export default AddImageModal;

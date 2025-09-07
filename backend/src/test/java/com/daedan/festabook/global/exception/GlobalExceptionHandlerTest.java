@@ -3,6 +3,7 @@ package com.daedan.festabook.global.exception;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
+import com.daedan.festabook.global.config.TestSecurityConfig;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -12,11 +13,13 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+@Import(TestSecurityConfig.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class GlobalExceptionHandlerTest {
@@ -48,7 +51,7 @@ class GlobalExceptionHandlerTest {
                     .queryParam(MESSAGE_PARAM_NAME, expectedMessage)
                     .queryParam(STATUS_CODE_PARAM_NAME, expectedStatusCode)
                     .when()
-                    .get("/business-exception-test")
+                    .get("/test/business-exception-test")
                     .then()
                     .log()
                     .all()
@@ -68,7 +71,7 @@ class GlobalExceptionHandlerTest {
             RestAssured
                     .given()
                     .when()
-                    .get("/runtime-exception-test")
+                    .get("/test/runtime-exception-test")
                     .then()
                     .log()
                     .all()
@@ -81,7 +84,7 @@ class GlobalExceptionHandlerTest {
     @RestController
     static public class ExceptionController {
 
-        @GetMapping("/business-exception-test")
+        @GetMapping("/test/business-exception-test")
         public void test1(
                 @RequestParam(MESSAGE_PARAM_NAME) String message,
                 @RequestParam(STATUS_CODE_PARAM_NAME) int statusCode
@@ -89,7 +92,7 @@ class GlobalExceptionHandlerTest {
             throw new BusinessException(message, HttpStatus.valueOf(statusCode));
         }
 
-        @GetMapping("/runtime-exception-test")
+        @GetMapping("/test/runtime-exception-test")
         public void test2() {
             throw new RuntimeException();
         }

@@ -2,9 +2,10 @@ package com.daedan.festabook
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.daedan.festabook.data.service.api.ApiClient
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
+import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
-import com.daedan.festabook.util.CrashlyticsTree
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
@@ -21,6 +22,7 @@ class FestaBookApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        initializeApiClient()
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
@@ -47,9 +49,9 @@ class FestaBookApp : Application() {
         if (BuildConfig.DEBUG) {
             plantDebugTimberTree()
         } else {
-          plantInfoTimberTree()
+            plantInfoTimberTree()
         }
-        Timber.plant(CrashlyticsTree())
+        Timber.plant(FirebaseCrashlyticsTree())
     }
 
     private fun plantDebugTimberTree() {
@@ -75,7 +77,23 @@ class FestaBookApp : Application() {
     }
 
     private fun setGlobalExceptionHandler() {
-        val defaultExceptionHandler: Thread.UncaughtExceptionHandler? = Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler(FestabookGlobalExceptionHandler(this, defaultExceptionHandler))
+        val defaultExceptionHandler: Thread.UncaughtExceptionHandler? =
+            Thread.getDefaultUncaughtExceptionHandler()
+        Thread.setDefaultUncaughtExceptionHandler(
+            FestabookGlobalExceptionHandler(
+                this,
+                defaultExceptionHandler,
+            ),
+        )
+    }
+
+    private fun initializeApiClient() {
+        runCatching {
+            ApiClient.initialize(this)
+        }.onSuccess {
+            Timber.d("API 클라이언트 초기화 완료")
+        }.onFailure { e ->
+            Timber.e(e, "FestabookApp: API 클라이언트 초기화 실패 ${e.message}")
+        }
     }
 }

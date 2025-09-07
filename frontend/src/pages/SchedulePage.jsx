@@ -11,11 +11,10 @@ const SchedulePage = () => {
 
     // activeDate 변경 시 해당 날짜의 이벤트 로드
     useEffect(() => {
-        if (activeDate && schedule[activeDate] === undefined) {
-            console.log('Loading events for date:', activeDate); // 디버깅용
+        if (activeDate && schedule[activeDate] === undefined && !isLoadingEvents) {
             loadEventsForDate(activeDate, showToast);
         }
-    }, [activeDate, schedule, loadEventsForDate, showToast]);
+    }, [activeDate, loadEventsForDate, showToast, isLoadingEvents]);
 
     const handleSave = async (eventData, onClose) => {
         // 필수 필드 검증
@@ -25,15 +24,15 @@ const SchedulePage = () => {
         }
         
         // 새 이벤트 추가 시 날짜 검증
-        if (!eventData.id && !eventData.date) {
+        if (!eventData.eventId && !eventData.date) {
             showToast('날짜를 선택해주세요.');
             return;
         }
         
         try {
-            if (eventData.id) {
+            if (eventData.eventId) {
                 // 기존 이벤트 수정
-                await updateScheduleEvent(activeDate, eventData.id, eventData, showToast);
+                await updateScheduleEvent(activeDate, eventData.eventId, eventData, showToast);
             } else {
                 // 새 이벤트 추가 - 선택된 날짜에 추가
                 await addScheduleEvent(eventData.date, eventData, showToast);
@@ -50,7 +49,7 @@ const SchedulePage = () => {
             title: '이벤트 삭제 확인',
             message: `'${event.title}' 이벤트를 정말 삭제하시겠습니까?`,
             onConfirm: async () => {
-                await deleteScheduleEvent(activeDate, event.id, showToast);
+                await deleteScheduleEvent(activeDate, event.eventId, showToast);
             }
         });
     };
@@ -169,7 +168,7 @@ const SchedulePage = () => {
                     <div className="flex flex-col">
                     {/* schedule[activeDate]가 undefined이면 아직 로드되지 않은 상태 */}
                     {schedule[activeDate] && schedule[activeDate].sort((a,b) => a.startTime.localeCompare(b.startTime)).map(event => (
-                        <div key={event.id} className="relative flex items-center mb-8 w-full">
+                        <div key={event.eventId} className="relative flex items-center mb-8 w-full">
                             <div className="z-10 shrink-0">
                                 <div className={`w-8 h-8 rounded-full border-4 border-gray-100 timeline-dot timeline-dot-${event.status}`}></div>
                             </div>

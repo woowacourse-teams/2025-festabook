@@ -1,6 +1,5 @@
 package com.daedan.festabook.festival.service;
 
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalImage;
 import com.daedan.festabook.festival.dto.FestivalImageRequest;
@@ -9,6 +8,7 @@ import com.daedan.festabook.festival.dto.FestivalImageResponses;
 import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -39,12 +39,16 @@ public class FestivalImageService {
     }
 
     @Transactional
-    public FestivalImageResponses updateFestivalImagesSequence(List<FestivalImageSequenceUpdateRequest> requests) {
+    public FestivalImageResponses updateFestivalImagesSequence(
+            Long festivalId,
+            List<FestivalImageSequenceUpdateRequest> requests
+    ) {
         // TODO: sequence DTO 값 검증 추가
         List<FestivalImage> festivalImages = new ArrayList<>();
 
         for (FestivalImageSequenceUpdateRequest request : requests) {
             FestivalImage festivalImage = getFestivalImageById(request.festivalImageId());
+            validateFestivalImageBelongsToFestival(festivalImage, festivalId);
             festivalImage.updateSequence(request.sequence());
             festivalImages.add(festivalImage);
         }
@@ -54,7 +58,10 @@ public class FestivalImageService {
         return FestivalImageResponses.from(festivalImages);
     }
 
-    public void removeFestivalImage(Long festivalImageId) {
+    public void removeFestivalImage(Long festivalId, Long festivalImageId) {
+        FestivalImage festivalImage = getFestivalImageById(festivalImageId);
+        validateFestivalImageBelongsToFestival(festivalImage, festivalId);
+
         festivalImageJpaRepository.deleteById(festivalImageId);
     }
 
@@ -66,5 +73,11 @@ public class FestivalImageService {
     private FestivalImage getFestivalImageById(Long festivalImageId) {
         return festivalImageJpaRepository.findById(festivalImageId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 축제 이미지입니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private void validateFestivalImageBelongsToFestival(FestivalImage festivalImage, Long festivalId) {
+        if (!festivalImage.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 축제 이미지가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }

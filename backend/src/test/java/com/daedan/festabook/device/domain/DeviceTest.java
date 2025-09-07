@@ -1,7 +1,7 @@
 package com.daedan.festabook.device.domain;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -11,9 +11,6 @@ import org.junit.jupiter.api.Test;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class DeviceTest {
-
-    private final String DEFAULT_DEVICE_IDENTIFIER = "device-abc123";
-    private final String DEFAULT_FCM_TOKEN = "fcm-token-xyz";
 
     @Nested
     class validateDeviceIdentifier {

@@ -10,7 +10,9 @@ public class AnnouncementPinUpdateRequestFixture {
         );
     }
 
-    public static AnnouncementPinUpdateRequest create(boolean pinned) {
+    public static AnnouncementPinUpdateRequest create(
+            boolean pinned
+    ) {
         return new AnnouncementPinUpdateRequest(
                 pinned
         );

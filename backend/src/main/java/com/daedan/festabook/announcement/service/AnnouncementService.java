@@ -3,15 +3,17 @@ package com.daedan.festabook.announcement.service;
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.dto.AnnouncementGroupedResponses;
 import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementPinUpdateResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementResponse;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
+import com.daedan.festabook.announcement.dto.AnnouncementUpdateResponse;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
-import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.dto.NotificationMessage;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.notification.dto.NotificationMessage;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -32,14 +34,15 @@ public class AnnouncementService {
 
     @Transactional
     public AnnouncementResponse createAnnouncement(Long festivalId, AnnouncementRequest request) {
+        Festival festival = getFestivalById(festivalId);
+        Announcement announcement = request.toEntity(festival);
         if (request.isPinned()) {
             validatePinnedLimit(festivalId);
         }
 
-        Festival festival = getFestivalById(festivalId);
-        Announcement announcement = request.toEntity(festival);
         announcementJpaRepository.save(announcement);
 
+        // TODO: 로직 분리
         NotificationMessage notificationMessage = new NotificationMessage(
                 request.title(),
                 request.content()
@@ -62,24 +65,40 @@ public class AnnouncementService {
     }
 
     @Transactional
-    public AnnouncementResponse updateAnnouncement(Long announcementId, AnnouncementUpdateRequest request) {
+    public AnnouncementUpdateResponse updateAnnouncement(
+            Long festivalId,
+            Long announcementId,
+            AnnouncementUpdateRequest request
+    ) {
         Announcement announcement = getAnnouncementById(announcementId);
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
+
         announcement.updateTitleAndContent(request.title(), request.content());
-        return AnnouncementResponse.from(announcement);
+        return AnnouncementUpdateResponse.from(announcement);
     }
 
     @Transactional
-    public void updateAnnouncementPin(Long announcementId, Long festivalId, AnnouncementPinUpdateRequest request) {
+    public AnnouncementPinUpdateResponse updateAnnouncementPin(
+            Long festivalId,
+            Long announcementId,
+            AnnouncementPinUpdateRequest request
+    ) {
         Announcement announcement = getAnnouncementById(announcementId);
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
         if (announcement.isUnpinned() && request.pinned()) {
             validatePinnedLimit(festivalId);
         }
 
         announcement.updatePinned(request.pinned());
+        return AnnouncementPinUpdateResponse.from(announcement);
     }
 
-    public void deleteAnnouncementByAnnouncementId(Long announcementId) {
-        announcementJpaRepository.deleteById(announcementId);
+    @Transactional
+    public void deleteAnnouncementByAnnouncementId(Long festivalId, Long announcementId) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
+
+        announcementJpaRepository.delete(announcement);
     }
 
     private Announcement getAnnouncementById(Long announcementId) {
@@ -102,6 +121,10 @@ public class AnnouncementService {
                 .toList();
     }
 
+    private Comparator<Announcement> createdAtDescending() {
+        return Comparator.comparing(Announcement::getCreatedAt).reversed();
+    }
+
     private void validatePinnedLimit(Long festivalId) {
         Long pinnedCount = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festivalId);
         if (pinnedCount >= MAX_PINNED_ANNOUNCEMENTS) {
@@ -112,7 +135,9 @@ public class AnnouncementService {
         }
     }
 
-    private Comparator<Announcement> createdAtDescending() {
-        return Comparator.comparing(Announcement::getCreatedAt).reversed();
+    private void validateAnnouncementBelongsToFestival(Announcement announcement, Long festivalId) {
+        if (!announcement.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 공지가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }

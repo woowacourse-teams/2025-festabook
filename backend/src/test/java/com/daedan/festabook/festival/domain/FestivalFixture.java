@@ -1,5 +1,6 @@
 package com.daedan.festabook.festival.domain;
 
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -86,10 +87,9 @@ public class FestivalFixture {
     }
 
     public static Festival create(
-            Long id
+            Long festivalId
     ) {
-        return new Festival(
-                id,
+        Festival festival = new Festival(
                 DEFAULT_UNIVERSITY_NAME,
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
@@ -98,5 +98,7 @@ public class FestivalFixture {
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
         );
+        BaseEntityTestHelper.setId(festival, festivalId);
+        return festival;
     }
 }

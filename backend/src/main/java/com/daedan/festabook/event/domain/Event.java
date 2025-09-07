@@ -1,5 +1,6 @@
 package com.daedan.festabook.event.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -13,15 +14,23 @@ import java.time.LocalTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE event SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Event implements Comparable<Event> {
+public class Event extends BaseEntity implements Comparable<Event> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @JoinColumn(nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    private EventDate eventDate;
 
     @Column(nullable = false)
     private LocalTime startTime;
@@ -35,41 +44,18 @@ public class Event implements Comparable<Event> {
     @Column(nullable = false)
     private String location;
 
-    @JoinColumn(nullable = false)
-    @ManyToOne(fetch = FetchType.LAZY)
-    private EventDate eventDate;
-
-    protected Event(
-            Long id,
+    public Event(
+            EventDate eventDate,
             LocalTime startTime,
             LocalTime endTime,
             String title,
-            String location,
-            EventDate eventDate
+            String location
     ) {
-        this.id = id;
+        this.eventDate = eventDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.title = title;
         this.location = location;
-        this.eventDate = eventDate;
-    }
-
-    public Event(
-            LocalTime startTime,
-            LocalTime endTime,
-            String title,
-            String location,
-            EventDate eventDate
-    ) {
-        this(
-                null,
-                startTime,
-                endTime,
-                title,
-                location,
-                eventDate
-        );
     }
 
     public EventStatus determineStatus(Clock clock) {
@@ -81,6 +67,10 @@ public class Event implements Comparable<Event> {
         this.endTime = newEvent.endTime;
         this.title = newEvent.title;
         this.location = newEvent.location;
+    }
+
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.eventDate.isFestivalIdEqualTo(festivalId);
     }
 
     @Override

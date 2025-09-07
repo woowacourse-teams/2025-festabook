@@ -1,10 +1,9 @@
 package com.daedan.festabook.place.service;
 
+import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.place.domain.Place;
-import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
-import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
@@ -22,20 +21,19 @@ public class PlacePreviewService {
 
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
-    private final PlaceDetailJpaRepository placeDetailJpaRepository;
+    private final ShuffleManager shuffleManager;
 
-    public PlacePreviewResponses getAllPreviewPlaceByFestivalId(Long festivalId) {
-        List<Place> places = getPlacesHasDetail(festivalId);
+    public PlacePreviewResponses getAllPreviewPlaceByFestivalIdSortByRandom(Long festivalId) {
+        List<Place> places = getMainPlaces(festivalId);
+        List<Place> shuffledPlaces = shuffleManager.getShuffledList(places);
+        Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(shuffledPlaces);
 
-        Map<Long, PlaceImage> placeImages = mapPlaceImagesToIds(places);
-        Map<Long, PlaceDetail> placeDetails = mapPlaceDetailsToIds(places);
-
-        return PlacePreviewResponses.from(places, placeDetails, placeImages);
+        return PlacePreviewResponses.from(shuffledPlaces, placeImages);
     }
 
-    private List<Place> getPlacesHasDetail(Long festivalId) {
+    private List<Place> getMainPlaces(Long festivalId) {
         return placeJpaRepository.findAllByFestivalId(festivalId).stream()
-                .filter(Place::hasDetail)
+                .filter(Place::isMainPlace)
                 .toList();
     }
 
@@ -43,14 +41,6 @@ public class PlacePreviewService {
         return placeImageJpaRepository.findAllByPlaceInAndSequence(places, REPRESENTATIVE_IMAGE_SEQUENCE).stream()
                 .collect(Collectors.toMap(
                         image -> image.getPlace().getId(), // TODO: N+1 문제 해결
-                        Function.identity()
-                ));
-    }
-
-    private Map<Long, PlaceDetail> mapPlaceDetailsToIds(List<Place> places) {
-        return placeDetailJpaRepository.findAllByPlaceIn(places).stream()
-                .collect(Collectors.toMap(
-                        detail -> detail.getPlace().getId(), // TODO: N+1 문제 해결
                         Function.identity()
                 ));
     }

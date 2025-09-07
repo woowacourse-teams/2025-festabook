@@ -19,16 +19,20 @@ import org.springframework.context.annotation.Configuration;
 @RequiredArgsConstructor
 public class SwaggerConfig {
 
-    private static final String FESTIVAL_SCHEME_NAME = "축제(Festival) ID 값";
+    private static final String FESTIVAL_SCHEME_NAME = "Festival ID 값";
+    private static final String BEARER_SCHEME_NAME = "JWT Token 값";
     private static final List<String[]> API_GROUPS = List.of(
             new String[]{"전체", "/**"},
             new String[]{"일정 API", "/event-dates/**"},
             new String[]{"플레이스 API", "/places/**"},
             new String[]{"공지 API", "/announcements/**"},
-            new String[]{"질문 API", "/questions/**"},
+            new String[]{"FAQ API", "/questions/**"},
             new String[]{"분실물 API", "/lost-items/**"},
             new String[]{"축제 API", "/festivals/**"},
-            new String[]{"디바이스 API", "/devices/**"}
+            new String[]{"디바이스 API", "/devices/**"},
+            new String[]{"학생회 API", "/councils/**"},
+            new String[]{"이미지 저장 API", "/images/**"},
+            new String[]{"라인업 API", "/lineups/**"}
     );
 
     private final BuildProperties buildProperties;
@@ -59,14 +63,23 @@ public class SwaggerConfig {
     }
 
     private static SecurityRequirement createSecurityRequirement() {
-        return new SecurityRequirement().addList(FESTIVAL_SCHEME_NAME);
+        return new SecurityRequirement()
+                .addList(FESTIVAL_SCHEME_NAME)
+                .addList(BEARER_SCHEME_NAME);
     }
 
     private static Components createComponents() {
         return new Components()
-                .addSecuritySchemes(FESTIVAL_SCHEME_NAME, new SecurityScheme()
-                        .type(Type.APIKEY)
-                        .in(In.HEADER)
-                        .name("festival"));
+                .addSecuritySchemes(FESTIVAL_SCHEME_NAME,
+                        new SecurityScheme()
+                                .type(Type.APIKEY)
+                                .in(In.HEADER)
+                                .name("festival"))
+                .addSecuritySchemes(BEARER_SCHEME_NAME,
+                        new SecurityScheme()
+                                .type(Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")
+                                .name("Authorization"));
     }
 }

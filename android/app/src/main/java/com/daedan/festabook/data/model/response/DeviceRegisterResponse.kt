@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeviceRegisterResponse(
-    @SerialName("id")
+    @SerialName("deviceId")
     val id: Long,
 )

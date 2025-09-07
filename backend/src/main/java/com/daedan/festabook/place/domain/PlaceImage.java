@@ -1,5 +1,6 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -11,11 +12,15 @@ import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE place_image SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceImage {
+public class PlaceImage extends BaseEntity implements Comparable<PlaceImage> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +36,6 @@ public class PlaceImage {
     @Column(nullable = false)
     private Integer sequence;
 
-    // TODO PlaceImage 최대 5개 검증 로직 구현
     public PlaceImage(
             Place place,
             String imageUrl,
@@ -40,5 +44,18 @@ public class PlaceImage {
         this.place = place;
         this.imageUrl = imageUrl;
         this.sequence = sequence;
+    }
+
+    public void updateSequence(int sequence) {
+        this.sequence = sequence;
+    }
+
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.place.isFestivalIdEqualTo(festivalId);
+    }
+
+    @Override
+    public int compareTo(PlaceImage otherPlaceImage) {
+        return sequence.compareTo(otherPlaceImage.sequence);
     }
 }

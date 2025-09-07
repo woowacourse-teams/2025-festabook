@@ -10,10 +10,12 @@ import kotlinx.serialization.Serializable
 data class PlaceGeographyResponse(
     @SerialName("category")
     val category: PlaceCategory,
-    @SerialName("id")
+    @SerialName("placeId")
     val id: Long,
     @SerialName("markerCoordinate")
     val markerCoordinate: MarkerCoordinate,
+    @SerialName("title")
+    val title: String,
 ) {
     @Serializable
     data class MarkerCoordinate(
@@ -30,6 +32,9 @@ data class PlaceGeographyResponse(
         TRASH_CAN,
         TOILET,
         SMOKING,
+        PARKING,
+        PRIMARY,
+        STAGE,
     }
 }
 
@@ -42,6 +47,7 @@ fun PlaceGeographyResponse.toDomain() =
                 latitude = markerCoordinate.latitude,
                 longitude = markerCoordinate.longitude,
             ),
+        title = title,
     )
 
 fun PlaceGeographyResponse.PlaceCategory.toDomain() =
@@ -52,4 +58,7 @@ fun PlaceGeographyResponse.PlaceCategory.toDomain() =
         PlaceGeographyResponse.PlaceCategory.SMOKING -> PlaceCategory.SMOKING_AREA
         PlaceGeographyResponse.PlaceCategory.TOILET -> PlaceCategory.TOILET
         PlaceGeographyResponse.PlaceCategory.TRASH_CAN -> PlaceCategory.TRASH_CAN
+        PlaceGeographyResponse.PlaceCategory.PARKING -> PlaceCategory.PARKING
+        PlaceGeographyResponse.PlaceCategory.PRIMARY -> PlaceCategory.PRIMARY
+        PlaceGeographyResponse.PlaceCategory.STAGE -> PlaceCategory.STAGE
     }

@@ -1,12 +1,11 @@
 package com.daedan.festabook.global.config;
 
-import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.argumentresolver.FestivalId;
-import com.daedan.festabook.festival.domain.FestivalFixture;
 import io.restassured.RestAssured;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -15,18 +14,15 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
+@Import(TestSecurityConfig.class)
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class WebMvcConfigTest {
 
@@ -64,189 +60,6 @@ class WebMvcConfigTest {
         }
     }
 
-    @Nested
-    class addCorsMappings {
-
-        @Test
-        void 성공_POST() {
-            // given
-            String origin1 = "http://localhost:5173";
-            String origin2 = "http://127.0.0.1:5173";
-            String expectedResponse = "addCorsMappings-POST";
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header("Origin", origin1)
-                    .when()
-                    .post("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin1));
-
-            RestAssured
-                    .given()
-                    .header("Origin", origin2)
-                    .when()
-                    .post("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin2));
-        }
-
-        @Test
-        void 성공_GET() {
-            // given
-            String origin1 = "http://localhost:5173";
-            String origin2 = "http://127.0.0.1:5173";
-            String expectedResponse = "addCorsMappings-GET";
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header("Origin", origin1)
-                    .when()
-                    .get("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin1));
-
-            RestAssured
-                    .given()
-                    .header("Origin", origin2)
-                    .when()
-                    .get("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin2));
-        }
-
-        @Test
-        void 성공_PUT() {
-            // given
-            String origin1 = "http://localhost:5173";
-            String origin2 = "http://127.0.0.1:5173";
-            String expectedResponse = "addCorsMappings-PUT";
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header("Origin", origin1)
-                    .when()
-                    .put("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin1));
-
-            RestAssured
-                    .given()
-                    .header("Origin", origin2)
-                    .when()
-                    .put("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin2));
-        }
-
-        @Test
-        void 성공_PATCH() {
-            // given
-            String origin1 = "http://localhost:5173";
-            String origin2 = "http://127.0.0.1:5173";
-            String expectedResponse = "addCorsMappings-PATCH";
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header("Origin", origin1)
-                    .when()
-                    .patch("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin1));
-
-            RestAssured
-                    .given()
-                    .header("Origin", origin2)
-                    .when()
-                    .patch("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin2));
-        }
-
-        @Test
-        void 성공_DELETE() {
-            // given
-            String origin1 = "http://localhost:5173";
-            String origin2 = "http://127.0.0.1:5173";
-            String expectedResponse = "addCorsMappings-DELETE";
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header("Origin", origin1)
-                    .when()
-                    .delete("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin1));
-
-            RestAssured
-                    .given()
-                    .header("Origin", origin2)
-                    .when()
-                    .delete("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body(equalTo(expectedResponse))
-                    .header("Access-Control-Allow-Origin", equalTo(origin2));
-        }
-
-        @Test
-        void 성공_Preflight_요청() {
-            // given & when & then
-            RestAssured
-                    .given()
-                    .header("Access-Control-Request-Method", "POST")
-                    .header("Access-Control-Request-Headers", "Content-Type,festival")
-                    .when()
-                    .options("/test/addCorsMappings")
-                    .then()
-                    .log().all()
-                    .statusCode(HttpStatus.OK.value())
-                    .header("Allow", containsString("POST"))
-                    .header("Allow", containsString("GET"))
-                    .header("Allow", containsString("PUT"))
-                    .header("Allow", containsString("PATCH"))
-                    .header("Allow", containsString("DELETE"));
-        }
-
-        @Test
-        void 실패_허용되지않은_origin() {
-            // given
-            String invalidOrigin = "https://naver.com";
-
-            // when & then
-            RestAssured.
-                    given()
-                    .header("Origin", invalidOrigin)
-                    .when()
-                    .get("/test/addCorsMappings")
-                    .then()
-                    .statusCode(HttpStatus.FORBIDDEN.value());
-        }
-    }
-
     @RestController
     static class TestController {
 
@@ -254,36 +67,6 @@ class WebMvcConfigTest {
         @ResponseStatus(HttpStatus.OK)
         public Long test(@FestivalId Long festivalId) {
             return festivalId;
-        }
-
-        @PostMapping("/test/addCorsMappings")
-        @ResponseStatus(HttpStatus.OK)
-        public String test1() {
-            return "addCorsMappings-POST";
-        }
-
-        @GetMapping("/test/addCorsMappings")
-        @ResponseStatus(HttpStatus.OK)
-        public String test2() {
-            return "addCorsMappings-GET";
-        }
-
-        @PutMapping("/test/addCorsMappings")
-        @ResponseStatus(HttpStatus.OK)
-        public String test3() {
-            return "addCorsMappings-PUT";
-        }
-
-        @PatchMapping("/test/addCorsMappings")
-        @ResponseStatus(HttpStatus.OK)
-        public String test4() {
-            return "addCorsMappings-PATCH";
-        }
-
-        @DeleteMapping("/test/addCorsMappings")
-        @ResponseStatus(HttpStatus.OK)
-        public String test5() {
-            return "addCorsMappings-DELETE";
         }
     }
 }

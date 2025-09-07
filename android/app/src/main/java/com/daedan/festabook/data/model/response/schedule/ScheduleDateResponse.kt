@@ -7,7 +7,7 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class ScheduleDateResponse(
-    @SerialName("id")
+    @SerialName("eventDateId")
     val id: Long,
     @SerialName("date")
     val date: String,

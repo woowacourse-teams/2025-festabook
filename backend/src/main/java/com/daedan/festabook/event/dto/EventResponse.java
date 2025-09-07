@@ -7,7 +7,7 @@ import java.time.Clock;
 import java.time.LocalTime;
 
 public record EventResponse(
-        Long id,
+        Long eventId,
         EventStatus status,
         @JsonFormat(pattern = "HH:mm") LocalTime startTime,
         @JsonFormat(pattern = "HH:mm") LocalTime endTime,

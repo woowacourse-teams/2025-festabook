@@ -4,7 +4,7 @@ import com.daedan.festabook.announcement.domain.Announcement;
 import java.time.LocalDateTime;
 
 public record AnnouncementResponse(
-        Long id,
+        Long announcementId,
         String title,
         String content,
         boolean isPinned,

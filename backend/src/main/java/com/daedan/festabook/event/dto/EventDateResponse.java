@@ -4,7 +4,7 @@ import com.daedan.festabook.event.domain.EventDate;
 import java.time.LocalDate;
 
 public record EventDateResponse(
-        Long id,
+        Long eventDateId,
         LocalDate date
 ) {
 

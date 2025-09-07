@@ -19,7 +19,7 @@
             android:layout_height="match_parent"
             android:contentDescription="@string/home_poster_image"
             android:scaleType="centerCrop"
-            android:src="@drawable/sample_poster"
+            tools:src="@drawable/sample_poster"
             app:layout_constraintDimensionRatio="3:4"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintBottom_toBottomOf="parent"

@@ -1,5 +1,9 @@
 package com.daedan.festabook.global.logging;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.MethodCallMessage;
+import com.daedan.festabook.global.logging.dto.MethodEndMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -12,19 +16,22 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
 
     @Around("""
-        within(@org.springframework.web.bind.annotation.RestController *) || 
-        within(@org.springframework.stereotype.Service *) ||
-        within(@org.springframework.stereotype.Repository *)) """
+            execution(* com.daedan.festabook..*.*(..)) &&
+            (
+                within(@org.springframework.web.bind.annotation.RestController *) ||
+                within(@org.springframework.stereotype.Service *) ||
+                execution(* org.springframework.data.jpa.repository.JpaRepository+.*(..))
+            )
+            """
     )
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
-
-        log.info("[Method Call] | Class: {} | Method: {} | Args: {}",
-                joinPoint.getSignature().getName(),
-                joinPoint.getSignature().getName(),
-                joinPoint.getArgs()
-        );
-
         long start = System.currentTimeMillis();
+        String className = joinPoint.getSignature().getDeclaringTypeName();
+        String methodName = joinPoint.getSignature().getName();
+
+        MethodCallMessage methodCallMessage = MethodCallMessage.from(className, methodName);
+        log.info("", kv("event", methodCallMessage));
+
         Object result = null;
         try {
             result = joinPoint.proceed();
@@ -32,12 +39,8 @@ public class LoggingAspect {
             long end = System.currentTimeMillis();
             long executionTime = end - start;
 
-            log.info("[Method End] | Class: {} | Method: {} | Execution Time: {}ms | Response: {}",
-                    joinPoint.getSignature().getDeclaringTypeName(),
-                    joinPoint.getSignature().getName(),
-                    executionTime,
-                    result
-            );
+            MethodEndMessage methodEndMessage = MethodEndMessage.from(className, methodName, executionTime);
+            log.info("", kv("event", methodEndMessage));
         }
 
         return result;

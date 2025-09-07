@@ -3,19 +3,14 @@ package com.daedan.festabook.place.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 
-import com.daedan.festabook.festival.domain.Coordinate;
-import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.place.domain.Place;
-import com.daedan.festabook.place.domain.PlaceCategory;
-import com.daedan.festabook.place.domain.PlaceDetail;
-import com.daedan.festabook.place.domain.PlaceDetailFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
-import com.daedan.festabook.place.infrastructure.PlaceDetailJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.List;
@@ -39,13 +34,13 @@ class PlacePreviewServiceTest {
     private PlaceImageJpaRepository placeImageJpaRepository;
 
     @Mock
-    private PlaceDetailJpaRepository placeDetailJpaRepository;
+    private ShuffleManager shuffleManager;
 
     @InjectMocks
     private PlacePreviewService placePreviewService;
 
     @Nested
-    class getAllPreviewPlaceByFestivalId {
+    class getAllPreviewPlaceByFestivalIdSortByRandom {
 
         @Test
         void 성공() {
@@ -53,10 +48,6 @@ class PlacePreviewServiceTest {
             Place place1 = PlaceFixture.create(1L);
             Place place2 = PlaceFixture.create(2L);
             List<Place> places = List.of(place1, place2);
-
-            PlaceDetail placeDetail1 = PlaceDetailFixture.create(place1);
-            PlaceDetail placeDetail2 = PlaceDetailFixture.create(place2);
-            List<PlaceDetail> placeDetails = List.of(placeDetail1, placeDetail2);
 
             int representativeSequence = 1;
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
@@ -66,18 +57,21 @@ class PlacePreviewServiceTest {
             Long festivalId = 1L;
             given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(places);
-            given(placeDetailJpaRepository.findAllByPlaceIn(places))
-                    .willReturn(placeDetails);
-            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
+            List<Place> shuffledPlaces = List.of(place2, place1);
+            given(shuffleManager.getShuffledList(places))
+                    .willReturn(shuffledPlaces);
+            given(placeImageJpaRepository.findAllByPlaceInAndSequence(shuffledPlaces, representativeSequence))
                     .willReturn(placeImages);
 
             int expectedSize = 2;
 
             // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
+            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalIdSortByRandom(festivalId);
 
             // then
             assertThat(result.responses()).hasSize(expectedSize);
+            then(shuffleManager).should()
+                    .getShuffledList(places);
         }
 
         @Test
@@ -87,10 +81,6 @@ class PlacePreviewServiceTest {
             Place place2 = PlaceFixture.create(2L);
             List<Place> places = List.of(place1, place2);
 
-            PlaceDetail placeDetail1 = PlaceDetailFixture.create(place1);
-            PlaceDetail placeDetail2 = PlaceDetailFixture.create(place2);
-            List<PlaceDetail> placeDetails = List.of(placeDetail1, placeDetail2);
-
             int representativeSequence = 1;
             PlaceImage placeImage1 = PlaceImageFixture.create(place1, representativeSequence);
             List<PlaceImage> placeImages = List.of(placeImage1);
@@ -99,45 +89,22 @@ class PlacePreviewServiceTest {
 
             given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(places);
-            given(placeDetailJpaRepository.findAllByPlaceIn(places))
-                    .willReturn(placeDetails);
-            given(placeImageJpaRepository.findAllByPlaceInAndSequence(places, representativeSequence))
+            List<Place> shuffledPlaces = List.of(place2, place1);
+            given(shuffleManager.getShuffledList(places))
+                    .willReturn(shuffledPlaces);
+            given(placeImageJpaRepository.findAllByPlaceInAndSequence(shuffledPlaces, representativeSequence))
                     .willReturn(placeImages);
 
             // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
+            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalIdSortByRandom(festivalId);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(placeImage1.getImageUrl());
-                s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(null);
+                s.assertThat(result.responses().get(0).imageUrl()).isEqualTo(null);
+                s.assertThat(result.responses().get(1).imageUrl()).isEqualTo(placeImage1.getImageUrl());
             });
-        }
-
-        @Test
-        void 성공_Detail이_없는_경우_나머지_필드_null_반환() {
-            // given
-            Long festivalId = 1L;
-            Festival festival = FestivalFixture.create(festivalId);
-
-            PlaceCategory placeCategory = PlaceCategory.BAR;
-            Coordinate coordinate = null;
-            Place place = PlaceFixture.create(festival, placeCategory, coordinate);
-
-            given(placeJpaRepository.findAllByFestivalId(festival.getId()))
-                    .willReturn(List.of(place));
-
-            // when
-            PlacePreviewResponses result = placePreviewService.getAllPreviewPlaceByFestivalId(festivalId);
-
-            // then
-            assertSoftly(s -> {
-                s.assertThat(result.responses().getFirst().imageUrl()).isNull();
-                s.assertThat(result.responses().getFirst().category()).isEqualTo(placeCategory);
-                s.assertThat(result.responses().getFirst().title()).isNull();
-                s.assertThat(result.responses().getFirst().description()).isNull();
-                s.assertThat(result.responses().getFirst().location()).isNull();
-            });
+            then(shuffleManager).should()
+                    .getShuffledList(places);
         }
     }
 }

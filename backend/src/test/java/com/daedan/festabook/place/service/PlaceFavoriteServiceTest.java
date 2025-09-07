@@ -1,8 +1,8 @@
 package com.daedan.festabook.place.service;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -57,7 +57,7 @@ class PlaceFavoriteServiceTest {
             Long deviceId = 10L;
             Device device = DeviceFixture.create(deviceId);
             Long placeFavoriteId = 100L;
-            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(place, device, placeFavoriteId);
             PlaceFavoriteRequest request = new PlaceFavoriteRequest(deviceId);
 
             given(placeJpaRepository.findById(placeId))
@@ -71,7 +71,7 @@ class PlaceFavoriteServiceTest {
             PlaceFavoriteResponse result = placeFavoriteService.addPlaceFavorite(placeId, request);
 
             // then
-            assertThat(result.id()).isEqualTo(placeFavoriteId);
+            assertThat(result.placeFavoriteId()).isEqualTo(placeFavoriteId);
             then(placeFavoriteJpaRepository).should()
                     .save(any());
         }
@@ -140,7 +140,7 @@ class PlaceFavoriteServiceTest {
 
             Device device = DeviceFixture.create(deviceId);
             Place place = PlaceFixture.create(placeId);
-            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(place, device, placeFavoriteId);
 
             given(placeFavoriteJpaRepository.findById(placeFavoriteId))
                     .willReturn(Optional.of(placeFavorite));
@@ -177,7 +177,7 @@ class PlaceFavoriteServiceTest {
 
             Device device = DeviceFixture.create(invalidDeviceId);
             Place place = PlaceFixture.create(placeId);
-            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(placeFavoriteId, place, device);
+            PlaceFavorite placeFavorite = PlaceFavoriteFixture.create(place, device, placeFavoriteId);
 
             given(placeFavoriteJpaRepository.findById(placeFavoriteId))
                     .willReturn(Optional.of(placeFavorite));

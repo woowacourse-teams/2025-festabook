@@ -3,6 +3,7 @@ package com.daedan.festabook.event.controller;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.event.domain.Event;
@@ -12,13 +13,17 @@ import com.daedan.festabook.event.domain.EventFixture;
 import com.daedan.festabook.event.domain.EventStatus;
 import com.daedan.festabook.event.dto.EventRequest;
 import com.daedan.festabook.event.dto.EventRequestFixture;
+import com.daedan.festabook.event.dto.EventUpdateRequest;
+import com.daedan.festabook.event.dto.EventUpdateRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -43,8 +48,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventControllerTest {
 
-    private static final String FESTIVAL_HEADER_NAME = "festival";
-
     @Autowired
     private EventDateJpaRepository eventDateJpaRepository;
 
@@ -53,6 +56,9 @@ class EventControllerTest {
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
+
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
 
     @MockitoBean
     private Clock clock;
@@ -76,21 +82,32 @@ class EventControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
             EventRequest request = EventRequestFixture.create(eventDate.getId());
 
+            int expectedSize = 6;
+
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .post("/event-dates/events")
                     .then()
-                    .statusCode(HttpStatus.CREATED.value());
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedSize))
+                    .body("eventId", notNullValue())
+                    .body("status", notNullValue())
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()))
+                    .body("title", equalTo(request.title()))
+                    .body("location", equalTo(request.location()));
         }
     }
 
@@ -100,10 +117,12 @@ class EventControllerTest {
         @Test
         void 성공() {
             // given
+            setFixedClock(LocalDateTime.now());
+
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            setFixedClock(LocalDateTime.now());
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
@@ -112,24 +131,33 @@ class EventControllerTest {
             eventJpaRepository.save(event);
             Long eventId = event.getId();
 
-            EventRequest request = EventRequestFixture.create(
+            EventUpdateRequest request = EventUpdateRequestFixture.create(
+                    eventDate.getId(),
                     LocalTime.of(3, 0),
                     LocalTime.of(4, 0),
                     "updated title",
-                    "updated location",
-                    eventDate.getId()
+                    "updated location"
             );
+
+            int expectedSize = 6;
 
             // when & then
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .body(request)
                     .when()
                     .patch("/event-dates/events/{eventId}", eventId)
                     .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedSize))
+                    .body("eventId", equalTo(eventId.intValue()))
+                    .body("status", notNullValue())
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()))
+                    .body("title", equalTo(request.title()))
+                    .body("location", equalTo(request.location()));
         }
     }
 
@@ -142,6 +170,8 @@ class EventControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             EventDate eventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(eventDate);
 
@@ -151,31 +181,12 @@ class EventControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .when()
                     .delete("/event-dates/events/{eventId}", event.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
             assertThat(eventJpaRepository.findById(event.getId())).isEmpty();
-        }
-
-        @Test
-        void 성공_존재하지_않는_일정_ID() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Long invalidEventId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .when()
-                    .delete("/event-dates/events/{eventId}", invalidEventId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-            assertThat(eventJpaRepository.findById(invalidEventId)).isEmpty();
         }
     }
 
@@ -213,7 +224,7 @@ class EventControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(event.getId().intValue()))
+                    .body("[0].eventId", equalTo(event.getId().intValue()))
                     .body("[0].status", equalTo(EventStatus.ONGOING.name()))
                     .body("[0].startTime", equalTo(event.getStartTime().toString()))
                     .body("[0].endTime", equalTo(event.getEndTime().toString()))

@@ -1,10 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useModal } from '../hooks/useModal';
-import api from '../utils/api';
+import { festivalAPI, lineupAPI } from '../utils/api';
 
 const HomePage = () => {
     const { openModal, showToast } = useModal();
     const [festival, setFestival] = useState(null);
+    const [lineups, setLineups] = useState([]);
     const [loading, setLoading] = useState(true);
     const [isDragging, setIsDragging] = useState(false);
     const scrollContainerRef = useRef(null);
@@ -12,10 +13,10 @@ const HomePage = () => {
     const scrollLeftRef = useRef(null);
 
     useEffect(() => {
-        fetchFestivalData();
+        fetchData();
     }, []);
 
-    const fetchFestivalData = async () => {
+    const fetchData = async () => {
         try {
             setLoading(true);
             const festivalId = localStorage.getItem('festivalId');
@@ -23,8 +24,15 @@ const HomePage = () => {
                 showToast('Festival ID가 설정되지 않았습니다.');
                 return;
             }
-            const response = await api.get('/festivals');
-            setFestival(response.data);
+            
+            // 축제 정보와 라인업 정보를 병렬로 가져오기
+            const [festivalData, lineupsData] = await Promise.all([
+                festivalAPI.getFestival(),
+                lineupAPI.getLineups()
+            ]);
+            
+            setFestival(festivalData);
+            setLineups(lineupsData);
         } catch (error) {
             if (error.response?.status === 404) {
                 showToast('축제 정보를 찾을 수 없습니다. Festival ID를 확인해주세요.');
@@ -46,6 +54,15 @@ const HomePage = () => {
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
         return `${year}년 ${month}월 ${day}일`;
+    };
+
+    const formatDateTime = (dateTimeString) => {
+        const date = new Date(dateTimeString);
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        const hours = String(date.getHours()).padStart(2, '0');
+        const minutes = String(date.getMinutes()).padStart(2, '0');
+        return `${month}.${day} ${hours}:${minutes}`;
     };
 
     const handleMouseDown = (e) => {
@@ -83,7 +100,7 @@ const HomePage = () => {
             <div className="text-center py-12">
                 <p className="text-gray-600 mb-4">축제 정보를 불러올 수 없습니다.</p>
                 <button 
-                    onClick={fetchFestivalData}
+                    onClick={fetchData}
                     className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                 >
                     다시 시도
@@ -179,6 +196,70 @@ const HomePage = () => {
                             className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                         >
                             첫 번째 이미지 추가
+                        </button>
+                    </div>
+                )}
+            </div>
+
+            {/* 축제 라인업 */}
+            <div className="bg-white rounded-xl shadow-lg p-6 mb-8">
+                <div className="flex justify-between items-center mb-6">
+                    <h3 className="text-lg font-semibold text-gray-900">축제 라인업</h3>
+                    <button 
+                        onClick={() => openModal('lineup-add', { onUpdate: setLineups })}
+                        className="text-black hover:text-gray-700 text-sm font-medium"
+                    >
+                        추가
+                    </button>
+                </div>
+                
+                {lineups.length > 0 ? (
+                    <div 
+                        ref={scrollContainerRef}
+                        className={`overflow-x-auto ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                        onMouseDown={handleMouseDown}
+                        onMouseMove={handleMouseMove}
+                        onMouseUp={handleMouseUp}
+                        onMouseLeave={handleMouseLeave}
+                    >
+                        <div className="flex space-x-6 w-max select-none py-2">
+                            {lineups.map((lineup, index) => (
+                                <div
+                                    key={lineup.lineupId}
+                                    className="relative flex-shrink-0 text-center cursor-pointer hover:scale-105 transition-transform duration-300 ease-out"
+                                    onClick={() => openModal('lineup-edit', { 
+                                        lineup, 
+                                        onUpdate: setLineups 
+                                    })}
+                                >
+                                    {/* 개선된 프로필 이미지 - 축제 분위기 */}
+                                    <div className="relative w-24 h-24 mb-3 mt-2">
+                                        {/* 회색 테두리로 복구 */}
+                                        <div className="w-full h-full bg-white overflow-hidden relative border-2 border-gray-300 shadow-2xl hover:shadow-black transition-shadow duration-300" style={{borderRadius: '50% 50% 50% 15%', boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3), 0 6px 10px rgba(0, 0, 0, 0.2)'}}>
+                                            <img
+                                                src={lineup.imageUrl}
+                                                alt={lineup.name}
+                                                className="w-full h-full object-cover"
+                                            />
+                                        </div>
+                                    </div>
+                                    <p className="text-sm font-medium text-gray-900">{lineup.name}</p>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                ) : (
+                    <div className="text-center py-12">
+                        <svg className="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                                d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                        <p className="text-gray-500 mb-4">등록된 라인업이 없습니다</p>
+                        <button
+                            onClick={() => openModal('lineup-add', { onUpdate: setLineups })}
+                            className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+                        >
+                            첫 번째 라인업 추가
                         </button>
                     </div>
                 )}

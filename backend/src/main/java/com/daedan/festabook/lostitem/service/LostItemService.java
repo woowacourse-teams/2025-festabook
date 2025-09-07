@@ -7,6 +7,8 @@ import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import jakarta.transaction.Transactional;
@@ -37,13 +39,31 @@ public class LostItemService {
     }
 
     @Transactional
-    public LostItemUpdateResponse updateLostItem(Long lostItemId, LostItemRequest request) {
+    public LostItemUpdateResponse updateLostItem(Long festivalId, Long lostItemId, LostItemRequest request) {
         LostItem lostItem = getLostItemById(lostItemId);
+        validateLostItemBelongsToFestival(lostItem, festivalId);
+
         lostItem.updateLostItem(request.imageUrl(), request.storageLocation());
         return LostItemUpdateResponse.from(lostItem);
     }
 
-    public void deleteLostItemByLostItemId(Long lostItemId) {
+    @Transactional
+    public LostItemStatusUpdateResponse updateLostItemStatus(
+            Long festivalId,
+            Long lostItemId,
+            LostItemStatusUpdateRequest request
+    ) {
+        LostItem lostItem = getLostItemById(lostItemId);
+        validateLostItemBelongsToFestival(lostItem, festivalId);
+
+        lostItem.updateStatus(request.pickupStatus());
+        return LostItemStatusUpdateResponse.from(lostItem);
+    }
+
+    public void deleteLostItemByLostItemId(Long festivalId, Long lostItemId) {
+        LostItem lostItem = getLostItemById(lostItemId);
+        validateLostItemBelongsToFestival(lostItem, festivalId);
+
         lostItemJpaRepository.deleteById(lostItemId);
     }
 
@@ -55,5 +75,11 @@ public class LostItemService {
     private Festival getFestivalById(Long festivalId) {
         return festivalJpaRepository.findById(festivalId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private void validateLostItemBelongsToFestival(LostItem lostItem, Long festivalId) {
+        if (!lostItem.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 분실물이 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }

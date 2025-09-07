@@ -1,7 +1,7 @@
 package com.daedan.festabook.festival.domain;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.daedan.festabook.global.exception.BusinessException;
 import org.junit.jupiter.api.DisplayNameGeneration;
