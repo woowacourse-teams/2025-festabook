@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,6 +38,7 @@ public class PlaceController {
     private final PlaceService placeService;
     private final PlacePreviewService placePreviewService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스 생성")
@@ -86,6 +88,7 @@ public class PlaceController {
         return placeService.getPlaceByPlaceId(placeId);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/{placeId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 플레이스 세부사항 수정")
@@ -100,6 +103,7 @@ public class PlaceController {
         return placeService.updatePlace(councilDetails.getFestivalId(), placeId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/{placeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스 삭제")

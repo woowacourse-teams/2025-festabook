@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -42,6 +43,7 @@ public class PlaceGeographyController {
         return placeGeographyService.getAllPlaceGeographyByFestivalId(festivalId);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/{placeId}/geographies")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 플레이스의 좌표(위도, 경도) 업데이트")

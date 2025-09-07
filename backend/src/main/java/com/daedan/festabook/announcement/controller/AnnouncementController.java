@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,6 +37,7 @@ public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "공지 생성 (+ FCM 알림 요청)")
@@ -61,6 +63,7 @@ public class AnnouncementController {
         return announcementService.getGroupedAnnouncementByFestivalId(festivalId);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 공지 내용 수정")
@@ -75,6 +78,7 @@ public class AnnouncementController {
         return announcementService.updateAnnouncement(councilDetails.getFestivalId(), announcementId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/{announcementId}/pin")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 공지 고정 형태 수정")
@@ -89,6 +93,7 @@ public class AnnouncementController {
         return announcementService.updateAnnouncementPin(councilDetails.getFestivalId(), announcementId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 공지 삭제")

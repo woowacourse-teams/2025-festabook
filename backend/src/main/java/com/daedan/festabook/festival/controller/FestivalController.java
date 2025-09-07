@@ -23,6 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -56,6 +57,7 @@ public class FestivalController {
         return festivalService.createFestival(request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping("/images")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 이미지 추가")
@@ -105,6 +107,7 @@ public class FestivalController {
         return festivalService.getUniversitiesByUniversityName(universityName);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/information")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 정보 수정")
@@ -118,6 +121,7 @@ public class FestivalController {
         return festivalService.updateFestivalInformation(councilDetails.getFestivalId(), request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/images/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 이미지들 순서 수정")
@@ -131,6 +135,7 @@ public class FestivalController {
         return festivalImageService.updateFestivalImagesSequence(councilDetails.getFestivalId(), requests);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/images/{festivalImageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 축제의 이미지 삭제")
