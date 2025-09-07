@@ -22,6 +22,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.global.security.util.JwtProvider;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -65,6 +66,7 @@ class CouncilServiceTest {
             String username = "test";
             String rawPassword = "1234";
             String encodedPassword = "{encoded}1234";
+            RoleType roleType = RoleType.ROLE_COUNCIL;
             Long councilId = 10L;
             Council council = CouncilFixture.create(festival, username, encodedPassword, councilId);
 
@@ -98,6 +100,7 @@ class CouncilServiceTest {
                 s.assertThat(savedCouncil.getFestival()).isEqualTo(festival);
                 s.assertThat(savedCouncil.getUsername()).isEqualTo(username);
                 s.assertThat(savedCouncil.getPassword()).isEqualTo(encodedPassword);
+                s.assertThat(savedCouncil.getRoles()).containsOnly(roleType);
                 s.assertThat(result).isNotNull();
             });
         }
