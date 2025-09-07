@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Test;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class QuestionTest {
 
+    private static final int MAX_QUESTION_LENGTH = 255;
+    private static final int MAX_ANSWER_LENGTH = 1024;
+
     @Nested
     class validateFestival {
 
@@ -46,8 +49,7 @@ class QuestionTest {
         @Test
         void 성공_경계값() {
             // given
-            int maxQuestionLength = 500;
-            String question = "미".repeat(maxQuestionLength);
+            String question = "미".repeat(MAX_QUESTION_LENGTH);
 
             // when & then
             assertThatCode(() -> QuestionFixture.createWithQuestion(question))
@@ -79,13 +81,12 @@ class QuestionTest {
         @Test
         void 예외_질문_길이_초과() {
             // given
-            int maxQuestionLength = 500;
-            String question = "미".repeat(maxQuestionLength + 1);
+            String question = "미".repeat(MAX_QUESTION_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> QuestionFixture.createWithQuestion(question))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("질문은 500자를 초과할 수 없습니다.");
+                    .hasMessage("질문은 255자를 초과할 수 없습니다.");
         }
     }
 
@@ -95,8 +96,7 @@ class QuestionTest {
         @Test
         void 성공_경계값() {
             // given
-            int maxAnswerLength = 1000;
-            String answer = "미".repeat(maxAnswerLength);
+            String answer = "미".repeat(MAX_ANSWER_LENGTH);
 
             // when & then
             assertThatCode(() -> QuestionFixture.createWithAnswer(answer))
@@ -128,13 +128,12 @@ class QuestionTest {
         @Test
         void 예외_답변_길이_초과() {
             // given
-            int maxAnswerLength = 1000;
-            String answer = "미".repeat(maxAnswerLength + 1);
+            String answer = "미".repeat(MAX_ANSWER_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> QuestionFixture.createWithAnswer(answer))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("답변은 1000자를 초과할 수 없습니다.");
+                    .hasMessage("답변은 1024자를 초과할 수 없습니다.");
         }
     }
 

@@ -25,8 +25,8 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question extends BaseEntity implements Comparable<Question> {
 
-    private static final int MAX_QUESTION_LENGTH = 500;
-    private static final int MAX_ANSWER_LENGTH = 1000;
+    private static final int MAX_QUESTION_LENGTH = 255;
+    private static final int MAX_ANSWER_LENGTH = 1024;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class Question extends BaseEntity implements Comparable<Question> {
     @Column(nullable = false)
     private String question;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 1024)
     private String answer;
 
     @Column(nullable = false)
@@ -64,6 +64,7 @@ public class Question extends BaseEntity implements Comparable<Question> {
     public void updateQuestionAndAnswer(String question, String answer) {
         validateQuestion(question);
         validateAnswer(answer);
+
         this.question = question;
         this.answer = answer;
     }
