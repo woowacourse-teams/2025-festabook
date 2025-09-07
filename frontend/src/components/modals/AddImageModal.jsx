@@ -64,12 +64,12 @@ const AddImageModal = ({
                 });
             }
             
-            handleToast('이미지가 성공적으로 업로드되었습니다.');
-            
             // 새로 추가된 이미지를 부모 컴포넌트에 전달
             if (onImageAdded && apiResponse) {
                 onImageAdded(apiResponse);
+                onClose(); // 콜백 호출 후 모달 닫기
             } else {
+                handleToast('이미지가 성공적으로 업로드되었습니다.');
                 onClose();
             }
         } catch (error) {
