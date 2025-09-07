@@ -5,11 +5,13 @@ import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalNotification;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
+import com.daedan.festabook.festival.dto.FestivalNotificationReadResponses;
 import com.daedan.festabook.festival.dto.FestivalNotificationRequest;
 import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -38,6 +40,16 @@ public class FestivalNotificationService {
         festivalNotificationManager.subscribeFestivalTopic(festivalId, device.getFcmToken());
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
+    }
+
+    @Transactional
+    public FestivalNotificationReadResponses getAllFestivalNotificationByDeviceId(Long deviceId) {
+        Device device = getDeviceById(deviceId);
+        List<FestivalNotification> festivalNotifications = festivalNotificationJpaRepository.getAllByDeviceId(
+                device.getId()
+        );
+
+        return FestivalNotificationReadResponses.from(festivalNotifications);
     }
 
     @Transactional
