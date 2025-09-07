@@ -54,6 +54,7 @@ public class Question extends BaseEntity implements Comparable<Question> {
         validateFestival(festival);
         validateQuestion(question);
         validateAnswer(answer);
+        validateSequence(sequence);
 
         this.festival = festival;
         this.question = question;
@@ -70,6 +71,8 @@ public class Question extends BaseEntity implements Comparable<Question> {
     }
 
     public void updateSequence(Integer sequence) {
+        validateSequence(sequence);
+
         this.sequence = sequence;
     }
 
@@ -109,6 +112,15 @@ public class Question extends BaseEntity implements Comparable<Question> {
                     String.format("답변은 %d자를 초과할 수 없습니다.", MAX_ANSWER_LENGTH),
                     HttpStatus.BAD_REQUEST
             );
+        }
+    }
+
+    private void validateSequence(Integer sequence) {
+        if (sequence == null) {
+            throw new BusinessException("순서는 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        if (sequence < 0) {
+            throw new BusinessException("순서는 음수일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }

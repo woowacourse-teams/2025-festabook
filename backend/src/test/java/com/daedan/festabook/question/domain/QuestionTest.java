@@ -169,4 +169,50 @@ class QuestionTest {
             assertThat(result).isFalse();
         }
     }
+
+    @Nested
+    class validateSequence {
+
+        @Test
+        void 성공() {
+            // given
+            Integer sequence = 1;
+
+            // when & then
+            assertThatCode(() -> QuestionFixture.create(sequence))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 성공_0() {
+            // given
+            Integer sequence = 0;
+
+            // when & then
+            assertThatCode(() -> QuestionFixture.create(sequence))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_sequence_null() {
+            // given
+            Integer sequence = null;
+
+            // when & then
+            assertThatThrownBy(() -> QuestionFixture.create(sequence))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("순서는 null일 수 없습니다.");
+        }
+
+        @Test
+        void 예외_sequence_음수() {
+            // given
+            Integer sequence = -1;
+
+            // when & then
+            assertThatThrownBy(() -> QuestionFixture.create(sequence))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("순서는 음수일 수 없습니다.");
+        }
+    }
 }
