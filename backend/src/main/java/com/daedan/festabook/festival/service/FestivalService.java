@@ -2,6 +2,8 @@ package com.daedan.festabook.festival.service;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalImage;
+import com.daedan.festabook.festival.dto.FestivalCreateRequest;
+import com.daedan.festabook.festival.dto.FestivalCreateResponse;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
@@ -22,6 +24,13 @@ public class FestivalService {
 
     private final FestivalJpaRepository festivalJpaRepository;
     private final FestivalImageJpaRepository festivalImageJpaRepository;
+
+    public FestivalCreateResponse createFestival(FestivalCreateRequest request) {
+        Festival festival = request.toEntity();
+        festivalJpaRepository.save(festival);
+        
+        return FestivalCreateResponse.from(festival);
+    }
 
     public FestivalGeographyResponse getFestivalGeographyByFestivalId(Long festivalId) {
         Festival festival = getFestivalById(festivalId);

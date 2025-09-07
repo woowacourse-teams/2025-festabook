@@ -1,5 +1,7 @@
 package com.daedan.festabook.festival.controller;
 
+import com.daedan.festabook.festival.dto.FestivalCreateRequest;
+import com.daedan.festabook.festival.dto.FestivalCreateResponse;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalImageRequest;
 import com.daedan.festabook.festival.dto.FestivalImageResponse;
@@ -41,6 +43,18 @@ public class FestivalController {
 
     private final FestivalService festivalService;
     private final FestivalImageService festivalImageService;
+
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "축제 생성")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalCreateResponse createFestival(
+            @RequestBody FestivalCreateRequest request
+    ) {
+        return festivalService.createFestival(request);
+    }
 
     @PostMapping("/images")
     @ResponseStatus(HttpStatus.CREATED)

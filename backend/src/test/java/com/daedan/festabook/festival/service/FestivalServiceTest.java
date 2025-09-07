@@ -5,10 +5,14 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.BDDMockito.given;
 
+import com.daedan.festabook.festival.domain.Coordinate;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalImage;
 import com.daedan.festabook.festival.domain.FestivalImageFixture;
+import com.daedan.festabook.festival.dto.FestivalCreateRequest;
+import com.daedan.festabook.festival.dto.FestivalCreateRequestFixture;
+import com.daedan.festabook.festival.dto.FestivalCreateResponse;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
@@ -42,6 +46,38 @@ class FestivalServiceTest {
 
     @InjectMocks
     private FestivalService festivalService;
+
+    @Nested
+    class createFestival {
+
+        @Test
+        void 성공() {
+            // given
+            FestivalCreateRequest request = FestivalCreateRequestFixture.create(
+                    "서울시립대학교",
+                    "2025 시립 Water Festival\n: AQUA WAVE",
+                    LocalDate.of(2025, 8, 23),
+                    LocalDate.of(2025, 8, 25),
+                    7,
+                    new Coordinate(37.5862037, 127.0565152),
+                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
+            );
+
+            // when
+            FestivalCreateResponse festival = festivalService.createFestival(request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(festival.universityName()).isEqualTo(request.universityName());
+                s.assertThat(festival.festivalName()).isEqualTo(request.festivalName());
+                s.assertThat(festival.startDate()).isEqualTo(request.startDate());
+                s.assertThat(festival.endDate()).isEqualTo(request.endDate());
+                s.assertThat(festival.zoom()).isEqualTo(request.zoom());
+                s.assertThat(festival.centerCoordinate()).isEqualTo(request.centerCoordinate());
+                s.assertThat(festival.polygonHoleBoundary()).isEqualTo(request.polygonHoleBoundary());
+            });
+        }
+    }
 
     @Nested
     class getFestivalGeographyByFestivalId {
