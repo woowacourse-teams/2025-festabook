@@ -192,7 +192,19 @@ const HomePage = () => {
                         </svg>
                         <p className="text-gray-500 mb-4">축제 이미지가 없습니다</p>
                         <button
-                            onClick={() => showToast('이미지 업로드 기능은 준비 중입니다.')}
+                            onClick={() => openModal('add-image', { 
+                                isPlaceImage: false,
+                                onImageAdded: async () => {
+                                    try {
+                                        const updatedFestival = await festivalAPI.getFestival();
+                                        setFestival(updatedFestival);
+                                        showToast('🎉 첫 번째 축제 이미지가 추가되었습니다!');
+                                    } catch (error) {
+                                        console.error('Failed to refresh festival data:', error);
+                                        showToast('이미지 추가 후 데이터 새로고침에 실패했습니다.');
+                                    }
+                                }
+                            })}
                             className="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-800 transition-colors"
                         >
                             첫 번째 이미지 추가

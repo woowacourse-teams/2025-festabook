@@ -96,6 +96,7 @@ function App() {
             case 'festival': return <FestivalPage {...allProps} />;
             case 'lineup-add': return <LineupAddModal isOpen={true} {...allProps} />;
             case 'lineup-edit': return <LineupEditModal isOpen={true} {...allProps} />;
+            case 'add-image': return <AddImageModal isOpen={true} {...allProps} />;
             
             default: return null;
         }
