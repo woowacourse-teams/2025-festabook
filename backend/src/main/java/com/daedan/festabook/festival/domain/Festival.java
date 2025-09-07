@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -91,14 +92,14 @@ public class Festival extends BaseEntity {
     public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate) {
         validateName(festivalName);
         validateDates(startDate, endDate);
-        
+
         this.festivalName = festivalName;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
     private void validateName(String name) {
-        if (name == null || name.trim().isEmpty()) {
+        if (!StringUtils.hasText(name)) {
             throw new BusinessException("이름은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (name.length() > MAX_NAME_LENGTH) {
