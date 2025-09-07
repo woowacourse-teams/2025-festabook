@@ -7,16 +7,18 @@ import static org.hamcrest.Matchers.hasSize;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
-import com.daedan.festabook.place.domain.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
+import com.daedan.festabook.place.dto.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import io.restassured.path.json.config.JsonPathConfig;
 import java.util.List;
 import org.junit.jupiter.api.AfterAll;
@@ -36,11 +38,16 @@ import org.springframework.http.HttpStatus;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceGeographyControllerTest {
 
+    private static final String FESTIVAL_HEADER_NAME = "festival";
+
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
     @Autowired
     private PlaceJpaRepository placeJpaRepository;
+
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
 
     @LocalServerPort
     private int port;
@@ -75,24 +82,25 @@ class PlaceGeographyControllerTest {
             placeJpaRepository.saveAll(List.of(place));
 
             int expectedSize = 1;
-            int expectedFieldSize = 3;
+            int expectedFieldSize = 4;
             int expectedMarkerFieldSize = 2;
 
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(place.getId().intValue()))
+                    .body("[0].placeId", equalTo(place.getId().intValue()))
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
                     .body("[0].markerCoordinate.latitude", equalTo(place.getCoordinate().getLatitude()))
-                    .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()));
+                    .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()))
+                    .body("[0].title", equalTo(place.getTitle()));
         }
 
         @Test
@@ -110,7 +118,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -132,7 +140,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header("festival", festival.getId())
+                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .when()
                     .get("/places/geographies")
                     .then()
@@ -150,6 +158,8 @@ class PlaceGeographyControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
@@ -161,6 +171,7 @@ class PlaceGeographyControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -170,7 +181,7 @@ class PlaceGeographyControllerTest {
                     .body("size()", equalTo(expectedFieldSize))
                     .body("$", hasKey("coordinate"))
                     .body("coordinate.size()", equalTo(expectedCoordinateSize))
-                    .body("id", equalTo(place.getId().intValue()))
+                    .body("placeId", equalTo(place.getId().intValue()))
                     .body("coordinate.latitude", equalTo(request.latitude()))
                     .body("coordinate.longitude", equalTo(request.longitude()));
         }
@@ -178,12 +189,18 @@ class PlaceGeographyControllerTest {
         @Test
         void 예외_존재하지_않는_플레이스() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long invalidPlaceId = 0L;
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()

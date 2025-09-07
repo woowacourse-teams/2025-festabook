@@ -3,6 +3,8 @@ package com.daedan.festabook.event.domain;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -29,19 +31,19 @@ class EventTest {
             // given
             EventDate eventDate = EventDateFixture.create(LocalDate.of(2025, 5, 5));
             Event originalEvent = EventFixture.create(
+                    eventDate,
                     LocalTime.of(1, 0),
                     LocalTime.of(2, 0),
                     "Original Title",
-                    "Original Location",
-                    eventDate
+                    "Original Location"
             );
 
             Event newEvent = EventFixture.create(
+                    eventDate,
                     LocalTime.of(3, 0),
                     LocalTime.of(4, 0),
                     "Updated Title",
-                    "Updated Location",
-                    eventDate
+                    "Updated Location"
             );
 
             // when
@@ -85,6 +87,41 @@ class EventTest {
 
             // then
             assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class isFestivalIdEqualTo {
+
+        @Test
+        void 같은_축제의_id이면_true() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            EventDate eventDate = EventDateFixture.create(festival);
+            Event event = EventFixture.create(eventDate);
+
+            // when
+            boolean result = event.isFestivalIdEqualTo(festivalId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 다른_축제의_id이면_false() {
+            // given
+            Long festivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival festival = FestivalFixture.create(festivalId);
+            EventDate eventDate = EventDateFixture.create(festival);
+            Event event = EventFixture.create(eventDate);
+
+            // when
+            boolean result = event.isFestivalIdEqualTo(otherFestivalId);
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 }

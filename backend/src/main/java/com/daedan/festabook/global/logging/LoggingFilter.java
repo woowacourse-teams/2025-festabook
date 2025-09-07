@@ -1,43 +1,93 @@
 package com.daedan.festabook.global.logging;
 
-import jakarta.servlet.Filter;
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.ApiCallMessage;
+import com.daedan.festabook.global.logging.dto.ApiEndMessage;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
-import java.util.UUID;
-
 import jakarta.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.stereotype.Component;
+import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Slf4j
 @Component
-public class LoggingFilter implements Filter {
+@RequiredArgsConstructor
+public class LoggingFilter extends OncePerRequestFilter {
+
+    private static final List<String> LOGGING_SKIP_PATH_PREFIX = List.of(
+            "/api/swagger-ui",
+            "/api/v3/api-docs",
+            "/api/api-docs",
+            "/api/actuator"
+    );
+
+    private final ObjectMapper objectMapper;
 
     @Override
-    public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-            throws IOException, ServletException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
+
+        long startTime = System.currentTimeMillis();
+        String uri = request.getRequestURI();
+        String httpMethod = request.getMethod();
+        String queryString = request.getQueryString();
+
+        if (isSkipLoggingForPath(uri)) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         try {
-            HttpServletRequest httpServletRequest = (HttpServletRequest) request;
+            MDC.put("traceId", UUID.randomUUID().toString());
 
-            MDC.put("requestId", UUID.randomUUID().toString());
-            log.info("[API CALL] method={}, uri={}, query={}, contentType={}, ip={}",
-                    httpServletRequest.getMethod(),
-                    httpServletRequest.getRequestURI(),
-                    httpServletRequest.getQueryString(),
-                    httpServletRequest.getContentType(),
-                    httpServletRequest.getRemoteAddr()
-            );
+            ApiCallMessage apiCallMessage = ApiCallMessage.from(httpMethod, queryString, uri);
+            log.info("", kv("event", apiCallMessage));
 
-            chain.doFilter(request, response);
+            filterChain.doFilter(request, response);
         } finally {
-            HttpServletResponse  httpServletResponse = (HttpServletResponse) response;
-            log.info("[API END] status={}", httpServletResponse.getStatus());
+            long endTime = System.currentTimeMillis();
+            long executionTime = endTime - startTime;
+            int statusCode = response.getStatus();
+            Object requestBody = extractBodyFromCache(request);
+
+            ApiEndMessage apiEndMessage = ApiEndMessage.from(statusCode, requestBody, executionTime);
+            log.info("", kv("event", apiEndMessage));
+
             MDC.clear();
         }
+    }
+
+    private boolean isSkipLoggingForPath(String uri) {
+        return LOGGING_SKIP_PATH_PREFIX.stream()
+                .anyMatch(skipPath -> uri.startsWith(skipPath));
+    }
+
+    private Object extractBodyFromCache(HttpServletRequest request) {
+        if (request instanceof ContentCachingRequestWrapper) {
+            ContentCachingRequestWrapper requestWrapper = (ContentCachingRequestWrapper) request;
+            byte[] content = requestWrapper.getContentAsByteArray();
+
+            if (content.length > 0) {
+                String requestBody = new String(content, StandardCharsets.UTF_8);
+                try {
+                    return objectMapper.readTree(requestBody);
+                } catch (IOException e) {
+                    return requestBody;
+                }
+            }
+        }
+
+        return null;
     }
 }

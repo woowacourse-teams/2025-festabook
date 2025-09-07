@@ -1,5 +1,6 @@
 package com.daedan.festabook.festival.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -17,12 +18,16 @@ import java.util.List;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 
 @Entity
 @Getter
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE festival SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Festival {
+public class Festival extends BaseEntity {
 
     private static final int MAX_NAME_LENGTH = 50;
     private static final int MIN_ZOOM = 0;
@@ -58,8 +63,7 @@ public class Festival {
     )
     private List<Coordinate> polygonHoleBoundary = new ArrayList<>();
 
-    protected Festival(
-            Long id,
+    public Festival(
             String universityName,
             String festivalName,
             LocalDate startDate,
@@ -73,7 +77,6 @@ public class Festival {
         validateCenterCoordinate(centerCoordinate);
         validatePolygonHoleBoundary(polygonHoleBoundary);
 
-        this.id = id;
         this.universityName = universityName;
         this.festivalName = festivalName;
         this.startDate = startDate;
@@ -81,27 +84,6 @@ public class Festival {
         this.zoom = zoom;
         this.centerCoordinate = centerCoordinate;
         this.polygonHoleBoundary = polygonHoleBoundary;
-    }
-
-    public Festival(
-            String universityName,
-            String festivalName,
-            LocalDate startDate,
-            LocalDate endDate,
-            Integer zoom,
-            Coordinate centerCoordinate,
-            List<Coordinate> polygonHoleBoundary
-    ) {
-        this(
-                null,
-                universityName,
-                festivalName,
-                startDate,
-                endDate,
-                zoom,
-                centerCoordinate,
-                polygonHoleBoundary
-        );
     }
 
     public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate) {

@@ -1,40 +1,41 @@
 <configuration>
 
-    <!-- 공통 로그 패턴 -->
-    <property name="LOG_PATTERN" value="%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{requestId}] - %msg%n"/>
-
-    <!-- PROD 전용: 로그를 파일에 기록 -->
-    <springProfile name="prod">
+    <!-- DEV, PROD: JSON 형식으로 로그 파일 기록 -->
+    <springProfile name="prod | dev">
         <property name="LOG_FILE_PATH" value="/home/ubuntu/2025-festabook/spring-logs"/>
 
-        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-            <file>${LOG_FILE_PATH}/application.log</file>
+        <appender name="JSON_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_FILE_PATH}/application.json</file>
 
-            <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-                <fileNamePattern>${LOG_FILE_PATH}/application.%d{yyyy-MM-dd}.log</fileNamePattern>
-                <maxHistory>7</maxHistory>
+            <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                <fileNamePattern>${LOG_FILE_PATH}/application.%i.json</fileNamePattern>
+                <minIndex>1</minIndex>
+                <maxIndex>10</maxIndex> <!-- 100MB * 10개 = 최대 1GB 보관 -->
             </rollingPolicy>
 
-            <encoder>
-                <pattern>${LOG_PATTERN}</pattern>
-            </encoder>
+            <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                <maxFileSize>100MB</maxFileSize> <!-- 100MB 단위 롤링 -->
+            </triggeringPolicy>
+
+            <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="FILE" />
+            <appender-ref ref="JSON_FILE"/>
         </root>
     </springProfile>
 
-    <!-- 로컬 및 테스트 환경용: 콘솔 출력 -->
+    <!-- 로컬 및 테스트 환경: 콘솔 JSON 출력 @formatter:off-->
     <springProfile name="!prod">
         <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
             <encoder>
-                <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} %highlight(%-5level) %green([%thread]) %cyan(%logger{36}) - %msg%n</pattern>
+                <pattern>%cyan(%d{yyyy-MM-dd HH:mm:ss.SSS}) %magenta([%thread]) %highlight(%-5level) %green(%logger{36}) - %msg%n
+                </pattern>
             </encoder>
         </appender>
 
         <root level="INFO">
-            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="CONSOLE"/>
         </root>
     </springProfile>
 

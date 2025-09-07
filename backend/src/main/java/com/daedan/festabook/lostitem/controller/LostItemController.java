@@ -1,9 +1,12 @@
 package com.daedan.festabook.lostitem.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemResponse;
 import com.daedan.festabook.lostitem.dto.LostItemResponses;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateResponse;
 import com.daedan.festabook.lostitem.dto.LostItemUpdateResponse;
 import com.daedan.festabook.lostitem.service.LostItemService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -38,10 +42,10 @@ class LostItemController {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public LostItemResponse createLostItem(
-            @Parameter(hidden = true) @FestivalId Long festivalId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody LostItemRequest request
     ) {
-        return lostItemService.createLostItem(festivalId, request);
+        return lostItemService.createLostItem(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping
@@ -64,9 +68,24 @@ class LostItemController {
     })
     public LostItemUpdateResponse updateLostItem(
             @PathVariable Long lostItemId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody LostItemRequest request
     ) {
-        return lostItemService.updateLostItem(lostItemId, request);
+        return lostItemService.updateLostItem(councilDetails.getFestivalId(), lostItemId, request);
+    }
+
+    @PatchMapping("/{lostItemId}/status")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 분실물 상태 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public LostItemStatusUpdateResponse updateLostItemStatus(
+            @PathVariable Long lostItemId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody LostItemStatusUpdateRequest request
+    ) {
+        return lostItemService.updateLostItemStatus(councilDetails.getFestivalId(), lostItemId, request);
     }
 
     @DeleteMapping("/{lostItemId}")
@@ -76,8 +95,9 @@ class LostItemController {
             @ApiResponse(responseCode = "204", useReturnTypeSchema = true),
     })
     public void deleteLostItemByLostItemId(
-            @PathVariable Long lostItemId
+            @PathVariable Long lostItemId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        lostItemService.deleteLostItemByLostItemId(lostItemId);
+        lostItemService.deleteLostItemByLostItemId(councilDetails.getFestivalId(), lostItemId);
     }
 }

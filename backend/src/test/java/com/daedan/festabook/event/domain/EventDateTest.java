@@ -2,6 +2,8 @@ package com.daedan.festabook.event.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.festival.domain.FestivalFixture;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -50,6 +52,39 @@ class EventDateTest {
 
             // then
             assertThat(result).isEqualTo(expected);
+        }
+    }
+
+    @Nested
+    class isFestivalIdEqualTo {
+
+        @Test
+        void 같은_축제의_id이면_true() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            EventDate eventDate = EventDateFixture.create(festival);
+
+            // when
+            boolean result = eventDate.isFestivalIdEqualTo(festivalId);
+
+            // then
+            assertThat(result).isTrue();
+        }
+
+        @Test
+        void 다른_축제의_id이면_false() {
+            // given
+            Long festivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival festival = FestivalFixture.create(festivalId);
+            EventDate eventDate = EventDateFixture.create(festival);
+
+            // when
+            boolean result = eventDate.isFestivalIdEqualTo(otherFestivalId);
+
+            // then
+            assertThat(result).isFalse();
         }
     }
 }

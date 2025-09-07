@@ -9,20 +9,26 @@ import static org.hamcrest.Matchers.notNullValue;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
 import com.daedan.festabook.lostitem.dto.LostItemRequest;
 import com.daedan.festabook.lostitem.dto.LostItemRequestFixture;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequest;
+import com.daedan.festabook.lostitem.dto.LostItemStatusUpdateRequestFixture;
 import com.daedan.festabook.lostitem.infrastructure.LostItemJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -39,6 +45,9 @@ class LostItemControllerTest {
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
+
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
 
     @LocalServerPort
     private int port;
@@ -57,13 +66,15 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             LostItemRequest request = LostItemRequestFixture.create();
 
             int expectedFieldSize = 5;
 
             // when & then
             given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -74,7 +85,7 @@ class LostItemControllerTest {
                     .body("lostItemId", notNullValue())
                     .body("imageUrl", equalTo(request.imageUrl()))
                     .body("storageLocation", equalTo(request.storageLocation()))
-                    .body("status", equalTo("PENDING"))
+                    .body("pickupStatus", equalTo("PENDING"))
                     .body("createdAt", notNullValue());
         }
     }
@@ -139,11 +150,11 @@ class LostItemControllerTest {
 
                     .body("[0].imageUrl", equalTo(lostItem1.getImageUrl()))
                     .body("[0].storageLocation", equalTo(lostItem1.getStorageLocation()))
-                    .body("[0].status", equalTo(lostItem1.getStatus().name()))
+                    .body("[0].pickupStatus", equalTo(lostItem1.getStatus().name()))
 
                     .body("[1].imageUrl", equalTo(lostItem2.getImageUrl()))
                     .body("[1].storageLocation", equalTo(lostItem2.getStorageLocation()))
-                    .body("[1].status", equalTo(lostItem2.getStatus().name()));
+                    .body("[1].pickupStatus", equalTo(lostItem2.getStatus().name()));
         }
     }
 
@@ -155,6 +166,8 @@ class LostItemControllerTest {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);
@@ -169,6 +182,7 @@ class LostItemControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -183,6 +197,46 @@ class LostItemControllerTest {
     }
 
     @Nested
+    class updateLostItemStatus {
+
+        @ParameterizedTest
+        @CsvSource({
+                "PENDING, PENDING",
+                "COMPLETED, COMPLETED",
+                "PENDING, COMPLETED",
+                "COMPLETED, PENDING"
+        })
+        void 성공(PickupStatus previousStatus, PickupStatus updatedStatus) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            LostItem lostItem = LostItemFixture.create(festival, previousStatus);
+            lostItemJpaRepository.save(lostItem);
+
+            LostItemStatusUpdateRequest request = LostItemStatusUpdateRequestFixture.create(updatedStatus);
+
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/lost-items/{lostItemId}/status", lostItem.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("lostItemId", notNullValue())
+                    .body("pickupStatus", equalTo(request.pickupStatus().name()));
+        }
+    }
+
+    @Nested
     class deleteLostItemByLostItemId {
 
         @Test
@@ -191,32 +245,21 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/lost-items/{lostItemId}", lostItem.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
             assertThat(lostItemJpaRepository.findById(lostItem.getId())).isEmpty();
-        }
-
-        @Test
-        void 성공_존재하지_않는_분실물_삭제() {
-            // given
-            Long notExistId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .when()
-                    .delete("/lost-items/{lostItemId}", notExistId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
         }
     }
 }

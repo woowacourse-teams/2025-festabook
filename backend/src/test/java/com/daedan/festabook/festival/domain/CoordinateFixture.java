@@ -12,6 +12,16 @@ public class CoordinateFixture {
         );
     }
 
+    public static Coordinate create(
+            Double latitude,
+            Double longitude
+    ) {
+        return new Coordinate(
+                latitude,
+                longitude
+        );
+    }
+
     public static Coordinate createWithLatitude(
             Double latitude
     ) {

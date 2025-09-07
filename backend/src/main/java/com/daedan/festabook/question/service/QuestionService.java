@@ -4,7 +4,6 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.question.domain.Question;
-import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionResponse;
 import com.daedan.festabook.question.dto.QuestionResponses;
@@ -46,18 +45,24 @@ public class QuestionService {
     }
 
     @Transactional
-    public QuestionAndAnswerUpdateResponse updateQuestionAndAnswer(Long questionId, QuestionRequest request) {
+    public QuestionResponse updateQuestionAndAnswer(Long festivalId, Long questionId, QuestionRequest request) {
         Question question = getQuestionById(questionId);
+        validateQuestionBelongsToFestival(question, festivalId);
+
         question.updateQuestionAndAnswer(request.question(), request.answer());
-        return QuestionAndAnswerUpdateResponse.from(question);
+        return QuestionResponse.from(question);
     }
 
     @Transactional
-    public QuestionSequenceUpdateResponses updateSequence(List<QuestionSequenceUpdateRequest> requests) {
+    public QuestionSequenceUpdateResponses updateSequence(
+            Long festivalId,
+            List<QuestionSequenceUpdateRequest> requests
+    ) {
         List<Question> questions = new ArrayList<>();
 
         for (QuestionSequenceUpdateRequest request : requests) {
             Question question = getQuestionById(request.questionId());
+            validateQuestionBelongsToFestival(question, festivalId);
             question.updateSequence(request.sequence());
             questions.add(question);
         }
@@ -67,7 +72,10 @@ public class QuestionService {
         return QuestionSequenceUpdateResponses.from(questions);
     }
 
-    public void deleteQuestionByQuestionId(Long questionId) {
+    public void deleteQuestionByQuestionId(Long festivalId, Long questionId) {
+        Question question = getQuestionById(questionId);
+        validateQuestionBelongsToFestival(question, festivalId);
+
         questionJpaRepository.deleteById(questionId);
     }
 
@@ -79,5 +87,11 @@ public class QuestionService {
     private Festival getFestivalById(Long festivalId) {
         return festivalJpaRepository.findById(festivalId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
+    }
+
+    private void validateQuestionBelongsToFestival(Question question, Long festivalId) {
+        if (!question.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 질문이 아닙니다.", HttpStatus.FORBIDDEN);
+        }
     }
 }

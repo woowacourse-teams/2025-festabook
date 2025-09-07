@@ -4,6 +4,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
+import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.event.domain.Event;
 import com.daedan.festabook.event.domain.EventDate;
@@ -11,13 +12,17 @@ import com.daedan.festabook.event.domain.EventDateFixture;
 import com.daedan.festabook.event.domain.EventFixture;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateRequestFixture;
+import com.daedan.festabook.event.dto.EventDateUpdateRequest;
+import com.daedan.festabook.event.dto.EventDateUpdateRequestFixture;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.time.Clock;
 import java.time.LocalDate;
 import java.util.List;
@@ -48,6 +53,9 @@ class EventDateControllerTest {
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @MockitoBean
     private Clock clock;
 
@@ -68,18 +76,25 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             EventDateRequest request = EventDateRequestFixture.create();
+
+            int expectedFieldSize = 2;
 
             // when & then
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .body(request)
                     .when()
                     .post("/event-dates")
                     .then()
-                    .statusCode(HttpStatus.CREATED.value());
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("eventDateId", notNullValue())
+                    .body("date", equalTo(request.date().toString()));
         }
 
         @Test
@@ -87,6 +102,8 @@ class EventDateControllerTest {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
 
             EventDate existingEventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(existingEventDate);
@@ -96,120 +113,14 @@ class EventDateControllerTest {
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
                     .body(request)
                     .when()
                     .post("/event-dates")
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("이미 존재하는 일정 날짜입니다."));
-        }
-    }
-
-    @Nested
-    class updateEventDate {
-
-        @Test
-        void 성공() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            EventDate eventDate = EventDateFixture.create(festival);
-            eventDateJpaRepository.save(eventDate);
-
-            EventDateRequest request = EventDateRequestFixture.create(eventDate.getDate().plusDays(1));
-
-            // when & then
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .body(request)
-                    .when()
-                    .patch("/event-dates/{eventDateId}", eventDate.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-
-            assertSoftly(s -> {
-                EventDate updatedEventDate = eventDateJpaRepository.findById(eventDate.getId()).orElseThrow();
-                s.assertThat(updatedEventDate.getDate()).isEqualTo(request.date());
-            });
-        }
-
-        @Test
-        void 성공_존재하지_않는_일정_날짜_ID_204_응답() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Long notExistingEventDateId = 0L;
-            EventDateRequest request = EventDateRequestFixture.create();
-
-            // when & then
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .body(request)
-                    .when()
-                    .patch("/event-dates/{eventDateId}", notExistingEventDateId)
-                    .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .body("message", equalTo("존재하지 않는 일정 날짜입니다."));
-        }
-    }
-
-    @Nested
-    class deleteEventDateByEventDateId {
-
-        @Test
-        void 성공() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            EventDate eventDate = EventDateFixture.create(festival);
-            eventDateJpaRepository.save(eventDate);
-
-            List<Event> events = EventFixture.createList(3, eventDate);
-            eventJpaRepository.saveAll(events);
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .when()
-                    .delete("/event-dates/{eventDateId}", eventDate.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-            assertSoftly(s -> {
-                s.assertThat(eventDateJpaRepository.findById(eventDate.getId())).isEmpty();
-                s.assertThat(eventJpaRepository.findAllByEventDateId(eventDate.getId())).isEmpty();
-            });
-        }
-
-        @Test
-        void 성공_존재하지_않는_일정_날짜_ID() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Long invalidEventDateId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
-                    .when()
-                    .delete("/event-dates/{eventDateId}", invalidEventDateId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-            assertSoftly(s -> {
-                s.assertThat(eventDateJpaRepository.findById(invalidEventDateId)).isEmpty();
-                s.assertThat(eventJpaRepository.findAllByEventDateId(invalidEventDateId)).isEmpty();
-            });
         }
     }
 
@@ -238,7 +149,7 @@ class EventDateControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(eventDate.getId().intValue()))
+                    .body("[0].eventDateId", equalTo(eventDate.getId().intValue()))
                     .body("[0].date", equalTo(eventDate.getDate().toString()));
         }
 
@@ -297,6 +208,122 @@ class EventDateControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("date", contains(expectedSortedDates.toArray()));
+        }
+    }
+
+    @Nested
+    class updateEventDate {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            EventDate eventDate = EventDateFixture.create(festival);
+            eventDateJpaRepository.save(eventDate);
+
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create(eventDate.getDate().plusDays(1));
+
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/event-dates/{eventDateId}", eventDate.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("eventDateId", equalTo(eventDate.getId().intValue()))
+                    .body("date", equalTo(request.date().toString()));
+        }
+
+        @Test
+        void 성공_존재하지_않는_일정_날짜_ID_400_응답() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            Long notExistingEventDateId = 0L;
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/event-dates/{eventDateId}", notExistingEventDateId)
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("존재하지 않는 일정 날짜입니다."));
+        }
+
+        @Test
+        void 예외_이미_존재하는_일정_날짜() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            List<EventDate> eventDates = EventDateFixture.createList(2, festival);
+            eventDateJpaRepository.saveAll(eventDates);
+
+            EventDateUpdateRequest request = EventDateUpdateRequestFixture.create(eventDates.get(1).getDate());
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/event-dates/{eventDateId}", eventDates.get(0).getId())
+                    .then()
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("이미 존재하는 일정 날짜입니다."));
+        }
+    }
+
+    @Nested
+    class deleteEventDateByEventDateId {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            EventDate eventDate = EventDateFixture.create(festival);
+            eventDateJpaRepository.save(eventDate);
+
+            List<Event> events = EventFixture.createList(3, eventDate);
+            eventJpaRepository.saveAll(events);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .when()
+                    .delete("/event-dates/{eventDateId}", eventDate.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+            assertSoftly(s -> {
+                s.assertThat(eventDateJpaRepository.findById(eventDate.getId())).isEmpty();
+                s.assertThat(eventJpaRepository.findAllByEventDateId(eventDate.getId())).isEmpty();
+            });
         }
     }
 }

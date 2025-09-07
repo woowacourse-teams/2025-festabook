@@ -1,0 +1,62 @@
+name: Slack Notification (Opened/Ready)
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+permissions: {}
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-slack-opened-ready
+  cancel-in-progress: true
+
+# 최초 리뷰 요청 알림
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      # JSON 파싱 도구
+      - name: Install jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
+      - name: Notify Initial Reviewers
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          REVIEWERS_JSON: ${{ toJson(github.event.pull_request.requested_reviewers) }}
+        run: |
+          declare -A GITHUB_TO_SLACK
+          GITHUB_TO_SLACK["soeun2537"]="U09A0LM0CRW"
+          GITHUB_TO_SLACK["taek2222"]="U099ARRH3D3"
+          GITHUB_TO_SLACK["changuii"]="U099BR9RNE6"
+          GITHUB_TO_SLACK["eoehd1ek"]="U0995NANDML"
+          GITHUB_TO_SLACK["oungsi2000"]="U098U2R57NK"
+          GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
+          GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
+
+          author_id=${GITHUB_TO_SLACK[$PR_AUTHOR]}
+          if [[ -n "$author_id" ]]; then
+            SLACK_AUTHOR_MENTION="<@$author_id>"
+          else
+            SLACK_AUTHOR_MENTION="@${PR_AUTHOR}"
+          fi
+
+          REVIEWER_MENTIONS=""
+          for reviewer in $(echo "$REVIEWERS_JSON" | jq -r '.[].login'); do
+            [[ "$reviewer" == *"[bot]" ]] && continue
+            slack_id=${GITHUB_TO_SLACK[$reviewer]}
+            [[ -z "$slack_id" ]] && continue
+            REVIEWER_MENTIONS+="<@$slack_id> "
+          done
+
+          if [ -z "$REVIEWER_MENTIONS" ]; then
+            echo "리뷰어가 없으므로 알림 생략"
+            exit 0
+          fi
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\": \"🔥 *리뷰 요청 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*리뷰어:* ${REVIEWER_MENTIONS}\n*링크:* ${PR_URL}\"}" \
+            $SLACK_WEBHOOK_URL

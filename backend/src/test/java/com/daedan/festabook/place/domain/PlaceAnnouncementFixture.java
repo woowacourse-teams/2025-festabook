@@ -1,5 +1,7 @@
 package com.daedan.festabook.place.domain;
 
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
+
 public class PlaceAnnouncementFixture {
 
     private static final Place DEFAULT_PLACE = PlaceFixture.create();
@@ -25,23 +27,36 @@ public class PlaceAnnouncementFixture {
     }
 
     public static PlaceAnnouncement create(
-            Place place,
             String title,
             String content
     ) {
         return new PlaceAnnouncement(
-                place,
+                DEFAULT_PLACE,
                 title,
                 content
         );
     }
 
     public static PlaceAnnouncement create(
+            Place place,
+            Long placeAnnouncementId
+    ) {
+        PlaceAnnouncement placeAnnouncement = new PlaceAnnouncement(
+                place,
+                DEFAULT_TITLE,
+                DEFAULT_CONTENT
+        );
+        BaseEntityTestHelper.setId(placeAnnouncement, placeAnnouncementId);
+        return placeAnnouncement;
+    }
+
+    public static PlaceAnnouncement create(
+            Place place,
             String title,
             String content
     ) {
         return new PlaceAnnouncement(
-                DEFAULT_PLACE,
+                place,
                 title,
                 content
         );

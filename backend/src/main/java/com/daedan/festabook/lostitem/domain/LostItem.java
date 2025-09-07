@@ -1,10 +1,10 @@
 package com.daedan.festabook.lostitem.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EntityListeners;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
@@ -13,21 +13,21 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import java.time.LocalDateTime;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
-@EntityListeners(AuditingEntityListener.class)
+@SQLRestriction("deleted = false")
+@SQLDelete(sql = "UPDATE lost_item SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class LostItem {
+public class LostItem extends BaseEntity {
 
     private static final int MAX_STORAGE_LOCATION_LENGTH = 20;
 
@@ -49,44 +49,20 @@ public class LostItem {
     @Enumerated(EnumType.STRING)
     private PickupStatus status;
 
-    @CreatedDate
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    protected LostItem(
-            Long id,
-            Festival festival,
-            String imageUrl,
-            String storageLocation,
-            PickupStatus status,
-            LocalDateTime createdAt
-    ) {
-        validateImageUrl(imageUrl);
-        validateStorageLocation(storageLocation);
-        validatePickupStatus(status);
-
-        this.id = id;
-        this.festival = festival;
-        this.imageUrl = imageUrl;
-        this.storageLocation = storageLocation;
-        this.status = status;
-        this.createdAt = createdAt;
-    }
-
     public LostItem(
             Festival festival,
             String imageUrl,
             String storageLocation,
             PickupStatus status
     ) {
-        this(
-                null,
-                festival,
-                imageUrl,
-                storageLocation,
-                status,
-                null
-        );
+        validateImageUrl(imageUrl);
+        validateStorageLocation(storageLocation);
+        validatePickupStatus(status);
+
+        this.festival = festival;
+        this.imageUrl = imageUrl;
+        this.storageLocation = storageLocation;
+        this.status = status;
     }
 
     public void updateLostItem(String imageUrl, String storageLocation) {
@@ -95,6 +71,16 @@ public class LostItem {
 
         this.imageUrl = imageUrl;
         this.storageLocation = storageLocation;
+    }
+
+    public void updateStatus(PickupStatus status) {
+        validatePickupStatus(status);
+
+        this.status = status;
+    }
+
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.getFestival().getId().equals(festivalId);
     }
 
     private void validateImageUrl(String imageUrl) {

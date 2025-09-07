@@ -1,0 +1,60 @@
+name: Slack Notification (Submitted)
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions: {}
+
+concurrency:
+  group: pr-${{ github.event.pull_request.number }}-slack-submitted
+  cancel-in-progress: true
+
+# 리뷰 완료 알림
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notify Review Submitted
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          REVIEW_STATE: ${{ github.event.review.state }}
+          PR_REVIEWER: ${{ github.event.review.user.login }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+        run: |
+          if [[ "$REVIEW_STATE" == "commented" ]]; then
+            echo "단순 코멘트 리뷰는 알림 생략"
+            exit 0
+          fi
+
+          declare -A GITHUB_TO_SLACK
+          GITHUB_TO_SLACK["soeun2537"]="U09A0LM0CRW"
+          GITHUB_TO_SLACK["taek2222"]="U099ARRH3D3"
+          GITHUB_TO_SLACK["changuii"]="U099BR9RNE6"
+          GITHUB_TO_SLACK["eoehd1ek"]="U0995NANDML"
+          GITHUB_TO_SLACK["oungsi2000"]="U098U2R57NK"
+          GITHUB_TO_SLACK["parkjiminnnn"]="U098U8SLXHD"
+          GITHUB_TO_SLACK["etama123"]="U0995MPSZ62"
+
+          SLACK_REVIEWER_ID=${GITHUB_TO_SLACK[$PR_REVIEWER]:-$PR_REVIEWER}
+          SLACK_AUTHOR_ID=${GITHUB_TO_SLACK[$PR_AUTHOR]:-$PR_AUTHOR}
+
+          SLACK_AUTHOR_MENTION="<@$SLACK_AUTHOR_ID>"
+
+          if [[ "$PR_REVIEWER" == *"[bot]" ]]; then
+            echo "Bot 계정 리뷰 요청은 알림 생략"
+            exit 0
+          fi
+          
+          ICON=""
+          case "$REVIEW_STATE" in
+            approved) ICON="✅" ;;
+            changes_requested) ICON="🔴" ;;
+          esac
+
+          curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\": \"${ICON} *리뷰 완료 알림*\n*PR 제목:* ${PR_TITLE} (#${PR_NUMBER})\n*작성자:* ${SLACK_AUTHOR_MENTION}\n*상태:* ${REVIEW_STATE}\n*링크:* ${PR_URL}\"}" \
+            $SLACK_WEBHOOK_URL

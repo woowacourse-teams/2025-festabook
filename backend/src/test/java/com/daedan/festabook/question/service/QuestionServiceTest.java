@@ -13,7 +13,6 @@ import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
-import com.daedan.festabook.question.dto.QuestionAndAnswerUpdateResponse;
 import com.daedan.festabook.question.dto.QuestionRequest;
 import com.daedan.festabook.question.dto.QuestionRequestFixture;
 import com.daedan.festabook.question.dto.QuestionResponse;
@@ -104,8 +103,7 @@ class QuestionServiceTest {
                     .willReturn(questions);
 
             // when
-            QuestionResponses questionResponses = questionService.getAllQuestionByFestivalId(
-                    festivalId);
+            QuestionResponses questionResponses = questionService.getAllQuestionByFestivalId(festivalId);
 
             // then
             int result = questionResponses.responses().size();
@@ -126,8 +124,10 @@ class QuestionServiceTest {
             QuestionResponses result = questionService.getAllQuestionByFestivalId(festivalId);
 
             // then
-            assertThat(result.responses().getFirst().sequence()).isEqualTo(question1.getSequence());
-            assertThat(result.responses().getLast().sequence()).isEqualTo(question2.getSequence());
+            assertSoftly(s -> {
+                s.assertThat(result.responses().getFirst().sequence()).isEqualTo(question1.getSequence());
+                s.assertThat(result.responses().getLast().sequence()).isEqualTo(question2.getSequence());
+            });
         }
     }
 
@@ -138,7 +138,9 @@ class QuestionServiceTest {
         void 성공() {
             // given
             Long questionId = 1L;
-            Question question = QuestionFixture.create(questionId);
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Question question = QuestionFixture.create(festival, questionId);
 
             given(questionJpaRepository.findById(questionId))
                     .willReturn(Optional.of(question));
@@ -149,7 +151,7 @@ class QuestionServiceTest {
             );
 
             // when
-            QuestionAndAnswerUpdateResponse result = questionService.updateQuestionAndAnswer(questionId, request);
+            QuestionResponse result = questionService.updateQuestionAndAnswer(festivalId, questionId, request);
 
             // then
             assertSoftly(s -> {
@@ -161,13 +163,36 @@ class QuestionServiceTest {
         @Test
         void 예외_존재하지_않는_질문() {
             // given
+            Long festivalId = 1L;
             Long invalidQuestionId = 0L;
             QuestionRequest request = QuestionRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> questionService.updateQuestionAndAnswer(invalidQuestionId, request))
+            assertThatThrownBy(() -> questionService.updateQuestionAndAnswer(festivalId, invalidQuestionId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 질문입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_질문일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Question question = QuestionFixture.create(requestFestival);
+
+            given(questionJpaRepository.findById(question.getId()))
+                    .willReturn(Optional.of(question));
+
+            QuestionRequest request = QuestionRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() ->
+                    questionService.updateQuestionAndAnswer(otherFestival.getId(), question.getId(), request)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 질문이 아닙니다.");
         }
     }
 
@@ -177,13 +202,16 @@ class QuestionServiceTest {
         @Test
         void 성공_수정_후에도_오름차순으로_재정렬() {
             // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
             Long question1Id = 1L;
             Long question2Id = 2L;
             Long question3Id = 3L;
 
-            Question question1 = QuestionFixture.create(question1Id, 1);
-            Question question2 = QuestionFixture.create(question2Id, 2);
-            Question question3 = QuestionFixture.create(question3Id, 3);
+            Question question1 = QuestionFixture.create(festival, 1, question1Id);
+            Question question2 = QuestionFixture.create(festival, 2, question2Id);
+            Question question3 = QuestionFixture.create(festival, 3, question3Id);
 
             given(questionJpaRepository.findById(question1Id))
                     .willReturn(Optional.of(question1));
@@ -198,7 +226,7 @@ class QuestionServiceTest {
             List<QuestionSequenceUpdateRequest> requests = List.of(request1, request2, request3);
 
             // when
-            QuestionSequenceUpdateResponses result = questionService.updateSequence(requests);
+            QuestionSequenceUpdateResponses result = questionService.updateSequence(festival.getId(), requests);
 
             // then
             assertSoftly(s -> {
@@ -216,12 +244,34 @@ class QuestionServiceTest {
         @Test
         void 예외_존재하지_않는_질문() {
             // given
+            Long festivalId = 1L;
             List<QuestionSequenceUpdateRequest> requests = QuestionSequenceUpdateRequestFixture.createList(3);
 
             // when & then
-            assertThatThrownBy(() -> questionService.updateSequence(requests))
+            assertThatThrownBy(() -> questionService.updateSequence(festivalId, requests))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 질문입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_질문일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Long questionId = 1L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Question question = QuestionFixture.create(requestFestival, questionId);
+
+            given(questionJpaRepository.findById(question.getId()))
+                    .willReturn(Optional.of(question));
+
+            List<QuestionSequenceUpdateRequest> requests = QuestionSequenceUpdateRequestFixture.createList(3);
+
+            // when & then
+            assertThatThrownBy(() -> questionService.updateSequence(otherFestival.getId(), requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 질문이 아닙니다.");
         }
     }
 
@@ -231,14 +281,40 @@ class QuestionServiceTest {
         @Test
         void 성공() {
             // given
+            Long festivalId = 1L;
             Long questionId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Question question = QuestionFixture.create(festival, questionId);
+
+            given(questionJpaRepository.findById(questionId))
+                    .willReturn(Optional.of(question));
 
             // when
-            questionService.deleteQuestionByQuestionId(questionId);
+            questionService.deleteQuestionByQuestionId(festival.getId(), question.getId());
 
             // then
             then(questionJpaRepository).should()
                     .deleteById(questionId);
+        }
+
+        @Test
+        void 예외_다른_축제의_질문일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Question question = QuestionFixture.create(requestFestival);
+
+            given(questionJpaRepository.findById(question.getId()))
+                    .willReturn(Optional.of(question));
+
+            // when & then
+            assertThatThrownBy(() ->
+                    questionService.deleteQuestionByQuestionId(otherFestival.getId(), question.getId())
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 질문이 아닙니다.");
         }
     }
 }

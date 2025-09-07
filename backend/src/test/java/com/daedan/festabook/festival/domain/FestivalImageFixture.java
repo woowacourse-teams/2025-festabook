@@ -1,12 +1,12 @@
 package com.daedan.festabook.festival.domain;
 
+import com.daedan.festabook.global.fixture.BaseEntityTestHelper;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class FestivalImageFixture {
 
-    private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final String DEFAULT_IMAGE_URL = "https://example.com/image.jpg";
     private static final Integer DEFAULT_SEQUENCE = 3;
 
@@ -22,6 +22,19 @@ public class FestivalImageFixture {
 
     public static FestivalImage create(
             Festival festival,
+            Long festivalImageId
+    ) {
+        FestivalImage festivalImage = new FestivalImage(
+                festival,
+                DEFAULT_IMAGE_URL,
+                DEFAULT_SEQUENCE
+        );
+        BaseEntityTestHelper.setId(festivalImage, festivalImageId);
+        return festivalImage;
+    }
+
+    public static FestivalImage create(
+            Festival festival,
             Integer sequence
     ) {
         return new FestivalImage(
@@ -32,16 +45,17 @@ public class FestivalImageFixture {
     }
 
     public static FestivalImage create(
-            Long id,
             Festival festival,
-            Integer sequence
+            Integer sequence,
+            Long festivalImageId
     ) {
-        return new FestivalImage(
-                id,
+        FestivalImage festivalImage = new FestivalImage(
                 festival,
                 DEFAULT_IMAGE_URL,
                 sequence
         );
+        BaseEntityTestHelper.setId(festivalImage, festivalImageId);
+        return festivalImage;
     }
 
     public static List<FestivalImage> createList(int size, Festival festival) {

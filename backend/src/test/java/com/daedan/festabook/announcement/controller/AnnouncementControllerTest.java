@@ -20,11 +20,13 @@ import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequest;
 import com.daedan.festabook.announcement.dto.AnnouncementUpdateRequestFixture;
 import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
-import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
-import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -52,6 +54,9 @@ class AnnouncementControllerTest {
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @MockitoBean
     private FcmNotificationManager fcmNotificationManager;
 
@@ -72,6 +77,8 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             AnnouncementRequest request = new AnnouncementRequest(
                     "폭우가 내립니다.",
                     "우산을 챙겨주세요.",
@@ -83,7 +90,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -106,6 +113,8 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             boolean isPinned = true;
             announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, festival));
 
@@ -114,7 +123,7 @@ class AnnouncementControllerTest {
             // when & then
             RestAssured
                     .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -157,13 +166,13 @@ class AnnouncementControllerTest {
                     .body("pinned", hasSize(expectedPinnedSize))
                     .body("unpinned.size()", equalTo(expectedUnpinnedSize))
                     .body("pinned[0].size()", equalTo(expectedFieldSize))
-                    .body("pinned[0].id", equalTo(announcement1.getId().intValue()))
+                    .body("pinned[0].announcementId", equalTo(announcement1.getId().intValue()))
                     .body("pinned[0].title", equalTo(announcement1.getTitle()))
                     .body("pinned[0].content", equalTo(announcement1.getContent()))
                     .body("pinned[0].isPinned", equalTo(announcement1.isPinned()))
                     .body("pinned[0].createdAt", notNullValue())
                     .body("unpinned[0].size()", equalTo(expectedFieldSize))
-                    .body("unpinned[0].id", equalTo(announcement2.getId().intValue()))
+                    .body("unpinned[0].announcementId", equalTo(announcement2.getId().intValue()))
                     .body("unpinned[0].title", equalTo(announcement2.getTitle()))
                     .body("unpinned[0].content", equalTo(announcement2.getContent()))
                     .body("unpinned[0].isPinned", equalTo(announcement2.isPinned()))
@@ -219,7 +228,7 @@ class AnnouncementControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .extract()
                     .jsonPath()
-                    .getList("pinned.id", Long.class);
+                    .getList("pinned.announcementId", Long.class);
 
             assertSoftly(s -> {
                 s.assertThat(result.get(0)).isEqualTo(announcement3.getId());
@@ -254,7 +263,7 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("pinned.size()", equalTo(expectedSize))
-                    .body("pinned.id", containsInAnyOrder(
+                    .body("pinned.announcementId", containsInAnyOrder(
                             targetAnnouncements.get(0).getId().intValue(),
                             targetAnnouncements.get(1).getId().intValue(),
                             targetAnnouncements.get(2).getId().intValue()
@@ -271,33 +280,46 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
 
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create("수정된 제목", "수정된 내용");
 
+            int expectedFieldSize = 3;
+
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .patch("/announcements/{announcementId}", announcement.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("announcementId", notNullValue())
                     .body("title", equalTo(request.title()))
                     .body("content", equalTo(request.content()));
         }
 
         @Test
-        void 실패_존재하지_않는_공지() {
+        void 예외_존재하지_않는_공지() {
             // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Long notExistId = 0L;
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -321,21 +343,28 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Announcement announcement = AnnouncementFixture.create(initialPinned, festival);
             announcementJpaRepository.save(announcement);
 
             AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(expectedPinned);
 
+            int expectedFieldSize = 2;
+
             // when & then
             RestAssured
                     .given()
-                    .header(FESTIVAL_HEADER_NAME, festival.getId())
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
                     .patch("/announcements/{announcementId}/pin", announcement.getId())
                     .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("announcementId", notNullValue())
+                    .body("isPinned", equalTo(request.pinned()));
 
             Announcement updatedAnnouncement = announcementJpaRepository.findById(announcement.getId()).get();
             assertThat(updatedAnnouncement.isPinned()).isEqualTo(expectedPinned);
@@ -351,28 +380,17 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
             Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .when()
                     .delete("/announcements/{announcementId}", announcement.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-        }
-
-        @Test
-        void 성공_존재하지_않는_공지지만_예외_없음() {
-            // given
-            Long notExistId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .when()
-                    .delete("/announcements/{announcementId}", notExistId)
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
         }

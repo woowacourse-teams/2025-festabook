@@ -3,14 +3,13 @@ package com.daedan.festabook.place.dto;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceCategory;
-import com.daedan.festabook.place.domain.PlaceDetail;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 import java.util.List;
 
 public record PlaceResponse(
-        Long id,
+        Long placeId,
         PlaceImageResponses placeImages,
         PlaceCategory category,
         String title,
@@ -22,9 +21,8 @@ public record PlaceResponse(
         PlaceAnnouncementResponses placeAnnouncements
 ) {
 
-    public static PlaceResponse fromWithDetail(
+    public static PlaceResponse from(
             Place place,
-            PlaceDetail placeDetail,
             List<PlaceImage> images,
             List<PlaceAnnouncement> announcements
     ) {
@@ -32,12 +30,12 @@ public record PlaceResponse(
                 place.getId(),
                 PlaceImageResponses.from(images),
                 place.getCategory(),
-                placeDetail.getTitle(),
-                placeDetail.getStartTime(),
-                placeDetail.getEndTime(),
-                placeDetail.getLocation(),
-                placeDetail.getHost(),
-                placeDetail.getDescription(),
+                place.getTitle(),
+                place.getStartTime(),
+                place.getEndTime(),
+                place.getLocation(),
+                place.getHost(),
+                place.getDescription(),
                 PlaceAnnouncementResponses.from(announcements)
         );
     }
@@ -47,12 +45,12 @@ public record PlaceResponse(
                 place.getId(),
                 PlaceImageResponses.from(List.of()),
                 place.getCategory(),
-                null,
-                null,
-                null,
-                null,
-                null,
-                null,
+                place.getTitle(),
+                place.getStartTime(),
+                place.getEndTime(),
+                place.getLocation(),
+                place.getHost(),
+                place.getDescription(),
                 PlaceAnnouncementResponses.from(List.of())
         );
     }

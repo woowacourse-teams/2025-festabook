@@ -4,11 +4,13 @@ import com.daedan.festabook.event.domain.EventDate;
 import com.daedan.festabook.event.dto.EventDateRequest;
 import com.daedan.festabook.event.dto.EventDateResponse;
 import com.daedan.festabook.event.dto.EventDateResponses;
+import com.daedan.festabook.event.dto.EventDateUpdateRequest;
+import com.daedan.festabook.event.dto.EventDateUpdateResponse;
 import com.daedan.festabook.event.infrastructure.EventDateJpaRepository;
 import com.daedan.festabook.event.infrastructure.EventJpaRepository;
-import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.time.LocalDate;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -27,24 +29,11 @@ public class EventDateService {
     @Transactional
     public EventDateResponse createEventDate(Long festivalId, EventDateRequest request) {
         validateDuplicatedEventDate(festivalId, request.date());
-
         Festival festival = getFestivalById(festivalId);
         EventDate eventDate = request.toEntity(festival);
+
         EventDate savedEventDate = eventDateJpaRepository.save(eventDate);
-
         return EventDateResponse.from(savedEventDate);
-    }
-
-    @Transactional
-    public void updateEventDate(Long eventDateId, EventDateRequest request) {
-        EventDate eventDate = getEventDateById(eventDateId);
-        eventDate.updateDate(request.date());
-    }
-
-    @Transactional
-    public void deleteEventDateByEventDateId(Long eventDateId) {
-        eventJpaRepository.deleteAllByEventDateId(eventDateId);
-        eventDateJpaRepository.deleteById(eventDateId);
     }
 
     public EventDateResponses getAllEventDateByFestivalId(Long festivalId) {
@@ -52,6 +41,27 @@ public class EventDateService {
                 .sorted()
                 .toList();
         return EventDateResponses.from(eventDates);
+    }
+
+    @Transactional
+    public EventDateUpdateResponse updateEventDate(Long festivalId, Long eventDateId, EventDateUpdateRequest request) {
+        EventDate eventDate = getEventDateById(eventDateId);
+        validateEventDateBelongsToFestival(eventDate, festivalId);
+        if (!eventDate.getDate().isEqual(request.date())) {
+            validateDuplicatedEventDate(festivalId, request.date());
+        }
+
+        eventDate.updateDate(request.date());
+        return EventDateUpdateResponse.from(eventDate);
+    }
+
+    @Transactional
+    public void deleteEventDateByEventDateId(Long festivalId, Long eventDateId) {
+        EventDate eventDate = getEventDateById(eventDateId);
+        validateEventDateBelongsToFestival(eventDate, festivalId);
+
+        eventJpaRepository.deleteAllByEventDateId(eventDateId);
+        eventDateJpaRepository.deleteById(eventDateId);
     }
 
     private Festival getFestivalById(Long festivalId) {
@@ -67,6 +77,12 @@ public class EventDateService {
     private void validateDuplicatedEventDate(Long festivalId, LocalDate date) {
         if (eventDateJpaRepository.existsByFestivalIdAndDate(festivalId, date)) {
             throw new BusinessException("이미 존재하는 일정 날짜입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateEventDateBelongsToFestival(EventDate eventDate, Long festivalId) {
+        if (!eventDate.isFestivalIdEqualTo(festivalId)) {
+            throw new BusinessException("해당 축제의 일정 날짜가 아닙니다.", HttpStatus.FORBIDDEN);
         }
     }
 }
