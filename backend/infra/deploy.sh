@@ -4,7 +4,7 @@ JAR_NAME=$(find $APP_HOME -name "*.jar" | head -n 1)
 
 echo "🚀========== 배포 스크립트 시작 =========="
 
-echo "▶️ 새로운 Spring WAS 실행 중..."
+echo "▶️Spring WAS 실행 중..."
 if [ -f "$JAR_NAME" ]; then
   sudo nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" --spring.profiles.active=prod > $LOG_FILE 2>&1 &
   echo "📦 실행 파일: $JAR_NAME"
