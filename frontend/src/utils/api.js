@@ -1,12 +1,19 @@
 // src/utils/api.js
 import axios from 'axios';
 
-const API_HOST = 'http://festabook.woowacourse.com';
-
+const API_HOST = import.meta.env.VITE_API_HOST;
 const api = axios.create({
   baseURL: API_HOST,
   headers: {
     'Content-Type': 'application/json',
+  },
+});
+
+// 파일 업로드용 별도 인스턴스
+const fileApi = axios.create({
+  baseURL: API_HOST,
+  headers: {
+    'Content-Type': 'multipart/form-data',
   },
 });
 
@@ -15,8 +22,330 @@ api.interceptors.request.use((config) => {
   if (festivalId) {
     config.headers['festival'] = festivalId;
   }
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
   return config;
 });
+
+// 파일 업로드용 인터셉터
+fileApi.interceptors.request.use((config) => {
+  const festivalId = localStorage.getItem('festivalId');
+  if (festivalId) {
+    config.headers['festival'] = festivalId;
+  }
+  const token = localStorage.getItem('access_token');
+  if (token) {
+    config.headers['Authorization'] = `Bearer ${token}`;
+  }
+  return config;
+});
+
+// Unauthorized handling centralized here as well
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401 || status === 403) {
+      try {
+        localStorage.clear();
+        window.location.replace('/');
+      } catch (error) {
+        // 에러 처리 시 로그만 출력
+        console.error('Error during logout redirect:', error);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+fileApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const status = error?.response?.status;
+    if (status === 401 || status === 403) {
+      try {
+        localStorage.clear();
+        window.location.replace('/');
+      } catch (error) {
+        console.error('Error during logout redirect:', error);
+      }
+    }
+    return Promise.reject(error);
+  }
+);
+
+// 공통 이미지 업로드 API
+export const imageAPI = {
+  // 이미지 파일 업로드
+  uploadImage: async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('image', file);
+      
+      const response = await fileApi.post('/images', formData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to upload image:', error);
+      throw new Error('이미지 업로드에 실패했습니다.');
+    }
+  }
+};
+
+// 축제 관련 API
+export const festivalAPI = {
+  // 축제 정보 조회
+  getFestival: async () => {
+    try {
+      const response = await api.get('/festivals');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch festival:', error);
+      throw new Error('축제 정보 조회에 실패했습니다.');
+    }
+  },
+
+  // 축제 정보 수정
+  updateFestivalInfo: async (festivalInfo) => {
+    try {
+      const response = await api.patch('/festivals/information', festivalInfo);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update festival info:', error);
+      throw new Error('축제 정보 수정에 실패했습니다.');
+    }
+  },
+
+  // 축제 이미지 추가
+  addFestivalImage: async (imageData) => {
+    try {
+      const response = await api.post('/festivals/images', imageData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to add festival image:', error);
+      throw new Error('축제 이미지 추가에 실패했습니다.');
+    }
+  },
+
+  // 축제 이미지 순서 변경
+  updateFestivalImageSequences: async (sequences) => {
+    try {
+      const response = await api.patch('/festivals/images/sequences', sequences);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update festival image sequences:', error);
+      throw new Error('축제 이미지 순서 변경에 실패했습니다.');
+    }
+  },
+
+  // 축제 이미지 삭제
+  deleteFestivalImage: async (festivalImageId) => {
+    try {
+      await api.delete(`/festivals/images/${festivalImageId}`);
+    } catch (error) {
+      console.error('Failed to delete festival image:', error);
+      throw new Error('축제 이미지 삭제에 실패했습니다.');
+    }
+  }
+};
+
+// 공지사항 관련 API
+export const announcementAPI = {
+  // 모든 공지사항 조회
+  getAnnouncements: async () => {
+    try {
+      const response = await api.get('/announcements');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch announcements:', error);
+      throw new Error('공지사항 조회에 실패했습니다.');
+    }
+  },
+
+  // 공지사항 생성
+  createAnnouncement: async (announcementData) => {
+    try {
+      await api.post('/announcements', announcementData);
+    } catch (error) {
+      console.error('Failed to create announcement:', error);
+      throw new Error('공지사항 생성에 실패했습니다.');
+    }
+  },
+
+  // 공지사항 수정
+  updateAnnouncement: async (id, announcementData) => {
+    try {
+      await api.patch(`/announcements/${id}`, announcementData);
+    } catch (error) {
+      console.error('Failed to update announcement:', error);
+      throw new Error('공지사항 수정에 실패했습니다.');
+    }
+  },
+
+  // 공지사항 삭제
+  deleteAnnouncement: async (id) => {
+    try {
+      await api.delete(`/announcements/${id}`);
+    } catch (error) {
+      console.error('Failed to delete announcement:', error);
+      throw new Error('공지사항 삭제에 실패했습니다.');
+    }
+  },
+
+  // 공지사항 고정/해제
+  toggleAnnouncementPin: async (id, pinned) => {
+    try {
+      const response = await api.patch(`/announcements/${id}/pin`, { pinned });
+      return response;
+    } catch (error) {
+      console.error('Failed to toggle announcement pin:', error);
+      throw new Error('공지사항 고정 상태 변경에 실패했습니다.');
+    }
+  }
+};
+
+// 플레이스 관련 API
+export const placeAPI = {
+  // 모든 플레이스 조회
+  getPlaces: async () => {
+    try {
+      const response = await api.get('/places');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch places:', error);
+      throw new Error('플레이스 조회에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 생성
+  createPlace: async (placeData) => {
+    try {
+      const response = await api.post('/places', placeData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create place:', error);
+      throw new Error('플레이스 생성에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 삭제
+  deletePlace: async (id) => {
+    try {
+      const response = await api.delete(`/places/${id}`);
+      return response;
+    } catch (error) {
+      console.error('Failed to delete place:', error);
+      throw new Error('플레이스 삭제에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 수정
+  updatePlace: async (placeId, placeData) => {
+    try {
+      const response = await api.patch(`/places/${placeId}`, placeData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update place:', error);
+      throw new Error('플레이스 수정에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 이미지 생성
+  createPlaceImage: async (placeId, imageData) => {
+    try {
+      const response = await api.post(`/places/${placeId}/images`, imageData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create place image:', error);
+      throw new Error('플레이스 이미지 생성에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 이미지 삭제
+  deletePlaceImage: async (placeImageId) => {
+    try {
+      console.log('API: Deleting place image with ID:', placeImageId);
+      console.log('API: Request URL:', `/places/images/${placeImageId}`);
+      console.log('API: Request method: DELETE');
+      const response = await api.delete(`/places/images/${placeImageId}`);
+      console.log('API: Response status:', response.status);
+      console.log('API: Place image deleted successfully');
+    } catch (error) {
+      console.error('Failed to delete place image:', error);
+      console.error('Error response:', error.response);
+      throw new Error('플레이스 이미지 삭제에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 이미지 순서 변경
+  updatePlaceImageSequences: async (sequences) => {
+    try {
+      console.log('=== API: updatePlaceImageSequences called ===');
+      console.log('API: Request URL:', '/places/images/sequences');
+      console.log('API: Request method: PATCH');
+      console.log('API: Request body:', JSON.stringify(sequences, null, 2));
+
+      const response = await api.patch('/places/images/sequences', sequences);
+
+      console.log('API: Response status:', response.status);
+      console.log('API: Response data:', response.data);
+      console.log('API: Place image sequences updated successfully');
+      return response.data;
+    } catch (error) {
+      console.error('=== API: updatePlaceImageSequences failed ===');
+      console.error('Error message:', error.message);
+      console.error('Error response:', error.response);
+      console.error('Error response data:', error.response?.data);
+      console.error('Error response status:', error.response?.status);
+      throw new Error('플레이스 이미지 순서 변경에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 관련 API
+  // 특정 플레이스의 모든 공지사항 조회
+  getPlaceAnnouncements: async (placeId) => {
+    try {
+      const response = await api.get(`/places/${placeId}/announcements`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch place announcements:', error);
+      throw new Error('플레이스 공지사항 조회에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 생성
+  createPlaceAnnouncement: async (placeId, announcementData) => {
+    try {
+      const response = await api.post(`/places/${placeId}/announcements`, announcementData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create place announcement:', error);
+      throw new Error('플레이스 공지사항 생성에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 수정
+  updatePlaceAnnouncement: async (placeAnnouncementId, announcementData) => {
+    try {
+      const response = await api.patch(`/places/announcements/${placeAnnouncementId}`, announcementData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update place announcement:', error);
+      throw new Error('플레이스 공지사항 수정에 실패했습니다.');
+    }
+  },
+
+  // 플레이스 공지사항 삭제
+  deletePlaceAnnouncement: async (placeAnnouncementId) => {
+    try {
+      await api.delete(`/places/announcements/${placeAnnouncementId}`);
+    } catch (error) {
+      console.error('Failed to delete place announcement:', error);
+      throw new Error('플레이스 공지사항 삭제에 실패했습니다.');
+    }
+  }
+};
 
 // 축제 날짜 관련 API
 export const scheduleAPI = {
@@ -89,83 +418,210 @@ export const scheduleAPI = {
     }
   },
 
-  // 일정 수정
-  updateEvent: async (eventId, eventData) => {
-    try {
-      await api.patch(`/event-dates/events/${eventId}`, eventData);
-      // 성공 시 204 응답, body 없음 - 재조회 필요
-    } catch (error) {
-      console.error('Failed to update event:', error);
-      throw new Error('일정 수정에 실패했습니다.');
-    }
-  },
+    // 일정 수정
+    updateEvent: async (eventId, eventData) => {
+        try {
+            await api.patch(`/event-dates/events/${eventId}`, eventData);
+            // 성공 시 204 응답, body 없음 - 재조회 필요
+        } catch (error) {
+            console.error('Failed to update event:', error);
+            throw new Error('일정 수정에 실패했습니다.');
+        }
+    },
 
-  // 일정 삭제
-  deleteEvent: async (eventId) => {
-    try {
-      await api.delete(`/event-dates/events/${eventId}`);
-      // 성공 시 204 응답, body 없음 - 재조회 필요
-    } catch (error) {
-      console.error('Failed to delete event:', error);
-      throw new Error('일정 삭제에 실패했습니다.');
+    // 일정 삭제
+    deleteEvent: async (eventId) => {
+        try {
+            await api.delete(`/event-dates/events/${eventId}`);
+            // 성공 시 204 응답, body 없음 - 재조회 필요
+        } catch (error) {
+            console.error('Failed to delete event:', error);
+            throw new Error('일정 삭제에 실패했습니다.');
+        }
     }
-  }
 };
 
-// QnA 관련 API
+// FAQ 관련 API
 export const qnaAPI = {
-  // 모든 QnA 조회
+  // 모든 FAQ 조회
   getQuestions: async () => {
     try {
       const response = await api.get('/questions');
       return response.data;
     } catch (error) {
       console.error('Failed to fetch questions:', error);
-      throw new Error('QnA 조회에 실패했습니다.');
+      throw new Error('FAQ 조회에 실패했습니다.');
     }
   },
 
-  // 새 QnA 추가
+  // 새 FAQ 추가
   createQuestion: async (questionData) => {
     try {
       const response = await api.post('/questions', questionData);
       return response.data;
     } catch (error) {
       console.error('Failed to create question:', error);
-      throw new Error('QnA 추가에 실패했습니다.');
+      throw new Error('FAQ 추가에 실패했습니다.');
     }
   },
 
-  // QnA 수정
+  // FAQ 수정
   updateQuestion: async (questionId, questionData) => {
     try {
       const response = await api.patch(`/questions/${questionId}`, questionData);
       return response.data;
     } catch (error) {
       console.error('Failed to update question:', error);
-      throw new Error('QnA 수정에 실패했습니다.');
+      throw new Error('FAQ 수정에 실패했습니다.');
     }
   },
 
-  // QnA 삭제
+  // FAQ 삭제
   deleteQuestion: async (questionId) => {
     try {
       await api.delete(`/questions/${questionId}`);
       // 성공 시 204 응답, body 없음
     } catch (error) {
       console.error('Failed to delete question:', error);
-      throw new Error('QnA 삭제에 실패했습니다.');
+      throw new Error('FAQ 삭제에 실패했습니다.');
     }
   },
 
-  // QnA 순서 변경
+  // FAQ 순서 변경
   updateQuestionSequences: async (sequences) => {
     try {
       const response = await api.patch('/questions/sequences', sequences);
       return response.data;
     } catch (error) {
       console.error('Failed to update question sequences:', error);
-      throw new Error('QnA 순서 변경에 실패했습니다.');
+      throw new Error('FAQ 순서 변경에 실패했습니다.');
+    }
+  }
+};
+
+// 분실물 관련 API
+export const lostItemAPI = {
+    // 모든 분실물 조회
+    getLostItems: async () => {
+        try {
+            const response = await api.get('/lost-items');
+            // 백엔드 응답을 프론트엔드 형식으로 변환
+            return response.data.map(item => ({
+                id: item.lostItemId,
+                imageUrl: item.imageUrl,
+                storageLocation: item.storageLocation,
+                pickupStatus: item.pickupStatus,
+                createdAt: item.createdAt
+            }));
+        } catch (error) {
+            console.error('Failed to fetch lost items:', error);
+            throw new Error('분실물 조회에 실패했습니다.');
+        }
+    },
+
+    // 분실물 등록
+    createLostItem: async (lostItemData) => {
+        try {
+            const response = await api.post('/lost-items', lostItemData);
+            // LostItemResponse를 프론트엔드 형식으로 변환
+            return {
+                id: response.data.lostItemId,
+                imageUrl: response.data.imageUrl,
+                storageLocation: response.data.storageLocation,
+                pickupStatus: response.data.pickupStatus,
+                createdAt: response.data.createdAt
+            };
+        } catch (error) {
+            console.error('Failed to create lost item:', error);
+            throw new Error('분실물 등록에 실패했습니다.');
+        }
+    },
+
+    // 분실물 수정
+    updateLostItem: async (lostItemId, updateData) => {
+        try {
+            const response = await api.patch(`/lost-items/${lostItemId}`, updateData);
+            // LostItemUpdateResponse를 프론트엔드 형식으로 변환
+            return {
+                id: response.data.lostItemId,
+                imageUrl: response.data.imageUrl,
+                storageLocation: response.data.storageLocation
+            };
+        } catch (error) {
+            console.error('Failed to update lost item:', error);
+            throw new Error('분실물 수정에 실패했습니다.');
+        }
+    },
+
+    // 분실물 삭제
+    deleteLostItem: async (lostItemId) => {
+        try {
+            await api.delete(`/lost-items/${lostItemId}`);
+            // 204 No Content - 반환값 없음
+        } catch (error) {
+            console.error('Failed to delete lost item:', error);
+            throw new Error('분실물 삭제에 실패했습니다.');
+        }
+    },
+
+    // 분실물 상태 변경
+    updateLostItemStatus: async (lostItemId, status) => {
+        try {
+            const response = await api.patch(`/lost-items/${lostItemId}/status`, { pickupStatus : status});
+            // LostItemStatusUpdateResponse를 프론트엔드 형식으로 변환
+            return {
+                id: response.data.lostItemId,
+                pickupStatus: response.data.pickupStatus
+            };
+        } catch (error) {
+            console.error('Failed to update lost item status:', error);
+            throw new Error('분실물 상태 변경에 실패했습니다.');
+        }
+    }
+};
+
+// 라인업 관련 API
+export const lineupAPI = {
+  // 특정 축제의 모든 라인업 조회
+  getLineups: async () => {
+    try {
+      const response = await api.get('/lineups');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch lineups:', error);
+      throw new Error('라인업 조회에 실패했습니다.');
+    }
+  },
+
+  // 라인업 추가
+  addLineup: async (lineupData) => {
+    try {
+      const response = await api.post('/lineups', lineupData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to add lineup:', error);
+      throw new Error('라인업 추가에 실패했습니다.');
+    }
+  },
+
+  // 라인업 수정
+  updateLineup: async (lineupId, lineupData) => {
+    try {
+      const response = await api.patch(`/lineups/${lineupId}`, lineupData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update lineup:', error);
+      throw new Error('라인업 수정에 실패했습니다.');
+    }
+  },
+
+  // 라인업 삭제
+  deleteLineup: async (lineupId) => {
+    try {
+      await api.delete(`/lineups/${lineupId}`);
+    } catch (error) {
+      console.error('Failed to delete lineup:', error);
+      throw new Error('라인업 삭제에 실패했습니다.');
     }
   }
 };

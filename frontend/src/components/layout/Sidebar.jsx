@@ -148,13 +148,6 @@ const Sidebar = ({ open, setOpen }) => {
                         >
                             Festabook
                         </h1>
-                        <button
-                            className="text-gray-500 hover:text-gray-800 focus:outline-none"
-                            title="Festival ID 변경"
-                            onClick={() => openModal('festival')}
-                        >
-                            <i className="fas fa-lock text-lg" />
-                        </button>
                     </div>
                 </div>
             ) : (
@@ -180,8 +173,27 @@ const Sidebar = ({ open, setOpen }) => {
                 <NavLink target="home" icon="fa-home" open={open}>홈</NavLink>
                 <NavLink target="schedule" icon="fa-calendar-alt" open={open}>일정</NavLink>
                 <SubMenu icon="fa-map-marked-alt" title="지도" links={[{ target: 'booths', title: '플레이스 관리' }, { target: 'map-settings', title: '지도 설정' }]} open={openMenus[0]} onToggle={() => handleSubMenuToggle(0)} sidebarOpen={open} />
-                <SubMenu icon="fa-bullhorn" title="소식" links={[{ target: 'notices', title: '공지 사항' }, { target: 'lost-found', title: '분실물' }, { target: 'qna', title: 'QnA' }]} open={openMenus[1]} onToggle={() => handleSubMenuToggle(1)} sidebarOpen={open} />
+                <SubMenu icon="fa-bullhorn" title="소식" links={[{ target: 'notices', title: '공지 사항' }, { target: 'faq', title: 'FAQ' }, { target: 'lost-found', title: '분실물' }]} open={openMenus[1]} onToggle={() => handleSubMenuToggle(1)} sidebarOpen={open} />
             </nav>
+            
+            {/* 로그아웃 버튼 - 사이드바 하단에 배치 */}
+            <div className="mt-auto pt-4">
+                <button
+                    onClick={() => {
+                        localStorage.clear();
+                        window.location.reload();
+                    }}
+                    className={`w-full flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors duration-200 ${
+                        open 
+                            ? 'text-red-600 hover:text-white hover:bg-red-600' 
+                            : 'text-red-500 hover:text-red-700'
+                    }`}
+                    title="로그아웃"
+                >
+                    <i className="fas fa-sign-out-alt mr-2" />
+                    {open && <span>로그아웃</span>}
+                </button>
+            </div>
         </aside>
     );
 };

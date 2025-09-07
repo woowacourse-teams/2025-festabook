@@ -1,14 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '../common/Modal';
 
-const QnaModal = ({ qna, onSave, onClose }) => {
+const FaqModal = ({ faq, onSave, onClose }) => {
     const [question, setQuestion] = useState('');
     const [answer, setAnswer] = useState('');
     useEffect(() => {
-        setQuestion(qna?.question || '');
-        setAnswer(qna?.answer || '');
-    }, [qna]);
-    const handleSave = () => { onSave({ question, answer }); onClose(); };
+        setQuestion(faq?.question || '');
+        setAnswer(faq?.answer || '');
+    }, [faq]);
+    
+    const handleSave = useCallback(() => { 
+        onSave({ question, answer }); 
+        onClose(); 
+    }, [question, answer, onSave, onClose]);
     
     useEffect(() => {
         const handleKeyPress = (e) => {
@@ -25,11 +29,11 @@ const QnaModal = ({ qna, onSave, onClose }) => {
         return () => {
             document.removeEventListener('keydown', handleKeyPress);
         };
-    }, [question, answer, onClose]);
+    }, [question, answer, onClose, handleSave]);
 
     return (
         <Modal isOpen={true} onClose={onClose}>
-            <h3 className="text-xl font-bold mb-6">{qna ? 'QnA 수정' : '새 QnA 등록'}</h3>
+            <h3 className="text-xl font-bold mb-6">{faq ? 'FAQ 수정' : '새 FAQ 등록'}</h3>
             <div className="space-y-4">
                 <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">질문</label>
@@ -62,4 +66,4 @@ const QnaModal = ({ qna, onSave, onClose }) => {
     );
 };
 
-export default QnaModal;
+export default FaqModal;

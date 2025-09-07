@@ -1,5 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Modal from '../common/Modal';
+import { imageAPI } from '../../utils/api';
 
 const LostItemModal = ({ item, onSave, onClose }) => {
     const [storageLocation, setStorageLocation] = useState('');
@@ -7,6 +8,39 @@ const LostItemModal = ({ item, onSave, onClose }) => {
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
+
+    const handleSave = useCallback(async () => {
+        if (!storageLocation.trim()) {
+            return;
+        }
+
+        if (!selectedFile && !item?.imageUrl) {
+            return;
+        }
+
+        setIsUploading(true);
+        
+        try {
+            let finalImageUrl = item?.imageUrl || '';
+            
+            if (selectedFile) {
+                // 1단계: 이미지 파일을 백엔드 이미지 업로드 API로 전송
+                const uploadResponse = await imageAPI.uploadImage(selectedFile);
+                finalImageUrl = uploadResponse.imageUrl;
+            }
+            
+            onSave({ 
+                storageLocation, 
+                imageUrl: finalImageUrl 
+            }); 
+            onClose();
+        } catch (error) {
+            console.error('Error uploading image:', error);
+            alert('이미지 업로드에 실패했습니다: ' + (error.message || '알 수 없는 오류'));
+        } finally {
+            setIsUploading(false);
+        }
+    }, [storageLocation, selectedFile, item?.imageUrl, onSave, onClose]);
 
     // ESC 키와 Enter 키 이벤트 처리
     useEffect(() => {
@@ -26,7 +60,7 @@ const LostItemModal = ({ item, onSave, onClose }) => {
 
         document.addEventListener('keydown', handleKeyDown, true);
         return () => document.removeEventListener('keydown', handleKeyDown, true);
-    }, [onClose, isUploading, storageLocation, selectedFile, item]);
+    }, [onClose, isUploading, storageLocation, selectedFile, item, handleSave]);
 
     // 모달이 닫힐 때 상태 초기화
     useEffect(() => {
@@ -95,45 +129,6 @@ const LostItemModal = ({ item, onSave, onClose }) => {
 
     const handleUploadClick = () => {
         fileInputRef.current?.click();
-    };
-
-    const handleSave = async () => {
-        if (!storageLocation.trim()) {
-            return;
-        }
-
-        if (!selectedFile && !item?.imageUrl) {
-            return;
-        }
-
-        setIsUploading(true);
-        
-        try {
-            let finalImageUrl = item?.imageUrl || '';
-            
-            if (selectedFile) {
-                // 파일을 base64로 변환
-                const reader = new FileReader();
-                await new Promise((resolve, reject) => {
-                    reader.onload = () => {
-                        finalImageUrl = reader.result;
-                        resolve();
-                    };
-                    reader.onerror = reject;
-                    reader.readAsDataURL(selectedFile);
-                });
-            }
-            
-            onSave({ 
-                storageLocation, 
-                imageUrl: finalImageUrl 
-            }); 
-            onClose();
-        } catch (error) {
-            console.error('Error processing image:', error);
-        } finally {
-            setIsUploading(false);
-        }
     };
 
     const handleClose = () => {

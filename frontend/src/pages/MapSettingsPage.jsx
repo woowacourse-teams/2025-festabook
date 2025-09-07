@@ -144,7 +144,8 @@ const MapSettingsPage = () => {
     // 새로운 마커들 생성
     markers.forEach(marker => {
       if (!marker.markerCoordinate || !marker.markerCoordinate.latitude || !marker.markerCoordinate.longitude) return;
-      const isSelected = selectedPlaceId === marker.id;
+      const markerId = marker.placeId || marker.id;
+      const isSelected = selectedPlaceId === markerId;
       const iconSize = isSelected ? { width: 40, height: 50 } : { width: 30, height: 40 };
       const anchorPoint = isSelected ? { x: 20, y: 50 } : { x: 15, y: 40 };
       
@@ -159,10 +160,12 @@ const MapSettingsPage = () => {
         }
       });
       naver.maps.Event.addListener(m, 'click', () => {
-        setSelectedPlaceId(marker.id);
+        // marker.id 대신 marker.placeId를 우선 사용하고, 없으면 marker.id 사용
+        const markerId = marker.placeId || marker.id;
+        setSelectedPlaceId(markerId);
         // 해당 플레이스로 스크롤
         setTimeout(() => {
-          const placeItem = placeItemRefs.current[marker.id];
+          const placeItem = placeItemRefs.current[markerId];
           if (placeItem && placeListRef.current) {
             placeItem.scrollIntoView({ 
               behavior: 'smooth', 
@@ -213,7 +216,9 @@ const MapSettingsPage = () => {
 
   // 플레이스 클릭 시 해당 마커로 이동 및 강조 표시
   const handlePlaceClick = (place) => {
-    const marker = markers.find(m => m.id === place.id);
+    // place.id 대신 place.placeId를 우선 사용하고, 없으면 place.id 사용
+    const placeId = place.placeId || place.id;
+    const marker = markers.find(m => (m.placeId || m.id) === placeId);
     if (marker?.markerCoordinate?.latitude && marker?.markerCoordinate?.longitude && mapInstanceRef.current) {
       // 지도 중심을 해당 마커로 이동
       const position = new window.naver.maps.LatLng(
@@ -224,7 +229,7 @@ const MapSettingsPage = () => {
       mapInstanceRef.current.setZoom(18); // 확대
       
       // 선택된 플레이스 표시
-      setSelectedPlaceId(place.id);
+      setSelectedPlaceId(placeId);
     }
   };
 
@@ -264,28 +269,24 @@ const MapSettingsPage = () => {
             {booths.length > 0 ? (
               <div className="space-y-2">
                 {booths.map(booth => {
-                  const matchedMarker = markers.find(m => m.id === booth.id);
+                  const boothId = booth.placeId || booth.id;
+                  const matchedMarker = markers.find(m => (m.placeId || m.id) === boothId);
                   const hasCoordinates = matchedMarker?.markerCoordinate?.latitude != null && matchedMarker?.markerCoordinate?.longitude != null;
 
                   return (
                     <div
-                      key={booth.id}
+                      key={boothId}
                       ref={(el) => {
                         if (el) {
-                          placeItemRefs.current[booth.id] = el;
+                          placeItemRefs.current[boothId] = el;
                         }
                       }}
-                      className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 cursor-pointer hover:bg-gray-100 ${selectedPlaceId === booth.id ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
+                      className={`p-3 rounded-md flex justify-between items-center bg-gray-50 transition-all duration-150 cursor-pointer hover:bg-gray-100 ${selectedPlaceId === boothId ? 'border-2 border-blue-500 bg-blue-50' : ''}`}
                       onClick={() => handlePlaceClick(booth)}
                     >
                       <div>
                         <p className="font-semibold">
                           {(() => {
-                            // etcPlace 카테고리들은 카테고리명을 제목으로 사용
-                            const etcPlaceCategories = ['TRASH_CAN', 'SMOKING', 'TOILET'];
-                            if (etcPlaceCategories.includes(booth.category)) {
-                              return placeCategories[booth.category];
-                            }
                             // 일반 플레이스는 기존 로직 사용
                             return booth.title?.trim() ? booth.title : '플레이스 이름을 지정하여 주십시오.';
                           })()}
@@ -334,7 +335,7 @@ const MapSettingsPage = () => {
         <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)} maxWidth="max-w-2xl">
           <h3 className="text-xl font-bold mb-4">{selectedPlace.title} 좌표 설정</h3>
           <MapSelector
-            placeId={selectedPlace.id}
+            placeId={selectedPlace.placeId || selectedPlace.id}
             onSaved={(newMarker) => {
               setModalOpen(false);
               if (newMarker) {
@@ -342,7 +343,9 @@ const MapSettingsPage = () => {
                 const coordinate = newMarker.coordinate || newMarker.markerCoordinate;
                 if (coordinate) {
                   setMarkers(prev => {
-                    const existingIndex = prev.findIndex(m => m.id === newMarker.id);
+                    // newMarker.id 대신 newMarker.placeId를 우선 사용하고, 없으면 newMarker.id 사용
+                    const markerId = newMarker.placeId || newMarker.id;
+                    const existingIndex = prev.findIndex(m => (m.placeId || m.id) === markerId);
                     if (existingIndex >= 0) {
                       // 기존 마커 업데이트
                       const updated = [...prev];
