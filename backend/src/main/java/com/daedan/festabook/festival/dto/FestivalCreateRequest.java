@@ -11,7 +11,7 @@ public record FestivalCreateRequest(
         @Schema(description = "학교 이름", example = "서울시립대학교")
         String universityName,
 
-        @Schema(description = "축제 이름", example = "2025 시립 Water Festival\n: AQUA WAVE")
+        @Schema(description = "축제 이름", example = "시립 Water Festival\n: AQUA WAVE")
         String festivalName,
 
         @Schema(description = "시작일", example = "2025-08-23")
