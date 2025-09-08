@@ -35,6 +35,7 @@ public class SecurityConfig {
             "/announcements",
             "/places",
             "/places/*",
+            "/places/*/announcements",
             "/places/previews",
             "/places/geographies",
             "/festivals",
