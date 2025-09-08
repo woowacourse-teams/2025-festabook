@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,7 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 FAQ 생성")
@@ -60,6 +62,7 @@ public class QuestionController {
         return questionService.getAllQuestionByFestivalId(festivalId);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/{questionId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 FAQ 수정")
@@ -74,6 +77,7 @@ public class QuestionController {
         return questionService.updateQuestionAndAnswer(councilDetails.getFestivalId(), questionId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "FAQ 순서 수정")
@@ -87,6 +91,7 @@ public class QuestionController {
         return questionService.updateSequence(councilDetails.getFestivalId(), requests);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/{questionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 FAQ 삭제")

@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -38,7 +39,7 @@ class FestivalTest {
             // when & then
             assertThatThrownBy(() -> FestivalFixture.create(invalidName))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("축제 이름은 비어 있을 수 없습니다.");
+                    .hasMessage("이름은 비어 있을 수 없습니다.");
         }
 
         @Test
@@ -49,7 +50,7 @@ class FestivalTest {
             // when & then
             assertThatThrownBy(() -> FestivalFixture.create(invalidName))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("축제 이름은 비어 있을 수 없습니다.");
+                    .hasMessage("이름은 비어 있을 수 없습니다.");
         }
 
         @Test
@@ -61,9 +62,72 @@ class FestivalTest {
             // when & then
             assertThatThrownBy(() -> FestivalFixture.create(invalidName))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("축제 이름은 50자를 초과할 수 없습니다.");
+                    .hasMessage("이름은 50자를 초과할 수 없습니다.");
         }
     }
+
+    @Nested
+    class validateDate {
+
+        @Test
+        void 성공() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 1);
+            LocalDate endDate = LocalDate.of(2025, 5, 2);
+
+            // when & then
+            assertThatCode(() -> FestivalFixture.create(startDate, endDate))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 성공_시작일과_종료일이_같은_경우() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 1);
+            LocalDate endDate = LocalDate.of(2025, 5, 1);
+
+            // when & then
+            assertThatCode(() -> FestivalFixture.create(startDate, endDate))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_시작일_null() {
+            // given
+            LocalDate startDate = null;
+            LocalDate endDate = LocalDate.of(2025, 5, 2);
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.create(startDate, endDate))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("시작일과 종료일은 null일 수 없습니다.");
+        }
+
+        @Test
+        void 예외_종료일_null() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 1);
+            LocalDate endDate = null;
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.create(startDate, endDate))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("시작일과 종료일은 null일 수 없습니다.");
+        }
+
+        @Test
+        void 예외_종료일이_시작일보다_이전() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 2);
+            LocalDate endDate = LocalDate.of(2025, 5, 1);
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.create(startDate, endDate))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("종료일은 시작일보다 이전일 수 없습니다.");
+        }
+    }
+
 
     @Nested
     class validateZoom {

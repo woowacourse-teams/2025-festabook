@@ -16,11 +16,13 @@ import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
+import com.daedan.festabook.place.dto.PlaceAnnouncementResponses;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -128,6 +130,37 @@ class PlaceAnnouncementServiceTest {
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
+        }
+    }
+
+    @Nested
+    class getAllPlaceAnnouncementsByPlaceId {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeId = 1L;
+            Place place = PlaceFixture.create(placeId);
+
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place, "title1", "content1");
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place, "title2", "content2");
+
+            given(placeAnnouncementJpaRepository.findAllByPlaceId(placeId))
+                    .willReturn(List.of(placeAnnouncement1, placeAnnouncement2));
+
+            // when
+            PlaceAnnouncementResponses result = placeAnnouncementService.getAllPlaceAnnouncementsByPlaceId(placeId);
+
+            // then
+            assertSoftly(s -> {
+                PlaceAnnouncementResponse response1 = result.responses().get(0);
+                s.assertThat(response1.title()).isEqualTo(placeAnnouncement1.getTitle());
+                s.assertThat(response1.content()).isEqualTo(placeAnnouncement1.getContent());
+
+                PlaceAnnouncementResponse response2 = result.responses().get(1);
+                s.assertThat(response2.title()).isEqualTo(placeAnnouncement2.getTitle());
+                s.assertThat(response2.content()).isEqualTo(placeAnnouncement2.getContent());
+            });
         }
     }
 

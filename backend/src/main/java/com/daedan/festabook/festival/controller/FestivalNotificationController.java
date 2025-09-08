@@ -1,5 +1,6 @@
 package com.daedan.festabook.festival.controller;
 
+import com.daedan.festabook.festival.dto.FestivalNotificationReadResponses;
 import com.daedan.festabook.festival.dto.FestivalNotificationRequest;
 import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.service.FestivalNotificationService;
@@ -10,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +38,18 @@ public class FestivalNotificationController {
             @RequestBody FestivalNotificationRequest request
     ) {
         return festivalNotificationService.subscribeFestivalNotification(festivalId, request);
+    }
+
+    @GetMapping("/notifications/{deviceId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 디바이스의 모든 축제 알림 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalNotificationReadResponses getAllFestivalNotificationByDeviceId(
+            @PathVariable Long deviceId
+    ) {
+        return festivalNotificationService.getAllFestivalNotificationByDeviceId(deviceId);
     }
 
     @DeleteMapping("/notifications/{festivalNotificationId}")

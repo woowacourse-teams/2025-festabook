@@ -3,6 +3,7 @@ package com.daedan.festabook.festival.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -15,12 +16,15 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalNotification;
 import com.daedan.festabook.festival.domain.FestivalNotificationFixture;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
+import com.daedan.festabook.festival.dto.FestivalNotificationReadResponse;
+import com.daedan.festabook.festival.dto.FestivalNotificationReadResponses;
 import com.daedan.festabook.festival.dto.FestivalNotificationRequest;
 import com.daedan.festabook.festival.dto.FestivalNotificationRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -140,6 +144,63 @@ class FestivalNotificationServiceTest {
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제입니다.");
+        }
+    }
+
+    @Nested
+    class getAllFestivalNotificationByDeviceId {
+
+        @Test
+        void 성공() {
+            // given
+            Long deviceId = 1L;
+            Long festivalId1 = 1L;
+            Long festivalId2 = 2L;
+            Device device = DeviceFixture.create(deviceId);
+            Festival festival1 = FestivalFixture.create(festivalId1);
+            Festival festival2 = FestivalFixture.create(festivalId2);
+            FestivalNotification festivalNotification1 = FestivalNotificationFixture.create(festival1, device);
+            FestivalNotification festivalNotification2 = FestivalNotificationFixture.create(festival2, device);
+            List<FestivalNotification> festivalNotifications = List.of(festivalNotification1, festivalNotification2);
+
+            given(deviceJpaRepository.findById(deviceId))
+                    .willReturn(Optional.of(device));
+            given(festivalNotificationJpaRepository.getAllByDeviceId(deviceId))
+                    .willReturn(festivalNotifications);
+
+            // when
+            FestivalNotificationReadResponses result = festivalNotificationService.getAllFestivalNotificationByDeviceId(
+                    deviceId
+            );
+
+            // then
+            assertSoftly(s -> {
+                FestivalNotificationReadResponse response1 = result.responses().get(0);
+                s.assertThat(response1.universityName())
+                        .isEqualTo(festivalNotification1.getFestival().getUniversityName());
+                s.assertThat(response1.festivalName())
+                        .isEqualTo(festivalNotification1.getFestival().getFestivalName());
+                
+                FestivalNotificationReadResponse response2 = result.responses().get(1);
+                s.assertThat(response2.universityName())
+                        .isEqualTo(festivalNotification2.getFestival().getUniversityName());
+                s.assertThat(response2.festivalName())
+                        .isEqualTo(festivalNotification2.getFestival().getFestivalName());
+            });
+        }
+
+        @Test
+        void 예외_존재하지_않는_디바이스() {
+            // given
+            Long invalidDeviceId = 0L;
+
+            given(deviceJpaRepository.findById(invalidDeviceId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> festivalNotificationService.getAllFestivalNotificationByDeviceId(invalidDeviceId))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 디바이스입니다.");
         }
     }
 

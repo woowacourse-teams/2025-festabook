@@ -1,6 +1,7 @@
 package com.daedan.festabook.council.controller;
 
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.council.dto.CouncilLoginRequest;
@@ -10,6 +11,7 @@ import com.daedan.festabook.council.dto.CouncilRequestFixture;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.role.RoleType;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,7 +62,8 @@ class CouncilControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("festivalId", notNullValue())
-                    .body("username", equalTo(username));
+                    .body("username", equalTo(username))
+                    .body("roleTypes", hasItem(RoleType.ROLE_COUNCIL.name()));
         }
     }
 

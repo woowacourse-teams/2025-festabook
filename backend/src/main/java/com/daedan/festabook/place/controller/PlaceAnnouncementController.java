@@ -3,6 +3,7 @@ package com.daedan.festabook.place.controller;
 import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
+import com.daedan.festabook.place.dto.PlaceAnnouncementResponses;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.service.PlaceAnnouncementService;
@@ -12,8 +13,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -30,6 +33,7 @@ public class PlaceAnnouncementController {
 
     private final PlaceAnnouncementService placeAnnouncementService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping("/{placeId}/announcements")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스 공지 생성")
@@ -42,6 +46,18 @@ public class PlaceAnnouncementController {
             @RequestBody PlaceAnnouncementRequest request
     ) {
         return placeAnnouncementService.createPlaceAnnouncement(councilDetails.getFestivalId(), placeId, request);
+    }
+
+    @GetMapping("/{placeId}/announcements")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제에 대한 플레이스 공지 전체 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public PlaceAnnouncementResponses getAllPlaceAnnouncementsByPlaceId(
+            @PathVariable Long placeId
+    ) {
+        return placeAnnouncementService.getAllPlaceAnnouncementsByPlaceId(placeId);
     }
 
     @PatchMapping("/announcements/{placeAnnouncementId}")
@@ -62,6 +78,7 @@ public class PlaceAnnouncementController {
         );
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/announcements/{placeAnnouncementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스의 공지 삭제")
