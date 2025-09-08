@@ -38,10 +38,11 @@ public class CouncilService {
                 request.username(),
                 encodedPassword
         );
-        Council savedCouncil = councilJpaRepository.save(council);
 
         // TODO: 추후 회원가입 방식이 생긴다면 삭제
         council.updateRole(Set.of(RoleType.ROLE_COUNCIL));
+
+        Council savedCouncil = councilJpaRepository.save(council);
 
         return CouncilResponse.from(savedCouncil);
     }
