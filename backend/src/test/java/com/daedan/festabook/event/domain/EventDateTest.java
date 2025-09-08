@@ -50,7 +50,7 @@ class EventDateTest {
         }
 
         @Test
-        void 예외_날짜_nul() {
+        void 예외_날짜_null() {
             // given
             LocalDate initialDate = LocalDate.of(2025, 5, 1);
             EventDate eventDate = EventDateFixture.create(initialDate);
