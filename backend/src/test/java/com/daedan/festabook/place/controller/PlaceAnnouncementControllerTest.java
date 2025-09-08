@@ -99,7 +99,7 @@ class PlaceAnnouncementControllerTest {
     }
 
     @Nested
-    class getAllPlaceAnnouncements {
+    class getAllPlaceAnnouncementsByPlaceId {
 
         @Test
         void 성공() {

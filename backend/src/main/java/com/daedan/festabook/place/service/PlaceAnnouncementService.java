@@ -40,7 +40,7 @@ public class PlaceAnnouncementService {
         return PlaceAnnouncementResponse.from(savedPlaceAnnouncement);
     }
 
-    public PlaceAnnouncementResponses getAllPlaceAnnouncements(Long placeId) {
+    public PlaceAnnouncementResponses getAllPlaceAnnouncementsByPlaceId(Long placeId) {
         List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
         return PlaceAnnouncementResponses.from(placeAnnouncements);
     }

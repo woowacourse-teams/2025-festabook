@@ -52,10 +52,10 @@ public class PlaceAnnouncementController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceAnnouncementResponses getAllPlaceAnnouncements(
+    public PlaceAnnouncementResponses getAllPlaceAnnouncementsByPlaceId(
             @PathVariable Long placeId
     ) {
-        return placeAnnouncementService.getAllPlaceAnnouncements(placeId);
+        return placeAnnouncementService.getAllPlaceAnnouncementsByPlaceId(placeId);
     }
 
     @PatchMapping("/announcements/{placeAnnouncementId}")

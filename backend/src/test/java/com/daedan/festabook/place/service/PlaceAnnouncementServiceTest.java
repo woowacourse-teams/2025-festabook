@@ -134,7 +134,7 @@ class PlaceAnnouncementServiceTest {
     }
 
     @Nested
-    class getAllPlaceAnnouncements {
+    class getAllPlaceAnnouncementsByPlaceId {
 
         @Test
         void 성공() {
@@ -149,7 +149,7 @@ class PlaceAnnouncementServiceTest {
                     .willReturn(List.of(placeAnnouncement1, placeAnnouncement2));
 
             // when
-            PlaceAnnouncementResponses result = placeAnnouncementService.getAllPlaceAnnouncements(placeId);
+            PlaceAnnouncementResponses result = placeAnnouncementService.getAllPlaceAnnouncementsByPlaceId(placeId);
 
             // then
             assertSoftly(s -> {
