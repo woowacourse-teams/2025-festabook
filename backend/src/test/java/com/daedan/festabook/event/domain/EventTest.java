@@ -149,7 +149,7 @@ class EventTest {
     class validateLocation {
 
         @ParameterizedTest
-        @ValueSource(ints = {1, 5, 10, MAX_TITLE_LENGTH})
+        @ValueSource(ints = {1, 5, 10, MAX_LOCATION_LENGTH})
         void 성공_일정_위치_길이_경계값(int length) {
             // given
             String location = "m".repeat(length);
