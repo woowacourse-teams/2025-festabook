@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class PlaceAnnouncementController {
 
     private final PlaceAnnouncementService placeAnnouncementService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping("/{placeId}/announcements")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스 공지 생성")
@@ -76,6 +78,7 @@ public class PlaceAnnouncementController {
         );
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/announcements/{placeAnnouncementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스의 공지 삭제")

@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,6 +33,7 @@ public class EventController {
 
     private final EventService eventService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping("/events")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "일정 생성")
@@ -57,6 +59,7 @@ public class EventController {
         return eventService.getAllEventByEventDateId(eventDateId);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "일정 수정")
@@ -71,6 +74,7 @@ public class EventController {
         return eventService.updateEvent(councilDetails.getFestivalId(), eventId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "일정 삭제")

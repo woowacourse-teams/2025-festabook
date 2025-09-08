@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -35,6 +36,7 @@ class LostItemController {
 
     private final LostItemService lostItemService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 분실물 생성")
@@ -60,6 +62,7 @@ class LostItemController {
         return lostItemService.getAllLostItemByFestivalId(festivalId);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/{lostItemId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 분실물 수정")
@@ -74,6 +77,7 @@ class LostItemController {
         return lostItemService.updateLostItem(councilDetails.getFestivalId(), lostItemId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/{lostItemId}/status")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 분실물 상태 수정")
@@ -88,6 +92,7 @@ class LostItemController {
         return lostItemService.updateLostItemStatus(councilDetails.getFestivalId(), lostItemId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/{lostItemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 분실물 삭제")

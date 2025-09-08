@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,6 +32,7 @@ public class PlaceImageController {
 
     private final PlaceImageService placeImageService;
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping("/{placeId}/images")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스의 이미지 생성")
@@ -45,6 +47,7 @@ public class PlaceImageController {
         return placeImageService.addPlaceImage(councilDetails.getFestivalId(), placeId, request);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @PatchMapping("/images/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 플레이스의 이미지들 순서 수정")
@@ -58,6 +61,7 @@ public class PlaceImageController {
         return placeImageService.updatePlaceImagesSequence(councilDetails.getFestivalId(), requests);
     }
 
+    @PreAuthorize("hasRole('COUNCIL')")
     @DeleteMapping("/images/{placeImageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스의 이미지 삭제")
