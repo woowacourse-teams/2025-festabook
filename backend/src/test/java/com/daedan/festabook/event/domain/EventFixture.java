@@ -89,8 +89,8 @@ public class EventFixture {
         return event;
     }
 
-    public static void createWithTitle(String title) {
-        new Event(
+    public static Event createWithTitle(String title) {
+        return new Event(
                 EventDateFixture.create(),
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME,
@@ -99,8 +99,8 @@ public class EventFixture {
         );
     }
 
-    public static void createWithLocation(String location) {
-        new Event(
+    public static Event createWithLocation(String location) {
+        return new Event(
                 EventDateFixture.create(),
                 DEFAULT_START_TIME,
                 DEFAULT_END_TIME,
