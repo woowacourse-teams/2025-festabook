@@ -175,14 +175,16 @@ class FestivalNotificationServiceTest {
 
             // then
             assertSoftly(s -> {
-                List<FestivalNotificationReadResponse> responses = result.responses();
-                s.assertThat(responses.get(0).universityName())
+                FestivalNotificationReadResponse response1 = result.responses().get(0);
+                s.assertThat(response1.universityName())
                         .isEqualTo(festivalNotification1.getFestival().getUniversityName());
-                s.assertThat(responses.get(0).festivalName())
+                s.assertThat(response1.festivalName())
                         .isEqualTo(festivalNotification1.getFestival().getFestivalName());
-                s.assertThat(responses.get(1).universityName())
+                
+                FestivalNotificationReadResponse response2 = result.responses().get(1);
+                s.assertThat(response2.universityName())
                         .isEqualTo(festivalNotification2.getFestival().getUniversityName());
-                s.assertThat(responses.get(1).festivalName())
+                s.assertThat(response2.festivalName())
                         .isEqualTo(festivalNotification2.getFestival().getFestivalName());
             });
         }
