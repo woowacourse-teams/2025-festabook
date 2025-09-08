@@ -49,7 +49,7 @@ public class FestivalController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "축제 생성")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public FestivalCreateResponse createFestival(
             @RequestBody FestivalCreateRequest request

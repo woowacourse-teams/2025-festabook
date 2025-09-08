@@ -2,6 +2,7 @@ package com.daedan.festabook.festival.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -20,6 +21,7 @@ import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepos
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -162,6 +164,48 @@ class FestivalNotificationControllerTest {
                     .body("message", equalTo("존재하지 않는 축제입니다."));
 
             then(fcmNotificationManager).shouldHaveNoInteractions();
+        }
+    }
+
+    @Nested
+    class getAllFestivalNotificationByDeviceId {
+
+        @Test
+        void 성공() {
+            // given
+            Device device = DeviceFixture.create();
+            deviceJpaRepository.save(device);
+
+            Festival festival1 = FestivalFixture.create();
+            Festival festival2 = FestivalFixture.create();
+            festivalJpaRepository.save(festival1);
+            festivalJpaRepository.save(festival2);
+
+            FestivalNotification festivalNotification1 = FestivalNotificationFixture.create(festival1, device);
+            FestivalNotification festivalNotification2 = FestivalNotificationFixture.create(festival2, device);
+            List<FestivalNotification> festivalNotifications = List.of(festivalNotification1, festivalNotification2);
+            festivalNotificationJpaRepository.saveAll(festivalNotifications);
+
+            int expectedSize = 2;
+            int expectedFieldSize = 3;
+
+            // when & then
+            RestAssured.
+                    given()
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .get("/festivals/notifications/{deviceId}", device.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize))
+                    .body("[0].size()", equalTo(expectedFieldSize))
+                    .body("[0].festivalNotificationId", notNullValue())
+                    .body("[0].universityName", equalTo(festivalNotification1.getFestival().getUniversityName()))
+                    .body("[0].festivalName", equalTo(festivalNotification1.getFestival().getFestivalName()))
+                    .body("[1].size()", equalTo(expectedFieldSize))
+                    .body("[1].festivalNotificationId", notNullValue())
+                    .body("[1].universityName", equalTo(festivalNotification2.getFestival().getUniversityName()))
+                    .body("[1].festivalName", equalTo(festivalNotification2.getFestival().getFestivalName()));
         }
     }
 

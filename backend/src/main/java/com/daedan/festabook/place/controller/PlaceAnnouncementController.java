@@ -3,6 +3,7 @@ package com.daedan.festabook.place.controller;
 import com.daedan.festabook.global.security.council.CouncilDetails;
 import com.daedan.festabook.place.dto.PlaceAnnouncementRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementResponse;
+import com.daedan.festabook.place.dto.PlaceAnnouncementResponses;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceAnnouncementUpdateResponse;
 import com.daedan.festabook.place.service.PlaceAnnouncementService;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -46,7 +48,18 @@ public class PlaceAnnouncementController {
         return placeAnnouncementService.createPlaceAnnouncement(councilDetails.getFestivalId(), placeId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @GetMapping("/{placeId}/announcements")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제에 대한 플레이스 공지 전체 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public PlaceAnnouncementResponses getAllPlaceAnnouncementsByPlaceId(
+            @PathVariable Long placeId
+    ) {
+        return placeAnnouncementService.getAllPlaceAnnouncementsByPlaceId(placeId);
+    }
+
     @PatchMapping("/announcements/{placeAnnouncementId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 플레이스 공지사항 수정")
