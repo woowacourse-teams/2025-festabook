@@ -89,6 +89,26 @@ public class EventFixture {
         return event;
     }
 
+    public static void createWithTitle(String title) {
+        new Event(
+                EventDateFixture.create(),
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                title,
+                DEFAULT_LOCATION
+        );
+    }
+
+    public static void createWithLocation(String location) {
+        new Event(
+                EventDateFixture.create(),
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                DEFAULT_TITLE,
+                location
+        );
+    }
+
     public static List<Event> createList(int size, EventDate eventDate) {
         return IntStream.range(0, size)
                 .mapToObj(i -> create(eventDate))
