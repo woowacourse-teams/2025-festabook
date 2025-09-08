@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -73,6 +74,8 @@ public class Festival extends BaseEntity {
             List<Coordinate> polygonHoleBoundary
     ) {
         validateName(universityName);
+        validateName(festivalName);
+        validateDates(startDate, endDate);
         validateZoom(zoom);
         validateCenterCoordinate(centerCoordinate);
         validatePolygonHoleBoundary(polygonHoleBoundary);
@@ -87,21 +90,32 @@ public class Festival extends BaseEntity {
     }
 
     public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate) {
-        // TODO: 검증 추가
+        validateName(festivalName);
+        validateDates(startDate, endDate);
+
         this.festivalName = festivalName;
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
     private void validateName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new BusinessException("축제 이름은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        if (!StringUtils.hasText(name)) {
+            throw new BusinessException("이름은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (name.length() > MAX_NAME_LENGTH) {
             throw new BusinessException(
-                    String.format("축제 이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH),
+                    String.format("이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH),
                     HttpStatus.BAD_REQUEST
             );
+        }
+    }
+
+    private void validateDates(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
+            throw new BusinessException("시작일과 종료일은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new BusinessException("종료일은 시작일보다 이전일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
