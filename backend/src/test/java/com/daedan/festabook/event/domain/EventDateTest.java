@@ -1,9 +1,11 @@
 package com.daedan.festabook.event.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.time.LocalDate;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -14,6 +16,21 @@ import org.junit.jupiter.params.provider.CsvSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventDateTest {
+
+    @Nested
+    class validateDate {
+
+        @Test
+        void 예외_날짜_null() {
+            // given
+            LocalDate date = null;
+
+            // when & then
+            assertThatThrownBy(() -> EventDateFixture.create(date))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("일정 날짜는 null일 수 없습니다.");
+        }
+    }
 
     @Nested
     class updateDate {
@@ -30,6 +47,19 @@ class EventDateTest {
 
             // then
             assertThat(eventDate.getDate()).isEqualTo(newDate);
+        }
+
+        @Test
+        void 예외_날짜_null() {
+            // given
+            LocalDate initialDate = LocalDate.of(2025, 5, 1);
+            EventDate eventDate = EventDateFixture.create(initialDate);
+            LocalDate newDate = null;
+
+            // when & then
+            assertThatThrownBy(() -> eventDate.updateDate(newDate))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("일정 날짜는 null일 수 없습니다.");
         }
     }
 
