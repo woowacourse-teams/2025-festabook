@@ -1,6 +1,7 @@
 package com.daedan.festabook.event.domain;
 
 import com.daedan.festabook.global.domain.BaseEntity;
+import com.daedan.festabook.global.exception.BusinessException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -16,6 +17,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -23,6 +26,9 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLDelete(sql = "UPDATE event SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Event extends BaseEntity implements Comparable<Event> {
+
+    private static final int MAX_TITLE_LENGTH = 255;
+    private static final int MAX_LOCATION_LENGTH = 100;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -38,10 +44,10 @@ public class Event extends BaseEntity implements Comparable<Event> {
     @Column(nullable = false)
     private LocalTime endTime;
 
-    @Column(nullable = false)
+    @Column(length = MAX_TITLE_LENGTH, nullable = false)
     private String title;
 
-    @Column(nullable = false)
+    @Column(length = MAX_LOCATION_LENGTH, nullable = false)
     private String location;
 
     public Event(
@@ -51,6 +57,11 @@ public class Event extends BaseEntity implements Comparable<Event> {
             String title,
             String location
     ) {
+        validateEventDate(eventDate);
+        validateTimes(startTime, endTime);
+        validateTitle(title);
+        validateLocation(location);
+
         this.eventDate = eventDate;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -71,6 +82,44 @@ public class Event extends BaseEntity implements Comparable<Event> {
 
     public boolean isFestivalIdEqualTo(Long festivalId) {
         return this.eventDate.isFestivalIdEqualTo(festivalId);
+    }
+
+    private void validateEventDate(EventDate eventDate) {
+        if (eventDate == null) {
+            throw new BusinessException("일정 날짜는 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateTimes(LocalTime startTime, LocalTime endTime) {
+        if (startTime == null || endTime == null) {
+            throw new BusinessException("시작 시간과 종료 시간은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateTitle(String title) {
+        if (!StringUtils.hasText(title)) {
+            throw new BusinessException("일정 제목은 공백이거나 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (title.length() > MAX_TITLE_LENGTH) {
+            throw new BusinessException(
+                    String.format("일정 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
+    }
+
+    private void validateLocation(String location) {
+        if (!StringUtils.hasText(location)) {
+            throw new BusinessException("일정 위치는 공백이거나 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (location.length() > MAX_LOCATION_LENGTH) {
+            throw new BusinessException(
+                    String.format("일정 위치의 길이는 %d자를 초과할 수 없습니다.", MAX_LOCATION_LENGTH),
+                    HttpStatus.BAD_REQUEST
+            );
+        }
     }
 
     @Override
