@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 class QuestionTest {
 
     private static final int MAX_QUESTION_LENGTH = 255;
-    private static final int MAX_ANSWER_LENGTH = 1024;
+    private static final int MAX_ANSWER_LENGTH = 3000;
 
     @Nested
     class validateFestival {
@@ -133,7 +133,7 @@ class QuestionTest {
             // when & then
             assertThatThrownBy(() -> QuestionFixture.createWithAnswer(answer))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("답변은 1024자를 초과할 수 없습니다.");
+                    .hasMessage("답변은 %d자를 초과할 수 없습니다.", MAX_ANSWER_LENGTH);
         }
     }
 

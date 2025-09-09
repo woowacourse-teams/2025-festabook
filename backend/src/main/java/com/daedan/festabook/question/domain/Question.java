@@ -26,7 +26,7 @@ import org.springframework.http.HttpStatus;
 public class Question extends BaseEntity implements Comparable<Question> {
 
     private static final int MAX_QUESTION_LENGTH = 255;
-    private static final int MAX_ANSWER_LENGTH = 1024;
+    private static final int MAX_ANSWER_LENGTH = 3000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class Question extends BaseEntity implements Comparable<Question> {
     @Column(nullable = false)
     private String question;
 
-    @Column(nullable = false, length = 1024)
+    @Column(nullable = false, length = MAX_ANSWER_LENGTH)
     private String answer;
 
     @Column(nullable = false)
