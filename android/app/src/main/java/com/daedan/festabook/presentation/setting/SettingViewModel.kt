@@ -10,26 +10,31 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
-import com.daedan.festabook.presentation.common.Event
+import com.daedan.festabook.presentation.common.SingleLiveData
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SettingViewModel(
     private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
-    private val _allowClickEvent: MutableLiveData<Event<Unit>> = MutableLiveData()
-    val allowClickEvent: LiveData<Event<Unit>> get() = _allowClickEvent
+    private val _allowClickEvent: SingleLiveData<Unit> = SingleLiveData()
+    val allowClickEvent: LiveData<Unit> get() = _allowClickEvent
 
     var isAllowed = festivalNotificationRepository.getFestivalNotificationIsAllow()
         private set
 
-    private val _error: MutableLiveData<Event<Throwable>> = MutableLiveData()
-    val error: LiveData<Event<Throwable>> get() = _error
+    private val _error: SingleLiveData<Throwable> = SingleLiveData()
+    val error: LiveData<Throwable> get() = _error
+
+    private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
+    val isLoading: LiveData<Boolean> get() = _isLoading
 
     fun notificationAllowClick() {
+        if (_isLoading.value == true) return
         updateNotificationIsAllowed(!isAllowed)
-        _allowClickEvent.value = Event(Unit)
-        Timber.d("$isAllowed")
+        _allowClickEvent.setValue(Unit)
+
+        _isLoading.value = true
         if (isAllowed) saveNotificationId() else deleteNotificationId()
     }
 
@@ -50,8 +55,10 @@ class SettingViewModel(
                 .onSuccess {
                     saveNotificationIsAllowed(isAllowed)
                 }.onFailure {
-                    _error.value = Event(it)
-                    Timber.e(it, "${::SettingViewModel.javaClass.simpleName} NotificationId 저장 실패")
+                    _error.setValue(it)
+                    Timber.e(it, "${this::class.java.simpleName} NotificationId 저장 실패")
+                }.also {
+                    _isLoading.value = false
                 }
         }
     }
@@ -65,8 +72,10 @@ class SettingViewModel(
                 .onSuccess {
                     saveNotificationIsAllowed(isAllowed)
                 }.onFailure {
-                    _error.value = Event(it)
-                    Timber.e(it, "${::SettingViewModel.name} NotificationId 삭제 실패")
+                    _error.setValue(it)
+                    Timber.e(it, "${this::class.java.simpleName} NotificationId 삭제 실패")
+                }.also {
+                    _isLoading.value = false
                 }
         }
     }
