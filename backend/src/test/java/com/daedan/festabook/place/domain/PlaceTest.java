@@ -22,7 +22,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class PlaceTest {
 
-    private static final int MAX_TITLE_LENGTH = 3000;
+    private static final int MAX_TITLE_LENGTH = 255;
     private static final int MAX_DESCRIPTION_LENGTH = 100;
     private static final int MAX_LOCATION_LENGTH = 100;
     private static final int MAX_HOST_LENGTH = 100;
