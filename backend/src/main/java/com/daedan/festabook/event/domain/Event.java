@@ -100,6 +100,7 @@ public class Event extends BaseEntity implements Comparable<Event> {
         if (!StringUtils.hasText(title)) {
             throw new BusinessException("일정 제목은 공백이거나 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+        
         if (title.length() > MAX_TITLE_LENGTH) {
             throw new BusinessException(
                     String.format("일정 제목의 길이는 %d자를 초과할 수 없습니다.", MAX_TITLE_LENGTH),
