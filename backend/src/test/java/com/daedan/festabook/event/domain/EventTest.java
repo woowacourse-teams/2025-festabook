@@ -27,7 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class EventTest {
 
-    private static final int MAX_TITLE_LENGTH = 30;
+    private static final int MAX_TITLE_LENGTH = 255;
     private static final int MAX_LOCATION_LENGTH = 100;
 
     @Nested
