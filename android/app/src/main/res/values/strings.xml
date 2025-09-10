@@ -124,4 +124,7 @@
     <string name="update_notice_title">신규 버전 출시 안내</string>
     <string name="update_notice_message">새로운 버전이 출시되었습니다.\n 더 나은 사용을 위해 앱을 업데이트해 주세요</string>
     <string name="update_notice_confirm">업데이트</string>
+    <string name="update_failed_title">서버 통신 실패</string>
+    <string name="update_failed_message">앱 서버에 접속할 수 없습니다. 다시 시도해주세요</string>
+    <string name="update_failed_confirm">종료</string>
 </resources>

@@ -230,7 +230,7 @@ class MainActivity :
     private fun showAlarmDialog() {
         val dialog =
             MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
-                .setView(R.layout.view_main_alarm_dialog)
+                .setView(R.layout.view_main_alert_dialog)
                 .setPositiveButton(R.string.main_alarm_dialog_confirm_button) { _, _ ->
                     notificationPermissionManager.requestNotificationPermission(this)
                 }.setNegativeButton(R.string.main_alarm_dialog_cancel_button) { dialog, _ ->
