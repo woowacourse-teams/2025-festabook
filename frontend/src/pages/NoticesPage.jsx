@@ -154,8 +154,8 @@ const NoticesPage = () => {
     // 알림 전송 함수
     const handleSendNotification = async (noticeId, noticeTitle) => {
         try {
-            // API 호출 (실제 알림 전송 API 엔드포인트 사용)
-            // await announcementAPI.sendNotification(noticeId);
+            // 실제 알림 전송 API 호출
+            await announcementAPI.sendNotification(noticeId);
             
             // 쿨다운 시작 (3분 = 180초)
             const cooldownTime = 3 * 60 * 1000; // 3분을 밀리초로 변환
@@ -177,7 +177,7 @@ const NoticesPage = () => {
             
             showToast(`'${noticeTitle}' 공지사항 알림이 전송되었습니다.`);
         } catch (error) {
-            showToast('알림 전송에 실패했습니다.');
+            showToast(error.message || '알림 전송에 실패했습니다.');
         }
     };
 
