@@ -51,6 +51,11 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun checkIsAppUpdateAvailable(onSuccess: () -> Unit) {
+        if (!isNetworkConnected()) {
+            exitDialog().show()
+            return
+        }
+
         lifecycleScope.launch {
             appVersionManager
                 .getIsAppUpdateAvailable()
@@ -87,28 +92,4 @@ class SplashActivity : AppCompatActivity() {
             }
         }
     }
-
-    private fun updateDialog(listener: () -> Unit): AlertDialog {
-        val dialogView =
-            LayoutInflater.from(this).inflate(R.layout.view_app_update_alert_dialog, null)
-        val dialog =
-            MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
-                .setView(dialogView)
-                .setCancelable(false)
-                .create()
-
-        dialogView.findViewById<Button>(R.id.btn_dialog_confirm)?.setOnClickListener {
-            listener()
-            dialog.dismiss()
-        }
-        return dialog
-    }
-
-    private fun exitDialog(): AlertDialog =
-        MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
-            .setView(R.layout.view_app_update_failed_alert_dialog)
-            .setNegativeButton(getString(R.string.update_failed_confirm)) { _, _ ->
-                finish()
-            }.setCancelable(false)
-            .create()
 }
