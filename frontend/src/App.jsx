@@ -37,6 +37,7 @@ import Modal from './components/common/Modal';
 import { NoticeDetailModal } from './components/modals/NoticeModal';
 import LineupAddModal from './components/modals/LineupAddModal';
 import LineupEditModal from './components/modals/LineupEditModal';
+import PushNotificationConfirmModal from './components/modals/PushNotificationConfirmModal';
 
 // Common Components
 import Toast from './components/common/Toast';
@@ -97,6 +98,7 @@ function App() {
             case 'lineup-add': return <LineupAddModal isOpen={true} {...allProps} />;
             case 'lineup-edit': return <LineupEditModal isOpen={true} {...allProps} />;
             case 'add-image': return <AddImageModal isOpen={true} {...allProps} />;
+            case 'pushNotificationConfirm': return <PushNotificationConfirmModal {...allProps} onConfirm={() => { props.onConfirm(); closeModal(); }} onCancel={closeModal} />;
             
             default: return null;
         }
