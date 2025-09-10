@@ -207,7 +207,7 @@ export const announcementAPI = {
   // 공지사항 알림 전송
   sendNotification: async (announcementId) => {
     try {
-      const response = await api.post(`/announcements/${announcementId}/notification`);
+      const response = await api.post(`/announcements/${announcementId}/notifications`);
       return response.data;
     } catch (error) {
       console.error('Failed to send notification:', error);
