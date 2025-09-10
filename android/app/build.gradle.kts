@@ -169,6 +169,7 @@ dependencies {
     implementation(libs.circleindicator)
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.app.update.ktx)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)
