@@ -2,7 +2,7 @@ name: Frontend CI/CD Dev
 
 on:
   push:
-    branches: [ frontend ]
+    branches: [ frontend-dev ]
     paths: [ 'frontend/**' ]
   workflow_dispatch:
 
@@ -16,7 +16,6 @@ jobs:
         run: |
           sudo chown -R ubuntu:ubuntu /home/ubuntu/actions-runner/_work
 
-    steps:
       # 프로젝트 체크아웃
       - name: Checkout repository
         uses: actions/checkout@v4
