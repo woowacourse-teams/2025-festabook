@@ -14,6 +14,7 @@ import com.daedan.festabook.domain.repository.ExploreRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -34,6 +35,7 @@ class ExploreViewModel(
         viewModelScope.launch {
             searchQuery
                 .debounce(300L)
+                .distinctUntilChanged()
                 .collect { query ->
                     search(query)
                 }
