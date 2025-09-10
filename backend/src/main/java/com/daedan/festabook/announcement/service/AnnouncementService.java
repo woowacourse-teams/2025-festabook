@@ -93,7 +93,7 @@ public class AnnouncementService {
         announcementJpaRepository.delete(announcement);
     }
 
-    public void sendAnnouncementNotification(Long announcementId, Long festivalId) {
+    public void sendAnnouncementNotification(Long festivalId, Long announcementId) {
         Announcement announcement = getAnnouncementById(announcementId);
         validateAnnouncementBelongsToFestival(announcement, festivalId);
 

@@ -118,6 +118,6 @@ public class AnnouncementController {
             @PathVariable Long announcementId,
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        announcementService.sendAnnouncementNotification(announcementId, councilDetails.getFestivalId());
+        announcementService.sendAnnouncementNotification(councilDetails.getFestivalId(), announcementId);
     }
 }
