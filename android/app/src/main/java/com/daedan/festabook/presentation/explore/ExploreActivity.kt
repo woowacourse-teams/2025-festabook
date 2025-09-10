@@ -49,8 +49,8 @@ class ExploreActivity :
             }
         }
 
-        binding.etSearchText.doOnTextChanged { _, _, _, _ ->
-            viewModel.onTextInputChanged()
+        binding.etSearchText.doOnTextChanged { text, _, _, _ ->
+            viewModel.onTextInputChanged(text.toString())
         }
 
         // 키보드 엔터(검색) 리스너
