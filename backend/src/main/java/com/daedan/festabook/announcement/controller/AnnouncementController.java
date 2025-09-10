@@ -108,7 +108,7 @@ public class AnnouncementController {
     }
 
     @PreAuthorize("hasRole('COUNCIL')")
-    @PostMapping("/{announcementId}/notification")
+    @PostMapping("/{announcementId}/notifications")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "공지 FCM 알림 요청")
     @ApiResponses(value = {

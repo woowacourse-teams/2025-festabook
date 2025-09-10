@@ -416,7 +416,7 @@ class AnnouncementControllerTest {
                     .given()
                     .header(authorizationHeader)
                     .when()
-                    .post("/announcements/{announcementId}/notification", announcement.getId())
+                    .post("/announcements/{announcementId}/notifications", announcement.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value());
 
