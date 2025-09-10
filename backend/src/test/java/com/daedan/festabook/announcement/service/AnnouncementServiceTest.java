@@ -504,7 +504,7 @@ class AnnouncementServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    announcementService.sendAnnouncementNotification(festivalId, invalidAnnouncementId)
+                    announcementService.sendAnnouncementNotification(invalidAnnouncementId, festivalId)
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 공지입니다.");
@@ -524,7 +524,7 @@ class AnnouncementServiceTest {
 
             // when & then
             assertThatThrownBy(() ->
-                    announcementService.sendAnnouncementNotification(otherFestival.getId(), announcement.getId())
+                    announcementService.sendAnnouncementNotification(announcement.getId(), otherFestival.getId())
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 공지가 아닙니다.");

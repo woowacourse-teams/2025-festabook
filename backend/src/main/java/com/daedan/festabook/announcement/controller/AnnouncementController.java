@@ -115,9 +115,9 @@ public class AnnouncementController {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
     public void sendAnnouncementNotification(
-            @AuthenticationPrincipal CouncilDetails councilDetails,
-            @PathVariable Long announcementId
+            @PathVariable Long announcementId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
-        announcementService.sendAnnouncementNotification(councilDetails.getFestivalId(), announcementId);
+        announcementService.sendAnnouncementNotification(announcementId, councilDetails.getFestivalId());
     }
 }
