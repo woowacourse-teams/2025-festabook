@@ -53,7 +53,7 @@ public class CouncilService {
     public CouncilLoginResponse loginCouncil(CouncilLoginRequest request) {
         Council council = getCouncilByUsername(request.username());
 
-        validatePassword(request.password(), council);
+        validatePasswordMatch(request.password(), council);
 
         String accessToken = jwtProvider.createToken(council.getUsername(), council.getFestival().getId());
 
@@ -64,7 +64,7 @@ public class CouncilService {
     public CouncilUpdateResponse updatePassword(Long councilId, CouncilUpdateRequest request) {
         Council council = getCouncilByCouncilId(councilId);
 
-        validatePassword(request.currentPassword(), council);
+        validatePasswordMatch(request.currentPassword(), council);
 
         String encodedNewPassword = passwordEncoder.encode(request.newPassword());
 
@@ -81,7 +81,7 @@ public class CouncilService {
         }
     }
 
-    private void validatePassword(String password, Council council) {
+    private void validatePasswordMatch(String password, Council council) {
         if (!passwordEncoder.matches(password, council.getPassword())) {
             throw new BusinessException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
