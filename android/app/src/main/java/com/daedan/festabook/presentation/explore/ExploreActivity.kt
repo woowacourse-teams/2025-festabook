@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.explore
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +31,8 @@ class ExploreActivity :
         binding.etSearchText.setSelection(university.universityName.length)
 
         viewModel.onUniversitySelected(university)
+        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -103,6 +106,10 @@ class ExploreActivity :
             }
             return@setOnEditorActionListener false
         }
+
+        binding.tilSearchInputLayout.setEndIconOnClickListener {
+            handleSearchAction()
+        }
     }
 
     private fun handleSearchAction() {
@@ -151,6 +158,13 @@ class ExploreActivity :
         viewModel.navigateToMain.observe(this) { university ->
             university?.let {
                 navigateToMainActivity(university.festivalId)
+            }
+        }
+        viewModel.hasFestivalId.observe(this) { hasId ->
+            if (hasId) {
+                binding.btnExploreClose.visibility = View.VISIBLE
+            } else {
+                binding.btnExploreClose.visibility = View.GONE
             }
         }
     }

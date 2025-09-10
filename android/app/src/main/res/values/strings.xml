@@ -120,6 +120,7 @@
     <string name="notification_permission_denied_message">알림이 비활성화되어 있습니다 [설정]에서 다시 켤 수 있어요.</string>
     <string name="move_to_setting_text">설정으로 이동</string>
     <string name="home_navigate_to_explore_desc">탐색 화면으로 이동하는 버튼</string>
+    <string name="explore_btn_close_desc">탐색 화면 닫기 버튼</string>
 
 
 </resources>
