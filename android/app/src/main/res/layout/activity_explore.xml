@@ -31,9 +31,12 @@
         app:boxCornerRadiusTopStart="50dp"
         app:boxStrokeColor="@color/gray400"
         app:boxStrokeErrorColor="@color/red400"
+        app:cursorColor="@color/blue400"
+        app:cursorErrorColor="@color/red400"
         app:endIconDrawable="@drawable/ic_search"
         app:endIconMode="custom"
         app:endIconTint="@color/gray500"
+        app:hintTextColor="@color/gray900"
         app:layout_constraintTop_toBottomOf="@id/iv_logo_title">
 
         <com.google.android.material.textfield.TextInputEditText
