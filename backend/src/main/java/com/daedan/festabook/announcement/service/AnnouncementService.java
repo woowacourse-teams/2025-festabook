@@ -41,14 +41,6 @@ public class AnnouncementService {
         }
 
         announcementJpaRepository.save(announcement);
-
-        // TODO: 로직 분리
-        NotificationMessage notificationMessage = new NotificationMessage(
-                request.title(),
-                request.content()
-        );
-        notificationManager.sendToFestivalTopic(festivalId, notificationMessage);
-
         return AnnouncementResponse.from(announcement);
     }
 
@@ -99,6 +91,18 @@ public class AnnouncementService {
         validateAnnouncementBelongsToFestival(announcement, festivalId);
 
         announcementJpaRepository.delete(announcement);
+    }
+
+    public void sendAnnouncementNotification(Long festivalId, Long announcementId) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        validateAnnouncementBelongsToFestival(announcement, festivalId);
+
+        NotificationMessage notificationMessage = new NotificationMessage(
+                announcement.getTitle(),
+                announcement.getContent()
+        );
+
+        notificationManager.sendToFestivalTopic(festivalId, notificationMessage);
     }
 
     private Announcement getAnnouncementById(Long announcementId) {
