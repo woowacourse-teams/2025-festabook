@@ -9,11 +9,13 @@
 
     <ImageView
         android:id="@+id/iv_logo_title"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="200dp"
         android:contentDescription="@string/explore_festabook_logo"
-        android:src="@drawable/logo_title"
+        android:src="@drawable/festabook_logo_shadow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
@@ -21,7 +23,6 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="28dp"
-        android:layout_marginTop="32dp"
         android:hint="@string/explore_search_hint_text"
         app:boxBackgroundColor="@color/gray050"
         app:boxBackgroundMode="outline"
