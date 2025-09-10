@@ -120,5 +120,8 @@
     <string name="notification_permission_denied_message">알림이 비활성화되어 있습니다 [설정]에서 다시 켤 수 있어요.</string>
     <string name="move_to_setting_text">설정으로 이동</string>
 
-
+    <!--앱 업데이트-->
+    <string name="update_notice_title">신규 버전 출시 안내</string>
+    <string name="update_notice_message">새로운 버전이 출시되었습니다.\n 더 나은 사용을 위해 앱을 업데이트해 주세요</string>
+    <string name="update_notice_confirm">업데이트</string>
 </resources>

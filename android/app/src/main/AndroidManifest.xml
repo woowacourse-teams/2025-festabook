@@ -23,7 +23,7 @@
         <activity
             android:name=".presentation.splash.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.Festabook.Splash">
+            android:theme="@style/Theme.Festabook">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
