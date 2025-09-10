@@ -19,7 +19,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 class AnnouncementTest {
 
     private static final int MAX_TITLE_LENGTH = 50;
-    private static final int MAX_CONTENT_LENGTH = 1000;
+    private static final int MAX_CONTENT_LENGTH = 3000;
 
     @Nested
     class validateAnnouncement {
@@ -118,7 +118,7 @@ class AnnouncementTest {
         }
 
         @ParameterizedTest(name = "내용 길이: {0}")
-        @ValueSource(ints = {MAX_CONTENT_LENGTH + 1, 2000})
+        @ValueSource(ints = {MAX_CONTENT_LENGTH + 1, MAX_CONTENT_LENGTH + 1000})
         void 예외_내용_길이_초과(int invalidContentLength) {
             // given
             String content = "a".repeat(invalidContentLength);
