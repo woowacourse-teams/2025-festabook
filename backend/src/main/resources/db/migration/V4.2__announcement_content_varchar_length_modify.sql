@@ -1,0 +1,2 @@
+ALTER TABLE announcement
+MODIFY COLUMN content VARCHAR(3000) NOT NULL;

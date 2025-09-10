@@ -38,7 +38,7 @@ public class Place extends BaseEntity {
             PlaceCategory.FOOD_TRUCK
     );
 
-    private static final int MAX_TITLE_LENGTH = 20;
+    private static final int MAX_TITLE_LENGTH = 255;
     private static final int MAX_DESCRIPTION_LENGTH = 100;
     private static final int MAX_LOCATION_LENGTH = 100;
     private static final int MAX_HOST_LENGTH = 100;
@@ -55,7 +55,7 @@ public class Place extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private PlaceCategory category;
 
-    @Column(length = 20, nullable = false)
+    @Column(length = MAX_TITLE_LENGTH, nullable = false)
     private String title;
 
     @Column(length = 100)
@@ -151,7 +151,7 @@ public class Place extends BaseEntity {
         this.startTime = startTime;
         this.endTime = endTime;
     }
-    
+
     public boolean isFestivalIdEqualTo(Long festivalId) {
         return this.getFestival().getId().equals(festivalId);
     }
