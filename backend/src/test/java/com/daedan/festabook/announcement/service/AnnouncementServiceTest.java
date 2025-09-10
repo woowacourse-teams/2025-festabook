@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 import static org.mockito.BDDMockito.willThrow;
@@ -27,6 +28,7 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.notification.dto.NotificationMessage;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -86,9 +88,6 @@ class AnnouncementServiceTest {
                 s.assertThat(result.content()).isEqualTo(request.content());
                 s.assertThat(result.isPinned()).isEqualTo(request.isPinned());
             });
-
-            then(festivalNotificationManager).should()
-                    .sendToFestivalTopic(any(), any());
         }
 
         @ParameterizedTest(name = "고정 공지 개수: {0}")
@@ -110,9 +109,6 @@ class AnnouncementServiceTest {
             // then
             then(announcementJpaRepository).should()
                     .save(any(Announcement.class));
-
-            then(festivalNotificationManager).should()
-                    .sendToFestivalTopic(any(), any());
         }
 
         @Test
@@ -128,27 +124,6 @@ class AnnouncementServiceTest {
             assertThatThrownBy(() -> announcementService.createAnnouncement(invalidDeviceId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제입니다.");
-        }
-
-        @Test
-        void 예외_알림_전송_실패시_예외_전파() {
-            // given
-            Long festivalId = 1L;
-            Festival festival = FestivalFixture.create(festivalId);
-
-            AnnouncementRequest request = AnnouncementRequestFixture.create();
-
-            given(festivalJpaRepository.findById(festivalId))
-                    .willReturn(Optional.of(festival));
-
-            willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
-                    .given(festivalNotificationManager)
-                    .sendToFestivalTopic(any(), any());
-
-            // when & then
-            assertThatThrownBy(() -> announcementService.createAnnouncement(festivalId, request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
 
         @ParameterizedTest(name = "고정 공지 개수: {0}")
@@ -493,6 +468,89 @@ class AnnouncementServiceTest {
             )
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 공지가 아닙니다.");
+        }
+    }
+
+    @Nested
+    class sendAnnouncementNotification {
+
+        @Test
+        void 성공() {
+            // given
+            Long festivalId = 1L;
+            Long announcementId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(festival, announcementId);
+
+            given(announcementJpaRepository.findById(announcementId))
+                    .willReturn(Optional.of(announcement));
+
+            // when
+            announcementService.sendAnnouncementNotification(festivalId, announcementId);
+
+            // then
+            then(festivalNotificationManager).should()
+                    .sendToFestivalTopic(eq(festivalId), any(NotificationMessage.class));
+        }
+
+        @Test
+        void 예외_존재하지_않는_공지사항_ID() {
+            // given
+            Long festivalId = 1L;
+            Long invalidAnnouncementId = 0L;
+
+            given(announcementJpaRepository.findById(invalidAnnouncementId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.sendAnnouncementNotification(festivalId, invalidAnnouncementId)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 공지입니다.");
+        }
+
+        @Test
+        void 예외_다른_축제의_공지일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Announcement announcement = AnnouncementFixture.create(requestFestival);
+
+            given(announcementJpaRepository.findById(announcement.getId()))
+                    .willReturn(Optional.of(announcement));
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.sendAnnouncementNotification(otherFestival.getId(), announcement.getId())
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 공지가 아닙니다.");
+        }
+
+        @Test
+        void 예외_알림_전송_실패() {
+            // given
+            Long festivalId = 1L;
+            Long announcementId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Announcement announcement = AnnouncementFixture.create(festival, announcementId);
+
+            given(announcementJpaRepository.findById(announcementId))
+                    .willReturn(Optional.of(announcement));
+
+            willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
+                    .given(festivalNotificationManager)
+                    .sendToFestivalTopic(any(), any());
+
+            // when & then
+            assertThatThrownBy(() ->
+                    announcementService.sendAnnouncementNotification(festivalId, announcementId)
+            )
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("FCM 메시지 전송을 실패했습니다.");
         }
     }
 }
