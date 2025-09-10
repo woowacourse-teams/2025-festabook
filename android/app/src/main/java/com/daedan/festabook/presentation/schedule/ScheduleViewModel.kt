@@ -58,7 +58,7 @@ class ScheduleViewModel(
                         scheduleEventUiModels
                             .indexOfFirst { scheduleEvent -> scheduleEvent.status == ScheduleEventUiStatus.ONGOING }
                             .coerceAtLeast(FIRST_INDEX)
-                          
+
                     _scheduleEventsUiState.value =
                         ScheduleEventsUiState.Success(scheduleEventUiModels, currentEventPosition)
                 }.onFailure {
