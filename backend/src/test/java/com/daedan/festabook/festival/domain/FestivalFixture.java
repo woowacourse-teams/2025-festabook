@@ -116,4 +116,21 @@ public class FestivalFixture {
                 DEFAULT_POLYGON_HOLE_BOUNDARY
         );
     }
+
+    public static Festival create(
+            String universityName,
+            String festivalName,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return new Festival(
+                universityName,
+                festivalName,
+                startDate,
+                endDate,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY
+        );
+    }
 }
