@@ -202,6 +202,23 @@ export const announcementAPI = {
       console.error('Failed to toggle announcement pin:', error);
       throw new Error('공지사항 고정 상태 변경에 실패했습니다.');
     }
+  },
+
+  // 공지사항 알림 전송
+  sendNotification: async (announcementId) => {
+    try {
+      const response = await api.post(`/announcements/${announcementId}/notifications`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+      if (error.response?.status === 429) {
+        throw new Error('알림 전송 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.');
+      } else if (error.response?.status === 404) {
+        throw new Error('공지사항을 찾을 수 없습니다.');
+      } else {
+        throw new Error('알림 전송에 실패했습니다.');
+      }
+    }
   }
 };
 

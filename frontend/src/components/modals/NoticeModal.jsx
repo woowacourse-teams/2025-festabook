@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../common/Modal";
 
-const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
+const NoticeModal = ({ notice, onSave, onClose }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [agreePush, setAgreePush] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
 
   // 글자 수 제한 상수
@@ -38,8 +37,10 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
       } else if (event.key === 'Enter' && !event.shiftKey) {
         // Shift+Enter가 아닌 Enter만 처리 (textarea에서 줄바꿈 방지)
         event.preventDefault();
-        if (!isSaveDisabled) {
-          handleSave();
+        // 글자 수 검증
+        if (title.length <= TITLE_MAX_LENGTH && content.length <= CONTENT_MAX_LENGTH) {
+          onSave({ title, content, isPinned });
+          onClose();
         }
       }
     };
@@ -50,14 +51,14 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [title, content, isPinned]); // 의존성 배열에 form 데이터 추가
+  }, [title, content, isPinned, onSave, onClose]); // 의존성 배열 단순화
 
   // 글자 수 초과 여부 확인
   const isTitleOverflow = title.length > TITLE_MAX_LENGTH;
   const isContentOverflow = content.length > CONTENT_MAX_LENGTH;
 
   // 저장 버튼 비활성화 조건
-  const isSaveDisabled = (!notice && !agreePush) || isTitleOverflow || isContentOverflow;
+  const isSaveDisabled = isTitleOverflow || isContentOverflow;
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -108,37 +109,20 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
           />
         </div>
         {!notice && (
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex items-center">
-              <input
-                id="pin-notice"
-                type="checkbox"
-                checked={isPinned}
-                onChange={(e) => setIsPinned(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="pin-notice"
-                className="text-sm text-gray-700 select-none"
-              >
-                상단 고정
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                id="push-agree"
-                type="checkbox"
-                checked={agreePush}
-                onChange={(e) => setAgreePush(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="push-agree"
-                className="text-sm text-gray-700 select-none"
-              >
-                푸시 알림을 사용자에게 전송하시겠습니까?
-              </label>
-            </div>
+          <div className="flex items-center mt-2">
+            <input
+              id="pin-notice"
+              type="checkbox"
+              checked={isPinned}
+              onChange={(e) => setIsPinned(e.target.checked)}
+              className="mr-2"
+            />
+            <label
+              htmlFor="pin-notice"
+              className="text-sm text-gray-700 select-none"
+            >
+              고정 공지 여부
+            </label>
           </div>
         )}
       </div>
@@ -181,7 +165,7 @@ const NoticeDetailModal = ({ notice, onClose }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, []);
+  }, [onClose]);
 
   return (
     <Modal isOpen={true} onClose={onClose}>
