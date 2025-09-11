@@ -209,10 +209,8 @@ class FestivalServiceTest {
             );
 
             // then
-            assertSoftly(s -> {
-                s.assertThat(results.responses().get(0).universityName())
-                        .isEqualTo(userVisibleTrueFestival.getUniversityName());
-            });
+            assertThat(results.responses().get(0).universityName())
+                    .isEqualTo(userVisibleTrueFestival.getUniversityName());
         }
     }
 
