@@ -30,8 +30,7 @@ class ExploreActivity :
         binding.etSearchText.setSelection(university.universityName.length)
 
         viewModel.onUniversitySelected(university)
-        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
+        viewModel.onNavigateIconClicked()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,6 +61,22 @@ class ExploreActivity :
 
         binding.etSearchText.doOnTextChanged { text, _, _, _ ->
             viewModel.onTextInputChanged(text?.toString().orEmpty())
+
+            if (text.isNullOrEmpty()) {
+                // 검색어 없음 → 검색 아이콘
+                binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
+                binding.tilSearchInputLayout.setEndIconOnClickListener {
+                    handleSearchAction()
+                }
+            } else {
+                // 검색어 입력 중 → X 아이콘
+                binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+                binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_close)
+                binding.tilSearchInputLayout.setEndIconOnClickListener {
+                    binding.etSearchText.text?.clear()
+                }
+            }
         }
 
         // 키보드 엔터(검색) 리스너
@@ -89,9 +104,7 @@ class ExploreActivity :
             null,
             -> viewModel.search(query)
 
-            is SearchUiState.Success -> {
-                viewModel.onNavigateIconClicked()
-            }
+            is SearchUiState.Success -> {}
         }
 
         hideKeyboard()
