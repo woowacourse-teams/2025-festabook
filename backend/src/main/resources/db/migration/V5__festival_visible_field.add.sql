@@ -1,0 +1,2 @@
+ALTER TABLE festival
+    ADD COLUMN user_visible BOOLEAN NOT NULL DEFAULT FALSE;
