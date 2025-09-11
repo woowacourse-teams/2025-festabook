@@ -13,26 +13,46 @@
         android:background="@drawable/bg_gray050_radius_10dp"
         android:padding="16dp">
 
-        <ImageView
-            android:id="@+id/iv_modal_lost_item_image"
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cv_modal_lost_item_image"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:contentDescription="@string/lost_item"
-            android:scaleType="centerCrop"
             app:layout_constraintBottom_toTopOf="@id/tv_modal_lost_item_storage_location"
-            app:layout_constraintDimensionRatio="208:247"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
+
+            <ImageView
+                android:id="@+id/iv_modal_lost_item_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:contentDescription="@string/lost_item"
+                android:scaleType="centerCrop"
+                app:layout_constraintDimensionRatio="208:247" />
+
+        </com.google.android.material.card.MaterialCardView>
+
 
         <TextView
             android:id="@+id/tv_modal_lost_item_storage_location"
             style="@style/PretendardMedium16"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/lost_item_spacing_16dp"
+            android:layout_marginTop="16dp"
+            android:includeFontPadding="true"
+            android:textColor="@color/gray500"
+            app:layout_constraintBottom_toTopOf="@id/tv_madal_lost_item_created_at"
+            app:layout_constraintTop_toBottomOf="@id/cv_modal_lost_item_image"
+            tools:text="보관 장소: 학생회관 301호" />
+
+        <TextView
+            android:id="@+id/tv_madal_lost_item_created_at"
+            style="@style/PretendardMedium16"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
             android:textColor="@color/gray500"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/iv_modal_lost_item_image"
-            tools:text="보관 장소: 학생회관 301호" />
+            app:layout_constraintTop_toBottomOf="@id/tv_modal_lost_item_storage_location"
+            tools:text="sdfsdfsdfsdfdsfsdfsdfdsfsd" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>
