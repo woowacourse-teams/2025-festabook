@@ -8,7 +8,7 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
 
   // 글자 수 제한 상수
   const TITLE_MAX_LENGTH = 50;
-  const CONTENT_MAX_LENGTH = 1000;
+  const CONTENT_MAX_LENGTH = 3000;
 
   useEffect(() => {
     setTitle(notice?.title || "");
@@ -100,7 +100,7 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows="6"
-            placeholder="공지 내용을 입력해주세요. (1000자 이내)"
+            placeholder="공지 내용을 입력해주세요. (3000자 이내)"
             className={`block w-full border rounded-md shadow-sm py-2 px-3 transition-colors duration-200
               ${isContentOverflow 
                 ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
