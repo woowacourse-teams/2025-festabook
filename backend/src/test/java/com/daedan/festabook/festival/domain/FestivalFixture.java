@@ -152,6 +152,7 @@ public class FestivalFixture {
                 festivalName,
                 startDate,
                 endDate,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
