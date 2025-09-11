@@ -63,19 +63,21 @@ class ExploreActivity :
             viewModel.onTextInputChanged(text?.toString().orEmpty())
 
             if (text.isNullOrEmpty()) {
-                // 검색어 없음 → 검색 아이콘
+                // 검색 아이콘
                 binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
                 binding.tilSearchInputLayout.setEndIconOnClickListener {
                     handleSearchAction()
                 }
+                binding.tilSearchInputLayout.endIconContentDescription = "검색"
             } else {
-                // 검색어 입력 중 → X 아이콘
+                // X 아이콘
                 binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_close)
                 binding.tilSearchInputLayout.setEndIconOnClickListener {
                     binding.etSearchText.text?.clear()
                 }
+                binding.tilSearchInputLayout.endIconContentDescription = "텍스트 지우기"
             }
         }
 
@@ -86,10 +88,6 @@ class ExploreActivity :
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
-        }
-
-        binding.tilSearchInputLayout.setEndIconOnClickListener {
-            handleSearchAction()
         }
     }
 
