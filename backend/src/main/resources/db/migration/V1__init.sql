@@ -182,7 +182,7 @@ CREATE TABLE place_announcement
 
 CREATE TABLE place_favorite
 (
-    id         BIGINT AUTO_INCREMEiNT NOT NULL,
+    id         BIGINT AUTO_INCREMENT NOT NULL,
     created_at datetime(6) NOT NULL,
     updated_at datetime(6) NOT NULL,
     deleted    BIT(1)   NOT NULL,
