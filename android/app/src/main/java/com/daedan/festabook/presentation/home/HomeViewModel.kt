@@ -52,10 +52,13 @@ class HomeViewModel(
         viewModelScope.launch {
             _lineupUiState.value = LineupUiState.Loading
 
-            val result = festivalRepository.getLineup()
+            val result = festivalRepository.getLineUpGroupByDate()
             result
                 .onSuccess { lineups ->
-                    _lineupUiState.value = LineupUiState.Success(lineups.map { it.toUiModel() })
+                    _lineupUiState.value =
+                        LineupUiState.Success(
+                            lineups.toUiModel(),
+                        )
                 }.onFailure {
                     _lineupUiState.value = LineupUiState.Error(it)
                 }
