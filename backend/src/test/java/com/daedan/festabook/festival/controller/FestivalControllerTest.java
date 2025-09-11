@@ -95,7 +95,7 @@ class FestivalControllerTest {
                     List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
             );
 
-            int expectedFieldSize = 8;
+            int expectedFieldSize = 9;
 
             // when & then
             RestAssured
@@ -112,6 +112,7 @@ class FestivalControllerTest {
                     .body("festivalName", equalTo(request.festivalName()))
                     .body("startDate", equalTo(request.startDate().toString()))
                     .body("endDate", equalTo(request.endDate().toString()))
+                    .body("userVisible", equalTo(false))
                     .body("zoom", equalTo(request.zoom()))
                     .body("centerCoordinate.latitude", equalTo(request.centerCoordinate().getLatitude()))
                     .body("centerCoordinate.longitude", equalTo(request.centerCoordinate().getLongitude()))
@@ -265,15 +266,23 @@ class FestivalControllerTest {
         @Test
         void 성공() {
             String universityName1 = "한양 대학교";
+            String festivalName1 = "한양 축제";
+            LocalDate startDate1 = LocalDate.of(2025, 11, 1);
+            LocalDate endDate1 = LocalDate.of(2025, 11, 2);
+
             String universityName2 = "한양 에리카 대학교";
-            Festival festival1 = FestivalFixture.create(universityName1);
-            Festival festival2 = FestivalFixture.create(universityName2);
+            String festivalName2 = "한양 에리카 축제";
+            LocalDate startDate2 = LocalDate.of(2025, 11, 3);
+            LocalDate endDate2 = LocalDate.of(2025, 11, 4);
+
+            Festival festival1 = FestivalFixture.create(universityName1, festivalName1, startDate1, endDate1);
+            Festival festival2 = FestivalFixture.create(universityName2, festivalName2, startDate2, endDate2);
             festivalJpaRepository.saveAll(List.of(festival1, festival2));
 
             String universityNameToSearch = "한양";
 
             int expectedSize = 2;
-            int expectedFieldSize = 2;
+            int expectedFieldSize = 5;
 
             // when & then
             RestAssured
@@ -284,13 +293,19 @@ class FestivalControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedSize))
 
+                    .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].festivalId", equalTo(festival1.getId().intValue()))
                     .body("[0].universityName", equalTo(festival1.getUniversityName()))
-                    .body("[0].size()", equalTo(expectedFieldSize))
+                    .body("[0].festivalName", equalTo(festival1.getFestivalName()))
+                    .body("[0].startDate", equalTo(festival1.getStartDate().toString()))
+                    .body("[0].endDate", equalTo(festival1.getEndDate().toString()))
 
+                    .body("[1].size()", equalTo(expectedFieldSize))
                     .body("[1].festivalId", equalTo(festival2.getId().intValue()))
                     .body("[1].universityName", equalTo(festival2.getUniversityName()))
-                    .body("[1].size()", equalTo(expectedFieldSize));
+                    .body("[1].festivalName", equalTo(festival2.getFestivalName()))
+                    .body("[1].startDate", equalTo(festival2.getStartDate().toString()))
+                    .body("[1].endDate", equalTo(festival2.getEndDate().toString()));
         }
 
         @Test
@@ -340,6 +355,28 @@ class FestivalControllerTest {
 
             festivalJpaRepository.delete(festival);
         }
+
+        @Test
+        void 성공_userVisible_true만_반환됨() {
+            // given
+            String userVisibleFalseFestivalName = "후유바보대학교";
+            String userVisibleTrueFestivalName = "미소대학교";
+            Festival userVisibleFalseFestival = FestivalFixture.create(userVisibleFalseFestivalName, false);
+            Festival userVisibleTrueFestival = FestivalFixture.create(userVisibleTrueFestivalName, true);
+            festivalJpaRepository.saveAll(List.of(userVisibleTrueFestival, userVisibleFalseFestival));
+
+            String universityNameToSearch = "미소";
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("[0].festivalId", equalTo(userVisibleTrueFestival.getId().intValue()))
+                    .body("[0].universityName", equalTo(userVisibleTrueFestival.getUniversityName()));
+        }
     }
 
     @Nested
@@ -362,7 +399,7 @@ class FestivalControllerTest {
                     changedEndDate
             );
 
-            int expectedFieldSize = 4;
+            int expectedFieldSize = 5;
 
             // when & then
             RestAssured

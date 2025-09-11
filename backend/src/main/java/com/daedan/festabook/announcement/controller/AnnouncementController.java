@@ -40,7 +40,7 @@ public class AnnouncementController {
     @PreAuthorize("hasRole('COUNCIL')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "공지 생성 (+ FCM 알림 요청)")
+    @Operation(summary = "공지 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
@@ -105,5 +105,19 @@ public class AnnouncementController {
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
         announcementService.deleteAnnouncementByAnnouncementId(councilDetails.getFestivalId(), announcementId);
+    }
+
+    @PreAuthorize("hasRole('COUNCIL')")
+    @PostMapping("/{announcementId}/notifications")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "공지 FCM 알림 요청")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public void sendAnnouncementNotification(
+            @PathVariable Long announcementId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
+    ) {
+        announcementService.sendAnnouncementNotification(councilDetails.getFestivalId(), announcementId);
     }
 }

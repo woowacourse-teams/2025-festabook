@@ -5,6 +5,8 @@ import com.daedan.festabook.council.dto.CouncilLoginRequest;
 import com.daedan.festabook.council.dto.CouncilLoginResponse;
 import com.daedan.festabook.council.dto.CouncilRequest;
 import com.daedan.festabook.council.dto.CouncilResponse;
+import com.daedan.festabook.council.dto.CouncilUpdateRequest;
+import com.daedan.festabook.council.dto.CouncilUpdateResponse;
 import com.daedan.festabook.council.infrastructure.CouncilJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
@@ -51,11 +53,24 @@ public class CouncilService {
     public CouncilLoginResponse loginCouncil(CouncilLoginRequest request) {
         Council council = getCouncilByUsername(request.username());
 
-        validatePassword(request, council);
+        validatePasswordMatch(request.password(), council);
 
         String accessToken = jwtProvider.createToken(council.getUsername(), council.getFestival().getId());
 
         return CouncilLoginResponse.from(council.getFestival().getId(), accessToken);
+    }
+
+    @Transactional
+    public CouncilUpdateResponse updatePassword(Long councilId, CouncilUpdateRequest request) {
+        Council council = getCouncilById(councilId);
+
+        validatePasswordMatch(request.currentPassword(), council);
+
+        String encodedNewPassword = passwordEncoder.encode(request.newPassword());
+
+        council.updatePassword(encodedNewPassword);
+
+        return CouncilUpdateResponse.from(council);
     }
 
     // TODO: JWT 기반 로그아웃 구현
@@ -66,14 +81,19 @@ public class CouncilService {
         }
     }
 
-    private void validatePassword(CouncilLoginRequest request, Council council) {
-        if (!passwordEncoder.matches(request.password(), council.getPassword())) {
+    private void validatePasswordMatch(String password, Council council) {
+        if (!passwordEncoder.matches(password, council.getPassword())) {
             throw new BusinessException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
     }
 
     private Council getCouncilByUsername(String username) {
         return councilJpaRepository.findByUsername(username)
+                .orElseThrow(() -> new BusinessException("존재하지 않는 학생회입니다.", HttpStatus.NOT_FOUND));
+    }
+
+    private Council getCouncilById(Long councilId) {
+        return councilJpaRepository.findById(councilId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 학생회입니다.", HttpStatus.NOT_FOUND));
     }
 

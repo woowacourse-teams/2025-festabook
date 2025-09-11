@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -102,9 +103,6 @@ class AnnouncementControllerTest {
                     .body("content", equalTo(request.content()))
                     .body("isPinned", equalTo(request.isPinned()))
                     .body("createdAt", notNullValue());
-
-            then(fcmNotificationManager).should()
-                    .sendToFestivalTopic(any(), any());
         }
 
         @Test
@@ -393,6 +391,37 @@ class AnnouncementControllerTest {
                     .delete("/announcements/{announcementId}", announcement.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+    }
+
+    @Nested
+    class sendAnnouncementNotification {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            Announcement announcement = AnnouncementFixture.create(festival);
+            announcementJpaRepository.save(announcement);
+
+            willDoNothing().given(fcmNotificationManager)
+                    .sendToFestivalTopic(any(), any());
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .when()
+                    .post("/announcements/{announcementId}/notifications", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+
+            then(fcmNotificationManager).should()
+                    .sendToFestivalTopic(any(), any());
         }
     }
 }
