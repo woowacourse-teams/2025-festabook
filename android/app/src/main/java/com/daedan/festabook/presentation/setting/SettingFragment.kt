@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.setting
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
+import android.view.Window
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
@@ -46,7 +47,10 @@ class SettingFragment :
                 Timber.d("Notification permission granted")
             } else {
                 Timber.d("Notification permission denied")
-                showNotificationDeniedSnackbar(binding.root, requireContext())
+                showNotificationDeniedSnackbar(
+                    requireActivity().window.decorView.rootView,
+                    requireContext(),
+                )
                 binding.btnNoticeAllow.isChecked = false
                 settingViewModel.updateNotificationIsAllowed(false)
                 settingViewModel.saveNotificationIsAllowed(false)
