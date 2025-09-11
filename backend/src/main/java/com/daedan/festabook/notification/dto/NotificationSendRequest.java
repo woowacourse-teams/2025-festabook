@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class NotificationSendRequest {
-    
+
     private String title;
     private String body;
     private Map<String, String> data;
@@ -20,8 +20,8 @@ public class NotificationSendRequest {
         return body;
     }
 
-    public Map<String, String> getData() {
-        return data;
+    public String getCustomData(String key) {
+        return data.getOrDefault(key, "");
     }
 
     public static Builder builder() {

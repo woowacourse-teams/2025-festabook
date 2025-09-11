@@ -1,6 +1,6 @@
 package com.daedan.festabook.festival.domain;
 
-import com.daedan.festabook.notification.dto.NotificationMessage;
+import com.daedan.festabook.notification.dto.NotificationSendRequest;
 
 public interface FestivalNotificationManager {
 
@@ -8,5 +8,5 @@ public interface FestivalNotificationManager {
 
     void unsubscribeFestivalTopic(Long festivalId, String token);
 
-    void sendToFestivalTopic(Long festivalId, NotificationMessage notificationMessage);
+    void sendToFestivalTopic(Long festivalId, NotificationSendRequest notificationSendRequest);
 }

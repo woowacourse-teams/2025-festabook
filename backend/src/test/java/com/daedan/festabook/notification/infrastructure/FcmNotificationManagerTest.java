@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willThrow;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.dto.NotificationMessage;
+import com.daedan.festabook.notification.dto.NotificationSendRequest;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -76,14 +76,18 @@ class FcmNotificationManagerTest {
         void 예외_도메인_예외로_변화하여_던지기() throws FirebaseMessagingException {
             // given
             Long festivalId = 1L;
-            NotificationMessage notificationMessage = new NotificationMessage("title", "body");
+            NotificationSendRequest request = NotificationSendRequest.builder()
+                    .title("title")
+                    .body("body")
+                    .putData("announcementId", "1")
+                    .build();
             willThrow(FirebaseMessagingException.class)
                     .given(firebaseMessaging)
                     .send(any());
 
             // when & then
             assertThatThrownBy(() -> {
-                fcmNotificationManager.sendToFestivalTopic(festivalId, notificationMessage);
+                fcmNotificationManager.sendToFestivalTopic(festivalId, request);
             })
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("FCM 메시지 전송을 실패했습니다.");
