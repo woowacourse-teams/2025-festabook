@@ -51,6 +51,9 @@ public class Festival extends BaseEntity {
     private LocalDate endDate;
 
     @Column(nullable = false)
+    private boolean userVisible;
+
+    @Column(nullable = false)
     private Integer zoom;
 
     @Embedded
@@ -69,6 +72,7 @@ public class Festival extends BaseEntity {
             String festivalName,
             LocalDate startDate,
             LocalDate endDate,
+            boolean userVisible,
             Integer zoom,
             Coordinate centerCoordinate,
             List<Coordinate> polygonHoleBoundary
@@ -84,6 +88,7 @@ public class Festival extends BaseEntity {
         this.festivalName = festivalName;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.userVisible = userVisible;
         this.zoom = zoom;
         this.centerCoordinate = centerCoordinate;
         this.polygonHoleBoundary = polygonHoleBoundary;

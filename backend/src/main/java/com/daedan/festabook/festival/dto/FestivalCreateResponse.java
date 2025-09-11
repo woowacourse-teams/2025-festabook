@@ -11,6 +11,7 @@ public record FestivalCreateResponse(
         String festivalName,
         LocalDate startDate,
         LocalDate endDate,
+        boolean userVisible,
         Integer zoom,
         Coordinate centerCoordinate,
         List<Coordinate> polygonHoleBoundary
@@ -23,6 +24,7 @@ public record FestivalCreateResponse(
                 festival.getFestivalName(),
                 festival.getStartDate(),
                 festival.getEndDate(),
+                festival.isUserVisible(),
                 festival.getZoom(),
                 festival.getCenterCoordinate(),
                 festival.getPolygonHoleBoundary()

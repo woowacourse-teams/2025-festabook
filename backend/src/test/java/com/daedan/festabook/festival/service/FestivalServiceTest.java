@@ -64,17 +64,18 @@ class FestivalServiceTest {
             );
 
             // when
-            FestivalCreateResponse festival = festivalService.createFestival(request);
+            FestivalCreateResponse result = festivalService.createFestival(request);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(festival.universityName()).isEqualTo(request.universityName());
-                s.assertThat(festival.festivalName()).isEqualTo(request.festivalName());
-                s.assertThat(festival.startDate()).isEqualTo(request.startDate());
-                s.assertThat(festival.endDate()).isEqualTo(request.endDate());
-                s.assertThat(festival.zoom()).isEqualTo(request.zoom());
-                s.assertThat(festival.centerCoordinate()).isEqualTo(request.centerCoordinate());
-                s.assertThat(festival.polygonHoleBoundary()).isEqualTo(request.polygonHoleBoundary());
+                s.assertThat(result.universityName()).isEqualTo(request.universityName());
+                s.assertThat(result.festivalName()).isEqualTo(request.festivalName());
+                s.assertThat(result.startDate()).isEqualTo(request.startDate());
+                s.assertThat(result.endDate()).isEqualTo(request.endDate());
+                s.assertThat(result.userVisible()).isEqualTo(false);
+                s.assertThat(result.zoom()).isEqualTo(request.zoom());
+                s.assertThat(result.centerCoordinate()).isEqualTo(request.centerCoordinate());
+                s.assertThat(result.polygonHoleBoundary()).isEqualTo(request.polygonHoleBoundary());
             });
         }
     }
@@ -175,7 +176,7 @@ class FestivalServiceTest {
 
             String universityNameToSearch = "한양";
 
-            given(festivalJpaRepository.findByUniversityNameContaining(universityNameToSearch))
+            given(festivalJpaRepository.findByUniversityNameContainingAndUserVisibleTrue(universityNameToSearch))
                     .willReturn(List.of(festival1, festival2));
 
             // when
@@ -187,6 +188,29 @@ class FestivalServiceTest {
                 s.assertThat(results.responses().get(0).universityName()).isEqualTo(universityName1);
                 s.assertThat(results.responses().get(1).universityName()).isEqualTo(universityName2);
             });
+        }
+
+        @Test
+        void 성공_userVisible_true만_반환됨() {
+            // given
+            String userVisibleFalseFestivalName = "후유바보대학교";
+            String userVisibleTrueFestivalName = "미소대학교";
+            Festival userVisibleFalseFestival = FestivalFixture.create(userVisibleFalseFestivalName, false);
+            Festival userVisibleTrueFestival = FestivalFixture.create(userVisibleTrueFestivalName, true);
+
+            String universityNameToSearch = "미소";
+
+            given(festivalJpaRepository.findByUniversityNameContainingAndUserVisibleTrue(universityNameToSearch))
+                    .willReturn(List.of(userVisibleTrueFestival));
+
+            // when
+            FestivalUniversityResponses results = festivalService.getUniversitiesByUniversityName(
+                    universityNameToSearch
+            );
+
+            // then
+            assertThat(results.responses().get(0).universityName())
+                    .isEqualTo(userVisibleTrueFestival.getUniversityName());
         }
     }
 

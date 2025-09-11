@@ -28,7 +28,7 @@ public class FestivalService {
     public FestivalCreateResponse createFestival(FestivalCreateRequest request) {
         Festival festival = request.toEntity();
         festivalJpaRepository.save(festival);
-        
+
         return FestivalCreateResponse.from(festival);
     }
 
@@ -46,7 +46,9 @@ public class FestivalService {
     }
 
     public FestivalUniversityResponses getUniversitiesByUniversityName(String universityName) {
-        List<Festival> festivals = festivalJpaRepository.findByUniversityNameContaining(universityName);
+        List<Festival> festivals = festivalJpaRepository.findByUniversityNameContainingAndUserVisibleTrue(
+                universityName
+        );
         return FestivalUniversityResponses.from(festivals);
     }
 
