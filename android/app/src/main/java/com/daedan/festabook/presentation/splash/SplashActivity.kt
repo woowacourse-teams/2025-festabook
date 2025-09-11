@@ -20,7 +20,7 @@ import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
     private val viewModel: SplashViewModel by viewModels { SplashViewModel.FACTORY }
-    private var launcher =
+    private val launcher by lazy {
         registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult(),
         ) { result ->
@@ -30,6 +30,8 @@ class SplashActivity : AppCompatActivity() {
                 exitDialog().show()
             }
         }
+    }
+
     private val appVersionManager by lazy {
         AppVersionManager(
             AppUpdateManagerFactory.create(this),
