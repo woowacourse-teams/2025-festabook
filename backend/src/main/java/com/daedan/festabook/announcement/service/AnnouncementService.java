@@ -14,6 +14,7 @@ import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.notification.dto.NotificationMessage;
+import com.daedan.festabook.notification.dto.NotificationSendRequest;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -96,6 +97,14 @@ public class AnnouncementService {
     public void sendAnnouncementNotification(Long festivalId, Long announcementId) {
         Announcement announcement = getAnnouncementById(announcementId);
         validateAnnouncementBelongsToFestival(announcement, festivalId);
+
+        NotificationSendRequest request = NotificationSendRequest.builder()
+                .title(announcement.getTitle())
+                .body(announcement.getContent())
+                .putData("notificationId", String.valueOf(announcement.getId()))
+                .build();
+
+        // notificationManager.sendToFestivalTopic(festivalId, request);
 
         NotificationMessage notificationMessage = new NotificationMessage(
                 announcement.getTitle(),
