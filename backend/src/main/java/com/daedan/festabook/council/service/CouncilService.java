@@ -62,7 +62,7 @@ public class CouncilService {
 
     @Transactional
     public CouncilUpdateResponse updatePassword(Long councilId, CouncilUpdateRequest request) {
-        Council council = getCouncilByCouncilId(councilId);
+        Council council = getCouncilById(councilId);
 
         validatePasswordMatch(request.currentPassword(), council);
 
@@ -92,7 +92,7 @@ public class CouncilService {
                 .orElseThrow(() -> new BusinessException("존재하지 않는 학생회입니다.", HttpStatus.NOT_FOUND));
     }
 
-    private Council getCouncilByCouncilId(Long councilId) {
+    private Council getCouncilById(Long councilId) {
         return councilJpaRepository.findById(councilId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 학생회입니다.", HttpStatus.NOT_FOUND));
     }
