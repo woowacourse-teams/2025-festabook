@@ -12,15 +12,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Timber.d("From: ${remoteMessage.from}")
 
-        // remoteMessage.notification
-        remoteMessage.notification?.let { notification ->
-            val title = notification.title
-            val body = notification.body
-            Timber.d("Notification Title: $title, Body: $body")
-
-            NotificationHelper.showNotification(this, title, body)
-        }
-
         // remoteMessage.data
         if (remoteMessage.data.isNotEmpty()) {
             Timber.d("Data Payload: ${remoteMessage.data}")

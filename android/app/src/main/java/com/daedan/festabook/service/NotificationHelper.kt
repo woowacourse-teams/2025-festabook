@@ -2,9 +2,11 @@ package com.daedan.festabook.service
 
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.daedan.festabook.R
+import com.daedan.festabook.presentation.main.MainActivity
 
 object NotificationHelper {
     private const val CHANNEL_ID = "notice_channel"
@@ -34,8 +36,18 @@ object NotificationHelper {
         message: String?,
         targetId: String? = null,
     ) {
-        val notificationManager =
-            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val intent =
+            MainActivity.newIntent(context).apply {
+                putExtra("navigateToNotice", true)
+            }
+
+        val pendingIntent =
+            PendingIntent.getActivity(
+                context,
+                System.currentTimeMillis().toInt(),
+                intent,
+                PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE,
+            )
 
         val notificationBuilder =
             NotificationCompat
@@ -43,10 +55,14 @@ object NotificationHelper {
                 .setSmallIcon(R.drawable.ic_launcher_foreground) // 앱 아이콘
                 .setContentTitle(title)
                 .setContentText(message)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setContentIntent(pendingIntent)
                 .setAutoCancel(true) // 클릭 시 자동 삭제
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
 
+        val notificationManager =
+            context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
     }
 }
