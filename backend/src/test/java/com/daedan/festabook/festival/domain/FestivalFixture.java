@@ -10,6 +10,7 @@ public class FestivalFixture {
     private static final String DEFAULT_FESTIVAL_NAME = "2025 시립 Water Festival: AQUA WAVE";
     private static final LocalDate DEFAULT_START_DATE = LocalDate.of(2025, 10, 15);
     private static final LocalDate DEFAULT_END_DATE = LocalDate.of(2025, 10, 17);
+    private static final boolean DEFAULT_USER_VISIBLE = true;
     private static final Integer DEFAULT_ZOOM = 16;
     private static final Coordinate DEFAULT_CENTER_COORDINATE = CoordinateFixture.create();
     private static final List<Coordinate> DEFAULT_POLYGON_HOLE_BOUNDARY = List.of(
@@ -24,6 +25,7 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -38,6 +40,7 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -52,7 +55,24 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 zoom,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY
+        );
+    }
+
+    public static Festival create(
+            String universityName,
+            boolean userVisible
+    ) {
+        return new Festival(
+                universityName,
+                DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
+                userVisible,
+                DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
         );
@@ -66,6 +86,7 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 centerCoordinate,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -80,6 +101,7 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 polygonHoleBoundary
@@ -94,6 +116,7 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
@@ -111,6 +134,7 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 startDate,
                 endDate,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
                 DEFAULT_POLYGON_HOLE_BOUNDARY
