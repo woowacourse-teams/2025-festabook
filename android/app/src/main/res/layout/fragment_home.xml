@@ -14,7 +14,7 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="120dp"
+            android:paddingBottom="60dp"
             tools:context=".presentation.home.HomeFragment">
 
             <TextView
@@ -75,7 +75,7 @@
 
             <TextView
                 android:id="@+id/tv_home_lineup_title"
-                style="@style/PretendardBold18"
+                style="@style/PretendardBold20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -106,8 +106,9 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_home_lineup"
                 android:layout_width="0dp"
+                android:nestedScrollingEnabled="false"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="16dp"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"

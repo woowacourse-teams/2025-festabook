@@ -5,14 +5,15 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
 
         <TextView
             android:id="@+id/tv_lineup_day"
             android:layout_height="wrap_content"
             android:layout_width="wrap_content"
             android:layout_marginStart="16dp"
-            style="@style/PretendardMedium16"
+            style="@style/PretendardBold18"
             android:textColor="@color/gray900"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -20,12 +21,13 @@
             />
 
         <TextView
+            android:id="@+id/tv_is_d_day"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="6dp"
             android:paddingHorizontal="6dp"
             android:paddingVertical="2dp"
-            android:text="오늘"
+            android:text="@string/home_is_d_day"
             style="@style/PretendardRegular10"
             android:background="@drawable/bg_black400_gradient_radius_20dp"
             android:textColor="@color/gray050"

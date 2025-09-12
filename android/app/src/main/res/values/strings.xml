@@ -11,6 +11,7 @@
 
     <!-- 홈 화면 -->
     <string name="home_poster_image">poster_image</string>
+    <string name="home_is_d_day">오늘</string>
 
     <!--한 눈에 보기 화면 -->
     <string name="place_list_title">한 눈에 보기</string>
