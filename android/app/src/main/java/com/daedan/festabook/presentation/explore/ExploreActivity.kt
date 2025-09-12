@@ -1,7 +1,9 @@
 package com.daedan.festabook.presentation.explore
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
@@ -30,6 +32,8 @@ class ExploreActivity :
         binding.etSearchText.setSelection(university.universityName.length)
 
         viewModel.onUniversitySelected(university)
+        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,6 +63,8 @@ class ExploreActivity :
         }
 
         setContentView(binding.root)
+
+        viewModel.checkFestivalId()
 
         setupBinding()
         setupRecyclerView()
@@ -102,6 +108,14 @@ class ExploreActivity :
                 return@setOnEditorActionListener true
             }
             return@setOnEditorActionListener false
+        }
+
+        binding.tilSearchInputLayout.setEndIconOnClickListener {
+            handleSearchAction()
+        }
+
+        binding.btnExploreClose.setOnClickListener {
+            finish()
         }
     }
 
@@ -153,6 +167,9 @@ class ExploreActivity :
                 navigateToMainActivity(university.festivalId)
             }
         }
+        viewModel.hasFestivalId.observe(this) { hasId ->
+            binding.btnExploreClose.visibility = if (hasId) View.VISIBLE else View.GONE
+        }
     }
 
     private fun hideKeyboard() {
@@ -162,10 +179,14 @@ class ExploreActivity :
 
     private fun navigateToMainActivity(festivalId: Long) {
         val intent =
-            Intent(this, MainActivity::class.java).apply {
-                putExtra("festival_id", festivalId)
+            MainActivity.newIntent(this, festivalId).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         startActivity(intent)
         finish()
+    }
+
+    companion object {
+        fun newIntent(context: Context) = Intent(context, ExploreActivity::class.java)
     }
 }

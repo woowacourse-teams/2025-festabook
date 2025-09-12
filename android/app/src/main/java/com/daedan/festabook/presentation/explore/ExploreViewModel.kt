@@ -31,9 +31,14 @@ class ExploreViewModel(
     private val _navigateToMain = SingleLiveData<SearchResultUiModel?>()
     val navigateToMain: LiveData<SearchResultUiModel?> = _navigateToMain
 
+    private val _hasFestivalId = MutableLiveData<Boolean>(false)
+    val hasFestivalId: LiveData<Boolean> = _hasFestivalId
+
     private var selectedUniversity: SearchResultUiModel? = null
 
     init {
+        checkFestivalId()
+
         viewModelScope.launch {
             searchQuery
                 .debounce(300L)
@@ -57,6 +62,14 @@ class ExploreViewModel(
                             _searchState.value = SearchUiState.Error(it)
                         }
                 }
+        }
+    }
+
+    fun checkFestivalId() {
+        val festivalId = exploreRepository.getFestivalId()
+        Timber.d("festival ID : $festivalId")
+        if (festivalId != null) {
+            _hasFestivalId.value = true
         }
     }
 
