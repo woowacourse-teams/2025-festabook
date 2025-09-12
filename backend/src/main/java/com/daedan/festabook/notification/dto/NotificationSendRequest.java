@@ -57,6 +57,7 @@ public class NotificationSendRequest {
     }
 
     public static class Builder {
+        
         private String title;
         private String body;
         private Map<String, String> data = new HashMap<>();
