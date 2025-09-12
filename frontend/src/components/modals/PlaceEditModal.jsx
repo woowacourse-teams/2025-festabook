@@ -59,15 +59,15 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     const newErrors = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = '제목을 입력해주세요.';
-    } else if (formData.title.length > 20) {
-      newErrors.title = '제목은 20자를 초과할 수 없습니다.';
+      newErrors.title = '이름을 입력해주세요.';
+    } else if (formData.title.length > 255) {
+      newErrors.title = '이름은 255자를 초과할 수 없습니다.';
     }
 
     if (!formData.description.trim()) {
       newErrors.description = '설명을 입력해주세요.';
-    } else if (formData.description.length > 100) {
-      newErrors.description = '설명은 100자를 초과할 수 없습니다.';
+    } else if (formData.description.length > 3000) {
+      newErrors.description = '설명은 3000자를 초과할 수 없습니다.';
     }
 
     if (!formData.location.trim()) {
@@ -77,9 +77,9 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     }
 
     if (!formData.host.trim()) {
-      newErrors.host = '주최자를 입력해주세요.';
+      newErrors.host = '운영 주체를 입력해주세요.';
     } else if (formData.host.length > 100) {
-      newErrors.host = '주최자는 100자를 초과할 수 없습니다.';
+      newErrors.host = '운영 주체는 100자를 초과할 수 없습니다.';
     }
 
  
@@ -146,10 +146,10 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
             </select>
           </div>
 
-          {/* 제목 */}
+          {/* 이름 */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              제목 *
+              이름 *
             </label>
                           <input
                 type="text"
@@ -160,7 +160,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.title ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="플레이스 제목을 입력하세요 (20자 이내)"
+                placeholder="플레이스 이름을 입력하세요 (255자 이내)"
               />
             {errors.title && (
               <p className="mt-1 text-sm text-red-600">{errors.title}</p>
@@ -181,7 +181,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="플레이스에 대한 설명을 입력하세요 (100자 이내)"
+                placeholder="플레이스에 대한 설명을 입력하세요 (3000자 이내)"
               />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
