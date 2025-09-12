@@ -86,7 +86,7 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                                 }
                             }}
                             className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black resize-none"
-                            placeholder="축제명을 입력하세요"
+                            placeholder="축제명을 입력하세요 (50자 이내)"
                             required
                         />
                     </div>

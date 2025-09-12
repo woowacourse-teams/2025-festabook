@@ -85,14 +85,14 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
             <h3 className="text-xl font-bold mb-6">{event ? '이벤트 수정' : '새 이벤트'}</h3>
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">이벤트명</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">제목</label>
                     <input 
                         name="title" 
                         type="text" 
                         value={form.title} 
                         onChange={handleChange} 
                         onKeyDown={handleKeyDown}
-                        placeholder="예: 동아리 버스킹 공연" 
+                        placeholder="제목을 입력하세요 (255자 이내)" 
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
