@@ -4,8 +4,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
@@ -27,17 +30,25 @@ class ExploreActivity :
         binding.etSearchText.setSelection(university.universityName.length)
 
         viewModel.onUniversitySelected(university)
-        binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
-        binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+            insets
+        }
+
         setContentView(binding.root)
 
         setupBinding()
         setupRecyclerView()
         setupObservers()
+
+        viewModel.navigateToMainScreen()
     }
 
     private fun setupBinding() {
@@ -49,8 +60,25 @@ class ExploreActivity :
             }
         }
 
-        binding.etSearchText.doOnTextChanged { _, _, _, _ ->
-            viewModel.onTextInputChanged()
+        binding.etSearchText.doOnTextChanged { text, _, _, _ ->
+            viewModel.onTextInputChanged(text?.toString().orEmpty())
+            binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+
+            if (text.isNullOrEmpty()) {
+                // 검색 아이콘
+                binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
+                binding.tilSearchInputLayout.setEndIconOnClickListener {
+                    handleSearchAction()
+                }
+                binding.tilSearchInputLayout.endIconContentDescription = "검색"
+            } else {
+                // X 아이콘
+                binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_close)
+                binding.tilSearchInputLayout.setEndIconOnClickListener {
+                    binding.etSearchText.text?.clear()
+                }
+                binding.tilSearchInputLayout.endIconContentDescription = "입력 내용 지우기"
+            }
         }
 
         // 키보드 엔터(검색) 리스너
@@ -61,28 +89,9 @@ class ExploreActivity :
             }
             return@setOnEditorActionListener false
         }
-
-        binding.tilSearchInputLayout.setEndIconOnClickListener {
-            handleSearchAction()
-        }
     }
 
     private fun handleSearchAction() {
-        val query = binding.etSearchText.text.toString()
-        val currentState = viewModel.searchState.value
-
-        when (currentState) {
-            is SearchUiState.Idle,
-            is SearchUiState.Error,
-            is SearchUiState.Loading,
-            null,
-            -> viewModel.search(query)
-
-            is SearchUiState.Success -> {
-                viewModel.onNavigateIconClicked()
-            }
-        }
-
         hideKeyboard()
     }
 
