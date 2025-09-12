@@ -139,13 +139,6 @@ class MainActivity :
     }
 
     private fun setUpBottomNavigation() {
-        binding.fabMap.post {
-            binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
-            binding.fcvFragmentContainer.updatePadding(
-                bottom = binding.babMenu.height + binding.babMenu.marginBottom,
-            )
-            binding.bnvMenu.x /= 2
-        }
         binding.babMenu.setOnApplyWindowInsetsListener(null)
         binding.babMenu.setPadding(0, 0, 0, 0)
         binding.bnvMenu.setOnApplyWindowInsetsListener(null)
