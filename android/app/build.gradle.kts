@@ -1,3 +1,4 @@
+import java.io.ByteArrayOutputStream
 import java.util.Properties
 
 plugins {
@@ -10,7 +11,21 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
+fun getGitRevisionCount(): Int {
+    val process =
+        ProcessBuilder("git", "rev-list", "--count", "--first-parent", "HEAD")
+            .redirectErrorStream(true)
+            .start()
+
+    val outputStream = ByteArrayOutputStream()
+    process.inputStream.use { it.copyTo(outputStream) }
+    process.waitFor()
+
+    return outputStream.toString(Charsets.UTF_8).trim().toIntOrNull() ?: 0
+}
+
 android {
+
     namespace = "com.daedan.festabook"
     compileSdk = 36
 
@@ -19,6 +34,17 @@ android {
             .file("local.properties")
             .inputStream()
             .use { Properties().apply { load(it) } }
+
+    val versionProperties =
+        gradle.rootProject
+            .file("version.properties")
+            .inputStream()
+            .use { Properties().apply { load(it) } }
+
+    val semanticVersion =
+        checkNotNull(versionProperties["VERSION"] as? String) {
+            "버전 정보가 version.properties에 존재하지 않습니다"
+        }
 
     val naverMapClientId =
         checkNotNull(localProperties["NAVER_MAP_CLIENT_ID"] as? String) {
@@ -66,8 +92,13 @@ android {
         applicationId = "com.daedan.festabook"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
+        versionCode =
+            if (System.getenv("GITHUB_ACTIONS") == "true") {
+                System.getenv("VERSION_CODE")?.toIntOrNull()
+            } else {
+                getGitRevisionCount()
+            }
+        versionName = semanticVersion
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
