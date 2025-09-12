@@ -158,7 +158,7 @@ const BoothsPage = () => {
     // 2. Booth 생성
     const handleCreate = async (data) => {
         if (!data.category) { showToast('카테고리는 필수 항목입니다.'); return; }
-        if (!data.title) { showToast('플레이스명은 필수 항목입니다.'); return; }
+        if (!data.title) { showToast('플레이스 이름은 필수 항목입니다.'); return; }
         try {
             setLoading(true);
             await placeAPI.createPlace({ 
@@ -274,7 +274,7 @@ const BoothsPage = () => {
                         <table className="min-w-full w-full">
                             <thead className="table-header">
                                 <tr>
-                                    <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스명</th>
+                                    <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스 이름</th>
                                     <th className="p-4 text-center font-semibold min-w-[100px] w-1/6">카테고리</th>
                                     <th className="p-4 text-right font-semibold min-w-[180px] w-1/4">관리</th>
                                 </tr>
@@ -328,7 +328,7 @@ const BoothsPage = () => {
                         <table className="min-w-full w-full">
                             <thead className="table-header">
                                 <tr>
-                                    <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스명</th>
+                                    <th className="p-4 text-left font-semibold min-w-[120px] w-1/4">플레이스 이름</th>
                                     <th className="p-4 text-center font-semibold min-w-[100px] w-1/6">카테고리</th>
                                     <th className="p-4 text-right font-semibold min-w-[180px] w-1/4">관리</th>
                                 </tr>

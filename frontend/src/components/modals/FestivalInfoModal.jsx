@@ -44,6 +44,13 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
+        
+        // 글자 수 제한 체크
+        if (name === 'festivalName' && value.length > 100) {
+            showToast('축제 이름은 100자 이내로 입력해주세요.');
+            return;
+        }
+        
         setFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : (name === 'userVisible' ? value === 'true' : value)
@@ -72,9 +79,14 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            축제명
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                                축제 이름
+                            </label>
+                            <span className="text-xs text-gray-500">
+                                {formData.festivalName.length}/100
+                            </span>
+                        </div>
                         <textarea
                             name="festivalName"
                             value={formData.festivalName}
@@ -86,7 +98,7 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                                 }
                             }}
                             className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black resize-none"
-                            placeholder="축제명을 입력하세요 (50자 이내)"
+                            placeholder="축제 이름을 입력하세요 (50자 이내)"
                             required
                         />
                     </div>

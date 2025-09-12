@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../common/Modal";
 
-const NoticeModal = ({ notice, onSave, onClose }) => {
+const NoticeModal = ({ notice, onSave, onClose, showToast }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isPinned, setIsPinned] = useState(false);
@@ -15,14 +15,32 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
     setContent(notice?.content || "");
   }, [notice]);
 
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    if (value.length > TITLE_MAX_LENGTH) {
+      showToast(`제목은 ${TITLE_MAX_LENGTH}자 이내로 입력해주세요.`);
+      return;
+    }
+    setTitle(value);
+  };
+
+  const handleContentChange = (e) => {
+    const value = e.target.value;
+    if (value.length > CONTENT_MAX_LENGTH) {
+      showToast(`내용은 ${CONTENT_MAX_LENGTH}자 이내로 입력해주세요.`);
+      return;
+    }
+    setContent(value);
+  };
+
   const handleSave = () => {
     // 글자 수 검증
     if (title.length > TITLE_MAX_LENGTH) {
-      alert(`제목은 ${TITLE_MAX_LENGTH}자를 초과할 수 없습니다.`);
+      showToast(`제목은 ${TITLE_MAX_LENGTH}자 이내로 입력해주세요.`);
       return;
     }
     if (content.length > CONTENT_MAX_LENGTH) {
-      alert(`내용은 ${CONTENT_MAX_LENGTH}자를 초과할 수 없습니다.`);
+      showToast(`내용은 ${CONTENT_MAX_LENGTH}자 이내로 입력해주세요.`);
       return;
     }
     onSave({ title, content, isPinned });
@@ -78,7 +96,7 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
           <input
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={handleTitleChange}
             placeholder="제목을 입력해 주세요 (50자 이내)"
             className={`block w-full border rounded-md shadow-sm py-2 px-3 transition-colors duration-200
               ${isTitleOverflow 
@@ -98,7 +116,7 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
           </div>
           <textarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={handleContentChange}
             rows="6"
             placeholder="공지 내용을 입력해주세요 (3000자 이내)"
             className={`block w-full border rounded-md shadow-sm py-2 px-3 transition-colors duration-200
