@@ -65,6 +65,12 @@ public class Council extends BaseEntity {
         this.password = password;
     }
 
+    public void updatePassword(String password) {
+        validatePassword(password);
+        
+        this.password = password;
+    }
+
     public void updateRole(Set<RoleType> roles) {
         if (!StringUtils.hasText(username)) {
             return;

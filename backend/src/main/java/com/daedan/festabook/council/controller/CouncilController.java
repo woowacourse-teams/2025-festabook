@@ -4,7 +4,10 @@ import com.daedan.festabook.council.dto.CouncilLoginRequest;
 import com.daedan.festabook.council.dto.CouncilLoginResponse;
 import com.daedan.festabook.council.dto.CouncilRequest;
 import com.daedan.festabook.council.dto.CouncilResponse;
+import com.daedan.festabook.council.dto.CouncilUpdateRequest;
+import com.daedan.festabook.council.dto.CouncilUpdateResponse;
 import com.daedan.festabook.council.service.CouncilService;
+import com.daedan.festabook.global.security.council.CouncilDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -12,6 +15,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -49,5 +54,19 @@ public class CouncilController {
             @RequestBody CouncilLoginRequest request
     ) {
         return councilService.loginCouncil(request);
+    }
+
+    @PreAuthorize("hasRole('COUNCIL')")
+    @PatchMapping("/password")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "학생회 비밀번호 변경")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true)
+    })
+    public CouncilUpdateResponse updatePassword(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody CouncilUpdateRequest request
+    ) {
+        return councilService.updatePassword(councilDetails.getCouncil().getId(), request);
     }
 }

@@ -48,6 +48,7 @@ public record FestivalCreateRequest(
                 festivalName,
                 startDate,
                 endDate,
+                false,
                 zoom,
                 centerCoordinate,
                 polygonHoleBoundary

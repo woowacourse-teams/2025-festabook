@@ -8,6 +8,9 @@ import com.daedan.festabook.council.dto.CouncilLoginRequest;
 import com.daedan.festabook.council.dto.CouncilLoginRequestFixture;
 import com.daedan.festabook.council.dto.CouncilRequest;
 import com.daedan.festabook.council.dto.CouncilRequestFixture;
+import com.daedan.festabook.council.dto.CouncilResponse;
+import com.daedan.festabook.council.dto.CouncilUpdateRequest;
+import com.daedan.festabook.council.dto.CouncilUpdateRequestFixture;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
@@ -61,7 +64,7 @@ class CouncilControllerTest {
                     .post("/councils")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
-                    .body("festivalId", notNullValue())
+                    .body("councilId", notNullValue())
                     .body("username", equalTo(username))
                     .body("roleTypes", hasItem(RoleType.ROLE_COUNCIL.name()));
         }
@@ -89,19 +92,75 @@ class CouncilControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value());
 
-            CouncilLoginRequest councilLoginRequest = CouncilLoginRequestFixture.create(username, password);
+            CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, password);
 
             // when & then
             RestAssured
                     .given()
                     .contentType(ContentType.JSON)
-                    .body(councilLoginRequest)
+                    .body(request)
                     .when()
                     .post("/councils/login")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("festivalId", equalTo(festival.getId().intValue()))
                     .body("accessToken", notNullValue());
+        }
+    }
+
+    @Nested
+    class updatePassword {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            String username = "user";
+            String currentPassword = "1234";
+            CouncilRequest councilRequest = CouncilRequestFixture.create(festival.getId(), username, currentPassword);
+            CouncilResponse response = RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(councilRequest)
+                    .when()
+                    .post("/councils")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .as(CouncilResponse.class);
+
+            CouncilLoginRequest loginRequest = CouncilLoginRequestFixture.create(username, currentPassword);
+            String accessToken = RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(loginRequest)
+                    .when()
+                    .post("/councils/login")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .path("accessToken");
+
+            String newPassword = "5678";
+            CouncilUpdateRequest councilUpdateRequest = CouncilUpdateRequestFixture.create(
+                    currentPassword,
+                    newPassword
+            );
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header("Authorization", "Bearer " + accessToken)
+                    .contentType(ContentType.JSON)
+                    .body(councilUpdateRequest)
+                    .when()
+                    .patch("/councils/password")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("councilId", equalTo(response.councilId().intValue()))
+                    .body("username", equalTo(username));
         }
     }
 }

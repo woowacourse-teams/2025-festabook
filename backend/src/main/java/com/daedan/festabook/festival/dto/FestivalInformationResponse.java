@@ -7,7 +7,8 @@ public record FestivalInformationResponse(
         Long festivalId,
         String festivalName,
         LocalDate startDate,
-        LocalDate endDate
+        LocalDate endDate,
+        boolean userVisible
 ) {
 
     public static FestivalInformationResponse from(Festival festival) {
@@ -15,7 +16,8 @@ public record FestivalInformationResponse(
                 festival.getId(),
                 festival.getFestivalName(),
                 festival.getStartDate(),
-                festival.getEndDate()
+                festival.getEndDate(),
+                festival.isUserVisible()
         );
     }
 }

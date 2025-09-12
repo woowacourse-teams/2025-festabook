@@ -30,6 +30,17 @@ public class CouncilFixture {
 
     public static Council create(
             Festival festival,
+            String password
+    ) {
+        return new Council(
+                festival,
+                DEFAULT_USERNAME,
+                password
+        );
+    }
+
+    public static Council create(
+            Festival festival,
             String username,
             String password
     ) {
