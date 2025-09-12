@@ -7,18 +7,21 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
         festivalName: festival?.festivalName || '',
         startDate: festival?.startDate ? festival.startDate.split('T')[0] : '',
         endDate: festival?.endDate ? festival.endDate.split('T')[0] : '',
-        isActive: true // 기본값은 활성화
+        userVisible: festival?.userVisible ?? true
     });
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         
         try {
-            const response = await festivalAPI.updateFestivalInfo({
+            const requestData = {
                 festivalName: formData.festivalName,
                 startDate: formData.startDate,
-                endDate: formData.endDate
-            });
+                endDate: formData.endDate,
+                userVisible: formData.userVisible
+            };
+            
+            const response = await festivalAPI.updateFestivalInfo(requestData);
             
             // 상태 업데이트
             if (onUpdate) {
@@ -26,7 +29,8 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                     ...prev,
                     festivalName: response.festivalName,
                     startDate: response.startDate,
-                    endDate: response.endDate
+                    endDate: response.endDate,
+                    userVisible: response.userVisible
                 }));
             }
             
@@ -39,10 +43,17 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
     };
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
+        
+        // 글자 수 제한 체크
+        if (name === 'festivalName' && value.length > 100) {
+            showToast('축제 이름은 100자 이내로 입력해주세요.');
+            return;
+        }
+        
         setFormData(prev => ({
             ...prev,
-            [name]: value
+            [name]: type === 'checkbox' ? checked : (name === 'userVisible' ? value === 'true' : value)
         }));
     };
 
@@ -68,9 +79,14 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            축제명
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                                축제 이름
+                            </label>
+                            <span className="text-xs text-gray-500">
+                                {formData.festivalName.length}/100
+                            </span>
+                        </div>
                         <textarea
                             name="festivalName"
                             value={formData.festivalName}
@@ -82,7 +98,7 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                                 }
                             }}
                             className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black resize-none"
-                            placeholder="축제명을 입력하세요"
+                            placeholder="축제 이름을 입력하세요 (50자 이내)"
                             required
                         />
                     </div>
@@ -113,6 +129,39 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                             className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
                             required
                         />
+                    </div>
+                    
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                            축제 공개 여부
+                        </label>
+                        <div className="flex items-center space-x-3">
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="userVisible"
+                                    value="true"
+                                    checked={formData.userVisible === true}
+                                    onChange={handleChange}
+                                    className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">공개</span>
+                            </label>
+                            <label className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="userVisible"
+                                    value="false"
+                                    checked={formData.userVisible === false}
+                                    onChange={handleChange}
+                                    className="h-4 w-4 text-black border-gray-300 focus:ring-black"
+                                />
+                                <span className="ml-2 text-sm text-gray-700">비공개</span>
+                            </label>
+                        </div>
+                        <p className="mt-1 text-xs text-gray-500">
+                            공개: 앱에서 검색 가능 / 비공개: 앱에서 검색 불가능
+                        </p>
                     </div>
                     
                 </div>

@@ -33,7 +33,7 @@ const Modal = ({ isOpen, onClose, children, maxWidth = 'max-w-lg' }) => {
     return (
         <div
             ref={backdropRef}
-            className={`modal-backdrop fixed inset-0 flex justify-center items-center transition-opacity duration-300 z-100 ${showContent ? 'bg-black/50' : 'bg-black/0'}`}
+            className={`modal-backdrop fixed inset-0 flex justify-center items-center transition-opacity duration-300 z-50 ${showContent ? 'bg-black/50' : 'bg-black/0'}`}
             onClick={handleBackdropClick}
             onTransitionEnd={handleBackdropTransitionEnd}
         >

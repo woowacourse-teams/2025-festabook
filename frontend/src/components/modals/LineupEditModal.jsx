@@ -106,7 +106,7 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
         e.preventDefault();
         
         if (!formData.name.trim()) {
-            showToast('아티스트명을 입력해주세요.');
+            showToast('아티스트 이름을 입력해주세요.');
             return;
         }
 
@@ -157,6 +157,13 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        
+        // 글자 수 제한 체크
+        if (name === 'name' && value.length > 50) {
+            showToast('아티스트 이름은 50자 이내로 입력해주세요.');
+            return;
+        }
+        
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -195,16 +202,21 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
                 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            아티스트명
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                                아티스트 이름
+                            </label>
+                            <span className="text-xs text-gray-500">
+                                {formData.name.length}/50
+                            </span>
+                        </div>
                         <input
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
                             className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
-                            placeholder="아티스트명을 입력하세요"
+                            placeholder="아티스트 이름을 입력하세요 (50자 이내)"
                             required
                         />
                     </div>

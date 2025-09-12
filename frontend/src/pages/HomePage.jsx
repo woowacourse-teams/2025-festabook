@@ -113,12 +113,21 @@ const HomePage = () => {
         <div className="w-full">
             {/* 헤더 섹션 */}
             <div className="mb-8">
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-center">
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900 mb-2">
                             {festival.universityName} 관리
                         </h1>
                     </div>
+                        <button
+                            onClick={() => openModal('passwordChange')}
+                            className="flex items-center space-x-2 px-3 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-md hover:bg-gray-50 focus:outline-none transition-colors duration-200"
+                        >
+                        <svg className="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>비밀번호 변경</span>
+                    </button>
                 </div>
             </div>
 
@@ -135,12 +144,29 @@ const HomePage = () => {
                 </div>
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">축제명</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">축제 이름</label>
                         <p className="text-lg font-semibold text-gray-900 whitespace-pre-line">{festival.festivalName}</p>
                     </div>
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
                         <p className="text-gray-900">{formatDate(festival.startDate)} - {formatDate(festival.endDate)}</p>
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">축제 공개 여부</label>
+                        <div className="flex items-center space-x-2">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                festival.userVisible 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-red-100 text-red-800'
+                            }`}>
+                                {festival.userVisible ? '공개' : '비공개'}
+                            </span>
+                            {festival.userVisible ? (
+                                <span className="text-xs text-gray-500">앱에서 검색 가능</span>
+                            ) : (
+                                <span className="text-xs text-gray-500">앱에서 검색 불가능</span>
+                            )}
+                        </div>
                     </div>
                 </div>
             </div>
@@ -276,6 +302,7 @@ const HomePage = () => {
                     </div>
                 )}
             </div>
+
         </div>
     );
 };

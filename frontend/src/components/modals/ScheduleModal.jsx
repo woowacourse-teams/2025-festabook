@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
-const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) => {
+const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, showToast }) => {
     const [form, setForm] = useState({ 
         title: '', 
         startTime: '', 
@@ -46,7 +46,21 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
         };
     }, [onClose]);
 
-    const handleChange = e => setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    const handleChange = e => {
+        const { name, value } = e.target;
+        
+        // 글자 수 제한 체크
+        if (name === 'title' && value.length > 100) {
+            showToast('일정 제목은 100자 이내로 입력해주세요.');
+            return;
+        }
+        if (name === 'location' && value.length > 100) {
+            showToast('장소는 100자 이내로 입력해주세요.');
+            return;
+        }
+        
+        setForm(prev => ({ ...prev, [name]: value }));
+    };
     
     const handleSave = () => { 
         // 새 이벤트 추가 시에만 날짜 검증
@@ -85,14 +99,19 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
             <h3 className="text-xl font-bold mb-6">{event ? '이벤트 수정' : '새 이벤트'}</h3>
             <div className="space-y-4">
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">이벤트명</label>
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="block text-sm font-medium text-gray-700">제목</label>
+                        <span className="text-xs text-gray-500">
+                            {form.title.length}/100
+                        </span>
+                    </div>
                     <input 
                         name="title" 
                         type="text" 
                         value={form.title} 
                         onChange={handleChange} 
                         onKeyDown={handleKeyDown}
-                        placeholder="예: 동아리 버스킹 공연" 
+                        placeholder="제목을 입력하세요 (100자 이내)" 
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
@@ -143,14 +162,19 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate }) =
                     </div>
                 </div>
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">장소</label>
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="block text-sm font-medium text-gray-700">장소</label>
+                        <span className="text-xs text-gray-500">
+                            {form.location.length}/100
+                        </span>
+                    </div>
                     <input 
                         name="location" 
                         type="text" 
                         value={form.location} 
                         onChange={handleChange} 
                         onKeyDown={handleKeyDown}
-                        placeholder="예: 학생회관 앞" 
+                        placeholder="장소를 입력하세요 (100자 이내)"
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>

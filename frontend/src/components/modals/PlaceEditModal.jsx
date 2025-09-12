@@ -39,8 +39,42 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     }
   }, [place]);
 
+  // ESC 키 이벤트 리스너
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [onClose]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // 글자 수 제한 체크
+    if (name === 'title' && value.length > 255) {
+      showToast('이름은 255자 이내로 입력해주세요.');
+      return;
+    }
+    if (name === 'description' && value.length > 3000) {
+      showToast('설명은 3000자 이내로 입력해주세요.');
+      return;
+    }
+    if (name === 'host' && value.length > 100) {
+      showToast('운영 주체는 100자 이내로 입력해주세요.');
+      return;
+    }
+    if (name === 'location' && value.length > 100) {
+      showToast('위치는 100자 이내로 입력해주세요.');
+      return;
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -59,15 +93,15 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     const newErrors = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = '제목을 입력해주세요.';
-    } else if (formData.title.length > 20) {
-      newErrors.title = '제목은 20자를 초과할 수 없습니다.';
+      newErrors.title = '이름을 입력해주세요.';
+    } else if (formData.title.length > 255) {
+      newErrors.title = '이름은 255자를 초과할 수 없습니다.';
     }
 
     if (!formData.description.trim()) {
       newErrors.description = '설명을 입력해주세요.';
-    } else if (formData.description.length > 100) {
-      newErrors.description = '설명은 100자를 초과할 수 없습니다.';
+    } else if (formData.description.length > 3000) {
+      newErrors.description = '설명은 3000자를 초과할 수 없습니다.';
     }
 
     if (!formData.location.trim()) {
@@ -77,9 +111,9 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     }
 
     if (!formData.host.trim()) {
-      newErrors.host = '주최자를 입력해주세요.';
+      newErrors.host = '운영 주체를 입력해주세요.';
     } else if (formData.host.length > 100) {
-      newErrors.host = '주최자는 100자를 초과할 수 없습니다.';
+      newErrors.host = '운영 주체는 100자를 초과할 수 없습니다.';
     }
 
  
@@ -146,21 +180,26 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
             </select>
           </div>
 
-          {/* 제목 */}
+          {/* 이름 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              제목 *
-            </label>
-                          <input
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                이름 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.title.length}/255
+              </span>
+            </div>
+              <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                maxLength={20}
+                maxLength={255}
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.title ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="플레이스 제목을 입력하세요 (20자 이내)"
+                placeholder="플레이스 이름을 입력하세요 (255자 이내)"
               />
             {errors.title && (
               <p className="mt-1 text-sm text-red-600">{errors.title}</p>
@@ -169,19 +208,24 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
 
           {/* 설명 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              설명 *
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                설명 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.description.length}/3000
+              </span>
+            </div>
                           <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows="3"
-                maxLength={100}
+                maxLength={3000}
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="플레이스에 대한 설명을 입력하세요 (100자 이내)"
+                placeholder="플레이스 설명을 입력하세요 (3000자 이내)"
               />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
@@ -190,9 +234,14 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
 
           {/* 위치 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              위치 *
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                위치 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.location.length}/100
+              </span>
+            </div>
                           <input
                 type="text"
                 name="location"
@@ -209,11 +258,16 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
             )}
           </div>
 
-          {/* 주최자 */}
+          {/* 운영 주체 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              주최자 *
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                운영 주체 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.host.length}/100
+              </span>
+            </div>
                           <input
                 type="text"
                 name="host"
@@ -223,7 +277,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.host ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="주최자 또는 담당자를 입력하세요 (100자 이내)"
+                placeholder="플레이스 운영 주체를 입력하세요 (100자 이내)"
               />
             {errors.host && (
               <p className="mt-1 text-sm text-red-600">{errors.host}</p>
@@ -272,8 +326,8 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
               disabled={loading}
               className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
                 loading
-                  ? 'bg-indigo-400 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700'
+                  ? 'bg-gray-800 cursor-not-allowed'
+                  : 'bg-gray-800'
               }`}
             >
               {loading ? '수정 중...' : '수정 완료'}

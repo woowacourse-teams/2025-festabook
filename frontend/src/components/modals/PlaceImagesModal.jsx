@@ -10,12 +10,15 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
     const [draggedItem, setDraggedItem] = useState(null);
     const [selectedImageToDelete, setSelectedImageToDelete] = useState(null);
     const [showAddImageModal, setShowAddImageModal] = useState(false);
+    const [selectedImage, setSelectedImage] = useState(null);
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
         const handleEscKey = (event) => {
             if (event.key === 'Escape') {
-                if (isReorderMode || isDeleteMode) {
+                if (selectedImage) {
+                    handleCloseDetail();
+                } else if (isReorderMode || isDeleteMode) {
                     handleCancelMode();
                 } else {
                     onClose();
@@ -27,7 +30,7 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
         return () => {
             document.removeEventListener('keydown', handleEscKey);
         };
-    }, [isReorderMode, isDeleteMode, onClose]);
+    }, [selectedImage, isReorderMode, isDeleteMode, onClose]);
 
     // 이미지 데이터 초기화
     useEffect(() => {
@@ -62,6 +65,63 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
             setDraggedItem(image);
             e.dataTransfer.effectAllowed = 'move';
             e.dataTransfer.setData('text/html', '');
+            
+            // 드래그 미리보기 이미지 생성
+            const dragImage = new Image();
+            dragImage.src = image.imageUrl;
+            dragImage.style.borderRadius = '8px';
+            dragImage.style.objectFit = 'cover';
+            
+            // 이미지가 로드된 후 원본 비율에 맞춰 드래그 이미지 설정
+            dragImage.onload = () => {
+                // 최대 크기 120px로 제한하되 원본 비율 유지
+                const maxSize = 120;
+                let width = dragImage.naturalWidth;
+                let height = dragImage.naturalHeight;
+                
+                if (width > height) {
+                    // 가로가 더 긴 경우
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    // 세로가 더 긴 경우
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+                
+                dragImage.style.width = width + 'px';
+                dragImage.style.height = height + 'px';
+                
+                e.dataTransfer.setDragImage(dragImage, width / 2, height / 2);
+            };
+            
+            // 즉시 사용할 수 있는 경우 (이미 로드된 이미지)
+            if (dragImage.complete) {
+                const maxSize = 120;
+                let width = dragImage.naturalWidth;
+                let height = dragImage.naturalHeight;
+                
+                if (width > height) {
+                    if (width > maxSize) {
+                        height = (height * maxSize) / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width = (width * maxSize) / height;
+                        height = maxSize;
+                    }
+                }
+                
+                dragImage.style.width = width + 'px';
+                dragImage.style.height = height + 'px';
+                
+                e.dataTransfer.setDragImage(dragImage, width / 2, height / 2);
+            }
         }
     };
 
@@ -219,6 +279,16 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
         setDraggedItem(null);
     };
 
+    const handleImageClick = (image) => {
+        if (!isReorderMode && !isDeleteMode) {
+            setSelectedImage(image);
+        }
+    };
+
+    const handleCloseDetail = () => {
+        setSelectedImage(null);
+    };
+
     const handleAddImageClick = () => {
         setShowAddImageModal(true);
     };
@@ -357,6 +427,8 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                                     if (isDeleteMode) {
                                         console.log('Image clicked for deletion:', image);
                                         handleDeleteToggle(image.id, e);
+                                    } else if (!isReorderMode) {
+                                        handleImageClick(image);
                                     }
                                 }}
                                 onDragStart={(e) => handleDragStart(e, image)}
@@ -364,35 +436,38 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                                 onDrop={(e) => handleDrop(e, image)}
                                 onDragEnd={handleDragEnd}
                             >
-                                <div className="aspect-square bg-gray-200 rounded-lg overflow-hidden transition-colors">
+                                <div className={`aspect-square bg-gray-200 rounded-lg overflow-hidden transition-colors relative ${
+                                    draggedItem?.id === image.id ? 'opacity-30 scale-95' : ''
+                                }`}>
                                     <img
-                                        src={image.imageUrl}
-                                        alt={`플레이스 이미지 ${index + 1}`}
-                                        className="w-full h-full object-cover pointer-events-none"
+                                    src={image.imageUrl}
+                                    alt={`플레이스 이미지 ${index + 1}`}
+                                    className="w-full h-full object-cover pointer-events-auto"
+                                    draggable={isReorderMode}
+                                    onDragStart={(e) => handleDragStart(e, image)}
+                                    onDragEnd={handleDragEnd}
                                     />
                                     {isDeleteMode && selectedImageToDelete === image.id && (
                                         <div className="absolute inset-0 border-4 border-red-500 rounded-lg pointer-events-none"></div>
                                     )}
-                                    {isDeleteMode && (
-                                        <div className="absolute top-2 left-2">
-                                            <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center ${
-                                                selectedImageToDelete === image.id 
-                                                    ? 'bg-red-500 border-red-500 text-white' 
-                                                    : 'bg-white border-gray-300'
-                                            }`}>
-                                                {selectedImageToDelete === image.id && (
-                                                    <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                                                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                                                    </svg>
-                                                )}
+                                    {isDeleteMode && selectedImageToDelete === image.id && (
+                                        <div className="absolute top-2 left-2 bg-red-500 text-white p-1 rounded-full">
+                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    )}
+                                    <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
+                                        {image.sequence || index + 1}
+                                    </div>
+                                    {!isReorderMode && !isDeleteMode && (
+                                        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all duration-200 rounded-lg pointer-events-none">
+                                            <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto">
+                                                <span className="text-white text-sm font-medium">클릭하여 상세보기</span>
                                             </div>
                                         </div>
                                     )}
                                 </div>
-                                <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
-                                    {image.sequence || index + 1}
-                                </div>
-                                
                             </div>
                             );
                         })}
@@ -417,7 +492,7 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                         </button>
                         <button 
                             onClick={handleImageUpdate} 
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                            className="bg-gray-800 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
                         >
                             저장
                         </button>
@@ -435,6 +510,40 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                 />
             )}
 
+            {/* 이미지 상세 보기 오버레이 */}
+            {selectedImage && (
+                <div 
+                    className="fixed inset-0 bg-black bg-opacity-80 flex items-center justify-center z-50"
+                    onClick={handleCloseDetail}
+                >
+                    <div 
+                        className="relative"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <img
+                            src={selectedImage.imageUrl}
+                            alt="상세 이미지"
+                            className="rounded-lg shadow-2xl"
+                            style={{
+                                maxWidth: '100vw',
+                                maxHeight: '95vh',
+                                width: 'auto',
+                                height: 'auto',
+                                display: 'block'
+                            }}
+                        />
+                        {/* 닫기 버튼 */}
+                        <button 
+                            onClick={handleCloseDetail}
+                            className="absolute top-4 right-4 bg-black bg-opacity-60 text-white p-2 rounded-full hover:bg-opacity-80 transition-colors"
+                        >
+                            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            )}
 
         </Modal>
     );

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '../common/Modal';
 import { placeCategories } from '../../data/categories';
 
-const BoothModal = ({ booth, onSave, onClose }) => {
+const BoothModal = ({ booth, onSave, onClose, showToast }) => {
     const isEditMode = !!booth;
     const [form, setForm] = useState({});
 
@@ -33,8 +33,29 @@ const BoothModal = ({ booth, onSave, onClose }) => {
         setForm(initialForm);
     }, [booth, isEditMode]);
 
+    // ESC 키 이벤트 리스너
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscKey);
+
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [onClose]);
+
     const handleChange = e => {
         const { name, value } = e.target;
+        
+        // 글자 수 제한 체크
+        if (name === 'title' && value.length > 255) {
+            showToast('플레이스 이름은 255자 이내로 입력해주세요.');
+            return;
+        }
         
         if (name === 'category' && !isEditMode) {
             // 카테고리 변경시 타이틀도 함께 업데이트
@@ -72,76 +93,22 @@ const BoothModal = ({ booth, onSave, onClose }) => {
                 </div>
                 
                 <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">플레이스명</label>
+                    <div className="flex justify-between items-center mb-1">
+                        <label className="block text-sm font-medium text-gray-700">이름</label>
+                        <span className="text-xs text-gray-500">
+                            {(form.title || '').length}/255
+                        </span>
+                    </div>
                     <input 
                         name="title" 
                         type="text" 
                         value={form.title || ''} 
                         onChange={handleChange} 
-                        placeholder="플레이스 이름을 입력해주세요" 
+                        placeholder="플레이스 이름을 입력해주세요 (255자 이내)" 
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
-                
-                {isEditMode && (
-                    <>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">설명</label>
-                            <textarea 
-                                name="description" 
-                                value={form.description || ''} 
-                                onChange={handleChange} 
-                                rows="3" 
-                                placeholder="플레이스에 대한 상세 설명을 입력해주세요." 
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">위치</label>
-                            <input 
-                                name="location" 
-                                type="text" 
-                                value={form.location || ''} 
-                                onChange={handleChange} 
-                                placeholder="예: 학생회관 앞" 
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
-                            />
-                        </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">운영 주체</label>
-                            <input 
-                                name="host" 
-                                type="text" 
-                                value={form.host || ''} 
-                                onChange={handleChange} 
-                                placeholder="예: 컴퓨터공학과 학생회" 
-                                className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
-                            />
-                        </div>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">운영 시작 시간</label>
-                                <input 
-                                    name="startTime" 
-                                    type="time" 
-                                    value={form.startTime || ''} 
-                                    onChange={handleChange} 
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">운영 종료 시간</label>
-                                <input 
-                                    name="endTime" 
-                                    type="time" 
-                                    value={form.endTime || ''} 
-                                    onChange={handleChange} 
-                                    className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
-                                />
-                            </div>
-                        </div>
-                    </>
-                )}
+            
             </div>
             <div className="mt-6 flex justify-between w-full relative z-10">
                 <div className="space-x-3">

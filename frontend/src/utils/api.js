@@ -319,49 +319,6 @@ export const placeAPI = {
     }
   },
 
-  // 플레이스 공지사항 관련 API
-  // 특정 플레이스의 모든 공지사항 조회
-  getPlaceAnnouncements: async (placeId) => {
-    try {
-      const response = await api.get(`/places/${placeId}/announcements`);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch place announcements:', error);
-      throw new Error('플레이스 공지사항 조회에 실패했습니다.');
-    }
-  },
-
-  // 플레이스 공지사항 생성
-  createPlaceAnnouncement: async (placeId, announcementData) => {
-    try {
-      const response = await api.post(`/places/${placeId}/announcements`, announcementData);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to create place announcement:', error);
-      throw new Error('플레이스 공지사항 생성에 실패했습니다.');
-    }
-  },
-
-  // 플레이스 공지사항 수정
-  updatePlaceAnnouncement: async (placeAnnouncementId, announcementData) => {
-    try {
-      const response = await api.patch(`/places/announcements/${placeAnnouncementId}`, announcementData);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to update place announcement:', error);
-      throw new Error('플레이스 공지사항 수정에 실패했습니다.');
-    }
-  },
-
-  // 플레이스 공지사항 삭제
-  deletePlaceAnnouncement: async (placeAnnouncementId) => {
-    try {
-      await api.delete(`/places/announcements/${placeAnnouncementId}`);
-    } catch (error) {
-      console.error('Failed to delete place announcement:', error);
-      throw new Error('플레이스 공지사항 삭제에 실패했습니다.');
-    }
-  }
 };
 
 // 축제 날짜 관련 API
@@ -639,6 +596,20 @@ export const lineupAPI = {
     } catch (error) {
       console.error('Failed to delete lineup:', error);
       throw new Error('라인업 삭제에 실패했습니다.');
+    }
+  }
+};
+
+// 학생회 관련 API
+export const councilAPI = {
+  // 학생회 비밀번호 변경
+  changePassword: async (passwordData) => {
+    try {
+      const response = await api.patch('/councils/password', passwordData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to change password:', error);
+      throw new Error('비밀번호 변경에 실패했습니다.');
     }
   }
 };
