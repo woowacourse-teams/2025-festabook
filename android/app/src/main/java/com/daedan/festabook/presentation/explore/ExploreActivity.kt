@@ -14,13 +14,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
-import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.presentation.explore.adapter.OnUniversityClickListener
 import com.daedan.festabook.presentation.explore.adapter.SearchResultAdapter
 import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
 import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.material.textfield.TextInputLayout
-import timber.log.Timber
 
 class ExploreActivity :
     AppCompatActivity(),

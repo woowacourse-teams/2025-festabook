@@ -9,8 +9,6 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
-import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
-import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.domain.repository.ExploreRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
@@ -37,9 +35,6 @@ class ExploreViewModel(
     val hasFestivalId: LiveData<Boolean> = _hasFestivalId
 
     private var selectedUniversity: SearchResultUiModel? = null
-    private var selectedUniversity: University? = null
-
-
 
     init {
         checkFestivalId()
@@ -70,7 +65,6 @@ class ExploreViewModel(
         }
     }
 
-
     fun checkFestivalId() {
         val festivalId = exploreRepository.getFestivalId()
         Timber.d("festival ID : $festivalId")
@@ -78,7 +72,6 @@ class ExploreViewModel(
             _hasFestivalId.value = true
         }
     }
-
 
     fun onUniversitySelected(university: SearchResultUiModel) {
         selectedUniversity = university
