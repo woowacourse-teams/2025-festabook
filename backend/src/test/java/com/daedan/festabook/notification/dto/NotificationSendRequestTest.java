@@ -9,6 +9,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class NotificationSendRequestTest {
@@ -40,6 +42,42 @@ class NotificationSendRequestTest {
     }
 
     @Nested
+    class validateTitle {
+
+        @ParameterizedTest(name = "제목: {0}")
+        @NullAndEmptySource
+        void 예외(String title) {
+            // when & then
+            assertThatThrownBy(() -> {
+                NotificationSendRequest.builder()
+                        .title(title)
+                        .body("body")
+                        .build();
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("알림 제목은 비어있을 수 없습니다.");
+        }
+    }
+
+    @Nested
+    class validateBody {
+
+        @ParameterizedTest(name = "본문: {0}")
+        @NullAndEmptySource
+        void 예외(String body) {
+            // when & then
+            assertThatThrownBy(() -> {
+                NotificationSendRequest.builder()
+                        .title("title")
+                        .body(body)
+                        .build();
+            })
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("알림 본문은 비어있을 수 없습니다.");
+        }
+    }
+
+    @Nested
     class getCustomData {
 
         @Test
@@ -61,7 +99,7 @@ class NotificationSendRequestTest {
         }
 
         @Test
-        void 실패_존재하지_않는_key로_조회() {
+        void 예외_존재하지_않는_key로_조회() {
             // given
             NotificationSendRequest request = NotificationSendRequest.builder()
                     .title("title")

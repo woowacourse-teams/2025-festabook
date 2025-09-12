@@ -4,14 +4,21 @@ import com.daedan.festabook.global.exception.BusinessException;
 import java.util.HashMap;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 public class NotificationSendRequest {
 
-    private String title;
-    private String body;
-    private Map<String, String> data;
+    private final String title;
+    private final String body;
+    private final Map<String, String> data;
 
-    private NotificationSendRequest() {
+    private NotificationSendRequest(String title, String body, Map<String, String> data) {
+        validateTitle(title);
+        validateBody(body);
+
+        this.title = title;
+        this.body = body;
+        this.data = new HashMap<>(data);
     }
 
     public String getTitle() {
@@ -31,6 +38,18 @@ public class NotificationSendRequest {
             );
         }
         return value;
+    }
+
+    private void validateTitle(String title) {
+        if (!StringUtils.hasText(title)) {
+            throw new BusinessException("알림 제목은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateBody(String title) {
+        if (!StringUtils.hasText(title)) {
+            throw new BusinessException("알림 본문은 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     public static Builder builder() {
@@ -58,11 +77,7 @@ public class NotificationSendRequest {
         }
 
         public NotificationSendRequest build() {
-            NotificationSendRequest request = new NotificationSendRequest();
-            request.title = this.title;
-            request.body = this.body;
-            request.data = this.data;
-            return request;
+            return new NotificationSendRequest(title, body, data);
         }
     }
 }
