@@ -79,7 +79,7 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="[50자 이내로 작성해주세요]"
+            placeholder="제목을 입력해 주세요 (50자 이내)"
             className={`block w-full border rounded-md shadow-sm py-2 px-3 transition-colors duration-200
               ${isTitleOverflow 
                 ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
@@ -100,7 +100,7 @@ const NoticeModal = ({ notice, onSave, onClose }) => {
             value={content}
             onChange={(e) => setContent(e.target.value)}
             rows="6"
-            placeholder="공지 내용을 입력해주세요. (3000자 이내)"
+            placeholder="공지 내용을 입력해주세요 (3000자 이내)"
             className={`block w-full border rounded-md shadow-sm py-2 px-3 transition-colors duration-200
               ${isContentOverflow 
                 ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 

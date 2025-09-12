@@ -153,7 +153,7 @@ const LostItemModal = ({ item, onSave, onClose }) => {
                         type="text" 
                         value={storageLocation} 
                         onChange={e => setStorageLocation(e.target.value)} 
-                        placeholder="예: 대운동장 스탠드" 
+                        placeholder="보관 장소를 입력해 주세요 (20자 이내)" 
                         className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>

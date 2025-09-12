@@ -41,7 +41,7 @@ const FaqModal = ({ faq, onSave, onClose }) => {
                         type="text" 
                         value={question} 
                         onChange={e => setQuestion(e.target.value)} 
-                        placeholder="질문을 작성해 주세요" 
+                        placeholder="질문을 작성해 주세요 (255자 이내)" 
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
@@ -51,7 +51,7 @@ const FaqModal = ({ faq, onSave, onClose }) => {
                         value={answer} 
                         onChange={e => setAnswer(e.target.value)} 
                         rows="4" 
-                        placeholder="답변을 작성해 주세요" 
+                        placeholder="답변을 작성해 주세요 (3000자 이내)" 
                         className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
