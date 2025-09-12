@@ -28,7 +28,7 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.dto.NotificationMessage;
+import com.daedan.festabook.notification.dto.NotificationSendRequest;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -490,7 +490,7 @@ class AnnouncementServiceTest {
 
             // then
             then(festivalNotificationManager).should()
-                    .sendToFestivalTopic(eq(festivalId), any(NotificationMessage.class));
+                    .sendToFestivalTopic(eq(festivalId), any(NotificationSendRequest.class));
         }
 
         @Test
