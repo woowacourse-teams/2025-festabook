@@ -3,11 +3,11 @@ package com.daedan.festabook.presentation.explore.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.daedan.festabook.domain.model.University
+import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
 
 class SearchResultAdapter(
     private val onUniversityClickListener: OnUniversityClickListener,
-) : ListAdapter<University, SearchResultViewHolder>(DIFF_CALLBACK) {
+) : ListAdapter<SearchResultUiModel, SearchResultViewHolder>(DIFF_CALLBACK) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
@@ -22,15 +22,15 @@ class SearchResultAdapter(
 
     companion object {
         private val DIFF_CALLBACK =
-            object : DiffUtil.ItemCallback<University>() {
+            object : DiffUtil.ItemCallback<SearchResultUiModel>() {
                 override fun areItemsTheSame(
-                    oldItem: University,
-                    newItem: University,
+                    oldItem: SearchResultUiModel,
+                    newItem: SearchResultUiModel,
                 ): Boolean = oldItem.festivalId == newItem.festivalId
 
                 override fun areContentsTheSame(
-                    oldItem: University,
-                    newItem: University,
+                    oldItem: SearchResultUiModel,
+                    newItem: SearchResultUiModel,
                 ): Boolean = oldItem == newItem
             }
     }

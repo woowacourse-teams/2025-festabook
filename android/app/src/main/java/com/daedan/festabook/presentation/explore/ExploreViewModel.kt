@@ -9,9 +9,10 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
-import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.domain.repository.ExploreRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
+import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
+import com.daedan.festabook.presentation.explore.model.toUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -27,10 +28,10 @@ class ExploreViewModel(
     private val _searchState = MutableLiveData<SearchUiState>()
     val searchState: LiveData<SearchUiState> = _searchState
 
-    private val _navigateToMain = SingleLiveData<University?>()
-    val navigateToMain: LiveData<University?> = _navigateToMain
+    private val _navigateToMain = SingleLiveData<SearchResultUiModel?>()
+    val navigateToMain: LiveData<SearchResultUiModel?> = _navigateToMain
 
-    private var selectedUniversity: University? = null
+    private var selectedUniversity: SearchResultUiModel? = null
 
     init {
         viewModelScope.launch {
@@ -50,7 +51,7 @@ class ExploreViewModel(
                         .onSuccess { universitiesFound ->
                             Timber.d("검색 성공 - received: $universitiesFound")
                             _searchState.value =
-                                SearchUiState.Success(universitiesFound = universitiesFound)
+                                SearchUiState.Success(universitiesFound = universitiesFound.map { it.toUiModel() })
                         }.onFailure {
                             Timber.d(it, "검색 실패")
                             _searchState.value = SearchUiState.Error(it)
@@ -59,20 +60,21 @@ class ExploreViewModel(
         }
     }
 
-    fun onUniversitySelected(university: University) {
+    fun onUniversitySelected(university: SearchResultUiModel) {
         selectedUniversity = university
         _searchState.value =
             SearchUiState.Success(
                 universitiesFound = listOf(university),
 //                selectedUniversity = university,
             )
+        navigateToMainScreen()
     }
 
     fun onTextInputChanged(query: String) {
         searchQuery.value = query
     }
 
-    fun navigateToMainScreen() {
+    private fun navigateToMainScreen() {
         val selectedUniversity = selectedUniversity
 
         if (selectedUniversity != null) {

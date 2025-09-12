@@ -12,9 +12,9 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
-import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.presentation.explore.adapter.OnUniversityClickListener
 import com.daedan.festabook.presentation.explore.adapter.SearchResultAdapter
+import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
 import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.material.textfield.TextInputLayout
 
@@ -25,7 +25,7 @@ class ExploreActivity :
     private val viewModel by viewModels<ExploreViewModel> { ExploreViewModel.Factory }
     private val searchResultAdapter by lazy { SearchResultAdapter(this) }
 
-    override fun onUniversityClick(university: University) {
+    override fun onUniversityClick(university: SearchResultUiModel) {
         binding.etSearchText.setText(university.universityName)
         binding.etSearchText.setSelection(university.universityName.length)
 
@@ -36,9 +36,25 @@ class ExploreActivity :
         super.onCreate(savedInstanceState)
 
         enableEdgeToEdge()
-        ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rvSearchResults) { view, insets ->
+            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            if (imeInsets.bottom > systemInsets.bottom) {
+                view.setPadding(
+                    view.paddingLeft,
+                    view.paddingTop,
+                    view.paddingRight,
+                    imeInsets.bottom - systemInsets.bottom,
+                )
+            } else {
+                view.setPadding(
+                    view.paddingLeft,
+                    view.paddingTop,
+                    view.paddingRight,
+                    0,
+                )
+            }
             insets
         }
 
@@ -47,8 +63,6 @@ class ExploreActivity :
         setupBinding()
         setupRecyclerView()
         setupObservers()
-
-        viewModel.navigateToMainScreen()
     }
 
     private fun setupBinding() {
