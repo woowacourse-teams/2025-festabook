@@ -272,8 +272,8 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
               disabled={loading}
               className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
                 loading
-                  ? 'bg-indigo-400 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700'
+                  ? 'bg-gray-800 cursor-not-allowed'
+                  : 'bg-gray-800'
               }`}
             >
               {loading ? '수정 중...' : '수정 완료'}

@@ -225,7 +225,7 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
            style={{ width: '100%', height: 400, display: loading || !center || !zoom || !mapReady ? 'none' : 'block' }} />
       <div className="mt-4 flex justify-end">
         <button onClick={handleSave} disabled={!coords || saving}
-                className="bg-blue-600 text-white px-4 py-2 rounded disabled:bg-gray-300">
+                className="bg-gray-800 text-white px-4 py-2 rounded disabled:bg-gray-300">
           {saving ? '저장 중...' : '좌표 설정'}
         </button>
       </div>

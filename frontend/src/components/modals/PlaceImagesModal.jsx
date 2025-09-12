@@ -417,7 +417,7 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                         </button>
                         <button 
                             onClick={handleImageUpdate} 
-                            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                            className="bg-gray-800 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
                         >
                             저장
                         </button>

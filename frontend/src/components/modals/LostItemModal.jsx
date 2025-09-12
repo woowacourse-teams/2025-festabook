@@ -238,7 +238,7 @@ const LostItemModal = ({ item, onSave, onClose }) => {
                     <button
                         onClick={handleSave}
                         disabled={!storageLocation.trim() || (!selectedFile && !item?.imageUrl) || isUploading}
-                        className="px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        className="px-4 py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                     >
                         {isUploading ? (
                             <>
