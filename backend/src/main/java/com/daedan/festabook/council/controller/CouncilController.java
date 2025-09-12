@@ -31,6 +31,7 @@ public class CouncilController {
 
     private final CouncilService councilService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "학생회 생성")

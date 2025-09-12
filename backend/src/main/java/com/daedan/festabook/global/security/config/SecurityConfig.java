@@ -54,9 +54,7 @@ public class SecurityConfig {
             "/devices",
             "/festivals/*/notifications",
             "/places/*/favorites",
-            "/councils/login",
-            "/councils", // TODO: ADMIN 생성 시 삭제
-            "/festivals" // TODO: ADMIN 생성 시 삭제
+            "/councils/login"
     };
 
     private static final String[] DELETE_WHITELIST = {
