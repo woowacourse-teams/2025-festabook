@@ -8,5 +8,5 @@ public interface FestivalNotificationManager {
 
     void unsubscribeFestivalTopic(Long festivalId, String token);
 
-    void sendToFestivalTopic(Long festivalId, NotificationSendRequest notificationSendRequest);
+    void sendToFestivalTopic(Long festivalId, NotificationSendRequest request);
 }

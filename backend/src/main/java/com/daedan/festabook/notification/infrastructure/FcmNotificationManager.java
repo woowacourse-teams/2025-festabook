@@ -32,8 +32,8 @@ public class FcmNotificationManager implements FestivalNotificationManager {
     }
 
     @Override
-    public void sendToFestivalTopic(Long festivalId, NotificationSendRequest notificationSendRequest) {
-        sendToTopic(FESTIVAL_PREFIX, festivalId, notificationSendRequest);
+    public void sendToFestivalTopic(Long festivalId, NotificationSendRequest request) {
+        sendToTopic(FESTIVAL_PREFIX, festivalId, request);
     }
 
     private void subscribeTopic(String topic, String fcmToken) {
@@ -52,18 +52,17 @@ public class FcmNotificationManager implements FestivalNotificationManager {
         }
     }
 
-    private void sendToTopic(String topicNamePrefix, Long topicTargetId,
-                             NotificationSendRequest notificationSendRequest) {
+    private void sendToTopic(String topicNamePrefix, Long topicTargetId, NotificationSendRequest request) {
         String topic = topicNamePrefix + topicTargetId;
 
         Message message = Message.builder()
                 .setTopic(topic)
 
-                .putData("title", notificationSendRequest.getTitle())
-                .putData("body", notificationSendRequest.getBody())
+                .putData("title", request.getTitle())
+                .putData("body", request.getBody())
 
                 .putData("festivalId", String.valueOf(topicTargetId))
-                .putData("announcementId", notificationSendRequest.getCustomData("announcementId"))
+                .putData("announcementId", request.getCustomData("announcementId"))
                 .build();
 
         try {
