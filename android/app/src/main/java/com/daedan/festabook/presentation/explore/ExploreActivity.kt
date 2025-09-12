@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.explore
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
@@ -13,11 +14,13 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
+import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.presentation.explore.adapter.OnUniversityClickListener
 import com.daedan.festabook.presentation.explore.adapter.SearchResultAdapter
 import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
 import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.material.textfield.TextInputLayout
+import timber.log.Timber
 
 class ExploreActivity :
     AppCompatActivity(),
@@ -62,6 +65,8 @@ class ExploreActivity :
         }
 
         setContentView(binding.root)
+
+        viewModel.checkFestivalId()
 
         setupBinding()
         setupRecyclerView()
@@ -109,6 +114,10 @@ class ExploreActivity :
 
         binding.tilSearchInputLayout.setEndIconOnClickListener {
             handleSearchAction()
+        }
+
+        binding.btnExploreClose.setOnClickListener {
+            finish()
         }
     }
 
@@ -161,11 +170,7 @@ class ExploreActivity :
             }
         }
         viewModel.hasFestivalId.observe(this) { hasId ->
-            if (hasId) {
-                binding.btnExploreClose.visibility = View.VISIBLE
-            } else {
-                binding.btnExploreClose.visibility = View.GONE
-            }
+            binding.btnExploreClose.visibility = if (hasId) View.VISIBLE else View.GONE
         }
     }
 
@@ -176,10 +181,14 @@ class ExploreActivity :
 
     private fun navigateToMainActivity(festivalId: Long) {
         val intent =
-            Intent(this, MainActivity::class.java).apply {
-                putExtra("festival_id", festivalId)
+            MainActivity.newIntent(this, festivalId).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         startActivity(intent)
         finish()
+    }
+
+    companion object {
+        fun newIntent(context: Context) = Intent(context, ExploreActivity::class.java)
     }
 }

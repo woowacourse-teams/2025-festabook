@@ -37,9 +37,13 @@ class ExploreViewModel(
     val hasFestivalId: LiveData<Boolean> = _hasFestivalId
 
     private var selectedUniversity: SearchResultUiModel? = null
+    private var selectedUniversity: University? = null
+
 
 
     init {
+        checkFestivalId()
+
         viewModelScope.launch {
             searchQuery
                 .debounce(300L)

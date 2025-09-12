@@ -1,5 +1,7 @@
 package com.daedan.festabook.presentation.main
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -252,10 +254,18 @@ class MainActivity :
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
         private const val INITIALIZED_FESTIVAL_ID = -1L
+        private const val KEY_FESTIVAL_ID = "festival_id"
 
         fun Fragment.newInstance(): Fragment =
             this.apply {
                 arguments = Bundle()
             }
+
+        fun newIntent(
+            context: Context,
+            festivalId: Long,
+        ) = Intent(context, MainActivity::class.java).apply {
+            putExtra(KEY_FESTIVAL_ID, festivalId)
+        }
     }
 }
