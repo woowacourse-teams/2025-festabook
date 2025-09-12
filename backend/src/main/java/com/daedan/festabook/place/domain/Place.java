@@ -58,13 +58,13 @@ public class Place extends BaseEntity {
     @Column(length = MAX_TITLE_LENGTH, nullable = false)
     private String title;
 
-    @Column(length = 100)
+    @Column(length = MAX_DESCRIPTION_LENGTH)
     private String description;
 
-    @Column(length = 100)
+    @Column(length = MAX_LOCATION_LENGTH)
     private String location;
 
-    @Column(length = 100)
+    @Column(length = MAX_HOST_LENGTH)
     private String host;
 
     private LocalTime startTime;
