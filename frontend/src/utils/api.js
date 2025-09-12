@@ -600,4 +600,18 @@ export const lineupAPI = {
   }
 };
 
+// 학생회 관련 API
+export const councilAPI = {
+  // 학생회 비밀번호 변경
+  changePassword: async (passwordData) => {
+    try {
+      const response = await api.patch('/councils/password', passwordData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to change password:', error);
+      throw new Error('비밀번호 변경에 실패했습니다.');
+    }
+  }
+};
+
 export default api;
