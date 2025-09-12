@@ -92,19 +92,6 @@ class ExploreActivity :
     }
 
     private fun handleSearchAction() {
-        val query = binding.etSearchText.text.toString()
-        val currentState = viewModel.searchState.value
-
-        when (currentState) {
-            is SearchUiState.Idle,
-            is SearchUiState.Error,
-            is SearchUiState.Loading,
-            null,
-            -> viewModel.search(query)
-
-            is SearchUiState.Success -> {}
-        }
-
         hideKeyboard()
     }
 

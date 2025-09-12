@@ -13,6 +13,7 @@ import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.domain.repository.ExploreRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
@@ -36,8 +37,24 @@ class ExploreViewModel(
             searchQuery
                 .debounce(300L)
                 .distinctUntilChanged()
-                .collect { query ->
-                    search(query)
+                .collectLatest { query ->
+                    if (query.isEmpty()) {
+                        _searchState.value = SearchUiState.Idle
+                        return@collectLatest
+                    }
+
+                    _searchState.value = SearchUiState.Loading
+
+                    val result = exploreRepository.search(query)
+                    result
+                        .onSuccess { universitiesFound ->
+                            Timber.d("검색 성공 - received: $universitiesFound")
+                            _searchState.value =
+                                SearchUiState.Success(universitiesFound = universitiesFound)
+                        }.onFailure {
+                            Timber.d(it, "검색 실패")
+                            _searchState.value = SearchUiState.Error(it)
+                        }
                 }
         }
     }
@@ -53,27 +70,6 @@ class ExploreViewModel(
 
     fun onTextInputChanged(query: String) {
         searchQuery.value = query
-    }
-
-    fun search(query: String) {
-        if (query.isEmpty()) {
-            _searchState.value = SearchUiState.Idle
-            return
-        }
-
-        _searchState.value = SearchUiState.Loading
-
-        viewModelScope.launch {
-            val result = exploreRepository.search(query)
-            result
-                .onSuccess { universitiesFound ->
-                    Timber.d("검색 성공 - received: $universitiesFound")
-                    _searchState.value = SearchUiState.Success(universitiesFound = universitiesFound)
-                }.onFailure {
-                    Timber.d(it, "검색 실패")
-                    _searchState.value = SearchUiState.Error(it)
-                }
-        }
     }
 
     fun navigateToMainScreen() {
