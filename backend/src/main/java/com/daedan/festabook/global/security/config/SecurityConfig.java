@@ -77,7 +77,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, GET_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.POST, POST_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.DELETE, DELETE_WHITELIST).permitAll()
-                        .anyRequest().hasAnyAuthority(RoleType.ROLE_COUNCIL.name())
+                        .anyRequest().hasAnyAuthority(
+                                RoleType.ROLE_COUNCIL.name(),
+                                RoleType.ROLE_ADMIN.name()
+                        )
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)

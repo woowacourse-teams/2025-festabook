@@ -38,4 +38,19 @@ public class JwtTestHelper {
         String token = jwtProvider.createToken(randomUsername, festival.getId());
         return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
     }
+
+    @Transactional
+    public Header createAdminAuthorizationHeader(Festival festival) {
+        UUID uuid = UUID.randomUUID();
+        String randomUsername = "test_" + uuid;
+        String randomPassword = "password_" + uuid;
+
+        festivalRepository.save(festival);
+        Council council = new Council(festival, randomUsername, randomPassword);
+        council.updateRole(Set.of(RoleType.ROLE_ADMIN));
+        councilRepository.save(council);
+
+        String token = jwtProvider.createToken(randomUsername, festival.getId());
+        return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
+    }
 }

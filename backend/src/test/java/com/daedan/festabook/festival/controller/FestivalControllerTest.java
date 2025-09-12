@@ -95,11 +95,17 @@ class FestivalControllerTest {
                     List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
             );
 
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAdminAuthorizationHeader(festival);
+
             int expectedFieldSize = 9;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
