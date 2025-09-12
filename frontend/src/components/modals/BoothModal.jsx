@@ -33,6 +33,21 @@ const BoothModal = ({ booth, onSave, onClose }) => {
         setForm(initialForm);
     }, [booth, isEditMode]);
 
+    // ESC 키 이벤트 리스너
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape') {
+                onClose();
+            }
+        };
+
+        document.addEventListener('keydown', handleEscKey);
+
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [onClose]);
+
     const handleChange = e => {
         const { name, value } = e.target;
         

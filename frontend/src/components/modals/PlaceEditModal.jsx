@@ -39,6 +39,21 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     }
   }, [place]);
 
+  // ESC 키 이벤트 리스너
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [onClose]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
