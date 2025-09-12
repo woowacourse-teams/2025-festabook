@@ -399,10 +399,12 @@ class FestivalControllerTest {
             String changedFestivalName = "수정 후 제목";
             LocalDate changedStartDate = LocalDate.of(2025, 11, 1);
             LocalDate changedEndDate = LocalDate.of(2025, 11, 2);
+            boolean userVisible = true;
             FestivalInformationUpdateRequest request = FestivalInformationUpdateRequestFixture.create(
                     changedFestivalName,
                     changedStartDate,
-                    changedEndDate
+                    changedEndDate,
+                    userVisible
             );
 
             int expectedFieldSize = 5;
@@ -421,7 +423,8 @@ class FestivalControllerTest {
                     .body("festivalId", equalTo(festival.getId().intValue()))
                     .body("festivalName", equalTo(changedFestivalName))
                     .body("startDate", equalTo(changedStartDate.toString()))
-                    .body("endDate", equalTo(changedEndDate.toString()));
+                    .body("endDate", equalTo(changedEndDate.toString()))
+                    .body("userVisible", equalTo(userVisible));
         }
     }
 

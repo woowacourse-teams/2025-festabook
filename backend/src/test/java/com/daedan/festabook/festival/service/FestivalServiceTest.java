@@ -228,7 +228,8 @@ class FestivalServiceTest {
             FestivalInformationUpdateRequest request = FestivalInformationUpdateRequestFixture.create(
                     "수정 후 제목",
                     LocalDate.of(2025, 10, 1),
-                    LocalDate.of(2025, 10, 2)
+                    LocalDate.of(2025, 10, 2),
+                    false
             );
 
             // when
