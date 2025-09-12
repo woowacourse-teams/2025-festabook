@@ -4,7 +4,7 @@ import { placeCategories } from '../data/categories';
 import { placeAPI } from '../utils/api';
 import { BoothsPageSkeleton } from '../components/common/Skeleton';
 
-const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBooth, handleImageUpdate, handleNoticeCreate }) => {
+const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBooth, handleImageUpdate }) => {
     const [imageLoadingStates, setImageLoadingStates] = useState({});
 
     const handleImageLoad = (index) => {
@@ -16,10 +16,8 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
             placeId: booth.placeId,
             category: booth.category,
             placeImages: booth.placeImages || [],
-            placeAnnouncements: booth.placeAnnouncements || [],
             // 기존 코드와의 호환성을 위한 필드들 (DTO 반영)
             images: (booth.placeImages || []).map(img => img.imageUrl),
-            notices: booth.placeAnnouncements || [],
             mainImageIndex: 0,
 
             title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
@@ -69,34 +67,6 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
                         <p><i className="fas fa-user-friends w-4 mr-2"></i>운영 주체: {booth.host}</p>
                         <p><i className="fas fa-clock w-4 mr-2"></i>운영 시간: {booth.startTime} - {booth.endTime}</p>
                     </div>
-                    <h4 className="font-semibold text-lg mt-4 mb-2">공지사항</h4>
-                    {booth.notices && booth.notices.length > 0 ? (
-                        <ul className="list-disc list-inside text-sm text-gray-700 space-y-2">
-                            {booth.notices.map(notice => (
-                                <li key={notice.id} className="flex items-start">
-                                    <span className="mr-2 mt-1">•</span>
-                                    <div className="flex-1">
-                                        <div>
-                                            <span className="font-medium">{notice.title}</span>
-                                            <span className="mx-1">-</span>
-                                            <span>{notice.content}</span>
-                                        </div>
-                                        {notice.createdAt && (
-                                            <div className="text-xs text-gray-400 mt-1">
-                                                {new Date(notice.createdAt).toLocaleString('ko-KR', {
-                                                    year: 'numeric',
-                                                    month: '2-digit',
-                                                    day: '2-digit',
-                                                    hour: '2-digit',
-                                                    minute: '2-digit'
-                                                }).replace(/\./g, '-').replace(/\s/g, ' ')}
-                                            </div>
-                                        )}
-                                    </div>
-                                </li>
-                            ))}
-                        </ul>
-                    ) : <p className="text-sm text-gray-500">공지사항 없음</p>}
 
                 </div>
                 <div>
@@ -127,7 +97,6 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
                 </div>
             </div>
             <div className="flex items-center gap-4 justify-end mt-2">
-                <button onClick={() => openModal('placeNotice', { place: booth, onSave: handleNoticeCreate })} className="text-orange-600 hover:text-orange-800 text-sm font-semibold">플레이스 공지사항 관리</button>
                 <button onClick={() => openModal('placeImages', { place: booth, onUpdate: handleImageUpdate })} className="text-purple-600 hover:text-purple-800 text-sm font-semibold">이미지 관리</button>
                 <button onClick={() => openModal('placeEdit', { place: booth, onSave: handleSave })} className="text-blue-600 hover:text-blue-800 text-sm font-semibold">세부사항 수정</button>
                 <button onClick={() => openDeleteModal(booth)}
@@ -149,7 +118,6 @@ const BoothsPage = () => {
         placeId: booth.placeId,
         category: booth.category,
         placeImages: booth.placeImages || [],
-        placeAnnouncements: booth.placeAnnouncements || [],
         // 서버에서 받은 title 값을 우선 사용
         title: getDefaultValueIfNull('플레이스 이름을 지정하여 주십시오.', booth.title),
         description: getDefaultValueIfNull('플레이스 설명이 아직 없습니다.', booth.description),
@@ -159,7 +127,6 @@ const BoothsPage = () => {
         host: getDefaultValueIfNull('미지정', booth.host),
         // 기존 코드와의 호환성을 위한 필드들
         images: (booth.placeImages || []).map(img => img.imageUrl),
-        notices: booth.placeAnnouncements || [],
     });
 
     // 1. Booth 목록 불러오기
@@ -233,7 +200,7 @@ const BoothsPage = () => {
                     {booth.title} 플레이스를 정말 삭제하시겠습니까?
                     <br /> 
                     <div className="font-bold text-red-500 text-xs">
-                        플레이스의 즐겨찾기 정보, 이미지, 세부 정보, 세부 공지사항도 모두 삭제됩니다.
+                        플레이스의 즐겨찾기 정보, 이미지, 세부 정보도 모두 삭제됩니다.
                     </div>
                 </>
             ),
@@ -283,21 +250,6 @@ const BoothsPage = () => {
         }
     };
 
-    // 공지 관리 전용 핸들러
-    const handleNoticeCreate = async (data) => {
-        try {
-            setLoading(true);
-            // 공지사항이 이미 API를 통해 처리되었으므로, 서버에서 최신 데이터를 다시 조회
-            const places = await placeAPI.getPlaces();
-            setBooths(places.map(defaultBooth));
-            showToast('플레이스 공지가 업데이트되었습니다.');
-        } catch (error) {
-            showToast('플레이스 공지 업데이트에 실패했습니다.');
-            console.error('Failed to update place announcements:', error);
-        } finally {
-            setLoading(false);
-        }
-    };
 
     const isMainPlace = (category) => {
         return !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE'].includes(category);
@@ -356,7 +308,6 @@ const BoothsPage = () => {
                                                                 openModal={openModal}
                                                                 handleSave={handleSave}
                                                                 handleImageUpdate={handleImageUpdate}
-                                                                handleNoticeCreate={handleNoticeCreate}
                                                                 updateBooth={(id, data) => setBooths(prev => prev.map(b => b.placeId === id ? { ...b, ...data } : b))}
                                                             />
                                                         )}
