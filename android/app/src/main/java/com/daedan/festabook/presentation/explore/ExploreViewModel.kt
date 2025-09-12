@@ -76,7 +76,7 @@ class ExploreViewModel(
         }
     }
 
-    fun onNavigateIconClicked() {
+    fun navigateToMainScreen() {
         val selectedUniversity = selectedUniversity
 
         if (selectedUniversity != null) {

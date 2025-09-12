@@ -30,7 +30,6 @@ class ExploreActivity :
         binding.etSearchText.setSelection(university.universityName.length)
 
         viewModel.onUniversitySelected(university)
-        viewModel.onNavigateIconClicked()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -48,6 +47,8 @@ class ExploreActivity :
         setupBinding()
         setupRecyclerView()
         setupObservers()
+
+        viewModel.navigateToMainScreen()
     }
 
     private fun setupBinding() {
@@ -61,10 +62,10 @@ class ExploreActivity :
 
         binding.etSearchText.doOnTextChanged { text, _, _, _ ->
             viewModel.onTextInputChanged(text?.toString().orEmpty())
+            binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
 
             if (text.isNullOrEmpty()) {
                 // 검색 아이콘
-                binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
                 binding.tilSearchInputLayout.setEndIconOnClickListener {
                     handleSearchAction()
@@ -72,12 +73,11 @@ class ExploreActivity :
                 binding.tilSearchInputLayout.endIconContentDescription = "검색"
             } else {
                 // X 아이콘
-                binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
                 binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_close)
                 binding.tilSearchInputLayout.setEndIconOnClickListener {
                     binding.etSearchText.text?.clear()
                 }
-                binding.tilSearchInputLayout.endIconContentDescription = "텍스트 지우기"
+                binding.tilSearchInputLayout.endIconContentDescription = "입력 내용 지우기"
             }
         }
 
