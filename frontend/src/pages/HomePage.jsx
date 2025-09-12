@@ -142,6 +142,23 @@ const HomePage = () => {
                         <label className="block text-sm font-medium text-gray-700 mb-1">기간</label>
                         <p className="text-gray-900">{formatDate(festival.startDate)} - {formatDate(festival.endDate)}</p>
                     </div>
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">축제 공개 여부</label>
+                        <div className="flex items-center space-x-2">
+                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                festival.userVisible 
+                                    ? 'bg-green-100 text-green-800' 
+                                    : 'bg-red-100 text-red-800'
+                            }`}>
+                                {festival.userVisible ? '공개' : '비공개'}
+                            </span>
+                            {festival.userVisible ? (
+                                <span className="text-xs text-gray-500">앱에서 검색 가능</span>
+                            ) : (
+                                <span className="text-xs text-gray-500">앱에서 검색 불가능</span>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
