@@ -8,6 +8,8 @@ import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.LineupItem
 import com.daedan.festabook.domain.model.Organization
 import com.daedan.festabook.domain.repository.FestivalRepository
+import java.time.LocalDate
+import java.time.LocalDateTime
 
 class FestivalRepositoryImpl(
     private val festivalDataSource: FestivalDataSource,
@@ -18,9 +20,12 @@ class FestivalRepositoryImpl(
         return response.mapCatching { it.toDomain() }
     }
 
-    override suspend fun getLineup(): Result<List<LineupItem>> {
+    override suspend fun getLineUpGroupByDate(): Result<Map<LocalDate, List<LineupItem>>> {
         val response = lineupDataSource.fetchLineup().toResult()
-
-        return response.mapCatching { lineupResponses -> lineupResponses.map { it.toDomain() } }
+        return response.mapCatching { lineupResponses ->
+            lineupResponses
+                .map { it.toDomain() }
+                .groupBy { it.performanceAt.toLocalDate() }
+        }
     }
 }

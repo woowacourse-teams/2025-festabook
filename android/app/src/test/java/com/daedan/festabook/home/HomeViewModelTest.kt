@@ -4,8 +4,11 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.presentation.home.HomeViewModel
+import com.daedan.festabook.presentation.home.LineUpItemGroupUiModel
+import com.daedan.festabook.presentation.home.LineupUiState
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState.Loading
+import com.daedan.festabook.presentation.home.toUiModel
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -35,7 +38,12 @@ class HomeViewModelTest {
         Dispatchers.setMain(testDispatcher)
         festivalRepository = mockk()
         coEvery { festivalRepository.getFestivalInfo() } returns Result.success(FAKE_ORGANIZATION)
-        coEvery { festivalRepository.getLineup() } returns Result.success(FAKE_LINEUP)
+        coEvery { festivalRepository.getLineUpGroupByDate() } returns
+            Result.success(
+                mapOf(
+                    FAKE_LINEUP[0].performanceAt.toLocalDate() to FAKE_LINEUP,
+                ),
+            )
 
         homeViewModel = HomeViewModel(festivalRepository)
     }
@@ -57,6 +65,28 @@ class HomeViewModelTest {
 
             // then
             val actual = homeViewModel.festivalUiState.getOrAwaitValue()
+            assertThat(actual).isEqualTo(expect)
+        }
+
+    @Test
+    fun `연예인 정보를 불러올 수 있다`() =
+        runTest {
+            // given
+            val expect =
+                LineupUiState.Success(
+                    LineUpItemGroupUiModel(
+                        mapOf(
+                            FAKE_LINEUP[0].performanceAt.toLocalDate() to FAKE_LINEUP.map { it.toUiModel() },
+                        ),
+                    ),
+                )
+
+            // when
+            HomeViewModel(festivalRepository)
+            advanceUntilIdle()
+
+            // then
+            val actual = homeViewModel.lineupUiState.getOrAwaitValue()
             assertThat(actual).isEqualTo(expect)
         }
 

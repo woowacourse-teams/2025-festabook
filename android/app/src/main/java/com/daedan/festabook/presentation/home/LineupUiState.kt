@@ -1,10 +1,12 @@
 package com.daedan.festabook.presentation.home
 
+import java.time.LocalDateTime
+
 sealed interface LineupUiState {
     data object Loading : LineupUiState
 
     data class Success(
-        val lineups: List<LineupItemUiModel>,
+        val lineups: LineUpItemGroupUiModel,
     ) : LineupUiState
 
     data class Error(

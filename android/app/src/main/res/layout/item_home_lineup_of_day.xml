@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:id="@+id/tv_lineup_day"
+            android:layout_height="wrap_content"
+            android:layout_width="wrap_content"
+            android:layout_marginStart="16dp"
+            style="@style/PretendardBold18"
+            android:textColor="@color/gray900"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:text="9.18"
+            />
+
+        <TextView
+            android:id="@+id/tv_is_d_day"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:paddingHorizontal="6dp"
+            android:paddingVertical="2dp"
+            android:text="@string/home_is_d_day"
+            style="@style/PretendardRegular10"
+            android:background="@drawable/bg_black400_gradient_radius_20dp"
+            android:textColor="@color/gray050"
+            app:layout_constraintStart_toEndOf="@id/tv_lineup_day"
+            app:layout_constraintTop_toTopOf="@id/tv_lineup_day"
+            app:layout_constraintBottom_toBottomOf="@id/tv_lineup_day"
+
+            />
+
+        <View
+            android:id="@+id/view_divider"
+            android:layout_width="75dp"
+            android:layout_marginStart="16dp"
+            android:layout_height="1dp"
+            android:layout_marginTop="4dp"
+            android:background="@color/gray900"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_lineup_day" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_home_lineup"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            app:layout_constraintTop_toBottomOf="@id/view_divider"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:listitem="@layout/item_home_lineup" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>
