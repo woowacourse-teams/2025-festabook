@@ -144,7 +144,7 @@ class AppContainer(
         )
     }
     val festivalRepository: FestivalRepository by lazy {
-        FestivalRepositoryImpl(festivalDataSource, lineupDataSource)
+        FestivalRepositoryImpl(festivalDataSource, festivalLocalDataSource, lineupDataSource)
     }
     val faqRepository: FAQRepository by lazy {
         FAQRepositoryImpl(faqDataSource)
