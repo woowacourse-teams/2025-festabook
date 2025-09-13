@@ -6,12 +6,104 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
     const [formData, setFormData] = useState({
         name: '',
         imageUrl: '',
-        performanceAt: ''
+        performanceDate: '',
+        performanceTime: ''
     });
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
+    
+    // 날짜 필드들을 개별적으로 관리
+    const [year, setYearState] = useState('');
+    const [month, setMonthState] = useState('');
+    const [day, setDayState] = useState('');
+    
+    // 시간 필드들을 개별적으로 관리
+    const [hours, setHoursState] = useState('');
+    const [minutes, setMinutesState] = useState('');
+
+    // 날짜 개별 필드 업데이트 함수들
+    const setYear = (newYear) => {
+        setYearState(newYear);
+        setFormData(prev => {
+            const currentDate = prev.performanceDate || '';
+            const [, currentMonth = '01', currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                performanceDate: `${newYear}-${currentMonth}-${currentDay}`
+            };
+        });
+    };
+
+    const setMonth = (newMonth) => {
+        setMonthState(newMonth);
+        setFormData(prev => {
+            const currentDate = prev.performanceDate || '';
+            const [currentYear = new Date().getFullYear().toString(), , currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                performanceDate: newMonth ? `${currentYear}-${newMonth.padStart(2, '0')}-${currentDay}` : ''
+            };
+        });
+    };
+
+    const setDay = (newDay) => {
+        setDayState(newDay);
+        setFormData(prev => {
+            const currentDate = prev.performanceDate || '';
+            const [currentYear = new Date().getFullYear().toString(), currentMonth = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                performanceDate: newDay ? `${currentYear}-${currentMonth}-${newDay.padStart(2, '0')}` : ''
+            };
+        });
+    };
+
+    // 시간 개별 필드 업데이트 함수들
+    const setHours = (newHours) => {
+        setHoursState(newHours);
+        setFormData(prev => {
+            const currentTime = prev.performanceTime || '';
+            const [, currentMinutes = '00'] = currentTime.split(':');
+            return {
+                ...prev,
+                performanceTime: `${newHours.padStart(2, '0')}:${currentMinutes}`
+            };
+        });
+    };
+
+    const setMinutes = (newMinutes) => {
+        setMinutesState(newMinutes);
+        setFormData(prev => {
+            const currentTime = prev.performanceTime || '';
+            const [currentHours = '00'] = currentTime.split(':');
+            return {
+                ...prev,
+                performanceTime: `${currentHours}:${newMinutes.padStart(2, '0')}`
+            };
+        });
+    };
+
+    // 모달이 닫힐 때 상태 초기화
+    useEffect(() => {
+        if (!isOpen) {
+            setFormData({
+                name: '',
+                imageUrl: '',
+                performanceDate: '',
+                performanceTime: ''
+            });
+            setSelectedFile(null);
+            setIsDragging(false);
+            setIsUploading(false);
+            setYearState('');
+            setMonthState('');
+            setDayState('');
+            setHoursState('');
+            setMinutesState('');
+        }
+    }, [isOpen]);
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
@@ -27,20 +119,6 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             document.removeEventListener('keydown', handleEscKey);
         };
     }, [onClose, isUploading]);
-
-    // 모달이 닫힐 때 상태 초기화
-    useEffect(() => {
-        if (!isOpen) {
-            setFormData({
-                name: '',
-                imageUrl: '',
-                performanceAt: ''
-            });
-            setSelectedFile(null);
-            setIsDragging(false);
-            setIsUploading(false);
-        }
-    }, [isOpen]);
 
     const validateFile = (file) => {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
@@ -100,7 +178,7 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
         e.preventDefault();
         
         if (!formData.name.trim()) {
-            showToast('아티스트명을 입력해주세요.');
+            showToast('아티스트 이름을 입력해주세요.');
             return;
         }
 
@@ -109,7 +187,7 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             return;
         }
 
-        if (!formData.performanceAt) {
+        if (!formData.performanceDate || !formData.performanceTime) {
             showToast('공연 일시를 입력해주세요.');
             return;
         }
@@ -122,15 +200,16 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             const imageUrl = uploadResponse.imageUrl;
 
             // 2단계: 라인업 API에 이미지 URL과 함께 데이터 전송
+            const performanceAt = `${formData.performanceDate}T${formData.performanceTime}:00`;
             const response = await lineupAPI.addLineup({
                 name: formData.name,
                 imageUrl: imageUrl,
-                performanceAt: formData.performanceAt
+                performanceAt: performanceAt
             });
             
-            // 상태 업데이트
+            // 상태 업데이트 (정렬된 상태로)
             if (onUpdate) {
-                onUpdate(prev => [...prev, response]);
+                onUpdate(prev => [...prev, response].sort((a, b) => new Date(a.performanceAt) - new Date(b.performanceAt)));
             }
             
             showToast('라인업이 성공적으로 추가되었습니다.');
@@ -145,6 +224,13 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
 
     const handleChange = (e) => {
         const { name, value } = e.target;
+        
+        // 글자 수 제한 체크
+        if (name === 'name' && value.length > 50) {
+            showToast('아티스트 이름은 50자 이내로 입력해주세요.');
+            return;
+        }
+        
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -164,16 +250,21 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
                 
                 <div className="space-y-4">
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            아티스트명
-                        </label>
+                        <div className="flex justify-between items-center mb-2">
+                            <label className="block text-sm font-medium text-gray-700">
+                                아티스트 이름
+                            </label>
+                            <span className="text-xs text-gray-500">
+                                {formData.name.length}/50
+                            </span>
+                        </div>
                         <input
                             type="text"
                             name="name"
                             value={formData.name}
                             onChange={handleChange}
                             className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
-                            placeholder="아티스트명을 입력하세요"
+                            placeholder="아티스트 이름을 입력하세요 (50자 이내)"
                             required
                         />
                     </div>
@@ -233,17 +324,160 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
                             공연 일시
                         </label>
-                        <input
-                            type="datetime-local"
-                            name="performanceAt"
-                            value={formData.performanceAt}
-                            onChange={handleChange}
-                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
-                            required
-                        />
+                        <div className="space-y-4">
+                            {/* 날짜 선택 */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                    날짜
+                                </label>
+                                
+                                <div className="space-y-2">
+                                    <div className="grid grid-cols-3 gap-2 w-full">
+                                        {/* 년도 선택 */}
+                                        <select
+                                            name="performanceYear"
+                                            value={year}
+                                            onChange={(e) => {
+                                                const newYear = e.target.value;
+                                                const [, m = '01', d = '01'] = formData.performanceDate
+                                                ? formData.performanceDate.split('-')
+                                                : ['', '01', '01'];
+
+                                                setFormData(prev => ({
+                                                ...prev,
+                                                performanceDate: `${newYear}-${m}-${d}`,
+                                                }));
+                                                setYear(newYear);
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">년도</option>
+                                            {Array.from({ length: 51 }, (_, i) => {
+                                                const yearOption = 2000 + i; // 2000 ~ 2050
+                                                return (
+                                                <option key={yearOption} value={yearOption.toString()}>
+                                                    {yearOption}년
+                                                </option>
+                                                );
+                                            })}
+                                        </select>
+                                        {/* 월 선택 */}
+                                        <select
+                                            name="performanceMonth"
+                                            value={month}
+                                            onChange={(e) => {
+                                                const newMonth = e.target.value;
+                                                const year = formData.performanceDate ? formData.performanceDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                                const day = formData.performanceDate ? formData.performanceDate.split('-')[2] || '01' : '01';
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceDate: newMonth ? `${year}-${newMonth.padStart(2, '0')}-${day}` : ''
+                                                }));
+                                                setMonth(newMonth);
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">월</option>
+                                            {Array.from({ length: 12 }, (_, i) => {
+                                                const monthOption = i + 1;
+                                                return (
+                                                    <option key={monthOption} value={monthOption.toString().padStart(2, '0')}>
+                                                        {monthOption}월
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                        {/* 일 선택 */}
+                                        <select
+                                            name="performanceDay"
+                                            value={day}
+                                            onChange={(e) => {
+                                                const newDay = e.target.value;
+                                                const year = formData.performanceDate ? formData.performanceDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                                const month = formData.performanceDate ? formData.performanceDate.split('-')[1] || '01' : '01';
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceDate: newDay ? `${year}-${month}-${newDay.padStart(2, '0')}` : ''
+                                                }));
+                                                setDay(newDay);
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">일</option>
+                                            {Array.from({ length: 31 }, (_, i) => {
+                                                const dayOption = i + 1;
+                                                return (
+                                                    <option key={dayOption} value={dayOption.toString().padStart(2, '0')}>
+                                                        {dayOption}일
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* 시간 선택 */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                    시간
+                                </label>
+                                
+                                <div className="space-y-2">
+                                    <div className="flex items-center space-x-2">
+                                        {/* 시간 선택 */}
+                                        <select
+                                            name="performanceHours"
+                                            value={hours}
+                                            onChange={(e) => {
+                                                const newHours = e.target.value;
+                                                const currentTime = formData.performanceTime || '';
+                                                const [, currentMinutes = '00'] = currentTime.split(':');
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceTime: newHours ? `${newHours.padStart(2, '0')}:${currentMinutes}` : ''
+                                                }));
+                                                setHours(newHours);
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">시간</option>
+                                            {Array.from({ length: 24 }, (_, i) => (
+                                                <option key={i} value={i.toString().padStart(2, '0')}>
+                                                    {i.toString().padStart(2, '0')}시
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {/* 분 선택 */}
+                                        <select
+                                            name="performanceMinutes"
+                                            value={minutes}
+                                            onChange={(e) => {
+                                                const newMinutes = e.target.value;
+                                                const currentTime = formData.performanceTime || '';
+                                                const [currentHours = '00'] = currentTime.split(':');
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceTime: newMinutes ? `${currentHours}:${newMinutes.padStart(2, '0')}` : ''
+                                                }));
+                                                setMinutes(newMinutes);
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">분</option>
+                                            {Array.from({ length: 60 }, (_, i) => (
+                                                <option key={i} value={i.toString().padStart(2, '0')}>
+                                                    {i.toString().padStart(2, '0')}분
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -252,14 +486,14 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
                         type="button"
                         onClick={handleClose}
                         disabled={isUploading}
-                        className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors duration-200 disabled:opacity-50"
+                        className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200 disabled:opacity-50"
                     >
                         취소
                     </button>
                     <button
                         type="submit"
                         disabled={isUploading}
-                        className="flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center"
+                        className="flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 flex items-center justify-center"
                     >
                         {isUploading ? (
                             <>

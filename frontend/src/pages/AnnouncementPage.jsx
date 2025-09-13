@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import FlipMove from 'react-flip-move';
 import { useModal } from '../hooks/useModal';
 import { announcementAPI } from '../utils/api';
 
@@ -11,10 +10,32 @@ function formatDate(dateString) {
     return `${year}.${month}.${day}`;
 }
 
-const NoticesPage = () => {
+const AnnouncementPage = () => {
     const { openModal, showToast } = useModal();
     const [pinned, setPinned] = useState([]);
     const [unpinned, setUnpinned] = useState([]);
+    const [notificationCooldowns, setNotificationCooldowns] = useState(() => {
+        // localStorage에서 쿨다운 정보를 불러오기
+        try {
+            const saved = localStorage.getItem('notificationCooldowns');
+            if (saved) {
+                const parsed = JSON.parse(saved);
+                // 만료된 쿨다운들 제거
+                const now = Date.now();
+                const filtered = {};
+                Object.keys(parsed).forEach(key => {
+                    if (parsed[key] > now) {
+                        filtered[key] = parsed[key];
+                    }
+                });
+                return filtered;
+            }
+        } catch (error) {
+            console.error('쿨다운 정보 불러오기 실패:', error);
+        }
+        return {};
+    }); // 알림 쿨다운 상태
+    const [currentTime, setCurrentTime] = useState(Date.now()); // 실시간 업데이트를 위한 현재 시간
     const hasLoadedRef = useRef(false);
 
     useEffect(() => {
@@ -128,6 +149,99 @@ const NoticesPage = () => {
             showToast('고정 상태 변경에 실패했습니다.');
         }
     };
+
+    // 알림 전송 함수
+    const handleSendNotification = async (noticeId, noticeTitle) => {
+        try {
+            // 실제 알림 전송 API 호출
+            await announcementAPI.sendNotification(noticeId);
+            
+            // 쿨다운 시작 (3분 = 180초)
+            const cooldownTime = 3 * 60 * 1000; // 3분을 밀리초로 변환
+            const endTime = Date.now() + cooldownTime;
+            
+            setNotificationCooldowns(prev => {
+                const updated = {
+                    ...prev,
+                    [noticeId]: endTime
+                };
+                // localStorage에 저장
+                try {
+                    localStorage.setItem('notificationCooldowns', JSON.stringify(updated));
+                } catch (error) {
+                    console.error('쿨다운 정보 저장 실패:', error);
+                }
+                return updated;
+            });
+            
+            showToast(`'${noticeTitle}' 공지사항 알림이 전송되었습니다.`);
+        } catch (error) {
+            showToast(error.message || '알림 전송에 실패했습니다.');
+        }
+    };
+
+    // 쿨다운 남은 시간 계산 (currentTime을 사용해서 리렌더링 보장)
+    const getCooldownTimeLeft = (noticeId) => {
+        const endTime = notificationCooldowns[noticeId];
+        if (!endTime) return 0;
+        
+        const timeLeft = Math.max(0, endTime - currentTime);
+        return Math.ceil(timeLeft / 1000); // 초 단위로 반환
+    };
+
+    // 쿨다운 텍스트 포맷팅
+    const formatCooldownTime = (seconds) => {
+        if (seconds <= 0) return '';
+        const minutes = Math.floor(seconds / 60);
+        const remainingSeconds = seconds % 60;
+        return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
+    };
+
+    // 쿨다운 카운트다운을 위한 useEffect
+    useEffect(() => {
+        const interval = setInterval(() => {
+            const now = Date.now();
+            
+            setNotificationCooldowns(prev => {
+                const updated = { ...prev };
+                let hasChanges = false;
+                let hasActiveCooldowns = false;
+                
+                // 만료된 쿨다운들 정리 및 활성화된 쿨다운 확인
+                Object.keys(updated).forEach(noticeId => {
+                    if (updated[noticeId] <= now) {
+                        delete updated[noticeId];
+                        hasChanges = true;
+                    } else {
+                        hasActiveCooldowns = true;
+                    }
+                });
+                
+                // 활성화된 쿨다운이 있으면 현재 시간 업데이트하여 리렌더링 트리거
+                if (hasActiveCooldowns) {
+                    setCurrentTime(now);
+                }
+                
+                if (hasChanges) {
+                    // localStorage 업데이트
+                    try {
+                        if (Object.keys(updated).length === 0) {
+                            localStorage.removeItem('notificationCooldowns');
+                        } else {
+                            localStorage.setItem('notificationCooldowns', JSON.stringify(updated));
+                        }
+                    } catch (error) {
+                        console.error('쿨다운 정보 업데이트 실패:', error);
+                    }
+                    return updated;
+                }
+                
+                return prev;
+            });
+        }, 1000);
+        
+        return () => clearInterval(interval);
+    }, []); // 의존성 배열을 빈 배열로 유지
     
     return (
         <div>
@@ -150,12 +264,11 @@ const NoticesPage = () => {
                         <i className="fas fa-thumbtack text-yellow-500 mr-2"></i>
                         고정된 공지사항
                     </h3>
-                    <FlipMove className="space-y-4" duration={300} easing="cubic-bezier(0.4, 0.0, 0.2, 1)" appearAnimation="none">
+                    <div className="space-y-4">
                         {pinned.map((notice) => {
                             return (
                             <div 
                                 key={notice.announcementId} 
-                                data-id={notice.announcementId} 
                                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-5"
                             >
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start gap-2 mb-3">
@@ -177,6 +290,32 @@ const NoticesPage = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center space-x-3 ml-0 sm:ml-4 flex-shrink-0">
+                                        <button 
+                                            onClick={() => {
+                                                const cooldownLeft = getCooldownTimeLeft(notice.announcementId);
+                                                if (cooldownLeft > 0) return;
+                                                
+                                                openModal('pushNotificationConfirm', {
+                                                    notice: notice,
+                                                    onConfirm: () => handleSendNotification(notice.announcementId, notice.title)
+                                                });
+                                            }}
+                                            disabled={getCooldownTimeLeft(notice.announcementId) > 0}
+                                            className={`font-bold py-1 px-3 rounded text-sm transition-colors duration-200 ${
+                                                getCooldownTimeLeft(notice.announcementId) > 0
+                                                    ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                    : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                            }`}
+                                            title={getCooldownTimeLeft(notice.announcementId) > 0 
+                                                ? `${formatCooldownTime(getCooldownTimeLeft(notice.announcementId))} 후 재전송 가능` 
+                                                : '알림 전송'
+                                            }
+                                        >
+                                            {getCooldownTimeLeft(notice.announcementId) > 0 
+                                                ? `알림 (${formatCooldownTime(getCooldownTimeLeft(notice.announcementId))})` 
+                                                : '알림 전송'
+                                            }
+                                        </button>
                                         <button 
                                             onClick={() => openModal('notice', { notice, onSave: (data) => handleSave(notice.announcementId, data) })} 
                                             className="text-blue-600 hover:text-blue-800 font-bold"
@@ -206,19 +345,18 @@ const NoticesPage = () => {
                             </div>
                         );
                         })}
-                    </FlipMove>
+                    </div>
                 </div>
             )}
             
             {/* 일반 공지사항 */}
             <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">일반 공지사항</h3>
-                <FlipMove className="space-y-4" duration={300} easing="cubic-bezier(0.4, 0.0, 0.2, 1)" appearAnimation="none">
+                <div className="space-y-4">
                     {unpinned.map((notice) => {
                         return (
                         <div 
                             key={notice.announcementId} 
-                            data-id={notice.announcementId} 
                             className="bg-white rounded-lg shadow-sm border border-gray-200 p-5"
                         >
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start gap-2 mb-3">
@@ -240,6 +378,32 @@ const NoticesPage = () => {
                                     </div>
                                 </div>
                                 <div className="flex items-center space-x-3 ml-0 sm:ml-4 flex-shrink-0">
+                                    <button 
+                                        onClick={() => {
+                                            const cooldownLeft = getCooldownTimeLeft(notice.announcementId);
+                                            if (cooldownLeft > 0) return;
+                                            
+                                            openModal('pushNotificationConfirm', {
+                                                notice: notice,
+                                                onConfirm: () => handleSendNotification(notice.announcementId, notice.title)
+                                            });
+                                        }}
+                                        disabled={getCooldownTimeLeft(notice.announcementId) > 0}
+                                        className={`font-bold py-1 px-3 rounded text-sm transition-colors duration-200 ${
+                                            getCooldownTimeLeft(notice.announcementId) > 0
+                                                ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                                : 'bg-emerald-600 hover:bg-emerald-700 text-white'
+                                        }`}
+                                        title={getCooldownTimeLeft(notice.announcementId) > 0 
+                                            ? `${formatCooldownTime(getCooldownTimeLeft(notice.announcementId))} 후 재전송 가능` 
+                                            : '알림 전송'
+                                        }
+                                    >
+                                        {getCooldownTimeLeft(notice.announcementId) > 0 
+                                            ? `알림 (${formatCooldownTime(getCooldownTimeLeft(notice.announcementId))})` 
+                                            : '알림 전송'
+                                        }
+                                    </button>
                                     <button 
                                         onClick={() => openModal('notice', { notice, onSave: (data) => handleSave(notice.announcementId, data) })} 
                                         className="text-blue-600 hover:text-blue-800 font-bold"
@@ -269,7 +433,7 @@ const NoticesPage = () => {
                         </div>
                     );
                     })}
-                </FlipMove>
+                </div>
                 
                 {/* 공지사항이 없을 때 */}
                 {pinned.length === 0 && unpinned.length === 0 && (
@@ -289,4 +453,4 @@ const NoticesPage = () => {
     );
 };
 
-export default NoticesPage;
+export default AnnouncementPage;

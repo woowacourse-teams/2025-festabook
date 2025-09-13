@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
-const PlaceNoticeModal = ({ place, onSave, onClose }) => {
+const PlaceAnnouncementModal = ({ place, onSave, onClose }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -60,8 +60,8 @@ const PlaceNoticeModal = ({ place, onSave, onClose }) => {
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            placeholder="공지 제목을 입력해주세요 (20자 이내)"
-            maxLength={20}
+            placeholder="공지 제목을 입력해주세요"
+            maxLength={255}
             className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
           />
         </div>
@@ -104,4 +104,4 @@ const PlaceNoticeModal = ({ place, onSave, onClose }) => {
   );
 };
 
-export default PlaceNoticeModal; 
+export default PlaceAnnouncementModal;

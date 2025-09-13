@@ -14,6 +14,64 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  
+  // 시작 시간 개별 필드 관리
+  const [startHours, setStartHoursState] = useState('');
+  const [startMinutes, setStartMinutesState] = useState('');
+  
+  // 종료 시간 개별 필드 관리
+  const [endHours, setEndHoursState] = useState('');
+  const [endMinutes, setEndMinutesState] = useState('');
+
+  // 시작 시간 개별 필드 업데이트 함수들
+  const setStartHours = (newHours) => {
+    setStartHoursState(newHours);
+    setFormData(prev => {
+      const currentTime = prev.startTime || '';
+      const [, currentMinutes = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        startTime: `${newHours.padStart(2, '0')}:${currentMinutes}`
+      };
+    });
+  };
+
+  const setStartMinutes = (newMinutes) => {
+    setStartMinutesState(newMinutes);
+    setFormData(prev => {
+      const currentTime = prev.startTime || '';
+      const [currentHours = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        startTime: `${currentHours}:${newMinutes.padStart(2, '0')}`
+      };
+    });
+  };
+
+  // 종료 시간 개별 필드 업데이트 함수들
+  const setEndHours = (newHours) => {
+    setEndHoursState(newHours);
+    setFormData(prev => {
+      const currentTime = prev.endTime || '';
+      const [, currentMinutes = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        endTime: `${newHours.padStart(2, '0')}:${currentMinutes}`
+      };
+    });
+  };
+
+  const setEndMinutes = (newMinutes) => {
+    setEndMinutesState(newMinutes);
+    setFormData(prev => {
+      const currentTime = prev.endTime || '';
+      const [currentHours = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        endTime: `${currentHours}:${newMinutes.padStart(2, '0')}`
+      };
+    });
+  };
 
   // 플레이스 데이터로 폼 초기화
   useEffect(() => {
@@ -27,20 +85,65 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
       const category = place.placeCategory || place.category || 'FOOD_TRUCK';
       console.log('PlaceEditModal - Selected category:', category);
       
+      const startTime = place.startTime || '';
+      const endTime = place.endTime || '';
+      const [startHoursPart = '', startMinutesPart = ''] = startTime.split(':');
+      const [endHoursPart = '', endMinutesPart = ''] = endTime.split(':');
+      
       setFormData({
         placeCategory: category,
         title: place.title || '',
         description: place.description || '',
         location: place.location || '',
         host: place.host || '',
-        startTime: place.startTime || '',
-        endTime: place.endTime || ''
+        startTime: startTime,
+        endTime: endTime
       });
+      
+      // 개별 시간 상태도 업데이트
+      setStartHoursState(startHoursPart);
+      setStartMinutesState(startMinutesPart);
+      setEndHoursState(endHoursPart);
+      setEndMinutesState(endMinutesPart);
     }
   }, [place]);
 
+  // ESC 키 이벤트 리스너
+  useEffect(() => {
+    const handleEscKey = (event) => {
+      if (event.key === 'Escape') {
+        onClose();
+      }
+    };
+
+    document.addEventListener('keydown', handleEscKey);
+
+    return () => {
+      document.removeEventListener('keydown', handleEscKey);
+    };
+  }, [onClose]);
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // 글자 수 제한 체크
+    if (name === 'title' && value.length > 255) {
+      showToast('이름은 255자 이내로 입력해주세요.');
+      return;
+    }
+    if (name === 'description' && value.length > 3000) {
+      showToast('설명은 3000자 이내로 입력해주세요.');
+      return;
+    }
+    if (name === 'host' && value.length > 100) {
+      showToast('운영 주체는 100자 이내로 입력해주세요.');
+      return;
+    }
+    if (name === 'location' && value.length > 100) {
+      showToast('위치는 100자 이내로 입력해주세요.');
+      return;
+    }
+    
     setFormData(prev => ({
       ...prev,
       [name]: value
@@ -59,15 +162,15 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     const newErrors = {};
 
     if (!formData.title.trim()) {
-      newErrors.title = '제목을 입력해주세요.';
-    } else if (formData.title.length > 20) {
-      newErrors.title = '제목은 20자를 초과할 수 없습니다.';
+      newErrors.title = '이름을 입력해주세요.';
+    } else if (formData.title.length > 255) {
+      newErrors.title = '이름은 255자를 초과할 수 없습니다.';
     }
 
     if (!formData.description.trim()) {
       newErrors.description = '설명을 입력해주세요.';
-    } else if (formData.description.length > 100) {
-      newErrors.description = '설명은 100자를 초과할 수 없습니다.';
+    } else if (formData.description.length > 3000) {
+      newErrors.description = '설명은 3000자를 초과할 수 없습니다.';
     }
 
     if (!formData.location.trim()) {
@@ -77,9 +180,9 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     }
 
     if (!formData.host.trim()) {
-      newErrors.host = '주최자를 입력해주세요.';
+      newErrors.host = '운영 주체를 입력해주세요.';
     } else if (formData.host.length > 100) {
-      newErrors.host = '주최자는 100자를 초과할 수 없습니다.';
+      newErrors.host = '운영 주체는 100자를 초과할 수 없습니다.';
     }
 
  
@@ -124,7 +227,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} maxWidth="max-w-2xl">
+    <Modal isOpen={true} onClose={onClose} maxWidth="max-w-xl">
       <div className="p-6">
         <h3 className="text-xl font-bold mb-6">플레이스 세부사항 수정</h3>
         
@@ -146,21 +249,26 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
             </select>
           </div>
 
-          {/* 제목 */}
+          {/* 이름 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              제목 *
-            </label>
-                          <input
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                이름 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.title.length}/255
+              </span>
+            </div>
+              <input
                 type="text"
                 name="title"
                 value={formData.title}
                 onChange={handleChange}
-                maxLength={20}
+                maxLength={255}
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.title ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="플레이스 제목을 입력하세요 (20자 이내)"
+                placeholder="플레이스 이름을 입력하세요 (255자 이내)"
               />
             {errors.title && (
               <p className="mt-1 text-sm text-red-600">{errors.title}</p>
@@ -169,19 +277,24 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
 
           {/* 설명 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              설명 *
-            </label>
-                          <textarea
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                설명 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.description.length}/3000
+              </span>
+            </div>
+            <textarea
                 name="description"
                 value={formData.description}
                 onChange={handleChange}
                 rows="3"
-                maxLength={100}
+                maxLength={3000}
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.description ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="플레이스에 대한 설명을 입력하세요 (100자 이내)"
+                placeholder="플레이스 설명을 입력하세요 (3000자 이내)"
               />
             {errors.description && (
               <p className="mt-1 text-sm text-red-600">{errors.description}</p>
@@ -190,9 +303,14 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
 
           {/* 위치 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              위치 *
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                위치 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.location.length}/100
+              </span>
+            </div>
                           <input
                 type="text"
                 name="location"
@@ -209,11 +327,16 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
             )}
           </div>
 
-          {/* 주최자 */}
+          {/* 운영 주체 */}
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              주최자 *
-            </label>
+            <div className="flex justify-between items-center mb-2">
+              <label className="block text-sm font-medium text-gray-700">
+                운영 주체 *
+              </label>
+              <span className="text-xs text-gray-500">
+                {formData.host.length}/100
+              </span>
+            </div>
                           <input
                 type="text"
                 name="host"
@@ -223,7 +346,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
                 className={`w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                   errors.host ? 'border-red-500' : 'border-gray-300'
                 }`}
-                placeholder="주최자 또는 담당자를 입력하세요 (100자 이내)"
+                placeholder="플레이스 운영 주체를 입력하세요 (100자 이내)"
               />
             {errors.host && (
               <p className="mt-1 text-sm text-red-600">{errors.host}</p>
@@ -236,25 +359,78 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 시작 시간
               </label>
-              <input
-                type="time"
-                name="startTime"
-                value={formatTimeOnly(formData.startTime)}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  {/* 시간 선택 */}
+                  <select
+                    name="startHours"
+                    value={startHours}
+                    onChange={(e) => setStartHours(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">시간</option>
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}시
+                      </option>
+                    ))}
+                  </select>
+                  {/* 분 선택 */}
+                  <select
+                    name="startMinutes"
+                    value={startMinutes}
+                    onChange={(e) => setStartMinutes(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">분</option>
+                    {Array.from({ length: 60 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}분
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
-            <div>
+
+            <div className="end-time-section">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 종료 시간
               </label>
-              <input
-                type="time"
-                name="endTime"
-                value={formatTimeOnly(formData.endTime)}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              
+              <div className="space-y-2">
+                <div className="flex items-center space-x-2">
+                  {/* 시간 선택 */}
+                  <select
+                    name="endHours"
+                    value={endHours}
+                    onChange={(e) => setEndHours(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">시간</option>
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}시
+                      </option>
+                    ))}
+                  </select>
+                  {/* 분 선택 */}
+                  <select
+                    name="endMinutes"
+                    value={endMinutes}
+                    onChange={(e) => setEndMinutes(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">분</option>
+                    {Array.from({ length: 60 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}분
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 
@@ -263,17 +439,15 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                loading
-                  ? 'bg-indigo-400 cursor-not-allowed'
-                  : 'bg-indigo-600 hover:bg-indigo-700'
+              className={`flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 ${
+                loading ? 'cursor-not-allowed' : ''
               }`}
             >
               {loading ? '수정 중...' : '수정 완료'}

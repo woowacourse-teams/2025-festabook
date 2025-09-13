@@ -1,29 +1,46 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../common/Modal";
 
-const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
+const AnnouncementModal = ({ notice, onSave, onClose, showToast }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [agreePush, setAgreePush] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
 
   // 글자 수 제한 상수
   const TITLE_MAX_LENGTH = 50;
-  const CONTENT_MAX_LENGTH = 1000;
+  const CONTENT_MAX_LENGTH = 3000;
 
   useEffect(() => {
     setTitle(notice?.title || "");
     setContent(notice?.content || "");
   }, [notice]);
 
+  const handleTitleChange = (e) => {
+    const value = e.target.value;
+    if (value.length > TITLE_MAX_LENGTH) {
+      showToast(`제목은 ${TITLE_MAX_LENGTH}자 이내로 입력해주세요.`);
+      return;
+    }
+    setTitle(value);
+  };
+
+  const handleContentChange = (e) => {
+    const value = e.target.value;
+    if (value.length > CONTENT_MAX_LENGTH) {
+      showToast(`내용은 ${CONTENT_MAX_LENGTH}자 이내로 입력해주세요.`);
+      return;
+    }
+    setContent(value);
+  };
+
   const handleSave = () => {
     // 글자 수 검증
     if (title.length > TITLE_MAX_LENGTH) {
-      alert(`제목은 ${TITLE_MAX_LENGTH}자를 초과할 수 없습니다.`);
+      showToast(`제목은 ${TITLE_MAX_LENGTH}자 이내로 입력해주세요.`);
       return;
     }
     if (content.length > CONTENT_MAX_LENGTH) {
-      alert(`내용은 ${CONTENT_MAX_LENGTH}자를 초과할 수 없습니다.`);
+      showToast(`내용은 ${CONTENT_MAX_LENGTH}자 이내로 입력해주세요.`);
       return;
     }
     onSave({ title, content, isPinned });
@@ -38,8 +55,10 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
       } else if (event.key === 'Enter' && !event.shiftKey) {
         // Shift+Enter가 아닌 Enter만 처리 (textarea에서 줄바꿈 방지)
         event.preventDefault();
-        if (!isSaveDisabled) {
-          handleSave();
+        // 글자 수 검증
+        if (title.length <= TITLE_MAX_LENGTH && content.length <= CONTENT_MAX_LENGTH) {
+          onSave({ title, content, isPinned });
+          onClose();
         }
       }
     };
@@ -50,14 +69,14 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, [title, content, isPinned]); // 의존성 배열에 form 데이터 추가
+  }, [title, content, isPinned, onSave, onClose]); // 의존성 배열 단순화
 
   // 글자 수 초과 여부 확인
   const isTitleOverflow = title.length > TITLE_MAX_LENGTH;
   const isContentOverflow = content.length > CONTENT_MAX_LENGTH;
 
   // 저장 버튼 비활성화 조건
-  const isSaveDisabled = (!notice && !agreePush) || isTitleOverflow || isContentOverflow;
+  const isSaveDisabled = isTitleOverflow || isContentOverflow;
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -77,8 +96,8 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
           <input
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            placeholder="[50자 이내로 작성해주세요]"
+            onChange={handleTitleChange}
+            placeholder="제목을 입력해 주세요 (50자 이내)"
             className={`block w-full border rounded-md shadow-sm py-2 px-3 transition-colors duration-200
               ${isTitleOverflow 
                 ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
@@ -97,9 +116,9 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
           </div>
           <textarea
             value={content}
-            onChange={(e) => setContent(e.target.value)}
+            onChange={handleContentChange}
             rows="6"
-            placeholder="공지 내용을 입력해주세요. (1000자 이내)"
+            placeholder="공지 내용을 입력해주세요 (3000자 이내)"
             className={`block w-full border rounded-md shadow-sm py-2 px-3 transition-colors duration-200
               ${isContentOverflow 
                 ? 'border-red-500 focus:ring-red-500 focus:border-red-500' 
@@ -108,66 +127,47 @@ const NoticeModal = ({ notice, onSave, onClose, isPlaceNotice = false }) => {
           />
         </div>
         {!notice && (
-          <div className="flex flex-col gap-2 mt-2">
-            <div className="flex items-center">
-              <input
-                id="pin-notice"
-                type="checkbox"
-                checked={isPinned}
-                onChange={(e) => setIsPinned(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="pin-notice"
-                className="text-sm text-gray-700 select-none"
-              >
-                상단 고정
-              </label>
-            </div>
-            <div className="flex items-center">
-              <input
-                id="push-agree"
-                type="checkbox"
-                checked={agreePush}
-                onChange={(e) => setAgreePush(e.target.checked)}
-                className="mr-2"
-              />
-              <label
-                htmlFor="push-agree"
-                className="text-sm text-gray-700 select-none"
-              >
-                푸시 알림을 사용자에게 전송하시겠습니까?
-              </label>
-            </div>
+          <div className="flex items-center mt-2">
+            <input
+              id="pin-notice"
+              type="checkbox"
+              checked={isPinned}
+              onChange={(e) => setIsPinned(e.target.checked)}
+              className="mr-2"
+            />
+            <label
+              htmlFor="pin-notice"
+              className="text-sm text-gray-700 select-none"
+            >
+              고정 공지 여부
+            </label>
           </div>
         )}
       </div>
-      <div className="mt-6 flex justify-between w-full">
-        <div className="space-x-3">
-          <button
-            onClick={onClose}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
-          >
-            취소
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={isSaveDisabled}
-            className={`font-bold py-2 px-4 rounded-lg transition-colors duration-200 ${
-              isSaveDisabled
-                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
-                : "bg-gray-800 hover:bg-gray-900 text-white"
-            }`}
-          >
-            저장
-          </button>
-        </div>
+      <div className="mt-6 flex w-full space-x-3">
+        <button
+          onClick={onClose}
+          className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
+        >
+          취소
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={isSaveDisabled}
+          className={`flex-1 font-bold py-2 px-4 rounded-lg transition-all duration-200 ${
+            isSaveDisabled
+              ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+              : "bg-black hover:bg-gray-800 text-white"
+          }`}
+        >
+          저장
+        </button>
       </div>
     </Modal>
   );
 };
 
-const NoticeDetailModal = ({ notice, onClose }) => {
+const AnnouncementDetailModal = ({ notice, onClose }) => {
   // ESC 키 처리
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -181,7 +181,7 @@ const NoticeDetailModal = ({ notice, onClose }) => {
     return () => {
       document.removeEventListener('keydown', handleKeyDown, true);
     };
-  }, []);
+  }, [onClose]);
 
   return (
     <Modal isOpen={true} onClose={onClose}>
@@ -207,4 +207,4 @@ const NoticeDetailModal = ({ notice, onClose }) => {
   );
 };
 
-export { NoticeModal as default, NoticeDetailModal };
+export { AnnouncementModal as default, AnnouncementDetailModal };

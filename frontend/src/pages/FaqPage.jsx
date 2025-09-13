@@ -85,16 +85,29 @@ const FaqPage = () => {
                                     </>
                                 ) : (
                                     <>
-                                        <button onClick={() => openModal('faq', { faq: item, onSave: (data) => handleSave(item.questionId, data) })} className="text-blue-600 hover:text-blue-800 font-bold">수정</button>
-                                        <button onClick={() => {
-                                            openModal('confirm', {
+                                        <button
+                                            onClick={() => openModal('faq', { 
+                                                faq: item, 
+                                                onSave: (data) => handleSave(item.questionId, data) 
+                                            })}
+                                            className="text-blue-600 hover:text-blue-800 font-bold"
+                                        >
+                                            수정
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                openModal('confirm', {
                                                 title: 'FAQ 삭제 확인',
-                                                message: `정말로 삭제하시겠습니까?`,
+                                                message: `'${item.question}' FAQ를 정말 삭제하시겠습니까?`,
                                                 onConfirm: async () => {
                                                     await deleteFaqItem(item.questionId, showToast);
                                                 }
-                                            });
-                                        }} className="text-red-600 hover:text-red-800 font-bold">삭제</button>
+                                                });
+                                            }}
+                                            className="text-red-600 hover:text-red-800 font-bold"
+                                        >
+                                            삭제
+                                        </button>
                                     </>
                                 )}
                             </div>

@@ -198,7 +198,7 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
                 type="text"
                 value={newNotice.title}
                 onChange={(e) => setNewNotice(prev => ({ ...prev, title: e.target.value }))}
-                placeholder="공지 제목을 입력해주세요 (20자 이내)"
+                placeholder="공지 제목을 입력해주세요"
                 maxLength={20}
                 className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
               />
@@ -340,7 +340,7 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
           <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">공지 삭제 확인</h3>
             <p className="text-gray-700 mb-6">
-              정말로 "{noticeToDelete?.title}" 공지를 삭제하시겠습니까?
+              '{noticeToDelete?.title}' 공지를 정말 삭제하시겠습니까?
             </p>
             <div className="flex justify-end space-x-3">
               <button 
