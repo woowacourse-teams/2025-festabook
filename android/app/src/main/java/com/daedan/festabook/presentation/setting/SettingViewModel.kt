@@ -17,11 +17,14 @@ import timber.log.Timber
 class SettingViewModel(
     private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
-    private val _allowClickEvent: SingleLiveData<Unit> = SingleLiveData()
-    val allowClickEvent: LiveData<Unit> get() = _allowClickEvent
+    private val _permissionCheckEvent: SingleLiveData<Unit> = SingleLiveData()
+    val permissionCheckEvent: LiveData<Unit> get() = _permissionCheckEvent
 
-    var isAllowed = festivalNotificationRepository.getFestivalNotificationIsAllow()
-        private set
+    private val _isAllowed =
+        MutableLiveData(
+            festivalNotificationRepository.getFestivalNotificationIsAllow(),
+        )
+    val isAllowed: LiveData<Boolean> get() = _isAllowed
 
     private val _error: SingleLiveData<Throwable> = SingleLiveData()
     val error: LiveData<Throwable> get() = _error
@@ -30,32 +33,38 @@ class SettingViewModel(
     val isLoading: LiveData<Boolean> get() = _isLoading
 
     fun notificationAllowClick() {
-        if (_isLoading.value == true) return
-        updateNotificationIsAllowed(!isAllowed)
-        _allowClickEvent.setValue(Unit)
-
-        _isLoading.value = true
-        if (isAllowed) saveNotificationId() else deleteNotificationId()
+        if (_isAllowed.value == false) {
+            _permissionCheckEvent.setValue(Unit)
+        } else {
+            deleteNotificationId()
+        }
     }
 
-    fun saveNotificationIsAllowed(isAllowed: Boolean) {
+    private fun saveNotificationIsAllowed(isAllowed: Boolean) {
         festivalNotificationRepository.setFestivalNotificationIsAllow(isAllowed)
     }
 
-    fun updateNotificationIsAllowed(allowed: Boolean) {
-        isAllowed = allowed
+    private fun updateNotificationIsAllowed(allowed: Boolean) {
+        _isAllowed.value = allowed
     }
 
-    private fun saveNotificationId() {
+    fun saveNotificationId() {
+        if (_isLoading.value == true) return
+        _isLoading.value = true
+
+        // Optimistic UI 적용, 요청 실패 시 원복
+        saveNotificationIsAllowed(true)
+        updateNotificationIsAllowed(true)
+
         viewModelScope.launch {
             val result =
                 festivalNotificationRepository.saveFestivalNotification()
 
             result
-                .onSuccess {
-                    saveNotificationIsAllowed(isAllowed)
-                }.onFailure {
+                .onFailure {
                     _error.setValue(it)
+                    saveNotificationIsAllowed(false)
+                    updateNotificationIsAllowed(false)
                     Timber.e(it, "${this::class.java.simpleName} NotificationId 저장 실패")
                 }.also {
                     _isLoading.value = false
@@ -64,15 +73,22 @@ class SettingViewModel(
     }
 
     private fun deleteNotificationId() {
+        if (_isLoading.value == true) return
+        _isLoading.value = true
+
+        // Optimistic UI 적용, 요청 실패 시 원복
+        saveNotificationIsAllowed(false)
+        updateNotificationIsAllowed(false)
+
         viewModelScope.launch {
             val result =
                 festivalNotificationRepository.deleteFestivalNotification()
 
             result
-                .onSuccess {
-                    saveNotificationIsAllowed(isAllowed)
-                }.onFailure {
+                .onFailure {
                     _error.setValue(it)
+                    saveNotificationIsAllowed(true)
+                    updateNotificationIsAllowed(true)
                     Timber.e(it, "${this::class.java.simpleName} NotificationId 삭제 실패")
                 }.also {
                     _isLoading.value = false
