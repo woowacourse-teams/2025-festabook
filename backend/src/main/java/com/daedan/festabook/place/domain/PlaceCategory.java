@@ -11,7 +11,7 @@ public enum PlaceCategory {
     PARKING,
 
     STAGE,
-    PHOTO,
+    PHOTO_BOOTH,
 
     PRIMARY,
     EXTRA,

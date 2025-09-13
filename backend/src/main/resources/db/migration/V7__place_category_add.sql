@@ -4,7 +4,7 @@ ALTER TABLE place
     'BAR',
     'FOOD_TRUCK',
     'STAGE',
-    'PHOTO',
+    'PHOTO_BOOTH',
     'SMOKING',
     'TRASH_CAN',
     'TOILET',
