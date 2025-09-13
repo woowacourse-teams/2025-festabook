@@ -286,7 +286,7 @@ const FestivalPage = () => {
                         onMouseLeave={handleLineupMouseLeave}
                     >
                         <div className="flex space-x-6 w-max select-none py-2">
-                            {lineups.map((lineup, index) => (
+                            {[...lineups].sort((a, b) => new Date(a.performanceAt) - new Date(b.performanceAt)).map((lineup, index) => (
                                 <div
                                     key={lineup.lineupId}
                                     className="relative flex-shrink-0 text-center cursor-pointer hover:scale-105 transition-transform duration-300 ease-out"

@@ -207,9 +207,9 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
                 performanceAt: performanceAt
             });
             
-            // 상태 업데이트
+            // 상태 업데이트 (정렬된 상태로)
             if (onUpdate) {
-                onUpdate(prev => [...prev, response]);
+                onUpdate(prev => [...prev, response].sort((a, b) => new Date(a.performanceAt) - new Date(b.performanceAt)));
             }
             
             showToast('라인업이 성공적으로 추가되었습니다.');
