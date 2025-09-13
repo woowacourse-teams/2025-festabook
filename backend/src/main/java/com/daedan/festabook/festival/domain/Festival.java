@@ -94,13 +94,14 @@ public class Festival extends BaseEntity {
         this.polygonHoleBoundary = polygonHoleBoundary;
     }
 
-    public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate) {
+    public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate, boolean userVisible) {
         validateName(festivalName);
         validateDates(startDate, endDate);
 
         this.festivalName = festivalName;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.userVisible = userVisible;
     }
 
     private void validateName(String name) {
