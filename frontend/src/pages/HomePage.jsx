@@ -7,10 +7,17 @@ const HomePage = () => {
     const [festival, setFestival] = useState(null);
     const [lineups, setLineups] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [isDragging, setIsDragging] = useState(false);
-    const scrollContainerRef = useRef(null);
-    const dragStartRef = useRef(null);
-    const scrollLeftRef = useRef(null);
+    // 축제 이미지 드래그 상태
+    const [isFestivalImageDragging, setIsFestivalImageDragging] = useState(false);
+    const festivalImageScrollRef = useRef(null);
+    const festivalImageDragStartRef = useRef(null);
+    const festivalImageScrollLeftRef = useRef(null);
+    
+    // 라인업 드래그 상태
+    const [isLineupDragging, setIsLineupDragging] = useState(false);
+    const lineupScrollRef = useRef(null);
+    const lineupDragStartRef = useRef(null);
+    const lineupScrollLeftRef = useRef(null);
 
     useEffect(() => {
         fetchData();
@@ -56,26 +63,52 @@ const HomePage = () => {
         return `${year}년 ${month}월 ${day}일`;
     };
 
-    const handleMouseDown = (e) => {
-        setIsDragging(true);
-        dragStartRef.current = e.pageX - scrollContainerRef.current.offsetLeft;
-        scrollLeftRef.current = scrollContainerRef.current.scrollLeft;
-    };
-
-    const handleMouseMove = (e) => {
-        if (!isDragging) return;
+    // 축제 이미지 드래그 핸들러
+    const handleFestivalImageMouseDown = (e) => {
         e.preventDefault();
-        const x = e.pageX - scrollContainerRef.current.offsetLeft;
-        const walk = (x - dragStartRef.current) * 2;
-        scrollContainerRef.current.scrollLeft = scrollLeftRef.current - walk;
+        setIsFestivalImageDragging(true);
+        festivalImageDragStartRef.current = e.pageX - festivalImageScrollRef.current.offsetLeft;
+        festivalImageScrollLeftRef.current = festivalImageScrollRef.current.scrollLeft;
     };
 
-    const handleMouseUp = () => {
-        setIsDragging(false);
+    const handleFestivalImageMouseMove = (e) => {
+        if (!isFestivalImageDragging) return;
+        e.preventDefault();
+        const x = e.pageX - festivalImageScrollRef.current.offsetLeft;
+        const walk = (x - festivalImageDragStartRef.current) * 2;
+        festivalImageScrollRef.current.scrollLeft = festivalImageScrollLeftRef.current - walk;
     };
 
-    const handleMouseLeave = () => {
-        setIsDragging(false);
+    const handleFestivalImageMouseUp = () => {
+        setIsFestivalImageDragging(false);
+    };
+
+    const handleFestivalImageMouseLeave = () => {
+        setIsFestivalImageDragging(false);
+    };
+
+    // 라인업 드래그 핸들러
+    const handleLineupMouseDown = (e) => {
+        e.preventDefault();
+        setIsLineupDragging(true);
+        lineupDragStartRef.current = e.pageX - lineupScrollRef.current.offsetLeft;
+        lineupScrollLeftRef.current = lineupScrollRef.current.scrollLeft;
+    };
+
+    const handleLineupMouseMove = (e) => {
+        if (!isLineupDragging) return;
+        e.preventDefault();
+        const x = e.pageX - lineupScrollRef.current.offsetLeft;
+        const walk = (x - lineupDragStartRef.current) * 2;
+        lineupScrollRef.current.scrollLeft = lineupScrollLeftRef.current - walk;
+    };
+
+    const handleLineupMouseUp = () => {
+        setIsLineupDragging(false);
+    };
+
+    const handleLineupMouseLeave = () => {
+        setIsLineupDragging(false);
     };
 
     if (loading) {
@@ -176,12 +209,12 @@ const HomePage = () => {
                 
                 {festival.festivalImages && festival.festivalImages.length > 0 ? (
                     <div 
-                        ref={scrollContainerRef}
-                        className={`overflow-x-auto ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-                        onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseLeave={handleMouseLeave}
+                        ref={festivalImageScrollRef}
+                        className={`overflow-x-auto ${isFestivalImageDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                        onMouseDown={handleFestivalImageMouseDown}
+                        onMouseMove={handleFestivalImageMouseMove}
+                        onMouseUp={handleFestivalImageMouseUp}
+                        onMouseLeave={handleFestivalImageMouseLeave}
                     >
                         <div className="flex space-x-4 w-max select-none">
                             {festival.festivalImages.map((image, index) => (
@@ -192,7 +225,8 @@ const HomePage = () => {
                                     <img
                                         src={image.imageUrl}
                                         alt={`축제 이미지 ${index + 1}`}
-                                        className="w-full h-full object-cover block pointer-events-none"
+                                        className="w-full h-full object-cover block"
+                                        draggable={false}
                                     />
                                     <div className="absolute top-2 right-2 bg-black bg-opacity-75 text-white text-xs px-2 py-1 rounded">
                                         {index + 1}
@@ -244,22 +278,28 @@ const HomePage = () => {
                 
                 {lineups.length > 0 ? (
                     <div 
-                        ref={scrollContainerRef}
-                        className={`overflow-x-auto ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
-                        onMouseDown={handleMouseDown}
-                        onMouseMove={handleMouseMove}
-                        onMouseUp={handleMouseUp}
-                        onMouseLeave={handleMouseLeave}
+                        ref={lineupScrollRef}
+                        className={`overflow-x-auto ${isLineupDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                        onMouseDown={handleLineupMouseDown}
+                        onMouseMove={handleLineupMouseMove}
+                        onMouseUp={handleLineupMouseUp}
+                        onMouseLeave={handleLineupMouseLeave}
                     >
                         <div className="flex space-x-6 w-max select-none py-2">
                             {lineups.map((lineup, index) => (
                                 <div
                                     key={lineup.lineupId}
                                     className="relative flex-shrink-0 text-center cursor-pointer hover:scale-105 transition-transform duration-300 ease-out"
-                                    onClick={() => openModal('lineup-edit', { 
-                                        lineup, 
-                                        onUpdate: setLineups 
-                                    })}
+                                    onClick={(e) => {
+                                        if (isLineupDragging) {
+                                            e.preventDefault();
+                                            return;
+                                        }
+                                        openModal('lineup-edit', { 
+                                            lineup, 
+                                            onUpdate: setLineups 
+                                        });
+                                    }}
                                 >
                                     {/* 개선된 프로필 이미지 - 축제 분위기 */}
                                     <div className="relative w-24 h-24 mb-3 mt-2">
@@ -269,6 +309,7 @@ const HomePage = () => {
                                                 src={lineup.imageUrl}
                                                 alt={lineup.name}
                                                 className="w-full h-full object-cover"
+                                                draggable={false}
                                             />
                                         </div>
                                     </div>
