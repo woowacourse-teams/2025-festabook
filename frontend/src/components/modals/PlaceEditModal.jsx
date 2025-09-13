@@ -439,17 +439,15 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
             >
               취소
             </button>
             <button
               type="submit"
               disabled={loading}
-              className={`px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${
-                loading
-                  ? 'bg-gray-800 cursor-not-allowed'
-                  : 'bg-gray-800'
+              className={`flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 ${
+                loading ? 'cursor-not-allowed' : ''
               }`}
             >
               {loading ? '수정 중...' : '수정 완료'}

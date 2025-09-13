@@ -486,13 +486,13 @@ const PlaceImagesModal = ({ place, onUpdate, onClose }) => {
                     <div className="mt-auto pt-6 flex justify-end space-x-3">
                         <button 
                             onClick={onClose} 
-                            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
+                            className="bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
                         >
                             취소
                         </button>
                         <button 
                             onClick={handleImageUpdate} 
-                            className="bg-gray-800 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg"
+                            className="bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200"
                         >
                             저장
                         </button>

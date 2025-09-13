@@ -486,14 +486,14 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
                         type="button"
                         onClick={handleClose}
                         disabled={isUploading}
-                        className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-colors duration-200 disabled:opacity-50"
+                        className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200 disabled:opacity-50"
                     >
                         취소
                     </button>
                     <button
                         type="submit"
                         disabled={isUploading}
-                        className="flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-colors duration-200 disabled:opacity-50 flex items-center justify-center"
+                        className="flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200 disabled:opacity-50 flex items-center justify-center"
                     >
                         {isUploading ? (
                             <>

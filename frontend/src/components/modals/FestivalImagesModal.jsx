@@ -224,13 +224,13 @@ const FestivalImagesModal = ({ isOpen, onClose, festival, showToast, onUpdate })
                             <>
                                 <button 
                                     onClick={isReorderMode ? handleSaveOrder : handleSaveDeletions}
-                                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors"
+                                    className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-all duration-200"
                                 >
                                     {isReorderMode ? '순서 저장' : '삭제 완료'}
                                 </button>
                                 <button 
                                     onClick={handleCancelMode}
-                                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-all duration-200"
                                 >
                                     취소
                                 </button>

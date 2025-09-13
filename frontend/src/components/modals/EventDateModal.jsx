@@ -116,8 +116,8 @@ const EventDateModal = ({ onSave, onClose, defaultDate }) => {
                 </div>
             </div>
             <div className="mt-6 flex justify-end space-x-3">
-                <button onClick={onClose} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">취소</button>
-                <button onClick={handleSave} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg">추가</button>
+                <button onClick={onClose} className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200">취소</button>
+                <button onClick={handleSave} className="flex-1 bg-black text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-800 transition-all duration-200">추가</button>
             </div>
         </Modal>
     );
