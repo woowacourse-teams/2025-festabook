@@ -39,7 +39,7 @@ public class Place extends BaseEntity {
     );
 
     private static final int MAX_TITLE_LENGTH = 255;
-    private static final int MAX_DESCRIPTION_LENGTH = 100;
+    private static final int MAX_DESCRIPTION_LENGTH = 3000;
     private static final int MAX_LOCATION_LENGTH = 100;
     private static final int MAX_HOST_LENGTH = 100;
 
@@ -58,13 +58,13 @@ public class Place extends BaseEntity {
     @Column(length = MAX_TITLE_LENGTH, nullable = false)
     private String title;
 
-    @Column(length = 100)
+    @Column(length = MAX_DESCRIPTION_LENGTH)
     private String description;
 
-    @Column(length = 100)
+    @Column(length = MAX_LOCATION_LENGTH)
     private String location;
 
-    @Column(length = 100)
+    @Column(length = MAX_HOST_LENGTH)
     private String host;
 
     private LocalTime startTime;
