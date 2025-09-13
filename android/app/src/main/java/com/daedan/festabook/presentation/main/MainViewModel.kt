@@ -23,6 +23,9 @@ class MainViewModel(
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
 
+    private val _noticeIdToExpand: MutableLiveData<Long> = MutableLiveData()
+    val noticeIdToExpand: LiveData<Long> = _noticeIdToExpand
+
     private var lastBackPressedTime: Long = 0
 
     fun registerDeviceAndFcmToken() {
@@ -90,6 +93,10 @@ class MainViewModel(
                     Timber.e(throwable, "MainViewModel: 기기 등록 실패: ${throwable.message}")
                 }
         }
+    }
+
+    fun expandNoticeItem(announcementId: Long) {
+        _noticeIdToExpand.value = announcementId
     }
 
     companion object {

@@ -15,6 +15,7 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.NotificationPermissionManager
@@ -129,7 +130,10 @@ class MainActivity :
 
     private fun handleNavigation(intent: Intent) {
         val canNavigateToNewsScreen =
-            intent.getBooleanExtra("navigateToNotice", false)
+            intent.getBooleanExtra(KEY_CAN_NAVIGATE_TO_NEWS, false)
+        val noticeIdToExpand = intent.getLongExtra(KEY_NOTICE_ID_TO_EXPAND, INITIALIZED_ID)
+        if (noticeIdToExpand != INITIALIZED_ID) mainViewModel.expandNoticeItem(noticeIdToExpand)
+
         if (canNavigateToNewsScreen) {
             binding.bnvMenu.selectedItemId = R.id.item_menu_news
         }
@@ -171,7 +175,7 @@ class MainActivity :
 
     private fun setupHomeFragment(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
+            supportFragmentManager.commitNow {
                 add(R.id.fcv_fragment_container, homeFragment, TAG_HOME_FRAGMENT)
             }
         }
@@ -257,18 +261,20 @@ class MainActivity :
     }
 
     private fun isMainActivityInitialized(): Boolean {
-        val initialValue = intent.getLongExtra("festival_id", INITIALIZED_FESTIVAL_ID)
-        return initialValue == INITIALIZED_FESTIVAL_ID
+        val initialValue = intent.getLongExtra("festival_id", INITIALIZED_ID)
+        return initialValue == INITIALIZED_ID
     }
 
     companion object {
+        const val KEY_NOTICE_ID_TO_EXPAND = "noticeIdToExpand"
+        const val KEY_CAN_NAVIGATE_TO_NEWS = "canNavigateToNews"
         private const val TAG_HOME_FRAGMENT = "homeFragment"
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
         private const val TAG_PLACE_MAP_FRAGMENT = "placeMapFragment"
         private const val TAG_NEWS_FRAGMENT = "newsFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
-        private const val INITIALIZED_FESTIVAL_ID = -1L
+        private const val INITIALIZED_ID = -1L
 
         fun Fragment.newInstance(): Fragment =
             this.apply {

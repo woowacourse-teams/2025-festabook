@@ -41,6 +41,8 @@ class NewsViewModel(
     private val _lostItemClickEvent: MutableLiveData<Event<LostItemUiModel>> = MutableLiveData()
     val lostItemClickEvent: LiveData<Event<LostItemUiModel>> get() = _lostItemClickEvent
 
+    private var noticeIdToExpand: Long? = null
+
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
@@ -54,7 +56,17 @@ class NewsViewModel(
             val result = noticeRepository.fetchNotices()
             result
                 .onSuccess { notices ->
-                    _noticeUiState.value = NoticeUiState.Success(notices.map { it.toUiModel() })
+                    val updatedNotices =
+                        noticeIdToExpand?.let { id ->
+                            notices.map {
+                                if (it.id == id) {
+                                    it.toUiModel().copy(isExpanded = true)
+                                } else {
+                                    it.toUiModel()
+                                }
+                            }
+                        } ?: notices.map { it.toUiModel() }
+                    _noticeUiState.value = NoticeUiState.Success(updatedNotices)
                 }.onFailure {
                     _noticeUiState.value = NoticeUiState.Error(it)
                 }
@@ -66,6 +78,19 @@ class NewsViewModel(
             notices.map { updatedNotice ->
                 if (notice.id == updatedNotice.id) {
                     updatedNotice.copy(isExpanded = !updatedNotice.isExpanded)
+                } else {
+                    updatedNotice
+                }
+            }
+        }
+    }
+
+    fun expandNotice(announcementId: Long) {
+        this.noticeIdToExpand = announcementId
+        updateNoticeUiState { notices ->
+            notices.map { updatedNotice ->
+                if (announcementId == updatedNotice.id) {
+                    updatedNotice.copy(isExpanded = true)
                 } else {
                     updatedNotice
                 }

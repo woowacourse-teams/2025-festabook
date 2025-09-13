@@ -7,6 +7,8 @@ import android.content.Context
 import androidx.core.app.NotificationCompat
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.main.MainActivity
+import com.daedan.festabook.presentation.main.MainActivity.Companion.KEY_CAN_NAVIGATE_TO_NEWS
+import com.daedan.festabook.presentation.main.MainActivity.Companion.KEY_NOTICE_ID_TO_EXPAND
 
 object NotificationHelper {
     private const val CHANNEL_ID = "notice_channel"
@@ -38,8 +40,8 @@ object NotificationHelper {
     ) {
         val intent =
             MainActivity.newIntent(context).apply {
-                putExtra("navigateToNotice", true)
-                putExtra("announcementId", announcementId.toLongOrNull())
+                putExtra(KEY_CAN_NAVIGATE_TO_NEWS, true)
+                putExtra(KEY_NOTICE_ID_TO_EXPAND, announcementId.toLongOrNull())
             }
 
         val pendingIntent =
