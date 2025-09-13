@@ -67,6 +67,7 @@ class NewsViewModel(
                             }
                         } ?: notices.map { it.toUiModel() }
                     _noticeUiState.value = NoticeUiState.Success(updatedNotices)
+                    noticeIdToExpand = null
                 }.onFailure {
                     _noticeUiState.value = NoticeUiState.Error(it)
                 }
@@ -85,11 +86,12 @@ class NewsViewModel(
         }
     }
 
-    fun expandNotice(announcementId: Long) {
-        this.noticeIdToExpand = announcementId
+    fun expandNotice(noticeId: Long) {
+        this.noticeIdToExpand = noticeId
+        loadAllNotices()
         updateNoticeUiState { notices ->
             notices.map { updatedNotice ->
-                if (announcementId == updatedNotice.id) {
+                if (noticeId == updatedNotice.id) {
                     updatedNotice.copy(isExpanded = true)
                 } else {
                     updatedNotice

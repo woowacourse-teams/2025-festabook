@@ -72,8 +72,8 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
                 }
             }
         }
-        mainViewModel.noticeIdToExpand.observe(viewLifecycleOwner) { announcementId ->
-            newsViewModel.expandNotice(announcementId)
+        mainViewModel.noticeIdToExpand.observe(viewLifecycleOwner) { noticeId ->
+            newsViewModel.expandNotice(noticeId)
         }
     }
 
