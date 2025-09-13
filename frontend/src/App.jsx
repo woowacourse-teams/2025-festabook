@@ -81,6 +81,7 @@ function App() {
             case 'schedule': return <EventModal {...allProps} />;
             case 'datePrompt': return <EventDateModal {...allProps} />;
             case 'booth': return <PlaceModal {...allProps} />;
+            case 'place': return <PlaceModal {...allProps} />;
             case 'festival-info': return <FestivalInfoModal isOpen={true} {...allProps} />;
             case 'festival-images': return <FestivalImagesModal isOpen={true} {...allProps} />;
             case 'festivalImages': return <FestivalImagesModal isOpen={true} {...allProps} />;

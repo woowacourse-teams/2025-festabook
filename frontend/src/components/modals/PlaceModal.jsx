@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '../common/Modal';
 import { placeCategories } from '../../data/categories';
 
-const PlaceModal = ({ booth, onSave, onClose, showToast }) => {
+const PlaceModal = ({ booth, onSave, onClose, showToast, initialData }) => {
     const isEditMode = !!booth;
     const [form, setForm] = useState({});
 
@@ -17,7 +17,7 @@ const PlaceModal = ({ booth, onSave, onClose, showToast }) => {
     useEffect(() => {
         const initialForm = booth || { 
             title: '', 
-            category: 'BOOTH', // 하드코딩 제거 - 명시적으로 'BOOTH' 설정
+            category: initialData?.category || 'BOOTH', // initialData에서 카테고리 가져오기
             description: '',
             location: '',
             host: '',
@@ -31,7 +31,7 @@ const PlaceModal = ({ booth, onSave, onClose, showToast }) => {
         }
         
         setForm(initialForm);
-    }, [booth, isEditMode]);
+    }, [booth, isEditMode, initialData]);
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
