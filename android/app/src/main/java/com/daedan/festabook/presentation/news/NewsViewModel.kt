@@ -52,7 +52,6 @@ class NewsViewModel(
     fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
         viewModelScope.launch {
             _noticeUiState.value = state
-
             val result = noticeRepository.fetchNotices()
             result
                 .onSuccess { notices ->
@@ -87,6 +86,7 @@ class NewsViewModel(
 
     fun expandNotice(noticeId: Long) {
         this.noticeIdToExpand = noticeId
+        if (noticeUiState.value == NoticeUiState.InitialLoading) return
         loadAllNotices()
         updateNoticeUiState { notices ->
             notices.map { updatedNotice ->
