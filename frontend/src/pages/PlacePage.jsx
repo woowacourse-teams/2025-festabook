@@ -415,7 +415,7 @@ const PlacePage = () => {
                         <div className="flex items-center gap-3">
                             <button 
                                 onClick={() => openModal('booth', { onSave: handleCreate })} 
-                                className="bg-gradient-to-r from-gray-800 to-gray-800 hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all duration-200 hover:scale-105 shadow-lg"
+                                className="bg-gradient-to-r from-black to-black hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all duration-200 hover:scale-105 shadow-lg"
                             >
                                 <i className="fas fa-plus mr-2"></i>
                                 새 플레이스 추가
@@ -553,7 +553,7 @@ const PlacePage = () => {
                                                         onSave: handleCreate,
                                                         initialData: { category: category }
                                                     })}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
+                                                    className="bg-black hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
                                                 >
                                                     <i className="fas fa-plus mr-2"></i>
                                                     {placeCategories[category]} 추가
