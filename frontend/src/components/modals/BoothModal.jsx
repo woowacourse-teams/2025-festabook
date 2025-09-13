@@ -75,7 +75,7 @@ const BoothModal = ({ booth, onSave, onClose, showToast }) => {
     };
     
     return (
-        <Modal isOpen={true} onClose={onClose} maxWidth="max-w-2xl">
+        <Modal isOpen={true} onClose={onClose} maxWidth="max-w-sm">
             <h3 className="text-xl font-bold mb-6">{isEditMode ? '플레이스 수정' : '새 플레이스 추가'}</h3>
             <div className={`space-y-4 ${isEditMode ? 'max-h-[60vh] overflow-y-auto pr-2' : ''}`}>
                 <div>
@@ -110,7 +110,7 @@ const BoothModal = ({ booth, onSave, onClose, showToast }) => {
                 </div>
             
             </div>
-            <div className="mt-6 flex justify-between w-full relative z-10">
+            <div className="mt-6 flex justify-end w-full relative z-10">
                 <div className="space-x-3">
                     <button 
                         type="button"

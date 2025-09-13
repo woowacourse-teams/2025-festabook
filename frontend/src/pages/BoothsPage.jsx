@@ -193,22 +193,28 @@ const BoothsPage = () => {
     };
 
     const openDeleteModal = (booth) => {
+        const isMain = isMainPlace(booth.category);
+
         openModal('confirm', {
             title: '플레이스 삭제 확인',
             message: (
+            <>
+                '{booth.title}' 플레이스를 정말 삭제하시겠습니까?
+                {isMain && (
                 <>
-                    {booth.title} 플레이스를 정말 삭제하시겠습니까?
-                    <br /> 
+                    <br />
                     <div className="font-bold text-red-500 text-xs">
-                        플레이스의 즐겨찾기 정보, 이미지, 세부 정보도 모두 삭제됩니다.
+                    플레이스의 이미지, 세부 정보도 모두 삭제됩니다.
                     </div>
                 </>
+                )}
+            </>
             ),
             onConfirm: () => {
-                handleDelete(booth.placeId);
+            handleDelete(booth.placeId);
             }
         });
-    }
+    };
 
     // 플레이스 수정 완료 후 최신 데이터 조회
     const handleSave = async (data) => {
@@ -252,7 +258,7 @@ const BoothsPage = () => {
 
 
     const isMainPlace = (category) => {
-        return !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE'].includes(category);
+        return !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(category);
     }
 
     return (

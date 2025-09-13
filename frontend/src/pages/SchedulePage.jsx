@@ -74,17 +74,25 @@ const SchedulePage = () => {
 
     const handleDeleteDate = (date) => {
         openModal('confirm', {
-            title: '날짜 삭제 확인',
-            message: `'${date}' 날짜의 모든 이벤트가 삭제됩니다. 정말 삭제하시겠습니까?`,
-            onConfirm: async () => {
-                await deleteScheduleDate(date, showToast);
-                // 삭제 후 다른 날짜로 activeDate 이동
-                const dates = Object.keys(schedule).sort().filter(d => d !== date);
-                setActiveDate(dates[0] || null);
+          title: '날짜 삭제 확인',
+          message: (
+            <>
+              '{date}' 날짜를 정말 삭제하시겠습니까?
+              <br />
+              <div className="font-bold text-red-500 text-xs mt-2">
+                날짜의 이벤트도 모두 삭제됩니다.
+              </div>
+            </>
+          ),
+          onConfirm: async () => {
+            await deleteScheduleDate(date, showToast);
+            // 삭제 후 다른 날짜로 activeDate 이동
+            const dates = Object.keys(schedule).sort().filter(d => d !== date);
+            setActiveDate(dates[0] || null);
             }
         });
     };
-
+      
     const getNextDefaultDate = () => {
         const sortedDates = Object.keys(schedule).sort();
         if (sortedDates.length === 0) {

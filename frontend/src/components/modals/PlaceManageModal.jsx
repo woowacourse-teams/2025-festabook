@@ -340,7 +340,7 @@ const PlaceManageModal = ({ place, onSave, onClose }) => {
           <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
             <h3 className="text-lg font-semibold mb-4">공지 삭제 확인</h3>
             <p className="text-gray-700 mb-6">
-              정말로 "{noticeToDelete?.title}" 공지를 삭제하시겠습니까?
+              '{noticeToDelete?.title}' 공지를 정말 삭제하시겠습니까?
             </p>
             <div className="flex justify-end space-x-3">
               <button 
