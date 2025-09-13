@@ -24,7 +24,7 @@ class SettingViewModel(
         MutableLiveData(
             festivalNotificationRepository.getFestivalNotificationIsAllow(),
         )
-    val isAllowed: LiveData<Boolean> = _isAllowed
+    val isAllowed: LiveData<Boolean> get() = _isAllowed
 
     private val _error: SingleLiveData<Throwable> = SingleLiveData()
     val error: LiveData<Throwable> get() = _error

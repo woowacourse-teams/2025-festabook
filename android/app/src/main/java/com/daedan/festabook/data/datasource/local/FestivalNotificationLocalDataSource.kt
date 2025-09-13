@@ -9,7 +9,10 @@ interface FestivalNotificationLocalDataSource {
 
     fun clearAll()
 
-    fun saveFestivalNotificationIsAllowed(isAllowed: Boolean)
+    fun saveFestivalNotificationIsAllowed(
+        festivalId: Long,
+        isAllowed: Boolean,
+    )
 
-    fun getFestivalNotificationIsAllowed(): Boolean
+    fun getFestivalNotificationIsAllowed(festivalId: Long): Boolean
 }
