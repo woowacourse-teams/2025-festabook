@@ -7,7 +7,7 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
         festivalName: festival?.festivalName || '',
         startDate: festival?.startDate ? festival.startDate.split('T')[0] : '',
         endDate: festival?.endDate ? festival.endDate.split('T')[0] : '',
-        userVisible: festival?.userVisible ?? true
+        userVisible: Boolean(festival?.userVisible)
     });
 
     const handleSubmit = async (e) => {
@@ -25,13 +25,13 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
             
             // 상태 업데이트
             if (onUpdate) {
-                onUpdate(prev => ({
-                    ...prev,
+                onUpdate({
+                    ...festival,
                     festivalName: response.festivalName,
                     startDate: response.startDate,
                     endDate: response.endDate,
                     userVisible: response.userVisible
-                }));
+                });
             }
             
             showToast('축제 정보가 성공적으로 수정되었습니다.');
@@ -56,6 +56,17 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
             [name]: type === 'checkbox' ? checked : (name === 'userVisible' ? value === 'true' : value)
         }));
     };
+
+    useEffect(() => {
+        if (festival) {
+            setFormData({
+                festivalName: festival.festivalName || '',
+                startDate: festival.startDate ? festival.startDate.split('T')[0] : '',
+                endDate: festival.endDate ? festival.endDate.split('T')[0] : '',
+                userVisible: Boolean(festival.userVisible)
+            });
+        }
+    }, [festival]);
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
