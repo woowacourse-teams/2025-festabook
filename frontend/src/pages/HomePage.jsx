@@ -304,7 +304,7 @@ const HomePage = () => {
                                     {/* 개선된 프로필 이미지 - 축제 분위기 */}
                                     <div className="relative w-24 h-24 mb-3 mt-2">
                                         {/* 회색 테두리로 복구 */}
-                                        <div className="w-full h-full bg-white overflow-hidden relative border-2 border-gray-300 shadow-2xl hover:shadow-black transition-shadow duration-300" style={{borderRadius: '50% 50% 50% 15%', boxShadow: '0 10px 25px rgba(0, 0, 0, 0.3), 0 6px 10px rgba(0, 0, 0, 0.2)'}}>
+                                        <div className="w-full h-full bg-white overflow-hidden relative border-2 border-gray-300 transition-all duration-300 hover:shadow-lg" style={{borderRadius: '50% 50% 50% 15%', boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1)'}}>
                                             <img
                                                 src={lineup.imageUrl}
                                                 alt={lineup.name}
