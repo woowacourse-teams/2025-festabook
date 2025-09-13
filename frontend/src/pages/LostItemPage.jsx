@@ -34,6 +34,23 @@ const LostItemPage = () => {
         }
     }, [lostItems]);
 
+    // ESC 키로 이미지 모달 닫기
+    useEffect(() => {
+        const handleEscKey = (event) => {
+            if (event.key === 'Escape' && selectedImage) {
+                setSelectedImage(null);
+            }
+        };
+
+        if (selectedImage) {
+            document.addEventListener('keydown', handleEscKey);
+        }
+
+        return () => {
+            document.removeEventListener('keydown', handleEscKey);
+        };
+    }, [selectedImage]);
+
     const handleImageClick = (imageUrl) => {
         setSelectedImage(imageUrl);
     };
@@ -205,16 +222,23 @@ const LostItemPage = () => {
             {/* 이미지 상세 보기 오버레이 */}
             {selectedImage && (
                 <div 
-                    className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none"
+                    className="fixed inset-0 flex items-center justify-center z-50 pointer-events-none bg-black bg-opacity-0"
+                    onClick={() => setSelectedImage(null)}
+                    style={{
+                        animation: 'fadeInOverlay 0.25s ease-out forwards'
+                    }}
                 >
                     <div 
-                        className="relative pointer-events-auto"
+                        className="relative pointer-events-auto transform scale-90 opacity-0"
                         onClick={(e) => e.stopPropagation()}
+                        style={{
+                            animation: 'zoomInImage 0.25s ease-out 0.05s forwards'
+                        }}
                     >
                         <img
                             src={selectedImage}
                             alt="상세 이미지"
-                            className="rounded-lg shadow-2xl select-none"
+                            className="rounded-lg shadow-2xl select-none transition-transform duration-300 hover:scale-105"
                             style={{
                                 maxWidth: '100vw',
                                 maxHeight: '95vh',
@@ -227,7 +251,10 @@ const LostItemPage = () => {
                         {/* 닫기 버튼 */}
                         <button 
                             onClick={handleCloseDetail}
-                            className="absolute top-4 right-4 bg-black bg-opacity-60 text-white p-2 rounded-full hover:bg-opacity-80 transition-colors"
+                            className="absolute top-4 right-4 bg-black bg-opacity-60 text-white p-2 rounded-full hover:bg-opacity-80 transition-all duration-200 transform hover:scale-110 opacity-0"
+                            style={{
+                                animation: 'fadeInButton 0.2s ease-out 0.15s forwards'
+                            }}
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />

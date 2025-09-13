@@ -30,3 +30,35 @@
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
 }
+
+/* 분실물 이미지 모달 애니메이션 */
+@keyframes fadeInOverlay {
+  0% {
+    background-color: rgba(0, 0, 0, 0);
+  }
+  100% {
+    background-color: rgba(0, 0, 0, 0.75);
+  }
+}
+
+@keyframes zoomInImage {
+  0% {
+    transform: scale(0.9);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInButton {
+  0% {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
