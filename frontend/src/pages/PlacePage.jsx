@@ -536,7 +536,7 @@ const PlacePage = () => {
                                                         <OtherPlaceCard
                                                             key={place.placeId}
                                                             place={place}
-                                                            onEdit={(place) => openModal('placeEdit', { place, onSave: handleSave })}
+                                                            onEdit={(place) => openModal('otherPlaceEdit', { place, onSave: handleSave })}
                                                             onDelete={openDeleteModal}
                                                             showToast={showToast}
                                                         />

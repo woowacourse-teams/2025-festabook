@@ -25,6 +25,7 @@ import FaqModal from './components/modals/FaqModal';
 import EventModal from './components/modals/EventModal';
 import EventDateModal from './components/modals/EventDateModal';
 import PlaceModal from './components/modals/PlaceModal';
+import OtherPlaceEditModal from './components/modals/OtherPlaceEditModal';
 import FestivalInfoModal from './components/modals/FestivalInfoModal';
 import FestivalImagesModal from './components/modals/FestivalImagesModal';
 import PlaceImagesModal from './components/modals/PlaceImagesModal';
@@ -87,6 +88,7 @@ function App() {
             case 'festivalImages': return <FestivalImagesModal isOpen={true} {...allProps} />;
             case 'placeImages': return <PlaceImagesModal {...allProps} />;
             case 'placeEdit': return <PlaceEditModal {...allProps} />;
+            case 'otherPlaceEdit': return <OtherPlaceEditModal {...allProps} />;
             case 'confirm': return <ConfirmModal {...allProps} onConfirm={() => { props.onConfirm(); closeModal(); }} onCancel={closeModal} />;
             case 'image': return <Modal isOpen={true} onClose={closeModal} maxWidth="max-w-4xl"><div className="relative"><img src={props.src} className="max-w-full max-h-[80vh] rounded-lg mx-auto" alt="상세 이미지" /><button onClick={closeModal} className="absolute top-2 right-2 text-white text-3xl bg-black bg-opacity-50 rounded-full w-8 h-8 flex items-center justify-center">&times;</button></div></Modal>;
             case 'lineup-add': return <LineupAddModal isOpen={true} {...allProps} />;
