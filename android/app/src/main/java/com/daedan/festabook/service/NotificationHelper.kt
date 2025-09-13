@@ -32,13 +32,14 @@ object NotificationHelper {
     // 실제 알림을 생성
     fun showNotification(
         context: Context,
-        title: String?,
-        message: String?,
-        targetId: String? = null,
+        title: String,
+        content: String,
+        announcementId: String,
     ) {
         val intent =
             MainActivity.newIntent(context).apply {
                 putExtra("navigateToNotice", true)
+                putExtra("announcementId", announcementId.toLongOrNull())
             }
 
         val pendingIntent =
@@ -52,12 +53,12 @@ object NotificationHelper {
         val notificationBuilder =
             NotificationCompat
                 .Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground) // 앱 아이콘
+                .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setContentTitle(title)
-                .setContentText(message)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(message))
+                .setContentText(content)
+                .setStyle(NotificationCompat.BigTextStyle().bigText(content))
                 .setContentIntent(pendingIntent)
-                .setAutoCancel(true) // 클릭 시 자동 삭제
+                .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setDefaults(NotificationCompat.DEFAULT_ALL)
 

@@ -120,5 +120,8 @@
     <string name="notification_permission_denied_message">알림이 비활성화되어 있습니다 [설정]에서 다시 켤 수 있어요.</string>
     <string name="move_to_setting_text">설정으로 이동</string>
 
+    <!--알림 -->
+    <string name="default_notification_title">알림</string>
+    <string name="default_notification_body">새로운 소식이 있습니다.</string>
 
 </resources>

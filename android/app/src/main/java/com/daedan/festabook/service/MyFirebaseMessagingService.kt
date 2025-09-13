@@ -1,5 +1,6 @@
 package com.daedan.festabook.service
 
+import com.daedan.festabook.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import timber.log.Timber
@@ -15,15 +16,26 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         // remoteMessage.data
         if (remoteMessage.data.isNotEmpty()) {
             Timber.d("Data Payload: ${remoteMessage.data}")
-            val targetId = remoteMessage.data["targetId"]
-            val customTitle = remoteMessage.data["custom_title"]
-            val customMessage = remoteMessage.data["custom_message"]
+            val title =
+                remoteMessage.data["title"] ?: getString(R.string.default_notification_title)
+            val content =
+                remoteMessage.data["body"] ?: getString(R.string.default_notification_body)
+            val announcementId = remoteMessage.data["announcementId"] ?: "-1"
 
-            val displayTitle = remoteMessage.notification?.title ?: customTitle ?: "알림"
-            val displayMessage =
-                remoteMessage.notification?.body ?: customMessage ?: "새로운 정보가 있습니다."
-
-            NotificationHelper.showNotification(this, displayTitle, displayMessage, targetId)
+            NotificationHelper.showNotification(this, title, content, announcementId)
         }
     }
 }
+
+// fcm 메시지
+// {
+//    "message": {
+//    "topic": "FCM이_사용하는_토픽_식별자",
+//    "data": {
+//    "title": "공지사항 제목_축제 공지 알림 ",
+//    "body": "공지사항 본문 내용_오늘 연예인 공연은 오후 6시부터 시작합니다.",
+//    "festivalId": "100",
+//    "announcementId": "1"
+// }
+// }
+// }
