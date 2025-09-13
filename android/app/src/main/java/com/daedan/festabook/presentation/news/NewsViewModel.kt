@@ -57,16 +57,15 @@ class NewsViewModel(
             result
                 .onSuccess { notices ->
                     val updatedNotices =
-                        noticeIdToExpand?.let { id ->
-                            notices.map {
-                                if (it.id == id) {
-                                    it.toUiModel().copy(isExpanded = true)
-                                } else {
-                                    it.toUiModel()
-                                }
+                        notices.map {
+                            it.toUiModel().let { notice ->
+                                if (notice.id == noticeIdToExpand) notice.copy(isExpanded = true) else notice
                             }
-                        } ?: notices.map { it.toUiModel() }
-                    _noticeUiState.value = NoticeUiState.Success(updatedNotices)
+                        }
+                    val noticeIdToExpandPosition =
+                        notices.indexOfFirst { it.id == noticeIdToExpand }
+                    _noticeUiState.value =
+                        NoticeUiState.Success(updatedNotices, noticeIdToExpandPosition)
                     noticeIdToExpand = null
                 }.onFailure {
                     _noticeUiState.value = NoticeUiState.Error(it)
