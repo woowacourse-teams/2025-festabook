@@ -3,7 +3,7 @@ import { useData } from '../hooks/useData';
 import { useModal } from '../hooks/useModal';
 import { getCurrentDate } from '../utils/date';
 
-const SchedulePage = () => {
+const EventPage = () => {
     const { schedule, addScheduleDate, addScheduleEvent, updateScheduleEvent, deleteScheduleEvent, deleteScheduleDate, isLoadingDates, isLoadingEvents, loadEventsForDate } = useData();
     const { openModal, showToast } = useModal();
     const [activeDate, setActiveDate] = useState(Object.keys(schedule).sort()[0] || null);
@@ -243,4 +243,4 @@ const SchedulePage = () => {
     );
 };
 
-export default SchedulePage;
+export default EventPage;

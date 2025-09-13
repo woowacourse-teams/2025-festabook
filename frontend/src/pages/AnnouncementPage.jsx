@@ -11,7 +11,7 @@ function formatDate(dateString) {
     return `${year}.${month}.${day}`;
 }
 
-const NoticesPage = () => {
+const AnnouncementPage = () => {
     const { openModal, showToast } = useModal();
     const [pinned, setPinned] = useState([]);
     const [unpinned, setUnpinned] = useState([]);
@@ -456,4 +456,4 @@ const NoticesPage = () => {
     );
 };
 
-export default NoticesPage;
+export default AnnouncementPage;

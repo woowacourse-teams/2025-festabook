@@ -57,7 +57,7 @@ export const ButtonSkeleton = () => (
 );
 
 // 플레이스 대시보드 전체 스켈레톤
-export const BoothsPageSkeleton = () => (
+export const PlacePageSkeleton = () => (
     <div>
         <div className="flex justify-between items-center mb-6">
             <TitleSkeleton />

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import Modal from '../common/Modal';
 import { placeCategories } from '../../data/categories';
 
-const BoothModal = ({ booth, onSave, onClose, showToast }) => {
+const PlaceModal = ({ booth, onSave, onClose, showToast }) => {
     const isEditMode = !!booth;
     const [form, setForm] = useState({});
 
@@ -132,4 +132,4 @@ const BoothModal = ({ booth, onSave, onClose, showToast }) => {
     );
 };
 
-export default BoothModal;
+export default PlaceModal;

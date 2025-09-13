@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../data/categories';
 import { placeAPI } from '../utils/api';
-import { BoothsPageSkeleton } from '../components/common/Skeleton';
+import { PlacePageSkeleton } from '../components/common/Skeleton';
 
 const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBooth, handleImageUpdate }) => {
     const [imageLoadingStates, setImageLoadingStates] = useState({});
@@ -106,7 +106,7 @@ const BoothDetails = ({ booth, openModal, handleSave, openDeleteModal, updateBoo
     );
 };
 
-const BoothsPage = () => {
+const PlacePage = () => {
     const { openModal, showToast } = useModal();
     const [booths, setBooths] = useState([]);
     const [expandedIds, setExpandedIds] = useState([]);
@@ -270,7 +270,7 @@ const BoothsPage = () => {
                 </button>
             </div>
             {loading ? (
-                <BoothsPageSkeleton />
+                <PlacePageSkeleton />
             ) : (
                 <div>
                     <div className='text-xl font-bold ml-1 mt-10 mb-2'>
@@ -368,4 +368,4 @@ const BoothsPage = () => {
     );
 };
 
-export default BoothsPage;
+export default PlacePage;

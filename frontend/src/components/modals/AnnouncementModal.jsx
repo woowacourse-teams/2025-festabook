@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../common/Modal";
 
-const NoticeModal = ({ notice, onSave, onClose, showToast }) => {
+const AnnouncementModal = ({ notice, onSave, onClose, showToast }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isPinned, setIsPinned] = useState(false);
@@ -167,7 +167,7 @@ const NoticeModal = ({ notice, onSave, onClose, showToast }) => {
   );
 };
 
-const NoticeDetailModal = ({ notice, onClose }) => {
+const AnnouncementDetailModal = ({ notice, onClose }) => {
   // ESC 키 처리
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -207,4 +207,4 @@ const NoticeDetailModal = ({ notice, onClose }) => {
   );
 };
 
-export { NoticeModal as default, NoticeDetailModal };
+export { AnnouncementModal as default, AnnouncementDetailModal };

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
-const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, showToast }) => {
+const EventModal = ({ event, onSave, onClose, availableDates, activeDate, showToast }) => {
     const [form, setForm] = useState({ 
         title: '', 
         startTime: '', 
@@ -322,4 +322,4 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, sho
     );
 };
 
-export default ScheduleModal;
+export default EventModal;

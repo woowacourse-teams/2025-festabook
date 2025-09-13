@@ -14,7 +14,7 @@ function formatDate(dateString) {
     return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
 }
 
-const LostFoundPage = () => {
+const LostItemPage = () => {
     const { lostItems, toggleLostItemStatus, addLostItem, updateLostItem, deleteLostItem, isLoadingLostItems, fetchLostItems } = useData();
     const { openModal, showToast } = useModal();
     const [selectedImage, setSelectedImage] = useState(null);
@@ -266,4 +266,4 @@ const LostFoundPage = () => {
     );
 };
 
-export default LostFoundPage;
+export default LostItemPage;

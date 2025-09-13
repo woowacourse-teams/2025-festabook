@@ -50,7 +50,7 @@ const FaqModal = ({ faq, onSave, onClose, showToast }) => {
     }, [question, answer, onClose, handleSave]);
 
     return (
-        <Modal isOpen={true} onClose={onClose}>
+        <Modal isOpen={true} onClose={onClose} maxWidth="max-w-lg">
             <h3 className="text-xl font-bold mb-6">{faq ? 'FAQ 수정' : '새 FAQ 등록'}</h3>
             <div className="space-y-4">
                 <div>
