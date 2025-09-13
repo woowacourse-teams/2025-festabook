@@ -79,7 +79,7 @@ export const getCategoryIcon = (category, size = 20, className = "") => {
     const iconMap = {
         'BOOTH': <BoothIcon size={size} className={className} />,
         'STAGE': <StageIcon size={size} className={className} />,
-        'PHOTO': <PhotoIcon size={size} className={className} />,
+        'PHOTO_BOOTH': <PhotoIcon size={size} className={className} />,
         'SMOKING': <SmokingIcon size={size} className={className} />,
         'TRASH_CAN': <TrashCanIcon size={size} className={className} />,
         'TOILET': <ToiletIcon size={size} className={className} />,

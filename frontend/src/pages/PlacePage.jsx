@@ -149,7 +149,7 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, showToast }) => {
     const getCategoryColor = (category) => {
         const colorMap = {
             'STAGE': 'bg-purple-50 text-gray-900 border-purple-100',
-            'PHOTO': 'bg-pink-50 text-gray-900 border-pink-100',
+            'PHOTO_BOOTH': 'bg-pink-50 text-gray-900 border-pink-100',
             'PRIMARY': 'bg-indigo-50 text-gray-900 border-indigo-100',
             'SMOKING': 'bg-gray-100 text-gray-900 border-gray-200',
             'TRASH_CAN': 'bg-gray-100 text-gray-900 border-gray-200',
@@ -286,7 +286,7 @@ const PlacePage = () => {
     };
 
     const openDeleteModal = (place) => {
-        const isMain = !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(place.category);
+        const isMain = !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
 
         openModal('confirm', {
             title: '플레이스 삭제 확인',
@@ -348,9 +348,9 @@ const PlacePage = () => {
                             placeCategories[place.category].toLowerCase().includes(searchTerm.toLowerCase());
         
         if (viewMode === 'main') {
-            return matchesSearch && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(place.category);
+            return matchesSearch && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
         } else if (viewMode === 'other') {
-            return matchesSearch && ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(place.category);
+            return matchesSearch && ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
         }
         return matchesSearch;
     });
@@ -382,7 +382,7 @@ const PlacePage = () => {
 
     // 카테고리 순서 정의 (원하는 순서대로)
     const categoryOrder = [
-        'BOOTH', 'FOOD_TRUCK', 'BAR', 'STAGE', 'PHOTO', 'PRIMARY',
+        'BOOTH', 'FOOD_TRUCK', 'BAR', 'STAGE', 'PHOTO_BOOTH', 'PRIMARY',
         'SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'EXTRA'
     ];
 
@@ -391,9 +391,9 @@ const PlacePage = () => {
         .filter(category => {
             // 필터링된 플레이스가 있는 카테고리만 포함
             if (viewMode === 'main') {
-                return !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(category);
+                return !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(category);
             } else if (viewMode === 'other') {
-                return ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(category);
+                return ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(category);
             }
             return true; // 전체 보기일 때는 모든 카테고리
         })
@@ -461,7 +461,7 @@ const PlacePage = () => {
                                         : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             >
-                                메인 ({places.filter(p => !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(p.category)).length})
+                                메인 ({places.filter(p => !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
                             </button>
                             <button
                                 onClick={() => setViewMode('other')}
@@ -471,7 +471,7 @@ const PlacePage = () => {
                                         : 'text-gray-600 hover:text-gray-900'
                                 }`}
                             >
-                                기타 ({places.filter(p => ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(p.category)).length})
+                                기타 ({places.filter(p => ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
                             </button>
                         </div>
                     </div>
@@ -521,7 +521,7 @@ const PlacePage = () => {
                                         {categoryPlaces.length > 0 ? (
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                                 {categoryPlaces.map(place => {
-                                                    const isMainPlace = !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO', 'EXTRA'].includes(place.category);
+                                                    const isMainPlace = !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
                                                     
                                                     return isMainPlace ? (
                                                         <MainPlaceCard
