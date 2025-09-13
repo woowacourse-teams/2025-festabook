@@ -44,16 +44,17 @@ class SettingFragment :
         ) { isGranted: Boolean ->
             if (isGranted) {
                 Timber.d("Notification permission granted")
+                onPermissionGranted()
             } else {
                 Timber.d("Notification permission denied")
                 showNotificationDeniedSnackbar(binding.root, requireContext())
-                binding.btnNoticeAllow.isChecked = false
-                settingViewModel.updateNotificationIsAllowed(false)
-                settingViewModel.saveNotificationIsAllowed(false)
+                onPermissionDenied()
             }
         }
 
-    override fun onPermissionGranted() = Unit
+    override fun onPermissionGranted() {
+        settingViewModel.saveNotificationId()
+    }
 
     override fun onPermissionDenied() = Unit
 
@@ -67,13 +68,10 @@ class SettingFragment :
         setupNoticeAllowButtonClickListener()
         setupServicePolicyClickListener()
         setupContactUsButtonClickListener()
-
         setupObservers()
     }
 
     private fun setupBindings() {
-        binding.btnNoticeAllow.isChecked = settingViewModel.isAllowed
-
         val versionName = BuildConfig.VERSION_NAME
         binding.tvSettingAppVersionName.text = versionName
     }
@@ -81,12 +79,13 @@ class SettingFragment :
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
     private fun setupObservers() {
-        settingViewModel.allowClickEvent.observe(viewLifecycleOwner) {
-            if (settingViewModel.isAllowed) {
-                notificationPermissionManager.requestNotificationPermission(
-                    requireContext(),
-                )
-            }
+        settingViewModel.permissionCheckEvent.observe(viewLifecycleOwner) {
+            notificationPermissionManager.requestNotificationPermission(
+                requireContext(),
+            )
+        }
+        settingViewModel.isAllowed.observe(viewLifecycleOwner) {
+            binding.btnNoticeAllow.isChecked = it
         }
         settingViewModel.error.observe(viewLifecycleOwner) { throwable ->
             showErrorSnackBar(throwable)
@@ -136,6 +135,8 @@ class SettingFragment :
 
     private fun setupNoticeAllowButtonClickListener() {
         binding.btnNoticeAllow.setOnClickListener {
+            // 기본적으로 클릭했을 때 checked되는 기능 무효화
+            binding.btnNoticeAllow.isChecked = !binding.btnNoticeAllow.isChecked
             settingViewModel.notificationAllowClick()
         }
     }
