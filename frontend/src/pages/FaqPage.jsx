@@ -86,6 +86,15 @@ const FaqPage = () => {
                                 ) : (
                                     <>
                                         <button
+                                            onClick={() => openModal('faq', { 
+                                                faq: item, 
+                                                onSave: (data) => handleSave(item.questionId, data) 
+                                            })}
+                                            className="text-blue-600 hover:text-blue-800 font-bold"
+                                        >
+                                            수정
+                                        </button>
+                                        <button
                                             onClick={() => {
                                                 openModal('confirm', {
                                                 title: 'FAQ 삭제 확인',

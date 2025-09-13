@@ -84,7 +84,7 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
             };
         });
     };
-  
+
     // lineup이 변경될 때마다 폼 데이터 업데이트
     useEffect(() => {
         if (lineup) {
@@ -301,7 +301,7 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose} maxWidth="max-w-xl">
+        <Modal isOpen={isOpen} onClose={handleClose} maxWidth="max-w-md">
             <form onSubmit={handleSubmit}>
                 <h2 className="text-2xl font-bold mb-6 text-center">라인업 수정</h2>
                 
@@ -397,87 +397,19 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
                         <label className="block text-sm font-medium text-gray-700 mb-3">
                             공연 일시
                         </label>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-4">
                             {/* 날짜 선택 */}
                             <div>
                                 <label className="block text-xs font-medium text-gray-600 mb-1">
                                     날짜
                                 </label>
                                 
-                                {/* 텍스트 입력과 선택기 조합 */}
                                 <div className="space-y-2">
-                                    {/* 텍스트 입력 */}
-                                    <div className="flex items-center space-x-2">
-                                        <input
-                                            type="text"
-                                            maxLength={4}
-                                            placeholder="YYYY"
-                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
-                                            value={year}
-                                            onChange={(e) => {
-                                                const newYear = e.target.value.replace(/[^0-9]/g, '');
-                                                if (newYear.length <= 4) {
-                                                    setYear(newYear);
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Tab' || (e.key === 'Enter' && year.length === 4)) {
-                                                    e.preventDefault();
-                                                    const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
-                                                    nextInput?.focus();
-                                                }
-                                            }}
-                                        />
-                                        <span className="text-gray-700 font-medium">-</span>
-                                        <input
-                                            type="text"
-                                            maxLength={2}
-                                            placeholder="MM"
-                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
-                                            value={month}
-                                            onChange={(e) => {
-                                                const newMonth = e.target.value.replace(/[^0-9]/g, '');
-                                                if (newMonth.length <= 2) {
-                                                    setMonth(newMonth);
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Tab' || (e.key === 'Enter' && month.length === 2)) {
-                                                    e.preventDefault();
-                                                    const nextInput = e.target.parentElement.querySelector('input[placeholder="DD"]');
-                                                    nextInput?.focus();
-                                                }
-                                            }}
-                                        />
-                                        <span className="text-gray-700 font-medium">-</span>
-                                        <input
-                                            type="text"
-                                            maxLength={2}
-                                            placeholder="DD"
-                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
-                                            value={day}
-                                            onChange={(e) => {
-                                                const newDay = e.target.value.replace(/[^0-9]/g, '');
-                                                if (newDay.length <= 2) {
-                                                    setDay(newDay);
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Tab' || (e.key === 'Enter' && day.length === 2)) {
-                                                    e.preventDefault();
-                                                    const timeInput = e.target.closest('.space-y-4').querySelector('input[placeholder="HH"]');
-                                                    timeInput?.focus();
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                    
-                                    {/* 날짜 선택기 */}
                                     <div className="grid grid-cols-3 gap-2 w-full">
                                         {/* 년도 선택 */}
                                         <select
                                             name="performanceYear"
-                                            value={formData.performanceDate ? formData.performanceDate.split('-')[0] : ''}
+                                            value={year}
                                             onChange={(e) => {
                                                 const newYear = e.target.value;
                                                 const [, m = '01', d = '01'] = formData.performanceDate
@@ -488,8 +420,9 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
                                                 ...prev,
                                                 performanceDate: `${newYear}-${m}-${d}`,
                                                 }));
+                                                setYear(newYear);
                                             }}
-                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm font-medium  text-center"
                                             >
                                             <option value="">년도</option>
                                             {Array.from({ length: 51 }, (_, i) => {
@@ -500,13 +433,21 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
                                                 </option>
                                                 );
                                             })}
-                                        <span className="text-gray-700 font-medium">-</span>
                                         </select>
                                         {/* 월 선택 */}
                                         <select
                                             name="performanceMonth"
                                             value={month}
-                                            onChange={(e) => setMonth(e.target.value)}
+                                            onChange={(e) => {
+                                                const newMonth = e.target.value;
+                                                const year = formData.performanceDate ? formData.performanceDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                                const day = formData.performanceDate ? formData.performanceDate.split('-')[2] || '01' : '01';
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceDate: newMonth ? `${year}-${newMonth.padStart(2, '0')}-${day}` : ''
+                                                }));
+                                                setMonth(newMonth);
+                                            }}
                                             className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
                                         >
                                             <option value="">월</option>
@@ -523,7 +464,16 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
                                         <select
                                             name="performanceDay"
                                             value={day}
-                                            onChange={(e) => setDay(e.target.value)}
+                                            onChange={(e) => {
+                                                const newDay = e.target.value;
+                                                const year = formData.performanceDate ? formData.performanceDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                                const month = formData.performanceDate ? formData.performanceDate.split('-')[1] || '01' : '01';
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceDate: newDay ? `${year}-${month}-${newDay.padStart(2, '0')}` : ''
+                                                }));
+                                                setDay(newDay);
+                                            }}
                                             className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
                                         >
                                             <option value="">일</option>
@@ -546,53 +496,23 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
                                     시간
                                 </label>
                                 
-                                {/* 텍스트 입력과 선택기 조합 */}
                                 <div className="space-y-2">
-                                    {/* 텍스트 입력 */}
-                                    <div className="flex items-center space-x-2">
-                                        <input
-                                            type="text"
-                                            maxLength={2}
-                                            placeholder="HH"
-                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
-                                            value={hours}
-                                            onChange={(e) => {
-                                                const newHours = e.target.value.replace(/[^0-9]/g, '');
-                                                if (newHours.length <= 2) {
-                                                    setHours(newHours);
-                                                }
-                                            }}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Tab' || (e.key === 'Enter' && hours.length === 2)) {
-                                                    e.preventDefault();
-                                                    const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
-                                                    nextInput?.focus();
-                                                }
-                                            }}
-                                        />
-                                        <span className="text-gray-700 font-medium">:</span>
-                                        <input
-                                            type="text"
-                                            maxLength={2}
-                                            placeholder="MM"
-                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
-                                            value={minutes}
-                                            onChange={(e) => {
-                                                const newMinutes = e.target.value.replace(/[^0-9]/g, '');
-                                                if (newMinutes.length <= 2) {
-                                                    setMinutes(newMinutes);
-                                                }
-                                            }}
-                                        />
-                                    </div>
-                                    
                                     {/* 시간 선택기 */}
                                     <div className="flex items-center space-x-2">
                                         {/* 시간 선택 */}
                                         <select
                                             name="performanceHours"
                                             value={hours}
-                                            onChange={(e) => setHours(e.target.value)}
+                                            onChange={(e) => {
+                                                const newHours = e.target.value;
+                                                const currentTime = formData.performanceTime || '';
+                                                const [, currentMinutes = '00'] = currentTime.split(':');
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceTime: newHours ? `${newHours.padStart(2, '0')}:${currentMinutes}` : ''
+                                                }));
+                                                setHours(newHours);
+                                            }}
                                             className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
                                         >
                                             <option value="">시간</option>
@@ -606,7 +526,16 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
                                         <select
                                             name="performanceMinutes"
                                             value={minutes}
-                                            onChange={(e) => setMinutes(e.target.value)}
+                                            onChange={(e) => {
+                                                const newMinutes = e.target.value;
+                                                const currentTime = formData.performanceTime || '';
+                                                const [currentHours = '00'] = currentTime.split(':');
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceTime: newMinutes ? `${currentHours}:${newMinutes.padStart(2, '0')}` : ''
+                                                }));
+                                                setMinutes(newMinutes);
+                                            }}
                                             className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
                                         >
                                             <option value="">분</option>

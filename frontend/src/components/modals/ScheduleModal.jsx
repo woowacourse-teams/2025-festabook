@@ -216,54 +216,7 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, sho
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">시작 시간</label>
                         
-                        {/* 텍스트 입력과 선택기 조합 */}
                         <div className="space-y-2">
-                            {/* 텍스트 입력 */}
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    type="text"
-                                    maxLength={2}
-                                    placeholder="HH"
-                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
-                                    value={startHours}
-                                    onChange={(e) => {
-                                        const newHours = e.target.value.replace(/[^0-9]/g, '');
-                                        if (newHours.length <= 2) {
-                                            setStartHours(newHours);
-                                        }
-                                    }}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Tab' || (e.key === 'Enter' && startHours.length === 2)) {
-                                            e.preventDefault();
-                                            const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
-                                            nextInput?.focus();
-                                        }
-                                    }}
-                                />
-                                <span className="text-gray-700 font-medium">:</span>
-                                <input
-                                    type="text"
-                                    maxLength={2}
-                                    placeholder="MM"
-                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
-                                    value={startMinutes}
-                                    onChange={(e) => {
-                                        const newMinutes = e.target.value.replace(/[^0-9]/g, '');
-                                        if (newMinutes.length <= 2) {
-                                            setStartMinutes(newMinutes);
-                                        }
-                                    }}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Tab' || (e.key === 'Enter' && startMinutes.length === 2)) {
-                                            e.preventDefault();
-                                            const endTimeInput = document.querySelector('.end-time-section input[placeholder="HH"]');
-                                            endTimeInput?.focus();
-                                        }
-                                    }}
-                                />
-                            </div>
-                            
-                            {/* 시간 선택기 */}
                             <div className="flex items-center space-x-2">
                                 {/* 시간 선택 */}
                                 <select
@@ -279,9 +232,6 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, sho
                                         </option>
                                     ))}
                                 </select>
-                                
-                                <span className="text-gray-700 font-medium">:</span>
-                                
                                 {/* 분 선택 */}
                                 <select
                                     name="startMinutes"
@@ -302,47 +252,7 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, sho
                     <div className="end-time-section">
                         <label className="block text-sm font-medium text-gray-700 mb-2">종료 시간</label>
                         
-                        {/* 텍스트 입력과 선택기 조합 */}
                         <div className="space-y-2">
-                            {/* 텍스트 입력 */}
-                            <div className="flex items-center space-x-2">
-                                <input
-                                    type="text"
-                                    maxLength={2}
-                                    placeholder="HH"
-                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
-                                    value={endHours}
-                                    onChange={(e) => {
-                                        const newHours = e.target.value.replace(/[^0-9]/g, '');
-                                        if (newHours.length <= 2) {
-                                            setEndHours(newHours);
-                                        }
-                                    }}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Tab' || (e.key === 'Enter' && endHours.length === 2)) {
-                                            e.preventDefault();
-                                            const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
-                                            nextInput?.focus();
-                                        }
-                                    }}
-                                />
-                                <span className="text-gray-700 font-medium">:</span>
-                                <input
-                                    type="text"
-                                    maxLength={2}
-                                    placeholder="MM"
-                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
-                                    value={endMinutes}
-                                    onChange={(e) => {
-                                        const newMinutes = e.target.value.replace(/[^0-9]/g, '');
-                                        if (newMinutes.length <= 2) {
-                                            setEndMinutes(newMinutes);
-                                        }
-                                    }}
-                                />
-                            </div>
-                            
-                            {/* 시간 선택기 */}
                             <div className="flex items-center space-x-2">
                                 {/* 시간 선택 */}
                                 <select
@@ -358,9 +268,6 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, sho
                                         </option>
                                     ))}
                                 </select>
-                                
-                                <span className="text-gray-700 font-medium">:</span>
-                                
                                 {/* 분 선택 */}
                                 <select
                                     name="endMinutes"
@@ -397,11 +304,19 @@ const ScheduleModal = ({ event, onSave, onClose, availableDates, activeDate, sho
                     />
                 </div>
             </div>
-            <div className="mt-6 flex justify-between w-full">
-                <div className="space-x-3">
-                    <button onClick={onClose} className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg">취소</button>
-                    <button onClick={handleSave} className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg">저장</button>
-                </div>
+            <div className="mt-6 flex w-full space-x-3">
+                <button
+                    onClick={onClose}
+                    className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
+                >
+                    취소
+                </button>
+                <button
+                    onClick={handleSave}
+                    className="flex-1 bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg"
+                >
+                    저장
+                </button>
             </div>
         </Modal>
     );
