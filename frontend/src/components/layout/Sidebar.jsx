@@ -154,7 +154,7 @@ const Sidebar = ({ open, setOpen }) => {
                 <NavLink target="home" icon="fa-home" open={open}>홈</NavLink>
                 <NavLink target="schedule" icon="fa-calendar-alt" open={open}>일정</NavLink>
                 <SubMenu icon="fa-map-marked-alt" title="지도" links={[{ target: 'place', title: '플레이스 관리' }, { target: 'map-settings', title: '지도 설정' }]} sidebarOpen={open} />
-                <SubMenu icon="fa-bullhorn" title="소식" links={[{ target: 'notices', title: '공지 사항' }, { target: 'faq', title: 'FAQ' }, { target: 'lost-found', title: '분실물' }]} sidebarOpen={open} />
+                <SubMenu icon="fa-bullhorn" title="소식" links={[{ target: 'notices', title: '공지사항' }, { target: 'faq', title: 'FAQ' }, { target: 'lost-found', title: '분실물' }]} sidebarOpen={open} />
             </nav>
             
             {/* 로그아웃 버튼 - 사이드바 하단에 배치 */}
