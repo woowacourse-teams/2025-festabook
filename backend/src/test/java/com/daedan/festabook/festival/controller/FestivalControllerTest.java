@@ -216,7 +216,7 @@ class FestivalControllerTest {
             festivalImageJpaRepository.saveAll(List.of(festivalImage2, festivalImage1));
 
             int festivalImageSize = 2;
-            int expectedFieldSize = 6;
+            int expectedFieldSize = 7;
 
             // when & then
             RestAssured
