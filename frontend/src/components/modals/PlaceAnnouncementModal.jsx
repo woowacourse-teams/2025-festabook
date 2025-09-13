@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
-const PlaceNoticeModal = ({ place, onSave, onClose }) => {
+const PlaceAnnouncementModal = ({ place, onSave, onClose }) => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
@@ -104,4 +104,4 @@ const PlaceNoticeModal = ({ place, onSave, onClose }) => {
   );
 };
 
-export default PlaceNoticeModal;
+export default PlaceAnnouncementModal;

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from 'react';
-import FlipMove from 'react-flip-move';
 import { useModal } from '../hooks/useModal';
 import { announcementAPI } from '../utils/api';
 
@@ -11,7 +10,7 @@ function formatDate(dateString) {
     return `${year}.${month}.${day}`;
 }
 
-const NoticesPage = () => {
+const AnnouncementPage = () => {
     const { openModal, showToast } = useModal();
     const [pinned, setPinned] = useState([]);
     const [unpinned, setUnpinned] = useState([]);
@@ -265,12 +264,11 @@ const NoticesPage = () => {
                         <i className="fas fa-thumbtack text-yellow-500 mr-2"></i>
                         고정된 공지사항
                     </h3>
-                    <FlipMove className="space-y-4" duration={300} easing="cubic-bezier(0.4, 0.0, 0.2, 1)" appearAnimation="none">
+                    <div className="space-y-4">
                         {pinned.map((notice) => {
                             return (
                             <div 
                                 key={notice.announcementId} 
-                                data-id={notice.announcementId} 
                                 className="bg-white rounded-lg shadow-sm border border-gray-200 p-5"
                             >
                                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start gap-2 mb-3">
@@ -347,19 +345,18 @@ const NoticesPage = () => {
                             </div>
                         );
                         })}
-                    </FlipMove>
+                    </div>
                 </div>
             )}
             
             {/* 일반 공지사항 */}
             <div>
                 <h3 className="text-lg font-semibold text-gray-700 mb-3">일반 공지사항</h3>
-                <FlipMove className="space-y-4" duration={300} easing="cubic-bezier(0.4, 0.0, 0.2, 1)" appearAnimation="none">
+                <div className="space-y-4">
                     {unpinned.map((notice) => {
                         return (
                         <div 
                             key={notice.announcementId} 
-                            data-id={notice.announcementId} 
                             className="bg-white rounded-lg shadow-sm border border-gray-200 p-5"
                         >
                             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-start gap-2 mb-3">
@@ -436,7 +433,7 @@ const NoticesPage = () => {
                         </div>
                     );
                     })}
-                </FlipMove>
+                </div>
                 
                 {/* 공지사항이 없을 때 */}
                 {pinned.length === 0 && unpinned.length === 0 && (
@@ -456,4 +453,4 @@ const NoticesPage = () => {
     );
 };
 
-export default NoticesPage;
+export default AnnouncementPage;

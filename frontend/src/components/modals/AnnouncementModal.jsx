@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Modal from "../common/Modal";
 
-const NoticeModal = ({ notice, onSave, onClose, showToast }) => {
+const AnnouncementModal = ({ notice, onSave, onClose, showToast }) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [isPinned, setIsPinned] = useState(false);
@@ -144,32 +144,30 @@ const NoticeModal = ({ notice, onSave, onClose, showToast }) => {
           </div>
         )}
       </div>
-      <div className="mt-6 flex justify-between w-full">
-        <div className="space-x-3">
-          <button
-            onClick={onClose}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg"
-          >
-            취소
-          </button>
-          <button
-            onClick={handleSave}
-            disabled={isSaveDisabled}
-            className={`font-bold py-2 px-4 rounded-lg transition-colors duration-200 ${
-              isSaveDisabled
-                ? "bg-gray-300 text-gray-400 cursor-not-allowed"
-                : "bg-gray-800 hover:bg-gray-900 text-white"
-            }`}
-          >
-            저장
-          </button>
-        </div>
+      <div className="mt-6 flex w-full space-x-3">
+        <button
+          onClick={onClose}
+          className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
+        >
+          취소
+        </button>
+        <button
+          onClick={handleSave}
+          disabled={isSaveDisabled}
+          className={`flex-1 font-bold py-2 px-4 rounded-lg transition-all duration-200 ${
+            isSaveDisabled
+              ? "bg-gray-300 text-gray-400 cursor-not-allowed"
+              : "bg-black hover:bg-gray-800 text-white"
+          }`}
+        >
+          저장
+        </button>
       </div>
     </Modal>
   );
 };
 
-const NoticeDetailModal = ({ notice, onClose }) => {
+const AnnouncementDetailModal = ({ notice, onClose }) => {
   // ESC 키 처리
   useEffect(() => {
     const handleKeyDown = (event) => {
@@ -209,4 +207,4 @@ const NoticeDetailModal = ({ notice, onClose }) => {
   );
 };
 
-export { NoticeModal as default, NoticeDetailModal };
+export { AnnouncementModal as default, AnnouncementDetailModal };

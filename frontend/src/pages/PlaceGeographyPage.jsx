@@ -13,7 +13,7 @@ const KOREA_BOUNDARY = [
   [32.8709533, 123.5125660],
 ];
 
-const MapSettingsPage = () => {
+const PlaceGeographyPage = () => {
   const { setPage } = usePage();
   const [booths, setBooths] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
@@ -321,7 +321,7 @@ const MapSettingsPage = () => {
                 <i className="fas fa-map-marker-alt text-4xl text-gray-400 mb-4"></i>
                 <p className="text-gray-500 mb-4">등록된 플레이스가 없습니다</p>
                 <button
-                  onClick={() => setPage('booths')}
+                  onClick={() => setPage('place')}
                   className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
                 >
                   플레이스 관리로 이동
@@ -372,4 +372,4 @@ const MapSettingsPage = () => {
   );
 };
 
-export default MapSettingsPage;
+export default PlaceGeographyPage;
