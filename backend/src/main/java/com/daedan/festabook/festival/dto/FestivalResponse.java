@@ -11,7 +11,8 @@ public record FestivalResponse(
         FestivalImageResponses festivalImages,
         String festivalName,
         LocalDate startDate,
-        LocalDate endDate
+        LocalDate endDate,
+        boolean userVisible
 ) {
 
     public static FestivalResponse from(Festival festival, List<FestivalImage> festivalImages) {
@@ -21,7 +22,8 @@ public record FestivalResponse(
                 FestivalImageResponses.from(festivalImages),
                 festival.getFestivalName(),
                 festival.getStartDate(),
-                festival.getEndDate()
+                festival.getEndDate(),
+                festival.isUserVisible()
         );
     }
 }
