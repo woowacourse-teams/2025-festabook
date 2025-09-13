@@ -9,6 +9,92 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
         endDate: festival?.endDate ? festival.endDate.split('T')[0] : '',
         userVisible: Boolean(festival?.userVisible)
     });
+    
+    // 시작일 개별 필드 관리
+    const [startYear, setStartYearState] = useState('');
+    const [startMonth, setStartMonthState] = useState('');
+    const [startDay, setStartDayState] = useState('');
+    
+    // 종료일 개별 필드 관리
+    const [endYear, setEndYearState] = useState('');
+    const [endMonth, setEndMonthState] = useState('');
+    const [endDay, setEndDayState] = useState('');
+
+    // 시작일 개별 필드 업데이트 함수들
+    const setStartYear = (newYear) => {
+        setStartYearState(newYear);
+        setFormData(prev => {
+            const currentDate = prev.startDate || '';
+            const [, currentMonth = '01', currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                startDate: `${newYear}-${currentMonth}-${currentDay}`
+            };
+        });
+    };
+
+    const setStartMonth = (newMonth) => {
+        setStartMonthState(newMonth);
+        setFormData(prev => {
+            const currentDate = prev.startDate || '';
+            const [currentYear = new Date().getFullYear().toString()] = currentDate.split('-');
+            const [, , currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                startDate: `${currentYear}-${newMonth.padStart(2, '0')}-${currentDay}`
+            };
+        });
+    };
+
+    const setStartDay = (newDay) => {
+        setStartDayState(newDay);
+        setFormData(prev => {
+            const currentDate = prev.startDate || '';
+            const [currentYear = new Date().getFullYear().toString(), currentMonth = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                startDate: `${currentYear}-${currentMonth}-${newDay.padStart(2, '0')}`
+            };
+        });
+    };
+
+    // 종료일 개별 필드 업데이트 함수들
+    const setEndYear = (newYear) => {
+        setEndYearState(newYear);
+        setFormData(prev => {
+            const currentDate = prev.endDate || '';
+            const [, currentMonth = '01', currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                endDate: `${newYear}-${currentMonth}-${currentDay}`
+            };
+        });
+    };
+
+    const setEndMonth = (newMonth) => {
+        setEndMonthState(newMonth);
+        setFormData(prev => {
+            const currentDate = prev.endDate || '';
+            const [currentYear = new Date().getFullYear().toString()] = currentDate.split('-');
+            const [, , currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                endDate: `${currentYear}-${newMonth.padStart(2, '0')}-${currentDay}`
+            };
+        });
+    };
+
+    const setEndDay = (newDay) => {
+        setEndDayState(newDay);
+        setFormData(prev => {
+            const currentDate = prev.endDate || '';
+            const [currentYear = new Date().getFullYear().toString(), currentMonth = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                endDate: `${currentYear}-${currentMonth}-${newDay.padStart(2, '0')}`
+            };
+        });
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -59,12 +145,25 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
 
     useEffect(() => {
         if (festival) {
+            const startDate = festival.startDate ? festival.startDate.split('T')[0] : '';
+            const endDate = festival.endDate ? festival.endDate.split('T')[0] : '';
+            const [startYearPart = '', startMonthPart = '', startDayPart = ''] = startDate.split('-');
+            const [endYearPart = '', endMonthPart = '', endDayPart = ''] = endDate.split('-');
+            
             setFormData({
                 festivalName: festival.festivalName || '',
-                startDate: festival.startDate ? festival.startDate.split('T')[0] : '',
-                endDate: festival.endDate ? festival.endDate.split('T')[0] : '',
+                startDate: startDate,
+                endDate: endDate,
                 userVisible: Boolean(festival.userVisible)
             });
+            
+            // 개별 날짜 상태도 업데이트
+            setStartYearState(startYearPart);
+            setStartMonthState(startMonthPart);
+            setStartDayState(startDayPart);
+            setEndYearState(endYearPart);
+            setEndMonthState(endMonthPart);
+            setEndDayState(endDayPart);
         }
     }, [festival]);
 
@@ -118,28 +217,293 @@ const FestivalInfoModal = ({ isOpen, onClose, festival, showToast, onUpdate }) =
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             시작일
                         </label>
-                        <input
-                            type="date"
-                            name="startDate"
-                            value={formData.startDate}
-                            onChange={handleChange}
-                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
-                            required
-                        />
+                        
+                        {/* 텍스트 입력과 선택기 조합 */}
+                        <div className="space-y-2">
+                            {/* 텍스트 입력 */}
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="text"
+                                    maxLength={4}
+                                    placeholder="YYYY"
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                    value={startYear}
+                                    onChange={(e) => {
+                                        const newYear = e.target.value.replace(/[^0-9]/g, '');
+                                        if (newYear.length <= 4) {
+                                            setStartYear(newYear);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Tab' || (e.key === 'Enter' && startYear.length === 4)) {
+                                            e.preventDefault();
+                                            const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
+                                            nextInput?.focus();
+                                        }
+                                    }}
+                                />
+                                <span className="text-gray-700 font-medium">-</span>
+                                <input
+                                    type="text"
+                                    maxLength={2}
+                                    placeholder="MM"
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                    value={startMonth}
+                                    onChange={(e) => {
+                                        const newMonth = e.target.value.replace(/[^0-9]/g, '');
+                                        if (newMonth.length <= 2) {
+                                            setStartMonth(newMonth);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Tab' || (e.key === 'Enter' && startMonth.length === 2)) {
+                                            e.preventDefault();
+                                            const nextInput = e.target.parentElement.querySelector('input[placeholder="DD"]');
+                                            nextInput?.focus();
+                                        }
+                                    }}
+                                />
+                                <span className="text-gray-700 font-medium">-</span>
+                                <input
+                                    type="text"
+                                    maxLength={2}
+                                    placeholder="DD"
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                    value={startDay}
+                                    onChange={(e) => {
+                                        const newDay = e.target.value.replace(/[^0-9]/g, '');
+                                        if (newDay.length <= 2) {
+                                            setStartDay(newDay);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Tab' || (e.key === 'Enter' && startDay.length === 2)) {
+                                            e.preventDefault();
+                                            const nextInput = e.target.parentElement.querySelector('input[placeholder="YYYY"]');
+                                            nextInput?.focus();
+                                        }
+                                    }}
+                                />
+                            </div>
+                            
+                            {/* 날짜 선택기 */}
+                            <div className="grid grid-cols-3 gap-2 w-full">
+                                <select
+                                    name="startYear"
+                                    value={formData.startDate ? formData.startDate.split('-')[0] : ''}
+                                    onChange={(e) => {
+                                        const newYear = e.target.value;
+                                        const [, m = '01', d = '01'] = formData.startDate ? formData.startDate.split('-') : ['', '01', '01'];
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            startDate: `${newYear}-${m}-${d}`,
+                                        }));
+                                    }}
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                >
+                                    <option value="">년도</option>
+                                    {Array.from({ length: 51 }, (_, i) => {
+                                        const yearOption = 2000 + i;
+                                        return (
+                                            <option key={yearOption} value={yearOption.toString()}>
+                                                {yearOption}년
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <select
+                                    name="startMonth"
+                                    value={formData.startDate ? formData.startDate.split('-')[1] : ''}
+                                    onChange={(e) => {
+                                        const month = e.target.value;
+                                        const year = formData.startDate ? formData.startDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                        const day = formData.startDate ? formData.startDate.split('-')[2] || '01' : '01';
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            startDate: month ? `${year}-${month.padStart(2, '0')}-${day}` : '',
+                                        }));
+                                    }}
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                >
+                                    <option value="">월</option>
+                                    {Array.from({ length: 12 }, (_, i) => {
+                                        const monthOption = i + 1;
+                                        return (
+                                            <option key={monthOption} value={monthOption.toString().padStart(2, '0')}>
+                                                {monthOption}월
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <select
+                                    name="startDay"
+                                    value={formData.startDate ? formData.startDate.split('-')[2] : ''}
+                                    onChange={(e) => {
+                                        const day = e.target.value;
+                                        const year = formData.startDate ? formData.startDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                        const month = formData.startDate ? formData.startDate.split('-')[1] || '01' : '01';
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            startDate: day ? `${year}-${month}-${day.padStart(2, '0')}` : '',
+                                        }));
+                                    }}
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                >
+                                    <option value="">일</option>
+                                    {Array.from({ length: 31 }, (_, i) => {
+                                        const dayOption = i + 1;
+                                        return (
+                                            <option key={dayOption} value={dayOption.toString().padStart(2, '0')}>
+                                                {dayOption}일
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     
                     <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
                             종료일
                         </label>
-                        <input
-                            type="date"
-                            name="endDate"
-                            value={formData.endDate}
-                            onChange={handleChange}
-                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
-                            required
-                        />
+                        
+                        {/* 텍스트 입력과 선택기 조합 */}
+                        <div className="space-y-2">
+                            {/* 텍스트 입력 */}
+                            <div className="flex items-center space-x-2">
+                                <input
+                                    type="text"
+                                    maxLength={4}
+                                    placeholder="YYYY"
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                    value={endYear}
+                                    onChange={(e) => {
+                                        const newYear = e.target.value.replace(/[^0-9]/g, '');
+                                        if (newYear.length <= 4) {
+                                            setEndYear(newYear);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Tab' || (e.key === 'Enter' && endYear.length === 4)) {
+                                            e.preventDefault();
+                                            const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
+                                            nextInput?.focus();
+                                        }
+                                    }}
+                                />
+                                <span className="text-gray-700 font-medium">-</span>
+                                <input
+                                    type="text"
+                                    maxLength={2}
+                                    placeholder="MM"
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                    value={endMonth}
+                                    onChange={(e) => {
+                                        const newMonth = e.target.value.replace(/[^0-9]/g, '');
+                                        if (newMonth.length <= 2) {
+                                            setEndMonth(newMonth);
+                                        }
+                                    }}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Tab' || (e.key === 'Enter' && endMonth.length === 2)) {
+                                            e.preventDefault();
+                                            const nextInput = e.target.parentElement.querySelector('input[placeholder="DD"]');
+                                            nextInput?.focus();
+                                        }
+                                    }}
+                                />
+                                <span className="text-gray-700 font-medium">-</span>
+                                <input
+                                    type="text"
+                                    maxLength={2}
+                                    placeholder="DD"
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                    value={endDay}
+                                    onChange={(e) => {
+                                        const newDay = e.target.value.replace(/[^0-9]/g, '');
+                                        if (newDay.length <= 2) {
+                                            setEndDay(newDay);
+                                        }
+                                    }}
+                                />
+                            </div>
+                            
+                            {/* 날짜 선택기 */}
+                            <div className="grid grid-cols-3 gap-2 w-full">
+                                <select
+                                    name="endYear"
+                                    value={formData.endDate ? formData.endDate.split('-')[0] : ''}
+                                    onChange={(e) => {
+                                        const newYear = e.target.value;
+                                        const [, m = '01', d = '01'] = formData.endDate ? formData.endDate.split('-') : ['', '01', '01'];
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            endDate: `${newYear}-${m}-${d}`,
+                                        }));
+                                    }}
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                >
+                                    <option value="">년도</option>
+                                    {Array.from({ length: 51 }, (_, i) => {
+                                        const yearOption = 2000 + i;
+                                        return (
+                                            <option key={yearOption} value={yearOption.toString()}>
+                                                {yearOption}년
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <select
+                                    name="endMonth"
+                                    value={formData.endDate ? formData.endDate.split('-')[1] : ''}
+                                    onChange={(e) => {
+                                        const month = e.target.value;
+                                        const year = formData.endDate ? formData.endDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                        const day = formData.endDate ? formData.endDate.split('-')[2] || '01' : '01';
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            endDate: month ? `${year}-${month.padStart(2, '0')}-${day}` : '',
+                                        }));
+                                    }}
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                >
+                                    <option value="">월</option>
+                                    {Array.from({ length: 12 }, (_, i) => {
+                                        const monthOption = i + 1;
+                                        return (
+                                            <option key={monthOption} value={monthOption.toString().padStart(2, '0')}>
+                                                {monthOption}월
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                                <select
+                                    name="endDay"
+                                    value={formData.endDate ? formData.endDate.split('-')[2] : ''}
+                                    onChange={(e) => {
+                                        const day = e.target.value;
+                                        const year = formData.endDate ? formData.endDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                        const month = formData.endDate ? formData.endDate.split('-')[1] || '01' : '01';
+                                        setFormData(prev => ({
+                                            ...prev,
+                                            endDate: day ? `${year}-${month}-${day.padStart(2, '0')}` : '',
+                                        }));
+                                    }}
+                                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                >
+                                    <option value="">일</option>
+                                    {Array.from({ length: 31 }, (_, i) => {
+                                        const dayOption = i + 1;
+                                        return (
+                                            <option key={dayOption} value={dayOption.toString().padStart(2, '0')}>
+                                                {dayOption}일
+                                            </option>
+                                        );
+                                    })}
+                                </select>
+                            </div>
+                        </div>
                     </div>
                     
                     <div>

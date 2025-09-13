@@ -1,1 +1,10 @@
 @import 'tailwindcss';
+
+/* 24시간 형식 시간 입력을 위한 스타일 */
+.time-24h::-webkit-datetime-edit-ampm-field {
+  display: none;
+}
+
+.time-24h {
+  color-scheme: light;
+}

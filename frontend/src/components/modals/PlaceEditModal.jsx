@@ -14,6 +14,64 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  
+  // 시작 시간 개별 필드 관리
+  const [startHours, setStartHoursState] = useState('');
+  const [startMinutes, setStartMinutesState] = useState('');
+  
+  // 종료 시간 개별 필드 관리
+  const [endHours, setEndHoursState] = useState('');
+  const [endMinutes, setEndMinutesState] = useState('');
+
+  // 시작 시간 개별 필드 업데이트 함수들
+  const setStartHours = (newHours) => {
+    setStartHoursState(newHours);
+    setFormData(prev => {
+      const currentTime = prev.startTime || '';
+      const [, currentMinutes = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        startTime: `${newHours.padStart(2, '0')}:${currentMinutes}`
+      };
+    });
+  };
+
+  const setStartMinutes = (newMinutes) => {
+    setStartMinutesState(newMinutes);
+    setFormData(prev => {
+      const currentTime = prev.startTime || '';
+      const [currentHours = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        startTime: `${currentHours}:${newMinutes.padStart(2, '0')}`
+      };
+    });
+  };
+
+  // 종료 시간 개별 필드 업데이트 함수들
+  const setEndHours = (newHours) => {
+    setEndHoursState(newHours);
+    setFormData(prev => {
+      const currentTime = prev.endTime || '';
+      const [, currentMinutes = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        endTime: `${newHours.padStart(2, '0')}:${currentMinutes}`
+      };
+    });
+  };
+
+  const setEndMinutes = (newMinutes) => {
+    setEndMinutesState(newMinutes);
+    setFormData(prev => {
+      const currentTime = prev.endTime || '';
+      const [currentHours = '00'] = currentTime.split(':');
+      return {
+        ...prev,
+        endTime: `${currentHours}:${newMinutes.padStart(2, '0')}`
+      };
+    });
+  };
 
   // 플레이스 데이터로 폼 초기화
   useEffect(() => {
@@ -27,15 +85,26 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
       const category = place.placeCategory || place.category || 'FOOD_TRUCK';
       console.log('PlaceEditModal - Selected category:', category);
       
+      const startTime = place.startTime || '';
+      const endTime = place.endTime || '';
+      const [startHoursPart = '', startMinutesPart = ''] = startTime.split(':');
+      const [endHoursPart = '', endMinutesPart = ''] = endTime.split(':');
+      
       setFormData({
         placeCategory: category,
         title: place.title || '',
         description: place.description || '',
         location: place.location || '',
         host: place.host || '',
-        startTime: place.startTime || '',
-        endTime: place.endTime || ''
+        startTime: startTime,
+        endTime: endTime
       });
+      
+      // 개별 시간 상태도 업데이트
+      setStartHoursState(startHoursPart);
+      setStartMinutesState(startMinutesPart);
+      setEndHoursState(endHoursPart);
+      setEndMinutesState(endMinutesPart);
     }
   }, [place]);
 
@@ -158,7 +227,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} maxWidth="max-w-2xl">
+    <Modal isOpen={true} onClose={onClose} maxWidth="max-w-xl">
       <div className="p-6">
         <h3 className="text-xl font-bold mb-6">플레이스 세부사항 수정</h3>
         
@@ -290,25 +359,170 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 시작 시간
               </label>
-              <input
-                type="time"
-                name="startTime"
-                value={formatTimeOnly(formData.startTime)}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              
+              {/* 텍스트 입력과 선택기 조합 */}
+              <div className="space-y-2">
+                {/* 텍스트 입력 */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="HH"
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                    value={startHours}
+                    onChange={(e) => {
+                      const newHours = e.target.value.replace(/[^0-9]/g, '');
+                      if (newHours.length <= 2) {
+                        setStartHours(newHours);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Tab' || (e.key === 'Enter' && startHours.length === 2)) {
+                        e.preventDefault();
+                        const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
+                        nextInput?.focus();
+                      }
+                    }}
+                  />
+                  <span className="text-gray-700 font-medium">:</span>
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="MM"
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                    value={startMinutes}
+                    onChange={(e) => {
+                      const newMinutes = e.target.value.replace(/[^0-9]/g, '');
+                      if (newMinutes.length <= 2) {
+                        setStartMinutes(newMinutes);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Tab' || (e.key === 'Enter' && startMinutes.length === 2)) {
+                        e.preventDefault();
+                        const endTimeInput = document.querySelector('.end-time-section input[placeholder="HH"]');
+                        endTimeInput?.focus();
+                      }
+                    }}
+                  />
+                </div>
+                
+                {/* 시간 선택기 */}
+                <div className="flex items-center space-x-2">
+                  {/* 시간 선택 */}
+                  <select
+                    name="startHours"
+                    value={startHours}
+                    onChange={(e) => setStartHours(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">시간</option>
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}시
+                      </option>
+                    ))}
+                  </select>
+                  
+                  <span className="text-gray-700 font-medium">:</span>
+                  
+                  {/* 분 선택 */}
+                  <select
+                    name="startMinutes"
+                    value={startMinutes}
+                    onChange={(e) => setStartMinutes(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">분</option>
+                    {Array.from({ length: 60 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}분
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
-            <div>
+            <div className="end-time-section">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 종료 시간
               </label>
-              <input
-                type="time"
-                name="endTime"
-                value={formatTimeOnly(formData.endTime)}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500"
-              />
+              
+              {/* 텍스트 입력과 선택기 조합 */}
+              <div className="space-y-2">
+                {/* 텍스트 입력 */}
+                <div className="flex items-center space-x-2">
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="HH"
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                    value={endHours}
+                    onChange={(e) => {
+                      const newHours = e.target.value.replace(/[^0-9]/g, '');
+                      if (newHours.length <= 2) {
+                        setEndHours(newHours);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Tab' || (e.key === 'Enter' && endHours.length === 2)) {
+                        e.preventDefault();
+                        const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
+                        nextInput?.focus();
+                      }
+                    }}
+                  />
+                  <span className="text-gray-700 font-medium">:</span>
+                  <input
+                    type="text"
+                    maxLength={2}
+                    placeholder="MM"
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                    value={endMinutes}
+                    onChange={(e) => {
+                      const newMinutes = e.target.value.replace(/[^0-9]/g, '');
+                      if (newMinutes.length <= 2) {
+                        setEndMinutes(newMinutes);
+                      }
+                    }}
+                  />
+                </div>
+                
+                {/* 시간 선택기 */}
+                <div className="flex items-center space-x-2">
+                  {/* 시간 선택 */}
+                  <select
+                    name="endHours"
+                    value={endHours}
+                    onChange={(e) => setEndHours(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">시간</option>
+                    {Array.from({ length: 24 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}시
+                      </option>
+                    ))}
+                  </select>
+                  
+                  <span className="text-gray-700 font-medium">:</span>
+                  
+                  {/* 분 선택 */}
+                  <select
+                    name="endMinutes"
+                    value={endMinutes}
+                    onChange={(e) => setEndMinutes(e.target.value)}
+                    className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 text-sm text-center"
+                  >
+                    <option value="">분</option>
+                    {Array.from({ length: 60 }, (_, i) => (
+                      <option key={i} value={i.toString().padStart(2, '0')}>
+                        {i.toString().padStart(2, '0')}분
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </div>
             </div>
           </div>
 

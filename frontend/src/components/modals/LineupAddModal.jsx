@@ -6,12 +6,84 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
     const [formData, setFormData] = useState({
         name: '',
         imageUrl: '',
-        performanceAt: ''
+        performanceDate: '',
+        performanceTime: ''
     });
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
+    
+    // 날짜 필드들을 개별적으로 관리
+    const [year, setYearState] = useState('');
+    const [month, setMonthState] = useState('');
+    const [day, setDayState] = useState('');
+    
+    // 시간 필드들을 개별적으로 관리
+    const [hours, setHoursState] = useState('');
+    const [minutes, setMinutesState] = useState('');
+
+    // 개별 필드 업데이트 함수들
+    const setYear = (newYear) => {
+        setYearState(newYear);
+        setFormData(prev => {
+            const currentDate = prev.performanceDate || '';
+            const [, currentMonth = '01', currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                performanceDate: `${newYear}-${currentMonth}-${currentDay}`
+            };
+        });
+    };
+
+    const setMonth = (newMonth) => {
+        setMonthState(newMonth);
+        setFormData(prev => {
+            const currentDate = prev.performanceDate || '';
+            const [currentYear = new Date().getFullYear().toString(), , currentDay = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                performanceDate: `${currentYear}-${newMonth.padStart(2, '0')}-${currentDay}`
+            };
+        });
+    };
+
+    const setDay = (newDay) => {
+        setDayState(newDay);
+        setFormData(prev => {
+            const currentDate = prev.performanceDate || '';
+            const [currentYear = new Date().getFullYear().toString(), currentMonth = '01'] = currentDate.split('-');
+            return {
+                ...prev,
+                performanceDate: `${currentYear}-${currentMonth}-${newDay.padStart(2, '0')}`
+            };
+        });
+    };
+
+    // 시간 개별 필드 업데이트 함수들
+    const setHours = (newHours) => {
+        setHoursState(newHours);
+        setFormData(prev => {
+            const currentTime = prev.performanceTime || '';
+            const [, currentMinutes = '00'] = currentTime.split(':');
+            return {
+                ...prev,
+                performanceTime: `${newHours.padStart(2, '0')}:${currentMinutes}`
+            };
+        });
+    };
+
+    const setMinutes = (newMinutes) => {
+        setMinutesState(newMinutes);
+        setFormData(prev => {
+            const currentTime = prev.performanceTime || '';
+            const [currentHours = '00'] = currentTime.split(':');
+            return {
+                ...prev,
+                performanceTime: `${currentHours}:${newMinutes.padStart(2, '0')}`
+            };
+        });
+    };
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
@@ -34,11 +106,17 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             setFormData({
                 name: '',
                 imageUrl: '',
-                performanceAt: ''
+                performanceDate: '',
+                performanceTime: ''
             });
             setSelectedFile(null);
             setIsDragging(false);
             setIsUploading(false);
+            setYearState('');
+            setMonthState('');
+            setDayState('');
+            setHoursState('');
+            setMinutesState('');
         }
     }, [isOpen]);
 
@@ -109,7 +187,7 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             return;
         }
 
-        if (!formData.performanceAt) {
+        if (!formData.performanceDate || !formData.performanceTime) {
             showToast('공연 일시를 입력해주세요.');
             return;
         }
@@ -122,10 +200,11 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             const imageUrl = uploadResponse.imageUrl;
 
             // 2단계: 라인업 API에 이미지 URL과 함께 데이터 전송
+            const performanceAt = `${formData.performanceDate}T${formData.performanceTime}:00`;
             const response = await lineupAPI.addLineup({
                 name: formData.name,
                 imageUrl: imageUrl,
-                performanceAt: formData.performanceAt
+                performanceAt: performanceAt
             });
             
             // 상태 업데이트
@@ -165,7 +244,7 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
     };
 
     return (
-        <Modal isOpen={isOpen} onClose={handleClose} maxWidth="max-w-md">
+        <Modal isOpen={isOpen} onClose={handleClose} maxWidth="max-w-xl">
             <form onSubmit={handleSubmit}>
                 <h2 className="text-2xl font-bold mb-6 text-center">라인업 추가</h2>
                 
@@ -245,17 +324,247 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
                     </div>
                     
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
                             공연 일시
                         </label>
-                        <input
-                            type="datetime-local"
-                            name="performanceAt"
-                            value={formData.performanceAt}
-                            onChange={handleChange}
-                            className="block w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black"
-                            required
-                        />
+                        <div className="grid grid-cols-2 gap-4">
+                            {/* 날짜 선택 */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                    날짜
+                                </label>
+                                
+                                {/* 텍스트 입력과 선택기 조합 */}
+                                <div className="space-y-2">
+                                    {/* 텍스트 입력 */}
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="text"
+                                            maxLength={4}
+                                            placeholder="YYYY"
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                            value={year}
+                                            onChange={(e) => {
+                                                const newYear = e.target.value.replace(/[^0-9]/g, '');
+                                                if (newYear.length <= 4) {
+                                                    setYear(newYear);
+                                                }
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Tab' || (e.key === 'Enter' && year.length === 4)) {
+                                                    e.preventDefault();
+                                                    const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
+                                                    nextInput?.focus();
+                                                }
+                                            }}
+                                        />
+                                        <span className="text-gray-700 font-medium">-</span>
+                                        <input
+                                            type="text"
+                                            maxLength={2}
+                                            placeholder="MM"
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                            value={month}
+                                            onChange={(e) => {
+                                                const newMonth = e.target.value.replace(/[^0-9]/g, '');
+                                                if (newMonth.length <= 2) {
+                                                    setMonth(newMonth);
+                                                }
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Tab' || (e.key === 'Enter' && month.length === 2)) {
+                                                    e.preventDefault();
+                                                    const nextInput = e.target.parentElement.querySelector('input[placeholder="DD"]');
+                                                    nextInput?.focus();
+                                                }
+                                            }}
+                                        />
+                                        <span className="text-gray-700 font-medium">-</span>
+                                        <input
+                                            type="text"
+                                            maxLength={2}
+                                            placeholder="DD"
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                            value={day}
+                                            onChange={(e) => {
+                                                const newDay = e.target.value.replace(/[^0-9]/g, '');
+                                                if (newDay.length <= 2) {
+                                                    setDay(newDay);
+                                                }
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Tab' || (e.key === 'Enter' && day.length === 2)) {
+                                                    e.preventDefault();
+                                                    const timeInput = e.target.closest('.space-y-4').querySelector('input[placeholder="HH"]');
+                                                    timeInput?.focus();
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    
+                                    {/* 날짜 선택기 */}
+                                    <div className="grid grid-cols-3 gap-2 w-full">
+                                        {/* 년도 선택 */}
+                                        <select
+                                            name="performanceYear"
+                                            value={formData.performanceDate ? formData.performanceDate.split('-')[0] : ''}
+                                            onChange={(e) => {
+                                                const newYear = e.target.value;
+                                                const [, m = '01', d = '01'] = formData.performanceDate
+                                                ? formData.performanceDate.split('-')
+                                                : ['', '01', '01'];
+
+                                                setFormData(prev => ({
+                                                ...prev,
+                                                performanceDate: `${newYear}-${m}-${d}`,
+                                                }));
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">년도</option>
+                                            {Array.from({ length: 51 }, (_, i) => {
+                                                const yearOption = 2000 + i; // 2000 ~ 2050
+                                                return (
+                                                <option key={yearOption} value={yearOption.toString()}>
+                                                    {yearOption}년
+                                                </option>
+                                                );
+                                            })}
+                                        </select>
+                                        {/* 월 선택 */}
+                                        <select
+                                            name="performanceMonth"
+                                            value={formData.performanceDate ? formData.performanceDate.split('-')[1] : ''}
+                                            onChange={(e) => {
+                                                const month = e.target.value;
+                                                const year = formData.performanceDate ? formData.performanceDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                                const day = formData.performanceDate ? formData.performanceDate.split('-')[2] || '01' : '01';
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceDate: month ? `${year}-${month.padStart(2, '0')}-${day}` : ''
+                                                }));
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">월</option>
+                                            {Array.from({ length: 12 }, (_, i) => {
+                                                const monthOption = i + 1;
+                                                return (
+                                                    <option key={monthOption} value={monthOption.toString().padStart(2, '0')}>
+                                                        {monthOption}월
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                        {/* 일 선택 */}
+                                        <select
+                                            name="performanceDay"
+                                            value={formData.performanceDate ? formData.performanceDate.split('-')[2] : ''}
+                                            onChange={(e) => {
+                                                const day = e.target.value;
+                                                const year = formData.performanceDate ? formData.performanceDate.split('-')[0] || new Date().getFullYear().toString() : new Date().getFullYear().toString();
+                                                const month = formData.performanceDate ? formData.performanceDate.split('-')[1] || '01' : '01';
+                                                setFormData(prev => ({
+                                                    ...prev,
+                                                    performanceDate: day ? `${year}-${month}-${day.padStart(2, '0')}` : ''
+                                                }));
+                                            }}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">일</option>
+                                            {Array.from({ length: 31 }, (_, i) => {
+                                                const dayOption = i + 1;
+                                                return (
+                                                    <option key={dayOption} value={dayOption.toString().padStart(2, '0')}>
+                                                        {dayOption}일
+                                                    </option>
+                                                );
+                                            })}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            {/* 시간 선택 */}
+                            <div>
+                                <label className="block text-xs font-medium text-gray-600 mb-1">
+                                    시간
+                                </label>
+                                
+                                {/* 텍스트 입력과 선택기 조합 */}
+                                <div className="space-y-2">
+                                    {/* 텍스트 입력 */}
+                                    <div className="flex items-center space-x-2">
+                                        <input
+                                            type="text"
+                                            maxLength={2}
+                                            placeholder="HH"
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                            value={hours}
+                                            onChange={(e) => {
+                                                const newHours = e.target.value.replace(/[^0-9]/g, '');
+                                                if (newHours.length <= 2) {
+                                                    setHours(newHours);
+                                                }
+                                            }}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Tab' || (e.key === 'Enter' && hours.length === 2)) {
+                                                    e.preventDefault();
+                                                    const nextInput = e.target.parentElement.querySelector('input[placeholder="MM"]');
+                                                    nextInput?.focus();
+                                                }
+                                            }}
+                                        />
+                                        <span className="text-gray-700 font-medium">:</span>
+                                        <input
+                                            type="text"
+                                            maxLength={2}
+                                            placeholder="MM"
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                            value={minutes}
+                                            onChange={(e) => {
+                                                const newMinutes = e.target.value.replace(/[^0-9]/g, '');
+                                                if (newMinutes.length <= 2) {
+                                                    setMinutes(newMinutes);
+                                                }
+                                            }}
+                                        />
+                                    </div>
+                                    
+                                    {/* 시간 선택기 */}
+                                    <div className="flex items-center space-x-2">
+                                        {/* 시간 선택 */}
+                                        <select
+                                            name="performanceHours"
+                                            value={hours}
+                                            onChange={(e) => setHours(e.target.value)}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">시간</option>
+                                            {Array.from({ length: 24 }, (_, i) => (
+                                                <option key={i} value={i.toString().padStart(2, '0')}>
+                                                    {i.toString().padStart(2, '0')}시
+                                                </option>
+                                            ))}
+                                        </select>
+                                        {/* 분 선택 */}
+                                        <select
+                                            name="performanceMinutes"
+                                            value={minutes}
+                                            onChange={(e) => setMinutes(e.target.value)}
+                                            className="w-full border border-gray-300 rounded-lg shadow-sm py-2 px-3 focus:ring-black focus:border-black text-sm text-center"
+                                        >
+                                            <option value="">분</option>
+                                            {Array.from({ length: 60 }, (_, i) => (
+                                                <option key={i} value={i.toString().padStart(2, '0')}>
+                                                    {i.toString().padStart(2, '0')}분
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
