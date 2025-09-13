@@ -45,6 +45,7 @@ public class FestivalController {
     private final FestivalService festivalService;
     private final FestivalImageService festivalImageService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "축제 생성")

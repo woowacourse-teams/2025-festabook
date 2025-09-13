@@ -12,6 +12,9 @@ public record FestivalInformationUpdateRequest(
         LocalDate startDate,
 
         @Schema(description = "축제 종료 날짜", example = "2025-08-07")
-        LocalDate endDate
+        LocalDate endDate,
+
+        @Schema(description = "축제 공개 여부", example = "false")
+        boolean userVisible
 ) {
 }

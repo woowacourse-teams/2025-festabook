@@ -14,9 +14,11 @@ import com.daedan.festabook.council.dto.CouncilUpdateRequestFixture;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.global.security.role.RoleType;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
+import io.restassured.http.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -35,6 +37,9 @@ class CouncilControllerTest {
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
 
+    @Autowired
+    private JwtTestHelper jwtTestHelper;
+
     @LocalServerPort
     private int port;
 
@@ -52,12 +57,15 @@ class CouncilControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAdminAuthorizationHeader(festival);
+
             String username = "hello";
             CouncilRequest request = CouncilRequestFixture.create(festival.getId(), username, "1234");
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -79,12 +87,15 @@ class CouncilControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAdminAuthorizationHeader(festival);
+
             String username = "test";
             String password = "1234";
             CouncilRequest councilRequest = CouncilRequestFixture.create(festival.getId(), username, password);
 
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(councilRequest)
                     .when()
@@ -117,11 +128,14 @@ class CouncilControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
+            Header authorizationHeader = jwtTestHelper.createAdminAuthorizationHeader(festival);
+
             String username = "user";
             String currentPassword = "1234";
             CouncilRequest councilRequest = CouncilRequestFixture.create(festival.getId(), username, currentPassword);
             CouncilResponse response = RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(councilRequest)
                     .when()

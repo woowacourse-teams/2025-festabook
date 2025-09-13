@@ -95,11 +95,17 @@ class FestivalControllerTest {
                     List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
             );
 
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAdminAuthorizationHeader(festival);
+
             int expectedFieldSize = 9;
 
             // when & then
             RestAssured
                     .given()
+                    .header(authorizationHeader)
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
@@ -210,7 +216,7 @@ class FestivalControllerTest {
             festivalImageJpaRepository.saveAll(List.of(festivalImage2, festivalImage1));
 
             int festivalImageSize = 2;
-            int expectedFieldSize = 6;
+            int expectedFieldSize = 7;
 
             // when & then
             RestAssured
@@ -393,10 +399,12 @@ class FestivalControllerTest {
             String changedFestivalName = "수정 후 제목";
             LocalDate changedStartDate = LocalDate.of(2025, 11, 1);
             LocalDate changedEndDate = LocalDate.of(2025, 11, 2);
+            boolean userVisible = true;
             FestivalInformationUpdateRequest request = FestivalInformationUpdateRequestFixture.create(
                     changedFestivalName,
                     changedStartDate,
-                    changedEndDate
+                    changedEndDate,
+                    userVisible
             );
 
             int expectedFieldSize = 5;
@@ -415,7 +423,8 @@ class FestivalControllerTest {
                     .body("festivalId", equalTo(festival.getId().intValue()))
                     .body("festivalName", equalTo(changedFestivalName))
                     .body("startDate", equalTo(changedStartDate.toString()))
-                    .body("endDate", equalTo(changedEndDate.toString()));
+                    .body("endDate", equalTo(changedEndDate.toString()))
+                    .body("userVisible", equalTo(userVisible));
         }
     }
 

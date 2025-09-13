@@ -58,7 +58,7 @@ public class FestivalService {
             FestivalInformationUpdateRequest request
     ) {
         Festival festival = getFestivalById(festivalId);
-        festival.updateFestival(request.festivalName(), request.startDate(), request.endDate());
+        festival.updateFestival(request.festivalName(), request.startDate(), request.endDate(), request.userVisible());
         return FestivalInformationResponse.from(festival);
     }
 

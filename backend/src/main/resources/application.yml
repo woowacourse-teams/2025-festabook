@@ -40,9 +40,12 @@ storage:
 # Swagger
 springdoc:
   swagger-ui:
+    enabled: false
     path: /api-docs
     persist-authorization: true
     operations-sorter: method
+  api-docs:
+    enabled: false
 
 firebase:
   adminsdk:
