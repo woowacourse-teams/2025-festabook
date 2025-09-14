@@ -4,7 +4,7 @@ import com.daedan.festabook.place.domain.PlaceCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;
 
-public record PlaceUpdateRequest(
+public record MainPlaceUpdateRequest(
 
         @Schema(description = "플레이스 카테고리", example = "BAR")
         PlaceCategory placeCategory,

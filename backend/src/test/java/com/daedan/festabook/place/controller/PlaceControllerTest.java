@@ -27,12 +27,12 @@ import com.daedan.festabook.place.domain.PlaceFavoriteFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateRequestFixture;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
-import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -463,7 +463,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class updatePlace {
+    class updateMainPlace {
 
         @Test
         void 성공() {
@@ -476,7 +476,7 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create(
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(
                     PlaceCategory.FOOD_TRUCK,
                     "수정된 제목",
                     "수정된 설명",
@@ -509,7 +509,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class updatePlaceExtra {
+    class updateEtcPlace {
 
         @Test
         void 성공() {
@@ -522,7 +522,7 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            PlaceExtraUpdateRequest request = PlaceExtraUpdateRequestFixture.create("수정된 플레이스 이름");
+            EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create("수정된 플레이스 이름");
 
             int expectedFieldSize = 1;
 

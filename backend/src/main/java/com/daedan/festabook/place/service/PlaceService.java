@@ -6,13 +6,13 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceImage;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateResponse;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
-import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -58,7 +58,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceUpdateResponse updatePlace(Long festivalId, Long placeId, PlaceUpdateRequest request) {
+    public MainPlaceUpdateResponse updateMainPlace(Long festivalId, Long placeId, MainPlaceUpdateRequest request) {
         Place place = getPlaceById(placeId);
         validatePlaceBelongsToFestival(place, festivalId);
 
@@ -72,17 +72,17 @@ public class PlaceService {
                 request.endTime()
         );
 
-        return PlaceUpdateResponse.from(place);
+        return MainPlaceUpdateResponse.from(place);
     }
 
     @Transactional
-    public PlaceExtraUpdateResponse updatePlaceExtra(Long festivalId, Long placeId, PlaceExtraUpdateRequest request) {
+    public EtcPlaceUpdateResponse updateEtcPlace(Long festivalId, Long placeId, EtcPlaceUpdateRequest request) {
         Place place = getPlaceById(placeId);
         validatePlaceBelongsToFestival(place, festivalId);
 
         place.updatePlace(request.title());
 
-        return PlaceExtraUpdateResponse.from(place);
+        return EtcPlaceUpdateResponse.from(place);
     }
 
     @Transactional

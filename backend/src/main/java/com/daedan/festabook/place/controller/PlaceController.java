@@ -2,14 +2,14 @@ package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.global.security.council.CouncilDetails;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateResponse;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
-import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateResponse;
 import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -91,33 +91,33 @@ public class PlaceController {
     }
 
     @PreAuthorize("hasRole('COUNCIL')")
-    @PatchMapping("/{placeId}")
+    @PatchMapping("/main/{placeId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제에 대한 플레이스 세부사항 수정")
+    @Operation(summary = "특정 축제에 대한 메인 플레이스 세부사항 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceUpdateResponse updatePlace(
+    public MainPlaceUpdateResponse updateMainPlace(
             @PathVariable Long placeId,
             @AuthenticationPrincipal CouncilDetails councilDetails,
-            @RequestBody PlaceUpdateRequest request
+            @RequestBody MainPlaceUpdateRequest request
     ) {
-        return placeService.updatePlace(councilDetails.getFestivalId(), placeId, request);
+        return placeService.updateMainPlace(councilDetails.getFestivalId(), placeId, request);
     }
 
     @PreAuthorize("hasRole('COUNCIL')")
-    @PatchMapping("/{placeId}/extra")
+    @PatchMapping("/etc/{placeId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 기타 플레이스 세부사항 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceExtraUpdateResponse updatePlaceExtra(
+    public EtcPlaceUpdateResponse updateEtcPlace(
             @PathVariable Long placeId,
             @AuthenticationPrincipal CouncilDetails councilDetails,
-            @RequestBody PlaceExtraUpdateRequest request
+            @RequestBody EtcPlaceUpdateRequest request
     ) {
-        return placeService.updatePlaceExtra(councilDetails.getFestivalId(), placeId, request);
+        return placeService.updateEtcPlace(councilDetails.getFestivalId(), placeId, request);
     }
 
     @PreAuthorize("hasRole('COUNCIL')")

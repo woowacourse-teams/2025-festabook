@@ -3,7 +3,7 @@ package com.daedan.festabook.place.dto;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import java.time.LocalTime;
 
-public class PlaceUpdateRequestFixture {
+public class MainPlaceUpdateRequestFixture {
 
     private static final PlaceCategory DEFAULT_CATEGORY = PlaceCategory.FOOD_TRUCK;
     private static final String DEFAULT_TITLE = "수정된 이름";
@@ -13,8 +13,8 @@ public class PlaceUpdateRequestFixture {
     private static final LocalTime DEFAULT_START_TIME = LocalTime.of(14, 12);
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(14, 39);
 
-    public static PlaceUpdateRequest create() {
-        return new PlaceUpdateRequest(
+    public static MainPlaceUpdateRequest create() {
+        return new MainPlaceUpdateRequest(
                 DEFAULT_CATEGORY,
                 DEFAULT_TITLE,
                 DEFAULT_DESCRIPTION,
@@ -25,7 +25,7 @@ public class PlaceUpdateRequestFixture {
         );
     }
 
-    public static PlaceUpdateRequest create(
+    public static MainPlaceUpdateRequest create(
             PlaceCategory placeCategory,
             String title,
             String description,
@@ -34,7 +34,7 @@ public class PlaceUpdateRequestFixture {
             LocalTime startTime,
             LocalTime endTime
     ) {
-        return new PlaceUpdateRequest(
+        return new MainPlaceUpdateRequest(
                 placeCategory,
                 title,
                 description,

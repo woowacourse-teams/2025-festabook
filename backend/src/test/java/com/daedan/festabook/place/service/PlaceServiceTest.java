@@ -19,16 +19,16 @@ import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateRequestFixture;
-import com.daedan.festabook.place.dto.PlaceExtraUpdateResponse;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
-import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
-import com.daedan.festabook.place.dto.PlaceUpdateResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -212,7 +212,7 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class updatePlace {
+    class updateMainPlace {
 
         @Test
         void 성공() {
@@ -225,7 +225,7 @@ class PlaceServiceTest {
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
 
-            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create(
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(
                     PlaceCategory.BAR,
                     "수정된 플레이스 이름",
                     "수정된 플레이스 설명",
@@ -236,7 +236,7 @@ class PlaceServiceTest {
             );
 
             // when
-            PlaceUpdateResponse result = placeService.updatePlace(festivalId, placeId, request);
+            MainPlaceUpdateResponse result = placeService.updateMainPlace(festivalId, placeId, request);
 
             // then
             assertSoftly(s -> {
@@ -262,17 +262,17 @@ class PlaceServiceTest {
             given(placeJpaRepository.findById(place.getId()))
                     .willReturn(Optional.of(place));
 
-            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create();
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeService.updatePlace(otherFestival.getId(), place.getId(), request))
+            assertThatThrownBy(() -> placeService.updateMainPlace(otherFestival.getId(), place.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
     }
 
     @Nested
-    class updatePlaceExtra {
+    class updateEtcPlace {
 
         @Test
         void 성공() {
@@ -285,10 +285,10 @@ class PlaceServiceTest {
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
 
-            PlaceExtraUpdateRequest request = PlaceExtraUpdateRequestFixture.create("수정된 플레이스 이름");
+            EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create("수정된 플레이스 이름");
 
             // when
-            PlaceExtraUpdateResponse result = placeService.updatePlaceExtra(festivalId, placeId, request);
+            EtcPlaceUpdateResponse result = placeService.updateEtcPlace(festivalId, placeId, request);
 
             // then
             assertThat(result.title()).isEqualTo(request.title());
@@ -306,10 +306,10 @@ class PlaceServiceTest {
             given(placeJpaRepository.findById(place.getId()))
                     .willReturn(Optional.of(place));
 
-            PlaceExtraUpdateRequest request = PlaceExtraUpdateRequestFixture.create();
+            EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeService.updatePlaceExtra(otherFestival.getId(), place.getId(), request))
+            assertThatThrownBy(() -> placeService.updateEtcPlace(otherFestival.getId(), place.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }
