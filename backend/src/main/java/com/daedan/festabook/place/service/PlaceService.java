@@ -6,6 +6,8 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceImage;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateResponse;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
@@ -71,6 +73,16 @@ public class PlaceService {
         );
 
         return PlaceUpdateResponse.from(place);
+    }
+
+    @Transactional
+    public PlaceExtraUpdateResponse updatePlaceExtra(Long festivalId, Long placeId, PlaceExtraUpdateRequest request) {
+        Place place = getPlaceById(placeId);
+        validatePlaceBelongsToFestival(place, festivalId);
+
+        place.updatePlace(request.title());
+
+        return PlaceExtraUpdateResponse.from(place);
     }
 
     @Transactional

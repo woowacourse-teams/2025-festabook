@@ -2,6 +2,8 @@ package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.global.security.council.CouncilDetails;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
@@ -101,6 +103,21 @@ public class PlaceController {
             @RequestBody PlaceUpdateRequest request
     ) {
         return placeService.updatePlace(councilDetails.getFestivalId(), placeId, request);
+    }
+
+    @PreAuthorize("hasRole('COUNCIL')")
+    @PatchMapping("/{placeId}/extra")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제에 대한 기타 플레이스 세부사항 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public PlaceExtraUpdateResponse updatePlaceExtra(
+            @PathVariable Long placeId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody PlaceExtraUpdateRequest request
+    ) {
+        return placeService.updatePlaceExtra(councilDetails.getFestivalId(), placeId, request);
     }
 
     @PreAuthorize("hasRole('COUNCIL')")
