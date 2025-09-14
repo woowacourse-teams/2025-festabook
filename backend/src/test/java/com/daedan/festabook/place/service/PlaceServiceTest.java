@@ -19,6 +19,9 @@ import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateRequestFixture;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateResponse;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceResponse;
@@ -263,6 +266,50 @@ class PlaceServiceTest {
 
             // when & then
             assertThatThrownBy(() -> placeService.updatePlace(otherFestival.getId(), place.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 플레이스가 아닙니다.");
+        }
+    }
+
+    @Nested
+    class updatePlaceExtra {
+
+        @Test
+        void 성공() {
+            // given
+            Long placeId = 1L;
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place = PlaceFixture.create(festival, placeId);
+
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+
+            PlaceExtraUpdateRequest request = PlaceExtraUpdateRequestFixture.create("수정된 플레이스 이름");
+
+            // when
+            PlaceExtraUpdateResponse result = placeService.updatePlaceExtra(festivalId, placeId, request);
+
+            // then
+            assertThat(result.title()).isEqualTo(request.title());
+        }
+
+        @Test
+        void 예외_다른_축제의_플레이스일_경우() {
+            // given
+            Long requestFestivalId = 1L;
+            Long otherFestivalId = 999L;
+            Festival requestFestival = FestivalFixture.create(requestFestivalId);
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+            Place place = PlaceFixture.create(requestFestival);
+
+            given(placeJpaRepository.findById(place.getId()))
+                    .willReturn(Optional.of(place));
+
+            PlaceExtraUpdateRequest request = PlaceExtraUpdateRequestFixture.create();
+
+            // when & then
+            assertThatThrownBy(() -> placeService.updatePlaceExtra(otherFestival.getId(), place.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
         }

@@ -27,6 +27,8 @@ import com.daedan.festabook.place.domain.PlaceFavoriteFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateRequest;
+import com.daedan.festabook.place.dto.PlaceExtraUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceRequestFixture;
 import com.daedan.festabook.place.dto.PlaceUpdateRequest;
@@ -474,7 +476,7 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create(
+            PlaceUpdateRequest request = PlaceUpdateRequestFixture.create(
                     PlaceCategory.FOOD_TRUCK,
                     "수정된 제목",
                     "수정된 설명",
@@ -491,18 +493,50 @@ class PlaceControllerTest {
                     .given()
                     .header(authorizationHeader)
                     .contentType(ContentType.JSON)
-                    .body(placeUpdateRequest)
+                    .body(request)
                     .patch("/places/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("placeCategory", equalTo(placeUpdateRequest.placeCategory().name()))
-                    .body("title", equalTo(placeUpdateRequest.title()))
-                    .body("description", equalTo(placeUpdateRequest.description()))
-                    .body("location", equalTo(placeUpdateRequest.location()))
-                    .body("host", equalTo(placeUpdateRequest.host()))
-                    .body("startTime", equalTo(placeUpdateRequest.startTime().toString()))
-                    .body("endTime", equalTo(placeUpdateRequest.endTime().toString()));
+                    .body("placeCategory", equalTo(request.placeCategory().name()))
+                    .body("title", equalTo(request.title()))
+                    .body("description", equalTo(request.description()))
+                    .body("location", equalTo(request.location()))
+                    .body("host", equalTo(request.host()))
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()));
+        }
+    }
+
+    @Nested
+    class updatePlaceExtra {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceExtraUpdateRequest request = PlaceExtraUpdateRequestFixture.create("수정된 플레이스 이름");
+
+            int expectedFieldSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .patch("/places/{placeId}/extra", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("title", equalTo(request.title()));
         }
     }
 
