@@ -13,21 +13,19 @@ import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.presentation.common.Event
-import com.daedan.festabook.presentation.common.SingleLiveData
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MainViewModel(
     private val deviceRepository: DeviceRepository,
-    private val festivalRepository: FestivalRepository,
+    festivalRepository: FestivalRepository,
     private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
 
-
-    private val _noticeIdToExpand: SingleLiveData<Long> = SingleLiveData()
+    private val _noticeIdToExpand: MutableLiveData<Long> = MutableLiveData()
     val noticeIdToExpand: LiveData<Long> = _noticeIdToExpand
 
     private val _isFirstVisit =
@@ -35,7 +33,6 @@ class MainViewModel(
             festivalRepository.getIsFirstVisit().getOrDefault(true),
         )
     val isFirstVisit: LiveData<Boolean> get() = _isFirstVisit
-
 
     private var lastBackPressedTime: Long = 0
 
@@ -107,7 +104,7 @@ class MainViewModel(
     }
 
     fun expandNoticeItem(announcementId: Long) {
-        _noticeIdToExpand.setValue(announcementId)
+        _noticeIdToExpand.value = announcementId
     }
 
     companion object {
@@ -120,7 +117,11 @@ class MainViewModel(
                     val festivalNotificationRepository =
                         app.appContainer.festivalNotificationRepository
                     val festivalRepository = app.appContainer.festivalRepository
-                    MainViewModel(deviceRepository, festivalRepository, festivalNotificationRepository)
+                    MainViewModel(
+                        deviceRepository,
+                        festivalRepository,
+                        festivalNotificationRepository,
+                    )
                 }
             }
     }
