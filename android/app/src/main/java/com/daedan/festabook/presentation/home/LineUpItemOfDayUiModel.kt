@@ -11,11 +11,11 @@ data class LineUpItemOfDayUiModel(
 )
 
 data class LineUpItemGroupUiModel(
-    private val map: Map<LocalDate, List<LineupItemUiModel>>,
+    private val group: Map<LocalDate, List<LineupItemUiModel>>,
     private val today: LocalDate = LocalDate.now(),
 ) {
     fun getLineupItems(): List<LineUpItemOfDayUiModel> =
-        map.entries.map {
+        group.entries.map {
             LineUpItemOfDayUiModel(
                 id = it.hashCode().toLong(),
                 date = it.key,
@@ -27,7 +27,7 @@ data class LineUpItemGroupUiModel(
 
 fun Map<LocalDate, List<LineupItem>>.toUiModel(): LineUpItemGroupUiModel =
     LineUpItemGroupUiModel(
-        map =
+        group =
             this.mapValues { (_, lineupItems) ->
                 lineupItems.map { it.toUiModel() }
             },
