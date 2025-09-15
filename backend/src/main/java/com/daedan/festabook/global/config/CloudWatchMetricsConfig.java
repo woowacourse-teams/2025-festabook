@@ -13,7 +13,7 @@ import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 @Profile("prod")
 public class CloudWatchMetricsConfig {
 
-    private static final String CLOUDWATCH_NAMESPACE = "festabook";
+    private static final String CLOUDWATCH_NAMESPACE = "Festabook/Server";
     private static final Duration CLOUDWATCH_STEP = Duration.ofMinutes(1);
 
     @Bean
