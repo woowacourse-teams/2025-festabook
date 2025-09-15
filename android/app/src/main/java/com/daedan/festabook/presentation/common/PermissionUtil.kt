@@ -29,7 +29,8 @@ fun showNotificationDeniedSnackbar(
             view,
             context.getString(R.string.notification_permission_denied_message),
             Snackbar.LENGTH_LONG,
-        ).setAction(context.getString(R.string.move_to_setting_text)) {
+        ).setAnchorView(view.rootView.findViewById(R.id.bab_menu))
+        .setAction(context.getString(R.string.move_to_setting_text)) {
             val intent =
                 Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
                     data = Uri.fromParts("package", context.packageName, null)
