@@ -16,7 +16,7 @@ class FestaBookApp : Application() {
         AppContainer(this)
     }
 
-    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
+    val fireBaseAnalytics: FirebaseAnalytics by lazy {
         FirebaseAnalytics.getInstance(this)
     }
 
@@ -46,11 +46,14 @@ class FestaBookApp : Application() {
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) {
-            plantDebugTimberTree()
-        } else {
-            plantInfoTimberTree()
-        }
+        plantDebugTimberTree()
+        plantInfoTimberTree()
+
+//        if (BuildConfig.DEBUG) {
+//            plantDebugTimberTree()
+//        } else {
+//            plantInfoTimberTree()
+//        }
         Timber.plant(FirebaseCrashlyticsTree())
     }
 
