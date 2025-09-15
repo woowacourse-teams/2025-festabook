@@ -7,6 +7,7 @@ import com.daedan.festabook.festival.dto.FestivalCreateResponse;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideResponse;
 import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateResponse;
 import com.daedan.festabook.festival.dto.FestivalResponse;
@@ -52,6 +53,11 @@ public class FestivalService {
                 universityName
         );
         return FestivalUniversityResponses.from(festivals);
+    }
+
+    public FestivalLostItemGuideResponse getFestivalLostItemGuide(Long festivalId) {
+        Festival festival = getFestivalById(festivalId);
+        return FestivalLostItemGuideResponse.from(festival);
     }
 
     @Transactional

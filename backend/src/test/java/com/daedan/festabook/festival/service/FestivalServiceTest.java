@@ -17,6 +17,7 @@ import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequestFixture;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideResponse;
 import com.daedan.festabook.festival.dto.FestivalResponse;
 import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
@@ -210,6 +211,26 @@ class FestivalServiceTest {
             // then
             assertThat(results.responses().get(0).universityName())
                     .isEqualTo(userVisibleTrueFestival.getUniversityName());
+        }
+    }
+
+    @Nested
+    class getFestivalLostItemGuide {
+
+        @Test
+        void 성공() {
+            // given
+            String lostItemGuide = "습득하신 분실물은 타마에게 전달하시기 바랍니다.";
+            Festival festival = FestivalFixture.createWithLostItemGuide(lostItemGuide);
+
+            given(festivalJpaRepository.findById(festival.getId()))
+                    .willReturn(Optional.of(festival));
+
+            // when
+            FestivalLostItemGuideResponse result = festivalService.getFestivalLostItemGuide(festival.getId());
+
+            // then
+            assertThat(result.lostItemGuide()).isEqualTo(lostItemGuide);
         }
     }
 

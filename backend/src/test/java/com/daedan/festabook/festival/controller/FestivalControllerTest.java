@@ -299,7 +299,7 @@ class FestivalControllerTest {
                     .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("size()", equalTo(expectedSize))
+                    .body("$", hasSize(expectedSize))
 
                     .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].festivalId", equalTo(festival1.getId().intValue()))
@@ -335,7 +335,7 @@ class FestivalControllerTest {
                     .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("size()", equalTo(expectedSize))
+                    .body("$", hasSize(expectedSize))
 
                     .body("[0].festivalId", equalTo(festival1.getId().intValue()))
                     .body("[0].universityName", equalTo(festival1.getUniversityName()));
@@ -359,7 +359,7 @@ class FestivalControllerTest {
                     .get("/festivals/universities?universityName={universityName}", universityNameToSearch)
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("size()", equalTo(expectedSize));
+                    .body("$", hasSize(expectedSize));
 
             festivalJpaRepository.delete(festival);
         }
@@ -384,6 +384,29 @@ class FestivalControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("[0].festivalId", equalTo(userVisibleTrueFestival.getId().intValue()))
                     .body("[0].universityName", equalTo(userVisibleTrueFestival.getUniversityName()));
+        }
+    }
+
+    @Nested
+    class getFestivalLostItemGuide {
+        @Test
+        void 성공() {
+            String lostItemGuide = "습득하신 분실물은 밀러에게 전달하시기 바랍니다.";
+            Festival festival = FestivalFixture.createWithLostItemGuide(lostItemGuide);
+            festivalJpaRepository.save(festival);
+
+            int expectedFieldSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header("festival", festival.getId())
+                    .when()
+                    .get("/festivals/lost-item-guide")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("lostItemGuide", equalTo(lostItemGuide));
         }
     }
 

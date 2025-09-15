@@ -9,6 +9,7 @@ import com.daedan.festabook.festival.dto.FestivalImageResponses;
 import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideResponse;
 import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateResponse;
 import com.daedan.festabook.festival.dto.FestivalResponse;
@@ -108,6 +109,18 @@ public class FestivalController {
             @RequestParam String universityName
     ) {
         return festivalService.getUniversitiesByUniversityName(universityName);
+    }
+
+    @GetMapping("/lost-item-guide")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 분실물 가이드 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalLostItemGuideResponse getFestivalLostItemGuide(
+            @Parameter(hidden = true) @FestivalId Long festivalId
+    ) {
+        return festivalService.getFestivalLostItemGuide(festivalId);
     }
 
     @PreAuthorize("hasRole('COUNCIL')")
