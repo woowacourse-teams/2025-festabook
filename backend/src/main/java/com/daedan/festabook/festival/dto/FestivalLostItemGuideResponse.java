@@ -3,7 +3,6 @@ package com.daedan.festabook.festival.dto;
 import com.daedan.festabook.festival.domain.Festival;
 
 public record FestivalLostItemGuideResponse(
-
         String lostItemGuide
 ) {
 
