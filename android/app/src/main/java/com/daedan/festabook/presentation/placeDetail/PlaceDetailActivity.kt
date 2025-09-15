@@ -115,13 +115,13 @@ class PlaceDetailActivity :
             placeImageAdapter.submitList(placeDetail.images)
             binding.clImageIndicator.setViewPager(binding.vpPlaceImages)
         }
-
-        if (placeDetail.notices.isEmpty()) {
-            binding.rvPlaceNotice.visibility = View.GONE
-            binding.tvNoNoticeDescription.visibility = View.VISIBLE
-        } else {
-            noticeAdapter.submitList(placeDetail.notices)
-        }
+        // 임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다
+//        if (placeDetail.notices.isEmpty()) {
+//            binding.rvPlaceNotice.visibility = View.GONE
+//            binding.tvNoNoticeDescription.visibility = View.VISIBLE
+//        } else {
+//            noticeAdapter.submitList(placeDetail.notices)
+//        }
     }
 
     private fun showSkeleton() {
