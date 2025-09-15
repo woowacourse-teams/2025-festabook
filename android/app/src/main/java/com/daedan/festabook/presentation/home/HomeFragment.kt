@@ -10,6 +10,7 @@ import com.daedan.festabook.databinding.FragmentHomeBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.formatFestivalPeriod
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.explore.ExploreActivity
 import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import com.daedan.festabook.presentation.home.adapter.LineupAdapter
@@ -36,6 +37,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
         setupObservers()
         setupAdapters()
         setupNavigateToScheduleButton()
+        setupNavigateToExploreButton()
+    }
+
+    private fun setupNavigateToExploreButton() {
+        binding.btnNavigateToExplore.setOnClickListener {
+            startActivity(ExploreActivity.newIntent(requireContext()))
+        }
     }
 
     private fun setupNavigateToScheduleButton() {

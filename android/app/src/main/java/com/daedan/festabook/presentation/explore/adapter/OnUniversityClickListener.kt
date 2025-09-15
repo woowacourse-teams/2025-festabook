@@ -1,7 +1,7 @@
 package com.daedan.festabook.presentation.explore.adapter
 
-import com.daedan.festabook.domain.model.University
+import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
 
 fun interface OnUniversityClickListener {
-    fun onUniversityClick(university: University)
+    fun onUniversityClick(university: SearchResultUiModel)
 }

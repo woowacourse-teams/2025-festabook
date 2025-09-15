@@ -7,4 +7,6 @@ interface FestivalRepository {
     suspend fun getFestivalInfo(): Result<Organization>
 
     suspend fun getLineup(): Result<List<LineupItem>>
+
+    fun getIsFirstVisit(): Result<Boolean>
 }

@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
+import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.common.SingleLiveData
 import com.google.firebase.messaging.FirebaseMessaging
@@ -19,13 +20,22 @@ import timber.log.Timber
 
 class MainViewModel(
     private val deviceRepository: DeviceRepository,
+    private val festivalRepository: FestivalRepository,
     private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
 
+
     private val _noticeIdToExpand: SingleLiveData<Long> = SingleLiveData()
     val noticeIdToExpand: LiveData<Long> = _noticeIdToExpand
+
+    private val _isFirstVisit =
+        MutableLiveData(
+            festivalRepository.getIsFirstVisit().getOrDefault(true),
+        )
+    val isFirstVisit: LiveData<Boolean> get() = _isFirstVisit
+
 
     private var lastBackPressedTime: Long = 0
 
@@ -109,7 +119,8 @@ class MainViewModel(
                     val deviceRepository = app.appContainer.deviceRepository
                     val festivalNotificationRepository =
                         app.appContainer.festivalNotificationRepository
-                    MainViewModel(deviceRepository, festivalNotificationRepository)
+                    val festivalRepository = app.appContainer.festivalRepository
+                    MainViewModel(deviceRepository, festivalRepository, festivalNotificationRepository)
                 }
             }
     }

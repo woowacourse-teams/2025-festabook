@@ -95,7 +95,6 @@ class MainActivity :
         setupBinding()
 
         mainViewModel.registerDeviceAndFcmToken()
-        setupAlarmDialog()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         setupObservers()
@@ -148,6 +147,12 @@ class MainActivity :
         homeViewModel.navigateToScheduleEvent.observe(this) {
             binding.bnvMenu.selectedItemId = R.id.item_menu_schedule
         }
+
+        mainViewModel.isFirstVisit.observe(this) { isFirstVisit ->
+            if (isFirstVisit) {
+                showAlarmDialog()
+            }
+        }
     }
 
     private fun setupBinding() {
@@ -160,13 +165,6 @@ class MainActivity :
     }
 
     private fun setUpBottomNavigation() {
-        binding.fabMap.post {
-            binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
-            binding.fcvFragmentContainer.updatePadding(
-                bottom = binding.babMenu.height + binding.babMenu.marginBottom,
-            )
-            binding.bnvMenu.x /= 2
-        }
         binding.babMenu.setOnApplyWindowInsetsListener(null)
         binding.babMenu.setPadding(0, 0, 0, 0)
         binding.bnvMenu.setOnApplyWindowInsetsListener(null)
@@ -242,16 +240,10 @@ class MainActivity :
         }
     }
 
-    private fun setupAlarmDialog() {
-        if (!isMainActivityInitialized()) {
-            showAlarmDialog()
-        }
-    }
-
     private fun showAlarmDialog() {
         val dialog =
             MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
-                .setView(R.layout.main_alarm_view)
+                .setView(R.layout.view_main_alert_dialog)
                 .setPositiveButton(R.string.main_alarm_dialog_confirm_button) { _, _ ->
                     notificationPermissionManager.requestNotificationPermission(this)
                 }.setNegativeButton(R.string.main_alarm_dialog_cancel_button) { dialog, _ ->
@@ -275,15 +267,19 @@ class MainActivity :
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
         private const val INITIALIZED_ID = -1L
+        private const val KEY_FESTIVAL_ID = "festival_id"
 
         fun Fragment.newInstance(): Fragment =
             this.apply {
                 arguments = Bundle()
             }
 
-        fun newIntent(context: Context): Intent =
-            Intent(context, MainActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            }
+        fun newIntent(
+            context: Context,
+            festivalId: Long,
+        ) = Intent(context, MainActivity::class.java).apply {
+               flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            putExtra(KEY_FESTIVAL_ID, festivalId)
+        }
     }
 }

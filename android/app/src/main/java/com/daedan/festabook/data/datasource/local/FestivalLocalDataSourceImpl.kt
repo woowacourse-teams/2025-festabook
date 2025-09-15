@@ -15,7 +15,21 @@ class FestivalLocalDataSourceImpl(
         return if (id == DEFAULT_FESTIVAL_ID) null else id
     }
 
+    override fun getIsFirstVisit(): Boolean {
+        val festivalId = getFestivalId() ?: return true
+        val isFirstVisit =
+            prefs.getBoolean(
+                "${KEY_IS_FIRST_VISIT}_$festivalId",
+                true,
+            )
+        if (isFirstVisit) {
+            prefs.edit { putBoolean("${KEY_IS_FIRST_VISIT}_$festivalId", false) }
+        }
+        return isFirstVisit
+    }
+
     companion object {
+        private const val KEY_IS_FIRST_VISIT = "is_first_visit"
         private const val KEY_FESTIVAL_ID = "festival_id"
         private const val DEFAULT_FESTIVAL_ID = -1L
     }

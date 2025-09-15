@@ -3,6 +3,7 @@ package com.daedan.festabook.main
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
+import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.presentation.main.MainViewModel
 import io.mockk.Runs
 import io.mockk.coEvery
@@ -30,6 +31,8 @@ class MainViewModelTest {
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var deviceRepository: DeviceRepository
     private lateinit var mainViewModel: MainViewModel
+
+    private lateinit var festivalRepository: FestivalRepository
     private lateinit var festivalNotificationRepository: FestivalNotificationRepository
 
     @Before
@@ -37,7 +40,12 @@ class MainViewModelTest {
         Dispatchers.setMain(testDispatcher)
         deviceRepository = mockk()
         festivalNotificationRepository = mockk()
-        mainViewModel = MainViewModel(deviceRepository, festivalNotificationRepository)
+        festivalRepository = mockk()
+
+        every { festivalRepository.getIsFirstVisit() } returns Result.success(true)
+
+        mainViewModel =
+            MainViewModel(deviceRepository, festivalRepository, festivalNotificationRepository)
 
         coEvery {
             deviceRepository.registerDevice(
@@ -71,4 +79,16 @@ class MainViewModelTest {
             verify { deviceRepository.getUuid() }
             verify { deviceRepository.getFcmToken() }
         }
+
+    @Test
+    fun `축제 페이지의 첫 방문 여부를 확인할 수 있다`() {
+        // given
+        every { festivalRepository.getIsFirstVisit() } returns Result.success(true)
+
+        // when
+        val result = mainViewModel.isFirstVisit.value
+
+        // then
+        assert(result == true)
+    }
 }
