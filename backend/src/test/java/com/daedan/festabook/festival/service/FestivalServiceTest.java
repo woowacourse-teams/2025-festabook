@@ -60,7 +60,8 @@ class FestivalServiceTest {
                     LocalDate.of(2025, 8, 25),
                     7,
                     new Coordinate(37.5862037, 127.0565152),
-                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
+                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925)),
+                    "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요."
             );
 
             // when
@@ -193,9 +194,7 @@ class FestivalServiceTest {
         @Test
         void 성공_userVisible_true만_반환됨() {
             // given
-            String userVisibleFalseFestivalName = "후유바보대학교";
             String userVisibleTrueFestivalName = "미소대학교";
-            Festival userVisibleFalseFestival = FestivalFixture.create(userVisibleFalseFestivalName, false);
             Festival userVisibleTrueFestival = FestivalFixture.create(userVisibleTrueFestivalName, true);
 
             String universityNameToSearch = "미소";

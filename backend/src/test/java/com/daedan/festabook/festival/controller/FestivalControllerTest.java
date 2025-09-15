@@ -18,6 +18,7 @@ import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequestFixture;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequestFixture;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateRequest;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
@@ -92,7 +93,8 @@ class FestivalControllerTest {
                     LocalDate.of(2025, 8, 25),
                     7,
                     new Coordinate(37.5862037, 127.0565152),
-                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
+                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925)),
+                    "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요."
             );
 
             Festival festival = FestivalFixture.create();
@@ -425,6 +427,35 @@ class FestivalControllerTest {
                     .body("startDate", equalTo(changedStartDate.toString()))
                     .body("endDate", equalTo(changedEndDate.toString()))
                     .body("userVisible", equalTo(userVisible));
+        }
+    }
+
+    @Nested
+    class updateFestivalLostItemGuide {
+
+        @Test
+        void 성공() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            FestivalLostItemGuideUpdateRequest request = new FestivalLostItemGuideUpdateRequest("수정된 가이드");
+
+            int expectedFieldSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/festivals/lost-item-guide")
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("lostItemGuide", equalTo(request.lostItemGuide()));
         }
     }
 

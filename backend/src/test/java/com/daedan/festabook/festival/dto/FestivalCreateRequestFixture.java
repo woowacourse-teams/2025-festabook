@@ -13,7 +13,8 @@ public class FestivalCreateRequestFixture {
             LocalDate endDate,
             Integer zoom,
             Coordinate centerCoordinate,
-            List<Coordinate> polygonHoleBoundary
+            List<Coordinate> polygonHoleBoundary,
+            String lostItemGuide
     ) {
         return new FestivalCreateRequest(
                 universityName,
@@ -22,7 +23,8 @@ public class FestivalCreateRequestFixture {
                 endDate,
                 zoom,
                 centerCoordinate,
-                polygonHoleBoundary
+                polygonHoleBoundary,
+                lostItemGuide
         );
     }
 }
