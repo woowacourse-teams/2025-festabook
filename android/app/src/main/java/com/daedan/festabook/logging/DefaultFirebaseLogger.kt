@@ -27,21 +27,15 @@ class DefaultFirebaseLogger(
         }
     }
 
-    fun log(
-        key: String,
-        value: LogData,
-    ) {
+    fun log(value: LogData) {
         firebaseAnalytics.logEvent(
-            key,
-            Bundle().apply {
-                putParcelable(key, value)
-                putParcelable(KEY_BASE_DATA, getBaseLogData())
-            },
+            value.javaClass.simpleName,
+            value.writeToBundle()
         )
     }
 
-    fun getBaseLogData(): BaseLogData =
-        BaseLogData(
+    fun getBaseLogData(): BaseLogData.CommonLogData =
+        BaseLogData.CommonLogData(
             festivalId = festivalLocalDataSource.getFestivalId() ?: -1,
             notificationId = festivalNotificationLocalDataSource.getFestivalNotificationId(),
             deviceInfo = android.os.Build.MODEL,
