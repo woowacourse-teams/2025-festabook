@@ -12,6 +12,7 @@ import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.presentation.common.Event
+import com.daedan.festabook.presentation.common.SingleLiveData
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -23,7 +24,7 @@ class MainViewModel(
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
 
-    private val _noticeIdToExpand: MutableLiveData<Long> = MutableLiveData()
+    private val _noticeIdToExpand: SingleLiveData<Long> = SingleLiveData()
     val noticeIdToExpand: LiveData<Long> = _noticeIdToExpand
 
     private var lastBackPressedTime: Long = 0
@@ -96,7 +97,7 @@ class MainViewModel(
     }
 
     fun expandNoticeItem(announcementId: Long) {
-        _noticeIdToExpand.value = announcementId
+        _noticeIdToExpand.setValue(announcementId)
     }
 
     companion object {
