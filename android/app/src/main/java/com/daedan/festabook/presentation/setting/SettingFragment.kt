@@ -48,13 +48,8 @@ class SettingFragment :
                 onPermissionGranted()
             } else {
                 Timber.d("Notification permission denied")
-                showNotificationDeniedSnackbar(
-                    requireActivity().window.decorView.rootView,
-                    requireContext(),
-                )
-                binding.btnNoticeAllow.isChecked = false
-                settingViewModel.updateNotificationIsAllowed(false)
-                settingViewModel.saveNotificationIsAllowed(false)
+                showNotificationDeniedSnackbar(binding.root, requireContext())
+                onPermissionDenied()
             }
         }
 
