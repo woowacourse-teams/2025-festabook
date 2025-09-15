@@ -252,11 +252,6 @@ class MainActivity :
         dialog.show()
     }
 
-    private fun isMainActivityInitialized(): Boolean {
-        val initialValue = intent.getLongExtra("festival_id", INITIALIZED_ID)
-        return initialValue == INITIALIZED_ID
-    }
-
     companion object {
         const val KEY_NOTICE_ID_TO_EXPAND = "noticeIdToExpand"
         const val KEY_CAN_NAVIGATE_TO_NEWS = "canNavigateToNews"
@@ -265,21 +260,16 @@ class MainActivity :
         private const val TAG_PLACE_MAP_FRAGMENT = "placeMapFragment"
         private const val TAG_NEWS_FRAGMENT = "newsFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
-        private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
         private const val INITIALIZED_ID = -1L
-        private const val KEY_FESTIVAL_ID = "festival_id"
 
         fun Fragment.newInstance(): Fragment =
             this.apply {
                 arguments = Bundle()
             }
 
-        fun newIntent(
-            context: Context,
-            festivalId: Long,
-        ) = Intent(context, MainActivity::class.java).apply {
-               flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
-            putExtra(KEY_FESTIVAL_ID, festivalId)
-        }
+        fun newIntent(context: Context) =
+            Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
+            }
     }
 }

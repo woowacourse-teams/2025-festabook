@@ -164,7 +164,7 @@ class ExploreActivity :
 
         viewModel.navigateToMain.observe(this) { university ->
             university?.let {
-                navigateToMainActivity(university.festivalId)
+                navigateToMainActivity()
             }
         }
         viewModel.hasFestivalId.observe(this) { hasId ->
@@ -177,9 +177,9 @@ class ExploreActivity :
         imm.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
     }
 
-    private fun navigateToMainActivity(festivalId: Long) {
+    private fun navigateToMainActivity() {
         val intent =
-            MainActivity.newIntent(this, festivalId).apply {
+            MainActivity.newIntent(this).apply {
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         startActivity(intent)
