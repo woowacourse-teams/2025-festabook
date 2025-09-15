@@ -20,7 +20,7 @@ class ConflictExceptionTest {
         void 성공_getter() {
             // given
             Class clazz = BaseEntity.class;
-            String expectedMessage = "[BaseEntity] 이미 존재합니다.";
+            String expectedMessage = "BaseEntity 이미 존재합니다.";
 
             // when
             ConflictException conflictException = new ConflictException(clazz);
@@ -37,7 +37,7 @@ class ConflictExceptionTest {
         void 성공_자식타입_확인() {
             // given
             Class clazz = Festival.class;
-            String expectedMessage = "[Festival] 이미 존재합니다.";
+            String expectedMessage = "Festival 이미 존재합니다.";
 
             // when
             ConflictException conflictException = new ConflictException(clazz);

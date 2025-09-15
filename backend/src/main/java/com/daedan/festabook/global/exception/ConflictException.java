@@ -10,7 +10,7 @@ public class ConflictException extends BusinessException {
     private final Class<?> clazz;
 
     public ConflictException(Class<? extends BaseEntity> clazz) {
-        this(String.format("[%s] 이미 존재합니다.", clazz.getSimpleName()), clazz);
+        this(String.format("%s 이미 존재합니다.", clazz.getSimpleName()), clazz);
     }
 
     protected ConflictException(String message, Class<?> clazz) {

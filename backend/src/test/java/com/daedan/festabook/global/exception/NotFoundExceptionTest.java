@@ -20,7 +20,7 @@ class NotFoundExceptionTest {
         void 성공_getter() {
             // given
             Class clazz = BaseEntity.class;
-            String expectedMessage = "[BaseEntity] 존재하지 않습니다.";
+            String expectedMessage = "BaseEntity 존재하지 않습니다.";
 
             // when
             NotFoundException notFoundException = new NotFoundException(clazz);
@@ -37,7 +37,7 @@ class NotFoundExceptionTest {
         void 성공_자식타입_확인() {
             // given
             Class clazz = Festival.class;
-            String expectedMessage = "[Festival] 존재하지 않습니다.";
+            String expectedMessage = "Festival 존재하지 않습니다.";
 
             // when
             NotFoundException notFoundException = new NotFoundException(clazz);
