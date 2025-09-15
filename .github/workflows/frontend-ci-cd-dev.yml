@@ -40,8 +40,8 @@ jobs:
       - name: Move build files
         run: |
           DEPLOY_PATH="/home/ubuntu/2025-festabook/static/frontend"
-          BUILD_DIST_PATH="./frontend/dist/"
           LOCAL_IMAGES_PATH="/home/ubuntu/2025-festabook/static/images"
+          BUILD_DIST_PATH="./frontend/dist"
           
           # 기존 빌드 파일 삭제
           sudo rm -rf "${DEPLOY_PATH}"
@@ -51,7 +51,7 @@ jobs:
           sudo mkdir -p "${LOCAL_IMAGES_PATH}"
 
           # 빌드 결과물 이동
-          sudo cp -r "${BUILD_DIST_PATH}" "${DEPLOY_PATH}"
+          sudo cp -r "${BUILD_DIST_PATH}/." "${DEPLOY_PATH}"
           sudo chmod -R 755 "${DEPLOY_PATH}"
 
           echo "Build files moved to ${DEPLOY_PATH}."
