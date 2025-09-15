@@ -93,7 +93,6 @@ class MainActivity :
         setupBinding()
 
         mainViewModel.registerDeviceAndFcmToken()
-        setupAlarmDialog()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         setupObservers()
@@ -128,6 +127,12 @@ class MainActivity :
         }
         homeViewModel.navigateToScheduleEvent.observe(this) {
             binding.bnvMenu.selectedItemId = R.id.item_menu_schedule
+        }
+
+        mainViewModel.isFirstVisit.observe(this) { isFirstVisit ->
+            if (isFirstVisit) {
+                showAlarmDialog()
+            }
         }
     }
 
@@ -213,12 +218,6 @@ class MainActivity :
                 add(R.id.fcv_fragment_container, fragment, tag)
             }
             setReorderingAllowed(true)
-        }
-    }
-
-    private fun setupAlarmDialog() {
-        if (!isMainActivityInitialized()) {
-            showAlarmDialog()
         }
     }
 
