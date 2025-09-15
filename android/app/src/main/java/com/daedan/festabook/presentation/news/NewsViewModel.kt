@@ -88,15 +88,6 @@ class NewsViewModel(
         this.noticeIdToExpand = noticeId
         if (noticeUiState.value == NoticeUiState.InitialLoading) return
         loadAllNotices()
-        updateNoticeUiState { notices ->
-            notices.map { updatedNotice ->
-                if (noticeId == updatedNotice.id) {
-                    updatedNotice.copy(isExpanded = true)
-                } else {
-                    updatedNotice
-                }
-            }
-        }
     }
 
     fun toggleFAQExpanded(faqItem: FAQItemUiModel) {
