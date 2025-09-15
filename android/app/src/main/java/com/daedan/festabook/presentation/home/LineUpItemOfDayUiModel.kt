@@ -2,7 +2,6 @@ package com.daedan.festabook.presentation.home
 
 import com.daedan.festabook.domain.model.LineupItem
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 data class LineUpItemOfDayUiModel(
     val id: Long,

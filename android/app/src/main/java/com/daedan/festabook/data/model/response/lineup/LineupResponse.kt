@@ -1,7 +1,6 @@
 package com.daedan.festabook.data.model.response.lineup
 
 import com.daedan.festabook.domain.model.LineupItem
-import com.daedan.festabook.domain.model.toLocalDateTime
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import java.time.LocalDateTime

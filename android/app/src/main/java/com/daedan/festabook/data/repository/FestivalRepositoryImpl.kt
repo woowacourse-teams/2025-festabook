@@ -9,7 +9,6 @@ import com.daedan.festabook.domain.model.LineupItem
 import com.daedan.festabook.domain.model.Organization
 import com.daedan.festabook.domain.repository.FestivalRepository
 import java.time.LocalDate
-import java.time.LocalDateTime
 
 class FestivalRepositoryImpl(
     private val festivalDataSource: FestivalDataSource,

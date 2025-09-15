@@ -3,9 +3,7 @@ package com.daedan.festabook.presentation.home.adapter
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
-import com.daedan.festabook.presentation.home.LineUpItemGroupUiModel
 import com.daedan.festabook.presentation.home.LineUpItemOfDayUiModel
-import com.daedan.festabook.presentation.home.LineupItemUiModel
 
 class LineUpItemOfDayAdapter : ListAdapter<LineUpItemOfDayUiModel, LineUpItemOfDayViewHolder>(lineupItemDiffUtil) {
     override fun onCreateViewHolder(

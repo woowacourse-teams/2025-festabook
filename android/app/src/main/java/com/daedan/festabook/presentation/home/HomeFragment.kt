@@ -13,7 +13,6 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import com.daedan.festabook.presentation.home.adapter.LineUpItemOfDayAdapter
-import com.daedan.festabook.presentation.home.adapter.LineupAdapter
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 import timber.log.Timber
 

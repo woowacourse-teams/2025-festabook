@@ -1,7 +1,5 @@
 package com.daedan.festabook.presentation.home
 
-import java.time.LocalDateTime
-
 sealed interface LineupUiState {
     data object Loading : LineupUiState
 
