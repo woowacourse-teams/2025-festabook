@@ -1,7 +1,12 @@
 package com.daedan.festabook.presentation.common
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import android.graphics.Color
 import android.widget.ImageView
+import androidx.appcompat.content.res.AppCompatResources
+import androidx.core.graphics.createBitmap
 import androidx.core.graphics.drawable.toDrawable
 import coil3.load
 import coil3.request.ImageRequest
@@ -29,4 +34,20 @@ fun ImageView.loadImage(
 
         block()
     }
+}
+
+fun vectorToBitmap(
+    context: Context,
+    vectorResId: Int,
+): Bitmap {
+    val drawable = AppCompatResources.getDrawable(context, vectorResId)!!
+    val bitmap =
+        createBitmap(
+            drawable.intrinsicWidth.coerceAtLeast(1),
+            drawable.intrinsicHeight.coerceAtLeast(1),
+        )
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
 }

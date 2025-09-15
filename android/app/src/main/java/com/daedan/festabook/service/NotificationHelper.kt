@@ -5,7 +5,9 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import androidx.core.app.NotificationCompat
+import androidx.core.content.ContextCompat
 import com.daedan.festabook.R
+import com.daedan.festabook.presentation.common.vectorToBitmap
 import com.daedan.festabook.presentation.main.MainActivity
 import com.daedan.festabook.presentation.main.MainActivity.Companion.KEY_CAN_NAVIGATE_TO_NEWS
 import com.daedan.festabook.presentation.main.MainActivity.Companion.KEY_NOTICE_ID_TO_EXPAND
@@ -13,7 +15,6 @@ import com.daedan.festabook.presentation.main.MainActivity.Companion.KEY_NOTICE_
 object NotificationHelper {
     private const val CHANNEL_ID = "notice_channel"
     private const val CHANNEL_NAME = "공지사항"
-    private const val NOTIFICATION_ID = 1001
 
     // Android 8.0에서 알림 채널을 생성
     fun createNotificationChannel(context: Context) {
@@ -55,10 +56,13 @@ object NotificationHelper {
         val notificationBuilder =
             NotificationCompat
                 .Builder(context, CHANNEL_ID)
-                .setSmallIcon(R.drawable.ic_launcher_foreground)
+                .setSmallIcon(R.drawable.ic_festabook_logo_notification_small)
+                .setColor(ContextCompat.getColor(context, R.color.gray050))
                 .setContentTitle(title)
                 .setContentText(content)
-                .setStyle(NotificationCompat.BigTextStyle().bigText(content))
+                .setLargeIcon(
+                    vectorToBitmap(context, R.drawable.ic_festabook_logo_notification_large),
+                ).setStyle(NotificationCompat.BigTextStyle().bigText(content))
                 .setContentIntent(pendingIntent)
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -66,6 +70,6 @@ object NotificationHelper {
 
         val notificationManager =
             context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, notificationBuilder.build())
+        notificationManager.notify(System.currentTimeMillis().toInt(), notificationBuilder.build())
     }
 }
