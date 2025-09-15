@@ -11,7 +11,7 @@ class LineUpItemOfDayAdapter : ListAdapter<LineUpItemOfDayUiModel, LineUpItemOfD
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): LineUpItemOfDayViewHolder = LineUpItemOfDayViewHolder.from(parent)
+    ): LineUpItemOfDayViewHolder = LineUpItemOfDayViewHolder.from(parent, LineupAdapter())
 
     override fun onBindViewHolder(
         holder: LineUpItemOfDayViewHolder,

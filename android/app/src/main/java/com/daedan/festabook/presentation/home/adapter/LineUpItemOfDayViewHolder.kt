@@ -10,9 +10,9 @@ import java.time.format.DateTimeFormatter
 
 class LineUpItemOfDayViewHolder(
     private val binding: ItemHomeLineupOfDayBinding,
+    private val adapter: LineupAdapter,
 ) : RecyclerView.ViewHolder(binding.root) {
     fun bind(lineUpItemOfDayUiModel: LineUpItemOfDayUiModel) {
-        val adapter = LineupAdapter()
         binding.rvHomeLineup.adapter = adapter
         adapter.submitList(lineUpItemOfDayUiModel.lineupItems)
         binding.tvLineupDay.text = DateTimeFormatter.ofPattern("MM.dd").format(lineUpItemOfDayUiModel.date)
@@ -20,14 +20,17 @@ class LineUpItemOfDayViewHolder(
     }
 
     companion object {
-        fun from(parent: ViewGroup): LineUpItemOfDayViewHolder {
+        fun from(
+            parent: ViewGroup,
+            adapter: LineupAdapter,
+        ): LineUpItemOfDayViewHolder {
             val binding =
                 ItemHomeLineupOfDayBinding.inflate(
                     LayoutInflater.from(parent.context),
                     parent,
                     false,
                 )
-            return LineUpItemOfDayViewHolder(binding)
+            return LineUpItemOfDayViewHolder(binding, adapter)
         }
     }
 }
