@@ -30,7 +30,11 @@ class AppVersionManager(
                         ),
                     )
                 }.addOnFailureListener { e ->
-                    continuation.resumeWith(Result.failure(e))
+                    continuation.resumeWith(
+                        Result.success(
+                            Result.failure(e),
+                        ),
+                    )
                 }
         }
 
