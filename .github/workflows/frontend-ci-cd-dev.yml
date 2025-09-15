@@ -36,14 +36,22 @@ jobs:
         working-directory: ./frontend
 
       # 빌드 파일 /home/ubuntu/2025-festabook/static/frontend/dist 이동
+      # 이미지 저장 경로 디렉토리 생성 /home/ubuntu/2025-festabook/static/images
       - name: Move build files
         run: |
           DEPLOY_PATH="/home/ubuntu/2025-festabook/static/frontend"
-          SOURCE_PATH="./frontend/dist"
+          BUILD_DIST_PATH="./frontend/dist/"
+          LOCAL_IMAGES_PATH="/home/ubuntu/2025-festabook/static/images"
+          
+          # 기존 빌드 파일 삭제
+          sudo rm -rf "${DEPLOY_PATH}"
 
+          # 디렉토리 생성
           sudo mkdir -p "${DEPLOY_PATH}"
-          sudo rm -rf "${DEPLOY_PATH}/dist"
-          sudo cp -r "${SOURCE_PATH}" "${DEPLOY_PATH}"
+          sudo mkdir -p "${LOCAL_IMAGES_PATH}"
+
+          # 빌드 결과물 이동
+          sudo cp -r "${BUILD_DIST_PATH}" "${DEPLOY_PATH}"
           sudo chmod -R 755 "${DEPLOY_PATH}"
 
           echo "Build files moved to ${DEPLOY_PATH}."
