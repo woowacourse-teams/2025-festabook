@@ -27,6 +27,8 @@ import org.springframework.util.StringUtils;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Lineup extends BaseEntity implements Comparable<Lineup> {
 
+    private static final int MAX_NAME_LENGTH = 50;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -35,7 +37,7 @@ public class Lineup extends BaseEntity implements Comparable<Lineup> {
     @ManyToOne(fetch = FetchType.LAZY)
     private Festival festival;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = MAX_NAME_LENGTH)
     private String name;
 
     private String imageUrl;
@@ -72,6 +74,13 @@ public class Lineup extends BaseEntity implements Comparable<Lineup> {
     private void validateName(String name) {
         if (!StringUtils.hasText(name)) {
             throw new BusinessException("이름은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+
+        if (name.length() > MAX_NAME_LENGTH) {
+            throw new BusinessException(
+                    String.format("이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH),
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 
