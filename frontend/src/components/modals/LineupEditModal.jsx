@@ -197,11 +197,6 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
             return;
         }
 
-        if (!selectedFile && !lineup?.imageUrl) {
-            showToast('이미지를 선택해주세요.');
-            return;
-        }
-
         if (!formData.performanceDate || !formData.performanceTime) {
             showToast('공연 일시를 입력해주세요.');
             return;
@@ -210,19 +205,17 @@ const LineupEditModal = ({ isOpen, onClose, lineup, showToast, onUpdate }) => {
         setIsUploading(true);
         
         try {
-            let finalImageUrl = lineup?.imageUrl || '';
+            let finalImageUrl = lineup?.imageUrl || null;
             
             if (selectedFile) {
-                // 1단계: 이미지 파일을 백엔드 이미지 업로드 API로 전송
                 const uploadResponse = await imageAPI.uploadImage(selectedFile);
                 finalImageUrl = uploadResponse.imageUrl;
             }
 
-            // 2단계: 라인업 API에 이미지 URL과 함께 데이터 전송
             const performanceAt = `${formData.performanceDate}T${formData.performanceTime}:00`;
             const response = await lineupAPI.updateLineup(lineup.lineupId, {
                 name: formData.name,
-                imageUrl: finalImageUrl,
+                imageUrl: finalImageUrl,  // null이 될 수 있음
                 performanceAt: performanceAt
             });
             
