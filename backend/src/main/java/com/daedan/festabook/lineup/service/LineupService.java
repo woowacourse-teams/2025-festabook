@@ -44,7 +44,10 @@ public class LineupService {
         Lineup lineup = getLineupById(lineupId);
 
         validateLineupBelongsToFestival(lineup, festivalId);
-        validateLineupPerformanceAtDuplicate(lineup.getFestival(), request.performanceAt());
+
+        if (!lineup.getPerformanceAt().isEqual(request.performanceAt())) {
+            validateLineupPerformanceAtDuplicate(lineup.getFestival(), request.performanceAt());
+        }
 
         lineup.updateLineup(request.name(), request.imageUrl(), request.performanceAt());
         return LineupResponse.from(lineup);
