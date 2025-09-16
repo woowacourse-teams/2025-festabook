@@ -6,6 +6,7 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNewsBinding
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.adapter.NewsPagerAdapter
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
@@ -20,7 +21,10 @@ class NewsFragment :
         NewsPagerAdapter(this)
     }
 
-    private val viewModel: NewsViewModel by viewModels { NewsViewModel.Factory }
+    private val newsViewModel: NewsViewModel by viewModels { NewsViewModel.Factory }
+    private val mainViewModel: MainViewModel by viewModels({ requireActivity() }) {
+        MainViewModel.Factory
+    }
 
     override fun onViewCreated(
         view: View,
@@ -29,18 +33,21 @@ class NewsFragment :
         super.onViewCreated(view, savedInstanceState)
         binding.lifecycleOwner = viewLifecycleOwner
         setupNewsTabLayout()
+        mainViewModel.noticeIdToExpand.observe(viewLifecycleOwner) {
+            binding.vpNews.currentItem = NOTICE_TAB_INDEX
+        }
     }
 
     override fun onNoticeClick(notice: NoticeUiModel) {
-        viewModel.toggleNoticeExpanded(notice)
+        newsViewModel.toggleNoticeExpanded(notice)
     }
 
     override fun onFAQClick(faqItem: FAQItemUiModel) {
-        viewModel.toggleFAQExpanded(faqItem)
+        newsViewModel.toggleFAQExpanded(faqItem)
     }
 
     override fun onLostItemClick(lostItem: LostItemUiModel) {
-        viewModel.lostItemClick(lostItem)
+        newsViewModel.lostItemClick(lostItem)
     }
 
     private fun setupNewsTabLayout() {
@@ -49,5 +56,9 @@ class NewsFragment :
             val tabNameRes = NewsTab.entries[position].tabNameRes
             tab.text = getString(tabNameRes)
         }.attach()
+    }
+
+    companion object {
+        private const val NOTICE_TAB_INDEX: Int = 0
     }
 }

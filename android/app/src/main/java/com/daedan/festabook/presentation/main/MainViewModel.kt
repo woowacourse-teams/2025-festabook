@@ -19,11 +19,14 @@ import timber.log.Timber
 
 class MainViewModel(
     private val deviceRepository: DeviceRepository,
-    private val festivalRepository: FestivalRepository,
+    festivalRepository: FestivalRepository,
     private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
+
+    private val _noticeIdToExpand: MutableLiveData<Long> = MutableLiveData()
+    val noticeIdToExpand: LiveData<Long> = _noticeIdToExpand
 
     private val _isFirstVisit =
         MutableLiveData(
@@ -100,6 +103,10 @@ class MainViewModel(
         }
     }
 
+    fun expandNoticeItem(announcementId: Long) {
+        _noticeIdToExpand.value = announcementId
+    }
+
     companion object {
         private const val BACK_PRESS_INTERVAL: Long = 2000L
         val Factory: ViewModelProvider.Factory =
@@ -110,7 +117,11 @@ class MainViewModel(
                     val festivalNotificationRepository =
                         app.appContainer.festivalNotificationRepository
                     val festivalRepository = app.appContainer.festivalRepository
-                    MainViewModel(deviceRepository, festivalRepository, festivalNotificationRepository)
+                    MainViewModel(
+                        deviceRepository,
+                        festivalRepository,
+                        festivalNotificationRepository,
+                    )
                 }
             }
     }
