@@ -10,9 +10,10 @@ import com.daedan.festabook.databinding.FragmentHomeBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.formatFestivalPeriod
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.explore.ExploreActivity
 import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
-import com.daedan.festabook.presentation.home.adapter.LineupAdapter
+import com.daedan.festabook.presentation.home.adapter.LineUpItemOfDayAdapter
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 import timber.log.Timber
 
@@ -23,8 +24,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     private val posterAdapter: PosterAdapter by lazy {
         PosterAdapter()
     }
-    private val lineupAdapter: LineupAdapter by lazy {
-        LineupAdapter()
+
+    private val lineupOfDayAdapter: LineUpItemOfDayAdapter by lazy {
+        LineUpItemOfDayAdapter()
     }
 
     override fun onViewCreated(
@@ -36,6 +38,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
         setupObservers()
         setupAdapters()
         setupNavigateToScheduleButton()
+        setupNavigateToExploreButton()
+    }
+
+    private fun setupNavigateToExploreButton() {
+        binding.btnNavigateToExplore.setOnClickListener {
+            startActivity(ExploreActivity.newIntent(requireContext()))
+        }
     }
 
     private fun setupNavigateToScheduleButton() {
@@ -62,7 +71,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
             when (lineupUiState) {
                 is LineupUiState.Loading -> {}
                 is LineupUiState.Success -> {
-                    lineupAdapter.submitList(lineupUiState.lineups)
+                    lineupOfDayAdapter.submitList(lineupUiState.lineups.getLineupItems())
                 }
 
                 is LineupUiState.Error -> {
@@ -78,7 +87,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     private fun setupAdapters() {
         binding.rvHomePoster.adapter = posterAdapter
-        binding.rvHomeLineup.adapter = lineupAdapter
+        binding.rvHomeLineup.adapter = lineupOfDayAdapter
         attachSnapHelper()
         addScrollEffectListener()
     }
@@ -99,8 +108,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 .sortedBy { it.sequence }
                 .map { it.imageUrl }
 
-        posterAdapter.submitList(posterUrls) {
-            scrollToInitialPosition(posterUrls.size)
+        if (!posterUrls.isEmpty()) {
+            posterAdapter.submitList(posterUrls) {
+                scrollToInitialPosition(posterUrls.size)
+            }
         }
     }
 

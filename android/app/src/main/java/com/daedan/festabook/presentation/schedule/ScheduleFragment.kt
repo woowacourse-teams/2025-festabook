@@ -86,7 +86,7 @@ class ScheduleFragment :
                     showLoadingView(isLoading = false)
                     Timber.w(
                         scheduleDatesUiState.throwable,
-                        "ScheduleFragment: ${scheduleDatesUiState.throwable.message}",
+                        "${this::class.simpleName}: ${scheduleDatesUiState.throwable.message}",
                     )
                     showErrorSnackBar(scheduleDatesUiState.throwable)
                 }
@@ -96,6 +96,7 @@ class ScheduleFragment :
 
     private fun showLoadingView(isLoading: Boolean) {
         binding.lavScheduleLoading.visibility = if (isLoading) View.VISIBLE else View.GONE
+        binding.vpSchedule.visibility = if (isLoading) View.INVISIBLE else View.VISIBLE
     }
 
     companion object {

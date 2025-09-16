@@ -34,7 +34,7 @@ class NotificationPermissionManager(
                 }
 
                 else -> {
-                    // 권한이 없으며, 이전에 "다시 묻지 않음"을 선택하지 않았거나 첫 요청인 경우
+                    // 권한이 없으며, 이전에 "다시 묻지 않음"을 선택했거나 첫 요청인 경우
                     // 바로 권한 요청 다이얼로그 표시
                     Timber.d("Requesting notification permission for the first time or after 'don't ask again'")
                     requester.permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
@@ -51,8 +51,9 @@ class NotificationPermissionManager(
             .setTitle(R.string.notification_permission_title)
             .setMessage(R.string.notification_permission_message)
             .setPositiveButton(R.string.confirm) { dialog, _ ->
-                requester.permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
-                onPermissionGranted()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    requester.permissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
                 dialog.dismiss()
             }.setNegativeButton(R.string.cancel) { dialog, _ ->
                 Timber.d("Notification permission denied")

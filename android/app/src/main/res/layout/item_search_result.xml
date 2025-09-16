@@ -5,28 +5,39 @@
 
     <data>
         <variable
-            name="university"
-            type="com.daedan.festabook.domain.model.University" />
+            name="SearchResult"
+            type="com.daedan.festabook.presentation.explore.model.SearchResultUiModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="?android:attr/selectableItemBackground"
-        android:paddingHorizontal="28dp">
+        android:paddingHorizontal="28dp"
+        android:paddingVertical="8dp">
 
         <TextView
             android:id="@+id/tv_university_name"
-            style="@style/PretendardRegular14"
+            style="@style/PretendardMedium14"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginVertical="8dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:text="@{university.universityName}"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:textColor="@color/gray800"
+            android:text="@{SearchResult.universityName}"
             app:layout_constraintTop_toTopOf="parent"
             tools:text="서울시립대학교" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/PretendardRegular12"
+            tools:text="축제 이름"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="@color/gray600"
+            android:text="@{SearchResult.festivalName}"
+            app:layout_constraintTop_toBottomOf="@id/tv_university_name"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

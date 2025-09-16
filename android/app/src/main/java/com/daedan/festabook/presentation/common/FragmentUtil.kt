@@ -8,12 +8,14 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
@@ -53,7 +55,15 @@ fun Fragment.showErrorSnackBar(exception: Throwable?) {
 }
 
 fun Activity.showErrorSnackBar(msg: String) {
-    val snackBar = Snackbar.make(window.decorView.rootView, msg, Snackbar.LENGTH_SHORT)
+    val snackBar =
+        Snackbar.make(
+            findViewById<ViewGroup>(android.R.id.content).getChildAt(0),
+            msg,
+            Snackbar.LENGTH_SHORT,
+        )
+    snackBar.setAnchorView(
+        findViewById<FloatingActionButton>(R.id.bab_menu),
+    )
     snackBar
         .setAction(
             getString(R.string.fail_snackbar_confirm),
@@ -95,6 +105,25 @@ fun Activity.showErrorSnackBar(exception: Throwable?) {
             )
         }
     }
+}
+
+fun Activity.showSnackBar(msg: String) {
+    val snackBar =
+        Snackbar.make(
+            findViewById<ViewGroup>(android.R.id.content).getChildAt(0),
+            msg,
+            Snackbar.LENGTH_SHORT,
+        )
+    snackBar.setAnchorView(
+        findViewById<FloatingActionButton>(R.id.bab_menu),
+    )
+    snackBar
+        .setAction(
+            getString(R.string.fail_snackbar_confirm),
+        ) {
+            snackBar.dismiss()
+        }.setActionTextColor(getColor(R.color.blue400))
+    snackBar.show()
 }
 
 fun View.placeListBottomSheetFollowBehavior(): PlaceListBottomSheetFollowBehavior? {

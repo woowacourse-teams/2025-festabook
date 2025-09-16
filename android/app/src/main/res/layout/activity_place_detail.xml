@@ -185,16 +185,17 @@
                     app:layout_constraintStart_toStartOf="@id/iv_host"
                     app:layout_constraintTop_toBottomOf="@id/tv_host"
                     tools:text="시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전" />
+<!--                임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다-->
 
-                <View
-                    android:id="@+id/view_divider"
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="20dp"
-                    android:background="@color/gray300"
-                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
-                    app:layout_constraintStart_toStartOf="@id/start_guideline"
-                    app:layout_constraintTop_toBottomOf="@id/tv_place_description" />
+<!--                <View-->
+<!--                    android:id="@+id/view_divider"-->
+<!--                    android:layout_width="0dp"-->
+<!--                    android:layout_height="1dp"-->
+<!--                    android:layout_marginTop="20dp"-->
+<!--                    android:background="@color/gray300"-->
+<!--                    app:layout_constraintEnd_toEndOf="@id/end_guideline"-->
+<!--                    app:layout_constraintStart_toStartOf="@id/start_guideline"-->
+<!--                    app:layout_constraintTop_toBottomOf="@id/tv_place_description" />-->
 
                 <TextView
                     android:id="@+id/tv_notice_title"
@@ -202,6 +203,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:text="@string/place_detail_notice_title"
+                    android:visibility="gone"
                     android:textAppearance="@style/PretendardBold20"
                     android:textColor="@color/gray900"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
@@ -216,6 +218,7 @@
                     android:text="@string/place_detail_notice_description"
                     android:textAppearance="@style/PretendardRegular12"
                     android:textColor="@color/gray500"
+                    android:visibility="gone"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/tv_notice_title"
                     app:layout_constraintTop_toBottomOf="@id/tv_notice_title" />
@@ -239,6 +242,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="20dp"
                     android:nestedScrollingEnabled="false"
+                    android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/start_guideline"

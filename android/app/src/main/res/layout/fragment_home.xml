@@ -14,19 +14,35 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:paddingBottom="120dp"
+            android:paddingBottom="60dp"
             tools:context=".presentation.home.HomeFragment">
 
             <TextView
                 android:id="@+id/tv_home_organization_title"
                 style="@style/PretendardBold24"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
                 android:textColor="@color/gray900"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="가천대학교" />
+
+            <ImageView
+                android:id="@+id/btn_navigate_to_explore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/home_navigate_to_explore_desc"
+                android:focusable="true"
+                android:padding="4dp"
+                android:src="@drawable/ic_dropdown"
+                app:layout_constraintBottom_toBottomOf="@id/tv_home_organization_title"
+                app:layout_constraintStart_toEndOf="@id/tv_home_organization_title"
+                app:layout_constraintTop_toTopOf="@id/tv_home_organization_title" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_home_poster"
@@ -75,7 +91,7 @@
 
             <TextView
                 android:id="@+id/tv_home_lineup_title"
-                style="@style/PretendardBold18"
+                style="@style/PretendardBold20"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -106,15 +122,16 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_home_lineup"
                 android:layout_width="0dp"
+                android:nestedScrollingEnabled="false"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:orientation="horizontal"
+                android:layout_marginTop="16dp"
+                android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/tv_home_lineup_title"
-                tools:listitem="@layout/item_home_lineup" />
+                tools:listitem="@layout/item_home_lineup_of_day" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

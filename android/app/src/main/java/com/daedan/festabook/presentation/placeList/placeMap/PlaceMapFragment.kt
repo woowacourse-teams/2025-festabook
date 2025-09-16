@@ -26,7 +26,6 @@ import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlin.getValue
 
 class PlaceMapFragment :
     BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment_place_map),

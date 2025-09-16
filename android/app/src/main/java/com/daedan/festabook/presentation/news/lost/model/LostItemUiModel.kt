@@ -4,6 +4,7 @@ import android.os.Parcelable
 import com.daedan.festabook.domain.model.LostItem
 import com.daedan.festabook.domain.model.LostItemStatus
 import kotlinx.parcelize.Parcelize
+import java.time.format.DateTimeFormatter
 
 @Parcelize
 data class LostItemUiModel(
@@ -11,6 +12,7 @@ data class LostItemUiModel(
     val imageUrl: String,
     val storageLocation: String,
     val status: LostItemUiStatus,
+    val createdAt: String,
 ) : Parcelable
 
 fun LostItem.toUiModel(): LostItemUiModel =
@@ -24,4 +26,5 @@ fun LostItem.toUiModel(): LostItemUiModel =
                 LostItemStatus.COMPLETED -> LostItemUiStatus.COMPLETED
                 LostItemStatus.UNKNOWN -> LostItemUiStatus.PENDING
             },
+        createdAt = createdAt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd  HH:mm")),
     )

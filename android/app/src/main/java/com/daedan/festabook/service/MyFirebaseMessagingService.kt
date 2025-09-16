@@ -1,5 +1,6 @@
 package com.daedan.festabook.service
 
+import com.daedan.festabook.R
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import timber.log.Timber
@@ -12,27 +13,16 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Timber.d("From: ${remoteMessage.from}")
 
-        // remoteMessage.notification
-        remoteMessage.notification?.let { notification ->
-            val title = notification.title
-            val body = notification.body
-            Timber.d("Notification Title: $title, Body: $body")
-
-            NotificationHelper.showNotification(this, title, body)
-        }
-
         // remoteMessage.data
         if (remoteMessage.data.isNotEmpty()) {
             Timber.d("Data Payload: ${remoteMessage.data}")
-            val targetId = remoteMessage.data["targetId"]
-            val customTitle = remoteMessage.data["custom_title"]
-            val customMessage = remoteMessage.data["custom_message"]
+            val title =
+                remoteMessage.data["title"] ?: getString(R.string.default_notification_title)
+            val content =
+                remoteMessage.data["body"] ?: getString(R.string.default_notification_body)
+            val noticeIdToExpand = remoteMessage.data["announcementId"] ?: "-1"
 
-            val displayTitle = remoteMessage.notification?.title ?: customTitle ?: "알림"
-            val displayMessage =
-                remoteMessage.notification?.body ?: customMessage ?: "새로운 정보가 있습니다."
-
-            NotificationHelper.showNotification(this, displayTitle, displayMessage, targetId)
+            NotificationHelper.showNotification(this, title, content, noticeIdToExpand)
         }
     }
 }

@@ -58,6 +58,8 @@ import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.domain.repository.ScheduleRepository
+import com.daedan.festabook.presentation.splash.AppVersionManager
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 import java.util.UUID
@@ -144,7 +146,7 @@ class AppContainer(
         )
     }
     val festivalRepository: FestivalRepository by lazy {
-        FestivalRepositoryImpl(festivalDataSource, lineupDataSource)
+        FestivalRepositoryImpl(festivalDataSource, festivalLocalDataSource, lineupDataSource)
     }
     val faqRepository: FAQRepository by lazy {
         FAQRepositoryImpl(faqDataSource)

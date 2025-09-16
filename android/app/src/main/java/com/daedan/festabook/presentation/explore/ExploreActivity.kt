@@ -1,17 +1,22 @@
 package com.daedan.festabook.presentation.explore
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
+import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
-import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.presentation.explore.adapter.OnUniversityClickListener
 import com.daedan.festabook.presentation.explore.adapter.SearchResultAdapter
+import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
 import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.material.textfield.TextInputLayout
 
@@ -22,7 +27,7 @@ class ExploreActivity :
     private val viewModel by viewModels<ExploreViewModel> { ExploreViewModel.Factory }
     private val searchResultAdapter by lazy { SearchResultAdapter(this) }
 
-    override fun onUniversityClick(university: University) {
+    override fun onUniversityClick(university: SearchResultUiModel) {
         binding.etSearchText.setText(university.universityName)
         binding.etSearchText.setSelection(university.universityName.length)
 
@@ -33,7 +38,33 @@ class ExploreActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        enableEdgeToEdge()
+        ViewCompat.setOnApplyWindowInsetsListener(binding.rvSearchResults) { view, insets ->
+            val systemInsets = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            val imeInsets = insets.getInsets(WindowInsetsCompat.Type.ime())
+
+            if (imeInsets.bottom > systemInsets.bottom) {
+                view.setPadding(
+                    view.paddingLeft,
+                    view.paddingTop,
+                    view.paddingRight,
+                    imeInsets.bottom - systemInsets.bottom,
+                )
+            } else {
+                view.setPadding(
+                    view.paddingLeft,
+                    view.paddingTop,
+                    view.paddingRight,
+                    0,
+                )
+            }
+            insets
+        }
+
         setContentView(binding.root)
+
+        viewModel.checkFestivalId()
 
         setupBinding()
         setupRecyclerView()
@@ -49,8 +80,25 @@ class ExploreActivity :
             }
         }
 
-        binding.etSearchText.doOnTextChanged { _, _, _, _ ->
-            viewModel.onTextInputChanged()
+        binding.etSearchText.doOnTextChanged { text, _, _, _ ->
+            viewModel.onTextInputChanged(text?.toString().orEmpty())
+            binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
+
+            if (text.isNullOrEmpty()) {
+                // 검색 아이콘
+                binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_search)
+                binding.tilSearchInputLayout.setEndIconOnClickListener {
+                    handleSearchAction()
+                }
+                binding.tilSearchInputLayout.endIconContentDescription = "검색"
+            } else {
+                // X 아이콘
+                binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_close)
+                binding.tilSearchInputLayout.setEndIconOnClickListener {
+                    binding.etSearchText.text?.clear()
+                }
+                binding.tilSearchInputLayout.endIconContentDescription = "입력 내용 지우기"
+            }
         }
 
         // 키보드 엔터(검색) 리스너
@@ -65,24 +113,13 @@ class ExploreActivity :
         binding.tilSearchInputLayout.setEndIconOnClickListener {
             handleSearchAction()
         }
+
+        binding.btnExploreClose.setOnClickListener {
+            finish()
+        }
     }
 
     private fun handleSearchAction() {
-        val query = binding.etSearchText.text.toString()
-        val currentState = viewModel.searchState.value
-
-        when (currentState) {
-            is SearchUiState.Idle,
-            is SearchUiState.Error,
-            is SearchUiState.Loading,
-            null,
-            -> viewModel.search(query)
-
-            is SearchUiState.Success -> {
-                viewModel.onNavigateIconClicked()
-            }
-        }
-
         hideKeyboard()
     }
 
@@ -127,8 +164,11 @@ class ExploreActivity :
 
         viewModel.navigateToMain.observe(this) { university ->
             university?.let {
-                navigateToMainActivity(university.festivalId)
+                navigateToMainActivity()
             }
+        }
+        viewModel.hasFestivalId.observe(this) { hasId ->
+            binding.btnExploreClose.visibility = if (hasId) View.VISIBLE else View.GONE
         }
     }
 
@@ -137,12 +177,16 @@ class ExploreActivity :
         imm.hideSoftInputFromWindow(binding.etSearchText.windowToken, 0)
     }
 
-    private fun navigateToMainActivity(festivalId: Long) {
+    private fun navigateToMainActivity() {
         val intent =
-            Intent(this, MainActivity::class.java).apply {
-                putExtra("festival_id", festivalId)
+            MainActivity.newIntent(this).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             }
         startActivity(intent)
         finish()
+    }
+
+    companion object {
+        fun newIntent(context: Context) = Intent(context, ExploreActivity::class.java)
     }
 }

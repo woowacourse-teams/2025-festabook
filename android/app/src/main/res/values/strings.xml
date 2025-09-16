@@ -11,6 +11,7 @@
 
     <!-- 홈 화면 -->
     <string name="home_poster_image">poster_image</string>
+    <string name="home_is_d_day">오늘</string>
 
     <!--한 눈에 보기 화면 -->
     <string name="place_list_title">한 눈에 보기</string>
@@ -32,7 +33,7 @@
     <!-- 탐색 화면 -->
     <string name="explore_search_hint_text">어떤 축제로 떠나볼까요?</string>
     <string name="explore_festabook_logo">explore_festabook_logo</string>
-    <string name="explore_no_search_result_text">검색 결과가 없습니다.</string>
+    <string name="explore_no_search_result_text">철자가 맞는지 확인해주세요</string>
     <string name="explore_error_text">오류가 발생했습니다: %1$s</string>
 
     <!--일정 화면-->
@@ -50,7 +51,7 @@
     <string name="map_category_smoking_area">흡연구역</string>
     <string name="map_category_toilet">화장실</string>
     <string name="map_category_trash">쓰레기통</string>
-    <string name="map_category_stage">공연장</string>
+    <string name="map_category_stage">무대</string>
     <string name="map_category_primary">주요시설</string>
     <string name="map_category_parking">주차장</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
@@ -68,12 +69,13 @@
     <string name="tab_faq">FAQ</string>
     <string name="tab_lost_item">분실물</string>
     <string name="tab_faq_question">Q. %1$s</string>
-    <string name="modal_lost_item">보관 장소 : %1$s</string>
+    <string name="modal_lost_item_location">보관 장소 : %1$s</string>
+    <string name="modal_lost_item_created_at">보관 일시 : %1$s</string>
 
     <!-- 설정 화면 -->
     <string name="setting_title">설정</string>
     <string name="setting_notice_title">알림</string>
-    <string name="setting_current_university_notice">현재 접속 중인 대학 알림</string>
+    <string name="setting_current_university_notice">현재 접속 중인 대학 - %1s</string>
     <string name="setting_notice_detail">앱 알림 세부 설정</string>
     <string name="setting_app_info_title">앱 정보</string>
     <string name="setting_app_version">앱 버전</string>
@@ -81,6 +83,7 @@
     <string name="setting_contact_us">개발자 문의하기</string>
     <string name="setting_contact_us_email_subject">개발자 문의하기</string>
     <string name="setting_contact_us_email">festabook2025@gmail.com</string>
+    <string name="setting_notice_enabled">알림이 설정되었습니다</string>
 
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
@@ -120,5 +123,17 @@
     <string name="notification_permission_denied_message">알림이 비활성화되어 있습니다 [설정]에서 다시 켤 수 있어요.</string>
     <string name="move_to_setting_text">설정으로 이동</string>
 
+    <!--알림 -->
+    <string name="default_notification_title">알림</string>
+    <string name="default_notification_body">새로운 소식이 있습니다.</string>
+    <string name="home_navigate_to_explore_desc">탐색 화면으로 이동하는 버튼</string>
+    <string name="explore_btn_close_desc">탐색 화면 닫기 버튼</string>
 
+    <!--앱 업데이트-->
+    <string name="update_notice_title">신규 버전 출시 안내</string>
+    <string name="update_notice_message">새로운 버전이 출시되었습니다.\n 더 나은 사용을 위해 앱을 업데이트해 주세요</string>
+    <string name="update_notice_confirm">업데이트</string>
+    <string name="update_failed_title">서버 통신 실패</string>
+    <string name="update_failed_message">앱 서버에 접속할 수 없습니다. 다시 시도해주세요</string>
+    <string name="update_failed_confirm">종료</string>
 </resources>
