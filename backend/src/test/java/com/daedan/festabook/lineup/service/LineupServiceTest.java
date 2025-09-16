@@ -205,7 +205,7 @@ class LineupServiceTest {
             Long lineupId = 1L;
             Lineup lineup = LineupFixture.create(festival, lineupId);
 
-            LocalDateTime performanceAt = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
+            LocalDateTime performanceAt = LocalDateTime.of(2025, 10, 15, 11, 0, 0);
             LineupUpdateRequest request = LineupUpdateRequestFixture.create(performanceAt);
 
             given(lineupJpaRepository.findById(lineupId))
