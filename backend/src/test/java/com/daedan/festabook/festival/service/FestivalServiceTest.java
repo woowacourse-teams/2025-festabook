@@ -61,8 +61,7 @@ class FestivalServiceTest {
                     LocalDate.of(2025, 8, 25),
                     7,
                     new Coordinate(37.5862037, 127.0565152),
-                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925)),
-                    "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요."
+                    List.of(new Coordinate(37.5862037, 127.0565152), new Coordinate(37.5845543, 127.0555925))
             );
 
             // when
