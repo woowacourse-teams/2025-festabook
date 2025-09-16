@@ -165,6 +165,11 @@ class MainActivity :
     }
 
     private fun setUpBottomNavigation() {
+        binding.fabMap.post {
+            binding.fcvFragmentContainer.updatePadding(
+                bottom = binding.babMenu.height + binding.babMenu.marginBottom,
+            )
+        }
         binding.babMenu.setOnApplyWindowInsetsListener(null)
         binding.babMenu.setPadding(0, 0, 0, 0)
         binding.bnvMenu.setOnApplyWindowInsetsListener(null)
