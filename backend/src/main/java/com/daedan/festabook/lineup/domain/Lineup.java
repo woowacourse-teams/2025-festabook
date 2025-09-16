@@ -38,7 +38,6 @@ public class Lineup extends BaseEntity implements Comparable<Lineup> {
     @Column(nullable = false)
     private String imageUrl;
 
-    // todo : 추후 event 테이블 조인 고려
     @Column(nullable = false)
     private LocalDateTime performanceAt;
 
