@@ -8,7 +8,7 @@ public class LineupFixture {
 
     private static final String DEFAULT_LINEUP_NAME = "이미소";
     private static final String DEFAULT_IMAGE_URL = "https://example.com/image.jpg";
-    private static final LocalDateTime DEFAULT_PERFORM_AT = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
+    private static final LocalDateTime DEFAULT_PERFORMANCE_AT = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
 
     public static Lineup create(
             Festival festival
@@ -17,7 +17,8 @@ public class LineupFixture {
                 festival,
                 DEFAULT_LINEUP_NAME,
                 DEFAULT_IMAGE_URL,
-                DEFAULT_PERFORM_AT
+                DEFAULT_PERFORMANCE_AT
+
         );
     }
 
@@ -29,7 +30,7 @@ public class LineupFixture {
                 festival,
                 DEFAULT_LINEUP_NAME,
                 DEFAULT_IMAGE_URL,
-                DEFAULT_PERFORM_AT
+                DEFAULT_PERFORMANCE_AT
         );
         BaseEntityTestHelper.setId(lineup, lineupId);
         return lineup;
@@ -37,14 +38,26 @@ public class LineupFixture {
 
     public static Lineup create(
             Festival festival,
+            LocalDateTime performanceAt
+    ) {
+        return new Lineup(
+                festival,
+                DEFAULT_LINEUP_NAME,
+                DEFAULT_IMAGE_URL,
+                performanceAt
+        );
+    }
+
+    public static Lineup create(
+            Festival festival,
             String name,
-            LocalDateTime dateTime
+            LocalDateTime performanceAt
     ) {
         return new Lineup(
                 festival,
                 name,
                 DEFAULT_IMAGE_URL,
-                dateTime
+                performanceAt
         );
     }
 
@@ -52,14 +65,14 @@ public class LineupFixture {
             Festival festival,
             String name,
             String imageUrl,
-            LocalDateTime dateTime,
+            LocalDateTime performanceAt,
             Long lineupId
     ) {
         Lineup lineup = new Lineup(
                 festival,
                 name,
                 imageUrl,
-                dateTime
+                performanceAt
         );
         BaseEntityTestHelper.setId(lineup, lineupId);
         return lineup;
