@@ -73,19 +73,6 @@ class MainViewModel(
         }
     }
 
-    fun saveNotificationId() {
-        viewModelScope.launch {
-            val result = festivalNotificationRepository.saveFestivalNotification()
-
-            result
-                .onSuccess {
-                    festivalNotificationRepository.setFestivalNotificationIsAllow(true)
-                }.onFailure {
-                    Timber.e("${::MainViewModel.javaClass.simpleName}: FestivalNotificationId 저장에 실패했습니다.")
-                }
-        }
-    }
-
     private fun registerDevice(
         uuid: String,
         fcmToken: String,

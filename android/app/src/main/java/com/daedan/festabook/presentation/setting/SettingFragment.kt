@@ -23,7 +23,7 @@ import timber.log.Timber
 class SettingFragment :
     BaseFragment<FragmentSettingBinding>(R.layout.fragment_setting),
     NotificationPermissionRequester {
-    private val settingViewModel: SettingViewModel by viewModels {
+    private val settingViewModel: SettingViewModel by viewModels({ requireActivity() }) {
         SettingViewModel.factory()
     }
 
