@@ -52,6 +52,21 @@ public class LineupFixture {
 
     public static Lineup create(
             Festival festival,
+            Long lineupId,
+            LocalDateTime performanceAt
+    ) {
+        Lineup lineup = new Lineup(
+                festival,
+                DEFAULT_LINEUP_NAME,
+                DEFAULT_IMAGE_URL,
+                performanceAt
+        );
+        BaseEntityTestHelper.setId(lineup, lineupId);
+        return lineup;
+    }
+
+    public static Lineup create(
+            Festival festival,
             LocalDateTime performanceAt
     ) {
         return new Lineup(

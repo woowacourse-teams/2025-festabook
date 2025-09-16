@@ -6,6 +6,8 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
@@ -169,6 +171,29 @@ class LineupServiceTest {
                 s.assertThat(result.imageUrl()).isEqualTo(request.imageUrl());
                 s.assertThat(result.performanceAt()).isEqualTo(request.performanceAt());
             });
+        }
+
+        @Test
+        void 성공_동일_시간_라인업인_경우_검증_제외() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long lineupId = 1L;
+            LocalDateTime performanceAt = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
+            Lineup lineup = LineupFixture.create(festival, lineupId, performanceAt);
+
+            LineupUpdateRequest request = LineupUpdateRequestFixture.create(performanceAt);
+
+            given(lineupJpaRepository.findById(lineupId))
+                    .willReturn(Optional.of(lineup));
+
+            // when
+            lineupService.updateLineup(festivalId, lineupId, request);
+
+            // then
+            verify(lineupJpaRepository, never())
+                    .existsByFestivalIdAndPerformanceAt(festivalId, request.performanceAt());
         }
 
         @Test
