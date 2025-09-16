@@ -34,7 +34,7 @@ version-resolver:
   default: minor
 
 exclude-labels:
-  - "Release"
+  - "Not Release Note"
 
 change-template: "- $TITLE (#$NUMBER) - @$AUTHOR"
 change-title-escapes: '\<*_&'
