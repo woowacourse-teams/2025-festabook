@@ -4,17 +4,19 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.databinding.ItemSearchResultBinding
-import com.daedan.festabook.domain.model.University
+import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
+import timber.log.Timber
 
 class SearchResultViewHolder private constructor(
     private val binding: ItemSearchResultBinding,
     private val onUniversityClickListener: OnUniversityClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
-    fun bind(university: University) {
+    fun bind(searchResult: SearchResultUiModel) {
         binding.root.setOnClickListener {
-            onUniversityClickListener.onUniversityClick(university)
+            Timber.d("아이템 클릭 - ${searchResult.universityName}")
+            onUniversityClickListener.onUniversityClick(searchResult)
         }
-        binding.university = university
+        binding.searchResult = searchResult
     }
 
     companion object {

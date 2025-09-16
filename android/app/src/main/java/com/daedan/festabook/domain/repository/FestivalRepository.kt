@@ -8,4 +8,6 @@ interface FestivalRepository {
     suspend fun getFestivalInfo(): Result<Organization>
 
     suspend fun getLineUpGroupByDate(): Result<Map<LocalDate, List<LineupItem>>>
+
+    fun getIsFirstVisit(): Result<Boolean>
 }

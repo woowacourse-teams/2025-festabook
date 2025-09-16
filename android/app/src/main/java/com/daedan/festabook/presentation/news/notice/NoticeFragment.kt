@@ -4,17 +4,20 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNoticeBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import timber.log.Timber
 
 class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_notice) {
-    private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
+    private val newsViewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
+    private val mainViewModel: MainViewModel by viewModels({ requireActivity() }) { MainViewModel.Factory }
 
     private val noticeAdapter: NoticeAdapter by lazy {
         NoticeAdapter(requireParentFragment() as OnNewsClickListener)
@@ -36,12 +39,12 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
 
     private fun onSwipeRefreshNoticesListener() {
         binding.srlNoticeList.setOnRefreshListener {
-            viewModel.loadAllNotices()
+            newsViewModel.loadAllNotices()
         }
     }
 
     private fun setupObserver() {
-        viewModel.noticeUiState.observe(viewLifecycleOwner) { noticeState ->
+        newsViewModel.noticeUiState.observe(viewLifecycleOwner) { noticeState ->
             when (noticeState) {
                 is NoticeUiState.InitialLoading -> {
                     binding.srlNoticeList.isRefreshing = false
@@ -50,7 +53,10 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
 
                 is NoticeUiState.Error -> {
                     showErrorSnackBar(noticeState.throwable)
-                    Timber.w(noticeState.throwable, "NoticeFragment: ${noticeState.throwable.message}")
+                    Timber.w(
+                        noticeState.throwable,
+                        "${this::class.simpleName}: ${noticeState.throwable.message}",
+                    )
                     binding.srlNoticeList.isRefreshing = false
                     hideSkeleton()
                 }
@@ -61,11 +67,27 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
                 }
 
                 is NoticeUiState.Success -> {
-                    noticeAdapter.submitList(noticeState.notices)
+                    noticeAdapter.submitList(noticeState.notices) {
+                        scrollExpandedNoticeToTop(noticeState)
+                    }
                     binding.srlNoticeList.isRefreshing = false
                     hideSkeleton()
                 }
             }
+        }
+        mainViewModel.noticeIdToExpand.observe(viewLifecycleOwner) { noticeId ->
+            newsViewModel.expandNotice(noticeId)
+        }
+    }
+
+    private fun scrollExpandedNoticeToTop(noticeState: NoticeUiState.Success) {
+        if (noticeState.noticeIdToExpandPosition != -1) {
+            val layoutManager =
+                binding.rvNoticeList.layoutManager as LinearLayoutManager
+            layoutManager.scrollToPositionWithOffset(
+                noticeState.noticeIdToExpandPosition,
+                0,
+            )
         }
     }
 

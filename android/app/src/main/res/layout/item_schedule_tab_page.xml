@@ -32,11 +32,13 @@
             <TextView
                 android:id="@+id/tv_schedule_event_title"
                 style="@style/PretendardMedium18"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="16dp"
+                android:layout_marginEnd="4dp"
                 android:text="@{scheduleEvent.title}"
+                app:layout_constraintEnd_toStartOf="@id/tv_schedule_event_status"
                 app:layout_constraintStart_toStartOf="@id/cl_schedule_event_card"
                 app:layout_constraintTop_toTopOf="@id/cl_schedule_event_card"
                 tools:text="동아리 버스킹 공연" />
@@ -49,7 +51,6 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="16dp"
                 android:gravity="center"
-                app:layout_constraintBottom_toBottomOf="@id/tv_schedule_event_title"
                 app:layout_constraintEnd_toEndOf="@id/cl_schedule_event_card"
                 app:layout_constraintTop_toTopOf="@id/tv_schedule_event_title"
                 tools:text="진행중" />

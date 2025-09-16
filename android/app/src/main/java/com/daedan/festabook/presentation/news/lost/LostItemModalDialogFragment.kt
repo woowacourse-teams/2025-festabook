@@ -58,8 +58,13 @@ class LostItemModalDialogFragment : DialogFragment() {
             binding.ivModalLostItemImage.loadImage(it.imageUrl)
             binding.tvModalLostItemStorageLocation.text =
                 binding.tvModalLostItemStorageLocation.context.getString(
-                    R.string.modal_lost_item,
+                    R.string.modal_lost_item_location,
                     it.storageLocation,
+                )
+            binding.tvMadalLostItemCreatedAt.text =
+                binding.tvMadalLostItemCreatedAt.context.getString(
+                    R.string.modal_lost_item_created_at,
+                    it.createdAt,
                 )
         } ?: run {
             Timber.e("${::LostItemModalDialogFragment.name}: 선택한 분실물이 존재하지 않습니다.")

@@ -20,13 +20,29 @@
             <TextView
                 android:id="@+id/tv_home_organization_title"
                 style="@style/PretendardBold24"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="20dp"
+                android:layout_marginStart="20dp"
                 android:layout_marginTop="40dp"
                 android:textColor="@color/gray900"
+                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 tools:text="가천대학교" />
+
+            <ImageView
+                android:id="@+id/btn_navigate_to_explore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:clickable="true"
+                android:contentDescription="@string/home_navigate_to_explore_desc"
+                android:focusable="true"
+                android:padding="4dp"
+                android:src="@drawable/ic_dropdown"
+                app:layout_constraintBottom_toBottomOf="@id/tv_home_organization_title"
+                app:layout_constraintStart_toEndOf="@id/tv_home_organization_title"
+                app:layout_constraintTop_toTopOf="@id/tv_home_organization_title" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rv_home_poster"

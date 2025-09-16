@@ -20,13 +20,21 @@ class FestivalNotificationLocalDataSourceImpl(
         prefs.edit { clear() }
     }
 
-    override fun saveFestivalNotificationIsAllowed(isAllowed: Boolean) {
-        prefs.edit { putBoolean(KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED, isAllowed) }
+    override fun saveFestivalNotificationIsAllowed(
+        festivalId: Long,
+        isAllowed: Boolean,
+    ) {
+        prefs.edit {
+            putBoolean(
+                "${KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED}_$festivalId",
+                isAllowed,
+            )
+        }
     }
 
-    override fun getFestivalNotificationIsAllowed(): Boolean =
+    override fun getFestivalNotificationIsAllowed(festivalId: Long): Boolean =
         prefs.getBoolean(
-            KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED,
+            "${KEY_FESTIVAL_NOTIFICATION_IS_ALLOWED}_$festivalId",
             false,
         )
 

@@ -1,5 +1,7 @@
 package com.daedan.festabook.presentation.main
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
@@ -13,6 +15,7 @@ import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
+import androidx.fragment.app.commitNow
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.presentation.NotificationPermissionManager
@@ -37,6 +40,7 @@ class MainActivity :
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
+
     private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
     private val homeViewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
 
@@ -52,7 +56,7 @@ class MainActivity :
         ScheduleFragment().newInstance()
     }
 
-    private val newFragment by lazy {
+    private val newsFragment by lazy {
         NewsFragment().newInstance()
     }
 
@@ -77,7 +81,7 @@ class MainActivity :
                 mainViewModel.saveNotificationId()
             } else {
                 Timber.d("Notification permission denied")
-                showNotificationDeniedSnackbar(binding.main, this)
+                showNotificationDeniedSnackbar(window.decorView.rootView, this)
             }
         }
 
@@ -91,13 +95,13 @@ class MainActivity :
         setupBinding()
 
         mainViewModel.registerDeviceAndFcmToken()
-        setupAlarmDialog()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
         setupObservers()
         onMenuItemClick()
         onMenuItemReClick()
         onBackPress()
+        handleNavigation(intent)
     }
 
     override fun onRequestPermissionsResult(
@@ -118,6 +122,22 @@ class MainActivity :
 
     override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
 
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNavigation(intent)
+    }
+
+    private fun handleNavigation(intent: Intent) {
+        val canNavigateToNewsScreen =
+            intent.getBooleanExtra(KEY_CAN_NAVIGATE_TO_NEWS, false)
+        val noticeIdToExpand = intent.getLongExtra(KEY_NOTICE_ID_TO_EXPAND, INITIALIZED_ID)
+        if (noticeIdToExpand != INITIALIZED_ID) mainViewModel.expandNoticeItem(noticeIdToExpand)
+
+        if (canNavigateToNewsScreen) {
+            binding.bnvMenu.selectedItemId = R.id.item_menu_news
+        }
+    }
+
     private fun setupObservers() {
         mainViewModel.backPressEvent.observe(this) { event ->
             event.getContentIfNotHandled()?.let { isDoublePress ->
@@ -126,6 +146,12 @@ class MainActivity :
         }
         homeViewModel.navigateToScheduleEvent.observe(this) {
             binding.bnvMenu.selectedItemId = R.id.item_menu_schedule
+        }
+
+        mainViewModel.isFirstVisit.observe(this) { isFirstVisit ->
+            if (isFirstVisit) {
+                showAlarmDialog()
+            }
         }
     }
 
@@ -140,11 +166,9 @@ class MainActivity :
 
     private fun setUpBottomNavigation() {
         binding.fabMap.post {
-            binding.fabMap.translationY = FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y
             binding.fcvFragmentContainer.updatePadding(
                 bottom = binding.babMenu.height + binding.babMenu.marginBottom,
             )
-            binding.bnvMenu.x /= 2
         }
         binding.babMenu.setOnApplyWindowInsetsListener(null)
         binding.babMenu.setPadding(0, 0, 0, 0)
@@ -154,7 +178,7 @@ class MainActivity :
 
     private fun setupHomeFragment(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
-            supportFragmentManager.commit {
+            supportFragmentManager.commitNow {
                 add(R.id.fcv_fragment_container, homeFragment, TAG_HOME_FRAGMENT)
             }
         }
@@ -176,7 +200,7 @@ class MainActivity :
             when (icon.itemId) {
                 R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
                 R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
-                R.id.item_menu_news -> switchFragment(newFragment, TAG_NEW_FRAGMENT)
+                R.id.item_menu_news -> switchFragment(newsFragment, TAG_NEWS_FRAGMENT)
                 R.id.item_menu_setting -> switchFragment(settingFragment, TAG_SETTING_FRAGMENT)
             }
             true
@@ -221,16 +245,10 @@ class MainActivity :
         }
     }
 
-    private fun setupAlarmDialog() {
-        if (!isMainActivityInitialized()) {
-            showAlarmDialog()
-        }
-    }
-
     private fun showAlarmDialog() {
         val dialog =
             MaterialAlertDialogBuilder(this, R.style.MainAlarmDialogTheme)
-                .setView(R.layout.main_alarm_view)
+                .setView(R.layout.view_main_alert_dialog)
                 .setPositiveButton(R.string.main_alarm_dialog_confirm_button) { _, _ ->
                     notificationPermissionManager.requestNotificationPermission(this)
                 }.setNegativeButton(R.string.main_alarm_dialog_cancel_button) { dialog, _ ->
@@ -239,23 +257,24 @@ class MainActivity :
         dialog.show()
     }
 
-    private fun isMainActivityInitialized(): Boolean {
-        val initialValue = intent.getLongExtra("festival_id", INITIALIZED_FESTIVAL_ID)
-        return initialValue == INITIALIZED_FESTIVAL_ID
-    }
-
     companion object {
+        const val KEY_NOTICE_ID_TO_EXPAND = "noticeIdToExpand"
+        const val KEY_CAN_NAVIGATE_TO_NEWS = "canNavigateToNews"
         private const val TAG_HOME_FRAGMENT = "homeFragment"
         private const val TAG_SCHEDULE_FRAGMENT = "scheduleFragment"
         private const val TAG_PLACE_MAP_FRAGMENT = "placeMapFragment"
-        private const val TAG_NEW_FRAGMENT = "newFragment"
+        private const val TAG_NEWS_FRAGMENT = "newsFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
-        private const val FLOATING_ACTION_BUTTON_INITIAL_TRANSLATION_Y = 0f
-        private const val INITIALIZED_FESTIVAL_ID = -1L
+        private const val INITIALIZED_ID = -1L
 
         fun Fragment.newInstance(): Fragment =
             this.apply {
                 arguments = Bundle()
+            }
+
+        fun newIntent(context: Context) =
+            Intent(context, MainActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_SINGLE_TOP
             }
     }
 }

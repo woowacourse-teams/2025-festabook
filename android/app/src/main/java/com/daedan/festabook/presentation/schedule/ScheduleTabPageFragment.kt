@@ -80,8 +80,8 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
             binding.rvScheduleEvent.visibility = View.INVISIBLE
             binding.lavScheduleLoading.visibility = View.VISIBLE
         } else {
-            binding.rvScheduleEvent.visibility = View.VISIBLE
             binding.lavScheduleLoading.visibility = View.GONE
+            binding.rvScheduleEvent.visibility = View.VISIBLE
         }
         binding.srlScheduleEvent.isRefreshing = false
     }
