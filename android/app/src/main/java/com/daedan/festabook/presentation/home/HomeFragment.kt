@@ -108,8 +108,10 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 .sortedBy { it.sequence }
                 .map { it.imageUrl }
 
-        posterAdapter.submitList(posterUrls) {
-            scrollToInitialPosition(posterUrls.size)
+        if (!posterUrls.isEmpty()) {
+            posterAdapter.submitList(posterUrls) {
+                scrollToInitialPosition(posterUrls.size)
+            }
         }
     }
 

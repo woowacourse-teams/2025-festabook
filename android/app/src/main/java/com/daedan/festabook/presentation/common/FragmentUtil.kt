@@ -107,6 +107,25 @@ fun Activity.showErrorSnackBar(exception: Throwable?) {
     }
 }
 
+fun Activity.showSnackBar(msg: String) {
+    val snackBar =
+        Snackbar.make(
+            findViewById<ViewGroup>(android.R.id.content).getChildAt(0),
+            msg,
+            Snackbar.LENGTH_SHORT,
+        )
+    snackBar.setAnchorView(
+        findViewById<FloatingActionButton>(R.id.bab_menu),
+    )
+    snackBar
+        .setAction(
+            getString(R.string.fail_snackbar_confirm),
+        ) {
+            snackBar.dismiss()
+        }.setActionTextColor(getColor(R.color.blue400))
+    snackBar.show()
+}
+
 fun View.placeListBottomSheetFollowBehavior(): PlaceListBottomSheetFollowBehavior? {
     val params = layoutParams as? CoordinatorLayout.LayoutParams
     return params?.behavior as? PlaceListBottomSheetFollowBehavior

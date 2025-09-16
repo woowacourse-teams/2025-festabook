@@ -32,6 +32,9 @@ class SettingViewModel(
     private val _isLoading: MutableLiveData<Boolean> = MutableLiveData(false)
     val isLoading: LiveData<Boolean> get() = _isLoading
 
+    private val _success: SingleLiveData<Unit> = SingleLiveData()
+    val success: LiveData<Unit> get() = _success
+
     fun notificationAllowClick() {
         if (_isAllowed.value == false) {
             _permissionCheckEvent.setValue(Unit)
@@ -55,6 +58,7 @@ class SettingViewModel(
         // Optimistic UI 적용, 요청 실패 시 원복
         saveNotificationIsAllowed(true)
         updateNotificationIsAllowed(true)
+        _success.setValue(Unit)
 
         viewModelScope.launch {
             val result =

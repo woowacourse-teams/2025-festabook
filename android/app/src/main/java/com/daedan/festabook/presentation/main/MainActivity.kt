@@ -23,6 +23,7 @@ import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
+import com.daedan.festabook.presentation.common.showSnackBar
 import com.daedan.festabook.presentation.common.showToast
 import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
 import com.daedan.festabook.presentation.home.HomeFragment
@@ -31,6 +32,7 @@ import com.daedan.festabook.presentation.news.NewsFragment
 import com.daedan.festabook.presentation.placeList.placeMap.PlaceMapFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
+import com.daedan.festabook.presentation.setting.SettingViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import timber.log.Timber
 
@@ -43,6 +45,7 @@ class MainActivity :
 
     private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
     private val homeViewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
+    private val settingViewModel: SettingViewModel by viewModels { SettingViewModel.factory() }
 
     private val placeMapFragment by lazy {
         PlaceMapFragment().newInstance()
@@ -78,14 +81,17 @@ class MainActivity :
         ) { isGranted: Boolean ->
             if (isGranted) {
                 Timber.d("Notification permission granted")
-                mainViewModel.saveNotificationId()
+                onPermissionGranted()
             } else {
                 Timber.d("Notification permission denied")
                 showNotificationDeniedSnackbar(window.decorView.rootView, this)
+                onPermissionDenied()
             }
         }
 
-    override fun onPermissionGranted() = Unit
+    override fun onPermissionGranted() {
+        settingViewModel.saveNotificationId()
+    }
 
     override fun onPermissionDenied() = Unit
 
@@ -152,6 +158,9 @@ class MainActivity :
             if (isFirstVisit) {
                 showAlarmDialog()
             }
+        }
+        settingViewModel.success.observe(this) {
+            showSnackBar(getString(R.string.setting_notice_enabled))
         }
     }
 

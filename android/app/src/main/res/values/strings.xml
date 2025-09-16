@@ -83,6 +83,7 @@
     <string name="setting_contact_us">개발자 문의하기</string>
     <string name="setting_contact_us_email_subject">개발자 문의하기</string>
     <string name="setting_contact_us_email">festabook2025@gmail.com</string>
+    <string name="setting_notice_enabled">알림이 설정되었습니다</string>
 
     <!-- icon description -->
     <string name="iv_speaker">speaker</string>
