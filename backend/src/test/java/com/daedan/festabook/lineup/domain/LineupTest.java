@@ -20,6 +20,8 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LineupTest {
 
+    private static final int MAX_NAME_LENGTH = 50;
+
     @Nested
     class updateLineup {
 
@@ -86,7 +88,7 @@ class LineupTest {
     class validateName {
 
         @Test
-        void 이름_유효성_검증_성공() {
+        void 성공_이름_유효성_검증() {
             // given
             String name = "비타";
 
@@ -98,10 +100,26 @@ class LineupTest {
         @ParameterizedTest
         @NullAndEmptySource
         @ValueSource(strings = {" ", "  "})
-        void 이름_유효성_검증_실패(String invalidName) {
+        void 예외_이름_유효성_검증(String invalidName) {
             assertThatThrownBy(() -> LineupFixture.create(invalidName))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("이름은 비어 있을 수 없습니다.");
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, MAX_NAME_LENGTH})
+        void 성공_이름_길이_검증(int len) {
+            String name = "a".repeat(len);
+            assertThatCode(() -> LineupFixture.create(name)).doesNotThrowAnyException();
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {MAX_NAME_LENGTH + 1, MAX_NAME_LENGTH + 10})
+        void 예외_이름_길이_초과(int len) {
+            String name = "가".repeat(len);
+            assertThatThrownBy(() -> LineupFixture.create(name))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이름은 50자를 초과할 수 없습니다.");
         }
     }
 }
