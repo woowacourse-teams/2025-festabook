@@ -16,6 +16,7 @@ import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
+import com.daedan.festabook.presentation.common.showSnackBar
 import com.daedan.festabook.presentation.home.HomeViewModel
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import timber.log.Timber
@@ -87,6 +88,9 @@ class SettingFragment :
         }
         settingViewModel.isAllowed.observe(viewLifecycleOwner) {
             binding.btnNoticeAllow.isChecked = it
+        }
+        settingViewModel.success.observe(viewLifecycleOwner) {
+            requireActivity().showSnackBar(getString(R.string.setting_notice_enabled))
         }
         settingViewModel.error.observe(viewLifecycleOwner) { throwable ->
             showErrorSnackBar(throwable)
