@@ -1,15 +1,21 @@
 package com.daedan.festabook.lineup.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LineupTest {
@@ -73,6 +79,29 @@ class LineupTest {
 
             // then
             assertThat(result).isFalse();
+        }
+    }
+
+    @Nested
+    class validateName {
+
+        @Test
+        void 이름_유효성_검증_성공() {
+            // given
+            String name = "비타";
+
+            // when & then
+            assertThatCode(() -> LineupFixture.create(name))
+                    .doesNotThrowAnyException();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "  "})
+        void 이름_유효성_검증_실패(String invalidName) {
+            assertThatThrownBy(() -> LineupFixture.create(invalidName))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이름은 비어 있을 수 없습니다.");
         }
     }
 }
