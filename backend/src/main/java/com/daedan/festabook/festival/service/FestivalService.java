@@ -7,6 +7,9 @@ import com.daedan.festabook.festival.dto.FestivalCreateResponse;
 import com.daedan.festabook.festival.dto.FestivalGeographyResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideResponse;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateResponse;
 import com.daedan.festabook.festival.dto.FestivalResponse;
 import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
@@ -52,6 +55,11 @@ public class FestivalService {
         return FestivalUniversityResponses.from(festivals);
     }
 
+    public FestivalLostItemGuideResponse getFestivalLostItemGuide(Long festivalId) {
+        Festival festival = getFestivalById(festivalId);
+        return FestivalLostItemGuideResponse.from(festival);
+    }
+
     @Transactional
     public FestivalInformationResponse updateFestivalInformation(
             Long festivalId,
@@ -60,6 +68,16 @@ public class FestivalService {
         Festival festival = getFestivalById(festivalId);
         festival.updateFestival(request.festivalName(), request.startDate(), request.endDate(), request.userVisible());
         return FestivalInformationResponse.from(festival);
+    }
+
+    @Transactional
+    public FestivalLostItemGuideUpdateResponse updateFestivalLostItemGuide(
+            Long festivalId,
+            FestivalLostItemGuideUpdateRequest request
+    ) {
+        Festival festival = getFestivalById(festivalId);
+        festival.updateFestival(request.lostItemGuide());
+        return FestivalLostItemGuideUpdateResponse.from(festival);
     }
 
     private Festival getFestivalById(Long festivalId) {

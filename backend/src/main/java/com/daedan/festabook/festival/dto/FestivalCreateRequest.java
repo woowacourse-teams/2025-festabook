@@ -39,7 +39,10 @@ public record FestivalCreateRequest(
                         "{\"latitude\": 37.5862547, \"longitude\": 127.0591545}, " +
                         "{\"latitude\": 37.5865607, \"longitude\": 127.0569872}]"
         )
-        List<Coordinate> polygonHoleBoundary
+        List<Coordinate> polygonHoleBoundary,
+
+        @Schema(description = "분실물 수령/습득 가이드", example = "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요.")
+        String lostItemGuide
 ) {
 
     public Festival toEntity() {
@@ -51,7 +54,8 @@ public record FestivalCreateRequest(
                 false,
                 zoom,
                 centerCoordinate,
-                polygonHoleBoundary
+                polygonHoleBoundary,
+                lostItemGuide
         );
     }
 }
