@@ -55,7 +55,7 @@ public class GlobalExceptionHandler {
             try {
                 stringWriter.close();
             } catch (IOException e) {
-                log.warn("잘못된 스택트레이스 입니다.");
+                log.warn("자원할당 해제에 실패하였습니다.");
             }
         }
     }
