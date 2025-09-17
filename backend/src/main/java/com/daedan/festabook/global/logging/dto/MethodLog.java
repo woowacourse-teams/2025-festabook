@@ -4,10 +4,10 @@ public record MethodLog(
         LogType type,
         String className,
         String methodName,
-        long executionTime
+        String executionTime
 ) {
 
-    public static MethodLog from(String className, String methodName, long executionTime) {
+    public static MethodLog from(String className, String methodName, String executionTime) {
         return new MethodLog(
                 LogType.METHOD_EVENT,
                 className,

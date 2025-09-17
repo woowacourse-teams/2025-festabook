@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -30,8 +31,7 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        long startTime = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch();
         String uri = request.getRequestURI();
         String httpMethod = request.getMethod();
         String queryString = request.getQueryString();
@@ -41,12 +41,12 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
             return;
         }
 
+        stopWatch.start();
         try {
             log.info("[API Call] method={} queryString={} uri={}", httpMethod, queryString, uri);
             filterChain.doFilter(request, response);
         } finally {
-            long endTime = System.currentTimeMillis();
-            long executionTime = endTime - startTime;
+            long executionTime = stopWatch.getTotalTimeMillis();
             int statusCode = response.getStatus();
             String requestBody = extractBodyFromCache(request);
 

@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
@@ -45,8 +46,7 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        long startTime = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch();
         String uri = request.getRequestURI();
         String httpMethod = request.getMethod();
         String ipAddress = request.getHeader(REQUEST_USER_IP_HEADER_NAME);
@@ -58,6 +58,7 @@ public class LoggingFilter extends OncePerRequestFilter {
             return;
         }
 
+        stopWatch.start();
         try {
             MDC.put("traceId", UUID.randomUUID().toString());
 
@@ -66,11 +67,10 @@ public class LoggingFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         } finally {
-
+            stopWatch.stop();
             String queryString = request.getQueryString();
-            long endTime = System.currentTimeMillis();
-            long executionTime = endTime - startTime;
             int statusCode = response.getStatus();
+            String executionTime = stopWatch.getTotalTimeMillis() + "ms";
             Object requestBody = extractBodyFromCache(request);
 
             ApiLog apiLog = ApiLog.from(
@@ -81,7 +81,8 @@ public class LoggingFilter extends OncePerRequestFilter {
                     username,
                     statusCode,
                     requestBody,
-                    executionTime);
+                    executionTime
+            );
             log.info("", kv("event", apiLog));
 
             MDC.clear();
