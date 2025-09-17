@@ -27,3 +27,7 @@ springdoc:
 secret:
   jwt-key: asidjiogorepgkpoergkorepgkopergkgopkregopqwrokgro
   jwt-expiration: 9023859840385093458
+
+fcm:
+  topic:
+    prefix: test-topic
