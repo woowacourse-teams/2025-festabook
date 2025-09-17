@@ -28,6 +28,8 @@ enum class PlaceCategoryUiModel {
                 PARKING,
                 PRIMARY,
                 STAGE,
+                PHOTO_BOOTH,
+                EXTRA,
             )
     }
 }
@@ -44,6 +46,8 @@ val PlaceCategoryUiModel.Companion.iconResources: List<Int>
             R.drawable.ic_primary,
             R.drawable.ic_parking,
             R.drawable.ic_stage,
+            R.drawable.ic_photo_booth,
+            R.drawable.ic_extra,
             R.drawable.ic_food_truck_selected,
             R.drawable.ic_booth_selected,
             R.drawable.ic_bar_selected,
@@ -53,6 +57,8 @@ val PlaceCategoryUiModel.Companion.iconResources: List<Int>
             R.drawable.ic_primary_selected,
             R.drawable.ic_parking_selected,
             R.drawable.ic_stage_selected,
+            R.drawable.ic_photo_booth_selected,
+            R.drawable.ic_extra_selected,
         )
 
 fun OverlayImageManager.getNormalIcon(category: PlaceCategoryUiModel): OverlayImage? =
