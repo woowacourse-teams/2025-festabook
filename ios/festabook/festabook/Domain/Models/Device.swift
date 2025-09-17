@@ -11,6 +11,11 @@ struct DeviceRegistrationResponse: Codable {
     let deviceId: Int
 }
 
+// MARK: - 디바이스 토큰 갱신 요청
+struct DeviceUpdateRequest: Codable {
+    let fcmToken: String
+}
+
 // MARK: - 축제 알림 구독 요청
 struct FestivalNotificationRequest: Codable {
     let deviceId: Int
@@ -20,4 +25,3 @@ struct FestivalNotificationRequest: Codable {
 struct FestivalNotificationResponse: Codable {
     let festivalNotificationId: Int
 }
-

@@ -24,6 +24,9 @@ class NotificationService: ObservableObject {
     private let notificationEnabledKey = "notificationEnabled"
     private let notificationModalShownKey = "notificationModalShown_"
     private let fcmTokenKey = "fcmToken"
+    private let syncedFcmTokenKey = "syncedFcmToken"
+
+    private var syncedFcmToken: String? = nil
     
     private init() {
         loadStoredValues()
@@ -35,13 +38,28 @@ class NotificationService: ObservableObject {
         festivalNotificationId = userDefaults.object(forKey: festivalNotificationIdKey) as? Int
         isNotificationEnabled = userDefaults.bool(forKey: notificationEnabledKey)
         fcmToken = userDefaults.string(forKey: fcmTokenKey)
-        print("[NotificationService] Loaded deviceId: \(deviceId ?? -1), festivalNotificationId: \(festivalNotificationId ?? -1), isNotificationEnabled: \(isNotificationEnabled), fcmToken: \(fcmToken?.prefix(20) ?? "nil")...")
+        syncedFcmToken = userDefaults.string(forKey: syncedFcmTokenKey)
+        print("[NotificationService] Loaded deviceId: \(deviceId ?? -1), festivalNotificationId: \(festivalNotificationId ?? -1), isNotificationEnabled: \(isNotificationEnabled), fcmToken: \(fcmToken?.prefix(20) ?? "nil"), syncedFcmToken: \(syncedFcmToken?.prefix(20) ?? "nil")...")
     }
     
     // MARK: - 디바이스 ID 저장
     private func saveDeviceId(_ id: Int) {
         deviceId = id
         userDefaults.set(id, forKey: deviceIdKey)
+    }
+
+    // MARK: - 서버와 동기화된 토큰 저장
+    private func saveSyncedFcmToken(_ token: String) {
+        syncedFcmToken = token
+        userDefaults.set(token, forKey: syncedFcmTokenKey)
+    }
+
+    // MARK: - 디바이스 등록 정보 초기화
+    private func clearStoredDeviceRegistration() {
+        deviceId = nil
+        userDefaults.removeObject(forKey: deviceIdKey)
+        syncedFcmToken = nil
+        userDefaults.removeObject(forKey: syncedFcmTokenKey)
     }
     
     // MARK: - 축제 알림 ID 저장
@@ -129,64 +147,81 @@ class NotificationService: ObservableObject {
 
     // MARK: - 토큰 자동 갱신 시 서버 업데이트
     func updateTokenToServerIfNeeded(_ token: String) async {
-        // 기존에 디바이스가 등록되어 있고, 토큰이 변경된 경우에만 서버 업데이트
-        guard let deviceId = deviceId, deviceId > 0 else {
-            print("[NotificationService] 디바이스 미등록 상태 - 서버 업데이트 스킵")
-            return
-        }
-
-        guard fcmToken != token else {
-            print("[NotificationService] 토큰 변경 없음 - 서버 업데이트 스킵")
-            return
-        }
-
-        print("[NotificationService] 토큰 변경 감지 - 서버에 업데이트 중...")
-
-        // TODO: 디바이스 토큰 업데이트 API 호출 구현 필요
-        // do {
-        //     let _ = try await updateDeviceToken(deviceId: deviceId, newToken: token)
-        //     print("[NotificationService] ✅ 서버 토큰 업데이트 완료")
-        // } catch {
-        //     print("[NotificationService] ❌ 서버 토큰 업데이트 실패: \(error)")
-        // }
-
-        print("[NotificationService] ✅ 서버 토큰 업데이트 완료 (현재 구현 대기중)")
+        await syncDeviceRegistration(with: token, previousToken: nil)
     }
     
     // MARK: - FCM 토큰 업데이트 (AppDelegate에서 호출)
     func updateFCMToken(_ token: String) {
         DispatchQueue.main.async {
-            // 이전 토큰을 먼저 저장 (비교용)
             let previousToken = self.fcmToken
 
-            // 새 토큰 저장
             self.fcmToken = token
             self.userDefaults.set(token, forKey: self.fcmTokenKey)
             print("[NotificationService] ✅ 새 FCM 토큰 저장")
 
-            // FCM 토큰 받으면 즉시 디바이스 등록 (deviceId 저장용)
             Task {
-                await self.registerDeviceIfNeeded(fcmToken: token, previousToken: previousToken)
+                await self.syncDeviceRegistration(with: token, previousToken: previousToken)
             }
         }
     }
+    
+    // MARK: - 디바이스 등록/갱신 동기화
+    private func syncDeviceRegistration(with newToken: String, previousToken: String?) async {
+        let trimmedToken = newToken.trimmingCharacters(in: .whitespacesAndNewlines)
 
-    // MARK: - 디바이스 등록 (토큰 변경 시 항상 새로 등록)
-    private func registerDeviceIfNeeded(fcmToken: String, previousToken: String?) async {
-        // 토큰이 변경되었거나 디바이스가 미등록 상태면 새로 등록
-        if !isDeviceRegistered() || previousToken != fcmToken {
-            print("[NotificationService] FCM 토큰 변경 감지 또는 미등록 - 디바이스 등록 시작")
-            print("[NotificationService] 이전 토큰: \(previousToken?.prefix(20) ?? "nil")...")
-            print("[NotificationService] 새 토큰: \(fcmToken.prefix(20))...")
+        guard !trimmedToken.isEmpty else {
+            print("[NotificationService] ⚠️ 빈 FCM 토큰 - 서버 동기화 스킵")
+            return
+        }
+
+        let storedDeviceId = deviceId
+        let storedSyncedToken = syncedFcmToken
+
+        if storedDeviceId == nil || storedDeviceId ?? 0 <= 0 {
+            print("[NotificationService] 디바이스 미등록 상태 - 신규 등록 시도")
+            do {
+                let registeredDeviceId = try await registerDevice(withToken: trimmedToken)
+                print("[NotificationService] ✅ 디바이스 신규 등록 완료 - deviceId: \(registeredDeviceId)")
+            } catch {
+                print("[NotificationService] ❌ 디바이스 신규 등록 실패: \(error)")
+            }
+            return
+        }
+
+        guard let existingDeviceId = storedDeviceId else {
+            print("[NotificationService] ⚠️ 저장된 deviceId 조회 실패")
+            return
+        }
+
+        if storedSyncedToken == trimmedToken {
+            print("[NotificationService] 현재 토큰이 서버와 이미 동기화됨 - 업데이트 스킵")
+            return
+        }
+
+        print("[NotificationService] 저장된 deviceId: \(existingDeviceId) 토큰 업데이트 진행")
+        print("[NotificationService] 이전 토큰: \(previousToken?.prefix(20) ?? "nil")...")
+        print("[NotificationService] 신규 토큰: \(trimmedToken.prefix(20))...")
+
+        do {
+            try await updateDeviceToken(deviceId: existingDeviceId, newToken: trimmedToken)
+            await MainActor.run {
+                self.saveSyncedFcmToken(trimmedToken)
+            }
+            print("[NotificationService] ✅ 디바이스 토큰 PATCH 성공")
+        } catch HTTPError.server(let statusCode, _) where statusCode == 404 {
+            print("[NotificationService] ⚠️ 서버에서 deviceId=\(existingDeviceId) 미존재 - 재등록 시도")
+            await MainActor.run {
+                self.clearStoredDeviceRegistration()
+            }
 
             do {
-                let registeredDeviceId = try await registerDevice(withToken: fcmToken)
-                print("[NotificationService] ✅ 디바이스 등록 성공 - deviceId: \(registeredDeviceId) 저장됨")
+                let newDeviceId = try await registerDevice(withToken: trimmedToken)
+                print("[NotificationService] ✅ 재등록 성공 - deviceId: \(newDeviceId)")
             } catch {
-                print("[NotificationService] ❌ 디바이스 등록 실패: \(error)")
+                print("[NotificationService] ❌ 디바이스 재등록 실패: \(error)")
             }
-        } else {
-            print("[NotificationService] 토큰 변경 없음 - 디바이스 등록 스킵")
+        } catch {
+            print("[NotificationService] ❌ 디바이스 토큰 PATCH 실패: \(error)")
         }
     }
 
@@ -220,10 +255,22 @@ class NotificationService: ObservableObject {
         
         await MainActor.run {
             saveDeviceId(response.deviceId)
+            saveSyncedFcmToken(tokenToUse)
             print("[NotificationService] 디바이스 등록 성공: \(response.deviceId)")
         }
-        
+
         return response.deviceId
+    }
+
+    // MARK: - 디바이스 토큰 갱신
+    private func updateDeviceToken(deviceId: Int, newToken: String) async throws {
+        let endpoint = "\(Endpoints.devices)/\(deviceId)"
+        let request = DeviceUpdateRequest(fcmToken: newToken)
+
+        try await APIClient.shared.patchDevice(
+            endpoint: endpoint,
+            body: request
+        )
     }
     
     // MARK: - 축제 알림 구독

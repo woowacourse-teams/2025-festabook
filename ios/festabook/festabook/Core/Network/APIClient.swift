@@ -229,6 +229,39 @@ class APIClient {
           catch { throw HTTPError.transport(error) }
     }
 
+    func patchDevice<U: Encodable>(endpoint: String, body: U) async throws {
+        var comps = URLComponents(url: BuildConfig.apiBaseURL, resolvingAgainstBaseURL: false)!
+        comps.path += endpoint
+        guard let url = comps.url else { throw HTTPError.invalidURL }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "PATCH"
+        req.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        req.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        do {
+            req.httpBody = try JSONEncoder().encode(body)
+        } catch {
+            throw HTTPError.transport(error)
+        }
+
+        print("[APIClient] Device PATCH URL: \(url)")
+        print("[APIClient] Headers: \(req.allHTTPHeaderFields ?? [:])")
+
+        do {
+            let (data, resp) = try await session.data(for: req)
+            guard let http = resp as? HTTPURLResponse else { throw HTTPError.transport(URLError(.badServerResponse)) }
+
+            print("[APIClient] Device PATCH Response Status: \(http.statusCode)")
+
+            guard (200..<300).contains(http.statusCode) else {
+                print("[APIClient] Device PATCH Error - Status: \(http.statusCode)")
+                throw HTTPError.server(http.statusCode, data)
+            }
+        } catch let e as HTTPError { throw e }
+          catch { throw HTTPError.transport(error) }
+    }
+
     func deleteNotification(endpoint: String) async throws {
         var comps = URLComponents(url: BuildConfig.apiBaseURL, resolvingAgainstBaseURL: false)!
         comps.path += endpoint

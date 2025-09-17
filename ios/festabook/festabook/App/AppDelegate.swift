@@ -112,10 +112,7 @@ extension AppDelegate: MessagingDelegate {
         // NotificationCenter로 FCM 토큰 발급 이벤트 전송 ("FCMToken" 이벤트명 사용)
         NotificationCenter.default.post(name: Notification.Name("FCMToken"), object: nil)
 
-        // 필요시 서버에 토큰 업데이트 (기존 디바이스가 등록되어 있는 경우)
-        Task {
-            await NotificationService.shared.updateTokenToServerIfNeeded(token)
-        }
+        // 서버 동기화는 NotificationService 내부에서 자동 처리됨
     }
 
     // data-only 메시지 수신 처리 (토픽 기반 메시지 포함)
