@@ -19,17 +19,17 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelable(key, T::class.java)
     } else {
-        getParcelable(key)
+        getParcelable(key) as? T
     }
 
 inline fun <reified T : Parcelable> Intent.getObject(key: String): T? =
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelableExtra(key, T::class.java)
     } else {
-        getParcelableExtra(key)
+        getParcelableExtra(key) as? T
     }
 
 fun Int.toPx(context: Context) =
