@@ -2,6 +2,7 @@ package com.daedan.festabook.device.controller;
 
 import com.daedan.festabook.device.dto.DeviceRequest;
 import com.daedan.festabook.device.dto.DeviceResponse;
+import com.daedan.festabook.device.dto.DeviceUpdateRequest;
 import com.daedan.festabook.device.service.DeviceService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -9,6 +10,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,5 +36,18 @@ public class DeviceController {
             @RequestBody DeviceRequest request
     ) {
         return deviceService.registerDevice(request);
+    }
+
+    @PatchMapping("/{deviceId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "디바이스 업데이트")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public DeviceResponse updateDevice(
+            @PathVariable Long deviceId,
+            @RequestBody DeviceUpdateRequest request
+    ) {
+        return deviceService.updateDevice(deviceId, request);
     }
 }
