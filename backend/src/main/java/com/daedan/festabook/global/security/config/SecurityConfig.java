@@ -58,6 +58,10 @@ public class SecurityConfig {
             "/councils/login"
     };
 
+    private static final String[] PATCH_WHITELIST = {
+            "/devices/*"
+    };
+
     private static final String[] DELETE_WHITELIST = {
             "/festivals/notifications/*",
             "/places/favorites/*"
@@ -77,6 +81,7 @@ public class SecurityConfig {
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.POST, POST_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.PATCH, PATCH_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.DELETE, DELETE_WHITELIST).permitAll()
                         .anyRequest().hasAnyAuthority(
                                 RoleType.ROLE_COUNCIL.name(),
