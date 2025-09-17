@@ -2,8 +2,8 @@ package com.daedan.festabook.global.logging;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
-import com.daedan.festabook.global.logging.dto.ApiCallMessage;
-import com.daedan.festabook.global.logging.dto.ApiEndMessage;
+import com.daedan.festabook.global.logging.dto.ApiEventLog;
+import com.daedan.festabook.global.logging.dto.ApiLog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -53,8 +53,8 @@ public class LoggingFilter extends OncePerRequestFilter {
         try {
             MDC.put("traceId", UUID.randomUUID().toString());
 
-            ApiCallMessage apiCallMessage = ApiCallMessage.from(httpMethod, queryString, uri);
-            log.info("", kv("event", apiCallMessage));
+            ApiEventLog apiEvent = new ApiEventLog("apiEvent", httpMethod, uri);
+            log.info("", kv("event", apiEvent));
 
             filterChain.doFilter(request, response);
         } finally {
@@ -63,8 +63,14 @@ public class LoggingFilter extends OncePerRequestFilter {
             int statusCode = response.getStatus();
             Object requestBody = extractBodyFromCache(request);
 
-            ApiEndMessage apiEndMessage = ApiEndMessage.from(statusCode, requestBody, executionTime);
-            log.info("", kv("event", apiEndMessage));
+            ApiLog apiLog = ApiLog.from(
+                    httpMethod,
+                    queryString,
+                    uri,
+                    statusCode,
+                    requestBody,
+                    executionTime);
+            log.info("", kv("event", apiLog));
 
             MDC.clear();
         }

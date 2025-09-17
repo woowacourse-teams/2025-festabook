@@ -1,6 +1,6 @@
 package com.daedan.festabook.global.logging.dto;
 
-public record ExceptionMessage(
+public record ExceptionLog(
         String type,
         int errorCode,
         String exceptionMessage,

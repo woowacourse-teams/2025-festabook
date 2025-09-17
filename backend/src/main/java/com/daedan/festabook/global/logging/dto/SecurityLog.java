@@ -1,6 +1,6 @@
 package com.daedan.festabook.global.logging.dto;
 
-public record SecurityMessage(
+public record SecurityLog(
         String type,
         String requestURI,
         String httpMethod,

@@ -1,19 +1,28 @@
 package com.daedan.festabook.global.logging.dto;
 
-public record ApiEndMessage(
+public record ApiLog(
         String type,
+        String httpMethod,
+        String queryString,
+        String uri,
         int httpStatusCode,
         Object requestBody,
         long executionTime
 ) {
 
-    public static ApiEndMessage from(
+    public static ApiLog from(
+            String httpMethod,
+            String queryString,
+            String uri,
             int httpStatusCode,
             Object requestBody,
             long executionTime
     ) {
-        return new ApiEndMessage(
-                "API End",
+        return new ApiLog(
+                "API",
+                httpMethod,
+                queryString,
+                uri,
                 httpStatusCode,
                 requestBody,
                 executionTime

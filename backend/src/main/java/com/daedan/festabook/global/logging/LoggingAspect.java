@@ -2,8 +2,8 @@ package com.daedan.festabook.global.logging;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
-import com.daedan.festabook.global.logging.dto.MethodCallMessage;
-import com.daedan.festabook.global.logging.dto.MethodEndMessage;
+import com.daedan.festabook.global.logging.dto.MethodEventLog;
+import com.daedan.festabook.global.logging.dto.MethodLog;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -31,8 +31,8 @@ public class LoggingAspect {
         String className = joinPoint.getSignature().getDeclaringTypeName();
         String methodName = joinPoint.getSignature().getName();
 
-        MethodCallMessage methodCallMessage = MethodCallMessage.from(className, methodName);
-        log.info("", kv("event", methodCallMessage));
+        MethodEventLog methodEvent = new MethodEventLog("methodEvent", className, methodName);
+        log.info("", kv("event", methodEvent));
 
         Object result = null;
         try {
@@ -41,8 +41,8 @@ public class LoggingAspect {
             long end = System.currentTimeMillis();
             long executionTime = end - start;
 
-            MethodEndMessage methodEndMessage = MethodEndMessage.from(className, methodName, executionTime);
-            log.info("", kv("event", methodEndMessage));
+            MethodLog methodLog = MethodLog.from(className, methodName, executionTime);
+            log.info("", kv("event", methodLog));
         }
 
         return result;

@@ -2,7 +2,7 @@ package com.daedan.festabook.global.exception;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
-import com.daedan.festabook.global.logging.dto.ExceptionMessage;
+import com.daedan.festabook.global.logging.dto.ExceptionLog;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -25,13 +25,13 @@ public class GlobalExceptionHandler {
                     .status(businessException.getStatus())
                     .body(businessException.toResponse());
         } finally {
-            ExceptionMessage exceptionMessage = new ExceptionMessage(
+            ExceptionLog exceptionLog = new ExceptionLog(
                     "exception",
                     businessException.getStatus().value(),
                     businessException.getMessage(),
                     ""
             );
-            log.info("", kv("event", exceptionMessage));
+            log.info("", kv("event", exceptionLog));
         }
     }
 
@@ -45,13 +45,13 @@ public class GlobalExceptionHandler {
                     .internalServerError()
                     .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
         } finally {
-            ExceptionMessage exceptionMessage = new ExceptionMessage(
+            ExceptionLog exceptionLog = new ExceptionLog(
                     "exception",
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     runtimeException.getMessage(),
                     stringWriter.toString()
             );
-            log.warn("", kv("event", exceptionMessage));
+            log.warn("", kv("event", exceptionLog));
             try {
                 stringWriter.close();
             } catch (IOException e) {

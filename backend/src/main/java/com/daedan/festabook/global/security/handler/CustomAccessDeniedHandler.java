@@ -2,7 +2,7 @@ package com.daedan.festabook.global.security.handler;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
-import com.daedan.festabook.global.logging.dto.SecurityMessage;
+import com.daedan.festabook.global.logging.dto.SecurityLog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -37,13 +37,13 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
             response.setCharacterEncoding(StandardCharsets.UTF_8.name());
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         } finally {
-            SecurityMessage securityMessage = new SecurityMessage(
+            SecurityLog securityLog = new SecurityLog(
                     "authorization",
                     request.getRequestURI(),
                     request.getMethod(),
                     exception.getMessage()
             );
-            log.info("", kv("event", securityMessage));
+            log.info("", kv("event", securityLog));
         }
     }
 
