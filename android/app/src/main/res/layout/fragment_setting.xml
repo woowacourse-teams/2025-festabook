@@ -30,29 +30,48 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginVertical="12dp"
+            android:layout_marginVertical="20dp"
             android:text="@string/setting_notice_title"
-            app:layout_constraintBottom_toTopOf="@id/tv_setting_current_university_notice"
             app:layout_constraintTop_toBottomOf="@id/tv_setting_title" />
 
         <TextView
             android:id="@+id/tv_setting_current_university_notice"
             style="@style/PretendardMedium16"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
             android:layout_marginVertical="12dp"
             android:text="@string/setting_current_university_notice"
-            app:layout_constraintBottom_toTopOf="@id/tv_setting_notice_detail"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_notice_allow"
             app:layout_constraintTop_toBottomOf="@id/tv_setting_notice_title"
-            tools:layout_editor_absoluteX="20dp" />
+            tools:text="현재 접속 중인 대학" />
+
+        <TextView
+            android:id="@+id/tv_setting_current_university"
+            style="@style/PretendardRegular14"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginHorizontal="20dp"
+            android:layout_marginVertical="4dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="@string/setting_current_university_notice"
+            android:textColor="@color/gray500"
+            app:layout_constraintEnd_toStartOf="@id/btn_notice_allow"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_current_university_notice"
+            tools:text="성균관대학교 인문사회과학철학문학자연캠퍼스" />
 
         <com.google.android.material.materialswitch.MaterialSwitch
             android:id="@+id/btn_notice_allow"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginEnd="20dp"
             app:layout_constraintBottom_toBottomOf="@id/tv_setting_current_university_notice"
-            app:layout_constraintEnd_toEndOf="@id/tv_setting_current_university_notice"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="@id/tv_setting_current_university_notice"
             app:trackDecorationTint="@color/selector_setting_notice_bg_color"
             app:trackTint="@color/selector_setting_notice_bg_color" />
@@ -76,7 +95,7 @@
             android:layout_marginVertical="20dp"
             android:background="@color/gray100"
             app:layout_constraintBottom_toTopOf="@id/tv_setting_app_info_title"
-            app:layout_constraintTop_toBottomOf="@id/tv_setting_notice_detail" />
+            app:layout_constraintTop_toBottomOf="@id/tv_setting_current_university" />
 
         <TextView
             android:id="@+id/tv_setting_app_info_title"
