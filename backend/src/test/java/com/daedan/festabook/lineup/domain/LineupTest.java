@@ -109,17 +109,23 @@ class LineupTest {
         @ParameterizedTest
         @ValueSource(ints = {1, MAX_NAME_LENGTH})
         void 성공_이름_길이_검증(int len) {
+            // given
             String name = "a".repeat(len);
+
+            // when & then
             assertThatCode(() -> LineupFixture.create(name)).doesNotThrowAnyException();
         }
 
         @ParameterizedTest
         @ValueSource(ints = {MAX_NAME_LENGTH + 1, MAX_NAME_LENGTH + 10})
         void 예외_이름_길이_초과(int len) {
+            // given
             String name = "가".repeat(len);
+
+            // when & then
             assertThatThrownBy(() -> LineupFixture.create(name))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("이름은 50자를 초과할 수 없습니다.");
+                    .hasMessage("이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH);
         }
     }
 }
