@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionResponse> handleRuntimeException(RuntimeException runtimeException) {
         StringWriter stringWriter = new StringWriter();
-        try (PrintWriter printWriter = new PrintWriter(stringWriter);) {
+        try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
 
             runtimeException.printStackTrace(printWriter);
             return ResponseEntity
