@@ -280,14 +280,25 @@ export const placeAPI = {
     }
   },
 
-  // 플레이스 수정
-  updatePlace: async (placeId, placeData) => {
+  // 메인 플레이스 수정
+  updateMainPlace: async (placeId, placeData) => {
     try {
-      const response = await api.patch(`/places/${placeId}`, placeData);
+      const response = await api.patch(`/places/main/${placeId}`, placeData);
       return response.data;
     } catch (error) {
-      console.error('Failed to update place:', error);
-      throw new Error('플레이스 수정에 실패했습니다.');
+      console.error('Failed to update main place:', error);
+      throw new Error('메인 플레이스 수정에 실패했습니다.');
+    }
+  },
+
+  // 기타 플레이스 수정
+  updateEtcPlace: async (placeId, placeData) => {
+    try {
+      const response = await api.patch(`/places/etc/${placeId}`, placeData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update etc place:', error);
+      throw new Error('기타 플레이스 수정에 실패했습니다.');
     }
   },
 
