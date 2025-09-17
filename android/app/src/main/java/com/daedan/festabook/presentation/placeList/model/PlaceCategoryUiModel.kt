@@ -15,6 +15,8 @@ enum class PlaceCategoryUiModel {
     PRIMARY,
     PARKING,
     STAGE,
+    PHOTO_BOOTH,
+    EXTRA
     ;
 
     companion object {
@@ -64,6 +66,8 @@ fun OverlayImageManager.getNormalIcon(category: PlaceCategoryUiModel): OverlayIm
         PlaceCategoryUiModel.PRIMARY -> getImage(R.drawable.ic_primary)
         PlaceCategoryUiModel.PARKING -> getImage(R.drawable.ic_parking)
         PlaceCategoryUiModel.STAGE -> getImage(R.drawable.ic_stage)
+        PlaceCategoryUiModel.PHOTO_BOOTH -> getImage(R.drawable.ic_photo_booth)
+        PlaceCategoryUiModel.EXTRA -> getImage(R.drawable.ic_extra)
     }
 
 fun OverlayImageManager.getSelectedIcon(category: PlaceCategoryUiModel): OverlayImage? =
@@ -77,6 +81,8 @@ fun OverlayImageManager.getSelectedIcon(category: PlaceCategoryUiModel): Overlay
         PlaceCategoryUiModel.PRIMARY -> getImage(R.drawable.ic_primary_selected)
         PlaceCategoryUiModel.PARKING -> getImage(R.drawable.ic_parking_selected)
         PlaceCategoryUiModel.STAGE -> getImage(R.drawable.ic_stage_selected)
+        PlaceCategoryUiModel.PHOTO_BOOTH -> getImage(R.drawable.ic_photo_booth_selected)
+        PlaceCategoryUiModel.EXTRA -> getImage(R.drawable.ic_extra_selected)
     }
 
 fun PlaceCategoryUiModel.getIconId() =
@@ -90,6 +96,8 @@ fun PlaceCategoryUiModel.getIconId() =
         PlaceCategoryUiModel.PRIMARY -> R.drawable.ic_map_category_primary
         PlaceCategoryUiModel.PARKING -> R.drawable.ic_map_category_parking
         PlaceCategoryUiModel.STAGE -> R.drawable.ic_map_category_stage
+        PlaceCategoryUiModel.PHOTO_BOOTH -> R.drawable.ic_map_category_photo_booth
+        PlaceCategoryUiModel.EXTRA -> R.drawable.ic_map_category_extra
     }
 
 fun PlaceCategoryUiModel.getTextId() =
@@ -103,6 +111,8 @@ fun PlaceCategoryUiModel.getTextId() =
         PlaceCategoryUiModel.PRIMARY -> R.string.map_category_primary
         PlaceCategoryUiModel.PARKING -> R.string.map_category_parking
         PlaceCategoryUiModel.STAGE -> R.string.map_category_stage
+        PlaceCategoryUiModel.PHOTO_BOOTH -> R.string.map_category_photo_booth
+        PlaceCategoryUiModel.EXTRA -> R.string.map_category_extra
     }
 
 fun PlaceCategory.toUiModel() =
@@ -116,4 +126,6 @@ fun PlaceCategory.toUiModel() =
         PlaceCategory.PARKING -> PlaceCategoryUiModel.PARKING
         PlaceCategory.PRIMARY -> PlaceCategoryUiModel.PRIMARY
         PlaceCategory.STAGE -> PlaceCategoryUiModel.STAGE
+        PlaceCategory.PHOTO_BOOTH -> PlaceCategoryUiModel.PHOTO_BOOTH
+        PlaceCategory.EXTRA -> PlaceCategoryUiModel.EXTRA
     }

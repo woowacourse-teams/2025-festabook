@@ -10,6 +10,8 @@ enum class PlaceCategory {
     PARKING,
     PRIMARY,
     STAGE,
+    PHOTO_BOOTH,
+    EXTRA
     ;
 
     companion object {

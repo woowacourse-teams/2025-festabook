@@ -54,6 +54,8 @@
     <string name="map_category_stage">무대</string>
     <string name="map_category_primary">주요시설</string>
     <string name="map_category_parking">주차장</string>
+    <string name="map_category_photo_booth">포토부스</string>
+    <string name="map_category_extra">기타시설</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
 
