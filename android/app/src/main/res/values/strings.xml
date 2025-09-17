@@ -75,7 +75,7 @@
     <!-- 설정 화면 -->
     <string name="setting_title">설정</string>
     <string name="setting_notice_title">알림</string>
-    <string name="setting_current_university_notice">현재 접속 중인 대학 - %1s</string>
+    <string name="setting_current_university_notice">현재 접속 중인 대학</string>
     <string name="setting_notice_detail">앱 알림 세부 설정</string>
     <string name="setting_app_info_title">앱 정보</string>
     <string name="setting_app_version">앱 버전</string>
