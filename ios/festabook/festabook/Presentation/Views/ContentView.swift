@@ -22,6 +22,7 @@ struct ContentView: View {
 // MARK: - 탭 네비게이션 매니저
 class TabNavigationManager: ObservableObject {
     @Published var selectedTab: MainTabView.Tab = .home
+    @Published var pendingSelection: MainTabView.Tab?
     
     init() {
         // 딥링크 이벤트 구독
@@ -33,7 +34,7 @@ class TabNavigationManager: ObservableObject {
             if let tabName = notification.object as? String,
                let tab = MainTabView.Tab(rawValue: tabName) {
                 print("[TabNavigationManager] 딥링크로 탭 이동: \(tabName)")
-                self?.selectedTab = tab
+                self?.pendingSelection = tab
             }
         }
     }
@@ -41,6 +42,7 @@ class TabNavigationManager: ObservableObject {
 
 struct MainTabView: View {
     @StateObject private var tabManager = TabNavigationManager()
+    @EnvironmentObject private var appState: AppState
 
     // Persistent ViewModels for each tab to prevent re-initialization
     @StateObject private var scheduleViewModel = ScheduleViewModel(repository: ServiceLocator.shared.scheduleRepository)
@@ -99,6 +101,26 @@ struct MainTabView: View {
             CustomTabBar(selectedTab: $tabManager.selectedTab)
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
+        .onChange(of: tabManager.pendingSelection) { newValue in
+            guard let tab = newValue else { return }
+            tabManager.pendingSelection = nil
+            withAnimation(.easeInOut) {
+                tabManager.selectedTab = tab
+            }
+        }
+        .onChange(of: appState.shouldNavigateToNews) { shouldNavigate in
+            guard shouldNavigate else { return }
+            appState.shouldNavigateToNews = false
+            withAnimation(.easeInOut) {
+                tabManager.selectedTab = .news
+            }
+        }
+        .onAppear {
+            if appState.shouldNavigateToNews {
+                appState.shouldNavigateToNews = false
+                tabManager.selectedTab = .news
+            }
+        }
     }
 }
 

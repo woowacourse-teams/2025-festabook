@@ -1,6 +1,6 @@
 import Foundation
 
-struct Announcement: Codable, Identifiable {
+struct Announcement: Codable, Identifiable, Equatable {
     let announcementId: Int
     let title: String
     let content: String

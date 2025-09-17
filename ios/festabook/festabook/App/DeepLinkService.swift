@@ -143,22 +143,10 @@ class DeepLinkService: ObservableObject {
             print("[DeepLinkService] ✅ 축제 ID 업데이트: \(festivalIdInt)")
         }
 
-        print("[DeepLinkService] ➡️ 공지사항 상세 화면으로 이동: festivalId=\(festivalId), announcementId=\(announcementId)")
+        print("[DeepLinkService] ➡️ 공지사항 딥링크로 뉴스 탭 이동: festivalId=\(festivalId), announcementId=\(announcementId)")
 
-        // 먼저 소식 탭으로 이동
+        // 소식 탭으로 이동하여 목록을 펼칠 수 있도록 함
         NotificationCenter.default.post(name: .navigateToTab, object: "news")
-
-        // 잠시 후 공지사항 상세 화면으로 네비게이션
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            let announcementDetailData: [String: Any] = [
-                "action": "show_announcement_detail",
-                "festivalId": festivalId,
-                "announcementId": announcementId
-            ]
-
-            NotificationCenter.default.post(name: .showAnnouncementDetail, object: announcementDetailData)
-            print("[DeepLinkService] 📤 공지사항 상세 화면 표시 이벤트 전송")
-        }
     }
     
     // MARK: - 축제 딥링크 처리

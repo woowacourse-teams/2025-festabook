@@ -95,71 +95,136 @@ struct AnnouncementsListView: View {
     @StateObject private var viewModel = AnnouncementsViewModel(
         repository: ServiceLocator.shared.announcementsRepository
     )
+    @EnvironmentObject private var appState: AppState
+    @State private var expandedAnnouncementId: Int?
+    @State private var pendingAnnouncementId: Int?
 
     var body: some View {
-        ScrollView {
-            LazyVStack(spacing: 12) {
-                if viewModel.isLoading && viewModel.pinnedAnnouncements.isEmpty && viewModel.unpinnedAnnouncements.isEmpty {
-                    // 초기 로딩 상태
-                    ProgressView("공지사항을 불러오는 중...")
-                        .padding(.vertical, 40)
-                } else if !viewModel.isLoading && viewModel.pinnedAnnouncements.isEmpty && viewModel.unpinnedAnnouncements.isEmpty {
-                    // 데이터가 없는 상태
-                    if let errorMessage = viewModel.errorMessage {
-                        VStack(spacing: 12) {
-                            Image(systemName: "exclamationmark.triangle")
-                                .font(.system(size: 24))
-                                .foregroundColor(.gray)
-                            Text(errorMessage)
-                                .font(.system(size: 14))
-                                .foregroundColor(.gray)
-                                .multilineTextAlignment(.center)
+        ScrollViewReader { proxy in
+            ScrollView {
+                LazyVStack(spacing: 12) {
+                    if viewModel.isLoading && viewModel.pinnedAnnouncements.isEmpty && viewModel.unpinnedAnnouncements.isEmpty {
+                        ProgressView("공지사항을 불러오는 중...")
+                            .padding(.vertical, 40)
+                    } else if !viewModel.isLoading && viewModel.pinnedAnnouncements.isEmpty && viewModel.unpinnedAnnouncements.isEmpty {
+                        if let errorMessage = viewModel.errorMessage {
+                            VStack(spacing: 12) {
+                                Image(systemName: "exclamationmark.triangle")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.gray)
+                                Text(errorMessage)
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                                    .multilineTextAlignment(.center)
+                            }
+                            .padding(.vertical, 40)
+                        } else {
+                            VStack(spacing: 12) {
+                                Image(systemName: "doc.text")
+                                    .font(.system(size: 24))
+                                    .foregroundColor(.gray)
+                                Text("등록된 공지사항이 없습니다")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(.gray)
+                            }
+                            .padding(.vertical, 40)
                         }
-                        .padding(.vertical, 40)
                     } else {
-                        VStack(spacing: 12) {
-                            Image(systemName: "doc.text")
-                                .font(.system(size: 24))
-                                .foregroundColor(.gray)
-                            Text("등록된 공지사항이 없습니다")
-                                .font(.system(size: 14))
-                                .foregroundColor(.gray)
+                        ForEach(viewModel.pinnedAnnouncements) { announcement in
+                            AnnouncementCard(
+                                announcement: announcement,
+                                isExpanded: expandedAnnouncementId == announcement.announcementId,
+                                onToggle: { toggleExpansion(for: announcement.announcementId) }
+                            )
+                            .id(announcement.announcementId)
                         }
-                        .padding(.vertical, 40)
-                    }
-                } else {
-                    // Pinned announcements first
-                    ForEach(viewModel.pinnedAnnouncements) { announcement in
-                        AnnouncementCard(announcement: announcement)
-                    }
 
-                    // Then unpinned announcements
-                    ForEach(viewModel.unpinnedAnnouncements) { announcement in
-                        AnnouncementCard(announcement: announcement)
+                        ForEach(viewModel.unpinnedAnnouncements) { announcement in
+                            AnnouncementCard(
+                                announcement: announcement,
+                                isExpanded: expandedAnnouncementId == announcement.announcementId,
+                                onToggle: { toggleExpansion(for: announcement.announcementId) }
+                            )
+                            .id(announcement.announcementId)
+                        }
+                    }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 16)
+                .padding(.bottom, 40)
+            }
+            .refreshable {
+                await viewModel.loadAnnouncements()
+                if let id = appState.pendingAnnouncementId {
+                    pendingAnnouncementId = id
+                    attemptExpansionIfNeeded(using: proxy)
+                }
+            }
+            .task {
+                await viewModel.loadAnnouncements()
+                if let id = appState.pendingAnnouncementId {
+                    pendingAnnouncementId = id
+                    attemptExpansionIfNeeded(using: proxy)
+                }
+            }
+            .onChange(of: appState.pendingAnnouncementId) { newValue in
+                guard let id = newValue else { return }
+                pendingAnnouncementId = id
+                attemptExpansionIfNeeded(using: proxy)
+            }
+            .onChange(of: viewModel.pinnedAnnouncements) { _ in
+                attemptExpansionIfNeeded(using: proxy)
+            }
+            .onChange(of: viewModel.unpinnedAnnouncements) { _ in
+                attemptExpansionIfNeeded(using: proxy)
+            }
+            .onChange(of: appState.currentFestivalId) { _ in
+                Task {
+                    await viewModel.loadAnnouncements()
+                    if let id = appState.pendingAnnouncementId {
+                        pendingAnnouncementId = id
+                        attemptExpansionIfNeeded(using: proxy)
                     }
                 }
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 16)
-            .padding(.bottom, 40)
         }
-        .refreshable {
-            await viewModel.loadAnnouncements()
+    }
+
+    private func toggleExpansion(for announcementId: Int) {
+        if expandedAnnouncementId == announcementId {
+            expandedAnnouncementId = nil
+        } else {
+            expandedAnnouncementId = announcementId
         }
-        .task {
-            await viewModel.loadAnnouncements()
+    }
+
+    private func attemptExpansionIfNeeded(using proxy: ScrollViewProxy) {
+        guard let targetId = pendingAnnouncementId else { return }
+
+        let allAnnouncements = viewModel.pinnedAnnouncements + viewModel.unpinnedAnnouncements
+        guard allAnnouncements.contains(where: { $0.announcementId == targetId }) else { return }
+
+        pendingAnnouncementId = nil
+        expandedAnnouncementId = targetId
+
+        DispatchQueue.main.async {
+            withAnimation(.easeInOut) {
+                proxy.scrollTo(targetId, anchor: .top)
+            }
+            appState.pendingAnnouncementId = nil
         }
     }
 }
 
 struct AnnouncementCard: View {
     let announcement: Announcement
-    @State private var isExpanded = false
+    let isExpanded: Bool
+    let onToggle: () -> Void
 
     var body: some View {
         Button(action: {
             withAnimation(.easeInOut(duration: 0.3)) {
-                isExpanded.toggle()
+                onToggle()
             }
         }) {
             VStack(alignment: .leading, spacing: 0) {
@@ -485,4 +550,3 @@ class FAQViewModel: ObservableObject {
         isLoading = false
     }
 }
-

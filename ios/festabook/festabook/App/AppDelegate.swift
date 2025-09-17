@@ -9,6 +9,7 @@ import NMapsMap
 #endif
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
+    private let deepLinkService = DeepLinkService.shared
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         print("[AppDelegate] 앱 시작 - 초기화 중...")
 
