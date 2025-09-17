@@ -78,9 +78,11 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
     private fun showLoadingView(isLoading: Boolean) {
         if (isLoading) {
             binding.rvScheduleEvent.visibility = View.INVISIBLE
+            binding.viewScheduleEventTimeLine.visibility = View.INVISIBLE
             binding.lavScheduleLoading.visibility = View.VISIBLE
         } else {
             binding.lavScheduleLoading.visibility = View.GONE
+            binding.viewScheduleEventTimeLine.visibility = View.VISIBLE
             binding.rvScheduleEvent.visibility = View.VISIBLE
         }
         binding.srlScheduleEvent.isRefreshing = false
