@@ -46,6 +46,7 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
             log.info("[API Call] method={} queryString={} uri={}", httpMethod, queryString, uri);
             filterChain.doFilter(request, response);
         } finally {
+            stopWatch.stop();
             long executionTime = stopWatch.getTotalTimeMillis();
             int statusCode = response.getStatus();
             String requestBody = extractBodyFromCache(request);

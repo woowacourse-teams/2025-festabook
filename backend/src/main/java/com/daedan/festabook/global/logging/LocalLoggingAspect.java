@@ -35,6 +35,7 @@ public class LocalLoggingAspect {
         try {
             result = joinPoint.proceed();
         } finally {
+            stopWatch.stop();
             long executionTime = stopWatch.getTotalTimeMillis();
 
             log.info(
