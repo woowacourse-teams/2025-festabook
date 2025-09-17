@@ -16,26 +16,26 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FcmNotificationManager implements FestivalNotificationManager {
 
-    @Value("${fcm.topic.prefix}")
-    private String topicPrefix;
+    @Value("${fcm.topic.festival-prefix}")
+    private String topicFestivalPrefix;
 
     private final FirebaseMessaging firebaseMessaging;
 
     @Override
     public void subscribeFestivalTopic(Long festivalId, String fcmToken) {
-        String topic = topicPrefix + festivalId;
+        String topic = topicFestivalPrefix + festivalId;
         subscribeTopic(topic, fcmToken);
     }
 
     @Override
     public void unsubscribeFestivalTopic(Long festivalId, String fcmToken) {
-        String topic = topicPrefix + festivalId;
+        String topic = topicFestivalPrefix + festivalId;
         unsubscribeTopic(topic, fcmToken);
     }
 
     @Override
     public void sendToFestivalTopic(Long festivalId, NotificationSendRequest request) {
-        sendToTopic(topicPrefix, festivalId, request);
+        sendToTopic(topicFestivalPrefix, festivalId, request);
     }
 
     private void subscribeTopic(String topic, String fcmToken) {

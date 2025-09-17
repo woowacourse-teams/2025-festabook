@@ -30,4 +30,4 @@ secret:
 
 fcm:
   topic:
-    prefix: test-topic
+    festival-prefix: test-topic
