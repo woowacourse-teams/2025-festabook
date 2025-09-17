@@ -51,7 +51,7 @@ public class GlobalExceptionHandler {
                     runtimeException.getMessage(),
                     stringWriter.toString()
             );
-            log.warn("", kv("event", exceptionLog));
+            log.error("", kv("event", exceptionLog));
             try {
                 stringWriter.close();
             } catch (IOException e) {
