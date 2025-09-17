@@ -44,6 +44,7 @@ public class SecurityConfig {
             "/festivals/universities",
             "/festivals/geography",
             "/festivals/notifications/*",
+            "/festivals/lost-item-guide",
             "/lost-items",
             "/questions",
             "/lineups",

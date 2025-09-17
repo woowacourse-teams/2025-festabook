@@ -6,6 +6,8 @@ import java.util.List;
 
 public class FestivalCreateRequestFixture {
 
+    private static final String DEFAULT_LOST_ITEM_GUIDE = "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요.";
+
     public static FestivalCreateRequest create(
             String universityName,
             String festivalName,
@@ -22,7 +24,8 @@ public class FestivalCreateRequestFixture {
                 endDate,
                 zoom,
                 centerCoordinate,
-                polygonHoleBoundary
+                polygonHoleBoundary,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 }

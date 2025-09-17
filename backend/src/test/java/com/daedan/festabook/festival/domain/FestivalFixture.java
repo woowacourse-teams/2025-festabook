@@ -18,6 +18,7 @@ public class FestivalFixture {
             new Coordinate(37.5801841, 127.0562684),
             new Coordinate(37.5839591, 127.0638215)
     );
+    private static final String DEFAULT_LOST_ITEM_GUIDE = "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요.";
 
     public static Festival create() {
         return new Festival(
@@ -28,7 +29,8 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -43,7 +45,8 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -58,7 +61,8 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 zoom,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -74,7 +78,8 @@ public class FestivalFixture {
                 userVisible,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -89,7 +94,8 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 centerCoordinate,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -104,7 +110,8 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                polygonHoleBoundary
+                polygonHoleBoundary,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -119,7 +126,8 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
         BaseEntityTestHelper.setId(festival, festivalId);
         return festival;
@@ -137,7 +145,8 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -155,7 +164,24 @@ public class FestivalFixture {
                 DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
+        );
+    }
+
+    public static Festival createWithLostItemGuide(
+            String lostItemGuide
+    ) {
+        return new Festival(
+                DEFAULT_UNIVERSITY_NAME,
+                DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                lostItemGuide
         );
     }
 }
