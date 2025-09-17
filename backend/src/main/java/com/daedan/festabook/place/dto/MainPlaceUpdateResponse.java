@@ -5,7 +5,7 @@ import com.daedan.festabook.place.domain.PlaceCategory;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 
-public record PlaceUpdateResponse(
+public record MainPlaceUpdateResponse(
         PlaceCategory placeCategory,
         String title,
         String description,
@@ -15,8 +15,8 @@ public record PlaceUpdateResponse(
         @JsonFormat(pattern = "HH:mm") LocalTime endTime
 ) {
 
-    public static PlaceUpdateResponse from(Place place) {
-        return new PlaceUpdateResponse(
+    public static MainPlaceUpdateResponse from(Place place) {
+        return new MainPlaceUpdateResponse(
                 place.getCategory(),
                 place.getTitle(),
                 place.getDescription(),
