@@ -54,7 +54,7 @@ public class Festival extends BaseEntity {
     @Column(nullable = false)
     private boolean userVisible;
 
-    @Column(nullable = false, length = MAX_ZOOM)
+    @Column(nullable = false)
     private Integer zoom;
 
     @Embedded
