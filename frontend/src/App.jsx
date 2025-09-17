@@ -38,6 +38,7 @@ import LineupAddModal from './components/modals/LineupAddModal';
 import LineupEditModal from './components/modals/LineupEditModal';
 import PushNotificationConfirmModal from './components/modals/PushNotificationConfirmModal';
 import PasswordChangeModal from './components/modals/PasswordChangeModal';
+import LostItemGuideModal from './components/modals/LostItemGuideModal';
 
 // Common Components
 import Toast from './components/common/Toast';
@@ -96,6 +97,7 @@ function App() {
             case 'add-image': return <AddImageModal isOpen={true} {...allProps} />;
             case 'pushNotificationConfirm': return <PushNotificationConfirmModal {...allProps} onConfirm={() => { props.onConfirm(); closeModal(); }} onCancel={closeModal} />;
             case 'passwordChange': return <PasswordChangeModal isOpen={true} {...allProps} />;
+            case 'lostItemGuide': return <LostItemGuideModal {...allProps} />;
             
             default: return null;
         }

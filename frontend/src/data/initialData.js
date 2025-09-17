@@ -1,4 +1,5 @@
 export const initialData = {
+    lostItemGuide: '분실물을 발견하신 경우 가까운 운영본부 또는 안내 데스크에 제출해주세요. 수령을 원하시는 분은 신분증을 지참하시고 보관 장소로 방문해 주세요.',
     notices: [
         { id: 1, title: '2025 대학 축제에 오신 것을 환영합니다!', content: '축제 기간 동안 다양한 이벤트와 공연이 준비되어 있으니 마음껏 즐겨주세요!', date: '2025-07-18', pinned: true },
         { id: 2, title: '분실물 센터 안내', content: '분실물은 학생회관 101호에서 보관하고 있습니다.', date: '2025-07-17', pinned: true },
