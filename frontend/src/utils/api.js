@@ -106,6 +106,29 @@ export const festivalAPI = {
     }
   },
 
+  // 분실물 가이드 조회
+  getLostItemGuide: async () => {
+    try {
+      const response = await api.get('/festivals/lost-item-guide');
+      // 응답 구조 문서 상과 실제는 다를 수 있으나, 여기서는 lostItemGuide만 추출하도록 가정
+      return response.data?.lostItemGuide ?? '';
+    } catch (error) {
+      console.error('Failed to fetch lost item guide:', error);
+      throw new Error('분실물 가이드 조회에 실패했습니다.');
+    }
+  },
+
+  // 분실물 가이드 수정
+  updateLostItemGuide: async (lostItemGuide) => {
+    try {
+      const response = await api.patch('/festivals/lost-item-guide', { lostItemGuide });
+      return response.data?.lostItemGuide ?? lostItemGuide;
+    } catch (error) {
+      console.error('Failed to update lost item guide:', error);
+      throw new Error('분실물 가이드 수정에 실패했습니다.');
+    }
+  },
+
   // 축제 정보 수정
   updateFestivalInfo: async (festivalInfo) => {
     try {

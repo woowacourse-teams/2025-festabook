@@ -13,7 +13,7 @@ function formatDate(dateString) {
 }
 
 const LostItemPage = () => {
-    const { lostItems, toggleLostItemStatus, addLostItem, updateLostItem, deleteLostItem, fetchLostItems } = useData();
+    const { lostItems, lostItemGuide, updateLostItemGuide, toggleLostItemStatus, addLostItem, updateLostItem, deleteLostItem, fetchLostItems } = useData();
     const { openModal, showToast } = useModal();
     const [selectedImage, setSelectedImage] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
@@ -84,6 +84,20 @@ const LostItemPage = () => {
                     >
                         <i className="fas fa-plus mr-2"></i> 분실물 등록
                     </button>
+                </div>
+            </div>
+
+            {/* 가이드 카드 */}
+            <div className="bg-white border border-gray-200 rounded-lg p-5 mb-6 shadow-sm">
+                <div className="flex items-start justify-between gap-4">
+                    <div>
+                        <h3 className="text-lg font-semibold mb-1">분실물 수령/제보 가이드</h3>
+                        <p className="text-gray-600 whitespace-pre-line">{lostItemGuide || '가이드를 등록해 주세요.'}</p>
+                    </div>
+                    <button
+                        onClick={() => openModal('lostItemGuide', { initialGuide: lostItemGuide, onSave: (text) => updateLostItemGuide(text, showToast) })}
+                        className="text-blue-600 hover:text-blue-800 font-bold shrink-0"
+                    >수정</button>
                 </div>
             </div>
             

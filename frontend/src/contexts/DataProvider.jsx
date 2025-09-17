@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DataContext } from './DataContext';
 import { initialData } from '../data/initialData';
 import { getCurrentDate } from '../utils/date';
-import { scheduleAPI, qnaAPI, lostItemAPI, placeAPI } from '../utils/api';
+import { scheduleAPI, qnaAPI, lostItemAPI, placeAPI, festivalAPI } from '../utils/api';
 
 export const DataProvider = ({ children }) => {
     const [data, setData] = useState(initialData);
@@ -60,6 +60,15 @@ export const DataProvider = ({ children }) => {
         }
     };
 
+    const fetchLostItemGuide = async () => {
+        try {
+            const guide = await festivalAPI.getLostItemGuide();
+            setData(prev => ({ ...prev, lostItemGuide: guide }));
+        } catch (error) {
+            // 실패 시 기존 기본값 유지 (initialData)
+        }
+    };
+
     const fetchLostItems = async () => {
         try {
             setIsLoadingLostItems(true);
@@ -84,12 +93,25 @@ export const DataProvider = ({ children }) => {
         fetchEventDates();
         fetchFaqItems();
         fetchLostItems();
+        fetchLostItemGuide();
     }, []);
 
     const getNextId = (arr) => (arr.length > 0 ? Math.max(...arr.map(item => item.id)) + 1 : 1);
 
     const dataActions = {
         // 기존 액션들
+        setLostItemGuide: (guide) => setData(d => ({ ...d, lostItemGuide: guide })),
+        updateLostItemGuide: async (guide, showToast) => {
+            try {
+                const saved = await festivalAPI.updateLostItemGuide(guide);
+                setData(d => ({ ...d, lostItemGuide: saved }));
+                if (showToast) showToast('분실물 가이드가 저장되었습니다.');
+                return saved;
+            } catch (error) {
+                if (showToast) showToast(error.message || '분실물 가이드 저장에 실패했습니다.');
+                throw error;
+            }
+        },
         addNotice: (notice) => setData(d => ({ ...d, notices: [{ id: getNextId(d.notices), ...notice, date: getCurrentDate(), pinned: false }, ...d.notices] })),
         updateNotice: (id, updated) => setData(d => ({ ...d, notices: d.notices.map(n => n.id === id ? { ...n, ...updated } : n) })),
         deleteNotice: (id) => setData(d => ({ ...d, notices: d.notices.filter(n => n.id !== id) })),
