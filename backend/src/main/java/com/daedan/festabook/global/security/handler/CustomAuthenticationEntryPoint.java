@@ -2,6 +2,7 @@ package com.daedan.festabook.global.security.handler;
 
 import static net.logstash.logback.argument.StructuredArguments.kv;
 
+import com.daedan.festabook.global.logging.dto.LogType;
 import com.daedan.festabook.global.logging.dto.SecurityLog;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +39,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
             response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
         } finally {
             SecurityLog securityLog = new SecurityLog(
-                    "authentication",
+                    LogType.AUTHENTICATION,
                     request.getRequestURI(),
                     request.getMethod(),
                     exception.getMessage()

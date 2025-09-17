@@ -31,7 +31,7 @@ public class LoggingAspect {
         String className = joinPoint.getSignature().getDeclaringTypeName();
         String methodName = joinPoint.getSignature().getName();
 
-        MethodEventLog methodEvent = new MethodEventLog("methodEvent", className, methodName);
+        MethodEventLog methodEvent = MethodEventLog.from(className, methodName);
         log.info("", kv("event", methodEvent));
 
         Object result = null;

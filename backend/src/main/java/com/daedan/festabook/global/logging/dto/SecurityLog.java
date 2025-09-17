@@ -1,10 +1,9 @@
 package com.daedan.festabook.global.logging.dto;
 
 public record SecurityLog(
-        String type,
+        LogType type,
         String requestURI,
         String httpMethod,
         String exceptionMessage
-
 ) {
 }

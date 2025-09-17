@@ -1,7 +1,7 @@
 package com.daedan.festabook.global.logging.dto;
 
 public record ApiLog(
-        String type,
+        LogType type,
         String httpMethod,
         String queryString,
         String uri,
@@ -19,7 +19,7 @@ public record ApiLog(
             long executionTime
     ) {
         return new ApiLog(
-                "API",
+                LogType.API,
                 httpMethod,
                 queryString,
                 uri,

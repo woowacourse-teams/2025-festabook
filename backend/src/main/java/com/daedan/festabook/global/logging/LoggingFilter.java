@@ -53,7 +53,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         try {
             MDC.put("traceId", UUID.randomUUID().toString());
 
-            ApiEventLog apiEvent = new ApiEventLog("apiEvent", httpMethod, uri);
+            ApiEventLog apiEvent = ApiEventLog.from(httpMethod, uri);
             log.info("", kv("event", apiEvent));
 
             filterChain.doFilter(request, response);

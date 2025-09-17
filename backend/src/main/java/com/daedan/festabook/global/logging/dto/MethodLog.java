@@ -1,7 +1,7 @@
 package com.daedan.festabook.global.logging.dto;
 
 public record MethodLog(
-        String type,
+        LogType type,
         String className,
         String methodName,
         long executionTime
@@ -9,7 +9,7 @@ public record MethodLog(
 
     public static MethodLog from(String className, String methodName, long executionTime) {
         return new MethodLog(
-                "Method",
+                LogType.METHOD_EVENT,
                 className,
                 methodName,
                 executionTime
