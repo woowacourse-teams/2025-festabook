@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import { placeCategories } from '../../data/categories';
+import { placeAPI } from '../../utils/api';
 
 const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
     const [form, setForm] = useState({
         title: '',
         category: 'EXTRA'
     });
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
         if (place) {
@@ -26,28 +27,35 @@ const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
         };
 
         document.addEventListener('keydown', handleEscKey);
-
         return () => {
             document.removeEventListener('keydown', handleEscKey);
         };
     }, [onClose]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        
+
         if (!form.title.trim()) {
             showToast('플레이스 이름을 입력해주세요.', 'error');
             return;
         }
 
-        const updatedPlace = {
-            ...place,
-            title: form.title.trim()
-        };
+        setLoading(true);
+        try {
+            // ✅ PATCH /places/etc/{placeId} 호출
+            await placeAPI.updateEtcPlace(place.placeId, {
+                title: form.title.trim()
+            });
 
-        onSave(updatedPlace);
-        showToast('기타 시설이 수정되었습니다.');
-        onClose();
+            showToast('기타 시설이 성공적으로 수정되었습니다.');
+            onSave({ placeId: place.placeId }); // 부모에서 최신 데이터 다시 불러오기
+            onClose();
+        } catch (error) {
+            console.error('Failed to update etc place:', error);
+            showToast(error.message || '기타 시설 수정에 실패했습니다.', 'error');
+        } finally {
+            setLoading(false);
+        }
     };
 
     const handleInputChange = (e) => {
@@ -79,6 +87,7 @@ const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
                         className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                         placeholder="플레이스 이름을 입력하세요"
                         autoFocus
+                        disabled={loading}
                     />
                 </div>
 
@@ -89,14 +98,18 @@ const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
                             type="button"
                             onClick={onClose}
                             className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                            disabled={loading}
                         >
                             취소
                         </button>
                         <button
                             type="submit"
-                            className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+                            className={`${
+                                loading ? 'bg-gray-500' : 'bg-gray-800 hover:bg-gray-900'
+                            } text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200`}
+                            disabled={loading}
                         >
-                            수정
+                            {loading ? '수정 중...' : '수정'}
                         </button>
                     </div>
                 </div>

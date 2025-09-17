@@ -200,7 +200,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
 
     setLoading(true);
     try {
-      await placeAPI.updatePlace(place.placeId, formData);
+      await placeAPI.updateMainPlace(place.placeId, formData);
       showToast('플레이스 정보가 성공적으로 수정되었습니다.');
       // 수정된 플레이스 ID를 전달하여 부모 컴포넌트에서 최신 데이터를 다시 조회하도록 함
       onSave({ placeId: place.placeId });
@@ -211,19 +211,6 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const formatTimeOnly = (timeString) => {
-    if (!timeString) return '';
-    // ISO 문자열이나 시간 문자열에서 시간 부분만 추출 (HH:MM 형식)
-    if (timeString.includes('T')) {
-      // ISO 형식인 경우 (예: "2024-01-01T14:30:00")
-      return timeString.slice(11, 16);
-    } else if (timeString.includes(':')) {
-      // 이미 시간 형식인 경우 (예: "14:30")
-      return timeString.slice(0, 5);
-    }
-    return '';
   };
 
   return (
