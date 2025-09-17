@@ -1,7 +1,9 @@
 package com.daedan.festabook.global.security.handler;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.SecurityMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,22 +25,26 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException exception)
-            throws IOException, ServletException {
+            throws IOException {
+        try {
+            AccessDeniedErrorResponse errorResponse = new AccessDeniedErrorResponse(
+                    String.valueOf(HttpStatus.FORBIDDEN.value()),
+                    "접근 권한이 없습니다."
+            );
 
-        log.info("Security 인가 실패: 요청 경로={}, 메서드={}, 에러 메시지={}",
-                request.getRequestURI(),
-                request.getMethod(),
-                exception.getMessage(), exception);
-
-        AccessDeniedErrorResponse errorResponse = new AccessDeniedErrorResponse(
-                String.valueOf(HttpStatus.FORBIDDEN.value()),
-                "접근 권한이 없습니다."
-        );
-
-        response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        } finally {
+            SecurityMessage securityMessage = new SecurityMessage(
+                    "authorization",
+                    request.getRequestURI(),
+                    request.getMethod(),
+                    exception.getMessage()
+            );
+            log.info("", kv("event", securityMessage));
+        }
     }
 
     private record AccessDeniedErrorResponse(

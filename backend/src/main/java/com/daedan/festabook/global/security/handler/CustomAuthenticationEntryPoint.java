@@ -1,7 +1,9 @@
 package com.daedan.festabook.global.security.handler;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.SecurityMessage;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -23,22 +25,26 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-            throws IOException, ServletException {
+            throws IOException {
+        try {
+            AuthenticationErrorResponse errorResponse = new AuthenticationErrorResponse(
+                    String.valueOf(HttpStatus.UNAUTHORIZED.value()),
+                    "인증이 필요합니다."
+            );
 
-        log.info("Security 인증 실패: 요청 경로={}, 메서드={}, 에러 메시지={}",
-                request.getRequestURI(),
-                request.getMethod(),
-                exception.getMessage(), exception);
-
-        AuthenticationErrorResponse errorResponse = new AuthenticationErrorResponse(
-                String.valueOf(HttpStatus.UNAUTHORIZED.value()),
-                "인증이 필요합니다."
-        );
-
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE);
-        response.setCharacterEncoding(StandardCharsets.UTF_8.name());
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        } finally {
+            SecurityMessage securityMessage = new SecurityMessage(
+                    "authentication",
+                    request.getRequestURI(),
+                    request.getMethod(),
+                    exception.getMessage()
+            );
+            log.info("", kv("event", securityMessage));
+        }
     }
 
     private record AuthenticationErrorResponse(
