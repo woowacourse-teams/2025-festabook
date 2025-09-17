@@ -1,13 +1,16 @@
 package com.daedan.festabook.global.security.filter;
 
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.global.security.council.CouncilDetailsService;
+import com.daedan.festabook.global.security.council.CouncilDetails;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.global.security.util.JwtProvider;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -26,7 +29,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
     private final JwtProvider jwtProvider;
-    private final CouncilDetailsService councilDetailsService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -35,9 +37,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             String accessToken = extractTokenFromHeader(request);
 
             if (accessToken != null && jwtProvider.isValidToken(accessToken)) {
-                String username = jwtProvider.extractBody(accessToken).getSubject();
+                Claims claims = jwtProvider.extractBody(accessToken);
+                String username = claims.getSubject();
+                Set<RoleType> roleTypes = jwtProvider.extractRoles(claims);
+                Long festivalId = jwtProvider.extractFestivalId(claims);
 
-                UserDetails userDetails = councilDetailsService.loadUserByUsername(username);
+                UserDetails userDetails = new CouncilDetails(username, festivalId, roleTypes);
 
                 Authentication authentication = new UsernamePasswordAuthenticationToken(
                         userDetails, null, userDetails.getAuthorities());
