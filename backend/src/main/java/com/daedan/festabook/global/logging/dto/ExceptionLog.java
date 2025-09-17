@@ -4,6 +4,7 @@ public record ExceptionLog(
         String type,
         int errorCode,
         String exceptionMessage,
+        String exceptionClass,
         String stackTrace
 ) {
 }

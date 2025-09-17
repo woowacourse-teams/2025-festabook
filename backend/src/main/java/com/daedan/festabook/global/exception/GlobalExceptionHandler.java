@@ -29,6 +29,7 @@ public class GlobalExceptionHandler {
                     "exception",
                     businessException.getStatus().value(),
                     businessException.getMessage(),
+                    businessException.getClass().getSimpleName(),
                     ""
             );
             log.info("", kv("event", exceptionLog));
@@ -49,6 +50,7 @@ public class GlobalExceptionHandler {
                     "exception",
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     runtimeException.getMessage(),
+                    runtimeException.getClass().getSimpleName(),
                     stringWriter.toString()
             );
             log.error("", kv("event", exceptionLog));
