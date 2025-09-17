@@ -1,0 +1,651 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		1998BF7B2E7939230054F32B /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1998BEC82E792C4C0054F32B /* FirebaseCore */; };
+		1998BF7C2E7939230054F32B /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 1998BEC92E792C4C0054F32B /* FirebaseMessaging */; };
+		19ECEA6D2E78021000BB6CD8 /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 19ECEA6C2E78021000BB6CD8 /* NMapsMap */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		195B4DB02E76A58000740AF2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 195B4D9A2E76A57E00740AF2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 195B4DA12E76A57E00740AF2;
+			remoteInfo = festabook;
+		};
+		195B4DBA2E76A58000740AF2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 195B4D9A2E76A57E00740AF2 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 195B4DA12E76A57E00740AF2;
+			remoteInfo = festabook;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		195B4DA22E76A57E00740AF2 /* festabook.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = festabook.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		195B4DAF2E76A58000740AF2 /* festabookTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = festabookTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		195B4DB92E76A58000740AF2 /* festabookUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = festabookUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		19DC18DD2E7AA03E009B0CF9 /* Exceptions for "festabook" folder in "festabook" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 195B4DA12E76A57E00740AF2 /* festabook */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		195B4DA42E76A57E00740AF2 /* festabook */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				19DC18DD2E7AA03E009B0CF9 /* Exceptions for "festabook" folder in "festabook" target */,
+			);
+			path = festabook;
+			sourceTree = "<group>";
+		};
+		195B4DB22E76A58000740AF2 /* festabookTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = festabookTests;
+			sourceTree = "<group>";
+		};
+		195B4DBC2E76A58000740AF2 /* festabookUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = festabookUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		195B4D9F2E76A57E00740AF2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1998BF7C2E7939230054F32B /* FirebaseMessaging in Frameworks */,
+				1998BF7B2E7939230054F32B /* FirebaseCore in Frameworks */,
+				19ECEA6D2E78021000BB6CD8 /* NMapsMap in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		195B4DAC2E76A58000740AF2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		195B4DB62E76A58000740AF2 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		19119CED2E77F35700A0A85E /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		195B4D992E76A57E00740AF2 = {
+			isa = PBXGroup;
+			children = (
+				195B4DA42E76A57E00740AF2 /* festabook */,
+				195B4DB22E76A58000740AF2 /* festabookTests */,
+				195B4DBC2E76A58000740AF2 /* festabookUITests */,
+				19119CED2E77F35700A0A85E /* Frameworks */,
+				195B4DA32E76A57E00740AF2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		195B4DA32E76A57E00740AF2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				195B4DA22E76A57E00740AF2 /* festabook.app */,
+				195B4DAF2E76A58000740AF2 /* festabookTests.xctest */,
+				195B4DB92E76A58000740AF2 /* festabookUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		195B4DA12E76A57E00740AF2 /* festabook */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 195B4DC32E76A58000740AF2 /* Build configuration list for PBXNativeTarget "festabook" */;
+			buildPhases = (
+				195B4D9E2E76A57E00740AF2 /* Sources */,
+				195B4D9F2E76A57E00740AF2 /* Frameworks */,
+				195B4DA02E76A57E00740AF2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			fileSystemSynchronizedGroups = (
+				195B4DA42E76A57E00740AF2 /* festabook */,
+			);
+			name = festabook;
+			packageProductDependencies = (
+				19ECEA6C2E78021000BB6CD8 /* NMapsMap */,
+				1998BEC82E792C4C0054F32B /* FirebaseCore */,
+				1998BEC92E792C4C0054F32B /* FirebaseMessaging */,
+			);
+			productName = festabook;
+			productReference = 195B4DA22E76A57E00740AF2 /* festabook.app */;
+			productType = "com.apple.product-type.application";
+		};
+		195B4DAE2E76A58000740AF2 /* festabookTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 195B4DC62E76A58000740AF2 /* Build configuration list for PBXNativeTarget "festabookTests" */;
+			buildPhases = (
+				195B4DAB2E76A58000740AF2 /* Sources */,
+				195B4DAC2E76A58000740AF2 /* Frameworks */,
+				195B4DAD2E76A58000740AF2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				195B4DB12E76A58000740AF2 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				195B4DB22E76A58000740AF2 /* festabookTests */,
+			);
+			name = festabookTests;
+			packageProductDependencies = (
+			);
+			productName = festabookTests;
+			productReference = 195B4DAF2E76A58000740AF2 /* festabookTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		195B4DB82E76A58000740AF2 /* festabookUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 195B4DC92E76A58000740AF2 /* Build configuration list for PBXNativeTarget "festabookUITests" */;
+			buildPhases = (
+				195B4DB52E76A58000740AF2 /* Sources */,
+				195B4DB62E76A58000740AF2 /* Frameworks */,
+				195B4DB72E76A58000740AF2 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				195B4DBB2E76A58000740AF2 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				195B4DBC2E76A58000740AF2 /* festabookUITests */,
+			);
+			name = festabookUITests;
+			packageProductDependencies = (
+			);
+			productName = festabookUITests;
+			productReference = 195B4DB92E76A58000740AF2 /* festabookUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		195B4D9A2E76A57E00740AF2 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1640;
+				LastUpgradeCheck = 1640;
+				TargetAttributes = {
+					195B4DA12E76A57E00740AF2 = {
+						CreatedOnToolsVersion = 16.4;
+					};
+					195B4DAE2E76A58000740AF2 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 195B4DA12E76A57E00740AF2;
+					};
+					195B4DB82E76A58000740AF2 = {
+						CreatedOnToolsVersion = 16.4;
+						TestTargetID = 195B4DA12E76A57E00740AF2;
+					};
+				};
+			};
+			buildConfigurationList = 195B4D9D2E76A57E00740AF2 /* Build configuration list for PBXProject "festabook" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 195B4D992E76A57E00740AF2;
+			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				19119CEE2E77F44900A0A85E /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */,
+				1998BEC72E792C4C0054F32B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+			);
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 195B4DA32E76A57E00740AF2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				195B4DA12E76A57E00740AF2 /* festabook */,
+				195B4DAE2E76A58000740AF2 /* festabookTests */,
+				195B4DB82E76A58000740AF2 /* festabookUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		195B4DA02E76A57E00740AF2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		195B4DAD2E76A58000740AF2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		195B4DB72E76A58000740AF2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		195B4D9E2E76A57E00740AF2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		195B4DAB2E76A58000740AF2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		195B4DB52E76A58000740AF2 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		195B4DB12E76A58000740AF2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 195B4DA12E76A57E00740AF2 /* festabook */;
+			targetProxy = 195B4DB02E76A58000740AF2 /* PBXContainerItemProxy */;
+		};
+		195B4DBB2E76A58000740AF2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 195B4DA12E76A57E00740AF2 /* festabook */;
+			targetProxy = 195B4DBA2E76A58000740AF2 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		195B4DC12E76A58000740AF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				"INFOPLIST_FILE[sdk=*]" = "$(PROJECT_DIR)/festabook/Info.plist";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		195B4DC22E76A58000740AF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				"INFOPLIST_FILE[sdk=*]" = "$(PROJECT_DIR)/festabook/Info.plist\n";
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		195B4DC42E76A58000740AF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = festabook/festabook.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = festabook/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = festabook;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "백그라운드에서도 위치를 표시하기 위해 권한이 필요합니다.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "위치 정보가 필요합니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱 사용 중 현재 위치를 표시하기 위해 위치 권한이 필요합니다.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eoehdeksruf.festabook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		195B4DC52E76A58000740AF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = festabook/festabook.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = festabook/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = festabook;
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "백그라운드에서도 위치를 표시하기 위해 권한이 필요합니다.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "위치 정보가 필요합니다.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "앱 사용 중 현재 위치를 표시하기 위해 위치 권한이 필요합니다.";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eoehdeksruf.festabook;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		195B4DC72E76A58000740AF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eoehdeksruf.festabookTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/festabook.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/festabook";
+			};
+			name = Debug;
+		};
+		195B4DC82E76A58000740AF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.5;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eoehdeksruf.festabookTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/festabook.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/festabook";
+			};
+			name = Release;
+		};
+		195B4DCA2E76A58000740AF2 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eoehdeksruf.festabookUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = festabook;
+			};
+			name = Debug;
+		};
+		195B4DCB2E76A58000740AF2 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = L8HZU9MP64;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = eoehdeksruf.festabookUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = festabook;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		195B4D9D2E76A57E00740AF2 /* Build configuration list for PBXProject "festabook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				195B4DC12E76A58000740AF2 /* Debug */,
+				195B4DC22E76A58000740AF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		195B4DC32E76A58000740AF2 /* Build configuration list for PBXNativeTarget "festabook" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				195B4DC42E76A58000740AF2 /* Debug */,
+				195B4DC52E76A58000740AF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		195B4DC62E76A58000740AF2 /* Build configuration list for PBXNativeTarget "festabookTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				195B4DC72E76A58000740AF2 /* Debug */,
+				195B4DC82E76A58000740AF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		195B4DC92E76A58000740AF2 /* Build configuration list for PBXNativeTarget "festabookUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				195B4DCA2E76A58000740AF2 /* Debug */,
+				195B4DCB2E76A58000740AF2 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		19119CEE2E77F44900A0A85E /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/navermaps/SPM-NMapsMap";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.22.1;
+			};
+		};
+		1998BEC72E792C4C0054F32B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.3.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		1998BEC82E792C4C0054F32B /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1998BEC72E792C4C0054F32B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		1998BEC92E792C4C0054F32B /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1998BEC72E792C4C0054F32B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
+		};
+		19ECEA6C2E78021000BB6CD8 /* NMapsMap */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 19119CEE2E77F44900A0A85E /* XCRemoteSwiftPackageReference "SPM-NMapsMap" */;
+			productName = NMapsMap;
+		};
+/* End XCSwiftPackageProductDependency section */
+	};
+	rootObject = 195B4D9A2E76A57E00740AF2 /* Project object */;
+}
