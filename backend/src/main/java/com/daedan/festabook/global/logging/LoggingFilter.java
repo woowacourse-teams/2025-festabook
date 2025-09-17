@@ -4,6 +4,7 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import com.daedan.festabook.global.logging.dto.ApiEventLog;
 import com.daedan.festabook.global.logging.dto.ApiLog;
+import com.daedan.festabook.global.security.util.JwtProvider;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -33,8 +35,12 @@ public class LoggingFilter extends OncePerRequestFilter {
             "/api/api-docs",
             "/api/actuator"
     );
+    private static final String REQUEST_USER_IP_HEADER_NAME = "X-Forwarded-For";
+    private static final String AUTHENTICATION_HEADER = "Authorization";
+    private static final String AUTHENTICATION_SCHEME = "Bearer ";
 
     private final ObjectMapper objectMapper;
+    private final JwtProvider jwtProvider;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,7 +49,9 @@ public class LoggingFilter extends OncePerRequestFilter {
         long startTime = System.currentTimeMillis();
         String uri = request.getRequestURI();
         String httpMethod = request.getMethod();
-        String queryString = request.getQueryString();
+        String ipAddress = request.getHeader(REQUEST_USER_IP_HEADER_NAME);
+        String token = extractTokenFromHeader(request);
+        String username = extractUsernameFromToken(token);
 
         if (isSkipLoggingForPath(uri)) {
             filterChain.doFilter(request, response);
@@ -53,11 +61,13 @@ public class LoggingFilter extends OncePerRequestFilter {
         try {
             MDC.put("traceId", UUID.randomUUID().toString());
 
-            ApiEventLog apiEvent = ApiEventLog.from(httpMethod, uri);
+            ApiEventLog apiEvent = ApiEventLog.from(httpMethod, uri, ipAddress, username);
             log.info("", kv("event", apiEvent));
 
             filterChain.doFilter(request, response);
         } finally {
+
+            String queryString = request.getQueryString();
             long endTime = System.currentTimeMillis();
             long executionTime = endTime - startTime;
             int statusCode = response.getStatus();
@@ -67,6 +77,8 @@ public class LoggingFilter extends OncePerRequestFilter {
                     httpMethod,
                     queryString,
                     uri,
+                    ipAddress,
+                    username,
                     statusCode,
                     requestBody,
                     executionTime);
@@ -95,5 +107,21 @@ public class LoggingFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private String extractTokenFromHeader(HttpServletRequest request) {
+        String token = request.getHeader(AUTHENTICATION_HEADER);
+        if (StringUtils.hasText(token) && token.startsWith(AUTHENTICATION_SCHEME)) {
+            return token.substring(AUTHENTICATION_SCHEME.length());
+        }
+        return null;
+    }
+
+    private String extractUsernameFromToken(String token) {
+        if (token == null) {
+            return null;
+        }
+
+        return jwtProvider.extractBody(token).getSubject();
     }
 }

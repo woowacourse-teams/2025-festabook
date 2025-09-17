@@ -5,6 +5,8 @@ public record ApiLog(
         String httpMethod,
         String queryString,
         String uri,
+        String ipAddress,
+        String username,
         int httpStatusCode,
         Object requestBody,
         long executionTime
@@ -14,6 +16,8 @@ public record ApiLog(
             String httpMethod,
             String queryString,
             String uri,
+            String ipAddress,
+            String username,
             int httpStatusCode,
             Object requestBody,
             long executionTime
@@ -23,6 +27,8 @@ public record ApiLog(
                 httpMethod,
                 queryString,
                 uri,
+                ipAddress,
+                username,
                 httpStatusCode,
                 requestBody,
                 executionTime
