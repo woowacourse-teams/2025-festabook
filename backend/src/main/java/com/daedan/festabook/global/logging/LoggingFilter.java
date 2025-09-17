@@ -123,6 +123,10 @@ public class LoggingFilter extends OncePerRequestFilter {
             return null;
         }
 
-        return jwtProvider.extractBody(token).getSubject();
+        if (jwtProvider.isValidToken(token)) {
+            return jwtProvider.extractBody(token).getSubject();
+        }
+
+        return null;
     }
 }
