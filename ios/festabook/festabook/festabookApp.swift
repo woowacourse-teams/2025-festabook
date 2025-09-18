@@ -18,6 +18,7 @@ struct festabookApp: App {
                     else { UserDefaults.standard.set(appState.currentFestivalId, forKey: "currentFestivalId") }
                     APIClient.shared.updateFestivalId(appState.currentFestivalId)
                 }
+                .preferredColorScheme(.light)
         }
     }
 }

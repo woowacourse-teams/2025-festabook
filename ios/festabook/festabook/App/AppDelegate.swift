@@ -50,6 +50,20 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         print("[AppDelegate] 📱 APNs 등록 요청 완료")
         #endif
 
+        if #available(iOS 13.0, *) {
+            UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .forEach { scene in
+                    scene.windows.forEach { window in
+                        window.overrideUserInterfaceStyle = .light
+                    }
+                }
+        } else {
+            UIApplication.shared.windows.forEach { window in
+                window.overrideUserInterfaceStyle = .light
+            }
+        }
+
         return true
     }
 
