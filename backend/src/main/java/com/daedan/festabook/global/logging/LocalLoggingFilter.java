@@ -10,7 +10,10 @@ import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StopWatch;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.ContentCachingRequestWrapper;
 
@@ -18,6 +21,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 @Component
 @Profile("!prod & !dev")
 @RequiredArgsConstructor
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class LocalLoggingFilter extends OncePerRequestFilter {
 
     private static final List<String> LOGGING_SKIP_PATH_PREFIX = List.of(
@@ -30,8 +34,7 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-
-        long startTime = System.currentTimeMillis();
+        StopWatch stopWatch = new StopWatch();
         String uri = request.getRequestURI();
         String httpMethod = request.getMethod();
         String queryString = request.getQueryString();
@@ -41,12 +44,13 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
             return;
         }
 
+        stopWatch.start();
         try {
             log.info("[API Call] method={} queryString={} uri={}", httpMethod, queryString, uri);
             filterChain.doFilter(request, response);
         } finally {
-            long endTime = System.currentTimeMillis();
-            long executionTime = endTime - startTime;
+            stopWatch.stop();
+            long executionTime = stopWatch.getTotalTimeMillis();
             int statusCode = response.getStatus();
             String requestBody = extractBodyFromCache(request);
 

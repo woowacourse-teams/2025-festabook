@@ -1,6 +1,13 @@
 package com.daedan.festabook.global.exception;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.ExceptionLog;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -13,17 +20,45 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException businessException) {
-        log.info(businessException.getMessage());
-        return ResponseEntity
-                .status(businessException.getStatus())
-                .body(businessException.toResponse());
+        try {
+            return ResponseEntity
+                    .status(businessException.getStatus())
+                    .body(businessException.toResponse());
+        } finally {
+            ExceptionLog exceptionLog = new ExceptionLog(
+                    "exception",
+                    businessException.getStatus().value(),
+                    businessException.getMessage(),
+                    businessException.getClass().getSimpleName(),
+                    ""
+            );
+            log.info("", kv("event", exceptionLog));
+        }
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionResponse> handleRuntimeException(RuntimeException runtimeException) {
-        log.warn(runtimeException.getMessage());
-        return ResponseEntity
-                .internalServerError()
-                .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
+        StringWriter stringWriter = new StringWriter();
+        try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
+
+            runtimeException.printStackTrace(printWriter);
+            return ResponseEntity
+                    .internalServerError()
+                    .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
+        } finally {
+            ExceptionLog exceptionLog = new ExceptionLog(
+                    "exception",
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    runtimeException.getMessage(),
+                    runtimeException.getClass().getSimpleName(),
+                    stringWriter.toString()
+            );
+            log.error("", kv("event", exceptionLog));
+            try {
+                stringWriter.close();
+            } catch (IOException e) {
+                log.warn("자원할당 해제에 실패하였습니다.");
+            }
+        }
     }
 }
