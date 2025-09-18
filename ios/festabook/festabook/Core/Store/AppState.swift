@@ -1,0 +1,128 @@
+import Foundation
+
+import Combine
+
+final class AppState: ObservableObject {
+    @Published var selectedUniversity: University?
+    @Published var selectedFestival: Festival?
+    @Published var currentFestivalId: Int = 1
+    @Published var currentUniversityName: String = "페스타북대학교"
+    @Published var pendingAnnouncementId: Int? = nil
+    @Published var shouldNavigateToNews = false
+
+    private var cancellables = Set<AnyCancellable>()
+
+    init() {
+        NotificationCenter.default.publisher(for: .notificationTapped)
+            .compactMap { $0.object as? [String: Any] }
+            .sink { [weak self] payload in
+                self?.handleNotificationPayload(payload)
+            }
+            .store(in: &cancellables)
+    }
+
+    func selectUniversity(_ university: University) {
+        selectedUniversity = university
+    }
+    
+    func changeFestival(_ festivalId: Int) {
+        currentFestivalId = festivalId
+        selectedFestival = nil
+        selectedUniversity = nil
+        // 현재 축제 ID를 영속화하고 API 헤더와 동기화
+        UserDefaults.standard.set(festivalId, forKey: "currentFestivalId")
+        APIClient.shared.updateFestivalId(festivalId)
+        ServiceLocator.shared.updateFestivalId(festivalId)
+    }
+
+    func updateUniversityName(_ universityName: String) {
+        currentUniversityName = universityName
+    }
+
+    private func handleNotificationPayload(_ payload: [String: Any]) {
+        guard let type = payload["type"] as? String else { return }
+
+        switch type {
+        case "announcement_detail":
+            handleAnnouncementDeepLink(payload)
+        default:
+            break
+        }
+    }
+
+    private func handleAnnouncementDeepLink(_ payload: [String: Any]) {
+        guard
+            let festivalIdString = payload["festivalId"] as? String,
+            let festivalId = Int(festivalIdString),
+            let announcementIdString = payload["announcementId"] as? String,
+            let announcementId = Int(announcementIdString)
+        else {
+            print("[AppState] ⚠️ 알림 payload에 festivalId 또는 announcementId 없음: \(payload)")
+            return
+        }
+
+        Task(priority: .userInitiated) {
+            await MainActor.run {
+                pendingAnnouncementId = announcementId
+                shouldNavigateToNews = true
+                NotificationCenter.default.post(name: .navigateToTab, object: "news")
+            }
+
+            // 축제가 이미 동일하고, 대학 선택이 유지되어 있으면 재선택 생략
+            let needsFestivalUpdate = await MainActor.run { currentFestivalId != festivalId || selectedUniversity == nil }
+
+            guard needsFestivalUpdate else { return }
+
+            let previousUniversity = await MainActor.run { selectedUniversity }
+
+            await MainActor.run {
+                changeFestival(festivalId)
+                if let preserved = previousUniversity {
+                    // 잠시 기존 축제 화면을 유지하여 검색 화면으로 튀는 현상 방지
+                    selectedUniversity = preserved
+                } else {
+                    selectedUniversity = University(
+                        id: festivalId,
+                        name: currentUniversityName,
+                        latitude: nil,
+                        longitude: nil
+                    )
+                }
+            }
+
+            do {
+                let detail = try await ServiceLocator.shared.festivalRepo.getFestivalDetail()
+                await MainActor.run {
+                    let festival = Festival(
+                        festivalId: detail.festivalId,
+                        universityName: detail.universityName,
+                        festivalName: detail.festivalName,
+                        startDate: detail.startDate,
+                        endDate: detail.endDate
+                    )
+
+                    selectedFestival = festival
+                    selectedUniversity = University(
+                        id: detail.festivalId,
+                        name: detail.universityName,
+                        latitude: nil,
+                        longitude: nil
+                    )
+                    currentUniversityName = detail.universityName
+                }
+            } catch {
+                print("[AppState] ❌ 축제 상세 로드 실패: \(error)")
+                await MainActor.run {
+                    if selectedUniversity == nil {
+                        selectedUniversity = University(
+                            id: festivalId,
+                            name: currentUniversityName,
+                            latitude: nil,
+                            longitude: nil
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
