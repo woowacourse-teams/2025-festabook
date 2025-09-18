@@ -215,7 +215,7 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             LostItem lostItem = LostItemFixture.create(festival, previousStatus);
             lostItemJpaRepository.save(lostItem);

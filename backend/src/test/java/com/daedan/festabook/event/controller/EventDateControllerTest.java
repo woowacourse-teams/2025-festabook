@@ -107,7 +107,7 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             EventDate existingEventDate = EventDateFixture.create(festival);
             eventDateJpaRepository.save(existingEventDate);
@@ -255,7 +255,7 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             Long notExistingEventDateId = 0L;
             EventDateUpdateRequest request = EventDateUpdateRequestFixture.create();
@@ -279,7 +279,7 @@ class EventDateControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             List<EventDate> eventDates = EventDateFixture.createList(2, festival);
             eventDateJpaRepository.saveAll(eventDates);

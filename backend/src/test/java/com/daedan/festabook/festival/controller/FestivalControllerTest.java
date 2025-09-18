@@ -134,7 +134,7 @@ class FestivalControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             FestivalCreateRequest request = FestivalCreateRequestFixture.create();
 

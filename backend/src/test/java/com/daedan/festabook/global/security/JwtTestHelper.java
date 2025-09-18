@@ -27,7 +27,7 @@ public class JwtTestHelper {
     private final PasswordEncoder encoder;
 
     @Transactional
-    public Header createAuthorizationHeader(Festival festival) {
+    public Header createCouncilAuthorizationHeader(Festival festival) {
         UUID uuid = UUID.randomUUID();
         String randomUsername = "test_" + uuid;
         String randomPassword = "password_" + uuid;

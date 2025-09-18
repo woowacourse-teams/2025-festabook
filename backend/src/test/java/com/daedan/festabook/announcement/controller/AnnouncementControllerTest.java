@@ -114,7 +114,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             boolean isPinned = true;
             announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, festival));
@@ -313,7 +313,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             Long notExistId = 0L;
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
@@ -373,7 +373,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             Announcement announcement = AnnouncementFixture.create(initialPinned, festival);
             announcementJpaRepository.save(announcement);

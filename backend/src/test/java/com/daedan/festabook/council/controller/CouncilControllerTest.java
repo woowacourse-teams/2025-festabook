@@ -85,7 +85,7 @@ class CouncilControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             String username = "hello";
             CouncilRequest request = CouncilRequestFixture.create(festival.getId(), username, "1234");

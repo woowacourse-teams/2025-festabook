@@ -196,7 +196,7 @@ class PlaceGeographyControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             Long invalidPlaceId = 0L;
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();
