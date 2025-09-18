@@ -27,8 +27,10 @@ public class FestivalNotificationService {
     private final FestivalNotificationManager festivalNotificationManager;
 
     @Transactional
-    public FestivalNotificationResponse subscribeFestivalNotification(Long festivalId,
-                                                                      FestivalNotificationRequest request) {
+    public FestivalNotificationResponse subscribeFestivalNotification(
+            Long festivalId,
+            FestivalNotificationRequest request
+    ) {
         validateDuplicatedFestivalNotification(festivalId, request.deviceId());
 
         Festival festival = getFestivalById(festivalId);
@@ -38,6 +40,42 @@ public class FestivalNotificationService {
                 festivalNotification);
 
         festivalNotificationManager.subscribeFestivalTopic(festivalId, device.getFcmToken());
+
+        return FestivalNotificationResponse.from(savedFestivalNotification);
+    }
+
+    @Transactional
+    public FestivalNotificationResponse subscribeAndroidFestivalNotification(
+            Long festivalId,
+            FestivalNotificationRequest request
+    ) {
+        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+
+        Festival festival = getFestivalById(festivalId);
+        Device device = getDeviceById(request.deviceId());
+        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
+        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
+                festivalNotification);
+
+        festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, device.getFcmToken());
+
+        return FestivalNotificationResponse.from(savedFestivalNotification);
+    }
+
+    @Transactional
+    public FestivalNotificationResponse subscribeIosFestivalNotification(
+            Long festivalId,
+            FestivalNotificationRequest request
+    ) {
+        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+
+        Festival festival = getFestivalById(festivalId);
+        Device device = getDeviceById(request.deviceId());
+        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
+        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
+                festivalNotification);
+
+        festivalNotificationManager.subscribeIosFestivalTopic(festivalId, device.getFcmToken());
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }

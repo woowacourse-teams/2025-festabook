@@ -1,8 +1,6 @@
 package com.daedan.festabook.festival.controller;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
@@ -21,7 +19,6 @@ import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepos
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -36,7 +33,7 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
-class FestivalNotificationControllerTest {
+class AndroidFestivalNotificationSubscriptionControllerTest {
 
     @Autowired
     private FestivalJpaRepository festivalJpaRepository;
@@ -59,7 +56,7 @@ class FestivalNotificationControllerTest {
     }
 
     @Nested
-    class subscribeFestivalNotification {
+    class subscribeAndroidFestivalNotification {
 
         @Test
         void 성공() {
@@ -80,14 +77,14 @@ class FestivalNotificationControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/festivals/{festivalId}/notifications", festival.getId())
+                    .post("/festivals/{festivalId}/notifications/android", festival.getId())
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("festivalNotificationId", notNullValue());
 
             then(fcmNotificationManager).should()
-                    .subscribeFestivalTopic(any(), any());
+                    .subscribeAndroidFestivalTopic(any(), any());
         }
 
         @Test
@@ -111,7 +108,7 @@ class FestivalNotificationControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/festivals/{festivalId}/notifications", festival.getId())
+                    .post("/festivals/{festivalId}/notifications/android", festival.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("이미 알림을 구독한 축제입니다."));
@@ -134,7 +131,7 @@ class FestivalNotificationControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/festivals/{festivalId}/notifications", festival.getId())
+                    .post("/festivals/{festivalId}/notifications/android", festival.getId())
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 디바이스입니다."));
@@ -158,104 +155,10 @@ class FestivalNotificationControllerTest {
                     .contentType(ContentType.JSON)
                     .body(request)
                     .when()
-                    .post("/festivals/{festivalId}/notifications", invalidFestivalId)
+                    .post("/festivals/{festivalId}/notifications/android", invalidFestivalId)
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("존재하지 않는 축제입니다."));
-
-            then(fcmNotificationManager).shouldHaveNoInteractions();
-        }
-    }
-
-    @Nested
-    class getAllFestivalNotificationByDeviceId {
-
-        @Test
-        void 성공() {
-            // given
-            Device device = DeviceFixture.create();
-            deviceJpaRepository.save(device);
-
-            Festival festival1 = FestivalFixture.create();
-            Festival festival2 = FestivalFixture.create();
-            festivalJpaRepository.save(festival1);
-            festivalJpaRepository.save(festival2);
-
-            FestivalNotification festivalNotification1 = FestivalNotificationFixture.create(festival1, device);
-            FestivalNotification festivalNotification2 = FestivalNotificationFixture.create(festival2, device);
-            List<FestivalNotification> festivalNotifications = List.of(festivalNotification1, festivalNotification2);
-            festivalNotificationJpaRepository.saveAll(festivalNotifications);
-
-            int expectedSize = 2;
-            int expectedFieldSize = 3;
-
-            // when & then
-            RestAssured.
-                    given()
-                    .contentType(ContentType.JSON)
-                    .when()
-                    .get("/festivals/notifications/{deviceId}", device.getId())
-                    .then()
-                    .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
-                    .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].festivalNotificationId", notNullValue())
-                    .body("[0].universityName", equalTo(festivalNotification1.getFestival().getUniversityName()))
-                    .body("[0].festivalName", equalTo(festivalNotification1.getFestival().getFestivalName()))
-                    .body("[1].size()", equalTo(expectedFieldSize))
-                    .body("[1].festivalNotificationId", notNullValue())
-                    .body("[1].universityName", equalTo(festivalNotification2.getFestival().getUniversityName()))
-                    .body("[1].festivalName", equalTo(festivalNotification2.getFestival().getFestivalName()));
-        }
-    }
-
-    @Nested
-    class unsubscribeFestivalNotification {
-
-        @Test
-        void 성공() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Device device = DeviceFixture.create();
-            deviceJpaRepository.save(device);
-
-            FestivalNotification festivalNotification = FestivalNotificationFixture.create(festival,
-                    device);
-            festivalNotificationJpaRepository.save(festivalNotification);
-
-            // when & then
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .when()
-                    .delete("/festivals/notifications/{festivalNotificationId}",
-                            festivalNotification.getId())
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
-
-            boolean exists = festivalNotificationJpaRepository.existsById(festivalNotification.getId());
-            assertThat(exists).isFalse();
-            then(fcmNotificationManager).should()
-                    .unsubscribeFestivalTopic(any(), any());
-
-        }
-
-        @Test
-        void 성공_알림_삭제시_축제_알림이_존재하지_않아도_정상_처리() {
-            // given
-            Long invalidFestivalNotificationId = 0L;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .contentType(ContentType.JSON)
-                    .when()
-                    .delete("/festivals/notifications/{festivalNotificationId}",
-                            invalidFestivalNotificationId)
-                    .then()
-                    .statusCode(HttpStatus.NO_CONTENT.value());
 
             then(fcmNotificationManager).shouldHaveNoInteractions();
         }
