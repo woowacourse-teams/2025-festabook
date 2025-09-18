@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FcmNotificationManager implements FestivalNotificationManager {
 
-    private final String ANDROID_TOPIC_SUFFIX = "-android";
-    private final String IOS_TOPIC_SUFFIX = "-ios";
+    private static final String ANDROID_TOPIC_SUFFIX = "-android";
+    private static final String IOS_TOPIC_SUFFIX = "-ios";
 
     @Value("${fcm.topic.festival-prefix}")
     private String topicFestivalPrefix;
