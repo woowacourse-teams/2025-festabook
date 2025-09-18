@@ -32,7 +32,7 @@ enum Endpoints {
 
     enum Notifications {
         static func subscribe(festivalId: Int) -> String {
-            "\(Festivals.detail)/\(festivalId)/notifications"
+            "\(Festivals.detail)/\(festivalId)/notifications/ios"
         }
 
         static func subscription(_ notificationId: Int) -> String {
