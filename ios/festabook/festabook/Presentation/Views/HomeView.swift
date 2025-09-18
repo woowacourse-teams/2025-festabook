@@ -1,4 +1,9 @@
 import SwiftUI
+import UIKit
+
+private enum PosterCarouselConstants {
+    static let cardWidthRatio: CGFloat = 0.78
+}
 
 struct HomeView: View {
     @EnvironmentObject private var appState: AppState
@@ -369,7 +374,6 @@ struct FestivalPosterCarousel: View {
     var body: some View {
         PosterCarousel(
             imageUrls: sortedImages.map { $0.imageUrl.hasPrefix("http") ? $0.imageUrl : "https://festabook.app" + $0.imageUrl },
-            festival: festival,
             currentIndex: $currentIndex
         )
         .onAppear {
@@ -381,80 +385,54 @@ struct FestivalPosterCarousel: View {
 // MARK: - 포스터 캐러셀 (풀 슬라이드 + 인디케이터)
 struct PosterCarousel: View {
     let imageUrls: [String]
-    let festival: FestivalDetail
     @Binding var currentIndex: Int
 
-    @State private var internalSelection: Int = 0
-
-    private let posterWidth: CGFloat = UIScreen.main.bounds.width * 0.75
+    private var cardWidthRatio: CGFloat { PosterCarouselConstants.cardWidthRatio }
+    private var posterWidth: CGFloat { UIScreen.main.bounds.width * cardWidthRatio }
     private var posterHeight: CGFloat { posterWidth * 4 / 3 }
-    private var horizontalPadding: CGFloat {
-        max((UIScreen.main.bounds.width - posterWidth) / 2, 0)
+    private let pageControlSpacing: CGFloat = 16
+    private let pageControlHeight: CGFloat = 20
+
+    private var containerHeight: CGFloat {
+        posterHeight + pageControlSpacing + pageControlHeight
     }
 
     var body: some View {
         if imageUrls.isEmpty {
             EmptyView()
         } else {
-            VStack(spacing: 16) {
-                TabView(selection: $internalSelection) {
-                    ForEach(Array(imageUrls.enumerated()), id: \.offset) { element in
-                        let index = element.offset
-                        let imageUrl = element.element
-                        let isActive = internalSelection == index
-
-                        PosterCard(
-                            imageUrl: imageUrl,
-                            festival: festival,
-                            posterWidth: posterWidth,
-                            posterHeight: posterHeight
-                        )
-                        .scaleEffect(isActive ? 1.0 : 0.96)
-                        .shadow(color: .black.opacity(isActive ? 0.2 : 0.05), radius: 12, x: 0, y: 8)
-                        .animation(.spring(response: 0.35, dampingFraction: 0.85), value: isActive)
-                        .tag(index)
-                    }
-                }
-                .frame(height: posterHeight)
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .padding(.horizontal, horizontalPadding)
-
-                pageIndicator
-            }
+            PosterCarouselContainerView(
+                imageUrls: imageUrls,
+                currentIndex: $currentIndex,
+                cardWidthRatio: cardWidthRatio,
+                cornerRadius: 12,
+                shadowColor: UIColor.black.withAlphaComponent(0.18),
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                shadowOffset: CGSize(width: 0, height: 8)
+            )
+            .frame(maxWidth: .infinity)
+            .frame(height: containerHeight)
             .onAppear {
                 let clamped = clampedIndex(currentIndex)
-                internalSelection = clamped
-                currentIndex = clamped
+                if currentIndex != clamped {
+                    DispatchQueue.main.async {
+                        currentIndex = clamped
+                    }
+                }
                 prefetch(urls: neighborUrls(for: clamped))
             }
             .onChange(of: currentIndex) { newValue in
-                let clamped = clampedIndex(newValue)
-                if internalSelection != clamped {
-                    internalSelection = clamped
-                }
-            }
-            .onChange(of: internalSelection) { newValue in
-                if currentIndex != newValue {
-                    currentIndex = newValue
-                }
                 prefetch(urls: neighborUrls(for: newValue))
             }
             .onChange(of: imageUrls.count) { _ in
                 let clamped = clampedIndex(currentIndex)
-                internalSelection = clamped
-                currentIndex = clamped
+                if currentIndex != clamped {
+                    DispatchQueue.main.async {
+                        currentIndex = clamped
+                    }
+                }
                 prefetch(urls: neighborUrls(for: clamped))
-            }
-        }
-    }
-
-    private var pageIndicator: some View {
-        HStack(spacing: 6) {
-            ForEach(Array(imageUrls.enumerated()), id: \.offset) { element in
-                let index = element.offset
-                Circle()
-                    .fill(index == internalSelection ? Color.black : Color.gray.opacity(0.3))
-                    .frame(width: index == internalSelection ? 8 : 6, height: index == internalSelection ? 8 : 6)
             }
         }
     }
@@ -467,9 +445,13 @@ struct PosterCarousel: View {
     private func neighborUrls(for index: Int) -> [String] {
         guard !imageUrls.isEmpty else { return [] }
         var indices: Set<Int> = [clampedIndex(index)]
-        if imageUrls.count > 1 {
-            indices.insert((index + 1) % imageUrls.count)
-            indices.insert((index - 1 + imageUrls.count) % imageUrls.count)
+        let previous = index - 1
+        if previous >= 0 {
+            indices.insert(previous)
+        }
+        let next = index + 1
+        if next < imageUrls.count {
+            indices.insert(next)
         }
         return indices.sorted().map { imageUrls[$0] }
     }
@@ -481,64 +463,463 @@ struct PosterCarousel: View {
         }
     }
 }
-// MARK: - 개별 포스터 카드
-struct PosterCard: View {
-    let imageUrl: String
-    let festival: FestivalDetail
-    let posterWidth: CGFloat
-    let posterHeight: CGFloat
-    
-    var body: some View {
-        CachedAsyncImage(
-            url: imageUrl,
-            content: { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: posterWidth, height: posterHeight)
-                    .clipped()
-                    .cornerRadius(12)
-            },
-            placeholder: {
-                placeholderView
-            },
-            errorView: {
-                errorView
-            }
+// MARK: - UIKit Carousel Wrapper
+struct PosterCarouselContainerView: UIViewControllerRepresentable {
+    let imageUrls: [String]
+    @Binding var currentIndex: Int
+    let cardWidthRatio: CGFloat
+    let cornerRadius: CGFloat
+    let shadowColor: UIColor
+    let shadowOpacity: Float
+    let shadowRadius: CGFloat
+    let shadowOffset: CGSize
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIViewController(context: Context) -> PosterCarouselViewController {
+        let controller = PosterCarouselViewController()
+        controller.delegate = context.coordinator
+        controller.cardWidthRatio = cardWidthRatio
+        controller.updateAppearance(
+            cornerRadius: cornerRadius,
+            shadowColor: shadowColor,
+            shadowOpacity: shadowOpacity,
+            shadowRadius: shadowRadius,
+            shadowOffset: shadowOffset
         )
-        .frame(width: posterWidth, height: posterHeight)
+        controller.update(imageUrls: imageUrls, currentIndex: currentIndex, animated: false)
+        return controller
     }
 
-    private var placeholderView: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(Color.gray.opacity(0.2))
-            .frame(width: posterWidth, height: posterHeight)
-            .overlay(
-                VStack(spacing: 8) {
-                    ProgressView()
-                        .tint(.blue)
-                    Text("로딩 중...")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
-                }
-            )
+    func updateUIViewController(_ controller: PosterCarouselViewController, context: Context) {
+        context.coordinator.parent = self
+        controller.cardWidthRatio = cardWidthRatio
+        controller.updateAppearance(
+            cornerRadius: cornerRadius,
+            shadowColor: shadowColor,
+            shadowOpacity: shadowOpacity,
+            shadowRadius: shadowRadius,
+            shadowOffset: shadowOffset
+        )
+        controller.update(imageUrls: imageUrls, currentIndex: currentIndex, animated: true)
     }
 
-    private var errorView: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(Color.gray.opacity(0.2))
-            .frame(width: posterWidth, height: posterHeight)
-            .overlay(
-                VStack(spacing: 8) {
-                    Image(systemName: "photo")
-                        .font(.system(size: 32))
-                        .foregroundColor(.gray.opacity(0.5))
-                    Text("이미지를 불러올 수 없습니다")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
+    final class Coordinator: NSObject, PosterCarouselViewControllerDelegate {
+        var parent: PosterCarouselContainerView
+
+        init(parent: PosterCarouselContainerView) {
+            self.parent = parent
+        }
+
+        func posterCarousel(_ controller: PosterCarouselViewController, didUpdateIndex index: Int) {
+            guard parent.currentIndex != index else { return }
+            DispatchQueue.main.async { [weak self] in
+                self?.parent.currentIndex = index
+            }
+        }
+    }
+}
+
+protocol PosterCarouselViewControllerDelegate: AnyObject {
+    func posterCarousel(_ controller: PosterCarouselViewController, didUpdateIndex index: Int)
+}
+
+final class PosterCarouselViewController: UIViewController {
+    weak var delegate: PosterCarouselViewControllerDelegate?
+
+    private var imageUrls: [String] = []
+    private var currentIndex: Int = 0
+    private var isProgrammaticScroll = false
+    private var pendingProgrammaticNotification: Int?
+
+    private var cellStyle = PosterCarouselCellStyle()
+    var cardWidthRatio: CGFloat = PosterCarouselConstants.cardWidthRatio
+
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 12
+        layout.sectionInset = .zero
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.backgroundColor = .clear
+        cv.showsHorizontalScrollIndicator = false
+        cv.decelerationRate = .fast
+        cv.contentInsetAdjustmentBehavior = .never
+        cv.register(PosterCarouselCell.self, forCellWithReuseIdentifier: PosterCarouselCell.reuseIdentifier)
+        cv.dataSource = self
+        cv.delegate = self
+        return cv
+    }()
+
+    private let pageControl: UIPageControl = {
+        let control = UIPageControl()
+        control.translatesAutoresizingMaskIntoConstraints = false
+        control.currentPage = 0
+        control.pageIndicatorTintColor = .systemGray3
+        control.currentPageIndicatorTintColor = .label
+        return control
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .clear
+        setupLayout()
+        pageControl.addTarget(self, action: #selector(pageControlChanged), for: .valueChanged)
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateLayoutMetrics()
+    }
+
+    func updateAppearance(
+        cornerRadius: CGFloat,
+        shadowColor: UIColor,
+        shadowOpacity: Float,
+        shadowRadius: CGFloat,
+        shadowOffset: CGSize
+    ) {
+        cellStyle.cornerRadius = cornerRadius
+        cellStyle.shadowColor = shadowColor
+        cellStyle.shadowOpacity = shadowOpacity
+        cellStyle.shadowRadius = shadowRadius
+        cellStyle.shadowOffset = shadowOffset
+        collectionView.visibleCells.compactMap { $0 as? PosterCarouselCell }.forEach { cell in
+            cell.apply(style: cellStyle)
+        }
+    }
+
+    func update(imageUrls: [String], currentIndex: Int, animated: Bool) {
+        let uniqueUrls = imageUrls
+        let didChangeUrls = uniqueUrls != self.imageUrls
+        self.imageUrls = uniqueUrls
+
+        pageControl.numberOfPages = uniqueUrls.count
+        pageControl.isHidden = uniqueUrls.count <= 1
+
+        if didChangeUrls {
+            collectionView.reloadData()
+            view.layoutIfNeeded()
+        }
+
+        guard !uniqueUrls.isEmpty else {
+            self.currentIndex = 0
+            pageControl.currentPage = 0
+            let offsetX = -collectionView.contentInset.left
+            collectionView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: false)
+            return
+        }
+
+        let clampedIndex = clamped(currentIndex)
+        if clampedIndex != self.currentIndex || didChangeUrls {
+            setCurrentIndex(clampedIndex, animated: animated && !didChangeUrls, notifyDelegate: false)
+        } else {
+            pageControl.currentPage = clampedIndex
+        }
+    }
+
+    private func setupLayout() {
+        view.addSubview(collectionView)
+        view.addSubview(pageControl)
+
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+
+            pageControl.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 12),
+            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -4)
+        ])
+    }
+
+    private func updateLayoutMetrics() {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+        let availableWidth = collectionView.bounds.width
+        guard availableWidth > 0 else { return }
+        let ratio = min(max(cardWidthRatio, 0.5), 1.0)
+        let width = availableWidth * ratio
+        let height = collectionView.bounds.height
+        layout.itemSize = CGSize(width: width, height: height)
+        let sideInset = max((availableWidth - width) / 2, 0)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)
+
+        if !isProgrammaticScroll,
+           !collectionView.isDragging,
+           collectionView.numberOfItems(inSection: 0) > currentIndex {
+            let indexPath = IndexPath(item: currentIndex, section: 0)
+            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+        }
+    }
+
+    private func setCurrentIndex(_ index: Int, animated: Bool, ensureVisible: Bool = true, notifyDelegate: Bool) {
+        guard imageUrls.indices.contains(index) else { return }
+        currentIndex = index
+        pageControl.currentPage = index
+
+        guard ensureVisible, collectionView.numberOfItems(inSection: 0) > index else {
+            pendingProgrammaticNotification = nil
+            isProgrammaticScroll = false
+            if notifyDelegate {
+                delegate?.posterCarousel(self, didUpdateIndex: index)
+            }
+            return
+        }
+
+        let indexPath = IndexPath(item: index, section: 0)
+
+        if animated {
+            isProgrammaticScroll = true
+            pendingProgrammaticNotification = notifyDelegate ? index : nil
+            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+        } else {
+            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+            pendingProgrammaticNotification = nil
+            isProgrammaticScroll = false
+            if notifyDelegate {
+                delegate?.posterCarousel(self, didUpdateIndex: index)
+            }
+        }
+    }
+
+    private func clamped(_ index: Int) -> Int {
+        guard !imageUrls.isEmpty else { return 0 }
+        return min(max(index, 0), imageUrls.count - 1)
+    }
+
+    @objc private func pageControlChanged() {
+        let index = clamped(pageControl.currentPage)
+        setCurrentIndex(index, animated: true, notifyDelegate: true)
+    }
+}
+
+extension PosterCarouselViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        imageUrls.count
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: PosterCarouselCell.reuseIdentifier,
+            for: indexPath
+        ) as? PosterCarouselCell else {
+            return UICollectionViewCell()
+        }
+
+        let urlString = imageUrls[indexPath.item]
+        cell.configure(with: urlString, style: cellStyle)
+        return cell
+    }
+}
+
+extension PosterCarouselViewController: UICollectionViewDelegateFlowLayout {
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout,
+              !imageUrls.isEmpty else { return }
+
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        let inset = scrollView.contentInset.left
+        let proposedOffsetX = targetContentOffset.pointee.x + inset
+        let index = round(proposedOffsetX / cellWidth)
+        let clampedIndex = Int(max(0, min(index, CGFloat(imageUrls.count - 1))))
+
+        let newOffsetX = CGFloat(clampedIndex) * cellWidth - inset
+        targetContentOffset.pointee = CGPoint(x: newOffsetX, y: targetContentOffset.pointee.y)
+
+        setCurrentIndex(clampedIndex, animated: false, ensureVisible: false, notifyDelegate: true)
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isProgrammaticScroll = false
+        if let pending = pendingProgrammaticNotification {
+            delegate?.posterCarousel(self, didUpdateIndex: pending)
+            pendingProgrammaticNotification = nil
+        }
+    }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        isProgrammaticScroll = false
+        if let pending = pendingProgrammaticNotification {
+            delegate?.posterCarousel(self, didUpdateIndex: pending)
+            pendingProgrammaticNotification = nil
+        }
+    }
+}
+
+// MARK: - Carousel Cell & Loader
+private struct PosterCarouselCellStyle {
+    var cornerRadius: CGFloat = 12
+    var shadowColor: UIColor = UIColor.black.withAlphaComponent(0.18)
+    var shadowOpacity: Float = 0.25
+    var shadowRadius: CGFloat = 12
+    var shadowOffset: CGSize = CGSize(width: 0, height: 8)
+}
+
+private final class PosterCarouselCell: UICollectionViewCell {
+    static let reuseIdentifier = "PosterCarouselCell"
+
+    private let shadowContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.masksToBounds = false
+        return view
+    }()
+
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = .secondarySystemBackground
+        return imageView
+    }()
+
+    private var loadToken: UUID?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.backgroundColor = .clear
+        contentView.clipsToBounds = false
+
+        contentView.addSubview(shadowContainer)
+        shadowContainer.addSubview(imageView)
+
+        NSLayoutConstraint.activate([
+            shadowContainer.topAnchor.constraint(equalTo: contentView.topAnchor),
+            shadowContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            shadowContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            shadowContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            imageView.topAnchor.constraint(equalTo: shadowContainer.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: shadowContainer.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: shadowContainer.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: shadowContainer.bottomAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.image = PosterCarouselCell.placeholderImage
+        if let token = loadToken {
+            CarouselImageLoader.shared.cancelLoad(token)
+            loadToken = nil
+        }
+    }
+
+    func configure(with urlString: String, style: PosterCarouselCellStyle) {
+        apply(style: style)
+        imageView.image = PosterCarouselCell.placeholderImage
+        loadToken = CarouselImageLoader.shared.loadImage(urlString: urlString) { [weak self] image in
+            guard let self else { return }
+            self.imageView.image = image ?? PosterCarouselCell.placeholderImage
+            self.loadToken = nil
+        }
+    }
+
+    func apply(style: PosterCarouselCellStyle) {
+        shadowContainer.layer.shadowColor = style.shadowColor.cgColor
+        shadowContainer.layer.shadowOpacity = style.shadowOpacity
+        shadowContainer.layer.shadowRadius = style.shadowRadius
+        shadowContainer.layer.shadowOffset = style.shadowOffset
+
+        imageView.layer.cornerRadius = style.cornerRadius
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        shadowContainer.layer.shadowPath = UIBezierPath(roundedRect: shadowContainer.bounds, cornerRadius: imageView.layer.cornerRadius).cgPath
+    }
+
+    private static let placeholderImage: UIImage? = {
+        let size = CGSize(width: 10, height: 10)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            UIColor.systemGray5.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+        }
+    }()
+}
+
+private final class CarouselImageLoader {
+    static let shared = CarouselImageLoader()
+
+    private let session: URLSession
+    private var tasks: [UUID: URLSessionDataTask] = [:]
+    private let lock = NSLock()
+
+    private init() {
+        let configuration = URLSessionConfiguration.default
+        configuration.urlCache = ImageLoader.cache
+        configuration.requestCachePolicy = .returnCacheDataElseLoad
+        session = URLSession(configuration: configuration)
+    }
+
+    @discardableResult
+    func loadImage(urlString: String, completion: @escaping (UIImage?) -> Void) -> UUID? {
+        guard let url = URL(string: urlString) else {
+            DispatchQueue.main.async {
+                completion(nil)
+            }
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.cachePolicy = .returnCacheDataElseLoad
+
+        if let cachedResponse = ImageLoader.cache.cachedResponse(for: request),
+           let image = UIImage(data: cachedResponse.data) {
+            DispatchQueue.main.async {
+                completion(image)
+            }
+            return nil
+        }
+
+        let token = UUID()
+
+        let task = session.dataTask(with: request) { [weak self] data, response, _ in
+            var image: UIImage? = nil
+            if let data, let fetchedImage = UIImage(data: data) {
+                image = fetchedImage
+                if let response {
+                    let cachedResponse = CachedURLResponse(response: response, data: data)
+                    ImageLoader.cache.storeCachedResponse(cachedResponse, for: request)
                 }
-            )
+            }
+
+            DispatchQueue.main.async {
+                completion(image)
+            }
+
+            self?.lock.lock()
+            self?.tasks[token] = nil
+            self?.lock.unlock()
+        }
+
+        lock.lock()
+        tasks[token] = task
+        lock.unlock()
+
+        task.resume()
+        return token
+    }
+
+    func cancelLoad(_ token: UUID) {
+        lock.lock()
+        let task = tasks[token]
+        tasks[token] = nil
+        lock.unlock()
+        task?.cancel()
     }
 }
 
@@ -970,7 +1351,9 @@ struct UniversityNamePlaceholder: View {
 struct FestivalPosterPlaceholder: View {
     @State private var isAnimating = false
     
-    private let posterWidth: CGFloat = UIScreen.main.bounds.width * 0.75
+    private var posterWidth: CGFloat {
+        UIScreen.main.bounds.width * PosterCarouselConstants.cardWidthRatio
+    }
     private var posterHeight: CGFloat { posterWidth * 4 / 3 }
     private var horizontalPadding: CGFloat {
         max((UIScreen.main.bounds.width - posterWidth) / 2, 0)
