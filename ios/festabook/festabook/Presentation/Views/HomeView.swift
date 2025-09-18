@@ -17,9 +17,19 @@ struct HomeView: View {
                 VStack(spacing: 0) {
                     // 상단 대학교 이름 + 변경 버튼 - 일정/소식 화면과 동일한 스타일
                     HStack(spacing: 8) {
-                        Text(festivalDetail?.universityName ?? "페스타북대학교")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.primary)
+                        if let universityName = festivalDetail?.universityName {
+                            Text(universityName)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.primary)
+                        } else if isLoading {
+                            UniversityNamePlaceholder()
+                        } else {
+                            Text(appState.selectedFestival?.universityName ?? 
+                                 appState.selectedUniversity?.name ?? 
+                                 "페스타북대학교")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.primary)
+                        }
 
                         Button(action: {
                             // 대학교 변경 - 최초 진입점으로 돌아가기
@@ -41,7 +51,11 @@ struct HomeView: View {
                     if let festival = festivalDetail, !festival.festivalImages.isEmpty {
                         FestivalPosterCarousel(festival: festival)
                             .padding(.bottom, 15) // 간격 줄임
-                    } else if !isLoading {
+                    } else if isLoading {
+                        // 로딩 중 포스터 스켈레톤
+                        FestivalPosterPlaceholder()
+                            .padding(.bottom, 15)
+                    } else {
                         // 포스터가 없을 때 표시 (3:4 비율)
                         GeometryReader { geometry in
                             let posterWidth = geometry.size.width - 60
@@ -94,7 +108,10 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 10) // 간격 줄임
-                    } else if !isLoading && errorMessage == nil {
+                    } else if isLoading {
+                        // 로딩 중 축제 제목/날짜 스켈레톤
+                        FestivalTitlePlaceholder()
+                    } else if errorMessage == nil {
                         // 축제 정보가 없을 때 표시
                         VStack(spacing: 4) {
                             HStack {
@@ -109,7 +126,7 @@ struct HomeView: View {
                     }
 
                     // 구분선
-                    if festivalDetail != nil {
+                    if festivalDetail != nil || isLoading {
                         Divider()
                             .padding(.horizontal, 20)
                             .padding(.top, 16)
@@ -124,15 +141,6 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
-            .overlay(alignment: .center) {
-                if isLoading {
-                    ProgressView("축제 정보를 불러오는 중...")
-                        .font(.system(size: 14))
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(8)
-                }
-            }
             .task {
                 await loadFestivalDetail()
             }
@@ -671,22 +679,27 @@ struct CircularLineupSection: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("축제 라인업")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.black)
+            if isLoading {
+                // 로딩 중 제목/버튼 스켈레톤
+                LineupHeaderPlaceholder()
+            } else {
+                HStack {
+                    Text("축제 라인업")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.black)
 
-                Spacer()
+                    Spacer()
 
-                Button("일정 확인하기 >") {
-                    NotificationCenter.default.post(
-                        name: .navigateToTab,
-                        object: MainTabView.Tab.schedule.rawValue,
-                        userInfo: ["animated": false]
-                    )
+                    Button("일정 확인하기 >") {
+                        NotificationCenter.default.post(
+                            name: .navigateToTab,
+                            object: MainTabView.Tab.schedule.rawValue,
+                            userInfo: ["animated": false]
+                        )
+                    }
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
                 }
-                .font(.system(size: 14))
-                .foregroundColor(.gray)
             }
 
             if !lineups.isEmpty {
@@ -731,13 +744,24 @@ struct CircularLineupSection: View {
                     }
                 }
             } else if isLoading {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 12) {
-                        ForEach(0..<6, id: \.self) { _ in
-                            CircularProfilePlaceholder()
+                // 로딩 중 날짜 그룹과 라인업 스켈레톤
+                VStack(alignment: .leading, spacing: 20) {
+                    ForEach(0..<2, id: \.self) { _ in
+                        VStack(alignment: .leading, spacing: 20) {
+                            // 날짜 제목과 언더바 스켈레톤
+                            LineupDateGroupPlaceholder()
+                            
+                            // 라인업 프로필 스켈레톤
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 12) {
+                                    ForEach(0..<4, id: \.self) { _ in
+                                        CircularProfilePlaceholder()
+                                    }
+                                }
+                                .padding(.horizontal, 4)
+                            }
                         }
                     }
-                    .padding(.horizontal, 4)
                 }
             } else {
                 VStack(spacing: 8) {
@@ -905,6 +929,289 @@ struct CircularProfilePlaceholder: View {
             RoundedRectangle(cornerRadius: 4)
                 .fill(Color.gray.opacity(0.2))
                 .frame(width: 40, height: 12)
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// 대학교 이름 로딩 플레이스홀더 (스켈레톤 뷰)
+struct UniversityNamePlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: 6)
+            .fill(Color.gray.opacity(0.2))
+            .frame(width: 180, height: 28)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .offset(x: isAnimating ? 180 : -180)
+                    .mask(RoundedRectangle(cornerRadius: 6))
+            )
+            .clipped()
+            .onAppear {
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    isAnimating = true
+                }
+            }
+    }
+}
+
+// 축제 포스터 로딩 플레이스홀더 (스켈레톤 뷰)
+struct FestivalPosterPlaceholder: View {
+    @State private var isAnimating = false
+    
+    private let posterWidth: CGFloat = UIScreen.main.bounds.width * 0.75
+    private var posterHeight: CGFloat { posterWidth * 4 / 3 }
+    private var horizontalPadding: CGFloat {
+        max((UIScreen.main.bounds.width - posterWidth) / 2, 0)
+    }
+    
+    var body: some View {
+        VStack(spacing: 16) {
+            // 포스터 스켈레톤 (실제 크기와 동일)
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: posterWidth, height: posterHeight)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .offset(x: isAnimating ? posterWidth : -posterWidth)
+                        .mask(RoundedRectangle(cornerRadius: 12))
+                )
+                .clipped()
+                .frame(height: posterHeight)
+                .padding(.horizontal, horizontalPadding)
+            
+            // 페이지 인디케이터 스켈레톤
+            HStack(spacing: 6) {
+                ForEach(0..<3, id: \.self) { index in
+                    Circle()
+                        .fill(Color.gray.opacity(index == 0 ? 0.4 : 0.2))
+                        .frame(width: index == 0 ? 8 : 6, height: index == 0 ? 8 : 6)
+                        .overlay(
+                            Circle()
+                                .fill(
+                                    LinearGradient(
+                                        colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                        startPoint: .leading,
+                                        endPoint: .trailing
+                                    )
+                                )
+                                .offset(x: isAnimating ? 8 : -8)
+                                .mask(Circle())
+                        )
+                        .clipped()
+                }
+            }
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// 축제 제목/날짜 로딩 플레이스홀더 (스켈레톤 뷰)
+struct FestivalTitlePlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            // 축제 제목 스켈레톤 (2줄)
+            HStack {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 280, height: 22)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 280 : -280)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                Spacer()
+            }
+            
+            HStack {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 200, height: 22)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 200 : -200)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                Spacer()
+            }
+            
+            // 날짜 스켈레톤
+            HStack {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 120, height: 16)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 120 : -120)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                Spacer()
+            }
+            .padding(.top, 8)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 10)
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// 라인업 헤더 로딩 플레이스홀더 (제목/버튼 스켈레톤)
+struct LineupHeaderPlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        HStack {
+            // "축제 라인업" 제목 스켈레톤
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 120, height: 20)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .offset(x: isAnimating ? 120 : -120)
+                        .mask(RoundedRectangle(cornerRadius: 4))
+                )
+                .clipped()
+            
+            Spacer()
+            
+            // "일정 확인하기 >" 버튼 스켈레톤
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 100, height: 16)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .offset(x: isAnimating ? 100 : -100)
+                        .mask(RoundedRectangle(cornerRadius: 4))
+                )
+                .clipped()
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// 라인업 날짜 그룹 로딩 플레이스홀더 (날짜 제목과 언더바 스켈레톤)
+struct LineupDateGroupPlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                // 날짜 제목 스켈레톤 (예: "5월 14일")
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 80, height: 18)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 80 : -80)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                
+                // "오늘" 배지 스켈레톤 (가끔 표시)
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.15))
+                    .frame(width: 40, height: 20)
+                
+                Spacer()
+            }
+            .overlay(alignment: .bottomLeading) {
+                // 언더바 스켈레톤
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: min(UIScreen.main.bounds.width * 0.20, 100), height: 3)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 100 : -100)
+                            .mask(RoundedRectangle(cornerRadius: 2))
+                    )
+                    .clipped()
+                    .offset(y: 8)
+            }
         }
         .onAppear {
             withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
