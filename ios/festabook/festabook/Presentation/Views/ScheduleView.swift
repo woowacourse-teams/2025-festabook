@@ -84,12 +84,65 @@ struct ScheduleView: View {
                 .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
                 .padding(.top, 100)
             } else {
-                timelineList
+                timelinePager
             }
         }
     }
 
-    private var timelineList: some View {
+    private var timelinePager: some View {
+        TabView(selection: selectedDateBinding) {
+            ForEach(viewModel.eventDates) { eventDate in
+                TimelinePageView(
+                    events: viewModel.events(for: eventDate.eventDateId),
+                    bottomInset: bottomBarHeight,
+                    scrollTargetEventId: scrollTargetBinding(for: eventDate.eventDateId),
+                    isActive: viewModel.selectedEventDate?.eventDateId == eventDate.eventDateId,
+                    refreshAction: {
+                        await viewModel.loadEventDates(preserveSelection: true, scrollToOngoing: true)
+                    }
+                )
+                .tag(eventDate.eventDateId)
+            }
+        }
+        .tabViewStyle(.page(indexDisplayMode: .never))
+        .animation(.easeInOut(duration: 0.2), value: viewModel.selectedEventDate?.eventDateId)
+    }
+
+    private var selectedDateBinding: Binding<Int> {
+        Binding(
+            get: {
+                viewModel.selectedEventDate?.eventDateId ?? viewModel.eventDates.first?.eventDateId ?? 0
+            },
+            set: { newValue in
+                guard let matchedDate = viewModel.eventDates.first(where: { $0.eventDateId == newValue }) else { return }
+                viewModel.selectDate(matchedDate)
+            }
+        )
+    }
+
+    private func scrollTargetBinding(for eventDateId: Int) -> Binding<Int?> {
+        Binding(
+            get: {
+                guard viewModel.selectedEventDate?.eventDateId == eventDateId else { return nil }
+                return viewModel.scrollTargetEventId
+            },
+            set: { newValue in
+                guard viewModel.selectedEventDate?.eventDateId == eventDateId else { return }
+                viewModel.scrollTargetEventId = newValue
+            }
+        )
+    }
+
+}
+
+private struct TimelinePageView: View {
+    let events: [ScheduleEvent]
+    let bottomInset: CGFloat
+    @Binding var scrollTargetEventId: Int?
+    let isActive: Bool
+    let refreshAction: () async -> Void
+
+    var body: some View {
         GeometryReader { geometry in
             ScrollViewReader { scrollProxy in
                 ScrollView {
@@ -102,8 +155,8 @@ struct ScheduleView: View {
                             .padding(.top, 20)
                             .allowsHitTesting(false)
 
-                        LazyVStack(spacing: 24, pinnedViews: []) {
-                            if viewModel.events.isEmpty {
+                        LazyVStack(spacing: 24) {
+                            if events.isEmpty {
                                 VStack(spacing: 12) {
                                     Image(systemName: "doc.text")
                                         .font(.system(size: 24))
@@ -115,11 +168,11 @@ struct ScheduleView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                                 .padding(.top, 60)
                             } else {
-                                ForEach(Array(viewModel.events.enumerated()), id: \.element.id) { index, event in
+                                ForEach(Array(events.enumerated()), id: \.element.id) { index, event in
                                     TimelineEventRow(
                                         event: event,
                                         isFirst: index == 0,
-                                        isLast: index == viewModel.events.count - 1
+                                        isLast: index == events.count - 1
                                     )
                                     .id(event.id)
                                 }
@@ -127,31 +180,31 @@ struct ScheduleView: View {
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 20)
-                        .padding(.bottom, bottomBarHeight + geometry.safeAreaInsets.bottom)
+                        .padding(.bottom, bottomInset + geometry.safeAreaInsets.bottom)
                     }
                     .frame(minHeight: geometry.size.height)
                 }
                 .scrollIndicators(.hidden)
                 .refreshable {
-                    await viewModel.loadEventDates(preserveSelection: true, scrollToOngoing: true)
+                    guard isActive else { return }
+                    await refreshAction()
                 }
-                .onChange(of: viewModel.scrollTargetEventId) { target in
-                    guard let target else { return }
+                .onChange(of: scrollTargetEventId) { target in
+                    guard isActive, let target else { return }
                     DispatchQueue.main.async {
                         withAnimation(.easeInOut) {
                             scrollProxy.scrollTo(target, anchor: .center)
                         }
-                        viewModel.scrollTargetEventId = nil
+                        scrollTargetEventId = nil
                     }
                 }
                 .onAppear {
-                    if let target = viewModel.scrollTargetEventId {
-                        DispatchQueue.main.async {
-                            withAnimation(.easeInOut) {
-                                scrollProxy.scrollTo(target, anchor: .center)
-                            }
-                            viewModel.scrollTargetEventId = nil
+                    guard isActive, let target = scrollTargetEventId else { return }
+                    DispatchQueue.main.async {
+                        withAnimation(.easeInOut) {
+                            scrollProxy.scrollTo(target, anchor: .center)
                         }
+                        scrollTargetEventId = nil
                     }
                 }
             }

@@ -67,6 +67,10 @@ class ScheduleViewModel: ObservableObject {
         applyEvents(for: eventDate.eventDateId, scrollToOngoing: false)
     }
 
+    func events(for eventDateId: Int) -> [ScheduleEvent] {
+        eventsByDate[eventDateId] ?? []
+    }
+
     private func applyEvents(for eventDateId: Int, scrollToOngoing: Bool) {
         isLoadingEvents = false
 
