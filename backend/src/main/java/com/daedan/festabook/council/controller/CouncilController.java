@@ -67,6 +67,6 @@ public class CouncilController {
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody CouncilUpdateRequest request
     ) {
-        return councilService.updatePassword(councilDetails.getCouncil().getId(), request);
+        return councilService.updatePassword(councilDetails.getUsername(), request);
     }
 }

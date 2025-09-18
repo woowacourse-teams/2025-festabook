@@ -22,14 +22,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/festivals")
-@Tag(name = "축제 알림", description = "축제 알림 관련 API")
-public class FestivalNotificationController {
+@Tag(name = "축제 공지사항 알림", description = "축제 공지사항 알림 관련 API")
+public class FestivalNotificationSubscriptionController {
 
     private final FestivalNotificationService festivalNotificationService;
 
     @PostMapping("/{festivalId}/notifications")
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "특정 축제의 알림 구독 (FCM 토픽 구독)")
+    @Operation(summary = "특정 축제의 알림 구독 (FCM 토픽 구독) [old 안드로이드 알림 구독 버전]")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
