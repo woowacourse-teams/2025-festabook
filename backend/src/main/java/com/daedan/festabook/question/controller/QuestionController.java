@@ -36,7 +36,7 @@ public class QuestionController {
 
     private final QuestionService questionService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 FAQ 생성")
@@ -62,7 +62,7 @@ public class QuestionController {
         return questionService.getAllQuestionByFestivalId(festivalId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{questionId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 FAQ 수정")
@@ -77,7 +77,7 @@ public class QuestionController {
         return questionService.updateQuestionAndAnswer(councilDetails.getFestivalId(), questionId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "FAQ 순서 수정")
@@ -91,7 +91,7 @@ public class QuestionController {
         return questionService.updateSequence(councilDetails.getFestivalId(), requests);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/{questionId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 FAQ 삭제")

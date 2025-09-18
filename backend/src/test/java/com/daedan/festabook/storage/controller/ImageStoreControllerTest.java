@@ -7,6 +7,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import io.restassured.RestAssured;
 import io.restassured.http.Header;
 import java.io.IOException;
@@ -14,7 +15,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -42,13 +44,14 @@ class ImageStoreControllerTest {
     @Nested
     class UploadImage {
 
-        @Test
-        void 성공() throws IOException {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) throws IOException {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             MockMultipartFile file = new MockMultipartFile(
                     "image",

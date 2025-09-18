@@ -33,7 +33,7 @@ public class PlaceAnnouncementController {
 
     private final PlaceAnnouncementService placeAnnouncementService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping("/{placeId}/announcements")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스 공지 생성")
@@ -60,6 +60,7 @@ public class PlaceAnnouncementController {
         return placeAnnouncementService.getAllPlaceAnnouncementsByPlaceId(placeId);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/announcements/{placeAnnouncementId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 플레이스 공지사항 수정")
@@ -78,7 +79,7 @@ public class PlaceAnnouncementController {
         );
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/announcements/{placeAnnouncementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스의 공지 삭제")

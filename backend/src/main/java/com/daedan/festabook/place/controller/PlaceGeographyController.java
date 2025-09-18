@@ -43,7 +43,7 @@ public class PlaceGeographyController {
         return placeGeographyService.getAllPlaceGeographyByFestivalId(festivalId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{placeId}/geographies")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 플레이스의 좌표(위도, 경도) 업데이트")

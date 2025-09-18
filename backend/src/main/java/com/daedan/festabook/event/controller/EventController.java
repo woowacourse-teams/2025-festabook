@@ -33,7 +33,7 @@ public class EventController {
 
     private final EventService eventService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping("/events")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "일정 생성")
@@ -59,7 +59,7 @@ public class EventController {
         return eventService.getAllEventByEventDateId(eventDateId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "일정 수정")
@@ -74,7 +74,7 @@ public class EventController {
         return eventService.updateEvent(councilDetails.getFestivalId(), eventId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/events/{eventId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "일정 삭제")

@@ -40,7 +40,7 @@ public class PlaceController {
     private final PlaceService placeService;
     private final PlacePreviewService placePreviewService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스 생성")
@@ -90,7 +90,7 @@ public class PlaceController {
         return placeService.getPlaceByPlaceId(placeId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/main/{placeId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 메인 플레이스 세부사항 수정")
@@ -105,7 +105,7 @@ public class PlaceController {
         return placeService.updateMainPlace(councilDetails.getFestivalId(), placeId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/etc/{placeId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 기타 플레이스 세부사항 수정")
@@ -120,7 +120,7 @@ public class PlaceController {
         return placeService.updateEtcPlace(councilDetails.getFestivalId(), placeId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/{placeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스 삭제")

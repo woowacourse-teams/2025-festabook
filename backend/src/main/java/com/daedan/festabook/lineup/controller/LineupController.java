@@ -34,7 +34,7 @@ public class LineupController {
 
     private final LineupService lineupService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 라인업 추가")
@@ -60,7 +60,7 @@ public class LineupController {
         return lineupService.getAllLineupByFestivalId(festivalId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{lineupId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 라인업 수정")
@@ -75,7 +75,7 @@ public class LineupController {
         return lineupService.updateLineup(councilDetails.getFestivalId(), lineupId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/{lineupId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 축제의 라인업 삭제")

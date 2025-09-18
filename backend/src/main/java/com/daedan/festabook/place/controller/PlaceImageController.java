@@ -32,7 +32,7 @@ public class PlaceImageController {
 
     private final PlaceImageService placeImageService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping("/{placeId}/images")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스의 이미지 생성")
@@ -47,7 +47,7 @@ public class PlaceImageController {
         return placeImageService.addPlaceImage(councilDetails.getFestivalId(), placeId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/images/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제에 대한 플레이스의 이미지들 순서 수정")
@@ -61,7 +61,7 @@ public class PlaceImageController {
         return placeImageService.updatePlaceImagesSequence(councilDetails.getFestivalId(), requests);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/images/{placeImageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스의 이미지 삭제")
