@@ -8,6 +8,7 @@ import com.google.firebase.messaging.FirebaseMessagingException;
 import com.google.firebase.messaging.Message;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
@@ -15,25 +16,26 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class FcmNotificationManager implements FestivalNotificationManager {
 
-    private static final String FESTIVAL_PREFIX = "festival";
+    @Value("${fcm.topic.festival-prefix}")
+    private String topicFestivalPrefix;
 
     private final FirebaseMessaging firebaseMessaging;
 
     @Override
     public void subscribeFestivalTopic(Long festivalId, String fcmToken) {
-        String topic = FESTIVAL_PREFIX + festivalId;
+        String topic = topicFestivalPrefix + festivalId;
         subscribeTopic(topic, fcmToken);
     }
 
     @Override
     public void unsubscribeFestivalTopic(Long festivalId, String fcmToken) {
-        String topic = FESTIVAL_PREFIX + festivalId;
+        String topic = topicFestivalPrefix + festivalId;
         unsubscribeTopic(topic, fcmToken);
     }
 
     @Override
     public void sendToFestivalTopic(Long festivalId, NotificationSendRequest request) {
-        sendToTopic(FESTIVAL_PREFIX, festivalId, request);
+        sendToTopic(topicFestivalPrefix, festivalId, request);
     }
 
     private void subscribeTopic(String topic, String fcmToken) {
