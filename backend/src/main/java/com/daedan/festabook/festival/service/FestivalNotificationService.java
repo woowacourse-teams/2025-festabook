@@ -27,8 +27,10 @@ public class FestivalNotificationService {
     private final FestivalNotificationManager festivalNotificationManager;
 
     @Transactional
-    public FestivalNotificationResponse subscribeFestivalNotification(Long festivalId,
-                                                                      FestivalNotificationRequest request) {
+    public FestivalNotificationResponse subscribeFestivalNotification(
+            Long festivalId,
+            FestivalNotificationRequest request
+    ) {
         validateDuplicatedFestivalNotification(festivalId, request.deviceId());
 
         Festival festival = getFestivalById(festivalId);
@@ -43,8 +45,10 @@ public class FestivalNotificationService {
     }
 
     @Transactional
-    public FestivalNotificationResponse subscribeAndroidFestivalNotification(Long festivalId,
-                                                                             FestivalNotificationRequest request) {
+    public FestivalNotificationResponse subscribeAndroidFestivalNotification(
+            Long festivalId,
+            FestivalNotificationRequest request
+    ) {
         validateDuplicatedFestivalNotification(festivalId, request.deviceId());
 
         Festival festival = getFestivalById(festivalId);
@@ -59,8 +63,10 @@ public class FestivalNotificationService {
     }
 
     @Transactional
-    public FestivalNotificationResponse subscribeIosFestivalNotification(Long festivalId,
-                                                                         FestivalNotificationRequest request) {
+    public FestivalNotificationResponse subscribeIosFestivalNotification(
+            Long festivalId,
+            FestivalNotificationRequest request
+    ) {
         validateDuplicatedFestivalNotification(festivalId, request.deviceId());
 
         Festival festival = getFestivalById(festivalId);
