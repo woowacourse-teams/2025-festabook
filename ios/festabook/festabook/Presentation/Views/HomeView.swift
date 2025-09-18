@@ -390,8 +390,9 @@ struct PosterCarousel: View {
         } else {
             VStack(spacing: 16) {
                 TabView(selection: $internalSelection) {
-                    ForEach(imageUrls.indices, id: \.self) { index in
-                        let imageUrl = imageUrls[index]
+                    ForEach(Array(imageUrls.enumerated()), id: \.offset) { element in
+                        let index = element.offset
+                        let imageUrl = element.element
                         let isActive = internalSelection == index
 
                         PosterCard(
@@ -442,7 +443,8 @@ struct PosterCarousel: View {
 
     private var pageIndicator: some View {
         HStack(spacing: 6) {
-            ForEach(imageUrls.indices, id: \.self) { index in
+            ForEach(Array(imageUrls.enumerated()), id: \.offset) { element in
+                let index = element.offset
                 Circle()
                     .fill(index == internalSelection ? Color.black : Color.gray.opacity(0.3))
                     .frame(width: index == internalSelection ? 8 : 6, height: index == internalSelection ? 8 : 6)
@@ -645,7 +647,6 @@ struct CircularLineupSection: View {
         return formatter
     }()
 
-    // API 응답 형식에 맞는 새로운 formatter (timezone 정보 없음)
     private let apiResponseFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -657,6 +658,13 @@ struct CircularLineupSection: View {
     private let isoFormatter: ISO8601DateFormatter = {
         let formatter = ISO8601DateFormatter()
         formatter.formatOptions = [.withFullDate]
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        return formatter
+    }()
+
+    private let isoDateTimeFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
         formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
         return formatter
     }()
@@ -752,19 +760,7 @@ struct CircularLineupSection: View {
         var unknownLineups: [Lineup] = []
 
         for lineup in lineups {
-            var parsed: Date?
-            
-            // 여러 DateFormatter를 순서대로 시도
-            let formatters = [apiResponseFormatter, backendFormatter, backendFormatterNoFraction]
-            
-            for formatter in formatters {
-                if let date = formatter.date(from: lineup.performanceAt) {
-                    parsed = date
-                    break
-                }
-            }
-            
-            if let date = parsed {
+            if let date = parsePerformanceDate(from: lineup.performanceAt) {
                 let key = calendar.startOfDay(for: date)
                 dateGroups[key, default: []].append(lineup)
             } else {
@@ -805,6 +801,24 @@ struct CircularLineupSection: View {
 
     private func isoIdentifier(for date: Date) -> String {
         isoFormatter.string(from: date)
+    }
+
+    private func parsePerformanceDate(from value: String) -> Date? {
+        for formatter in [backendFormatter, backendFormatterNoFraction, apiResponseFormatter] {
+            if let date = formatter.date(from: value) {
+                return date
+            }
+        }
+
+        if let isoDate = isoDateTimeFormatter.date(from: value) {
+            return isoDate
+        }
+
+        // ISO formatter without fractional seconds fallback
+        let isoNoFraction = ISO8601DateFormatter()
+        isoNoFraction.formatOptions = [.withInternetDateTime]
+        isoNoFraction.timeZone = TimeZone(identifier: "Asia/Seoul")
+        return isoNoFraction.date(from: value)
     }
 
     private struct LineupGroup: Identifiable {
