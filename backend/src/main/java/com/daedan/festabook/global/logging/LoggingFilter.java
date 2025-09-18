@@ -103,10 +103,10 @@ public class LoggingFilter extends OncePerRequestFilter {
 
     private Object maskingIfContainsMaskingPath(String uri, String httpMethod, Object requestBody) {
         if (BODY_MASKING_PATH.contains(new MaskingPath(uri, httpMethod))) {
-            return requestBody;
+            return "MASKING";
         }
 
-        return "MASKING";
+        return requestBody;
     }
 
     private Object extractBodyFromCache(HttpServletRequest request) {
