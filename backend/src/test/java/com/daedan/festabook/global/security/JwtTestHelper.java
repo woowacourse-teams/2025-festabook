@@ -29,13 +29,14 @@ public class JwtTestHelper {
         UUID uuid = UUID.randomUUID();
         String randomUsername = "test_" + uuid;
         String randomPassword = "password_" + uuid;
+        Set<RoleType> roleTypes = Set.of(RoleType.ROLE_COUNCIL);
 
         festivalRepository.save(festival);
         Council council = new Council(festival, randomUsername, randomPassword);
-        council.updateRole(Set.of(RoleType.ROLE_COUNCIL));
+        council.updateRole(roleTypes);
         councilRepository.save(council);
 
-        String token = jwtProvider.createToken(randomUsername, festival.getId());
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), roleTypes);
         return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
     }
 
@@ -44,13 +45,14 @@ public class JwtTestHelper {
         UUID uuid = UUID.randomUUID();
         String randomUsername = "test_" + uuid;
         String randomPassword = "password_" + uuid;
+        Set<RoleType> roleTypes = Set.of(RoleType.ROLE_ADMIN);
 
         festivalRepository.save(festival);
         Council council = new Council(festival, randomUsername, randomPassword);
-        council.updateRole(Set.of(RoleType.ROLE_ADMIN));
+        council.updateRole(roleTypes);
         councilRepository.save(council);
 
-        String token = jwtProvider.createToken(randomUsername, festival.getId());
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), roleTypes);
         return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
     }
 }

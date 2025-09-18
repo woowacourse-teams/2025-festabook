@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -67,7 +68,7 @@ public class Council extends BaseEntity {
 
     public void updatePassword(String password) {
         validatePassword(password);
-        
+
         this.password = password;
     }
 
@@ -97,5 +98,10 @@ public class Council extends BaseEntity {
         if (!StringUtils.hasText(password)) {
             throw new BusinessException("비밀번호는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
+    }
+
+    public Set<RoleType> getRoles() {
+        return roles.stream()
+                .collect(Collectors.toUnmodifiableSet());
     }
 }
