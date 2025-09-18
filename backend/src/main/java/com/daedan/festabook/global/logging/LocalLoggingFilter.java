@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -29,6 +30,11 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
             "/api/v3/api-docs",
             "/api/api-docs",
             "/api/actuator"
+    );
+    private static final Set<MaskingPath> BODY_MASKING_PATH = Set.of(
+            new MaskingPath("/api/councils", "POST"),
+            new MaskingPath("/api/councils/login", "POST"),
+            new MaskingPath("/api/councils/password", "PATCH")
     );
 
     @Override
@@ -57,7 +63,7 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
             log.info(
                     "[API End] statusCode={} requestBody={} executionTime={}ms",
                     statusCode,
-                    requestBody,
+                    maskingIfContainsMaskingPath(uri, httpMethod, requestBody),
                     executionTime
             );
         }
@@ -65,6 +71,14 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
 
     private boolean isSkipLoggingForPath(String uri) {
         return LOGGING_SKIP_PATH_PREFIX.stream().anyMatch(uri::startsWith);
+    }
+
+    private Object maskingIfContainsMaskingPath(String uri, String httpMethod, Object requestBody) {
+        if (BODY_MASKING_PATH.contains(new MaskingPath(uri, httpMethod))) {
+            return requestBody;
+        }
+
+        return "MASKING";
     }
 
     private String extractBodyFromCache(HttpServletRequest request) {
