@@ -11,6 +11,15 @@ struct NewsRootView: View {
     @State private var showAnnouncementDetail = false
     @State private var selectedFestivalId = ""
     @State private var selectedAnnouncementId = ""
+    
+    // 미리 생성된 ViewModels - 홈 진입시 모두 로딩
+    @StateObject private var announcementsViewModel = AnnouncementsViewModel(
+        repository: ServiceLocator.shared.announcementsRepository
+    )
+    @StateObject private var faqViewModel = FAQViewModel(
+        repository: ServiceLocator.shared.faqRepository
+    )
+    @StateObject private var lostItemViewModel = LostItemViewModel()
 
     var body: some View {
         NavigationStack {
@@ -38,6 +47,15 @@ struct NewsRootView: View {
                     announcementId: selectedAnnouncementId
                 )
             }
+        }
+        .task {
+            // 홈 진입시 소식 탭 데이터 모두 미리 로딩
+            async let announcementsTask = announcementsViewModel.loadAnnouncements()
+            async let faqTask = faqViewModel.loadFAQs()
+            async let lostItemTask = lostItemViewModel.loadInitialData()
+            
+            await (announcementsTask, faqTask, lostItemTask)
+            print("[NewsRootView] 모든 소식 데이터 로딩 완료")
         }
         .onReceive(NotificationCenter.default.publisher(for: .showAnnouncementDetail)) { notification in
             if let data = notification.object as? [String: Any],
@@ -78,23 +96,23 @@ struct NewsRootView: View {
     }
 
     private var tabContent: some View {
-        Group {
-            switch selectedTab {
-            case .notice:
-                AnnouncementsListView()
-            case .faq:
-                FAQListView()
-            case .lost:
-                LostFoundListView()
-            }
+        TabView(selection: $selectedTab) {
+            AnnouncementsListView(viewModel: announcementsViewModel)
+                .tag(Tab.notice)
+            
+            FAQListView(viewModel: faqViewModel)
+                .tag(Tab.faq)
+            
+            LostFoundListView(viewModel: lostItemViewModel)
+                .tag(Tab.lost)
         }
+        .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+        .animation(.easeInOut(duration: 0.2), value: selectedTab)
     }
 }
 
 struct AnnouncementsListView: View {
-    @StateObject private var viewModel = AnnouncementsViewModel(
-        repository: ServiceLocator.shared.announcementsRepository
-    )
+    @ObservedObject var viewModel: AnnouncementsViewModel
     @EnvironmentObject private var appState: AppState
     @State private var expandedAnnouncementId: Int?
     @State private var pendingAnnouncementId: Int?
@@ -151,7 +169,7 @@ struct AnnouncementsListView: View {
                 }
                 .padding(.horizontal, 20)
                 .padding(.top, 16)
-                .padding(.bottom, 40)
+                .padding(.bottom, 100)
             }
             .refreshable {
                 await viewModel.loadAnnouncements()
@@ -160,8 +178,7 @@ struct AnnouncementsListView: View {
                     attemptExpansionIfNeeded(using: proxy)
                 }
             }
-            .task {
-                await viewModel.loadAnnouncements()
+            .onAppear {
                 if let id = appState.pendingAnnouncementId {
                     pendingAnnouncementId = id
                     attemptExpansionIfNeeded(using: proxy)
@@ -367,9 +384,7 @@ class AnnouncementsViewModel: ObservableObject {
 }
 
 struct FAQListView: View {
-    @StateObject private var viewModel = FAQViewModel(
-        repository: ServiceLocator.shared.faqRepository
-    )
+    @ObservedObject var viewModel: FAQViewModel
 
     var body: some View {
         ScrollView {
@@ -410,12 +425,9 @@ struct FAQListView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
-            .padding(.bottom, 40)
+            .padding(.bottom, 100)
         }
         .refreshable {
-            await viewModel.loadFAQs()
-        }
-        .task {
             await viewModel.loadFAQs()
         }
     }
