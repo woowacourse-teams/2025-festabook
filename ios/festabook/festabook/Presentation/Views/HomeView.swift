@@ -411,7 +411,7 @@ struct PosterCarousel: View {
                         )
                         .scaleEffect(isActive ? 1.0 : 0.96)
                         .shadow(color: .black.opacity(isActive ? 0.2 : 0.05), radius: 12, x: 0, y: 8)
-                        .animation(.easeInOut(duration: 0.25), value: internalSelection)
+                        .animation(.spring(response: 0.35, dampingFraction: 0.85), value: isActive)
                         .tag(index)
                     }
                 }
@@ -421,7 +421,6 @@ struct PosterCarousel: View {
 
                 pageIndicator
             }
-            .animation(.easeInOut(duration: 0.25), value: internalSelection)
             .onAppear {
                 let clamped = clampedIndex(currentIndex)
                 internalSelection = clamped

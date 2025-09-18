@@ -13,12 +13,19 @@ final class ImageLoader: ObservableObject {
     )
 
     private let session: URLSession
+    private var currentURL: URL?
+    private var currentTask: Task<Void, Never>?
+    private var currentLoadToken: UUID?
 
     init() {
         let config = URLSessionConfiguration.default
         config.urlCache = Self.cache
         config.requestCachePolicy = .returnCacheDataElseLoad
         self.session = URLSession(configuration: config)
+    }
+
+    deinit {
+        currentTask?.cancel()
     }
 
     func load(from urlString: String) {
@@ -32,21 +39,45 @@ final class ImageLoader: ObservableObject {
     }
 
     func load(from url: URL) {
-        // Reset state
-        image = nil
-        hasError = false
+        if currentURL == url {
+            if image != nil {
+                return
+            }
+
+            if isLoading {
+                return
+            }
+
+            hasError = false
+        } else {
+            currentTask?.cancel()
+            currentTask = nil
+            currentURL = url
+            image = nil
+            hasError = false
+        }
+
         isLoading = true
 
         print("[ImageLoader] Loading image from: \(url)")
 
-        Task {
+        let loadToken = UUID()
+        currentLoadToken = loadToken
+
+        let task = Task { [weak self] in
+            guard let self else { return }
+
             do {
-                let (data, response) = try await session.data(from: url)
+                let (data, response) = try await self.session.data(from: url)
+
+                guard !Task.isCancelled else { return }
+                guard self.currentLoadToken == loadToken else { return }
 
                 guard let httpResponse = response as? HTTPURLResponse,
                       httpResponse.statusCode == 200 else {
                     print("[ImageLoader] Invalid response for: \(url)")
                     await MainActor.run {
+                        guard self.currentLoadToken == loadToken else { return }
                         self.hasError = true
                         self.isLoading = false
                     }
@@ -56,6 +87,7 @@ final class ImageLoader: ObservableObject {
                 guard let loadedImage = UIImage(data: data) else {
                     print("[ImageLoader] Failed to create image from data for: \(url)")
                     await MainActor.run {
+                        guard self.currentLoadToken == loadToken else { return }
                         self.hasError = true
                         self.isLoading = false
                     }
@@ -63,23 +95,40 @@ final class ImageLoader: ObservableObject {
                 }
 
                 await MainActor.run {
+                    guard self.currentLoadToken == loadToken else { return }
                     self.image = loadedImage
                     self.isLoading = false
+                    self.hasError = false
                     print("[ImageLoader] Successfully loaded image for: \(url)")
                 }
 
             } catch {
+                guard !Task.isCancelled else { return }
                 print("[ImageLoader] Error loading image: \(error)")
                 await MainActor.run {
+                    guard self.currentLoadToken == loadToken else { return }
                     self.hasError = true
                     self.isLoading = false
                 }
             }
+
+            await MainActor.run {
+                guard self.currentLoadToken == loadToken else { return }
+                self.currentTask = nil
+                self.currentLoadToken = nil
+            }
         }
+
+        currentTask = task
     }
 
     func retry(from urlString: String) {
         hasError = false
+        image = nil
+        currentURL = nil
+        currentTask?.cancel()
+        currentTask = nil
+        currentLoadToken = nil
         load(from: urlString)
     }
 }
@@ -121,6 +170,9 @@ struct CachedAsyncImage<Content: View, Placeholder: View, ErrorView: View>: View
         }
         .onAppear {
             loader.load(from: url)
+        }
+        .onChange(of: url) { newValue in
+            loader.load(from: newValue)
         }
     }
 }
