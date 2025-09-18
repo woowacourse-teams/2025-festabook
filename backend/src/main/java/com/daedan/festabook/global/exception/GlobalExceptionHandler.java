@@ -56,7 +56,7 @@ public class GlobalExceptionHandler {
         }
     }
 
-    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    @ExceptionHandler(AccessDeniedException.class)
     public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException exception) {
         try {
             return ResponseEntity
