@@ -44,7 +44,7 @@ struct HomeView: View {
                     } else if !isLoading {
                         // 포스터가 없을 때 표시 (3:4 비율)
                         GeometryReader { geometry in
-                            let posterWidth = geometry.size.width - 40
+                            let posterWidth = geometry.size.width - 60
                             let posterHeight = posterWidth * 4 / 3 // 3:4 비율
                             
                             RoundedRectangle(cornerRadius: 12)
@@ -116,7 +116,7 @@ struct HomeView: View {
                     }
 
                     // 축제 라인업 섹션 - 원형 프로필 스타일
-                    CircularLineupSection(lineups: lineups)
+                    CircularLineupSection(lineups: lineups, isLoading: isLoading)
                         .padding(.top, 16)
                         .padding(.horizontal, 20)
 
@@ -368,133 +368,110 @@ struct FestivalPosterCarousel: View {
             currentIndex = 0
         }
     }
-    
-    // MARK: - Navigation Functions
-    private func nextImage() {
-        if currentIndex < sortedImages.count - 1 {
-            currentIndex += 1
-        } else {
-            currentIndex = 0 // 무한 순환
-        }
-    }
-    
-    private func previousImage() {
-        if currentIndex > 0 {
-            currentIndex -= 1
-        } else {
-            currentIndex = sortedImages.count - 1 // 무한 순환
-        }
-    }
 }
 
-// MARK: - 완전히 새로운 드래그 로직 포스터 캐러셀
+// MARK: - 포스터 캐러셀 (풀 슬라이드 + 인디케이터)
 struct PosterCarousel: View {
     let imageUrls: [String]
     let festival: FestivalDetail
     @Binding var currentIndex: Int
-    
-    @State private var dragOffset: CGFloat = 0
-    @State private var isDragging = false
-    
+
+    @State private var internalSelection: Int = 0
+
     private let posterWidth: CGFloat = UIScreen.main.bounds.width * 0.75
     private var posterHeight: CGFloat { posterWidth * 4 / 3 }
-    private let spacing: CGFloat = 20
-    
-    // 안전한 인덱스 정규화
-    private func safeIndex(_ index: Int) -> Int {
-        guard !imageUrls.isEmpty else { return 0 }
-        let count = imageUrls.count
-        return ((index % count) + count) % count
+    private var horizontalPadding: CGFloat {
+        max((UIScreen.main.bounds.width - posterWidth) / 2, 0)
     }
-    
+
     var body: some View {
-        GeometryReader { geometry in
-            
-            ZStack {
-                // 현재 인덱스 주변의 포스터들만 표시 (좌우 2개씩)
-                ForEach(-2...2, id: \.self) { offset in
-                    let targetIndex = currentIndex + offset
-                    let safeImageIndex = safeIndex(targetIndex)
-                    
-                    if safeImageIndex < imageUrls.count {
+        if imageUrls.isEmpty {
+            EmptyView()
+        } else {
+            VStack(spacing: 16) {
+                TabView(selection: $internalSelection) {
+                    ForEach(imageUrls.indices, id: \.self) { index in
+                        let imageUrl = imageUrls[index]
+                        let isActive = internalSelection == index
+
                         PosterCard(
-                            imageUrl: imageUrls[safeImageIndex],
+                            imageUrl: imageUrl,
                             festival: festival,
                             posterWidth: posterWidth,
                             posterHeight: posterHeight
                         )
-                        .scaleEffect(offset == 0 ? 1.0 : 0.9)
-                        .opacity(offset == 0 ? 1.0 : (abs(offset) == 1 ? 0.6 : 0.3))
-                        .offset(x: calculateOffset(for: offset))
-                        .zIndex(offset == 0 ? 10 : Double(5 - abs(offset)))
+                        .scaleEffect(isActive ? 1.0 : 0.96)
+                        .shadow(color: .black.opacity(isActive ? 0.2 : 0.05), radius: 12, x: 0, y: 8)
+                        .animation(.easeInOut(duration: 0.25), value: internalSelection)
+                        .tag(index)
                     }
                 }
+                .frame(height: posterHeight)
+                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
+                .padding(.horizontal, horizontalPadding)
+
+                pageIndicator
             }
-            .frame(width: geometry.size.width, height: posterHeight)
-            .clipped()
-            .gesture(
-                DragGesture()
-                    .onChanged { value in
-                        isDragging = true
-                        dragOffset = value.translation.width
-                    }
-                    .onEnded { value in
-                        snapToNearestPoster(dragTranslation: value.translation.width)
-                    }
-            )
-            .animation(.easeInOut(duration: 0.4), value: currentIndex)
-            .animation(.linear(duration: 0.05), value: dragOffset)
-        }
-        .frame(height: posterHeight)
-        .onAppear {
-            // 초기화 시 안전한 인덱스로 설정
-            if !imageUrls.isEmpty && currentIndex >= imageUrls.count {
-                currentIndex = 0
+            .animation(.easeInOut(duration: 0.25), value: internalSelection)
+            .onAppear {
+                let clamped = clampedIndex(currentIndex)
+                internalSelection = clamped
+                currentIndex = clamped
+                prefetch(urls: neighborUrls(for: clamped))
             }
-        }
-    }
-    
-    // MARK: - 정확한 오프셋 계산
-    private func calculateOffset(for indexOffset: Int) -> CGFloat {
-        let baseOffset = CGFloat(indexOffset) * (posterWidth + spacing)
-        let currentDragEffect = isDragging ? dragOffset : 0
-        return baseOffset + currentDragEffect
-    }
-    
-    // MARK: - 스냅 기능 (완전히 새로운 로직)
-    private func snapToNearestPoster(dragTranslation: CGFloat) {
-        let threshold: CGFloat = 50.0
-        let shouldMove = abs(dragTranslation) > threshold
-        
-        withAnimation(.easeInOut(duration: 0.35)) {
-            if shouldMove {
-                if dragTranslation > 0 {
-                    // 오른쪽으로 드래그 -> 이전 포스터
-                    moveToPrevious()
-                } else {
-                    // 왼쪽으로 드래그 -> 다음 포스터
-                    moveToNext()
+            .onChange(of: currentIndex) { newValue in
+                let clamped = clampedIndex(newValue)
+                if internalSelection != clamped {
+                    internalSelection = clamped
                 }
             }
-            
-            // 항상 드래그 오프셋 리셋
-            isDragging = false
-            dragOffset = 0
+            .onChange(of: internalSelection) { newValue in
+                if currentIndex != newValue {
+                    currentIndex = newValue
+                }
+                prefetch(urls: neighborUrls(for: newValue))
+            }
+            .onChange(of: imageUrls.count) { _ in
+                let clamped = clampedIndex(currentIndex)
+                internalSelection = clamped
+                currentIndex = clamped
+                prefetch(urls: neighborUrls(for: clamped))
+            }
         }
     }
-    
-    // MARK: - 안전한 네비게이션
-    private func moveToNext() {
-        guard !imageUrls.isEmpty else { return }
-        currentIndex = safeIndex(currentIndex + 1)
+
+    private var pageIndicator: some View {
+        HStack(spacing: 6) {
+            ForEach(imageUrls.indices, id: \.self) { index in
+                Circle()
+                    .fill(index == internalSelection ? Color.black : Color.gray.opacity(0.3))
+                    .frame(width: index == internalSelection ? 8 : 6, height: index == internalSelection ? 8 : 6)
+            }
+        }
     }
-    
-    private func moveToPrevious() {
-        guard !imageUrls.isEmpty else { return }
-        currentIndex = safeIndex(currentIndex - 1)
+
+    private func clampedIndex(_ index: Int) -> Int {
+        guard !imageUrls.isEmpty else { return 0 }
+        return min(max(index, 0), imageUrls.count - 1)
+    }
+
+    private func neighborUrls(for index: Int) -> [String] {
+        guard !imageUrls.isEmpty else { return [] }
+        var indices: Set<Int> = [clampedIndex(index)]
+        if imageUrls.count > 1 {
+            indices.insert((index + 1) % imageUrls.count)
+            indices.insert((index - 1 + imageUrls.count) % imageUrls.count)
+        }
+        return indices.sorted().map { imageUrls[$0] }
+    }
+
+    private func prefetch(urls: [String]) {
+        guard !urls.isEmpty else { return }
+        Task(priority: .utility) {
+            await ImagePrefetcher.shared.prefetch(urls: urls)
+        }
     }
 }
-
 // MARK: - 개별 포스터 카드
 struct PosterCard: View {
     let imageUrl: String
@@ -503,71 +480,56 @@ struct PosterCard: View {
     let posterHeight: CGFloat
     
     var body: some View {
-        ZStack {
-            AsyncImage(url: URL(string: imageUrl)) { phase in
-                switch phase {
-                case .success(let image):
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: posterWidth, height: posterHeight)
-                        .clipped()
-                        .cornerRadius(12)
-                        .onAppear { 
-                            print("[PosterCard] 이미지 로딩 성공: \(imageUrl)") 
-                        }
-                case .failure(let error):
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: posterWidth, height: posterHeight)
-                        .overlay(
-                            VStack(spacing: 8) {
-                                Image(systemName: "photo")
-                                    .font(.system(size: 32))
-                                    .foregroundColor(.gray.opacity(0.5))
-                                Text("이미지를 불러올 수 없습니다")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.gray)
-                                    .multilineTextAlignment(.center)
-                            }
-                        )
-                        .onAppear { 
-                            print("[PosterCard] 이미지 로딩 실패: \(imageUrl), 에러: \(error)") 
-                        }
-                case .empty:
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: posterWidth, height: posterHeight)
-                        .overlay(
-                            VStack(spacing: 8) {
-                                ProgressView()
-                                    .tint(.blue)
-                                Text("로딩 중...")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.gray)
-                            }
-                        )
-                        .onAppear { 
-                            print("[PosterCard] 이미지 로딩 시작: \(imageUrl)") 
-                        }
-                @unknown default:
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(Color.gray.opacity(0.2))
-                        .frame(width: posterWidth, height: posterHeight)
-                        .overlay(
-                            VStack(spacing: 8) {
-                                Image(systemName: "exclamationmark.triangle")
-                                    .font(.system(size: 32))
-                                    .foregroundColor(.gray.opacity(0.5))
-                                Text("알 수 없는 오류")
-                                    .font(.system(size: 12))
-                                    .foregroundColor(.gray)
-                            }
-                        )
-                }
+        CachedAsyncImage(
+            url: imageUrl,
+            content: { image in
+                image
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: posterWidth, height: posterHeight)
+                    .clipped()
+                    .cornerRadius(12)
+            },
+            placeholder: {
+                placeholderView
+            },
+            errorView: {
+                errorView
             }
-            
-        }
+        )
+        .frame(width: posterWidth, height: posterHeight)
+    }
+
+    private var placeholderView: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color.gray.opacity(0.2))
+            .frame(width: posterWidth, height: posterHeight)
+            .overlay(
+                VStack(spacing: 8) {
+                    ProgressView()
+                        .tint(.blue)
+                    Text("로딩 중...")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                }
+            )
+    }
+
+    private var errorView: some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color.gray.opacity(0.2))
+            .frame(width: posterWidth, height: posterHeight)
+            .overlay(
+                VStack(spacing: 8) {
+                    Image(systemName: "photo")
+                        .font(.system(size: 32))
+                        .foregroundColor(.gray.opacity(0.5))
+                    Text("이미지를 불러올 수 없습니다")
+                        .font(.system(size: 12))
+                        .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
+                }
+            )
     }
 }
 
@@ -657,6 +619,47 @@ struct AndroidStyleFestivalCard: View {
 // 원형 라인업 섹션 (이미지와 동일한 스타일)
 struct CircularLineupSection: View {
     let lineups: [Lineup]
+    let isLoading: Bool
+
+    private let displayFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "ko_KR")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "M.d"
+        return formatter
+    }()
+
+    private let backendFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
+        return formatter
+    }()
+
+    private let backendFormatterNoFraction: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter
+    }()
+
+    // API 응답 형식에 맞는 새로운 formatter (timezone 정보 없음)
+    private let apiResponseFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        return formatter
+    }()
+
+    private let isoFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withFullDate]
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        return formatter
+    }()
 
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
@@ -668,24 +671,58 @@ struct CircularLineupSection: View {
                 Spacer()
 
                 Button("일정 확인하기 >") {
-                    // 일정 확인하기 액션
+                    NotificationCenter.default.post(
+                        name: .navigateToTab,
+                        object: MainTabView.Tab.schedule.rawValue,
+                        userInfo: ["animated": false]
+                    )
                 }
                 .font(.system(size: 14))
                 .foregroundColor(.gray)
             }
 
-            // 원형 아티스트 프로필 이미지들 (수평 스크롤)
             if !lineups.isEmpty {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 12) {
-                        ForEach(lineups) { lineup in
-                            CircularArtistProfile(lineup: lineup)
+                VStack(alignment: .leading, spacing: 20) {
+                    ForEach(groupedLineups) { group in
+                        VStack(alignment: .leading, spacing: 20) {
+                            VStack(alignment: .leading, spacing: 16) {
+                                HStack(spacing: 8) {
+                                    Text(group.displayLabel)
+                                        .font(.system(size: 16, weight: .bold))
+                                        .foregroundColor(.black)
+
+                                    if group.isToday {
+                                        Text("오늘")
+                                            .font(.system(size: 12, weight: .semibold))
+                                            .foregroundColor(.white)
+                                            .padding(.horizontal, 8)
+                                            .padding(.vertical, 4)
+                                            .background(Color.black)
+                                            .cornerRadius(12)
+                                    }
+
+                                    Spacer()
+                                }
+                                .overlay(alignment: .bottomLeading) {
+                                    RoundedRectangle(cornerRadius: 2)
+                                        .fill(Color.gray.opacity(0.7))
+                                        .frame(width: min(UIScreen.main.bounds.width * 0.20, 100), height: 3)
+                                        .offset(y: 8)
+                                }
+                            }
+
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 12) {
+                                    ForEach(group.lineups) { lineup in
+                                        CircularArtistProfile(lineup: lineup)
+                                    }
+                                }
+                                .padding(.horizontal, 4)
+                            }
                         }
                     }
-                    .padding(.horizontal, 4)
                 }
-            } else {
-                // 라인업이 없을 때 표시 (로딩 플레이스홀더)
+            } else if isLoading {
                 ScrollView(.horizontal, showsIndicators: false) {
                     LazyHStack(spacing: 12) {
                         ForEach(0..<6, id: \.self) { _ in
@@ -694,8 +731,87 @@ struct CircularLineupSection: View {
                     }
                     .padding(.horizontal, 4)
                 }
+            } else {
+                VStack(spacing: 8) {
+                    Image(systemName: "person.3")
+                        .font(.system(size: 28))
+                        .foregroundColor(.gray.opacity(0.6))
+                    Text("등록된 라인업 정보가 없습니다")
+                        .font(.system(size: 14, weight: .medium))
+                        .foregroundColor(.gray)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
             }
         }
+    }
+
+    private var groupedLineups: [LineupGroup] {
+        let calendar = Calendar.current
+        var dateGroups: [Date: [Lineup]] = [:]
+        var unknownLineups: [Lineup] = []
+
+        for lineup in lineups {
+            var parsed: Date?
+            
+            // 여러 DateFormatter를 순서대로 시도
+            let formatters = [apiResponseFormatter, backendFormatter, backendFormatterNoFraction]
+            
+            for formatter in formatters {
+                if let date = formatter.date(from: lineup.performanceAt) {
+                    parsed = date
+                    break
+                }
+            }
+            
+            if let date = parsed {
+                let key = calendar.startOfDay(for: date)
+                dateGroups[key, default: []].append(lineup)
+            } else {
+                print("[CircularLineupSection] 날짜 파싱 실패: \(lineup.performanceAt)")
+                unknownLineups.append(lineup)
+            }
+        }
+
+        var results: [LineupGroup] = []
+        let sortedDates = dateGroups.keys.sorted()
+
+        for date in sortedDates {
+            guard let items = dateGroups[date] else { continue }
+            let label = displayFormatter.string(from: date)
+            results.append(
+                LineupGroup(
+                    id: isoIdentifier(for: date),
+                    displayLabel: label,
+                    isToday: calendar.isDateInToday(date),
+                    lineups: items
+                )
+            )
+        }
+
+        if !unknownLineups.isEmpty {
+            results.append(
+                LineupGroup(
+                    id: "unknown",
+                    displayLabel: "기타",
+                    isToday: false,
+                    lineups: unknownLineups
+                )
+            )
+        }
+
+        return results
+    }
+
+    private func isoIdentifier(for date: Date) -> String {
+        isoFormatter.string(from: date)
+    }
+
+    private struct LineupGroup: Identifiable {
+        let id: String
+        let displayLabel: String
+        let isToday: Bool
+        let lineups: [Lineup]
     }
 }
 

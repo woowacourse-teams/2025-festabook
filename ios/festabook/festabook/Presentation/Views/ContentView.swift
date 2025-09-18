@@ -23,6 +23,7 @@ struct ContentView: View {
 class TabNavigationManager: ObservableObject {
     @Published var selectedTab: MainTabView.Tab = .home
     @Published var pendingSelection: MainTabView.Tab?
+    @Published var shouldAnimatePendingSelection = true
     
     init() {
         // 딥링크 이벤트 구독
@@ -31,10 +32,18 @@ class TabNavigationManager: ObservableObject {
             object: nil,
             queue: .main
         ) { [weak self] notification in
+            guard let self else { return }
+
+            if let animated = notification.userInfo?["animated"] as? Bool {
+                self.shouldAnimatePendingSelection = animated
+            } else {
+                self.shouldAnimatePendingSelection = true
+            }
+
             if let tabName = notification.object as? String,
-               let tab = MainTabView.Tab(rawValue: tabName) {
+               let tab = MainTabView.Tab.fromIdentifier(tabName) {
                 print("[TabNavigationManager] 딥링크로 탭 이동: \(tabName)")
-                self?.pendingSelection = tab
+                self.pendingSelection = tab
             }
         }
     }
@@ -62,6 +71,21 @@ struct MainTabView: View {
             case .map: return "map.fill"
             case .news: return "newspaper.fill"
             case .settings: return "gearshape.fill"
+            }
+        }
+
+        static func fromIdentifier(_ identifier: String) -> Tab? {
+            if let tab = Tab(rawValue: identifier) {
+                return tab
+            }
+
+            switch identifier.lowercased() {
+            case "home": return .home
+            case "schedule": return .schedule
+            case "map": return .map
+            case "news": return .news
+            case "settings": return .settings
+            default: return nil
             }
         }
     }
@@ -104,7 +128,14 @@ struct MainTabView: View {
         .onChange(of: tabManager.pendingSelection) { newValue in
             guard let tab = newValue else { return }
             tabManager.pendingSelection = nil
-            withAnimation(.easeInOut) {
+            let shouldAnimate = tabManager.shouldAnimatePendingSelection
+            tabManager.shouldAnimatePendingSelection = true
+
+            if shouldAnimate {
+                withAnimation(.easeInOut) {
+                    tabManager.selectedTab = tab
+                }
+            } else {
                 tabManager.selectedTab = tab
             }
         }

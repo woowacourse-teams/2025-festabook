@@ -7,7 +7,7 @@ final class ImageLoader: ObservableObject {
     @Published var isLoading = false
     @Published var hasError = false
 
-    private static let cache = URLCache(
+    static let cache = URLCache(
         memoryCapacity: 50 * 1024 * 1024, // 50MB memory
         diskCapacity: 200 * 1024 * 1024   // 200MB disk
     )
@@ -147,5 +147,56 @@ extension CachedAsyncImage {
                 )
             }
         )
+    }
+}
+
+// MARK: - Image Prefetcher
+actor ImagePrefetcher {
+    static let shared = ImagePrefetcher()
+
+    private var activeRequests: Set<URL> = []
+    private let session: URLSession
+
+    private init() {
+        let configuration = URLSessionConfiguration.default
+        configuration.urlCache = ImageLoader.cache
+        configuration.requestCachePolicy = .returnCacheDataElseLoad
+        configuration.timeoutIntervalForResource = 60
+        session = URLSession(configuration: configuration)
+    }
+
+    func prefetch(urls: [String]) async {
+        for urlString in urls {
+            guard let url = URL(string: urlString) else { continue }
+            await prefetch(url: url)
+        }
+    }
+
+    private func prefetch(url: URL) async {
+        if activeRequests.contains(url) { return }
+
+        var request = URLRequest(url: url)
+        request.cachePolicy = .returnCacheDataElseLoad
+
+        if ImageLoader.cache.cachedResponse(for: request) != nil {
+            return
+        }
+
+        activeRequests.insert(url)
+        defer { activeRequests.remove(url) }
+
+        do {
+            let (data, response) = try await session.data(for: request)
+
+            guard let httpResponse = response as? HTTPURLResponse,
+                  (200...299).contains(httpResponse.statusCode) else {
+                return
+            }
+
+            let cachedResponse = CachedURLResponse(response: response, data: data)
+            ImageLoader.cache.storeCachedResponse(cachedResponse, for: request)
+        } catch {
+            // Ignore failures; cache simply remains empty for this URL
+        }
     }
 }
