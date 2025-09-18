@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.context.annotation.Profile;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
@@ -28,6 +30,7 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 @Component
 @Profile("prod | dev")
 @RequiredArgsConstructor
+@Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class LoggingFilter extends OncePerRequestFilter {
 
     private static final List<String> LOGGING_SKIP_PATH_PREFIX = List.of(
@@ -84,7 +87,6 @@ public class LoggingFilter extends OncePerRequestFilter {
                     executionTime
             );
             log.info("", kv("event", apiLog));
-
             MDC.clear();
         }
     }
