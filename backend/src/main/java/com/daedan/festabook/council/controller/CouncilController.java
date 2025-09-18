@@ -56,7 +56,7 @@ public class CouncilController {
         return councilService.loginCouncil(request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/password")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "학생회 비밀번호 변경")

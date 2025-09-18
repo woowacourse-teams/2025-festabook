@@ -24,6 +24,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -52,7 +54,7 @@ class CouncilControllerTest {
     class createCouncil {
 
         @Test
-        void 성공() {
+        void 성공_ADMIN_계정() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
@@ -75,6 +77,29 @@ class CouncilControllerTest {
                     .body("councilId", notNullValue())
                     .body("username", equalTo(username))
                     .body("roleTypes", hasItem(RoleType.ROLE_COUNCIL.name()));
+        }
+
+        @Test
+        void 실패_권한() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            String username = "hello";
+            CouncilRequest request = CouncilRequestFixture.create(festival.getId(), username, "1234");
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/councils")
+                    .then()
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
         }
     }
 
@@ -175,6 +200,35 @@ class CouncilControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("councilId", equalTo(response.councilId().intValue()))
                     .body("username", equalTo(username));
+        }
+
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공_권한(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            String currentPassword = "1234";
+            String newPassword = "5678";
+            CouncilUpdateRequest councilUpdateRequest = CouncilUpdateRequestFixture.create(
+                    currentPassword,
+                    newPassword
+            );
+
+            Header authorizationHeader = jwtTestHelper
+                    .createAuthorizationHeaderWithRoleAndPassword(festival, roleType, currentPassword);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(councilUpdateRequest)
+                    .when()
+                    .patch("/councils/password")
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
         }
     }
 }

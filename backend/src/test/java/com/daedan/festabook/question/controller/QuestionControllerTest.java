@@ -8,6 +8,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.question.domain.Question;
 import com.daedan.festabook.question.domain.QuestionFixture;
 import com.daedan.festabook.question.dto.QuestionRequest;
@@ -24,6 +25,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -56,13 +59,14 @@ class QuestionControllerTest {
     @Nested
     class createQuestion {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
@@ -180,13 +184,14 @@ class QuestionControllerTest {
     @Nested
     class updateQuestionAndAnswer {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);
@@ -215,13 +220,14 @@ class QuestionControllerTest {
     @Nested
     class updateSequence {
 
-        @Test
-        void 성공_수정_후에도_오름차순으로_재정렬() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공_수정_후에도_오름차순으로_재정렬(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Question question1 = QuestionFixture.create(festival, 1);
             Question question2 = QuestionFixture.create(festival, 2);
@@ -257,13 +263,14 @@ class QuestionControllerTest {
     @Nested
     class deleteQuestionByQuestionId {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Question question = QuestionFixture.create(festival);
             questionJpaRepository.save(question);

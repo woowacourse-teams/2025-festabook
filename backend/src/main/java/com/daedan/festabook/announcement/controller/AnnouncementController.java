@@ -37,7 +37,7 @@ public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "공지 생성")
@@ -63,7 +63,7 @@ public class AnnouncementController {
         return announcementService.getGroupedAnnouncementByFestivalId(festivalId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 공지 내용 수정")
@@ -78,7 +78,7 @@ public class AnnouncementController {
         return announcementService.updateAnnouncement(councilDetails.getFestivalId(), announcementId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{announcementId}/pin")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 공지 고정 형태 수정")
@@ -93,7 +93,7 @@ public class AnnouncementController {
         return announcementService.updateAnnouncementPin(councilDetails.getFestivalId(), announcementId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 공지 삭제")
@@ -107,7 +107,7 @@ public class AnnouncementController {
         announcementService.deleteAnnouncementByAnnouncementId(councilDetails.getFestivalId(), announcementId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping("/{announcementId}/notifications")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "공지 FCM 알림 요청")

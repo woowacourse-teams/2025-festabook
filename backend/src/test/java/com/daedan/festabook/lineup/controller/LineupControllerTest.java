@@ -8,6 +8,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.lineup.domain.Lineup;
 import com.daedan.festabook.lineup.domain.LineupFixture;
 import com.daedan.festabook.lineup.dto.LineupRequest;
@@ -25,6 +26,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -57,13 +60,14 @@ class LineupControllerTest {
     @Nested
     class addLineup {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+            Header header = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             String lineupName = "이미소";
             String imageUrl = "https://image.example/a.jpg";
@@ -139,13 +143,14 @@ class LineupControllerTest {
     @Nested
     class updateLineup {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+            Header header = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Lineup lineup = LineupFixture.create(festival);
             lineupJpaRepository.save(lineup);
@@ -179,13 +184,14 @@ class LineupControllerTest {
     @Nested
     class deleteLineupByLineupId {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header header = jwtTestHelper.createAuthorizationHeader(festival);
+            Header header = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Lineup lineup = LineupFixture.create(festival);
             lineupJpaRepository.save(lineup);

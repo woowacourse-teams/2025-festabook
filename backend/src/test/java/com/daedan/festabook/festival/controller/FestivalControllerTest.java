@@ -22,6 +22,7 @@ import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateRequest;
 import com.daedan.festabook.festival.infrastructure.FestivalImageJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -39,6 +40,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -125,18 +127,41 @@ class FestivalControllerTest {
                     .body("centerCoordinate.longitude", equalTo(request.centerCoordinate().getLongitude()))
                     .body("polygonHoleBoundary", notNullValue());
         }
+
+        @Test
+        void 실패_ADMIN만_생성_가능() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            FestivalCreateRequest request = FestivalCreateRequestFixture.create();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/festivals")
+                    .then()
+                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        }
     }
 
     @Nested
     class addFestivalImage {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             FestivalImageRequest request = FestivalImageRequestFixture.create("이미지 URL");
 
@@ -412,13 +437,14 @@ class FestivalControllerTest {
     @Nested
     class updateFestivalInformation {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             String changedFestivalName = "수정 후 제목";
             LocalDate changedStartDate = LocalDate.of(2025, 11, 1);
@@ -455,13 +481,14 @@ class FestivalControllerTest {
     @Nested
     class updateFestivalLostItemGuide {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
             FestivalLostItemGuideUpdateRequest request = new FestivalLostItemGuideUpdateRequest("수정된 가이드");
 
             int expectedFieldSize = 1;
@@ -484,13 +511,14 @@ class FestivalControllerTest {
     @Nested
     class updateFestivalImagesSequence {
 
-        @Test
-        void 성공_수정_후_응답값_오름차순_정렬() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공_수정_후_응답값_오름차순_정렬(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             FestivalImage festivalImage1 = FestivalImageFixture.create(festival, 1);
             FestivalImage festivalImage2 = FestivalImageFixture.create(festival, 2);
@@ -527,13 +555,14 @@ class FestivalControllerTest {
     @Nested
     class removeFestivalImage {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             FestivalImage festivalImage = FestivalImageFixture.create(festival, 1);
             festivalImageJpaRepository.save(festivalImage);
