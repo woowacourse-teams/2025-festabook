@@ -73,7 +73,7 @@ public class LoggingFilter extends OncePerRequestFilter {
             stopWatch.stop();
             String queryString = request.getQueryString();
             int statusCode = response.getStatus();
-            String executionTime = stopWatch.getTotalTimeMillis() + "ms";
+            long executionTime = stopWatch.getTotalTimeMillis();
             Object requestBody = extractBodyFromCache(request);
 
             ApiLog apiLog = ApiLog.from(

@@ -41,7 +41,7 @@ public class LoggingAspect {
             result = joinPoint.proceed();
         } finally {
             stopWatch.stop();
-            String executionTime = stopWatch.getTotalTimeMillis() + "ms";
+            long executionTime = stopWatch.getTotalTimeMillis();
 
             MethodLog methodLog = MethodLog.from(className, methodName, executionTime);
             log.info("", kv("event", methodLog));

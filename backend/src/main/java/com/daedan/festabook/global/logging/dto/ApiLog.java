@@ -9,7 +9,7 @@ public record ApiLog(
         String username,
         int httpStatusCode,
         Object requestBody,
-        String executionTime
+        long executionTime
 ) {
 
     public static ApiLog from(
@@ -20,7 +20,7 @@ public record ApiLog(
             String username,
             int httpStatusCode,
             Object requestBody,
-            String executionTime
+            long executionTime
     ) {
         return new ApiLog(
                 LogType.API,
