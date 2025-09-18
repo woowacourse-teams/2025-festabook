@@ -27,8 +27,7 @@ public class GlobalExceptionHandler {
                     .status(businessException.getStatus())
                     .body(businessException.toResponse());
         } finally {
-            ExceptionLog exceptionLog = new ExceptionLog(
-                    "exception",
+            ExceptionLog exceptionLog = ExceptionLog.from(
                     businessException.getStatus().value(),
                     businessException.getMessage(),
                     businessException.getClass().getSimpleName(),
@@ -47,8 +46,7 @@ public class GlobalExceptionHandler {
                     .status(HttpStatus.UNAUTHORIZED.value())
                     .body(new ExceptionResponse("인증되지 않은 사용자입니다."));
         } finally {
-            ExceptionLog exceptionLog = new ExceptionLog(
-                    "exception",
+            ExceptionLog exceptionLog = ExceptionLog.from(
                     HttpStatus.UNAUTHORIZED.value(),
                     exception.getMessage(),
                     exception.getClass().getSimpleName(),
@@ -65,8 +63,7 @@ public class GlobalExceptionHandler {
                     .status(HttpStatus.FORBIDDEN.value())
                     .body(new ExceptionResponse("인가되지 않은 사용자입니다."));
         } finally {
-            ExceptionLog exceptionLog = new ExceptionLog(
-                    "exception",
+            ExceptionLog exceptionLog = ExceptionLog.from(
                     HttpStatus.FORBIDDEN.value(),
                     exception.getMessage(),
                     exception.getClass().getSimpleName(),
@@ -86,8 +83,7 @@ public class GlobalExceptionHandler {
                     .internalServerError()
                     .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
         } finally {
-            ExceptionLog exceptionLog = new ExceptionLog(
-                    "exception",
+            ExceptionLog exceptionLog = ExceptionLog.from(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     runtimeException.getMessage(),
                     runtimeException.getClass().getSimpleName(),
