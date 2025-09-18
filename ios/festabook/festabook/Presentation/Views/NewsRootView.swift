@@ -114,7 +114,7 @@ struct NewsRootView: View {
 struct AnnouncementsListView: View {
     @ObservedObject var viewModel: AnnouncementsViewModel
     @EnvironmentObject private var appState: AppState
-    @State private var expandedAnnouncementId: Int?
+    @State private var expandedAnnouncementIds: Set<Int> = []
     @State private var pendingAnnouncementId: Int?
 
     var body: some View {
@@ -151,7 +151,7 @@ struct AnnouncementsListView: View {
                         ForEach(viewModel.pinnedAnnouncements) { announcement in
                             AnnouncementCard(
                                 announcement: announcement,
-                                isExpanded: expandedAnnouncementId == announcement.announcementId,
+                                isExpanded: expandedAnnouncementIds.contains(announcement.announcementId),
                                 onToggle: { toggleExpansion(for: announcement.announcementId) }
                             )
                             .id(announcement.announcementId)
@@ -160,7 +160,7 @@ struct AnnouncementsListView: View {
                         ForEach(viewModel.unpinnedAnnouncements) { announcement in
                             AnnouncementCard(
                                 announcement: announcement,
-                                isExpanded: expandedAnnouncementId == announcement.announcementId,
+                                isExpanded: expandedAnnouncementIds.contains(announcement.announcementId),
                                 onToggle: { toggleExpansion(for: announcement.announcementId) }
                             )
                             .id(announcement.announcementId)
@@ -190,9 +190,11 @@ struct AnnouncementsListView: View {
                 attemptExpansionIfNeeded(using: proxy)
             }
             .onChange(of: viewModel.pinnedAnnouncements) { _ in
+                pruneInvalidExpandedIds()
                 attemptExpansionIfNeeded(using: proxy)
             }
             .onChange(of: viewModel.unpinnedAnnouncements) { _ in
+                pruneInvalidExpandedIds()
                 attemptExpansionIfNeeded(using: proxy)
             }
             .onChange(of: appState.currentFestivalId) { _ in
@@ -202,16 +204,17 @@ struct AnnouncementsListView: View {
                         pendingAnnouncementId = id
                         attemptExpansionIfNeeded(using: proxy)
                     }
+                    pruneInvalidExpandedIds()
                 }
             }
         }
     }
 
     private func toggleExpansion(for announcementId: Int) {
-        if expandedAnnouncementId == announcementId {
-            expandedAnnouncementId = nil
+        if expandedAnnouncementIds.contains(announcementId) {
+            expandedAnnouncementIds.remove(announcementId)
         } else {
-            expandedAnnouncementId = announcementId
+            expandedAnnouncementIds.insert(announcementId)
         }
     }
 
@@ -222,7 +225,7 @@ struct AnnouncementsListView: View {
         guard allAnnouncements.contains(where: { $0.announcementId == targetId }) else { return }
 
         pendingAnnouncementId = nil
-        expandedAnnouncementId = targetId
+        expandedAnnouncementIds.insert(targetId)
 
         DispatchQueue.main.async {
             withAnimation(.easeInOut) {
@@ -230,6 +233,11 @@ struct AnnouncementsListView: View {
             }
             appState.pendingAnnouncementId = nil
         }
+    }
+
+    private func pruneInvalidExpandedIds() {
+        let validIds = Set((viewModel.pinnedAnnouncements + viewModel.unpinnedAnnouncements).map { $0.announcementId })
+        expandedAnnouncementIds = expandedAnnouncementIds.intersection(validIds)
     }
 }
 
