@@ -7,7 +7,7 @@ struct festabookApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashView()
                 .environmentObject(ServiceLocator.shared)
                 .environmentObject(appState)
                 .environmentObject(NotificationService.shared)

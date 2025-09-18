@@ -2,7 +2,7 @@
 import Foundation
 
 enum BuildConfig {
-    static var apiBaseURL: URL { 
+    static var apiBaseURL: URL {
         let urlString = string(for: "API_BASE_URL")
         guard !urlString.isEmpty else {
             // 폴백 URL 사용
