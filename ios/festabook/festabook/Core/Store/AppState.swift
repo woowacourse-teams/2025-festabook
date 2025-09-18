@@ -3,6 +3,10 @@ import Foundation
 import Combine
 
 final class AppState: ObservableObject {
+    private enum UserDefaultsKey {
+        static let currentFestivalId = "currentFestivalId"
+        static let currentUniversityName = "currentUniversityName"
+    }
     @Published var selectedUniversity: University?
     @Published var selectedFestival: Festival?
     @Published var currentFestivalId: Int = 1
@@ -23,6 +27,8 @@ final class AppState: ObservableObject {
 
     func selectUniversity(_ university: University) {
         selectedUniversity = university
+        currentUniversityName = university.name
+        UserDefaults.standard.set(university.name, forKey: UserDefaultsKey.currentUniversityName)
     }
     
     func changeFestival(_ festivalId: Int) {
@@ -30,13 +36,79 @@ final class AppState: ObservableObject {
         selectedFestival = nil
         selectedUniversity = nil
         // 현재 축제 ID를 영속화하고 API 헤더와 동기화
-        UserDefaults.standard.set(festivalId, forKey: "currentFestivalId")
+        UserDefaults.standard.set(festivalId, forKey: UserDefaultsKey.currentFestivalId)
         APIClient.shared.updateFestivalId(festivalId)
         ServiceLocator.shared.updateFestivalId(festivalId)
     }
 
     func updateUniversityName(_ universityName: String) {
         currentUniversityName = universityName
+        UserDefaults.standard.set(universityName, forKey: UserDefaultsKey.currentUniversityName)
+    }
+
+    func bootstrapFestivalIfNeeded() {
+        APIClient.shared.bootstrapFestivalIdFromStorage()
+
+        let storedFestivalId = UserDefaults.standard.integer(forKey: UserDefaultsKey.currentFestivalId)
+
+        guard storedFestivalId > 0 else {
+            UserDefaults.standard.set(currentFestivalId, forKey: UserDefaultsKey.currentFestivalId)
+            ServiceLocator.shared.updateFestivalId(currentFestivalId)
+            APIClient.shared.updateFestivalId(currentFestivalId)
+            return
+        }
+
+        currentFestivalId = storedFestivalId
+
+        let storedUniversityName = UserDefaults.standard.string(forKey: UserDefaultsKey.currentUniversityName) ?? currentUniversityName
+        currentUniversityName = storedUniversityName
+
+        if selectedUniversity == nil {
+            selectedUniversity = University(
+                id: storedFestivalId,
+                name: storedUniversityName,
+                latitude: nil,
+                longitude: nil
+            )
+        }
+
+        APIClient.shared.updateFestivalId(storedFestivalId)
+        ServiceLocator.shared.updateFestivalId(storedFestivalId)
+
+        Task { [weak self] in
+            await self?.hydrateFestivalSelection()
+        }
+    }
+
+    private func hydrateFestivalSelection() async {
+        do {
+            let detail = try await ServiceLocator.shared.festivalRepo.getFestivalDetail()
+
+            await MainActor.run { [weak self] in
+                guard let self else { return }
+                guard self.selectedUniversity != nil else { return }
+
+                let restoredFestival = Festival(
+                    festivalId: detail.festivalId,
+                    universityName: detail.universityName,
+                    festivalName: detail.festivalName,
+                    startDate: detail.startDate,
+                    endDate: detail.endDate
+                )
+
+                self.selectedFestival = restoredFestival
+                self.selectedUniversity = University(
+                    id: detail.festivalId,
+                    name: detail.universityName,
+                    latitude: nil,
+                    longitude: nil
+                )
+                self.currentUniversityName = detail.universityName
+                UserDefaults.standard.set(detail.universityName, forKey: UserDefaultsKey.currentUniversityName)
+            }
+        } catch {
+            print("[AppState] ⚠️ Failed to hydrate festival selection: \(error)")
+        }
     }
 
     private func handleNotificationPayload(_ payload: [String: Any]) {

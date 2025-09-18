@@ -12,11 +12,7 @@ struct festabookApp: App {
                 .environmentObject(appState)
                 .environmentObject(NotificationService.shared)
                 .onAppear {
-                    APIClient.shared.bootstrapFestivalIdFromStorage()
-                    let stored = UserDefaults.standard.integer(forKey: "currentFestivalId")
-                    if stored > 0 { appState.currentFestivalId = stored }
-                    else { UserDefaults.standard.set(appState.currentFestivalId, forKey: "currentFestivalId") }
-                    APIClient.shared.updateFestivalId(appState.currentFestivalId)
+                    appState.bootstrapFestivalIfNeeded()
                 }
                 .preferredColorScheme(.light)
         }
