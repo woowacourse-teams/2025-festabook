@@ -39,7 +39,7 @@ final class LostItemAPI: LostItemServicing {
             print("[LostItemAPI] Fetching lost items...")
             // 서버 스펙: GET /lost-items, 헤더 festival: {id}
             // Base URL이 이미 "/api"를 포함하므로 여기서는 "/lost-items"만 전달
-            let allItems: [LostItem] = try await apiClient.get("/lost-items")
+            let allItems: [LostItem] = try await apiClient.get(Endpoints.News.lostItems)
             print("[LostItemAPI] Successfully fetched \(allItems.count) total lost items")
 
             // PENDING 상태만 필터링하고 최신순 정렬

@@ -11,14 +11,14 @@ struct FestivalRepositoryLive: FestivalRepository {
     
     func getFestivalsByUniversity(universityName: String) async throws -> [Festival] {
         let queryItems = [URLQueryItem(name: "universityName", value: universityName)]
-        return try await api.get(Endpoints.festivalsUniversities, query: queryItems)
+        return try await api.get(Endpoints.Festivals.universities, query: queryItems)
     }
     
     func getFestivalDetail() async throws -> FestivalDetail {
-        return try await api.get(Endpoints.festivals)
+        return try await api.get(Endpoints.Festivals.detail)
     }
     
     func getLineups() async throws -> [Lineup] {
-        return try await api.get(Endpoints.lineups)
+        return try await api.get(Endpoints.Festivals.lineups)
     }
 }

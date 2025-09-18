@@ -9,44 +9,54 @@ class ScheduleViewModel: ObservableObject {
     @Published var isLoadingDates = false
     @Published var isLoadingEvents = false
     @Published var errorMessage: String?
+    @Published var scrollTargetEventId: Int?
 
     private let repository: ScheduleRepository
+    private var eventsByDate: [Int: [ScheduleEvent]] = [:]
 
     init(repository: ScheduleRepository) {
         self.repository = repository
     }
 
-    func loadEventDates() async {
+    func loadEventDates(preserveSelection: Bool = false, scrollToOngoing: Bool = true) async {
         isLoadingDates = true
         errorMessage = nil
 
-        do {
-            let dates = try await repository.getEventDates()
-            eventDates = dates
+        let previousSelectedId = preserveSelection ? selectedEventDate?.eventDateId : nil
 
-            if let firstDate = dates.first {
+        do {
+            let timeline = try await repository.getTimeline()
+            eventDates = timeline.map { $0.asEventDate }
+            eventsByDate = timeline.reduce(into: [:]) { partialResult, item in
+                partialResult[item.eventDateId] = item.events
+            }
+
+            guard !eventDates.isEmpty else {
+                selectedEventDate = nil
+                events = []
+                scrollTargetEventId = nil
+                isLoadingDates = false
+                isLoadingEvents = false
+                return
+            }
+
+            if let previousSelectedId,
+               let matchedDate = eventDates.first(where: { $0.eventDateId == previousSelectedId }) {
+                selectedEventDate = matchedDate
+                applyEvents(for: matchedDate.eventDateId, scrollToOngoing: scrollToOngoing)
+            } else if let firstDate = eventDates.first {
                 selectedEventDate = firstDate
-                await loadEvents(for: firstDate.eventDateId)
+                applyEvents(for: firstDate.eventDateId, scrollToOngoing: scrollToOngoing)
             }
         } catch {
             errorMessage = "일정 날짜를 불러오는데 실패했습니다."
             print("Error loading event dates: \(error)")
+            events = []
+            selectedEventDate = nil
+            scrollTargetEventId = nil
         }
 
         isLoadingDates = false
-    }
-
-    func loadEvents(for eventDateId: Int) async {
-        isLoadingEvents = true
-        errorMessage = nil
-
-        do {
-            events = try await repository.getEvents(for: eventDateId)
-        } catch {
-            errorMessage = "일정을 불러오는데 실패했습니다."
-            print("Error loading events: \(error)")
-        }
-
         isLoadingEvents = false
     }
 
@@ -54,8 +64,19 @@ class ScheduleViewModel: ObservableObject {
         guard selectedEventDate?.eventDateId != eventDate.eventDateId else { return }
 
         selectedEventDate = eventDate
-        Task {
-            await loadEvents(for: eventDate.eventDateId)
+        applyEvents(for: eventDate.eventDateId, scrollToOngoing: false)
+    }
+
+    private func applyEvents(for eventDateId: Int, scrollToOngoing: Bool) {
+        isLoadingEvents = false
+
+        let fetchedEvents = eventsByDate[eventDateId] ?? []
+        events = fetchedEvents
+
+        if scrollToOngoing {
+            scrollTargetEventId = fetchedEvents.first(where: { $0.status == .ongoing })?.id
+        } else {
+            scrollTargetEventId = nil
         }
     }
 }

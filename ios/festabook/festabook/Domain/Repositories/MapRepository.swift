@@ -15,18 +15,18 @@ class MapRepository: MapRepositoryProtocol {
     }
 
     func fetchGeography() async throws -> GeographyResponse {
-        return try await apiClient.get("/festivals/geography")
+        return try await apiClient.get(Endpoints.Festivals.geography)
     }
 
     func fetchPlaceGeographies() async throws -> [PlaceGeography] {
-        return try await apiClient.get("/places/geographies")
+        return try await apiClient.get(Endpoints.Places.geographies)
     }
 
     func fetchPlacePreviews() async throws -> [PlacePreview] {
-        return try await apiClient.get("/places/previews")
+        return try await apiClient.get(Endpoints.Places.previews)
     }
 
     func fetchPlaceDetail(_ placeId: Int) async throws -> PlaceDetail {
-        return try await apiClient.get("/places/\(placeId)")
+        return try await apiClient.get(Endpoints.Places.detail(placeId))
     }
 }

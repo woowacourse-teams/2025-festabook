@@ -8,6 +8,6 @@ struct AnnouncementsRepositoryLive: AnnouncementsRepository {
     let api: APIClient
 
     func getAnnouncements() async throws -> AnnouncementsResponse {
-        return try await api.get("/announcements")
+        return try await api.get(Endpoints.News.announcements)
     }
 }

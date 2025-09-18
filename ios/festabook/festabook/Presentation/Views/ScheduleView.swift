@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ScheduleView: View {
     @ObservedObject var viewModel: ScheduleViewModel
+    private let bottomBarHeight: CGFloat = 70
 
     init(viewModel: ScheduleViewModel) {
         self.viewModel = viewModel
@@ -29,7 +30,7 @@ struct ScheduleView: View {
             timelineContent
         }
         .task {
-            await viewModel.loadEventDates()
+            await viewModel.loadEventDates(preserveSelection: false, scrollToOngoing: true)
         }
     }
 
@@ -70,21 +71,18 @@ struct ScheduleView: View {
                 ProgressView("로딩 중...")
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
             } else if let errorMessage = viewModel.errorMessage {
-                VStack(spacing: 16) {
+                VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
-                        .font(.system(size: 50))
-                        .foregroundColor(.orange)
+                        .font(.system(size: 32))
+                        .foregroundColor(.gray)
                     Text(errorMessage)
-                        .font(.body)
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
-                    Button("다시 시도") {
-                        Task {
-                            await viewModel.loadEventDates()
-                        }
-                    }
-                    .buttonStyle(.bordered)
+                        .padding(.horizontal, 24)
                 }
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+                .padding(.top, 100)
             } else {
                 timelineList
             }
@@ -92,33 +90,71 @@ struct ScheduleView: View {
     }
 
     private var timelineList: some View {
-        ScrollView {
-            ZStack(alignment: .topLeading) {
-                // Background timeline line
-                if !viewModel.events.isEmpty {
-                    Rectangle()
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 2)
-                        .padding(.leading, 29) // 20 padding + 9 to center in 20pt dot area
-                }
+        GeometryReader { geometry in
+            ScrollViewReader { scrollProxy in
+                ScrollView {
+                    ZStack(alignment: .topLeading) {
+                        Rectangle()
+                            .fill(Color.gray.opacity(0.3))
+                            .frame(width: 2)
+                            .frame(maxHeight: .infinity)
+                            .padding(.leading, 29)
+                            .padding(.top, 20)
+                            .allowsHitTesting(false)
 
-                // Event cards and dots
-                LazyVStack(spacing: 24) {
-                    ForEach(Array(viewModel.events.enumerated()), id: \.element.id) { index, event in
-                        TimelineEventRow(
-                            event: event,
-                            isFirst: index == 0,
-                            isLast: index == viewModel.events.count - 1
-                        )
+                        LazyVStack(spacing: 24, pinnedViews: []) {
+                            if viewModel.events.isEmpty {
+                                VStack(spacing: 12) {
+                                    Image(systemName: "doc.text")
+                                        .font(.system(size: 24))
+                                        .foregroundColor(.gray)
+                                    Text("등록된 일정이 없습니다")
+                                        .font(.system(size: 14))
+                                        .foregroundColor(.gray)
+                                }
+                                .frame(maxWidth: .infinity, alignment: .center)
+                                .padding(.top, 60)
+                            } else {
+                                ForEach(Array(viewModel.events.enumerated()), id: \.element.id) { index, event in
+                                    TimelineEventRow(
+                                        event: event,
+                                        isFirst: index == 0,
+                                        isLast: index == viewModel.events.count - 1
+                                    )
+                                    .id(event.id)
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 20)
+                        .padding(.bottom, bottomBarHeight + geometry.safeAreaInsets.bottom)
+                    }
+                    .frame(minHeight: geometry.size.height)
+                }
+                .scrollIndicators(.hidden)
+                .refreshable {
+                    await viewModel.loadEventDates(preserveSelection: true, scrollToOngoing: true)
+                }
+                .onChange(of: viewModel.scrollTargetEventId) { target in
+                    guard let target else { return }
+                    DispatchQueue.main.async {
+                        withAnimation(.easeInOut) {
+                            scrollProxy.scrollTo(target, anchor: .center)
+                        }
+                        viewModel.scrollTargetEventId = nil
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 20)
-                .padding(.bottom, 40)
+                .onAppear {
+                    if let target = viewModel.scrollTargetEventId {
+                        DispatchQueue.main.async {
+                            withAnimation(.easeInOut) {
+                                scrollProxy.scrollTo(target, anchor: .center)
+                            }
+                            viewModel.scrollTargetEventId = nil
+                        }
+                    }
+                }
             }
-        }
-        .refreshable {
-            await viewModel.loadEventDates()
         }
     }
 }
@@ -165,6 +201,11 @@ struct TimelineEventRow: View {
                     Text(event.title)
                         .font(.system(size: 18, weight: .medium))
                         .foregroundColor(textColor)
+                        .lineLimit(2)
+                        .multilineTextAlignment(.leading)
+                        .layoutPriority(1)
+                        .minimumScaleFactor(0.95)
+                        .allowsTightening(true)
 
                     HStack(spacing: 6) {
                         Image(systemName: "clock")

@@ -78,7 +78,7 @@ struct AnnouncementDetailView: View {
         /*
         Task {
             do {
-                let endpoint = "\(Endpoints.announcements)/\(announcementId)"
+                let endpoint = Endpoints.News.announcementDetail(Int(announcementId) ?? 0)
                 let announcement: AnnouncementDetail = try await APIClient.shared.get(endpoint: endpoint)
 
                 await MainActor.run {

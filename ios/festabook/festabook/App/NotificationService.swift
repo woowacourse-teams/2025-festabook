@@ -249,7 +249,7 @@ class NotificationService: ObservableObject {
         )
         
         let response: DeviceRegistrationResponse = try await APIClient.shared.postDevice(
-            endpoint: Endpoints.devices,
+            endpoint: Endpoints.Devices.register,
             body: request
         )
         
@@ -264,7 +264,7 @@ class NotificationService: ObservableObject {
 
     // MARK: - 디바이스 토큰 갱신
     private func updateDeviceToken(deviceId: Int, newToken: String) async throws {
-        let endpoint = "\(Endpoints.devices)/\(deviceId)"
+        let endpoint = Endpoints.Devices.detail(deviceId)
         let request = DeviceUpdateRequest(fcmToken: newToken)
 
         try await APIClient.shared.patchDevice(
@@ -280,7 +280,7 @@ class NotificationService: ObservableObject {
         }
 
         let request = FestivalNotificationRequest(deviceId: deviceId)
-        let endpoint = "\(Endpoints.festivalNotifications)/\(festivalId)/notifications"
+        let endpoint = Endpoints.Notifications.subscribe(festivalId: festivalId)
 
         // Use notification-specific POST method (no festival header)
         let response: FestivalNotificationResponse = try await APIClient.shared.postNotification(
@@ -303,7 +303,7 @@ class NotificationService: ObservableObject {
             throw NotificationError.notificationNotSubscribed
         }
 
-        let endpoint = "\(Endpoints.festivalNotificationCancel)/\(festivalNotificationId)"
+        let endpoint = Endpoints.Notifications.subscription(festivalNotificationId)
 
         // Use notification-specific DELETE method (no festival header)
         try await APIClient.shared.deleteNotification(endpoint: endpoint)
