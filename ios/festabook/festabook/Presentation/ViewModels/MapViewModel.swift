@@ -27,6 +27,7 @@ class MapViewModel: NSObject, ObservableObject {
     @Published var selectedPlaceDetail: PlaceDetail?
     @Published var isLoadingPlaceDetail = false
     @Published var placeDetailError: String?
+    @Published var resetCameraRequest: UUID?
 
     enum ModalType {
         case none           // 모달 없음 (바텀시트 표시)
@@ -112,6 +113,11 @@ class MapViewModel: NSObject, ObservableObject {
     func selectPlace(_ placeId: Int) {
         print("[MapViewModel] 📍 selectPlace 호출됨: placeId=\(placeId)")
 
+        guard selectedPlaceId != placeId || selectedPlaceDetail == nil else {
+            print("[MapViewModel] 동일 장소 재선택 - 상태 유지")
+            return
+        }
+
         selectedPlaceId = placeId
 
         // 기존 상태 초기화
@@ -188,6 +194,22 @@ class MapViewModel: NSObject, ObservableObject {
         sheetDetent = .small
 
         print("[MapViewModel] 모달 숨김, bottom sheet 복귀 (small 크기)")
+    }
+
+    func resetCameraToInitial() {
+        guard geography != nil else { return }
+
+        modalType = .none
+        selectedPlaceId = nil
+        selectedPlaceDetail = nil
+        isLoadingPlaceDetail = false
+        placeDetailError = nil
+        isMiniCardVisible = false
+        selectedMiniCardPlace = nil
+        sheetDetent = .small
+
+        resetCameraRequest = UUID()
+        print("[MapViewModel] 🧭 지도 초기 상태로 리셋 요청")
     }
 
 

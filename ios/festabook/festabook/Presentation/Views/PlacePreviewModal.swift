@@ -7,50 +7,31 @@ struct PlacePreviewModal: View {
     let onTap: () -> Void
     let onDismiss: () -> Void
 
+    @ViewBuilder
     var body: some View {
-        Button(action: onTap) {
-            if isLoading {
-                // Loading state
-                HStack(spacing: 10) {
-                    ProgressView()
-                        .scaleEffect(0.8)
-                        .fixedSize()
+        if isLoading {
+            EmptyView()
+        } else if let errorMessage = errorMessage {
+            HStack(spacing: 10) {
+                Image(systemName: "exclamationmark.triangle")
+                    .foregroundColor(.orange)
+                    .fixedSize()
 
-                    Text("정보를 불러오는 중...")
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
-                )
-                .frame(maxWidth: .infinity)
-            } else if let errorMessage = errorMessage {
-                // Error state
-                HStack(spacing: 10) {
-                    Image(systemName: "exclamationmark.triangle")
-                        .foregroundColor(.orange)
-                        .fixedSize()
-
-                    Text(errorMessage)
-                        .font(.system(size: 15, weight: .medium))
-                        .foregroundColor(.secondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
-                )
-                .frame(maxWidth: .infinity)
-            } else if let place = place {
-                // Loaded state - 뱃지가 위에, 제목이 밑에
+                Text(errorMessage)
+                    .font(.system(size: 15, weight: .medium))
+                    .foregroundColor(.secondary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .padding(.horizontal, 20)
+            .padding(.vertical, 16)
+            .background(
+                RoundedRectangle(cornerRadius: 12, style: .continuous)
+                    .fill(Color.white)
+                    .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
+            )
+            .frame(maxWidth: .infinity)
+        } else if let place = place {
+            Button(action: onTap) {
                 VStack(spacing: 6) {
                     HStack {
                         CategoryBadge(category: place.category)
@@ -75,23 +56,22 @@ struct PlacePreviewModal: View {
                         .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
                 )
                 .frame(maxWidth: .infinity)
-            } else {
-                // Fallback state
-                Text("장소 정보 없음")
-                    .font(.system(size: 15, weight: .medium))
-                    .foregroundColor(.secondary)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(.horizontal, 20)
-                    .padding(.vertical, 16)
-                    .background(
-                        RoundedRectangle(cornerRadius: 12, style: .continuous)
-                            .fill(Color.white)
-                            .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
-                    )
-                    .frame(maxWidth: .infinity)
             }
+            .buttonStyle(PlainButtonStyle())
+        } else {
+            Text("장소 정보 없음")
+                .font(.system(size: 15, weight: .medium))
+                .foregroundColor(.secondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color.white)
+                        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
+                )
+                .frame(maxWidth: .infinity)
         }
-        .buttonStyle(PlainButtonStyle())
     }
 }
 

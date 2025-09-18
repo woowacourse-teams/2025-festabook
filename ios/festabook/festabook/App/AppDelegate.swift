@@ -320,4 +320,5 @@ extension Notification.Name {
     static let fcmTokenReceived = Notification.Name("fcmTokenReceived")
     static let navigateToTab = Notification.Name("navigateToTab")
     static let showAnnouncementDetail = Notification.Name("showAnnouncementDetail")
+    static let mapTabReselected = Notification.Name("mapTabReselected")
 }

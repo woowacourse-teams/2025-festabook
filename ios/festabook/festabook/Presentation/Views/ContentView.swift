@@ -221,6 +221,11 @@ struct TabBarItem: View {
 
     var body: some View {
         Button(action: {
+            if selectedTab == tab {
+                if tab == .map {
+                    NotificationCenter.default.post(name: .mapTabReselected, object: nil)
+                }
+            }
             selectedTab = tab
         }) {
             VStack(spacing: 4) {

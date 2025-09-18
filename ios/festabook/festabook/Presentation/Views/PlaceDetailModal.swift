@@ -7,51 +7,7 @@ struct PlaceDetailModal: View {
     let onDismiss: () -> Void
 
     var body: some View {
-        if isLoading {
-            // Loading state with skeleton UI
-            HStack(alignment: .top, spacing: 10) {
-                VStack(alignment: .leading, spacing: 6) {
-                    // Skeleton badge
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(width: 60, height: 20)
-
-                    // Skeleton title
-                    RoundedRectangle(cornerRadius: 4)
-                        .fill(Color.gray.opacity(0.3))
-                        .frame(height: 18)
-
-                    // Skeleton info lines
-                    VStack(alignment: .leading, spacing: 4) {
-                        ForEach(0..<3, id: \.self) { _ in
-                            HStack(spacing: 6) {
-                                Circle()
-                                    .fill(Color.gray.opacity(0.3))
-                                    .frame(width: 16, height: 16)
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.gray.opacity(0.3))
-                                    .frame(height: 13)
-                            }
-                        }
-                    }
-                }
-                .frame(maxWidth: .infinity, alignment: .leading)
-
-                // Skeleton thumbnail
-                RoundedRectangle(cornerRadius: 8)
-                    .fill(Color.gray.opacity(0.3))
-                    .frame(width: 70, height: 70)
-                    .fixedSize()
-            }
-            .padding(.horizontal, 20)
-            .padding(.vertical, 16)
-            .background(
-                RoundedRectangle(cornerRadius: 16, style: .continuous)
-                    .fill(Color.white)
-                    .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
-            )
-            .frame(maxWidth: .infinity)
-        } else if let errorMessage = errorMessage {
+        if let errorMessage = errorMessage {
             // Error state
             VStack(spacing: 8) {
                 Image(systemName: "exclamationmark.triangle")

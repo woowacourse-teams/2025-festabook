@@ -55,7 +55,6 @@ struct NaverMapRepresentable: UIViewRepresentable {
         mapView.addCameraDelegate(delegate: context.coordinator)
 
         // Create and add location button
-        context.coordinator.createLocationButton(on: mapView)
 
         print("[NaverMapRepresentable] NMFMapView 생성 완료")
         return mapView
@@ -85,6 +84,11 @@ struct NaverMapRepresentable: UIViewRepresentable {
             private var hasAppliedInitialGeography = false
             private var isAnimating = false
             private var lastContentInsetUpdate: Date = Date.distantPast
+            private var lastCameraResetId: UUID?
+            private var markerBaseSizes: [Int: CGSize] = [:]
+            private var markerTitles: [Int: String] = [:]
+            private var pendingMoveToCurrentLocation = false
+            private var selectedMarkerId: Int?
 
             init(_ viewModel: MapViewModel) {
                 self.viewModel = viewModel
@@ -96,21 +100,6 @@ struct NaverMapRepresentable: UIViewRepresentable {
                 locationManager.delegate = self
                 locationManager.desiredAccuracy = kCLLocationAccuracyBest
                 locationManager.distanceFilter = 10 // 10미터마다 업데이트
-
-                // Check authorization status and request if needed
-                switch locationManager.authorizationStatus {
-                case .notDetermined:
-                    print("[Coordinator] 📍 위치 권한 요청 중...")
-                    locationManager.requestWhenInUseAuthorization()
-                case .authorizedWhenInUse, .authorizedAlways:
-                    print("[Coordinator] ✅ 위치 권한 허용됨 - 위치 업데이트 시작")
-                    locationManager.startUpdatingLocation()
-                case .denied, .restricted:
-                    print("[Coordinator] ❌ 위치 권한이 거부됨 - 설정에서 권한을 허용해주세요")
-                @unknown default:
-                    print("[Coordinator] 📍 위치 권한 상태 불명 - 권한 요청")
-                    locationManager.requestWhenInUseAuthorization()
-                }
             }
 
         @MainActor
@@ -159,10 +148,21 @@ struct NaverMapRepresentable: UIViewRepresentable {
             if let selectedPlaceId = viewModel.selectedPlaceId {
                 print("[Coordinator] 선택된 마커: \(selectedPlaceId)")
             }
-            updateSelectedMarker(placeId: viewModel.selectedPlaceId)
+            updateSelectedMarker(mapView: mapView, placeId: viewModel.selectedPlaceId)
 
             // Update location button visibility based on modal state
             updateLocationButtonVisibility()
+
+            // Reset camera request 처리
+            if let resetId = viewModel.resetCameraRequest,
+               resetId != lastCameraResetId,
+               let geography = viewModel.geography {
+                lastCameraResetId = resetId
+                resetCamera(mapView, with: geography)
+                Task { @MainActor in
+                    viewModel.resetCameraRequest = nil
+                }
+            }
 
             // Caption visibility is automatically handled by Naver Maps SDK based on captionMinZoom/captionMaxZoom
         }
@@ -234,6 +234,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
 
         private func moveToMarkerWithOffset(_ mapView: NMFMapView, marker: PlaceGeography) {
+            if selectedMarkerId == marker.placeId { return }
             // 애니메이션 중이거나 최근에 contentInset 변경이 있었으면 대기
             if isAnimating {
                 print("[Coordinator] 카메라 애니메이션 진행 중 - 마커 이동 스킵")
@@ -437,42 +438,35 @@ struct NaverMapRepresentable: UIViewRepresentable {
             // Remove existing markers
             self.markers.values.forEach { $0.mapView = nil }
             self.markers.removeAll()
+            markerBaseSizes.removeAll()
+
+            markerTitles.removeAll()
 
             print("[Coordinator] 🗺 마커 업데이트 시작: \(markers.count)개 마커")
 
-            // Add new markers
             for marker in markers {
                 let nmfMarker = NMFMarker()
                 let coord = marker.safeCoordinate
                 nmfMarker.position = NMGLatLng(lat: coord.latitude, lng: coord.longitude)
 
-                // Set caption text with proper styling
-                nmfMarker.captionText = marker.title
-                nmfMarker.captionAligns = [.bottom]  // 마커 아래쪽에 캡션 배치
-                nmfMarker.captionOffset = 5  // 아이콘과 텍스트 간격
-                nmfMarker.captionRequestedWidth = 0  // 줄바꿈 없이 한 줄로
-                nmfMarker.captionTextSize = 13  // 적절한 폰트 크기
-
-                // Set zoom level constraints for smooth appearance
-                nmfMarker.captionMinZoom = 15.0  // 줌 15 이상에서 보이기 시작
-                // captionMaxZoom 설정 안 함 - 최대 줌까지 계속 보이도록
-
-                print("[Coordinator] 📍 마커 생성: placeId=\(marker.placeId), category=\(marker.category), title=\(marker.title), position=(\(coord.latitude), \(coord.longitude)), captionMinZoom=\(nmfMarker.captionMinZoom)")
-
-                // Set marker icon with fallback
                 setMarkerIcon(nmfMarker, category: marker.category)
+                markerBaseSizes[marker.placeId] = CGSize(width: nmfMarker.width, height: nmfMarker.height)
 
-                // Marker touch handler (모든 카테고리 클릭 가능)
+                let title = viewModel.previewsByPlaceId[marker.placeId]?.title ?? marker.title
+                nmfMarker.captionAligns = [.bottom]
+                nmfMarker.captionMinZoom = 15
+                nmfMarker.captionText = title
+                nmfMarker.captionOffset = 6
+                markerTitles[marker.placeId] = title
+
                 nmfMarker.touchHandler = { [weak self] _ in
                     Task { @MainActor in
-                        print("[Coordinator] 🎯 마커 클릭됨: placeId=\(marker.placeId), category=\(marker.category), title=\(marker.title)")
-
-                        // 마커 클릭 시 즉시 현위치 버튼 숨김
-                        self?.hideLocationButton()
-
-                        // 모든 카테고리 클릭 가능 - 마커 클릭 시 미니카드 표시 및 카메라 이동
-                        self?.viewModel.selectPlace(marker.placeId)
-                        self?.moveToMarkerWithOffset(mapView, marker: marker)
+                        guard let self else { return }
+                        print("[Coordinator] 🎯 마커 클릭됨: placeId=\(marker.placeId)")
+                        self.hideLocationButton()
+                        self.viewModel.selectPlace(marker.placeId)
+                        self.moveToMarkerWithOffset(mapView, marker: marker)
+                        self.updateSelectedMarker(mapView: mapView, placeId: marker.placeId)
                     }
                     return true
                 }
@@ -480,8 +474,6 @@ struct NaverMapRepresentable: UIViewRepresentable {
                 nmfMarker.mapView = mapView
                 self.markers[marker.placeId] = nmfMarker
             }
-
-            // Caption visibility is automatically handled by captionMinZoom/captionMaxZoom
         }
 
         private func setMarkerIcon(_ marker: NMFMarker, category: String) {
@@ -560,22 +552,35 @@ struct NaverMapRepresentable: UIViewRepresentable {
             return UIGraphicsGetImageFromCurrentImageContext() ?? UIImage()
         }
 
-        private func updateSelectedMarker(placeId: Int?) {
-            // Reset all markers to normal state
-            markers.values.forEach { marker in
-                // Restore original size for custom icons
+        @MainActor
+        private func updateSelectedMarker(mapView: NMFMapView, placeId: Int?) {
+            markers.forEach { id, marker in
+                if let base = markerBaseSizes[id] {
+                    CATransaction.begin()
+                    CATransaction.setAnimationDuration(0.2)
+                    marker.width = base.width
+                    marker.height = base.height
+                    CATransaction.commit()
+                }
                 marker.zIndex = 0
-                // Size is already set properly in setMarkerIcon
+                marker.captionText = markerTitles[id] ?? ""
+                marker.captionOffset = 6
             }
 
-            // Highlight selected marker
-            if let placeId = placeId, let selectedMarker = markers[placeId] {
-                // Scale up selected marker by 1.2x
-                let scaleMultiplier: CGFloat = 1.2
-                selectedMarker.width *= scaleMultiplier
-                selectedMarker.height *= scaleMultiplier
-                selectedMarker.zIndex = 100
-            }
+            selectedMarkerId = placeId
+
+            guard let placeId = placeId,
+                  let selectedMarker = markers[placeId],
+                  let base = markerBaseSizes[placeId] else { return }
+
+            CATransaction.begin()
+            CATransaction.setAnimationDuration(0.2)
+            selectedMarker.width = base.width * 1.1
+            selectedMarker.height = base.height * 1.1
+            selectedMarker.zIndex = 100
+            selectedMarker.captionTextSize = 13
+            selectedMarker.captionOffset = 10
+            CATransaction.commit()
         }
 
         // MARK: - Location Button Management
@@ -677,55 +682,28 @@ struct NaverMapRepresentable: UIViewRepresentable {
         @objc private func locationButtonTapped() {
             guard let mapView = locationButton?.superview as? NMFMapView else { return }
 
-            // Check location authorization first
             switch locationManager.authorizationStatus {
             case .notDetermined:
+                pendingMoveToCurrentLocation = true
                 locationManager.requestWhenInUseAuthorization()
-                return
             case .denied, .restricted:
                 showLocationPermissionAlert()
-                return
             case .authorizedWhenInUse, .authorizedAlways:
-                break
+                moveToCurrentLocation(mapView)
             @unknown default:
+                break
+            }
+        }
+
+        private func moveToCurrentLocation(_ mapView: NMFMapView) {
+            guard let location = locationManager.location else {
+                pendingMoveToCurrentLocation = true
+                locationManager.startUpdatingLocation()
+                print("[Coordinator] 위치 정보 요청 중...")
                 return
             }
 
-            // positionMode 순환: .disabled → .normal → .direction → .compass → .disabled
-            let currentMode = mapView.positionMode
-            let nextMode: NMFMyPositionMode
-            
-            switch currentMode {
-            case .disabled:
-                nextMode = .normal
-            case .normal:
-                nextMode = .direction
-            case .direction:
-                nextMode = .compass
-            case .compass:
-                nextMode = .disabled
-            @unknown default:
-                nextMode = .normal
-            }
-            
-            mapView.positionMode = nextMode
-            
-            // 위치 오버레이 표시 및 카메라 이동
-            if nextMode != .disabled {
-                if let location = locationManager.location {
-                    moveToCurrentLocation(mapView, location: location)
-                } else {
-                    // 현재 위치가 없으면 위치 업데이트 시작
-                    locationManager.startUpdatingLocation()
-                    print("[Coordinator] 위치 정보 요청 중...")
-                }
-            } else {
-                // disabled 모드일 때는 위치 오버레이 숨김
-                mapView.locationOverlay.hidden = true
-                print("[Coordinator] 위치 추적 모드 해제")
-            }
-            
-            print("[Coordinator] positionMode 변경: \(currentMode) → \(nextMode)")
+            moveToCurrentLocation(mapView, location: location)
         }
 
         private func moveToCurrentLocation(_ mapView: NMFMapView, location: CLLocation) {
@@ -740,6 +718,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
             locationOverlay.circleOutlineWidth = 2
             locationOverlay.circleRadius = 15
 
+            mapView.positionMode = .normal
             // Move camera with animation (공식 문서에 따른 구현)
             let cameraUpdate = NMFCameraUpdate(scrollTo: coord)
             cameraUpdate.animation = .easeIn
@@ -762,6 +741,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
                 if let mapView = locationButton?.superview as? NMFMapView {
                     moveToCurrentLocation(mapView, location: location)
                     isLocationTracking = true
+                    pendingMoveToCurrentLocation = false
                 }
                 locationManager.stopUpdatingLocation()
                 print("[Coordinator] ✅ 위치 업데이트 성공: lat=\(location.coordinate.latitude), lng=\(location.coordinate.longitude)")
@@ -778,6 +758,9 @@ struct NaverMapRepresentable: UIViewRepresentable {
                     print("[Coordinator] 위치를 찾을 수 없습니다")
                 case .denied:
                     print("[Coordinator] 위치 서비스가 거부되었습니다")
+                    Task { @MainActor in
+                        pendingMoveToCurrentLocation = false
+                    }
                 case .network:
                     print("[Coordinator] 네트워크 오류로 위치를 가져올 수 없습니다")
                 default:
@@ -790,14 +773,18 @@ struct NaverMapRepresentable: UIViewRepresentable {
             Task { @MainActor in
                 switch status {
                 case .authorizedWhenInUse, .authorizedAlways:
-                    print("[Coordinator] ✅ 위치 권한 허용됨 - 위치 업데이트 시작")
-                    locationManager.startUpdatingLocation()
+                    print("[Coordinator] ✅ 위치 권한 허용됨")
+                    if pendingMoveToCurrentLocation,
+                       let mapView = locationButton?.superview as? NMFMapView {
+                        moveToCurrentLocation(mapView)
+                    }
+                    pendingMoveToCurrentLocation = false
                 case .denied, .restricted:
                     print("[Coordinator] ❌ 위치 권한 거부됨 - 설정에서 권한을 허용해주세요")
                     showLocationPermissionAlert()
+                    pendingMoveToCurrentLocation = false
                 case .notDetermined:
-                    print("[Coordinator] 📍 위치 권한 미결정 - 권한 요청")
-                    locationManager.requestWhenInUseAuthorization()
+                    print("[Coordinator] 📍 위치 권한 미결정")
                 @unknown default:
                     print("[Coordinator] 📍 위치 권한 상태 불명")
                     break
@@ -805,7 +792,9 @@ struct NaverMapRepresentable: UIViewRepresentable {
             }
         }
 
+        @MainActor
         private func showLocationPermissionAlert() {
+            pendingMoveToCurrentLocation = false
             guard let window = UIApplication.shared.connectedScenes
                 .compactMap({ $0 as? UIWindowScene })
                 .first?.windows
@@ -828,6 +817,27 @@ struct NaverMapRepresentable: UIViewRepresentable {
             window.rootViewController?.present(alert, animated: true)
         }
 
+        private func resetCamera(_ mapView: NMFMapView, with geography: GeographyResponse) {
+            print("[Coordinator] 🧭 지도 초기화 실행")
+            mapView.positionMode = .disabled
+            mapView.locationOverlay.hidden = true
+            isLocationTracking = false
+
+            let target = NMGLatLng(lat: geography.centerCoordinate.latitude, lng: geography.centerCoordinate.longitude)
+            let cameraPosition = NMFCameraPosition(target, zoom: Double(geography.zoom))
+            let cameraUpdate = NMFCameraUpdate(position: cameraPosition)
+            cameraUpdate.animation = .easeIn
+            cameraUpdate.animationDuration = 0.8
+
+            Task {
+                _ = await mapView.moveCamera(cameraUpdate)
+            }
+
+            updateSelectedMarker(mapView: mapView, placeId: nil)
+            showLocationButton()
+            print("[Coordinator] 🧭 지도 초기 위치로 복귀 완료")
+        }
+
         // MARK: - NMFMapViewCameraDelegate
 
         nonisolated func mapViewCameraIdle(_ mapView: NMFMapView) {
@@ -845,6 +855,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
                     viewModel.hideModal()
                     print("[Coordinator] 지도 빈 영역 클릭 - bottom sheet로 복귀")
                 }
+                updateSelectedMarker(mapView: mapView, placeId: nil)
                 // 지도 빈 영역 클릭 시 현위치 버튼 다시 표시
                 showLocationButton()
             }

@@ -82,6 +82,9 @@ struct MapView: View {
         .task {
             await viewModel.loadMapData()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .mapTabReselected)) { _ in
+            viewModel.resetCameraToInitial()
+        }
         .alert("오류", isPresented: $viewModel.showError) {
             Button("다시 시도") {
                 viewModel.retryLoading()
