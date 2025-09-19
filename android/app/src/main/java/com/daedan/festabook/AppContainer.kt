@@ -78,7 +78,7 @@ class AppContainer(
         FcmDataSourceImpl(prefs)
     }
 
-    private val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource by lazy {
+    val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource by lazy {
         FestivalNotificationLocalDataSourceImpl(prefs)
     }
 
