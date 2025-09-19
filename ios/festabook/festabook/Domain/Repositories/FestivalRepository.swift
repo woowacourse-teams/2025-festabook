@@ -11,7 +11,7 @@ struct FestivalRepositoryLive: FestivalRepository {
     
     func getFestivalsByUniversity(universityName: String) async throws -> [Festival] {
         let queryItems = [URLQueryItem(name: "universityName", value: universityName)]
-        return try await api.get(Endpoints.Festivals.universities, query: queryItems)
+        return try await api.get(Endpoints.Festivals.universities, query: queryItems, requiresFestivalId: false)
     }
     
     func getFestivalDetail() async throws -> FestivalDetail {

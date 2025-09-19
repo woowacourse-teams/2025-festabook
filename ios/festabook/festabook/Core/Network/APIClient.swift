@@ -4,7 +4,7 @@ class APIClient {
     static let shared = APIClient()
 
     var session: URLSession = .shared
-    private var _currentFestivalId: Int = 1
+    private var _currentFestivalId: Int = 0
 
     init() {}
 
@@ -20,37 +20,45 @@ class APIClient {
 
     // 앱 시작 시 UserDefaults에 저장된 값이 있으면 반영
     func bootstrapFestivalIdFromStorage() {
-        let stored = UserDefaults.standard.integer(forKey: "currentFestivalId")
-        if stored > 0 {
+        let stored = UserDefaults.standard.object(forKey: "currentFestivalId") as? Int
+        if let stored, stored > 0 {
             _currentFestivalId = stored
             print("[APIClient] Bootstrapped Festival ID from storage: \(stored)")
+        } else {
+            _currentFestivalId = 0
+            print("[APIClient] No stored festival ID found during bootstrap")
         }
     }
 
-    func get<T: Decodable>(_ path: String, query: [URLQueryItem] = []) async throws -> T {
+    func get<T: Decodable>(_ path: String, query: [URLQueryItem] = [], requiresFestivalId: Bool = true) async throws -> T {
         var comps = URLComponents(url: BuildConfig.apiBaseURL, resolvingAgainstBaseURL: false)!
         comps.path += path
         comps.queryItems = query.isEmpty ? nil : query
         guard let url = comps.url else { throw HTTPError.invalidURL }
 
-        // 최신 festivalId를 저장소에서 동기화 (단일 소스: UserDefaults)
-        let storedFestivalId = UserDefaults.standard.integer(forKey: "currentFestivalId")
-        if storedFestivalId > 0 && storedFestivalId != currentFestivalId {
-            _currentFestivalId = storedFestivalId
-            print("[APIClient] Synced Festival ID from storage: \(storedFestivalId)")
-        }
-
         var req = URLRequest(url: url)
         req.httpMethod = "GET"
         req.setValue("application/json", forHTTPHeaderField: "Accept")
-        // 축제 ID 검증: 0 또는 음수면 요청 금지
-        guard currentFestivalId > 0 else {
-            throw HTTPError.transport(NSError(domain: "APIClient", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid festivalId: \(currentFestivalId)"]))
+
+        if requiresFestivalId {
+            // 최신 festivalId를 저장소에서 동기화 (단일 소스: UserDefaults)
+            let storedFestivalId = UserDefaults.standard.object(forKey: "currentFestivalId") as? Int
+            if let storedFestivalId, storedFestivalId > 0, storedFestivalId != currentFestivalId {
+                _currentFestivalId = storedFestivalId
+                print("[APIClient] Synced Festival ID from storage: \(storedFestivalId)")
+            }
+
+            // 축제 ID 검증: 0 또는 음수면 요청 금지
+            guard currentFestivalId > 0 else {
+                throw HTTPError.transport(NSError(domain: "APIClient", code: -1, userInfo: [NSLocalizedDescriptionKey: "Invalid festivalId: \(currentFestivalId)"]))
+            }
+            req.setValue("\(currentFestivalId)", forHTTPHeaderField: "festival")
         }
-        req.setValue("\(currentFestivalId)", forHTTPHeaderField: "festival")
 
         print("[APIClient] Request URL: \(url)")
-        print("[APIClient] Festival Header: \(currentFestivalId)")
+        if requiresFestivalId {
+            print("[APIClient] Festival Header: \(currentFestivalId)")
+        }
         print("[APIClient] All Headers: \(req.allHTTPHeaderFields ?? [:])")
         // 공통 헤더: x-request-id 등 필요 시 추가
 
@@ -81,8 +89,8 @@ class APIClient {
         guard let url = comps.url else { throw HTTPError.invalidURL }
         
         // 최신 festivalId 동기화
-        let storedFestivalId = UserDefaults.standard.integer(forKey: "currentFestivalId")
-        if storedFestivalId > 0 && storedFestivalId != currentFestivalId {
+        let storedFestivalId = UserDefaults.standard.object(forKey: "currentFestivalId") as? Int
+        if let storedFestivalId, storedFestivalId > 0, storedFestivalId != currentFestivalId {
             _currentFestivalId = storedFestivalId
             print("[APIClient] Synced Festival ID from storage: \(storedFestivalId)")
         }
@@ -125,8 +133,8 @@ class APIClient {
         guard let url = comps.url else { throw HTTPError.invalidURL }
         
         // 최신 festivalId 동기화
-        let storedFestivalId = UserDefaults.standard.integer(forKey: "currentFestivalId")
-        if storedFestivalId > 0 && storedFestivalId != currentFestivalId {
+        let storedFestivalId = UserDefaults.standard.object(forKey: "currentFestivalId") as? Int
+        if let storedFestivalId, storedFestivalId > 0, storedFestivalId != currentFestivalId {
             _currentFestivalId = storedFestivalId
             print("[APIClient] Synced Festival ID from storage: \(storedFestivalId)")
         }

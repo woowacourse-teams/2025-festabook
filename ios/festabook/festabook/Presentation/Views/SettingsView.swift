@@ -174,10 +174,17 @@ struct SettingsView: View {
         let previousValue = notificationService.isNotificationEnabled
 
         Task {
+            guard let festivalId = appState.currentFestivalId else {
+                await MainActor.run {
+                    notificationService.isNotificationEnabled = previousValue
+                    print("[SettingsView] ❌ 축제 ID가 없어 알림 구독을 변경할 수 없습니다")
+                }
+                return
+            }
             do {
                 if newValue {
                     // 구독 - festival 헤더 제거된 API 호출
-                    _ = try await notificationService.subscribeToFestivalNotifications(festivalId: appState.currentFestivalId)
+                    _ = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
                 } else {
                     // 구독 취소 - festival 헤더 제거된 API 호출
                     try await notificationService.unsubscribeFromFestivalNotifications()

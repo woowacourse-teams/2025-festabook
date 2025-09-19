@@ -38,8 +38,7 @@ struct HomeView: View {
 
                         Button(action: {
                             // 대학교 변경 - 최초 진입점으로 돌아가기
-                            appState.selectedUniversity = nil
-                            appState.selectedFestival = nil
+                            appState.resetFestivalSelection()
                         }) {
                             Image(systemName: "chevron.down")
                                 .font(.system(size: 14, weight: .medium))

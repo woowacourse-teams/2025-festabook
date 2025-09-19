@@ -9,10 +9,12 @@ final class AppState: ObservableObject {
     }
     @Published var selectedUniversity: University?
     @Published var selectedFestival: Festival?
-    @Published var currentFestivalId: Int = 1
+    @Published var currentFestivalId: Int?
     @Published var currentUniversityName: String = "페스타북대학교"
     @Published var pendingAnnouncementId: Int? = nil
     @Published var shouldNavigateToNews = false
+    @Published var isInitialLoadCompleted = false
+    @Published var initialFestivalList: [Festival] = []
 
     private var cancellables = Set<AnyCancellable>()
 
@@ -46,15 +48,33 @@ final class AppState: ObservableObject {
         UserDefaults.standard.set(universityName, forKey: UserDefaultsKey.currentUniversityName)
     }
 
+    func resetFestivalSelection() {
+        currentFestivalId = nil
+        selectedUniversity = nil
+        selectedFestival = nil
+        currentUniversityName = "페스타북대학교"
+
+        UserDefaults.standard.removeObject(forKey: UserDefaultsKey.currentFestivalId)
+        UserDefaults.standard.removeObject(forKey: UserDefaultsKey.currentUniversityName)
+
+        APIClient.shared.updateFestivalId(0)
+        ServiceLocator.shared.updateFestivalId(0)
+    }
+
     func bootstrapFestivalIfNeeded() {
+        isInitialLoadCompleted = false
         APIClient.shared.bootstrapFestivalIdFromStorage()
 
-        let storedFestivalId = UserDefaults.standard.integer(forKey: UserDefaultsKey.currentFestivalId)
+        let storedFestivalId = UserDefaults.standard.object(forKey: UserDefaultsKey.currentFestivalId) as? Int
 
-        guard storedFestivalId > 0 else {
-            UserDefaults.standard.set(currentFestivalId, forKey: UserDefaultsKey.currentFestivalId)
-            ServiceLocator.shared.updateFestivalId(currentFestivalId)
-            APIClient.shared.updateFestivalId(currentFestivalId)
+        guard let storedFestivalId else {
+            currentFestivalId = nil
+            selectedUniversity = nil
+            selectedFestival = nil
+
+            Task { [weak self] in
+                await self?.loadInitialFestivalList()
+            }
             return
         }
 
@@ -77,6 +97,29 @@ final class AppState: ObservableObject {
 
         Task { [weak self] in
             await self?.hydrateFestivalSelection()
+            await MainActor.run {
+                self?.isInitialLoadCompleted = true
+            }
+        }
+    }
+
+    private func loadInitialFestivalList() async {
+        defer {
+            Task { @MainActor [weak self] in
+                self?.isInitialLoadCompleted = true
+            }
+        }
+
+        do {
+            let festivals = try await ServiceLocator.shared.festivalRepo.getFestivalsByUniversity(universityName: "")
+            await MainActor.run { [weak self] in
+                self?.initialFestivalList = festivals
+            }
+        } catch {
+            print("[AppState] ⚠️ Failed to load initial festival list: \(error)")
+            await MainActor.run { [weak self] in
+                self?.initialFestivalList = []
+            }
         }
     }
 
@@ -108,6 +151,9 @@ final class AppState: ObservableObject {
             }
         } catch {
             print("[AppState] ⚠️ Failed to hydrate festival selection: \(error)")
+            await MainActor.run { [weak self] in
+                self?.isInitialLoadCompleted = true
+            }
         }
     }
 

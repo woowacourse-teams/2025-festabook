@@ -6,8 +6,8 @@ struct SplashView: View {
     @EnvironmentObject private var notificationService: NotificationService
 
     @State private var isActive = false
-    @State private var logoScale: CGFloat = 0.9
-    @State private var logoOpacity: Double = 0.0
+    @State private var logoBrightness: Double = -0.35
+    @State private var hasMinimumDisplayTimeElapsed = false
 
     var body: some View {
         ZStack {
@@ -19,30 +19,37 @@ struct SplashView: View {
                     .environmentObject(serviceLocator)
                     .environmentObject(appState)
                     .environmentObject(notificationService)
-                    .transition(.opacity.combined(with: .scale))
+                    .transition(.opacity)
             } else {
                 Image("festabook_logo")
                     .resizable()
                     .scaledToFit()
                     .frame(maxWidth: 260)
-                    .scaleEffect(logoScale)
-                    .opacity(logoOpacity)
+                    .brightness(logoBrightness)
                     .onAppear(perform: startSplash)
             }
         }
-        .animation(.easeInOut(duration: 0.35), value: isActive)
+        .animation(.easeInOut(duration: 0.4), value: isActive)
+        .onChange(of: appState.isInitialLoadCompleted) { _ in
+            proceedIfReady()
+        }
     }
 
     private func startSplash() {
-        withAnimation(.spring(response: 0.8, dampingFraction: 0.7, blendDuration: 0.3)) {
-            logoScale = 1.0
-            logoOpacity = 1.0
+        withAnimation(.easeInOut(duration: 0.6)) {
+            logoBrightness = 0.0
         }
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-            withAnimation {
-                isActive = true
-            }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.8) {
+            hasMinimumDisplayTimeElapsed = true
+            proceedIfReady()
+        }
+    }
+
+    private func proceedIfReady() {
+        guard !isActive, hasMinimumDisplayTimeElapsed, appState.isInitialLoadCompleted else { return }
+        withAnimation {
+            isActive = true
         }
     }
 }
