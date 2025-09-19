@@ -1,0 +1,2 @@
+ALTER TABLE lineup
+    ADD COLUMN name_tmp VARCHAR(50) NOT NULL;
