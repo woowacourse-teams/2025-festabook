@@ -69,7 +69,7 @@ public class JwtTestHelper {
         council.updateRole(Set.of(roleType));
         councilRepository.save(council);
 
-        String token = jwtProvider.createToken(randomUsername, festival.getId());
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), Set.of(roleType));
         return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
     }
 
@@ -83,7 +83,7 @@ public class JwtTestHelper {
         council.updateRole(Set.of(roleType));
         councilRepository.save(council);
 
-        String token = jwtProvider.createToken(randomUsername, festival.getId());
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), Set.of(roleType));
         return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
     }
 }
