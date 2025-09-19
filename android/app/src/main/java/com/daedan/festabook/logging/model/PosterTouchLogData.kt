@@ -1,4 +1,4 @@
-package com.daedan.festabook.logging
+package com.daedan.festabook.logging.model
 
 import kotlinx.parcelize.Parcelize
 
