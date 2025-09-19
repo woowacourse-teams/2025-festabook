@@ -8,6 +8,8 @@ struct PlaceDetailView: View {
     @State private var currentImageIndex = 0
     @State private var isImageViewerPresented = false
     @State private var viewerIndex = 0
+    @State private var imageViewerStartIndex = 0  // 안전한 인덱스 보관용
+    @State private var lockedViewerIndex = 0     // 뷰어 생성 시 고정된 인덱스
     @State private var safeAreaTop: CGFloat = 0
     @State private var backSwipeOffset: CGFloat = 0
     @State private var isBackSwiping = false
@@ -49,7 +51,16 @@ struct PlaceDetailView: View {
             .background(Color.white)
             .background(ModalDismissDisabler())
             .onAppear {
-                currentImageIndex = 0
+                print("[PlaceDetailView] onAppear - currentImageIndex: \(currentImageIndex), viewerIndex: \(viewerIndex), lockedViewerIndex: \(lockedViewerIndex), isImageViewerPresented: \(isImageViewerPresented)")
+                // 처음 열 때만 인덱스 초기화 (lockedViewerIndex는 보호)
+                if !isImageViewerPresented && currentImageIndex == 0 && viewerIndex == 0 && lockedViewerIndex == 0 {
+                    print("[PlaceDetailView] 인덱스 초기화 실행 (lockedViewerIndex 보호)")
+                    currentImageIndex = 0
+                    imageViewerStartIndex = 0
+                    // lockedViewerIndex는 이미 0이므로 별도 설정 불필요
+                } else {
+                    print("[PlaceDetailView] 인덱스 초기화 생략 - lockedViewerIndex 보호됨: \(lockedViewerIndex)")
+                }
                 safeAreaTop = topInset
                 backSwipeOffset = 0
                 isBackSwiping = false
@@ -57,22 +68,47 @@ struct PlaceDetailView: View {
             .onChange(of: topInset) { newValue in
                 safeAreaTop = newValue
             }
-            .onChange(of: imageUrls) { _ in
-                let maxIndex = max(imageUrls.count - 1, 0)
-                if isImageViewerPresented {
-                    currentImageIndex = min(currentImageIndex, maxIndex)
-                    viewerIndex = min(viewerIndex, maxIndex)
-                } else {
-                    currentImageIndex = 0
-                    viewerIndex = 0
-                }
+        .onChange(of: imageUrls) { newUrls in
+            print("[PlaceDetailView] imageUrls 변경됨 - 개수: \(newUrls.count), currentImageIndex: \(currentImageIndex), viewerIndex: \(viewerIndex), lockedViewerIndex: \(lockedViewerIndex)")
+            let maxIndex = max(newUrls.count - 1, 0)
+            
+            // 인덱스가 범위를 벗어날 때만 조정
+            let newCurrentIndex = min(currentImageIndex, maxIndex)
+            let newViewerIndex = min(viewerIndex, maxIndex)
+            let newStartIndex = min(imageViewerStartIndex, maxIndex)
+            let newLockedIndex = min(lockedViewerIndex, maxIndex)
+            
+            if currentImageIndex != newCurrentIndex {
+                currentImageIndex = newCurrentIndex
+                print("[PlaceDetailView] currentImageIndex를 \(newCurrentIndex)로 조정")
             }
+            
+            if viewerIndex != newViewerIndex {
+                viewerIndex = newViewerIndex
+                print("[PlaceDetailView] viewerIndex를 \(newViewerIndex)로 조정")
+            }
+            
+            if imageViewerStartIndex != newStartIndex {
+                imageViewerStartIndex = newStartIndex
+                print("[PlaceDetailView] imageViewerStartIndex를 \(newStartIndex)로 조정")
+            }
+            
+            // lockedViewerIndex는 뷰어가 열려있지 않을 때만 범위 조정
+            if !isImageViewerPresented && lockedViewerIndex != newLockedIndex {
+                lockedViewerIndex = newLockedIndex
+                print("[PlaceDetailView] lockedViewerIndex를 \(newLockedIndex)로 조정")
+            } else if isImageViewerPresented {
+                print("[PlaceDetailView] lockedViewerIndex 보호됨 (뷰어 열린 상태): \(lockedViewerIndex)")
+            }
+        }
         }
         .ignoresSafeArea(edges: .top)
         .interactiveDismissDisabled(true)
         .navigationBarBackButtonHidden(true)
         .toolbar(.hidden, for: .navigationBar)
         .fullScreenCover(isPresented: $isImageViewerPresented) {
+            // fullScreenCover 실행 시점 로그
+            let _ = print("[PlaceDetailView] fullScreenCover 실행 - lockedViewerIndex: \(lockedViewerIndex), viewerIndex: \(viewerIndex)")
             imageViewer
         }
     }
@@ -111,15 +147,35 @@ struct PlaceDetailView: View {
                     .tag(index)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        currentImageIndex = index
-                        viewerIndex = index
+                        print("[PlaceDetailView] 이미지 탭됨 - 인덱스: \(index), 현재 currentImageIndex: \(currentImageIndex), viewerIndex: \(viewerIndex)")
+                        
                         if isImageViewerPresented {
-                            // 이미 열려 있으면 인덱스만 갱신
+                            print("[PlaceDetailView] 이미지 뷰어가 이미 열려있음 - 인덱스만 갱신")
                             return
                         }
-                        DispatchQueue.main.async {
-                            isImageViewerPresented = true
+                        
+                        // 고정된 뷰어 인덱스 설정 (절대 변경되지 않음)
+                        lockedViewerIndex = index
+                        print("[PlaceDetailView] lockedViewerIndex 설정: \(lockedViewerIndex) (고정, 절대 변경 안됨)")
+                        
+                        // 다른 인덱스들도 설정
+                        imageViewerStartIndex = index
+                        
+                        if viewerIndex != index {
+                            print("[PlaceDetailView] viewerIndex 설정: \(viewerIndex) -> \(index)")
+                            viewerIndex = index
                         }
+                        
+                        if currentImageIndex != index {
+                            print("[PlaceDetailView] currentImageIndex 설정: \(currentImageIndex) -> \(index)")
+                            currentImageIndex = index
+                        }
+                        
+                        print("[PlaceDetailView] 이미지 뷰어 열기 (lockedIndex: \(lockedViewerIndex), viewerIndex: \(viewerIndex))")
+                        isImageViewerPresented = true
+                        
+                        // 즉시 상태 확인
+                        print("[PlaceDetailView] 뷰어 열린 직후 상태 - lockedViewerIndex: \(lockedViewerIndex), viewerIndex: \(viewerIndex), isImageViewerPresented: \(isImageViewerPresented)")
                     }
                 }
             }
@@ -128,6 +184,20 @@ struct PlaceDetailView: View {
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         .frame(maxWidth: .infinity)
         .clipped()
+        .onChange(of: currentImageIndex) { newIndex in
+            print("[PlaceDetailView] TabView currentImageIndex 변경됨: \(currentImageIndex) -> \(newIndex)")
+            // viewerIndex 동기화 (조건부 동기화)
+            if viewerIndex != newIndex {
+                print("[PlaceDetailView] viewerIndex 동기화: \(viewerIndex) -> \(newIndex)")
+                viewerIndex = newIndex
+            } else {
+                print("[PlaceDetailView] viewerIndex 이미 동기화됨: \(viewerIndex)")
+            }
+            
+            // imageViewerStartIndex는 탭에서만 설정되도록 변경 (자동 동기화 제거)
+            // 이 로직이 imageViewer 생성 중 충돌을 일으켜서 제거
+            print("[PlaceDetailView] imageViewerStartIndex 자동 동기화 생략 (충돌 방지)")
+        }
     }
 
     private var detailContent: some View {
@@ -201,18 +271,52 @@ struct PlaceDetailView: View {
     }
 
     private var imageViewer: some View {
-        let clampedIndex = min(max(viewerIndex, 0), max(imageUrls.count - 1, 0))
+        // 고정된 인덱스 사용 + 안전장치
+        var safeStartIndex = lockedViewerIndex
+        
+        // 안전장치: lockedViewerIndex가 0이고 currentImageIndex가 0이 아니면 currentImageIndex 사용
+        if safeStartIndex == 0 && currentImageIndex != 0 {
+            safeStartIndex = currentImageIndex
+            print("[PlaceDetailView] 안전장치 작동: lockedViewerIndex가 0이므로 currentImageIndex(\(currentImageIndex)) 사용")
+        }
+        
+        // 추가 안전장치: 여전히 0이면 viewerIndex 사용  
+        if safeStartIndex == 0 && viewerIndex != 0 {
+            safeStartIndex = viewerIndex
+            print("[PlaceDetailView] 추가 안전장치: viewerIndex(\(viewerIndex)) 사용")
+        }
+        
+        let clampedIndex = min(max(safeStartIndex, 0), max(imageUrls.count - 1, 0))
+        print("[PlaceDetailView] imageViewer 생성 - lockedViewerIndex: \(lockedViewerIndex), safeStartIndex: \(safeStartIndex), clampedIndex: \(clampedIndex), viewerIndex: \(viewerIndex)")
 
         return ImageGalleryView(
             imageUrls: imageUrls,
             initialIndex: clampedIndex,
             currentIndex: Binding(
-                get: { viewerIndex },
-                set: { viewerIndex = min(max($0, 0), max(imageUrls.count - 1, 0)) }
+                get: { 
+                    let currentValue = viewerIndex
+                    print("[PlaceDetailView] imageViewer Binding get - viewerIndex: \(currentValue)")
+                    return currentValue
+                },
+                set: { newValue in
+                    let clamped = min(max(newValue, 0), max(imageUrls.count - 1, 0))
+                    print("[PlaceDetailView] imageViewer Binding set - newValue: \(newValue), clamped: \(clamped), current viewerIndex: \(viewerIndex)")
+                    // 실제로 값이 다를 때만 변경 (무한 루프 방지)
+                    if viewerIndex != clamped {
+                        viewerIndex = clamped
+                        print("[PlaceDetailView] viewerIndex 업데이트: \(viewerIndex) -> \(clamped)")
+                    }
+                }
             ),
             topInset: safeAreaTop
         ) {
+            print("[PlaceDetailView] imageViewer 닫기 - viewerIndex: \(viewerIndex), lockedIndex: \(lockedViewerIndex)")
             isImageViewerPresented = false
+            // 닫을 때 lockedViewerIndex를 현재 viewerIndex로 업데이트 (다음 열기 준비)
+            let finalIndex = max(viewerIndex, 0)  // 최소 0 보장
+            lockedViewerIndex = finalIndex
+            imageViewerStartIndex = finalIndex
+            print("[PlaceDetailView] imageViewer 닫기 완료 - 최종 lockedViewerIndex: \(lockedViewerIndex)")
         }
     }
 }
@@ -460,11 +564,13 @@ private struct ImageGalleryView: View {
         onClose: @escaping () -> Void
     ) {
         self.imageUrls = imageUrls
-        self.initialIndex = min(max(initialIndex, 0), max(imageUrls.count - 1, 0))
+        let clampedInitialIndex = min(max(initialIndex, 0), max(imageUrls.count - 1, 0))
+        self.initialIndex = clampedInitialIndex
         self._currentIndex = currentIndex
         self.topInset = topInset
         self.onClose = onClose
-        _displayedIndex = State(initialValue: self.initialIndex)
+        _displayedIndex = State(initialValue: clampedInitialIndex)
+        print("[ImageGalleryView] init - initialIndex: \(initialIndex), clampedInitialIndex: \(clampedInitialIndex), displayedIndex: \(clampedInitialIndex)")
     }
 
     var body: some View {
@@ -512,8 +618,22 @@ private struct ImageGalleryView: View {
             }
         }
         .onAppear {
-            syncDisplayedIndex(with: initialIndex)
-            syncCurrentIndex(with: displayedIndex)
+            print("[ImageGalleryView] onAppear - initialIndex: \(initialIndex), displayedIndex: \(displayedIndex), currentIndex: \(currentIndex)")
+            
+            // displayedIndex가 initialIndex와 다르면 동기화
+            if displayedIndex != initialIndex {
+                print("[ImageGalleryView] displayedIndex를 \(displayedIndex) -> \(initialIndex)로 동기화")
+                syncDisplayedIndex(with: initialIndex)
+            }
+            
+            // currentIndex는 사용자가 선택한 값일 수 있으므로 강제 동기화하지 않음
+            // 대신 initialIndex가 유효한 범위 내에 있는지만 확인
+            let maxIndex = max(imageUrls.count - 1, 0)
+            if initialIndex >= 0 && initialIndex <= maxIndex {
+                print("[ImageGalleryView] currentIndex \(currentIndex) 유지 (사용자 선택 값)")
+            } else {
+                print("[ImageGalleryView] initialIndex \(initialIndex)가 범위를 벗어남 - currentIndex 유지")
+            }
         }
         .onChange(of: imageUrls) { _ in
             let maxIndex = max(imageUrls.count - 1, 0)
@@ -538,15 +658,23 @@ private struct ImageGalleryView: View {
 
     private func syncDisplayedIndex(with target: Int) {
         let clamped = imageUrls.isEmpty ? 0 : min(max(target, 0), imageUrls.count - 1)
+        print("[ImageGalleryView] syncDisplayedIndex - target: \(target), clamped: \(clamped), current: \(displayedIndex)")
         if clamped != displayedIndex {
+            print("[ImageGalleryView] displayedIndex 업데이트: \(displayedIndex) -> \(clamped)")
             displayedIndex = clamped
+        } else {
+            print("[ImageGalleryView] displayedIndex 이미 올바른 값: \(displayedIndex)")
         }
     }
 
     private func syncCurrentIndex(with target: Int) {
         let clamped = imageUrls.isEmpty ? 0 : min(max(target, 0), imageUrls.count - 1)
+        print("[ImageGalleryView] syncCurrentIndex - target: \(target), clamped: \(clamped), current: \(currentIndex)")
         if clamped != currentIndex {
+            print("[ImageGalleryView] currentIndex 업데이트: \(currentIndex) -> \(clamped)")
             currentIndex = clamped
+        } else {
+            print("[ImageGalleryView] currentIndex 이미 올바른 값: \(currentIndex)")
         }
     }
 
