@@ -42,7 +42,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     }
 
     private fun setupNavigateToExploreButton() {
-        binding.btnNavigateToExplore.setOnClickListener {
+        binding.layoutTitleWithIcon.setOnClickListener {
             startActivity(ExploreActivity.newIntent(requireContext()))
         }
     }
