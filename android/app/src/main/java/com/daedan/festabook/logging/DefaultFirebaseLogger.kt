@@ -1,10 +1,13 @@
 package com.daedan.festabook.logging
 
 import android.content.Context
-import android.os.Bundle
+import android.os.Build
+import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
 import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource
+import com.daedan.festabook.logging.model.CommonLogData
+import com.daedan.festabook.logging.model.LogData
 import com.google.firebase.analytics.FirebaseAnalytics
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,21 +31,21 @@ class DefaultFirebaseLogger(
     }
 
     fun log(value: LogData) {
+        if (BuildConfig.DEBUG) return
         firebaseAnalytics.logEvent(
             value.javaClass.simpleName,
             value.writeToBundle()
         )
     }
 
-    fun getBaseLogData(): BaseLogData.CommonLogData =
-        BaseLogData.CommonLogData(
-            festivalId = festivalLocalDataSource.getFestivalId() ?: -1,
-            notificationId = festivalNotificationLocalDataSource.getFestivalNotificationId(),
-            deviceInfo = android.os.Build.MODEL,
-            eventTime = LocalDateTime.now().toString(),
-            userId = userId ?: KEY_UNINITIALIZED_USER_ID,
-            sessionId = sessionId ?: KEY_UNINITIALIZED_SESSION_ID,
-        )
+    fun getBaseLogData() = CommonLogData(
+        festivalId = festivalLocalDataSource.getFestivalId() ?: -1L,
+        notificationId = festivalNotificationLocalDataSource.getFestivalNotificationId(),
+        deviceInfo = Build.MODEL,
+        eventTime = LocalDateTime.now().toString(),
+        userId = userId ?: KEY_UNINITIALIZED_USER_ID,
+        sessionId = sessionId ?: KEY_UNINITIALIZED_SESSION_ID,
+    )
 
     companion object {
         @Volatile

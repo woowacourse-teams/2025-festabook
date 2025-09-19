@@ -1,4 +1,4 @@
-package com.daedan.festabook.logging
+package com.daedan.festabook.logging.model
 
 import android.os.Bundle
 import android.os.Parcelable
