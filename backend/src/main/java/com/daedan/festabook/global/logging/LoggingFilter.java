@@ -55,17 +55,17 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        StopWatch stopWatch = new StopWatch();
         String uri = request.getRequestURI();
-        String httpMethod = request.getMethod();
-        String ipAddress = request.getHeader(REQUEST_USER_IP_HEADER_NAME);
-        String token = extractTokenFromHeader(request);
-        String username = extractUsernameFromToken(token);
-
         if (isSkipLoggingForPath(uri)) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        StopWatch stopWatch = new StopWatch();
+        String httpMethod = request.getMethod();
+        String ipAddress = request.getHeader(REQUEST_USER_IP_HEADER_NAME);
+        String token = extractTokenFromHeader(request);
+        String username = extractUsernameFromToken(token);
 
         stopWatch.start();
         try {
@@ -89,7 +89,7 @@ public class LoggingFilter extends OncePerRequestFilter {
                     ipAddress,
                     username,
                     statusCode,
-                    maskingIfContainsMaskingPath(uri, httpMethod, requestBody),
+                    maskIfContainsMaskingPath(uri, httpMethod, requestBody),
                     executionTime
             );
             log.info("", kv("event", apiLog));
@@ -101,7 +101,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         return LOGGING_SKIP_PATH_PREFIX.stream().anyMatch(uri::startsWith);
     }
 
-    private Object maskingIfContainsMaskingPath(String uri, String httpMethod, Object requestBody) {
+    private Object maskIfContainsMaskingPath(String uri, String httpMethod, Object requestBody) {
         if (BODY_MASKING_PATH.contains(new MaskingPath(uri, httpMethod))) {
             return "MASKING";
         }

@@ -40,15 +40,15 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        StopWatch stopWatch = new StopWatch();
         String uri = request.getRequestURI();
-        String httpMethod = request.getMethod();
-        String queryString = request.getQueryString();
-
         if (isSkipLoggingForPath(uri)) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        StopWatch stopWatch = new StopWatch();
+        String httpMethod = request.getMethod();
+        String queryString = request.getQueryString();
 
         stopWatch.start();
         try {
@@ -63,7 +63,7 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
             log.info(
                     "[API End] statusCode={} requestBody={} executionTime={}ms",
                     statusCode,
-                    maskingIfContainsMaskingPath(uri, httpMethod, requestBody),
+                    requestBody,
                     executionTime
             );
         }
@@ -71,14 +71,6 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
 
     private boolean isSkipLoggingForPath(String uri) {
         return LOGGING_SKIP_PATH_PREFIX.stream().anyMatch(uri::startsWith);
-    }
-
-    private Object maskingIfContainsMaskingPath(String uri, String httpMethod, Object requestBody) {
-        if (BODY_MASKING_PATH.contains(new MaskingPath(uri, httpMethod))) {
-            return "MASKING";
-        }
-
-        return requestBody;
     }
 
     private String extractBodyFromCache(HttpServletRequest request) {
