@@ -122,7 +122,14 @@ struct MainTabView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             // Custom Tab Bar
-            CustomTabBar(selectedTab: $tabManager.selectedTab)
+            CustomTabBar(
+                selectedTab: $tabManager.selectedTab,
+                onMapButtonTap: { wasAlreadySelected in
+                    if wasAlreadySelected {
+                        mapViewModel.resetToInitialState()
+                    }
+                }
+            )
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
         .onChange(of: tabManager.pendingSelection) { newValue in
@@ -146,6 +153,11 @@ struct MainTabView: View {
                 tabManager.selectedTab = .news
             }
         }
+        .onChange(of: tabManager.selectedTab) { newTab in
+            if newTab == .map {
+                mapViewModel.resetToInitialState()
+            }
+        }
         .onAppear {
             if appState.shouldNavigateToNews {
                 appState.shouldNavigateToNews = false
@@ -157,6 +169,7 @@ struct MainTabView: View {
 
 struct CustomTabBar: View {
     @Binding var selectedTab: MainTabView.Tab
+    var onMapButtonTap: (_ wasAlreadySelected: Bool) -> Void = { _ in }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -177,7 +190,9 @@ struct CustomTabBar: View {
 
                 // Center Map button (circular and elevated)
                 Button(action: {
+                    let wasSelected = selectedTab == .map
                     selectedTab = .map
+                    onMapButtonTap(wasSelected)
                 }) {
                     Image(systemName: "map.fill")
                         .font(.system(size: 26, weight: .medium))

@@ -4,7 +4,7 @@ struct PlacePreviewModal: View {
     let place: PlaceDetail?
     let isLoading: Bool
     let errorMessage: String?
-    let onTap: () -> Void
+    let onTap: (() -> Void)?
     let onDismiss: () -> Void
 
     @ViewBuilder
@@ -31,48 +31,47 @@ struct PlacePreviewModal: View {
             )
             .frame(maxWidth: .infinity)
         } else if let place = place {
-            Button(action: onTap) {
-                VStack(spacing: 6) {
-                    HStack {
-                        CategoryBadge(category: place.category)
-                        Spacer()
-                    }
-
-                    HStack {
-                        Text(place.title)
-                            .font(.system(size: 15, weight: .medium))
-                            .foregroundColor(.primary)
-                            .lineLimit(1)
-                            .truncationMode(.tail)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                        Spacer()
-                    }
+            if let onTap {
+                Button(action: onTap) {
+                    modalContent(for: place)
                 }
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
-                )
-                .frame(maxWidth: .infinity)
+                .buttonStyle(PlainButtonStyle())
+                .accessibilityAddTraits(.isButton)
+            } else {
+                modalContent(for: place)
             }
-            .buttonStyle(PlainButtonStyle())
         } else {
-            Text("장소 정보 없음")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundColor(.secondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 12, style: .continuous)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
-                )
-                .frame(maxWidth: .infinity)
+            EmptyView()
         }
     }
+}
+
+@ViewBuilder
+private func modalContent(for place: PlaceDetail) -> some View {
+    VStack(spacing: 6) {
+        HStack {
+            CategoryBadge(category: place.category)
+            Spacer()
+        }
+
+        HStack {
+            Text(place.title)
+                .font(.system(size: 15, weight: .medium))
+                .foregroundColor(.primary)
+                .lineLimit(1)
+                .truncationMode(.tail)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Spacer()
+        }
+    }
+    .padding(.horizontal, 20)
+    .padding(.vertical, 16)
+    .background(
+        RoundedRectangle(cornerRadius: 12, style: .continuous)
+            .fill(Color.white)
+            .shadow(color: .black.opacity(0.06), radius: 8, x: 0, y: 2)
+    )
+    .frame(maxWidth: .infinity)
 }
 
 #Preview {
@@ -80,6 +79,7 @@ struct PlacePreviewModal: View {
         place: PlaceDetail(
             placeId: 1,
             imageUrl: nil,
+            placeImages: nil,
             category: "BOOTH",
             title: "하리랜드:최강단과대 결정전",
             description: "플레이스 설명이 아직 없습니다.",

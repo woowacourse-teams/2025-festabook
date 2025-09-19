@@ -26,3 +26,19 @@ enum BuildConfig {
         return ""
     }
 }
+
+enum ImageURLResolver {
+    private static let baseURL = URL(string: "https://festabook.app/")!
+
+    static func resolve(_ path: String?) -> String? {
+        guard let path = path, !path.isEmpty else { return nil }
+
+        let lowercased = path.lowercased()
+        if lowercased.hasPrefix("http://") || lowercased.hasPrefix("https://") {
+            return path
+        }
+
+        let trimmed = path.hasPrefix("/") ? String(path.dropFirst()) : path
+        return baseURL.appendingPathComponent(trimmed).absoluteString
+    }
+}
