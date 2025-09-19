@@ -29,7 +29,7 @@ class LineupJpaRepositoryTest {
     class existsByFestivalIdAndPerformanceAt {
 
         @Test
-        void 페스티벌ID와_공연시간_일치_데이터_존재_여부() {
+        void 성공_페스티벌ID_공연시간_일치_데이터_존재시_TRUE_반환() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
@@ -46,7 +46,7 @@ class LineupJpaRepositoryTest {
         }
 
         @Test
-        void 동일_페스티벌ID_다른_공연시간_데이터_존재_여부() {
+        void 성공_동일_페스티벌ID_다른_공연시간_데이터_존재시_FALSE_반환() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
@@ -66,7 +66,7 @@ class LineupJpaRepositoryTest {
         }
 
         @Test
-        void 동일_공연시간_다른_페스티벌ID_데이터_존재_여부() {
+        void 성공_동일_공연시간_다른_페스티벌ID_데이터_존재시_FALSE_반환() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
@@ -87,7 +87,7 @@ class LineupJpaRepositoryTest {
         }
 
         @Test
-        void 존재하지_않는_데이터_조회_결과() {
+        void 성공_존재하지_않는_데이터_조회시_FALSE_반환() {
             // given
             Long nonExistentFestivalId = 0L;
             LocalDateTime nonExistentPerformanceAt = LocalDateTime.of(2025, 12, 31, 23, 59);
