@@ -381,7 +381,7 @@ struct FestivalPosterCarousel: View {
     }
 }
 
-// MARK: - 포스터 캐러셀 (풀 슬라이드 + 인디케이터)
+// MARK: - 포스터 캐러셀 (풀 슬라이드)
 struct PosterCarousel: View {
     let imageUrls: [String]
     @Binding var currentIndex: Int
@@ -389,11 +389,8 @@ struct PosterCarousel: View {
     private var cardWidthRatio: CGFloat { PosterCarouselConstants.cardWidthRatio }
     private var posterWidth: CGFloat { UIScreen.main.bounds.width * cardWidthRatio }
     private var posterHeight: CGFloat { posterWidth * 4 / 3 }
-    private let pageControlSpacing: CGFloat = 16
-    private let pageControlHeight: CGFloat = 20
-
     private var containerHeight: CGFloat {
-        posterHeight + pageControlSpacing + pageControlHeight
+        posterHeight
     }
 
     var body: some View {
@@ -529,12 +526,20 @@ final class PosterCarouselViewController: UIViewController {
     weak var delegate: PosterCarouselViewControllerDelegate?
 
     private var imageUrls: [String] = []
-    private var currentIndex: Int = 0
+    private var repeatedImageUrls: [String] = []
+    private var currentIndex: Int = 0 // actual index within imageUrls
+    private var currentRepeatedIndex: Int = 0 // index within repeatedImageUrls
     private var isProgrammaticScroll = false
     private var pendingProgrammaticNotification: Int?
+    private var isAdjustingContentOffset = false
 
     private var cellStyle = PosterCarouselCellStyle()
     var cardWidthRatio: CGFloat = PosterCarouselConstants.cardWidthRatio
+
+    private let repetitionCount = 40 // even number to allow centering
+    private var isInfiniteScrollEnabled: Bool { imageUrls.count > 1 }
+    private var repeatedItemCount: Int { repeatedImageUrls.count }
+    private var actualItemCount: Int { imageUrls.count }
 
     private lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
@@ -553,25 +558,16 @@ final class PosterCarouselViewController: UIViewController {
         return cv
     }()
 
-    private let pageControl: UIPageControl = {
-        let control = UIPageControl()
-        control.translatesAutoresizingMaskIntoConstraints = false
-        control.currentPage = 0
-        control.pageIndicatorTintColor = .systemGray3
-        control.currentPageIndicatorTintColor = .label
-        return control
-    }()
-
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .clear
         setupLayout()
-        pageControl.addTarget(self, action: #selector(pageControlChanged), for: .valueChanged)
     }
 
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
         updateLayoutMetrics()
+        centerIfNeeded()
     }
 
     func updateAppearance(
@@ -592,46 +588,51 @@ final class PosterCarouselViewController: UIViewController {
     }
 
     func update(imageUrls: [String], currentIndex: Int, animated: Bool) {
-        let uniqueUrls = imageUrls
-        let didChangeUrls = uniqueUrls != self.imageUrls
-        self.imageUrls = uniqueUrls
+        let normalizedUrls = imageUrls
+        let didChangeUrls = normalizedUrls != self.imageUrls
 
-        pageControl.numberOfPages = uniqueUrls.count
-        pageControl.isHidden = uniqueUrls.count <= 1
+        self.imageUrls = normalizedUrls
+        self.repeatedImageUrls = buildRepeatedUrls(from: normalizedUrls)
 
         if didChangeUrls {
             collectionView.reloadData()
             view.layoutIfNeeded()
         }
 
-        guard !uniqueUrls.isEmpty else {
+        guard repeatedItemCount > 0 else {
             self.currentIndex = 0
-            pageControl.currentPage = 0
+            currentRepeatedIndex = 0
             let offsetX = -collectionView.contentInset.left
             collectionView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: false)
             return
         }
 
-        let clampedIndex = clamped(currentIndex)
-        if clampedIndex != self.currentIndex || didChangeUrls {
-            setCurrentIndex(clampedIndex, animated: animated && !didChangeUrls, notifyDelegate: false)
+        let clampedActualIndex = clamped(currentIndex)
+        let targetRepeatedIndex = initialRepeatedIndex(for: clampedActualIndex)
+
+        self.currentIndex = clampedActualIndex
+        self.currentRepeatedIndex = targetRepeatedIndex
+
+        let shouldAnimate = animated && !didChangeUrls
+        scrollToRepeatedIndex(targetRepeatedIndex, animated: shouldAnimate, notifyDelegate: false)
+
+        if shouldAnimate == false { // ensure immediate readiness for reverse swipe on first render
+            primeRepeatedIndexIfNeeded()
         } else {
-            pageControl.currentPage = clampedIndex
+            DispatchQueue.main.async { [weak self] in
+                self?.primeRepeatedIndexIfNeeded()
+            }
         }
     }
 
     private func setupLayout() {
         view.addSubview(collectionView)
-        view.addSubview(pageControl)
 
         NSLayoutConstraint.activate([
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-
-            pageControl.topAnchor.constraint(equalTo: collectionView.bottomAnchor, constant: 12),
-            pageControl.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            pageControl.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -4)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
     }
 
@@ -645,59 +646,157 @@ final class PosterCarouselViewController: UIViewController {
         layout.itemSize = CGSize(width: width, height: height)
         let sideInset = max((availableWidth - width) / 2, 0)
         collectionView.contentInset = UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)
-
-        if !isProgrammaticScroll,
-           !collectionView.isDragging,
-           collectionView.numberOfItems(inSection: 0) > currentIndex {
-            let indexPath = IndexPath(item: currentIndex, section: 0)
-            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
-        }
     }
 
-    private func setCurrentIndex(_ index: Int, animated: Bool, ensureVisible: Bool = true, notifyDelegate: Bool) {
-        guard imageUrls.indices.contains(index) else { return }
-        currentIndex = index
-        pageControl.currentPage = index
+    private func centerIfNeeded() {
+        guard repeatedItemCount > 0,
+              let expectedOffset = expectedContentOffset(forRepeatedIndex: currentRepeatedIndex) else { return }
+        let delta = abs(collectionView.contentOffset.x - expectedOffset.x)
+        guard delta > 1 else { return }
 
-        guard ensureVisible, collectionView.numberOfItems(inSection: 0) > index else {
-            pendingProgrammaticNotification = nil
-            isProgrammaticScroll = false
-            if notifyDelegate {
-                delegate?.posterCarousel(self, didUpdateIndex: index)
-            }
-            return
-        }
+        scrollToRepeatedIndex(currentRepeatedIndex, animated: false, notifyDelegate: false)
+    }
 
-        let indexPath = IndexPath(item: index, section: 0)
+    private func scrollToRepeatedIndex(_ repeatedIndex: Int, animated: Bool, notifyDelegate: Bool) {
+        guard repeatedImageUrls.indices.contains(repeatedIndex),
+              let offset = expectedContentOffset(forRepeatedIndex: repeatedIndex) else { return }
+
+        let actual = actualIndex(forRepeated: repeatedIndex)
+        currentRepeatedIndex = repeatedIndex
+        currentIndex = actual
 
         if animated {
             isProgrammaticScroll = true
-            pendingProgrammaticNotification = notifyDelegate ? index : nil
-            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: true)
+            pendingProgrammaticNotification = notifyDelegate ? actual : nil
+            collectionView.setContentOffset(offset, animated: true)
         } else {
-            collectionView.scrollToItem(at: indexPath, at: .centeredHorizontally, animated: false)
+            let previousState = isProgrammaticScroll
+            isProgrammaticScroll = true
             pendingProgrammaticNotification = nil
-            isProgrammaticScroll = false
+            UIView.performWithoutAnimation {
+                collectionView.setContentOffset(offset, animated: false)
+                collectionView.layoutIfNeeded()
+            }
+            isProgrammaticScroll = previousState
             if notifyDelegate {
-                delegate?.posterCarousel(self, didUpdateIndex: index)
+                delegate?.posterCarousel(self, didUpdateIndex: actual)
             }
         }
     }
 
-    private func clamped(_ index: Int) -> Int {
-        guard !imageUrls.isEmpty else { return 0 }
-        return min(max(index, 0), imageUrls.count - 1)
+    private func adjustContentOffsetIfNeeded() {
+        guard isInfiniteScrollEnabled,
+              !isAdjustingContentOffset,
+              let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        guard cellWidth > 0, actualItemCount > 0 else { return }
+
+        let inset = collectionView.contentInset.left
+        let rawOffset = collectionView.contentOffset.x + inset
+
+        let cycleWidth = cellWidth * CGFloat(actualItemCount)
+        let totalWidth = cellWidth * CGFloat(repeatedItemCount)
+
+        let minimumOffset = cycleWidth * CGFloat(repetitionCount / 4)
+        let maximumOffset = totalWidth - cycleWidth * CGFloat(repetitionCount / 4)
+
+        if rawOffset < minimumOffset {
+            isAdjustingContentOffset = true
+            let shift = cycleWidth * CGFloat(repetitionCount / 2)
+            let newOffset = rawOffset + shift
+            collectionView.setContentOffset(CGPoint(x: newOffset - inset, y: collectionView.contentOffset.y), animated: false)
+            collectionView.layoutIfNeeded()
+            isAdjustingContentOffset = false
+        } else if rawOffset > maximumOffset {
+            isAdjustingContentOffset = true
+            let shift = cycleWidth * CGFloat(repetitionCount / 2)
+            let newOffset = rawOffset - shift
+            collectionView.setContentOffset(CGPoint(x: newOffset - inset, y: collectionView.contentOffset.y), animated: false)
+            collectionView.layoutIfNeeded()
+            isAdjustingContentOffset = false
+        }
     }
 
-    @objc private func pageControlChanged() {
-        let index = clamped(pageControl.currentPage)
-        setCurrentIndex(index, animated: true, notifyDelegate: true)
+    private func buildRepeatedUrls(from urls: [String]) -> [String] {
+        guard !urls.isEmpty else { return [] }
+        guard urls.count > 1 else { return urls }
+
+        var repeated: [String] = []
+        repeated.reserveCapacity(urls.count * repetitionCount)
+        for _ in 0..<repetitionCount {
+            repeated.append(contentsOf: urls)
+        }
+        return repeated
     }
+
+    private func initialRepeatedIndex(for actualIndex: Int) -> Int {
+        guard actualItemCount > 0 else { return 0 }
+        guard isInfiniteScrollEnabled else { return actualIndex }
+        let middleCycle = (repetitionCount / 2) * actualItemCount
+        return middleCycle + actualIndex
+    }
+
+    private func expectedContentOffset(forRepeatedIndex index: Int) -> CGPoint? {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return nil }
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        guard cellWidth > 0 else { return nil }
+        let inset = collectionView.contentInset.left
+        let offsetX = CGFloat(index) * cellWidth - inset
+        return CGPoint(x: offsetX, y: 0)
+    }
+
+    private func updateIndicesForVisibleItem(notifyDelegate: Bool) {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout,
+              layout.itemSize.width + layout.minimumLineSpacing > 0,
+              actualItemCount > 0 else { return }
+
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        let inset = collectionView.contentInset.left
+        let offset = collectionView.contentOffset.x + inset
+        let rawIndex = Int(round(offset / cellWidth))
+        let clampedRepeatedIndex = max(0, min(repeatedItemCount - 1, rawIndex))
+
+        currentRepeatedIndex = clampedRepeatedIndex
+        let actual = actualIndex(forRepeated: clampedRepeatedIndex)
+
+        if currentIndex != actual {
+            currentIndex = actual
+            if notifyDelegate {
+                delegate?.posterCarousel(self, didUpdateIndex: actual)
+            }
+        }
+    }
+
+    private func actualIndex(forRepeated index: Int) -> Int {
+        guard actualItemCount > 0 else { return 0 }
+        let normalized = ((index % actualItemCount) + actualItemCount) % actualItemCount
+        return normalized
+    }
+
+    private func clamped(_ index: Int) -> Int {
+        guard actualItemCount > 0 else { return 0 }
+        return min(max(index, 0), actualItemCount - 1)
+    }
+
+    private func primeRepeatedIndexIfNeeded() {
+        guard isInfiniteScrollEnabled,
+              actualItemCount > 0,
+              repeatedItemCount > 0 else { return }
+
+        let desiredIndex = currentRepeatedIndex + actualItemCount
+        guard desiredIndex < repeatedItemCount else { return }
+
+        if desiredIndex != currentRepeatedIndex {
+            scrollToRepeatedIndex(desiredIndex, animated: false, notifyDelegate: false)
+        }
+    }
+
 }
 
 extension PosterCarouselViewController: UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        imageUrls.count
+        repeatedItemCount
     }
 
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
@@ -708,50 +807,60 @@ extension PosterCarouselViewController: UICollectionViewDataSource {
             return UICollectionViewCell()
         }
 
-        let urlString = imageUrls[indexPath.item]
+        guard repeatedImageUrls.indices.contains(indexPath.item) else {
+            cell.apply(style: cellStyle)
+            return cell
+        }
+
+        let urlString = repeatedImageUrls[indexPath.item]
         cell.configure(with: urlString, style: cellStyle)
         return cell
     }
 }
 
 extension PosterCarouselViewController: UICollectionViewDelegateFlowLayout {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard !isProgrammaticScroll else { return }
+        adjustContentOffsetIfNeeded()
+        updateIndicesForVisibleItem(notifyDelegate: false)
+    }
+
     func scrollViewWillEndDragging(
         _ scrollView: UIScrollView,
         withVelocity velocity: CGPoint,
         targetContentOffset: UnsafeMutablePointer<CGPoint>
     ) {
         guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout,
-              !imageUrls.isEmpty else { return }
+              repeatedItemCount > 0 else { return }
 
         let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        guard cellWidth > 0 else { return }
         let inset = scrollView.contentInset.left
         let proposedOffsetX = targetContentOffset.pointee.x + inset
         let index = round(proposedOffsetX / cellWidth)
-        let clampedIndex = Int(max(0, min(index, CGFloat(imageUrls.count - 1))))
+        let clampedIndex = Int(max(0, min(index, CGFloat(repeatedItemCount - 1))))
 
         let newOffsetX = CGFloat(clampedIndex) * cellWidth - inset
         targetContentOffset.pointee = CGPoint(x: newOffsetX, y: targetContentOffset.pointee.y)
-
-        setCurrentIndex(clampedIndex, animated: false, ensureVisible: false, notifyDelegate: true)
     }
 
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         isProgrammaticScroll = false
-        if let pending = pendingProgrammaticNotification {
-            delegate?.posterCarousel(self, didUpdateIndex: pending)
-            pendingProgrammaticNotification = nil
-        }
+        adjustContentOffsetIfNeeded()
+        updateIndicesForVisibleItem(notifyDelegate: true)
     }
 
     func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
         isProgrammaticScroll = false
+        adjustContentOffsetIfNeeded()
+        updateIndicesForVisibleItem(notifyDelegate: false)
+
         if let pending = pendingProgrammaticNotification {
-            delegate?.posterCarousel(self, didUpdateIndex: pending)
             pendingProgrammaticNotification = nil
+            delegate?.posterCarousel(self, didUpdateIndex: pending)
         }
     }
 }
-
 // MARK: - Carousel Cell & Loader
 private struct PosterCarouselCellStyle {
     var cornerRadius: CGFloat = 12
@@ -1354,59 +1463,57 @@ struct FestivalPosterPlaceholder: View {
         UIScreen.main.bounds.width * PosterCarouselConstants.cardWidthRatio
     }
     private var posterHeight: CGFloat { posterWidth * 4 / 3 }
-    private var horizontalPadding: CGFloat {
-        max((UIScreen.main.bounds.width - posterWidth) / 2, 0)
-    }
+    private let carouselSpacing: CGFloat = 12
     
-    var body: some View {
-        VStack(spacing: 16) {
-            // 포스터 스켈레톤 (실제 크기와 동일)
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color.gray.opacity(0.2))
-                .frame(width: posterWidth, height: posterHeight)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(
-                            LinearGradient(
-                                colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
-                                startPoint: .leading,
-                                endPoint: .trailing
-                            )
-                        )
-                        .offset(x: isAnimating ? posterWidth : -posterWidth)
-                        .mask(RoundedRectangle(cornerRadius: 12))
-                )
-                .clipped()
-                .frame(height: posterHeight)
-                .padding(.horizontal, horizontalPadding)
-            
-            // 페이지 인디케이터 스켈레톤
-            HStack(spacing: 6) {
-                ForEach(0..<3, id: \.self) { index in
-                    Circle()
-                        .fill(Color.gray.opacity(index == 0 ? 0.4 : 0.2))
-                        .frame(width: index == 0 ? 8 : 6, height: index == 0 ? 8 : 6)
-                        .overlay(
-                            Circle()
-                                .fill(
-                                    LinearGradient(
-                                        colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
-                                        startPoint: .leading,
-                                        endPoint: .trailing
-                                    )
-                                )
-                                .offset(x: isAnimating ? 8 : -8)
-                                .mask(Circle())
-                        )
-                        .clipped()
-                }
-            }
+var body: some View {
+        ZStack(alignment: .center) {
+            sideCard(multiplier: -1)
+            sideCard(multiplier: 1)
+            mainCard()
         }
+        .frame(width: UIScreen.main.bounds.width, height: posterHeight)
+        .clipped()
         .onAppear {
             withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
                 isAnimating = true
             }
         }
+    }
+
+    private func mainCard() -> some View {
+        placeholderCard(width: posterWidth, height: posterHeight, baseOpacity: 0.2)
+            .zIndex(1)
+    }
+
+    private func sideCard(multiplier: CGFloat) -> some View {
+        let sideWidth = posterWidth
+        let sideHeight = posterHeight
+        let horizontalOffset = (posterWidth + carouselSpacing) * multiplier
+
+        return placeholderCard(width: sideWidth, height: sideHeight, baseOpacity: 0.14)
+            .offset(x: horizontalOffset)
+            .zIndex(0)
+    }
+
+    private func placeholderCard(width: CGFloat, height: CGFloat, baseOpacity: Double) -> some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color.gray.opacity(baseOpacity))
+            .frame(width: width, height: height)
+            .overlay(shimmerOverlay(width: width, height: height))
+    }
+
+    private func shimmerOverlay(width: CGFloat, height: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(
+                LinearGradient(
+                    colors: [Color.clear, Color.white.opacity(0.45), Color.clear],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .frame(width: width, height: height)
+            .offset(x: isAnimating ? width : -width)
+            .mask(RoundedRectangle(cornerRadius: 12))
     }
 }
 
