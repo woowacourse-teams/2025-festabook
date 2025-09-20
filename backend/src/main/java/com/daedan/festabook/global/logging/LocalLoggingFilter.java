@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Profile;
@@ -30,19 +31,24 @@ public class LocalLoggingFilter extends OncePerRequestFilter {
             "/api/api-docs",
             "/api/actuator"
     );
+    private static final Set<MaskingPath> BODY_MASKING_PATH = Set.of(
+            new MaskingPath("/api/councils", "POST"),
+            new MaskingPath("/api/councils/login", "POST"),
+            new MaskingPath("/api/councils/password", "PATCH")
+    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        StopWatch stopWatch = new StopWatch();
         String uri = request.getRequestURI();
-        String httpMethod = request.getMethod();
-        String queryString = request.getQueryString();
-
         if (isSkipLoggingForPath(uri)) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        StopWatch stopWatch = new StopWatch();
+        String httpMethod = request.getMethod();
+        String queryString = request.getQueryString();
 
         stopWatch.start();
         try {

@@ -9,6 +9,8 @@ import java.io.StringWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
@@ -25,11 +27,46 @@ public class GlobalExceptionHandler {
                     .status(businessException.getStatus())
                     .body(businessException.toResponse());
         } finally {
-            ExceptionLog exceptionLog = new ExceptionLog(
-                    "exception",
+            ExceptionLog exceptionLog = ExceptionLog.from(
                     businessException.getStatus().value(),
                     businessException.getMessage(),
                     businessException.getClass().getSimpleName(),
+                    ""
+            );
+            log.info("", kv("event", exceptionLog));
+        }
+    }
+
+    @ExceptionHandler(AuthenticationCredentialsNotFoundException.class)
+    public ResponseEntity<ExceptionResponse> handleAuthenticationCredentialsNotFoundException(
+            AuthenticationCredentialsNotFoundException exception
+    ) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED.value())
+                    .body(new ExceptionResponse("인증되지 않은 사용자입니다."));
+        } finally {
+            ExceptionLog exceptionLog = ExceptionLog.from(
+                    HttpStatus.UNAUTHORIZED.value(),
+                    exception.getMessage(),
+                    exception.getClass().getSimpleName(),
+                    ""
+            );
+            log.info("", kv("event", exceptionLog));
+        }
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ExceptionResponse> handleAccessDeniedException(AccessDeniedException exception) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.FORBIDDEN.value())
+                    .body(new ExceptionResponse("인가되지 않은 사용자입니다."));
+        } finally {
+            ExceptionLog exceptionLog = ExceptionLog.from(
+                    HttpStatus.FORBIDDEN.value(),
+                    exception.getMessage(),
+                    exception.getClass().getSimpleName(),
                     ""
             );
             log.info("", kv("event", exceptionLog));
@@ -46,8 +83,7 @@ public class GlobalExceptionHandler {
                     .internalServerError()
                     .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
         } finally {
-            ExceptionLog exceptionLog = new ExceptionLog(
-                    "exception",
+            ExceptionLog exceptionLog = ExceptionLog.from(
                     HttpStatus.INTERNAL_SERVER_ERROR.value(),
                     runtimeException.getMessage(),
                     runtimeException.getClass().getSimpleName(),

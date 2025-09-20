@@ -13,6 +13,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +40,11 @@ public class LoggingFilter extends OncePerRequestFilter {
             "/api/api-docs",
             "/api/actuator"
     );
+    private static final Set<MaskingPath> BODY_MASKING_PATH = Set.of(
+            new MaskingPath("/api/councils", "POST"),
+            new MaskingPath("/api/councils/login", "POST"),
+            new MaskingPath("/api/councils/password", "PATCH")
+    );
     private static final String REQUEST_USER_IP_HEADER_NAME = "X-Forwarded-For";
     private static final String AUTHENTICATION_HEADER = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Bearer ";
@@ -50,17 +56,17 @@ public class LoggingFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
         MDC.put("traceId", UUID.randomUUID().toString());
-        StopWatch stopWatch = new StopWatch();
         String uri = request.getRequestURI();
-        String httpMethod = request.getMethod();
-        String ipAddress = request.getHeader(REQUEST_USER_IP_HEADER_NAME);
-        String token = extractTokenFromHeader(request);
-        String username = extractUsernameFromToken(token);
-
         if (isSkipLoggingForPath(uri)) {
             filterChain.doFilter(request, response);
             return;
         }
+
+        StopWatch stopWatch = new StopWatch();
+        String httpMethod = request.getMethod();
+        String ipAddress = request.getHeader(REQUEST_USER_IP_HEADER_NAME);
+        String token = extractTokenFromHeader(request);
+        String username = extractUsernameFromToken(token);
 
         stopWatch.start();
         try {
@@ -82,7 +88,7 @@ public class LoggingFilter extends OncePerRequestFilter {
                     ipAddress,
                     username,
                     statusCode,
-                    requestBody,
+                    maskIfContainsMaskingPath(uri, httpMethod, requestBody),
                     executionTime
             );
             log.info("", kv("event", apiLog));
@@ -92,6 +98,14 @@ public class LoggingFilter extends OncePerRequestFilter {
 
     private boolean isSkipLoggingForPath(String uri) {
         return LOGGING_SKIP_PATH_PREFIX.stream().anyMatch(uri::startsWith);
+    }
+
+    private Object maskIfContainsMaskingPath(String uri, String httpMethod, Object requestBody) {
+        if (BODY_MASKING_PATH.contains(new MaskingPath(uri, httpMethod))) {
+            return "MASKING";
+        }
+
+        return requestBody;
     }
 
     private Object extractBodyFromCache(HttpServletRequest request) {

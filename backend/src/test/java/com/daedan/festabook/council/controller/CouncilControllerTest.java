@@ -99,7 +99,7 @@ class CouncilControllerTest {
                     .when()
                     .post("/councils")
                     .then()
-                    .statusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+                    .statusCode(HttpStatus.FORBIDDEN.value());
         }
     }
 
