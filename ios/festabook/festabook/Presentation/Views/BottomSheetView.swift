@@ -115,21 +115,36 @@ struct PreviewListView: View {
 
     var body: some View {
         ScrollView {
-            LazyVStack(spacing: 0) {
-                ForEach(viewModel.filteredPreviews, id: \.id) { preview in
-                    PreviewCard(preview: preview) {
-                        viewModel.selectPlace(preview.placeId)
-                    }
+            if viewModel.filteredPreviews.isEmpty {
+                // 빈 상태 메시지
+                VStack(spacing: 12) {
+                    Image(systemName: "storefront")
+                        .font(.system(size: 24))
+                        .foregroundColor(.gray)
+                    Text("등록된 부스 정보가 없습니다")
+                        .font(.system(size: 14))
+                        .foregroundColor(.gray)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.top, 20)     // 상단 여백 줄임
+                .padding(.bottom, 40)   // 하단 여백은 유지
+            } else {
+                LazyVStack(spacing: 0) {
+                    ForEach(viewModel.filteredPreviews, id: \.id) { preview in
+                        PreviewCard(preview: preview) {
+                            viewModel.selectPlace(preview.placeId)
+                        }
 
-                    if preview.id != viewModel.filteredPreviews.last?.id {
-                        Divider()
-                            .background(Color.gray.opacity(0.3))
-                            .padding(.horizontal, 16)
+                        if preview.id != viewModel.filteredPreviews.last?.id {
+                            Divider()
+                                .background(Color.gray.opacity(0.3))
+                                .padding(.horizontal, 16)
+                        }
                     }
                 }
+                .padding(.top, 4) // 간격 축소
+                .padding(.bottom, 100) // Safe area for bottom navigation
             }
-            .padding(.top, 4) // 간격 축소
-            .padding(.bottom, 100) // Safe area for bottom navigation
         }
     }
 }
