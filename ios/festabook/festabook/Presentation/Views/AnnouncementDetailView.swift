@@ -1,4 +1,5 @@
 import SwiftUI
+import Foundation
 
 // MARK: - 공지사항 상세 화면
 struct AnnouncementDetailView: View {
@@ -35,7 +36,7 @@ struct AnnouncementDetailView: View {
                                 .padding(.horizontal)
 
                             // 내용
-                            Text(announcement.content)
+                            Text(LinkHelper.createAttributedString(from: announcement.content))
                                 .font(.body)
                                 .padding(.horizontal)
                                 .padding(.bottom)
@@ -57,29 +58,10 @@ struct AnnouncementDetailView: View {
     private func loadAnnouncementDetail() {
         print("[AnnouncementDetailView] 공지사항 상세 정보 로드: festivalId=\(festivalId), announcementId=\(announcementId)")
 
-        // 실제 구현에서는 APIClient를 통해 서버에서 데이터를 가져옵니다
-        // 여기서는 임시 데이터를 사용합니다
-
-        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
-            // 임시 데이터
-            self.announcementData = AnnouncementDetail(
-                id: announcementId,
-                title: "축제 공지 알림",
-                content: "오늘 연예인 공연은 오후 6시부터 시작합니다.\n\n많은 관심과 참여 부탁드립니다!",
-                createdAt: "2025-09-16 23:20:00",
-                festivalId: festivalId
-            )
-            self.isLoading = false
-
-            print("[AnnouncementDetailView] ✅ 공지사항 상세 정보 로드 완료")
-        }
-
-        // 실제 API 호출 예시:
-        /*
         Task {
             do {
                 let endpoint = Endpoints.News.announcementDetail(Int(announcementId) ?? 0)
-                let announcement: AnnouncementDetail = try await APIClient.shared.get(endpoint: endpoint)
+                let announcement: AnnouncementDetail = try await APIClient.shared.get(endpoint)
 
                 await MainActor.run {
                     self.announcementData = announcement
@@ -92,12 +74,12 @@ struct AnnouncementDetailView: View {
                 }
             }
         }
-        */
     }
+
 }
 
 // MARK: - 공지사항 상세 데이터 모델
-struct AnnouncementDetail {
+struct AnnouncementDetail: Decodable {
     let id: String
     let title: String
     let content: String

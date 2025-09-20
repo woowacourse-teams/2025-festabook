@@ -283,7 +283,7 @@ struct AnnouncementCard: View {
                             .frame(width: 16)
 
                         // 본문
-                        Text(announcement.content)
+                        Text(LinkHelper.createAttributedString(from: announcement.content))
                             .font(.system(size: 14))
                             .foregroundColor(.black)
                             .multilineTextAlignment(.leading)
