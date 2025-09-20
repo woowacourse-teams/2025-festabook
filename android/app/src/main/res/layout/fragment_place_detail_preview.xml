@@ -115,6 +115,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:textAppearance="@style/PretendardRegular12"
+                android:autoLink="web"
+                android:textColorLink="@color/gray500"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="@id/iv_selected_place_host"
                 app:layout_constraintTop_toBottomOf="@id/iv_selected_place_host"
