@@ -16,11 +16,6 @@ class AppStoreCheck {
         let currentVersion = Self.appVersion ?? "알 수 없음"
         print("[AppStoreCheck] 현재 앱 버전: \(currentVersion)")
 
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-            print("[AppStoreCheck] 테스트용 하드코딩: 앱스토어 버전 2.0.0 반환")
-            completion("2.0.0")
-        }
-
         let urlString = "https://itunes.apple.com/lookup?id=\(Self.appleID)&country=kr"
 
         guard let url = URL(string: urlString) else {
