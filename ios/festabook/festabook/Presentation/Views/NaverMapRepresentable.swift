@@ -89,6 +89,9 @@ struct NaverMapRepresentable: UIViewRepresentable {
             private var markerTitles: [Int: String] = [:]
             private var pendingMoveToCurrentLocation = false
             private var selectedMarkerId: Int?
+            private let captionVisibilityZoomThreshold: Double = 18.0
+            private var markerGeographies: [Int: PlaceGeography] = [:]
+            private var lastCameraMoveTargetId: Int?
 
             init(_ viewModel: MapViewModel) {
                 self.viewModel = viewModel
@@ -143,6 +146,12 @@ struct NaverMapRepresentable: UIViewRepresentable {
             // Update markers
             print("[Coordinator] 마커 업데이트: \(viewModel.filteredMarkers.count)개")
             updateMarkers(mapView, markers: viewModel.filteredMarkers)
+
+            if let selectedPlaceId = viewModel.selectedPlaceId,
+               lastCameraMoveTargetId != selectedPlaceId,
+               let targetMarker = markerGeographies[selectedPlaceId] {
+                moveToMarkerWithOffset(mapView, marker: targetMarker)
+            }
 
             // Update selected marker
             if let selectedPlaceId = viewModel.selectedPlaceId {
@@ -234,7 +243,10 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
 
         private func moveToMarkerWithOffset(_ mapView: NMFMapView, marker: PlaceGeography) {
-            if selectedMarkerId == marker.placeId { return }
+            if selectedMarkerId == marker.placeId {
+                lastCameraMoveTargetId = marker.placeId
+                return
+            }
             // 애니메이션 중이거나 최근에 contentInset 변경이 있었으면 대기
             if isAnimating {
                 print("[Coordinator] 카메라 애니메이션 진행 중 - 마커 이동 스킵")
@@ -271,6 +283,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
             // 50m 이내면 카메라 이동 스킵 (적절한 기준으로 설정하여 불필요한 애니메이션 방지)
             if distance < 45.0 {
                 print("[Coordinator] 마커가 이미 화면 중앙 근처에 있음 (거리: \(String(format: "%.2f", distance))m) - 카메라 이동 스킵")
+                lastCameraMoveTargetId = marker.placeId
                 return
             }
 
@@ -294,6 +307,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
             cameraUpdate.animation = .easeIn
             cameraUpdate.animationDuration = dynamicDuration
 
+            lastCameraMoveTargetId = marker.placeId
             mapView.moveCamera(cameraUpdate)
 
             // 애니메이션 완료 후 플래그 해제 (동적 시간 + 여유 시간)
@@ -441,6 +455,8 @@ struct NaverMapRepresentable: UIViewRepresentable {
             markerBaseSizes.removeAll()
 
             markerTitles.removeAll()
+            markerGeographies.removeAll()
+            lastCameraMoveTargetId = nil
 
             print("[Coordinator] 🗺 마커 업데이트 시작: \(markers.count)개 마커")
 
@@ -454,7 +470,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
                 let title = viewModel.previewsByPlaceId[marker.placeId]?.title ?? marker.title
                 nmfMarker.captionAligns = [.bottom]
-                nmfMarker.captionMinZoom = 15
+                nmfMarker.captionMinZoom = 0
                 nmfMarker.captionText = title
                 nmfMarker.captionOffset = 6
                 markerTitles[marker.placeId] = title
@@ -473,6 +489,25 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
                 nmfMarker.mapView = mapView
                 self.markers[marker.placeId] = nmfMarker
+                markerGeographies[marker.placeId] = marker
+            }
+
+            updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
+        }
+
+        @MainActor
+        private func updateMarkerCaptionVisibility(for zoomLevel: Double) {
+            let shouldShowCaptions = zoomLevel >= captionVisibilityZoomThreshold
+
+            markers.forEach { id, marker in
+                let title = markerTitles[id] ?? ""
+                if shouldShowCaptions || id == selectedMarkerId {
+                    if marker.captionText != title {
+                        marker.captionText = title
+                    }
+                } else if !title.isEmpty {
+                    marker.captionText = ""
+                }
             }
         }
 
@@ -569,6 +604,10 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
             selectedMarkerId = placeId
 
+            if placeId == nil {
+                lastCameraMoveTargetId = nil
+            }
+
             guard let placeId = placeId,
                   let selectedMarker = markers[placeId],
                   let base = markerBaseSizes[placeId] else { return }
@@ -581,6 +620,8 @@ struct NaverMapRepresentable: UIViewRepresentable {
             selectedMarker.captionTextSize = 13
             selectedMarker.captionOffset = 10
             CATransaction.commit()
+
+            updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
         }
 
         // MARK: - Location Button Management
@@ -841,8 +882,15 @@ struct NaverMapRepresentable: UIViewRepresentable {
         // MARK: - NMFMapViewCameraDelegate
 
         nonisolated func mapViewCameraIdle(_ mapView: NMFMapView) {
-            // Caption visibility is automatically handled by Naver Maps SDK
-            // No additional action needed here for captions
+            Task { @MainActor in
+                self.updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
+            }
+        }
+
+        nonisolated func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
+            Task { @MainActor in
+                self.updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
+            }
         }
 
         // MARK: - NMFMapViewTouchDelegate
