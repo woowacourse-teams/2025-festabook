@@ -44,4 +44,3 @@ cache:
   paths:
     - '/root/.gradle/caches/**/*'
     - '/root/.gradle/wrapper/**/*'
-    - '.gradle/**/*'
