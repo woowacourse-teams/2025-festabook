@@ -2,18 +2,21 @@
 import Foundation
 
 enum BuildConfig {
+    /// 기본 베이스 URL
+    private static let defaultBaseURL = "https://festabook.app"
+    
     static var apiBaseURL: URL {
         let urlString = string(for: "API_BASE_URL")
         guard !urlString.isEmpty else {
             // 폴백 URL 사용
-            return URL(string: "https://festabook.app/api")!
+            return URL(string: defaultBaseURL + "/api")!
         }
         return URL(string: urlString)!
     }
 
     /// 베이스 URL (이미지 경로 등에 사용)
     static var baseURL: String {
-        return "https://festabook.app"
+        return defaultBaseURL
     }
 
     static var naverMapClientId: String { string(for: "NAVER_MAP_CLIENT_ID") }
