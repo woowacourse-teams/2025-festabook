@@ -5,7 +5,7 @@
 	<key>FirebaseMessagingAutoInitEnabled</key>
 	<true/>
 	<key>MinimumOSVersion</key>
-	<string>18.0</string>
+	<string>17.0</string>
 	<key>NMFNcpKeyId</key>
 	<string>$(NMF_CLIENT_ID)</string>
 	<key>UIApplicationSceneManifest</key>
