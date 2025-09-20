@@ -59,6 +59,10 @@ dependencies {
     // Monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-cloudwatch2'
+    
+    // Tracing
+    implementation 'io.micrometer:micrometer-tracing-bridge-otel'
+    implementation 'io.opentelemetry:opentelemetry-exporter-otlp'
 
     // Test
     testImplementation 'org.springframework.boot:spring-boot-starter-test'

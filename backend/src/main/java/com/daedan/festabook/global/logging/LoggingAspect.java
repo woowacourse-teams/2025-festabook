@@ -4,6 +4,10 @@ import static net.logstash.logback.argument.StructuredArguments.kv;
 
 import com.daedan.festabook.global.logging.dto.MethodEventLog;
 import com.daedan.festabook.global.logging.dto.MethodLog;
+import io.opentelemetry.api.trace.Span;
+import io.opentelemetry.api.trace.Tracer;
+import io.opentelemetry.context.Scope;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -16,7 +20,10 @@ import org.springframework.util.StopWatch;
 @Aspect
 @Component
 @Profile("prod | dev")
+@RequiredArgsConstructor
 public class LoggingAspect {
+
+    private final Tracer tracer;
 
     @Around("""
             execution(* com.daedan.festabook..*.*(..)) &&
@@ -29,15 +36,18 @@ public class LoggingAspect {
     )
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
         StopWatch stopWatch = new StopWatch();
-        String className = joinPoint.getSignature().getDeclaringTypeName();
+        String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
 
         MethodEventLog methodEvent = MethodEventLog.from(className, methodName);
         log.info("", kv("event", methodEvent));
 
+        String spanName = className + "::" + methodName;
+        Span span = tracer.spanBuilder(spanName).startSpan();
+
         Object result = null;
         stopWatch.start();
-        try {
+        try (Scope scope = span.makeCurrent()) {
             result = joinPoint.proceed();
         } finally {
             stopWatch.stop();
@@ -45,6 +55,8 @@ public class LoggingAspect {
 
             MethodLog methodLog = MethodLog.from(className, methodName, executionTime);
             log.info("", kv("event", methodLog));
+
+            span.end();
         }
 
         return result;

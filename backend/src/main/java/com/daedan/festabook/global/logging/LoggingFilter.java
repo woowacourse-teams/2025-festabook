@@ -55,6 +55,7 @@ public class LoggingFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
+        MDC.put("traceId", UUID.randomUUID().toString());
         String uri = request.getRequestURI();
         if (isSkipLoggingForPath(uri)) {
             filterChain.doFilter(request, response);
@@ -69,8 +70,6 @@ public class LoggingFilter extends OncePerRequestFilter {
 
         stopWatch.start();
         try {
-            MDC.put("traceId", UUID.randomUUID().toString());
-
             ApiEventLog apiEvent = ApiEventLog.from(httpMethod, uri, ipAddress, username);
             log.info("", kv("event", apiEvent));
 
