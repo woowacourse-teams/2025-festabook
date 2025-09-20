@@ -132,7 +132,7 @@ struct MainTabView: View {
             )
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .onChange(of: tabManager.pendingSelection) { newValue in
+        .onChange(of: tabManager.pendingSelection) { _, newValue in
             guard let tab = newValue else { return }
             tabManager.pendingSelection = nil
             let shouldAnimate = tabManager.shouldAnimatePendingSelection
@@ -146,14 +146,14 @@ struct MainTabView: View {
                 tabManager.selectedTab = tab
             }
         }
-        .onChange(of: appState.shouldNavigateToNews) { shouldNavigate in
+        .onChange(of: appState.shouldNavigateToNews) { _, shouldNavigate in
             guard shouldNavigate else { return }
             appState.shouldNavigateToNews = false
             withAnimation(.easeInOut) {
                 tabManager.selectedTab = .news
             }
         }
-        .onChange(of: tabManager.selectedTab) { newTab in
+        .onChange(of: tabManager.selectedTab) { _, newTab in
             if newTab == .map {
                 mapViewModel.resetToInitialState()
             }

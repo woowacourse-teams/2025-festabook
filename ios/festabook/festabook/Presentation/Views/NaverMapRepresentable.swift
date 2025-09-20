@@ -34,8 +34,8 @@ struct NaverMapRepresentable: UIViewRepresentable {
         // 초기 카메라 위치 설정 - geography 데이터가 있으면 즉시 적용
         if let geography = viewModel.geography {
             let initialPosition = NMGLatLng(
-                lat: geography.centerCoordinate.latitude,
-                lng: geography.centerCoordinate.longitude
+                lat: geography.adjustedCenterCoordinate.latitude,
+                lng: geography.adjustedCenterCoordinate.longitude
             )
             let initialCameraPosition = NMFCameraPosition(initialPosition, zoom: Double(geography.zoom))
             let cameraUpdate = NMFCameraUpdate(position: initialCameraPosition)
@@ -122,7 +122,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
                 // 카메라 위치가 아직 설정되지 않은 경우에만 설정 (애니메이션 없이)
                 let currentPosition = mapView.cameraPosition
-                let targetPosition = NMGLatLng(lat: geography.centerCoordinate.latitude, lng: geography.centerCoordinate.longitude)
+                let targetPosition = NMGLatLng(lat: geography.adjustedCenterCoordinate.latitude, lng: geography.adjustedCenterCoordinate.longitude)
                 let targetZoom = Double(geography.zoom)
 
                 // 현재 위치와 목표 위치가 다르면 즉시 설정 (애니메이션 없음)
@@ -226,11 +226,12 @@ struct NaverMapRepresentable: UIViewRepresentable {
         }
 
         private func updateCameraPosition(_ mapView: NMFMapView, geography: GeographyResponse) {
-            let targetPosition = NMGLatLng(lat: geography.centerCoordinate.latitude, lng: geography.centerCoordinate.longitude)
+            let targetPosition = NMGLatLng(lat: geography.adjustedCenterCoordinate.latitude, lng: geography.adjustedCenterCoordinate.longitude)
             let targetZoom = Double(geography.zoom)
 
             print("[Coordinator] 📍 Geography API 초기 카메라 설정:")
             print("  - API center: lat=\(geography.centerCoordinate.latitude), lng=\(geography.centerCoordinate.longitude)")
+            print("  - Adjusted center: lat=\(geography.adjustedCenterCoordinate.latitude), lng=\(geography.adjustedCenterCoordinate.longitude)")
             print("  - API zoom: \(geography.zoom)")
             print("  - 현재 카메라: lat=\(mapView.cameraPosition.target.lat), lng=\(mapView.cameraPosition.target.lng), zoom=\(mapView.cameraPosition.zoom)")
 
@@ -864,7 +865,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
             mapView.locationOverlay.hidden = true
             isLocationTracking = false
 
-            let target = NMGLatLng(lat: geography.centerCoordinate.latitude, lng: geography.centerCoordinate.longitude)
+            let target = NMGLatLng(lat: geography.adjustedCenterCoordinate.latitude, lng: geography.adjustedCenterCoordinate.longitude)
             let cameraPosition = NMFCameraPosition(target, zoom: Double(geography.zoom))
             let cameraUpdate = NMFCameraUpdate(position: cameraPosition)
             cameraUpdate.animation = .easeIn

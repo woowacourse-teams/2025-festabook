@@ -15,6 +15,14 @@ struct GeographyResponse: Codable {
     let zoom: Int
     let centerCoordinate: LatLng
     let polygonHoleBoundary: [LatLng]
+
+    /// 화면 표시용 조정된 중심 좌표 (원래 좌표에서 살짝 위로 이동)
+    var adjustedCenterCoordinate: LatLng {
+        return LatLng(
+            latitude: centerCoordinate.latitude - 0.0015,
+            longitude: centerCoordinate.longitude
+        )
+    }
 }
 
 // MARK: - Place Geography API Response

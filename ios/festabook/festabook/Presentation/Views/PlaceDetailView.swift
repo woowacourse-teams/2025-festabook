@@ -65,10 +65,10 @@ struct PlaceDetailView: View {
                 backSwipeOffset = 0
                 isBackSwiping = false
             }
-            .onChange(of: topInset) { newValue in
+            .onChange(of: topInset) { _, newValue in
                 safeAreaTop = newValue
             }
-        .onChange(of: imageUrls) { newUrls in
+        .onChange(of: imageUrls) { _, newUrls in
             print("[PlaceDetailView] imageUrls 변경됨 - 개수: \(newUrls.count), currentImageIndex: \(currentImageIndex), viewerIndex: \(viewerIndex), lockedViewerIndex: \(lockedViewerIndex)")
             let maxIndex = max(newUrls.count - 1, 0)
             
@@ -184,7 +184,7 @@ struct PlaceDetailView: View {
         .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
         .frame(maxWidth: .infinity)
         .clipped()
-        .onChange(of: currentImageIndex) { newIndex in
+        .onChange(of: currentImageIndex) { _, newIndex in
             print("[PlaceDetailView] TabView currentImageIndex 변경됨: \(currentImageIndex) -> \(newIndex)")
             // viewerIndex 동기화 (조건부 동기화)
             if viewerIndex != newIndex {
@@ -635,15 +635,15 @@ private struct ImageGalleryView: View {
                 print("[ImageGalleryView] initialIndex \(initialIndex)가 범위를 벗어남 - currentIndex 유지")
             }
         }
-        .onChange(of: imageUrls) { _ in
+        .onChange(of: imageUrls) { _, _ in
             let maxIndex = max(imageUrls.count - 1, 0)
             syncDisplayedIndex(with: min(displayedIndex, maxIndex))
             syncCurrentIndex(with: min(currentIndex, maxIndex))
         }
-        .onChange(of: currentIndex) { newValue in
+        .onChange(of: currentIndex) { _, newValue in
             syncDisplayedIndex(with: newValue)
         }
-        .onChange(of: displayedIndex) { newValue in
+        .onChange(of: displayedIndex) { _, newValue in
             syncCurrentIndex(with: newValue)
         }
         .edgesIgnoringSafeArea(.all)

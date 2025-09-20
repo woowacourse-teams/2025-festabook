@@ -171,7 +171,7 @@ struct CachedAsyncImage<Content: View, Placeholder: View, ErrorView: View>: View
         .onAppear {
             loader.load(from: url)
         }
-        .onChange(of: url) { newValue in
+        .onChange(of: url) { _, newValue in
             loader.load(from: newValue)
         }
     }
@@ -211,7 +211,10 @@ actor ImagePrefetcher {
 
     private init() {
         let configuration = URLSessionConfiguration.default
-        configuration.urlCache = ImageLoader.cache
+        configuration.urlCache = URLCache(
+            memoryCapacity: 50 * 1024 * 1024,
+            diskCapacity: 200 * 1024 * 1024
+        )
         configuration.requestCachePolicy = .returnCacheDataElseLoad
         configuration.timeoutIntervalForResource = 60
         session = URLSession(configuration: configuration)
@@ -230,7 +233,7 @@ actor ImagePrefetcher {
         var request = URLRequest(url: url)
         request.cachePolicy = .returnCacheDataElseLoad
 
-        if ImageLoader.cache.cachedResponse(for: request) != nil {
+        if session.configuration.urlCache?.cachedResponse(for: request) != nil {
             return
         }
 
@@ -246,7 +249,7 @@ actor ImagePrefetcher {
             }
 
             let cachedResponse = CachedURLResponse(response: response, data: data)
-            ImageLoader.cache.storeCachedResponse(cachedResponse, for: request)
+            session.configuration.urlCache?.storeCachedResponse(cachedResponse, for: request)
         } catch {
             // Ignore failures; cache simply remains empty for this URL
         }

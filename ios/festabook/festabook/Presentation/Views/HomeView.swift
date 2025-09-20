@@ -330,7 +330,7 @@ struct HomeView: View {
         // 3. 축제 알림 구독
         print("[HomeView] 🎪 축제 알림 구독 시작")
         do {
-            let notificationId = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
+            let _ = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
             print("[APIClient] ✅ 축제 알림 구독 성공")
 
             // 구독 성공 시 토글 상태 확실히 동기화 (NotificationService에서 이미 처리하지만 명시적으로)
@@ -411,10 +411,10 @@ struct PosterCarousel: View {
                 }
                 prefetch(urls: neighborUrls(for: clamped))
             }
-            .onChange(of: currentIndex) { newValue in
+            .onChange(of: currentIndex) { _, newValue in
                 prefetch(urls: neighborUrls(for: newValue))
             }
-            .onChange(of: imageUrls.count) { _ in
+            .onChange(of: imageUrls.count) { _, _ in
                 let clamped = clampedIndex(currentIndex)
                 if currentIndex != clamped {
                     DispatchQueue.main.async {
@@ -961,7 +961,10 @@ private final class CarouselImageLoader {
 
     private init() {
         let configuration = URLSessionConfiguration.default
-        configuration.urlCache = ImageLoader.cache
+        configuration.urlCache = URLCache(
+            memoryCapacity: 50 * 1024 * 1024,
+            diskCapacity: 200 * 1024 * 1024
+        )
         configuration.requestCachePolicy = .returnCacheDataElseLoad
         session = URLSession(configuration: configuration)
     }
@@ -978,7 +981,7 @@ private final class CarouselImageLoader {
         var request = URLRequest(url: url)
         request.cachePolicy = .returnCacheDataElseLoad
 
-        if let cachedResponse = ImageLoader.cache.cachedResponse(for: request),
+        if let cachedResponse = session.configuration.urlCache?.cachedResponse(for: request),
            let image = UIImage(data: cachedResponse.data) {
             DispatchQueue.main.async {
                 completion(image)
@@ -994,7 +997,7 @@ private final class CarouselImageLoader {
                 image = fetchedImage
                 if let response {
                     let cachedResponse = CachedURLResponse(response: response, data: data)
-                    ImageLoader.cache.storeCachedResponse(cachedResponse, for: request)
+                    self?.session.configuration.urlCache?.storeCachedResponse(cachedResponse, for: request)
                 }
             }
 
