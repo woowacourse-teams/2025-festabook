@@ -61,10 +61,10 @@ struct HomeView: View {
                             .padding(.bottom, 15)
                     } else {
                         // 포스터가 없을 때 표시 (3:4 비율)
-                        GeometryReader { geometry in
-                            let posterWidth = geometry.size.width - 60
-                            let posterHeight = posterWidth * 4 / 3 // 3:4 비율
-                            
+                        let posterWidth = UIScreen.main.bounds.width * PosterCarouselConstants.cardWidthRatio
+                        let posterHeight = posterWidth * 4 / 3 // 3:4 비율
+                        
+                        ZStack(alignment: .center) {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.gray.opacity(0.1))
                                 .frame(width: posterWidth, height: posterHeight)
@@ -73,16 +73,15 @@ struct HomeView: View {
                                         Image(systemName: "photo")
                                             .font(.system(size: 40))
                                             .foregroundColor(.gray.opacity(0.5))
-                                        Text("포스터가 없습니다")
+                                        Text("등록된 포스터 정보가 없습니다")
                                             .font(.system(size: 16, weight: .medium))
                                             .foregroundColor(.gray)
                                     }
                                 )
-                                .frame(maxWidth: .infinity)
                         }
-                        .frame(height: (UIScreen.main.bounds.width - 40) * 4 / 3)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 20)
+                        .frame(width: UIScreen.main.bounds.width, height: posterHeight)
+                        .clipped()
+                        .padding(.bottom, 15) // 스켈레톤과 동일한 패딩 적용
                     }
 
                     // 축제 제목과 부제목 - 안드로이드 스타일
