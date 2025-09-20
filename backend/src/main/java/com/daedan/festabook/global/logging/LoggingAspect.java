@@ -42,7 +42,8 @@ public class LoggingAspect {
         MethodEventLog methodEvent = MethodEventLog.from(className, methodName);
         log.info("", kv("event", methodEvent));
 
-        Span span = tracer.spanBuilder(className + "::" + methodName).startSpan();
+        String spanName = className + "::" + methodName;
+        Span span = tracer.spanBuilder(spanName).startSpan();
 
         Object result = null;
         stopWatch.start();

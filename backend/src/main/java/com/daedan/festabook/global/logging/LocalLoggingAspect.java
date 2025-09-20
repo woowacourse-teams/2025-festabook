@@ -21,7 +21,8 @@ public class LocalLoggingAspect {
                 within(@org.springframework.stereotype.Service *) ||
                 execution(* org.springframework.data.jpa.repository.JpaRepository+.*(..))
             )
-            """)
+            """
+    )
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
         StopWatch stopWatch = new StopWatch();
         String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
@@ -37,8 +38,11 @@ public class LocalLoggingAspect {
             stopWatch.stop();
             long executionTime = stopWatch.getTotalTimeMillis();
 
-            log.info("[Method End] className={} methodName={} executionTime={}ms", className, methodName,
-                    executionTime);
+            log.info("[Method End] className={} methodName={} executionTime={}ms",
+                    className,
+                    methodName,
+                    executionTime
+            );
         }
 
         return result;
