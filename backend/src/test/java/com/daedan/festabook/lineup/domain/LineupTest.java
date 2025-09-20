@@ -1,18 +1,26 @@
 package com.daedan.festabook.lineup.domain;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatCode;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.time.LocalDateTime;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class LineupTest {
+
+    private static final int MAX_NAME_LENGTH = 50;
 
     @Nested
     class updateLineup {
@@ -47,7 +55,7 @@ class LineupTest {
     class isFestivalIdEqualTo {
 
         @Test
-        void 같은_축제의_id이면_true() {
+        void 성공_같은_축제의_id이면_true() {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
@@ -61,7 +69,7 @@ class LineupTest {
         }
 
         @Test
-        void 다른_축제의_id이면_false() {
+        void 성공_다른_축제의_id이면_false() {
             // given
             Long festivalId = 1L;
             Long otherFestivalId = 999L;
@@ -73,6 +81,51 @@ class LineupTest {
 
             // then
             assertThat(result).isFalse();
+        }
+    }
+
+    @Nested
+    class validateName {
+
+        @Test
+        void 성공_이름_유효성_검증() {
+            // given
+            String name = "비타";
+
+            // when & then
+            assertThatCode(() -> LineupFixture.create(name))
+                    .doesNotThrowAnyException();
+        }
+
+        @ParameterizedTest
+        @NullAndEmptySource
+        @ValueSource(strings = {" ", "  "})
+        void 예외_이름_유효성_검증(String invalidName) {
+            assertThatThrownBy(() -> LineupFixture.create(invalidName))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이름은 비어 있을 수 없습니다.");
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {1, MAX_NAME_LENGTH})
+        void 성공_이름_길이_검증(int len) {
+            // given
+            String name = "a".repeat(len);
+
+            // when & then
+            assertThatCode(() -> LineupFixture.create(name)).doesNotThrowAnyException();
+        }
+
+        @ParameterizedTest
+        @ValueSource(ints = {MAX_NAME_LENGTH + 1, MAX_NAME_LENGTH + 10})
+        void 예외_이름_길이_초과(int len) {
+            // given
+            String name = "가".repeat(len);
+
+            // when & then
+            assertThatThrownBy(() -> LineupFixture.create(name))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH);
         }
     }
 }

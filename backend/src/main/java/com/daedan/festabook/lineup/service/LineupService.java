@@ -9,6 +9,7 @@ import com.daedan.festabook.lineup.dto.LineupResponse;
 import com.daedan.festabook.lineup.dto.LineupResponses;
 import com.daedan.festabook.lineup.dto.LineupUpdateRequest;
 import com.daedan.festabook.lineup.infrastructure.LineupJpaRepository;
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -25,10 +26,10 @@ public class LineupService {
 
     public LineupResponse addLineup(Long festivalId, LineupRequest request) {
         Festival festival = getFestivalById(festivalId);
+        validateLineupPerformanceAtDuplicate(festival, request.performanceAt());
 
         Lineup lineup = request.toEntity(festival);
         Lineup savedLineup = lineupJpaRepository.save(lineup);
-
         return LineupResponse.from(savedLineup);
     }
 
@@ -41,7 +42,12 @@ public class LineupService {
     @Transactional
     public LineupResponse updateLineup(Long festivalId, Long lineupId, LineupUpdateRequest request) {
         Lineup lineup = getLineupById(lineupId);
+
         validateLineupBelongsToFestival(lineup, festivalId);
+
+        if (!lineup.getPerformanceAt().isEqual(request.performanceAt())) {
+            validateLineupPerformanceAtDuplicate(lineup.getFestival(), request.performanceAt());
+        }
 
         lineup.updateLineup(request.name(), request.imageUrl(), request.performanceAt());
         return LineupResponse.from(lineup);
@@ -52,6 +58,12 @@ public class LineupService {
         validateLineupBelongsToFestival(lineup, festivalId);
 
         lineupJpaRepository.deleteById(lineupId);
+    }
+
+    private void validateLineupPerformanceAtDuplicate(Festival festival, LocalDateTime performanceAt) {
+        if (lineupJpaRepository.existsByFestivalIdAndPerformanceAt(festival.getId(), performanceAt)) {
+            throw new BusinessException("해당 시간에 이미 라인업이 존재합니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private Festival getFestivalById(Long festivalId) {

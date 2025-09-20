@@ -6,6 +6,8 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.verify;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
@@ -79,6 +81,26 @@ class LineupServiceTest {
         }
 
         @Test
+        void 예외_동일_공연_시간_라인업_존재() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            LocalDateTime performanceAt = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
+            LineupRequest request = LineupRequestFixture.create(performanceAt);
+
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
+            given(lineupJpaRepository.existsByFestivalIdAndPerformanceAt(festivalId, performanceAt))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> lineupService.addLineup(festivalId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 시간에 이미 라인업이 존재합니다.");
+        }
+
+        @Test
         void 예외_존재하지_않는_축제() {
             // given
             Long invalidFestivalId = 0L;
@@ -149,6 +171,52 @@ class LineupServiceTest {
                 s.assertThat(result.imageUrl()).isEqualTo(request.imageUrl());
                 s.assertThat(result.performanceAt()).isEqualTo(request.performanceAt());
             });
+        }
+
+        @Test
+        void 성공_동일_시간_라인업인_경우_검증_제외() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long lineupId = 1L;
+            LocalDateTime performanceAt = LocalDateTime.of(2025, 10, 15, 12, 0, 0);
+            Lineup lineup = LineupFixture.create(festival, lineupId, performanceAt);
+
+            LineupUpdateRequest request = LineupUpdateRequestFixture.create(performanceAt);
+
+            given(lineupJpaRepository.findById(lineupId))
+                    .willReturn(Optional.of(lineup));
+
+            // when
+            lineupService.updateLineup(festivalId, lineupId, request);
+
+            // then
+            verify(lineupJpaRepository, never())
+                    .existsByFestivalIdAndPerformanceAt(festivalId, request.performanceAt());
+        }
+
+        @Test
+        void 예외_동일_공연_시간_라인업_존재() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long lineupId = 1L;
+            Lineup lineup = LineupFixture.create(festival, lineupId);
+
+            LocalDateTime performanceAt = LocalDateTime.of(2025, 10, 15, 11, 0, 0);
+            LineupUpdateRequest request = LineupUpdateRequestFixture.create(performanceAt);
+
+            given(lineupJpaRepository.findById(lineupId))
+                    .willReturn(Optional.of(lineup));
+            given(lineupJpaRepository.existsByFestivalIdAndPerformanceAt(festivalId, performanceAt))
+                    .willReturn(true);
+
+            // when & then
+            assertThatThrownBy(() -> lineupService.updateLineup(festivalId, lineupId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 시간에 이미 라인업이 존재합니다.");
         }
 
         @Test

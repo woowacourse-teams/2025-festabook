@@ -159,7 +159,7 @@ class AnnouncementTest {
     class isFestivalIdEqualTo {
 
         @Test
-        void 같은_축제의_id이면_true() {
+        void 성공_같은_축제의_id이면_true() {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
@@ -173,7 +173,7 @@ class AnnouncementTest {
         }
 
         @Test
-        void 다른_축제의_id이면_false() {
+        void 성공_다른_축제의_id이면_false() {
             // given
             Long festivalId = 1L;
             Long otherFestivalId = 999L;
