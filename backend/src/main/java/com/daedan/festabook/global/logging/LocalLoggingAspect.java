@@ -25,7 +25,7 @@ public class LocalLoggingAspect {
     )
     public Object allLayersLogging(ProceedingJoinPoint joinPoint) throws Throwable {
         StopWatch stopWatch = new StopWatch();
-        String className = joinPoint.getSignature().getDeclaringTypeName();
+        String className = joinPoint.getSignature().getDeclaringType().getSimpleName();
         String methodName = joinPoint.getSignature().getName();
 
         log.info("[Method Call] className={} methodName={}", className, methodName);
@@ -38,8 +38,7 @@ public class LocalLoggingAspect {
             stopWatch.stop();
             long executionTime = stopWatch.getTotalTimeMillis();
 
-            log.info(
-                    "[Method End] className={} methodName={} executionTime={}ms",
+            log.info("[Method End] className={} methodName={} executionTime={}ms",
                     className,
                     methodName,
                     executionTime
