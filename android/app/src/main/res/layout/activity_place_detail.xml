@@ -181,6 +181,8 @@
                     android:layout_marginTop="16dp"
                     android:text="@{placeDetail.place.description ?? @string/place_list_default_description}"
                     android:textAppearance="@style/PretendardRegular14"
+                    android:autoLink="web"
+                    android:textColorLink="@color/gray500"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/iv_host"
                     app:layout_constraintTop_toBottomOf="@id/tv_host"
