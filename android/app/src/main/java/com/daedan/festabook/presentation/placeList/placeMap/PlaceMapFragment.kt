@@ -84,7 +84,7 @@ class PlaceMapFragment :
         naverMap = mapFragment.getMap()
         (placeListFragment as? OnMapReadyCallback)?.onMapReady(naverMap)
         naverMap.locationSource = locationSource
-        binding.viewMapTouchIntercepter.setOnMapDragListener {
+        binding.viewMapTouchEventIntercept.setOnMapDragListener {
             viewModel.onMapViewClick()
         }
     }

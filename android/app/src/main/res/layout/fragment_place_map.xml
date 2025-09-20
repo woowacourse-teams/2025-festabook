@@ -12,7 +12,7 @@
             android:layout_height="match_parent">
 
             <com.daedan.festabook.presentation.placeList.placeMap.MapTouchEventInterceptView
-                android:id="@+id/view_map_touch_intercepter"
+                android:id="@+id/view_map_touch_event_intercept"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" >
                 <androidx.fragment.app.FragmentContainerView
