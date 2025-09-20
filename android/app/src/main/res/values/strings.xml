@@ -54,6 +54,8 @@
     <string name="map_category_stage">무대</string>
     <string name="map_category_primary">주요시설</string>
     <string name="map_category_parking">주차장</string>
+    <string name="map_category_photo_booth">포토부스</string>
+    <string name="map_category_extra">기타시설</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
 
@@ -75,7 +77,7 @@
     <!-- 설정 화면 -->
     <string name="setting_title">설정</string>
     <string name="setting_notice_title">알림</string>
-    <string name="setting_current_university_notice">현재 접속 중인 대학 - %1s</string>
+    <string name="setting_current_university_notice">현재 접속 중인 대학</string>
     <string name="setting_notice_detail">앱 알림 세부 설정</string>
     <string name="setting_app_info_title">앱 정보</string>
     <string name="setting_app_version">앱 버전</string>

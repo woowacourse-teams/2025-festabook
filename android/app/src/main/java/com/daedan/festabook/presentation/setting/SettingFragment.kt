@@ -3,7 +3,6 @@ package com.daedan.festabook.presentation.setting
 import android.content.Intent
 import android.os.Bundle
 import android.view.View
-import android.view.Window
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
@@ -78,7 +77,8 @@ class SettingFragment :
         binding.tvSettingAppVersionName.text = versionName
     }
 
-    override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
+    override fun shouldShowPermissionRationale(permission: String): Boolean =
+        shouldShowRequestPermissionRationale(permission)
 
     private fun setupObservers() {
         settingViewModel.permissionCheckEvent.observe(viewLifecycleOwner) {
@@ -114,11 +114,7 @@ class SettingFragment :
                 }
 
                 is FestivalUiState.Success -> {
-                    binding.tvSettingCurrentUniversityNotice.text =
-                        requireContext().getString(
-                            R.string.setting_current_university_notice,
-                            state.organization.universityName,
-                        )
+                    binding.tvSettingCurrentUniversity.text = state.organization.universityName
                 }
             }
         }
