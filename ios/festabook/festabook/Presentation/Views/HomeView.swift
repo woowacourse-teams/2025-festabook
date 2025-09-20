@@ -365,7 +365,7 @@ struct FestivalPosterCarousel: View {
 
     var body: some View {
         PosterCarousel(
-            imageUrls: sortedImages.map { $0.imageUrl.hasPrefix("http") ? $0.imageUrl : "https://festabook.app" + $0.imageUrl },
+            imageUrls: sortedImages.compactMap { ImageURLResolver.resolve($0.imageUrl) },
             currentIndex: $currentIndex
         )
         .onAppear {
@@ -1038,7 +1038,7 @@ struct AndroidStyleFestivalCard: View {
     var body: some View {
         ZStack {
             // 실제 S3 이미지 URL 구성 및 로딩 (API와 같은 도메인 사용)
-            let imageURL = image.imageUrl.hasPrefix("http") ? image.imageUrl : "https://festabook.app" + image.imageUrl
+            let imageURL = ImageURLResolver.resolve(image.imageUrl) ?? ""
             
             AsyncImage(url: URL(string: imageURL)) { phase in
                 switch phase {
@@ -1345,7 +1345,7 @@ struct CircularArtistProfile: View {
     var body: some View {
         VStack(spacing: 8) {
             // 원형 프로필 이미지
-            let artistImageURL = lineup.imageUrl.isEmpty ? "" : (lineup.imageUrl.hasPrefix("http") ? lineup.imageUrl : "https://festabook.app" + lineup.imageUrl)
+            let artistImageURL = ImageURLResolver.resolve(lineup.imageUrl) ?? ""
 
             AsyncImage(url: artistImageURL.isEmpty ? nil : URL(string: artistImageURL)) { phase in
                 switch phase {

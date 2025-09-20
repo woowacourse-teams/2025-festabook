@@ -10,6 +10,12 @@ enum BuildConfig {
         }
         return URL(string: urlString)!
     }
+
+    /// 베이스 URL (이미지 경로 등에 사용)
+    static var baseURL: String {
+        return "https://festabook.app"
+    }
+
     static var naverMapClientId: String { string(for: "NAVER_MAP_CLIENT_ID") }
 
     private static func string(for key: String) -> String {
@@ -28,7 +34,9 @@ enum BuildConfig {
 }
 
 enum ImageURLResolver {
-    private static let baseURL = URL(string: "https://festabook.app/")!
+    private static var baseURL: URL {
+        return URL(string: BuildConfig.baseURL + "/")!
+    }
 
     static func resolve(_ path: String?) -> String? {
         guard let path = path, !path.isEmpty else { return nil }
