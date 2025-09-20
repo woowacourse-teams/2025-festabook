@@ -89,14 +89,7 @@ struct HomeView: View {
                     if let festival = festivalDetail {
                         VStack(spacing: 4) {
                             HStack {
-                                Text("2025 \(festival.universityName) 봄축제")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(.black)
-                                Spacer()
-                            }
-
-                            HStack {
-                                Text(": 大同團結")
+                                Text(festival.festivalName)
                                     .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.black)
                                 Spacer()
