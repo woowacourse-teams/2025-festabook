@@ -51,6 +51,9 @@ class PlaceListViewModel(
     private val _selectedCategories: MutableLiveData<List<PlaceCategoryUiModel>> = MutableLiveData()
     val selectedCategories: LiveData<List<PlaceCategoryUiModel>> = _selectedCategories
 
+    private val _onMapViewClick: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val onMapViewClick: LiveData<Event<Unit>> = _onMapViewClick
+
     init {
         loadOrganizationGeography()
     }
@@ -89,6 +92,10 @@ class PlaceListViewModel(
 
     fun setSelectedCategories(categories: List<PlaceCategoryUiModel>) {
         _selectedCategories.value = categories
+    }
+
+    fun onMapViewClick() {
+        _onMapViewClick.value = Event(Unit)
     }
 
     private fun loadOrganizationGeography() {
