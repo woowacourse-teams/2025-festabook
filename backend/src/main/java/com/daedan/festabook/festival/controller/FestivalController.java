@@ -61,7 +61,7 @@ public class FestivalController {
         return festivalService.createFestival(request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping("/images")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 이미지 추가")
@@ -123,7 +123,7 @@ public class FestivalController {
         return festivalService.getFestivalLostItemGuide(festivalId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/information")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 정보 수정")
@@ -137,7 +137,7 @@ public class FestivalController {
         return festivalService.updateFestivalInformation(councilDetails.getFestivalId(), request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/lost-item-guide")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 분실물 가이드 정보 수정")
@@ -151,7 +151,7 @@ public class FestivalController {
         return festivalService.updateFestivalLostItemGuide(councilDetails.getFestivalId(), request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/images/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 이미지들 순서 수정")
@@ -165,7 +165,7 @@ public class FestivalController {
         return festivalImageService.updateFestivalImagesSequence(councilDetails.getFestivalId(), requests);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/images/{festivalImageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 축제의 이미지 삭제")

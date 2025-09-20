@@ -55,14 +55,15 @@ public class CouncilService {
 
         validatePasswordMatch(request.password(), council);
 
-        String accessToken = jwtProvider.createToken(council.getUsername(), council.getFestival().getId());
+        String accessToken = jwtProvider.createToken(council.getUsername(), council.getFestival().getId(),
+                council.getRoles());
 
         return CouncilLoginResponse.from(council.getFestival().getId(), accessToken);
     }
 
     @Transactional
-    public CouncilUpdateResponse updatePassword(Long councilId, CouncilUpdateRequest request) {
-        Council council = getCouncilById(councilId);
+    public CouncilUpdateResponse updatePassword(String username, CouncilUpdateRequest request) {
+        Council council = getCouncilByUsername(username);
 
         validatePasswordMatch(request.currentPassword(), council);
 
@@ -89,11 +90,6 @@ public class CouncilService {
 
     private Council getCouncilByUsername(String username) {
         return councilJpaRepository.findByUsername(username)
-                .orElseThrow(() -> new BusinessException("존재하지 않는 학생회입니다.", HttpStatus.NOT_FOUND));
-    }
-
-    private Council getCouncilById(Long councilId) {
-        return councilJpaRepository.findById(councilId)
                 .orElseThrow(() -> new BusinessException("존재하지 않는 학생회입니다.", HttpStatus.NOT_FOUND));
     }
 

@@ -25,7 +25,7 @@ public class ImageStoreController {
 
     private final ImageStoreService imageStoreService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "이미지 파일 업로드")

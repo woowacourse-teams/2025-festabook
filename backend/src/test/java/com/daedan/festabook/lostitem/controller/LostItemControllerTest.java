@@ -10,6 +10,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.lostitem.domain.LostItem;
 import com.daedan.festabook.lostitem.domain.LostItemFixture;
 import com.daedan.festabook.lostitem.domain.PickupStatus;
@@ -29,6 +30,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
@@ -60,13 +62,14 @@ class LostItemControllerTest {
     @Nested
     class createLostItem {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             LostItemRequest request = LostItemRequestFixture.create();
 
@@ -161,13 +164,14 @@ class LostItemControllerTest {
     @Nested
     class updateLostItem {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);
@@ -211,7 +215,7 @@ class LostItemControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             LostItem lostItem = LostItemFixture.create(festival, previousStatus);
             lostItemJpaRepository.save(lostItem);
@@ -234,18 +238,48 @@ class LostItemControllerTest {
                     .body("lostItemId", notNullValue())
                     .body("pickupStatus", equalTo(request.pickupStatus().name()));
         }
+
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공_권한(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
+
+            PickupStatus previousStatus = PickupStatus.PENDING;
+            PickupStatus updatedStatus = PickupStatus.COMPLETED;
+
+            LostItem lostItem = LostItemFixture.create(festival, previousStatus);
+            lostItemJpaRepository.save(lostItem);
+
+            LostItemStatusUpdateRequest request = LostItemStatusUpdateRequestFixture.create(updatedStatus);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/lost-items/{lostItemId}/status", lostItem.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+        }
     }
 
     @Nested
     class deleteLostItemByLostItemId {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             LostItem lostItem = LostItemFixture.create(festival);
             lostItemJpaRepository.save(lostItem);

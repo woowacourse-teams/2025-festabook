@@ -36,7 +36,7 @@ class LostItemController {
 
     private final LostItemService lostItemService;
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 분실물 생성")
@@ -62,7 +62,7 @@ class LostItemController {
         return lostItemService.getAllLostItemByFestivalId(festivalId);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{lostItemId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 분실물 수정")
@@ -77,7 +77,7 @@ class LostItemController {
         return lostItemService.updateLostItem(councilDetails.getFestivalId(), lostItemId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{lostItemId}/status")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 분실물 상태 수정")
@@ -92,7 +92,7 @@ class LostItemController {
         return lostItemService.updateLostItemStatus(councilDetails.getFestivalId(), lostItemId, request);
     }
 
-    @PreAuthorize("hasRole('COUNCIL')")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/{lostItemId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 분실물 삭제")
