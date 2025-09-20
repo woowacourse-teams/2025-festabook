@@ -61,8 +61,8 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                 is ScheduleEventsUiState.Success -> {
                     showLoadingView(isLoading = false)
                     adapter.submitList(schedule.events) {
-                        scrollToCenterOfCurrentEvent(schedule.currentEventPosition)
                         showEmptyStateMessage()
+                        scrollToCenterOfCurrentEvent(schedule.currentEventPosition)
                     }
                 }
 
