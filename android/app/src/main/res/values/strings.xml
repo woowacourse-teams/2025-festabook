@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Festabook</string>
 
+
+    <!--공통-->
+    <string name="empty_state_message">현재 표시할 항목이 없습니다.</string>
+
     <!--바텀 네비게이션 바-->
     <string name="menu_home_title">홈</string>
     <string name="menu_schedule_title">일정</string>
