@@ -28,6 +28,7 @@ class MapViewModel: NSObject, ObservableObject {
     @Published var isLoadingPlaceDetail = false
     @Published var placeDetailError: String?
     @Published var resetCameraRequest: UUID?
+    @Published var currentLocationRequestId: UUID?
 
     enum ModalType {
         case none           // 모달 없음 (바텀시트 표시)
@@ -208,6 +209,11 @@ class MapViewModel: NSObject, ObservableObject {
 
         resetCameraRequest = UUID()
         print("[MapViewModel] 🧭 지도 초기 상태로 리셋 요청")
+    }
+
+    func requestCurrentLocation() {
+        currentLocationRequestId = UUID()
+        print("[MapViewModel] 📍 현위치 버튼 탭 - 위치 요청 트리거 갱신")
     }
 
     func resetToInitialState() {

@@ -60,6 +60,19 @@ struct MapView: View {
                             detailModal(geometry: geometry)
                         }
                     }
+
+                    // Floating current location button that tracks sheet height
+                    if viewModel.modalType == .none && viewModel.sheetDetent != .large {
+                        VStack {
+                            Spacer()
+                            HStack {
+                                CurrentLocationButton(viewModel: viewModel)
+                                    .padding(.leading, 16)
+                                Spacer()
+                            }
+                            .padding(.bottom, viewModel.sheetDetent.height + 12)
+                        }
+                    }
                 }
             }
             .navigationDestination(for: PlaceDetail.self) { place in

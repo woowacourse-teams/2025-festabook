@@ -17,7 +17,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
         // Configure map settings
         mapView.positionMode = .disabled
-        mapView.locationOverlay.hidden = false
+        mapView.locationOverlay.hidden = true
         mapView.mapType = .basic
 
         // Apply custom style
@@ -89,9 +89,11 @@ struct NaverMapRepresentable: UIViewRepresentable {
             private var markerTitles: [Int: String] = [:]
             private var pendingMoveToCurrentLocation = false
             private var selectedMarkerId: Int?
-            private let captionVisibilityZoomThreshold: Double = 18.0
+            private let captionVisibilityZoomThreshold: Double = 17.0
             private var markerGeographies: [Int: PlaceGeography] = [:]
             private var lastCameraMoveTargetId: Int?
+            private var lastLocationRequestId: UUID?
+            private weak var mapViewReference: NMFMapView?
 
             init(_ viewModel: MapViewModel) {
                 self.viewModel = viewModel
@@ -108,6 +110,8 @@ struct NaverMapRepresentable: UIViewRepresentable {
         @MainActor
         func updateMapView(_ mapView: NMFMapView, with viewModel: MapViewModel) async {
             print("[Coordinator] updateMapView 호출")
+
+            mapViewReference = mapView
 
             // Update content inset for bottom sheet
             updateContentInset(mapView, bottomSheetHeight: viewModel.visibleBottomSheetHeight)
@@ -161,6 +165,12 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
             // Update location button visibility based on modal state
             updateLocationButtonVisibility()
+
+            if let requestId = viewModel.currentLocationRequestId,
+               requestId != lastLocationRequestId {
+                lastLocationRequestId = requestId
+                handleCurrentLocationRequest(on: mapView)
+            }
 
             // Reset camera request 처리
             if let resetId = viewModel.resetCameraRequest,
@@ -470,7 +480,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
                 let title = viewModel.previewsByPlaceId[marker.placeId]?.title ?? marker.title
                 nmfMarker.captionAligns = [.bottom]
-                nmfMarker.captionMinZoom = 0
+                nmfMarker.captionMinZoom = captionVisibilityZoomThreshold
                 nmfMarker.captionText = title
                 nmfMarker.captionOffset = 6
                 markerTitles[marker.placeId] = title
@@ -490,24 +500,6 @@ struct NaverMapRepresentable: UIViewRepresentable {
                 nmfMarker.mapView = mapView
                 self.markers[marker.placeId] = nmfMarker
                 markerGeographies[marker.placeId] = marker
-            }
-
-            updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
-        }
-
-        @MainActor
-        private func updateMarkerCaptionVisibility(for zoomLevel: Double) {
-            let shouldShowCaptions = zoomLevel >= captionVisibilityZoomThreshold
-
-            markers.forEach { id, marker in
-                let title = markerTitles[id] ?? ""
-                if shouldShowCaptions || id == selectedMarkerId {
-                    if marker.captionText != title {
-                        marker.captionText = title
-                    }
-                } else if !title.isEmpty {
-                    marker.captionText = ""
-                }
             }
         }
 
@@ -600,6 +592,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
                 marker.zIndex = 0
                 marker.captionText = markerTitles[id] ?? ""
                 marker.captionOffset = 6
+                marker.captionMinZoom = captionVisibilityZoomThreshold
             }
 
             selectedMarkerId = placeId
@@ -619,9 +612,8 @@ struct NaverMapRepresentable: UIViewRepresentable {
             selectedMarker.zIndex = 100
             selectedMarker.captionTextSize = 13
             selectedMarker.captionOffset = 10
+            selectedMarker.captionMinZoom = 0
             CATransaction.commit()
-
-            updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
         }
 
         // MARK: - Location Button Management
@@ -629,17 +621,19 @@ struct NaverMapRepresentable: UIViewRepresentable {
         func createLocationButton(on mapView: NMFMapView) {
             let button = UIButton(type: .custom)
             button.backgroundColor = .white
-            button.layer.cornerRadius = 22
+            button.layer.cornerRadius = 10
+            button.layer.borderWidth = 0.5
+            button.layer.borderColor = UIColor.black.withAlphaComponent(0.08).cgColor
             button.layer.shadowColor = UIColor.black.cgColor
             button.layer.shadowOffset = CGSize(width: 0, height: 2)
-            button.layer.shadowOpacity = 0.3
+            button.layer.shadowOpacity = 0.15
             button.layer.shadowRadius = 4
 
             // Use target/scope icon similar to Naver Maps
             let configuration = UIImage.SymbolConfiguration(pointSize: 18, weight: .medium)
             let targetImage = UIImage(systemName: "scope", withConfiguration: configuration)
             button.setImage(targetImage, for: .normal)
-            button.tintColor = .systemBlue
+            button.tintColor = UIColor.gray
 
             button.addTarget(self, action: #selector(locationButtonTapped), for: .touchUpInside)
 
@@ -662,7 +656,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
             guard locationButton != nil else { return }
 
             // Show button only when in "한눈에 보기" mode (no modal)
-            let shouldShow = viewModel.modalType == .none
+            let shouldShow = viewModel.modalType == .none && viewModel.sheetDetent != .large
             
             if shouldShow {
                 showLocationButton()
@@ -680,7 +674,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
             let bottomInset: CGFloat
             switch viewModel.modalType {
             case .none:
-                bottomInset = viewModel.sheetDetent.height + 16 // Above bottom sheet with 16pt gap
+                bottomInset = viewModel.sheetDetent.totalHeight + 12 // Consistent gap above sheet top
             case .preview:
                 bottomInset = 140 // Above preview modal
             case .detail:
@@ -721,8 +715,14 @@ struct NaverMapRepresentable: UIViewRepresentable {
         }
 
         @objc private func locationButtonTapped() {
-            guard let mapView = locationButton?.superview as? NMFMapView else { return }
+            guard let mapView = mapViewReference ?? locationButton?.superview as? NMFMapView else { return }
 
+            handleCurrentLocationRequest(on: mapView)
+        }
+
+        @MainActor
+        private func handleCurrentLocationRequest(on mapView: NMFMapView) {
+            
             switch locationManager.authorizationStatus {
             case .notDetermined:
                 pendingMoveToCurrentLocation = true
@@ -779,7 +779,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
         nonisolated func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
             guard let location = locations.last else { return }
             Task { @MainActor in
-                if let mapView = locationButton?.superview as? NMFMapView {
+                if let mapView = mapViewReference ?? locationButton?.superview as? NMFMapView {
                     moveToCurrentLocation(mapView, location: location)
                     isLocationTracking = true
                     pendingMoveToCurrentLocation = false
@@ -816,7 +816,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
                 case .authorizedWhenInUse, .authorizedAlways:
                     print("[Coordinator] ✅ 위치 권한 허용됨")
                     if pendingMoveToCurrentLocation,
-                       let mapView = locationButton?.superview as? NMFMapView {
+                       let mapView = mapViewReference ?? locationButton?.superview as? NMFMapView {
                         moveToCurrentLocation(mapView)
                     }
                     pendingMoveToCurrentLocation = false
@@ -881,17 +881,9 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
         // MARK: - NMFMapViewCameraDelegate
 
-        nonisolated func mapViewCameraIdle(_ mapView: NMFMapView) {
-            Task { @MainActor in
-                self.updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
-            }
-        }
+        nonisolated func mapViewCameraIdle(_ mapView: NMFMapView) {}
 
-        nonisolated func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
-            Task { @MainActor in
-                self.updateMarkerCaptionVisibility(for: mapView.cameraPosition.zoom)
-            }
-        }
+        nonisolated func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {}
 
         // MARK: - NMFMapViewTouchDelegate
 
