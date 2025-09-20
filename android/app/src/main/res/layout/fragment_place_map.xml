@@ -10,18 +10,24 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
-            <androidx.fragment.app.FragmentContainerView
-                android:id="@+id/fcv_map_container"
-                android:name="com.naver.maps.map.MapFragment"
+
+            <com.daedan.festabook.presentation.placeList.placeMap.MapTouchEventInterceptView
+                android:id="@+id/view_map_touch_event_intercept"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
+                android:layout_height="match_parent" >
+                <androidx.fragment.app.FragmentContainerView
+                    android:id="@+id/fcv_map_container"
+                    android:name="com.naver.maps.map.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"/>
+
+            </com.daedan.festabook.presentation.placeList.placeMap.MapTouchEventInterceptView>
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fcv_place_category_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent"
-                />
+                app:layout_constraintTop_toTopOf="parent" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fcv_place_list_container"
