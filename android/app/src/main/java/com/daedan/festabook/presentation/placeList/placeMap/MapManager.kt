@@ -32,7 +32,7 @@ class MapManager(
 
     private val overlayImageManager =
         OverlayImageManager(
-            PlaceCategoryUiModel.iconResources + listOf(R.drawable.ic_cluster_marker),
+            PlaceCategoryUiModel.iconResources,
         )
 
     private val context = map.context

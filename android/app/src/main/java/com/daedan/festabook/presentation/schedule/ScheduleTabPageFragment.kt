@@ -55,12 +55,15 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                 is ScheduleEventsUiState.Loading,
                 -> {
                     showLoadingView(isLoading = true)
+                    showEmptyStateMessage()
                 }
 
                 is ScheduleEventsUiState.Success -> {
-                    adapter.submitList(schedule.events)
-                    scrollToCenterOfCurrentEvent(schedule.currentEventPosition)
                     showLoadingView(isLoading = false)
+                    adapter.submitList(schedule.events) {
+                        showEmptyStateMessage()
+                        scrollToCenterOfCurrentEvent(schedule.currentEventPosition)
+                    }
                 }
 
                 is ScheduleEventsUiState.Error -> {
@@ -70,6 +73,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
                     )
                     showErrorSnackBar(schedule.throwable)
                     showLoadingView(isLoading = false)
+                    showEmptyStateMessage()
                 }
             }
         }
@@ -103,6 +107,20 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
 
                 recyclerView.smoothScrollBy(NO_OFFSET, dy)
             }
+        }
+    }
+
+    private fun showEmptyStateMessage() {
+        val itemCount = binding.rvScheduleEvent.adapter?.itemCount ?: 0
+
+        if (itemCount == 0) {
+            binding.rvScheduleEvent.visibility = View.GONE
+            binding.viewScheduleEventTimeLine.visibility = View.GONE
+            binding.tvEmptyState.root.visibility = View.VISIBLE
+        } else {
+            binding.rvScheduleEvent.visibility = View.VISIBLE
+            binding.viewScheduleEventTimeLine.visibility = View.VISIBLE
+            binding.tvEmptyState.root.visibility = View.GONE
         }
     }
 
