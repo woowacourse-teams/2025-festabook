@@ -459,8 +459,11 @@ struct NaverMapRepresentable: UIViewRepresentable {
             print("[Coordinator] 📌 Fallback 캠퍼스 오버레이 생성: 지도 배경색과 유사하게 설정")
         }
 
-        private func updateMarkers(_ mapView: NMFMapView, markers: [PlaceGeography]) {
-            // Remove existing markers
+        private var captionAnimationTimer: Timer?
+    
+    private func updateMarkers(_ mapView: NMFMapView, markers: [PlaceGeography]) {
+            // Remove existing markers and timer
+            captionAnimationTimer?.invalidate()
             self.markers.values.forEach { $0.mapView = nil }
             self.markers.removeAll()
             markerBaseSizes.removeAll()
@@ -484,6 +487,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
                 nmfMarker.captionMinZoom = captionVisibilityZoomThreshold
                 nmfMarker.captionText = title
                 nmfMarker.captionOffset = 6
+                nmfMarker.isHideCollidedCaptions = true // 마커와 겹치는 다른 마커의 캡션만 숨김
                 markerTitles[marker.placeId] = title
 
                 nmfMarker.touchHandler = { [weak self] _ in
@@ -884,7 +888,9 @@ struct NaverMapRepresentable: UIViewRepresentable {
 
         nonisolated func mapViewCameraIdle(_ mapView: NMFMapView) {}
 
-        nonisolated func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {}
+        nonisolated func mapView(_ mapView: NMFMapView, cameraIsChangingByReason reason: Int) {
+            // 카메라가 변경되는 동안에는 아무 작업도 하지 않음
+        }
 
         // MARK: - NMFMapViewTouchDelegate
 
