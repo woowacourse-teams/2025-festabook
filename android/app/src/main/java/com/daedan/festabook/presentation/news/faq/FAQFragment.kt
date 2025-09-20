@@ -35,7 +35,9 @@ class FAQFragment : BaseFragment<FragmentFaqBinding>(R.layout.fragment_faq) {
                 FAQUiState.InitialLoading -> {}
                 FAQUiState.Refreshing -> {}
                 is FAQUiState.Success -> {
-                    adapter.submitList(state.faqs)
+                    adapter.submitList(state.faqs) {
+                        showEmptyStateMessage()
+                    }
                 }
 
                 is FAQUiState.Error -> {
@@ -44,6 +46,12 @@ class FAQFragment : BaseFragment<FragmentFaqBinding>(R.layout.fragment_faq) {
                 }
             }
         }
+    }
+
+    private fun showEmptyStateMessage() {
+        val itemCount = binding.rvFaq.adapter?.itemCount ?: 0
+
+        binding.tvEmptyState.root.visibility = if (itemCount == 0) View.VISIBLE else View.GONE
     }
 
     companion object {
