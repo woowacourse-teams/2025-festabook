@@ -15,6 +15,14 @@ struct GeographyResponse: Codable {
     let zoom: Int
     let centerCoordinate: LatLng
     let polygonHoleBoundary: [LatLng]
+
+    /// 화면 표시용 조정된 중심 좌표 (원래 좌표에서 살짝 위로 이동)
+    var adjustedCenterCoordinate: LatLng {
+        return LatLng(
+            latitude: centerCoordinate.latitude - 0.0015,
+            longitude: centerCoordinate.longitude
+        )
+    }
 }
 
 // MARK: - Place Geography API Response
@@ -108,13 +116,19 @@ struct PlacePreview: Codable, Identifiable {
             }
         }
     }
+
+    var resolvedImageURL: String? {
+        ImageURLResolver.resolve(imageUrl)
+    }
 }
+
 
 // MARK: - Place Detail API Response
 
 struct PlaceDetail: Codable, Identifiable {
     let placeId: Int
     let imageUrl: String?
+    let placeImages: [PlaceImage]?
     let category: String
     let title: String
     let description: String?
@@ -125,6 +139,21 @@ struct PlaceDetail: Codable, Identifiable {
     let coordinate: LatLng?
 
     var id: Int { placeId }
+
+    var orderedImageUrls: [String] {
+        if let placeImages, !placeImages.isEmpty {
+            let urls = placeImages
+                .sorted { $0.sequence < $1.sequence }
+                .compactMap { ImageURLResolver.resolve($0.imageUrl) }
+            if !urls.isEmpty { return urls }
+        }
+
+        if let fallback = ImageURLResolver.resolve(imageUrl) {
+            return [fallback]
+        }
+
+        return []
+    }
 
     // UI 표시용 안전한 텍스트
     var safeDescription: String {
@@ -178,6 +207,22 @@ struct PlaceDetail: Codable, Identifiable {
                 return "시간 미정"
             }
         }
+    }
+}
+
+struct PlaceImage: Codable, Identifiable {
+    let id: Int
+    let imageUrl: String
+    let sequence: Int
+}
+
+extension PlaceDetail: Hashable {
+    static func == (lhs: PlaceDetail, rhs: PlaceDetail) -> Bool {
+        lhs.placeId == rhs.placeId
+    }
+
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(placeId)
     }
 }
 
@@ -283,6 +328,19 @@ enum SheetDetent: String, CaseIterable {
         case .medium: return UIScreen.main.bounds.height * 0.5
         case .large: return UIScreen.main.bounds.height * 0.85
         }
+    }
+
+    var topSpacing: CGFloat {
+        switch self {
+        case .collapsed: return 0
+        case .small: return 16
+        case .medium: return 32
+        case .large: return 42
+        }
+    }
+
+    var totalHeight: CGFloat {
+        height + topSpacing
     }
 }
 

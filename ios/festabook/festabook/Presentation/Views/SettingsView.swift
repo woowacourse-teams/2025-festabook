@@ -39,11 +39,16 @@ struct SettingsView: View {
                         VStack(spacing: 0) {
                             // 현재 접속 중인 대학 - {universityName}
                             HStack(alignment: .center, spacing: 12) {
-                                Text("현재 접속 중인 대학 - \(appState.currentUniversityName)")
-                                    .font(.system(size: 17, weight: .regular))
-                                    .foregroundColor(.primary)
-                                    .lineLimit(1) // 한 줄로 제한
-                                    .truncationMode(.tail) // 말줄임표로 처리
+                                VStack(alignment: .leading, spacing: 4) {
+                                    Text("현재 접속 중인 대학")
+                                        .font(.system(size: 17, weight: .regular))
+                                        .foregroundColor(.primary)
+                                    
+                                    Text(appState.currentUniversityName)
+                                        .font(.system(size: 15, weight: .regular))
+                                        .foregroundColor(.secondary)
+                                        .lineLimit(nil) // 여러 줄 허용
+                                }
 
                                 Spacer() // 텍스트와 토글 사이 공간 확보
 
@@ -63,7 +68,7 @@ struct SettingsView: View {
 
                     // 섹션 간 구분선
                     Divider()
-                        .padding(.top, 24)
+                        .padding(.top, 8)
 
                     // 앱 정보 섹션
                     VStack(spacing: 0) {
@@ -169,10 +174,17 @@ struct SettingsView: View {
         let previousValue = notificationService.isNotificationEnabled
 
         Task {
+            guard let festivalId = appState.currentFestivalId else {
+                await MainActor.run {
+                    notificationService.isNotificationEnabled = previousValue
+                    print("[SettingsView] ❌ 축제 ID가 없어 알림 구독을 변경할 수 없습니다")
+                }
+                return
+            }
             do {
                 if newValue {
                     // 구독 - festival 헤더 제거된 API 호출
-                    _ = try await notificationService.subscribeToFestivalNotifications(festivalId: appState.currentFestivalId)
+                    _ = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
                 } else {
                     // 구독 취소 - festival 헤더 제거된 API 호출
                     try await notificationService.unsubscribeFromFestivalNotifications()

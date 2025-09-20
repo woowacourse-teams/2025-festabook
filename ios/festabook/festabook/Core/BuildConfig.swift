@@ -2,14 +2,23 @@
 import Foundation
 
 enum BuildConfig {
+    /// 기본 베이스 URL
+    private static let defaultBaseURL = "https://festabook.app"
+    
     static var apiBaseURL: URL {
         let urlString = string(for: "API_BASE_URL")
         guard !urlString.isEmpty else {
             // 폴백 URL 사용
-            return URL(string: "https://festabook.app/api")!
+            return URL(string: defaultBaseURL + "/api")!
         }
         return URL(string: urlString)!
     }
+
+    /// 베이스 URL (이미지 경로 등에 사용)
+    static var baseURL: String {
+        return defaultBaseURL
+    }
+
     static var naverMapClientId: String { string(for: "NAVER_MAP_CLIENT_ID") }
 
     private static func string(for key: String) -> String {
@@ -24,5 +33,23 @@ enum BuildConfig {
         }
         
         return ""
+    }
+}
+
+enum ImageURLResolver {
+    private static var baseURL: URL {
+        return URL(string: BuildConfig.baseURL + "/")!
+    }
+
+    static func resolve(_ path: String?) -> String? {
+        guard let path = path, !path.isEmpty else { return nil }
+
+        let lowercased = path.lowercased()
+        if lowercased.hasPrefix("http://") || lowercased.hasPrefix("https://") {
+            return path
+        }
+
+        let trimmed = path.hasPrefix("/") ? String(path.dropFirst()) : path
+        return baseURL.appendingPathComponent(trimmed).absoluteString
     }
 }

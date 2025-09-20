@@ -102,7 +102,7 @@ struct PlaceDetailModal: View {
                 .frame(maxWidth: .infinity, alignment: .leading)
 
                 // Right thumbnail - 고정 크기
-                ThumbnailView(imageUrl: place.imageUrl)
+                ThumbnailView(imageUrl: place.orderedImageUrls.first)
                     .frame(width: 70, height: 70)
                     .fixedSize()
             }
@@ -115,18 +115,7 @@ struct PlaceDetailModal: View {
             )
             .frame(maxWidth: .infinity)
         } else {
-            // Fallback state
-            Text("장소 정보 없음")
-                .font(.system(size: 15, weight: .medium))
-                .foregroundColor(.secondary)
-                .padding(.horizontal, 20)
-                .padding(.vertical, 16)
-                .background(
-                    RoundedRectangle(cornerRadius: 16, style: .continuous)
-                        .fill(Color.white)
-                        .shadow(color: .black.opacity(0.08), radius: 12, x: 0, y: 4)
-                )
-                .frame(maxWidth: .infinity)
+            EmptyView()
         }
     }
 }
@@ -138,6 +127,7 @@ struct PlaceDetailModal: View {
         place: PlaceDetail(
             placeId: 1,
             imageUrl: nil,
+            placeImages: nil,
             category: "BAR",
             title: "사회과학대학 주점",
             description: "사회과학대학에서 운영하는 주점입니다. 맛있는 음식과 시원한 음료를 제공합니다.",

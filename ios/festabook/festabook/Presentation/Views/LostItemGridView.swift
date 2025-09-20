@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LostItemGridView: View {
-    @StateObject private var viewModel = LostItemViewModel()
+    @ObservedObject var viewModel: LostItemViewModel
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 2)
 
@@ -13,7 +13,6 @@ struct LostItemGridView: View {
             switch viewModel.state {
             case .idle:
                 Color.clear
-                    .onAppear { viewModel.loadInitialData() }
             case .loading:
                 loadingView
             case .loaded:
@@ -65,7 +64,8 @@ struct LostItemGridView: View {
                 }
             }
             .padding(.horizontal, 16)
-            .padding(.vertical, 16)
+            .padding(.top, 16)
+            .padding(.bottom, 100)
         }
     }
 
@@ -85,7 +85,7 @@ struct LostItemGridView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
-            .padding(.bottom, 40)
+            .padding(.bottom, 100)
         }
     }
 
@@ -106,7 +106,7 @@ struct LostItemGridView: View {
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
-            .padding(.bottom, 40)
+            .padding(.bottom, 100)
         }
     }
 }

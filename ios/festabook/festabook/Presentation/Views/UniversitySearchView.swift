@@ -146,11 +146,19 @@ struct UniversitySearchView: View {
                 hideKeyboard()
             }
             .task {
-                // 앱 시작 시 모든 축제 목록 로드
-                await loadFestivals(universityName: "")
+                if appState.initialFestivalList.isEmpty {
+                    await loadFestivals(universityName: "")
+                } else {
+                    festivals = appState.initialFestivalList
+                    isLoading = false
+                }
 
                 // 대학 선택 화면 진입 시 시스템 알림 권한 요청 (최초 1회)
                 await requestSystemNotificationPermissionOnce()
+            }
+            .onChange(of: appState.initialFestivalList) { newValue in
+                festivals = newValue
+                isLoading = false
             }
         }
     }
@@ -184,6 +192,9 @@ struct UniversitySearchView: View {
         do {
             // 검색어에 따라 API 호출
             festivals = try await locator.festivalRepo.getFestivalsByUniversity(universityName: universityName)
+            if universityName.isEmpty {
+                appState.initialFestivalList = festivals
+            }
         } catch {
             print("축제 목록 로드 실패: \(error)")
             // 에러 시 빈 배열로 설정

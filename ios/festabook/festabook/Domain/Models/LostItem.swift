@@ -47,13 +47,7 @@ struct LostItem: Decodable, Identifiable {
 
     // API가 "/images/.." 상대 경로를 줄 수 있어 절대 URL 문자열로 변환
     var imageAbsoluteURLString: String {
-        if imageUrl.hasPrefix("http://") || imageUrl.hasPrefix("https://") {
-            return imageUrl
-        }
-        if imageUrl.hasPrefix("/") {
-            return "https://festabook.app" + imageUrl
-        }
-        return "https://festabook.app/\(imageUrl)"
+        return ImageURLResolver.resolve(imageUrl) ?? ""
     }
 }
 

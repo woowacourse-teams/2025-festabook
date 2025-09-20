@@ -33,8 +33,8 @@ final class LostItemViewModel: ObservableObject {
     init(service: LostItemServicing = LostItemAPI()) {
         self.service = service
         // ViewModel 생성 시점에도 동기화 보장
-        let storedFestivalId = UserDefaults.standard.integer(forKey: "currentFestivalId")
-        if storedFestivalId > 0 {
+        let storedFestivalId = UserDefaults.standard.object(forKey: "currentFestivalId") as? Int
+        if let storedFestivalId, storedFestivalId > 0 {
             APIClient.shared.updateFestivalId(storedFestivalId)
         }
     }

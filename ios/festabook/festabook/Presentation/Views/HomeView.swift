@@ -1,4 +1,9 @@
 import SwiftUI
+import UIKit
+
+private enum PosterCarouselConstants {
+    static let cardWidthRatio: CGFloat = 0.78
+}
 
 struct HomeView: View {
     @EnvironmentObject private var appState: AppState
@@ -17,14 +22,23 @@ struct HomeView: View {
                 VStack(spacing: 0) {
                     // 상단 대학교 이름 + 변경 버튼 - 일정/소식 화면과 동일한 스타일
                     HStack(spacing: 8) {
-                        Text(festivalDetail?.universityName ?? "페스타북대학교")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundColor(.primary)
+                        if let universityName = festivalDetail?.universityName {
+                            Text(universityName)
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.primary)
+                        } else if isLoading {
+                            UniversityNamePlaceholder()
+                        } else {
+                            Text(appState.selectedFestival?.universityName ?? 
+                                 appState.selectedUniversity?.name ?? 
+                                 "페스타북대학교")
+                                .font(.system(size: 24, weight: .bold))
+                                .foregroundColor(.primary)
+                        }
 
                         Button(action: {
                             // 대학교 변경 - 최초 진입점으로 돌아가기
-                            appState.selectedUniversity = nil
-                            appState.selectedFestival = nil
+                            appState.resetFestivalSelection()
                         }) {
                             Image(systemName: "chevron.down")
                                 .font(.system(size: 14, weight: .medium))
@@ -41,12 +55,16 @@ struct HomeView: View {
                     if let festival = festivalDetail, !festival.festivalImages.isEmpty {
                         FestivalPosterCarousel(festival: festival)
                             .padding(.bottom, 15) // 간격 줄임
-                    } else if !isLoading {
+                    } else if isLoading {
+                        // 로딩 중 포스터 스켈레톤
+                        FestivalPosterPlaceholder()
+                            .padding(.bottom, 15)
+                    } else {
                         // 포스터가 없을 때 표시 (3:4 비율)
-                        GeometryReader { geometry in
-                            let posterWidth = geometry.size.width - 60
-                            let posterHeight = posterWidth * 4 / 3 // 3:4 비율
-                            
+                        let posterWidth = UIScreen.main.bounds.width * PosterCarouselConstants.cardWidthRatio
+                        let posterHeight = posterWidth * 4 / 3 // 3:4 비율
+                        
+                        ZStack(alignment: .center) {
                             RoundedRectangle(cornerRadius: 12)
                                 .fill(Color.gray.opacity(0.1))
                                 .frame(width: posterWidth, height: posterHeight)
@@ -55,30 +73,22 @@ struct HomeView: View {
                                         Image(systemName: "photo")
                                             .font(.system(size: 40))
                                             .foregroundColor(.gray.opacity(0.5))
-                                        Text("포스터가 없습니다")
+                                        Text("등록된 포스터 정보가 없습니다")
                                             .font(.system(size: 16, weight: .medium))
                                             .foregroundColor(.gray)
                                     }
                                 )
-                                .frame(maxWidth: .infinity)
                         }
-                        .frame(height: (UIScreen.main.bounds.width - 40) * 4 / 3)
-                        .padding(.horizontal, 20)
-                        .padding(.bottom, 20)
+                        .frame(width: UIScreen.main.bounds.width, height: posterHeight)
+                        .clipped()
+                        .padding(.bottom, 15) // 스켈레톤과 동일한 패딩 적용
                     }
 
                     // 축제 제목과 부제목 - 안드로이드 스타일
                     if let festival = festivalDetail {
                         VStack(spacing: 4) {
                             HStack {
-                                Text("2025 \(festival.universityName) 봄축제")
-                                    .font(.system(size: 20, weight: .bold))
-                                    .foregroundColor(.black)
-                                Spacer()
-                            }
-
-                            HStack {
-                                Text(": 大同團結")
+                                Text(festival.festivalName)
                                     .font(.system(size: 20, weight: .bold))
                                     .foregroundColor(.black)
                                 Spacer()
@@ -94,7 +104,10 @@ struct HomeView: View {
                         }
                         .padding(.horizontal, 20)
                         .padding(.top, 10) // 간격 줄임
-                    } else if !isLoading && errorMessage == nil {
+                    } else if isLoading {
+                        // 로딩 중 축제 제목/날짜 스켈레톤
+                        FestivalTitlePlaceholder()
+                    } else if errorMessage == nil {
                         // 축제 정보가 없을 때 표시
                         VStack(spacing: 4) {
                             HStack {
@@ -109,7 +122,7 @@ struct HomeView: View {
                     }
 
                     // 구분선
-                    if festivalDetail != nil {
+                    if festivalDetail != nil || isLoading {
                         Divider()
                             .padding(.horizontal, 20)
                             .padding(.top, 16)
@@ -124,15 +137,6 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
-            .overlay(alignment: .center) {
-                if isLoading {
-                    ProgressView("축제 정보를 불러오는 중...")
-                        .font(.system(size: 14))
-                        .padding()
-                        .background(Color(.systemBackground))
-                        .cornerRadius(8)
-                }
-            }
             .task {
                 await loadFestivalDetail()
             }
@@ -325,7 +329,7 @@ struct HomeView: View {
         // 3. 축제 알림 구독
         print("[HomeView] 🎪 축제 알림 구독 시작")
         do {
-            let notificationId = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
+            let _ = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
             print("[APIClient] ✅ 축제 알림 구독 성공")
 
             // 구독 성공 시 토글 상태 확실히 동기화 (NotificationService에서 이미 처리하지만 명시적으로)
@@ -360,8 +364,7 @@ struct FestivalPosterCarousel: View {
 
     var body: some View {
         PosterCarousel(
-            imageUrls: sortedImages.map { $0.imageUrl.hasPrefix("http") ? $0.imageUrl : "https://festabook.app" + $0.imageUrl },
-            festival: festival,
+            imageUrls: sortedImages.compactMap { ImageURLResolver.resolve($0.imageUrl) },
             currentIndex: $currentIndex
         )
         .onAppear {
@@ -370,82 +373,54 @@ struct FestivalPosterCarousel: View {
     }
 }
 
-// MARK: - 포스터 캐러셀 (풀 슬라이드 + 인디케이터)
+// MARK: - 포스터 캐러셀 (풀 슬라이드)
 struct PosterCarousel: View {
     let imageUrls: [String]
-    let festival: FestivalDetail
     @Binding var currentIndex: Int
 
-    @State private var internalSelection: Int = 0
-
-    private let posterWidth: CGFloat = UIScreen.main.bounds.width * 0.75
+    private var cardWidthRatio: CGFloat { PosterCarouselConstants.cardWidthRatio }
+    private var posterWidth: CGFloat { UIScreen.main.bounds.width * cardWidthRatio }
     private var posterHeight: CGFloat { posterWidth * 4 / 3 }
-    private var horizontalPadding: CGFloat {
-        max((UIScreen.main.bounds.width - posterWidth) / 2, 0)
+    private var containerHeight: CGFloat {
+        posterHeight
     }
 
     var body: some View {
         if imageUrls.isEmpty {
             EmptyView()
         } else {
-            VStack(spacing: 16) {
-                TabView(selection: $internalSelection) {
-                    ForEach(imageUrls.indices, id: \.self) { index in
-                        let imageUrl = imageUrls[index]
-                        let isActive = internalSelection == index
-
-                        PosterCard(
-                            imageUrl: imageUrl,
-                            festival: festival,
-                            posterWidth: posterWidth,
-                            posterHeight: posterHeight
-                        )
-                        .scaleEffect(isActive ? 1.0 : 0.96)
-                        .shadow(color: .black.opacity(isActive ? 0.2 : 0.05), radius: 12, x: 0, y: 8)
-                        .animation(.easeInOut(duration: 0.25), value: internalSelection)
-                        .tag(index)
-                    }
-                }
-                .frame(height: posterHeight)
-                .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
-                .padding(.horizontal, horizontalPadding)
-
-                pageIndicator
-            }
-            .animation(.easeInOut(duration: 0.25), value: internalSelection)
+            PosterCarouselContainerView(
+                imageUrls: imageUrls,
+                currentIndex: $currentIndex,
+                cardWidthRatio: cardWidthRatio,
+                cornerRadius: 12,
+                shadowColor: UIColor.black.withAlphaComponent(0.18),
+                shadowOpacity: 0.25,
+                shadowRadius: 12,
+                shadowOffset: CGSize(width: 0, height: 8)
+            )
+            .frame(maxWidth: .infinity)
+            .frame(height: containerHeight)
             .onAppear {
                 let clamped = clampedIndex(currentIndex)
-                internalSelection = clamped
-                currentIndex = clamped
+                if currentIndex != clamped {
+                    DispatchQueue.main.async {
+                        currentIndex = clamped
+                    }
+                }
                 prefetch(urls: neighborUrls(for: clamped))
             }
-            .onChange(of: currentIndex) { newValue in
-                let clamped = clampedIndex(newValue)
-                if internalSelection != clamped {
-                    internalSelection = clamped
-                }
-            }
-            .onChange(of: internalSelection) { newValue in
-                if currentIndex != newValue {
-                    currentIndex = newValue
-                }
+            .onChange(of: currentIndex) { _, newValue in
                 prefetch(urls: neighborUrls(for: newValue))
             }
-            .onChange(of: imageUrls.count) { _ in
+            .onChange(of: imageUrls.count) { _, _ in
                 let clamped = clampedIndex(currentIndex)
-                internalSelection = clamped
-                currentIndex = clamped
+                if currentIndex != clamped {
+                    DispatchQueue.main.async {
+                        currentIndex = clamped
+                    }
+                }
                 prefetch(urls: neighborUrls(for: clamped))
-            }
-        }
-    }
-
-    private var pageIndicator: some View {
-        HStack(spacing: 6) {
-            ForEach(imageUrls.indices, id: \.self) { index in
-                Circle()
-                    .fill(index == internalSelection ? Color.black : Color.gray.opacity(0.3))
-                    .frame(width: index == internalSelection ? 8 : 6, height: index == internalSelection ? 8 : 6)
             }
         }
     }
@@ -458,9 +433,13 @@ struct PosterCarousel: View {
     private func neighborUrls(for index: Int) -> [String] {
         guard !imageUrls.isEmpty else { return [] }
         var indices: Set<Int> = [clampedIndex(index)]
-        if imageUrls.count > 1 {
-            indices.insert((index + 1) % imageUrls.count)
-            indices.insert((index - 1 + imageUrls.count) % imageUrls.count)
+        let previous = index - 1
+        if previous >= 0 {
+            indices.insert(previous)
+        }
+        let next = index + 1
+        if next < imageUrls.count {
+            indices.insert(next)
         }
         return indices.sorted().map { imageUrls[$0] }
     }
@@ -472,64 +451,578 @@ struct PosterCarousel: View {
         }
     }
 }
-// MARK: - 개별 포스터 카드
-struct PosterCard: View {
-    let imageUrl: String
-    let festival: FestivalDetail
-    let posterWidth: CGFloat
-    let posterHeight: CGFloat
-    
-    var body: some View {
-        CachedAsyncImage(
-            url: imageUrl,
-            content: { image in
-                image
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: posterWidth, height: posterHeight)
-                    .clipped()
-                    .cornerRadius(12)
-            },
-            placeholder: {
-                placeholderView
-            },
-            errorView: {
-                errorView
-            }
+// MARK: - UIKit Carousel Wrapper
+struct PosterCarouselContainerView: UIViewControllerRepresentable {
+    let imageUrls: [String]
+    @Binding var currentIndex: Int
+    let cardWidthRatio: CGFloat
+    let cornerRadius: CGFloat
+    let shadowColor: UIColor
+    let shadowOpacity: Float
+    let shadowRadius: CGFloat
+    let shadowOffset: CGSize
+
+    func makeCoordinator() -> Coordinator {
+        Coordinator(parent: self)
+    }
+
+    func makeUIViewController(context: Context) -> PosterCarouselViewController {
+        let controller = PosterCarouselViewController()
+        controller.delegate = context.coordinator
+        controller.cardWidthRatio = cardWidthRatio
+        controller.updateAppearance(
+            cornerRadius: cornerRadius,
+            shadowColor: shadowColor,
+            shadowOpacity: shadowOpacity,
+            shadowRadius: shadowRadius,
+            shadowOffset: shadowOffset
         )
-        .frame(width: posterWidth, height: posterHeight)
+        controller.update(imageUrls: imageUrls, currentIndex: currentIndex, animated: false)
+        return controller
     }
 
-    private var placeholderView: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(Color.gray.opacity(0.2))
-            .frame(width: posterWidth, height: posterHeight)
-            .overlay(
-                VStack(spacing: 8) {
-                    ProgressView()
-                        .tint(.blue)
-                    Text("로딩 중...")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
-                }
-            )
+    func updateUIViewController(_ controller: PosterCarouselViewController, context: Context) {
+        context.coordinator.parent = self
+        controller.cardWidthRatio = cardWidthRatio
+        controller.updateAppearance(
+            cornerRadius: cornerRadius,
+            shadowColor: shadowColor,
+            shadowOpacity: shadowOpacity,
+            shadowRadius: shadowRadius,
+            shadowOffset: shadowOffset
+        )
+        controller.update(imageUrls: imageUrls, currentIndex: currentIndex, animated: true)
     }
 
-    private var errorView: some View {
-        RoundedRectangle(cornerRadius: 12)
-            .fill(Color.gray.opacity(0.2))
-            .frame(width: posterWidth, height: posterHeight)
-            .overlay(
-                VStack(spacing: 8) {
-                    Image(systemName: "photo")
-                        .font(.system(size: 32))
-                        .foregroundColor(.gray.opacity(0.5))
-                    Text("이미지를 불러올 수 없습니다")
-                        .font(.system(size: 12))
-                        .foregroundColor(.gray)
-                        .multilineTextAlignment(.center)
+    final class Coordinator: NSObject, PosterCarouselViewControllerDelegate {
+        var parent: PosterCarouselContainerView
+
+        init(parent: PosterCarouselContainerView) {
+            self.parent = parent
+        }
+
+        func posterCarousel(_ controller: PosterCarouselViewController, didUpdateIndex index: Int) {
+            guard parent.currentIndex != index else { return }
+            DispatchQueue.main.async { [weak self] in
+                self?.parent.currentIndex = index
+            }
+        }
+    }
+}
+
+protocol PosterCarouselViewControllerDelegate: AnyObject {
+    func posterCarousel(_ controller: PosterCarouselViewController, didUpdateIndex index: Int)
+}
+
+final class PosterCarouselViewController: UIViewController {
+    weak var delegate: PosterCarouselViewControllerDelegate?
+
+    private var imageUrls: [String] = []
+    private var repeatedImageUrls: [String] = []
+    private var currentIndex: Int = 0 // actual index within imageUrls
+    private var currentRepeatedIndex: Int = 0 // index within repeatedImageUrls
+    private var isProgrammaticScroll = false
+    private var pendingProgrammaticNotification: Int?
+    private var isAdjustingContentOffset = false
+
+    private var cellStyle = PosterCarouselCellStyle()
+    var cardWidthRatio: CGFloat = PosterCarouselConstants.cardWidthRatio
+
+    private let repetitionCount = 40 // even number to allow centering
+    private var isInfiniteScrollEnabled: Bool { imageUrls.count > 1 }
+    private var repeatedItemCount: Int { repeatedImageUrls.count }
+    private var actualItemCount: Int { imageUrls.count }
+
+    private lazy var collectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal
+        layout.minimumLineSpacing = 12
+        layout.sectionInset = .zero
+        let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        cv.translatesAutoresizingMaskIntoConstraints = false
+        cv.backgroundColor = .clear
+        cv.showsHorizontalScrollIndicator = false
+        cv.decelerationRate = .fast
+        cv.contentInsetAdjustmentBehavior = .never
+        cv.register(PosterCarouselCell.self, forCellWithReuseIdentifier: PosterCarouselCell.reuseIdentifier)
+        cv.dataSource = self
+        cv.delegate = self
+        return cv
+    }()
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = .clear
+        setupLayout()
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        updateLayoutMetrics()
+        centerIfNeeded()
+    }
+
+    func updateAppearance(
+        cornerRadius: CGFloat,
+        shadowColor: UIColor,
+        shadowOpacity: Float,
+        shadowRadius: CGFloat,
+        shadowOffset: CGSize
+    ) {
+        cellStyle.cornerRadius = cornerRadius
+        cellStyle.shadowColor = shadowColor
+        cellStyle.shadowOpacity = shadowOpacity
+        cellStyle.shadowRadius = shadowRadius
+        cellStyle.shadowOffset = shadowOffset
+        collectionView.visibleCells.compactMap { $0 as? PosterCarouselCell }.forEach { cell in
+            cell.apply(style: cellStyle)
+        }
+    }
+
+    func update(imageUrls: [String], currentIndex: Int, animated: Bool) {
+        let normalizedUrls = imageUrls
+        let didChangeUrls = normalizedUrls != self.imageUrls
+
+        self.imageUrls = normalizedUrls
+        self.repeatedImageUrls = buildRepeatedUrls(from: normalizedUrls)
+
+        if didChangeUrls {
+            collectionView.reloadData()
+            view.layoutIfNeeded()
+        }
+
+        guard repeatedItemCount > 0 else {
+            self.currentIndex = 0
+            currentRepeatedIndex = 0
+            let offsetX = -collectionView.contentInset.left
+            collectionView.setContentOffset(CGPoint(x: offsetX, y: 0), animated: false)
+            return
+        }
+
+        let clampedActualIndex = clamped(currentIndex)
+        let targetRepeatedIndex = initialRepeatedIndex(for: clampedActualIndex)
+
+        self.currentIndex = clampedActualIndex
+        self.currentRepeatedIndex = targetRepeatedIndex
+
+        let shouldAnimate = animated && !didChangeUrls
+        scrollToRepeatedIndex(targetRepeatedIndex, animated: shouldAnimate, notifyDelegate: false)
+
+        if shouldAnimate == false { // ensure immediate readiness for reverse swipe on first render
+            primeRepeatedIndexIfNeeded()
+        } else {
+            DispatchQueue.main.async { [weak self] in
+                self?.primeRepeatedIndexIfNeeded()
+            }
+        }
+    }
+
+    private func setupLayout() {
+        view.addSubview(collectionView)
+
+        NSLayoutConstraint.activate([
+            collectionView.topAnchor.constraint(equalTo: view.topAnchor),
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+    }
+
+    private func updateLayoutMetrics() {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+        let availableWidth = collectionView.bounds.width
+        guard availableWidth > 0 else { return }
+        let ratio = min(max(cardWidthRatio, 0.5), 1.0)
+        let width = availableWidth * ratio
+        let height = collectionView.bounds.height
+        layout.itemSize = CGSize(width: width, height: height)
+        let sideInset = max((availableWidth - width) / 2, 0)
+        collectionView.contentInset = UIEdgeInsets(top: 0, left: sideInset, bottom: 0, right: sideInset)
+    }
+
+    private func centerIfNeeded() {
+        guard repeatedItemCount > 0,
+              let expectedOffset = expectedContentOffset(forRepeatedIndex: currentRepeatedIndex) else { return }
+        let delta = abs(collectionView.contentOffset.x - expectedOffset.x)
+        guard delta > 1 else { return }
+
+        scrollToRepeatedIndex(currentRepeatedIndex, animated: false, notifyDelegate: false)
+    }
+
+    private func scrollToRepeatedIndex(_ repeatedIndex: Int, animated: Bool, notifyDelegate: Bool) {
+        guard repeatedImageUrls.indices.contains(repeatedIndex),
+              let offset = expectedContentOffset(forRepeatedIndex: repeatedIndex) else { return }
+
+        let actual = actualIndex(forRepeated: repeatedIndex)
+        currentRepeatedIndex = repeatedIndex
+        currentIndex = actual
+
+        if animated {
+            isProgrammaticScroll = true
+            pendingProgrammaticNotification = notifyDelegate ? actual : nil
+            collectionView.setContentOffset(offset, animated: true)
+        } else {
+            let previousState = isProgrammaticScroll
+            isProgrammaticScroll = true
+            pendingProgrammaticNotification = nil
+            UIView.performWithoutAnimation {
+                collectionView.setContentOffset(offset, animated: false)
+                collectionView.layoutIfNeeded()
+            }
+            isProgrammaticScroll = previousState
+            if notifyDelegate {
+                delegate?.posterCarousel(self, didUpdateIndex: actual)
+            }
+        }
+    }
+
+    private func adjustContentOffsetIfNeeded() {
+        guard isInfiniteScrollEnabled,
+              !isAdjustingContentOffset,
+              let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return }
+
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        guard cellWidth > 0, actualItemCount > 0 else { return }
+
+        let inset = collectionView.contentInset.left
+        let rawOffset = collectionView.contentOffset.x + inset
+
+        let cycleWidth = cellWidth * CGFloat(actualItemCount)
+        let totalWidth = cellWidth * CGFloat(repeatedItemCount)
+
+        let minimumOffset = cycleWidth * CGFloat(repetitionCount / 4)
+        let maximumOffset = totalWidth - cycleWidth * CGFloat(repetitionCount / 4)
+
+        if rawOffset < minimumOffset {
+            isAdjustingContentOffset = true
+            let shift = cycleWidth * CGFloat(repetitionCount / 2)
+            let newOffset = rawOffset + shift
+            collectionView.setContentOffset(CGPoint(x: newOffset - inset, y: collectionView.contentOffset.y), animated: false)
+            collectionView.layoutIfNeeded()
+            isAdjustingContentOffset = false
+        } else if rawOffset > maximumOffset {
+            isAdjustingContentOffset = true
+            let shift = cycleWidth * CGFloat(repetitionCount / 2)
+            let newOffset = rawOffset - shift
+            collectionView.setContentOffset(CGPoint(x: newOffset - inset, y: collectionView.contentOffset.y), animated: false)
+            collectionView.layoutIfNeeded()
+            isAdjustingContentOffset = false
+        }
+    }
+
+    private func buildRepeatedUrls(from urls: [String]) -> [String] {
+        guard !urls.isEmpty else { return [] }
+        guard urls.count > 1 else { return urls }
+
+        var repeated: [String] = []
+        repeated.reserveCapacity(urls.count * repetitionCount)
+        for _ in 0..<repetitionCount {
+            repeated.append(contentsOf: urls)
+        }
+        return repeated
+    }
+
+    private func initialRepeatedIndex(for actualIndex: Int) -> Int {
+        guard actualItemCount > 0 else { return 0 }
+        guard isInfiniteScrollEnabled else { return actualIndex }
+        let middleCycle = (repetitionCount / 2) * actualItemCount
+        return middleCycle + actualIndex
+    }
+
+    private func expectedContentOffset(forRepeatedIndex index: Int) -> CGPoint? {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout else { return nil }
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        guard cellWidth > 0 else { return nil }
+        let inset = collectionView.contentInset.left
+        let offsetX = CGFloat(index) * cellWidth - inset
+        return CGPoint(x: offsetX, y: 0)
+    }
+
+    private func updateIndicesForVisibleItem(notifyDelegate: Bool) {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout,
+              layout.itemSize.width + layout.minimumLineSpacing > 0,
+              actualItemCount > 0 else { return }
+
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        let inset = collectionView.contentInset.left
+        let offset = collectionView.contentOffset.x + inset
+        let rawIndex = Int(round(offset / cellWidth))
+        let clampedRepeatedIndex = max(0, min(repeatedItemCount - 1, rawIndex))
+
+        currentRepeatedIndex = clampedRepeatedIndex
+        let actual = actualIndex(forRepeated: clampedRepeatedIndex)
+
+        if currentIndex != actual {
+            currentIndex = actual
+            if notifyDelegate {
+                delegate?.posterCarousel(self, didUpdateIndex: actual)
+            }
+        }
+    }
+
+    private func actualIndex(forRepeated index: Int) -> Int {
+        guard actualItemCount > 0 else { return 0 }
+        let normalized = ((index % actualItemCount) + actualItemCount) % actualItemCount
+        return normalized
+    }
+
+    private func clamped(_ index: Int) -> Int {
+        guard actualItemCount > 0 else { return 0 }
+        return min(max(index, 0), actualItemCount - 1)
+    }
+
+    private func primeRepeatedIndexIfNeeded() {
+        guard isInfiniteScrollEnabled,
+              actualItemCount > 0,
+              repeatedItemCount > 0 else { return }
+
+        let desiredIndex = currentRepeatedIndex + actualItemCount
+        guard desiredIndex < repeatedItemCount else { return }
+
+        if desiredIndex != currentRepeatedIndex {
+            scrollToRepeatedIndex(desiredIndex, animated: false, notifyDelegate: false)
+        }
+    }
+
+}
+
+extension PosterCarouselViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        repeatedItemCount
+    }
+
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        guard let cell = collectionView.dequeueReusableCell(
+            withReuseIdentifier: PosterCarouselCell.reuseIdentifier,
+            for: indexPath
+        ) as? PosterCarouselCell else {
+            return UICollectionViewCell()
+        }
+
+        guard repeatedImageUrls.indices.contains(indexPath.item) else {
+            cell.apply(style: cellStyle)
+            return cell
+        }
+
+        let urlString = repeatedImageUrls[indexPath.item]
+        cell.configure(with: urlString, style: cellStyle)
+        return cell
+    }
+}
+
+extension PosterCarouselViewController: UICollectionViewDelegateFlowLayout {
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        guard !isProgrammaticScroll else { return }
+        adjustContentOffsetIfNeeded()
+        updateIndicesForVisibleItem(notifyDelegate: false)
+    }
+
+    func scrollViewWillEndDragging(
+        _ scrollView: UIScrollView,
+        withVelocity velocity: CGPoint,
+        targetContentOffset: UnsafeMutablePointer<CGPoint>
+    ) {
+        guard let layout = collectionView.collectionViewLayout as? UICollectionViewFlowLayout,
+              repeatedItemCount > 0 else { return }
+
+        let cellWidth = layout.itemSize.width + layout.minimumLineSpacing
+        guard cellWidth > 0 else { return }
+        let inset = scrollView.contentInset.left
+        let proposedOffsetX = targetContentOffset.pointee.x + inset
+        let index = round(proposedOffsetX / cellWidth)
+        let clampedIndex = Int(max(0, min(index, CGFloat(repeatedItemCount - 1))))
+
+        let newOffsetX = CGFloat(clampedIndex) * cellWidth - inset
+        targetContentOffset.pointee = CGPoint(x: newOffsetX, y: targetContentOffset.pointee.y)
+    }
+
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        isProgrammaticScroll = false
+        adjustContentOffsetIfNeeded()
+        updateIndicesForVisibleItem(notifyDelegate: true)
+    }
+
+    func scrollViewDidEndScrollingAnimation(_ scrollView: UIScrollView) {
+        isProgrammaticScroll = false
+        adjustContentOffsetIfNeeded()
+        updateIndicesForVisibleItem(notifyDelegate: false)
+
+        if let pending = pendingProgrammaticNotification {
+            pendingProgrammaticNotification = nil
+            delegate?.posterCarousel(self, didUpdateIndex: pending)
+        }
+    }
+}
+// MARK: - Carousel Cell & Loader
+private struct PosterCarouselCellStyle {
+    var cornerRadius: CGFloat = 12
+    var shadowColor: UIColor = UIColor.black.withAlphaComponent(0.18)
+    var shadowOpacity: Float = 0.25
+    var shadowRadius: CGFloat = 12
+    var shadowOffset: CGSize = CGSize(width: 0, height: 8)
+}
+
+private final class PosterCarouselCell: UICollectionViewCell {
+    static let reuseIdentifier = "PosterCarouselCell"
+
+    private let shadowContainer: UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.masksToBounds = false
+        return view
+    }()
+
+    private let imageView: UIImageView = {
+        let imageView = UIImageView()
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        imageView.contentMode = .scaleAspectFill
+        imageView.clipsToBounds = true
+        imageView.backgroundColor = .secondarySystemBackground
+        return imageView
+    }()
+
+    private var loadToken: UUID?
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        contentView.backgroundColor = .clear
+        contentView.clipsToBounds = false
+
+        contentView.addSubview(shadowContainer)
+        shadowContainer.addSubview(imageView)
+
+        NSLayoutConstraint.activate([
+            shadowContainer.topAnchor.constraint(equalTo: contentView.topAnchor),
+            shadowContainer.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            shadowContainer.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            shadowContainer.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
+
+            imageView.topAnchor.constraint(equalTo: shadowContainer.topAnchor),
+            imageView.leadingAnchor.constraint(equalTo: shadowContainer.leadingAnchor),
+            imageView.trailingAnchor.constraint(equalTo: shadowContainer.trailingAnchor),
+            imageView.bottomAnchor.constraint(equalTo: shadowContainer.bottomAnchor)
+        ])
+    }
+
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        imageView.image = PosterCarouselCell.placeholderImage
+        if let token = loadToken {
+            CarouselImageLoader.shared.cancelLoad(token)
+            loadToken = nil
+        }
+    }
+
+    func configure(with urlString: String, style: PosterCarouselCellStyle) {
+        apply(style: style)
+        imageView.image = PosterCarouselCell.placeholderImage
+        loadToken = CarouselImageLoader.shared.loadImage(urlString: urlString) { [weak self] image in
+            guard let self else { return }
+            self.imageView.image = image ?? PosterCarouselCell.placeholderImage
+            self.loadToken = nil
+        }
+    }
+
+    func apply(style: PosterCarouselCellStyle) {
+        shadowContainer.layer.shadowColor = style.shadowColor.cgColor
+        shadowContainer.layer.shadowOpacity = style.shadowOpacity
+        shadowContainer.layer.shadowRadius = style.shadowRadius
+        shadowContainer.layer.shadowOffset = style.shadowOffset
+
+        imageView.layer.cornerRadius = style.cornerRadius
+    }
+
+    override func layoutSubviews() {
+        super.layoutSubviews()
+        shadowContainer.layer.shadowPath = UIBezierPath(roundedRect: shadowContainer.bounds, cornerRadius: imageView.layer.cornerRadius).cgPath
+    }
+
+    private static let placeholderImage: UIImage? = {
+        let size = CGSize(width: 10, height: 10)
+        let renderer = UIGraphicsImageRenderer(size: size)
+        return renderer.image { context in
+            UIColor.systemGray5.setFill()
+            context.fill(CGRect(origin: .zero, size: size))
+        }
+    }()
+}
+
+private final class CarouselImageLoader {
+    static let shared = CarouselImageLoader()
+
+    private let session: URLSession
+    private var tasks: [UUID: URLSessionDataTask] = [:]
+    private let lock = NSLock()
+
+    private init() {
+        let configuration = URLSessionConfiguration.default
+        configuration.urlCache = URLCache(
+            memoryCapacity: 50 * 1024 * 1024,
+            diskCapacity: 200 * 1024 * 1024
+        )
+        configuration.requestCachePolicy = .returnCacheDataElseLoad
+        session = URLSession(configuration: configuration)
+    }
+
+    @discardableResult
+    func loadImage(urlString: String, completion: @escaping (UIImage?) -> Void) -> UUID? {
+        guard let url = URL(string: urlString) else {
+            DispatchQueue.main.async {
+                completion(nil)
+            }
+            return nil
+        }
+
+        var request = URLRequest(url: url)
+        request.cachePolicy = .returnCacheDataElseLoad
+
+        if let cachedResponse = session.configuration.urlCache?.cachedResponse(for: request),
+           let image = UIImage(data: cachedResponse.data) {
+            DispatchQueue.main.async {
+                completion(image)
+            }
+            return nil
+        }
+
+        let token = UUID()
+
+        let task = session.dataTask(with: request) { [weak self] data, response, _ in
+            var image: UIImage? = nil
+            if let data, let fetchedImage = UIImage(data: data) {
+                image = fetchedImage
+                if let response {
+                    let cachedResponse = CachedURLResponse(response: response, data: data)
+                    self?.session.configuration.urlCache?.storeCachedResponse(cachedResponse, for: request)
                 }
-            )
+            }
+
+            DispatchQueue.main.async {
+                completion(image)
+            }
+
+            self?.lock.lock()
+            self?.tasks[token] = nil
+            self?.lock.unlock()
+        }
+
+        lock.lock()
+        tasks[token] = task
+        lock.unlock()
+
+        task.resume()
+        return token
+    }
+
+    func cancelLoad(_ token: UUID) {
+        lock.lock()
+        let task = tasks[token]
+        tasks[token] = nil
+        lock.unlock()
+        task?.cancel()
     }
 }
 
@@ -544,7 +1037,7 @@ struct AndroidStyleFestivalCard: View {
     var body: some View {
         ZStack {
             // 실제 S3 이미지 URL 구성 및 로딩 (API와 같은 도메인 사용)
-            let imageURL = image.imageUrl.hasPrefix("http") ? image.imageUrl : "https://festabook.app" + image.imageUrl
+            let imageURL = ImageURLResolver.resolve(image.imageUrl) ?? ""
             
             AsyncImage(url: URL(string: imageURL)) { phase in
                 switch phase {
@@ -645,7 +1138,6 @@ struct CircularLineupSection: View {
         return formatter
     }()
 
-    // API 응답 형식에 맞는 새로운 formatter (timezone 정보 없음)
     private let apiResponseFormatter: DateFormatter = {
         let formatter = DateFormatter()
         formatter.locale = Locale(identifier: "en_US_POSIX")
@@ -661,24 +1153,36 @@ struct CircularLineupSection: View {
         return formatter
     }()
 
+    private let isoDateTimeFormatter: ISO8601DateFormatter = {
+        let formatter = ISO8601DateFormatter()
+        formatter.formatOptions = [.withInternetDateTime, .withFractionalSeconds]
+        formatter.timeZone = TimeZone(identifier: "Asia/Seoul")
+        return formatter
+    }()
+
     var body: some View {
         VStack(alignment: .leading, spacing: 16) {
-            HStack {
-                Text("축제 라인업")
-                    .font(.system(size: 18, weight: .bold))
-                    .foregroundColor(.black)
+            if isLoading {
+                // 로딩 중 제목/버튼 스켈레톤
+                LineupHeaderPlaceholder()
+            } else {
+                HStack {
+                    Text("축제 라인업")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(.black)
 
-                Spacer()
+                    Spacer()
 
-                Button("일정 확인하기 >") {
-                    NotificationCenter.default.post(
-                        name: .navigateToTab,
-                        object: MainTabView.Tab.schedule.rawValue,
-                        userInfo: ["animated": false]
-                    )
+                    Button("일정 확인하기 >") {
+                        NotificationCenter.default.post(
+                            name: .navigateToTab,
+                            object: MainTabView.Tab.schedule.rawValue,
+                            userInfo: ["animated": false]
+                        )
+                    }
+                    .font(.system(size: 14))
+                    .foregroundColor(.gray)
                 }
-                .font(.system(size: 14))
-                .foregroundColor(.gray)
             }
 
             if !lineups.isEmpty {
@@ -723,13 +1227,24 @@ struct CircularLineupSection: View {
                     }
                 }
             } else if isLoading {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    LazyHStack(spacing: 12) {
-                        ForEach(0..<6, id: \.self) { _ in
-                            CircularProfilePlaceholder()
+                // 로딩 중 날짜 그룹과 라인업 스켈레톤
+                VStack(alignment: .leading, spacing: 20) {
+                    ForEach(0..<2, id: \.self) { _ in
+                        VStack(alignment: .leading, spacing: 20) {
+                            // 날짜 제목과 언더바 스켈레톤
+                            LineupDateGroupPlaceholder()
+                            
+                            // 라인업 프로필 스켈레톤
+                            ScrollView(.horizontal, showsIndicators: false) {
+                                LazyHStack(spacing: 12) {
+                                    ForEach(0..<4, id: \.self) { _ in
+                                        CircularProfilePlaceholder()
+                                    }
+                                }
+                                .padding(.horizontal, 4)
+                            }
                         }
                     }
-                    .padding(.horizontal, 4)
                 }
             } else {
                 VStack(spacing: 8) {
@@ -752,19 +1267,7 @@ struct CircularLineupSection: View {
         var unknownLineups: [Lineup] = []
 
         for lineup in lineups {
-            var parsed: Date?
-            
-            // 여러 DateFormatter를 순서대로 시도
-            let formatters = [apiResponseFormatter, backendFormatter, backendFormatterNoFraction]
-            
-            for formatter in formatters {
-                if let date = formatter.date(from: lineup.performanceAt) {
-                    parsed = date
-                    break
-                }
-            }
-            
-            if let date = parsed {
+            if let date = parsePerformanceDate(from: lineup.performanceAt) {
                 let key = calendar.startOfDay(for: date)
                 dateGroups[key, default: []].append(lineup)
             } else {
@@ -807,6 +1310,24 @@ struct CircularLineupSection: View {
         isoFormatter.string(from: date)
     }
 
+    private func parsePerformanceDate(from value: String) -> Date? {
+        for formatter in [backendFormatter, backendFormatterNoFraction, apiResponseFormatter] {
+            if let date = formatter.date(from: value) {
+                return date
+            }
+        }
+
+        if let isoDate = isoDateTimeFormatter.date(from: value) {
+            return isoDate
+        }
+
+        // ISO formatter without fractional seconds fallback
+        let isoNoFraction = ISO8601DateFormatter()
+        isoNoFraction.formatOptions = [.withInternetDateTime]
+        isoNoFraction.timeZone = TimeZone(identifier: "Asia/Seoul")
+        return isoNoFraction.date(from: value)
+    }
+
     private struct LineupGroup: Identifiable {
         let id: String
         let displayLabel: String
@@ -823,7 +1344,7 @@ struct CircularArtistProfile: View {
     var body: some View {
         VStack(spacing: 8) {
             // 원형 프로필 이미지
-            let artistImageURL = lineup.imageUrl.isEmpty ? "" : (lineup.imageUrl.hasPrefix("http") ? lineup.imageUrl : "https://festabook.app" + lineup.imageUrl)
+            let artistImageURL = ImageURLResolver.resolve(lineup.imageUrl) ?? ""
 
             AsyncImage(url: artistImageURL.isEmpty ? nil : URL(string: artistImageURL)) { phase in
                 switch phase {
@@ -891,6 +1412,289 @@ struct CircularProfilePlaceholder: View {
             RoundedRectangle(cornerRadius: 4)
                 .fill(Color.gray.opacity(0.2))
                 .frame(width: 40, height: 12)
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// 대학교 이름 로딩 플레이스홀더 (스켈레톤 뷰)
+struct UniversityNamePlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        RoundedRectangle(cornerRadius: 6)
+            .fill(Color.gray.opacity(0.2))
+            .frame(width: 180, height: 28)
+            .overlay(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(
+                        LinearGradient(
+                            colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                            startPoint: .leading,
+                            endPoint: .trailing
+                        )
+                    )
+                    .offset(x: isAnimating ? 180 : -180)
+                    .mask(RoundedRectangle(cornerRadius: 6))
+            )
+            .clipped()
+            .onAppear {
+                withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                    isAnimating = true
+                }
+            }
+    }
+}
+
+// 축제 포스터 로딩 플레이스홀더 (스켈레톤 뷰)
+struct FestivalPosterPlaceholder: View {
+    @State private var isAnimating = false
+    
+    private var posterWidth: CGFloat {
+        UIScreen.main.bounds.width * PosterCarouselConstants.cardWidthRatio
+    }
+    private var posterHeight: CGFloat { posterWidth * 4 / 3 }
+    private let carouselSpacing: CGFloat = 12
+    
+var body: some View {
+        ZStack(alignment: .center) {
+            sideCard(multiplier: -1)
+            sideCard(multiplier: 1)
+            mainCard()
+        }
+        .frame(width: UIScreen.main.bounds.width, height: posterHeight)
+        .clipped()
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+
+    private func mainCard() -> some View {
+        placeholderCard(width: posterWidth, height: posterHeight, baseOpacity: 0.2)
+            .zIndex(1)
+    }
+
+    private func sideCard(multiplier: CGFloat) -> some View {
+        let sideWidth = posterWidth
+        let sideHeight = posterHeight
+        let horizontalOffset = (posterWidth + carouselSpacing) * multiplier
+
+        return placeholderCard(width: sideWidth, height: sideHeight, baseOpacity: 0.14)
+            .offset(x: horizontalOffset)
+            .zIndex(0)
+    }
+
+    private func placeholderCard(width: CGFloat, height: CGFloat, baseOpacity: Double) -> some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(Color.gray.opacity(baseOpacity))
+            .frame(width: width, height: height)
+            .overlay(shimmerOverlay(width: width, height: height))
+    }
+
+    private func shimmerOverlay(width: CGFloat, height: CGFloat) -> some View {
+        RoundedRectangle(cornerRadius: 12)
+            .fill(
+                LinearGradient(
+                    colors: [Color.clear, Color.white.opacity(0.45), Color.clear],
+                    startPoint: .leading,
+                    endPoint: .trailing
+                )
+            )
+            .frame(width: width, height: height)
+            .offset(x: isAnimating ? width : -width)
+            .mask(RoundedRectangle(cornerRadius: 12))
+    }
+}
+
+// 축제 제목/날짜 로딩 플레이스홀더 (스켈레톤 뷰)
+struct FestivalTitlePlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        VStack(spacing: 4) {
+            // 축제 제목 스켈레톤 (2줄)
+            HStack {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 280, height: 22)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 280 : -280)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                Spacer()
+            }
+            
+            HStack {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 200, height: 22)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 200 : -200)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                Spacer()
+            }
+            
+            // 날짜 스켈레톤
+            HStack {
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 120, height: 16)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 120 : -120)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                Spacer()
+            }
+            .padding(.top, 8)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 10)
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// 라인업 헤더 로딩 플레이스홀더 (제목/버튼 스켈레톤)
+struct LineupHeaderPlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        HStack {
+            // "축제 라인업" 제목 스켈레톤
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 120, height: 20)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .offset(x: isAnimating ? 120 : -120)
+                        .mask(RoundedRectangle(cornerRadius: 4))
+                )
+                .clipped()
+            
+            Spacer()
+            
+            // "일정 확인하기 >" 버튼 스켈레톤
+            RoundedRectangle(cornerRadius: 4)
+                .fill(Color.gray.opacity(0.2))
+                .frame(width: 100, height: 16)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 4)
+                        .fill(
+                            LinearGradient(
+                                colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .offset(x: isAnimating ? 100 : -100)
+                        .mask(RoundedRectangle(cornerRadius: 4))
+                )
+                .clipped()
+        }
+        .onAppear {
+            withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {
+                isAnimating = true
+            }
+        }
+    }
+}
+
+// 라인업 날짜 그룹 로딩 플레이스홀더 (날짜 제목과 언더바 스켈레톤)
+struct LineupDateGroupPlaceholder: View {
+    @State private var isAnimating = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 16) {
+            HStack(spacing: 8) {
+                // 날짜 제목 스켈레톤 (예: "5월 14일")
+                RoundedRectangle(cornerRadius: 4)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: 80, height: 18)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 80 : -80)
+                            .mask(RoundedRectangle(cornerRadius: 4))
+                    )
+                    .clipped()
+                
+                // "오늘" 배지 스켈레톤 (가끔 표시)
+                RoundedRectangle(cornerRadius: 12)
+                    .fill(Color.gray.opacity(0.15))
+                    .frame(width: 40, height: 20)
+                
+                Spacer()
+            }
+            .overlay(alignment: .bottomLeading) {
+                // 언더바 스켈레톤
+                RoundedRectangle(cornerRadius: 2)
+                    .fill(Color.gray.opacity(0.2))
+                    .frame(width: min(UIScreen.main.bounds.width * 0.20, 100), height: 3)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(
+                                LinearGradient(
+                                    colors: [Color.clear, Color.white.opacity(0.6), Color.clear],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .offset(x: isAnimating ? 100 : -100)
+                            .mask(RoundedRectangle(cornerRadius: 2))
+                    )
+                    .clipped()
+                    .offset(y: 8)
+            }
         }
         .onAppear {
             withAnimation(.linear(duration: 1.5).repeatForever(autoreverses: false)) {

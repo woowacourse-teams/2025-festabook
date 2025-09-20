@@ -2,88 +2,93 @@ import SwiftUI
 
 struct MapView: View {
     @ObservedObject var viewModel: MapViewModel
+    @State private var navigationPath: [PlaceDetail] = []
 
     init(viewModel: MapViewModel) {
         self.viewModel = viewModel
     }
 
     var body: some View {
-        GeometryReader { geometry in
-            ZStack {
-                // Map background
-                #if canImport(NMapsMap)
-                NaverMapRepresentable(viewModel: viewModel)
-                    .ignoresSafeArea(edges: .bottom)
-                #else
-                VStack(spacing: 12) {
-                    Text("Naver Maps SDK 미연동 상태").font(.headline)
-                    Text("SDK 추가 후 NaverMapRepresentable이 자동 활성화")
-                }.padding()
-                #endif
+        NavigationStack(path: $navigationPath) {
+            GeometryReader { geometry in
+                ZStack {
+                    // Map background
+                    #if canImport(NMapsMap)
+                    NaverMapRepresentable(viewModel: viewModel)
+                        .ignoresSafeArea(edges: .bottom)
+                    #else
+                    VStack(spacing: 12) {
+                        Text("Naver Maps SDK 미연동 상태").font(.headline)
+                        Text("SDK 추가 후 NaverMapRepresentable이 자동 활성화")
+                    }.padding()
+                    #endif
 
-                // Category filter chips (top)
-                VStack {
-                    CategoryFilterView(viewModel: viewModel)
-                        .frame(height: 50)
-                    Spacer()
-                }
+                    // Category filter chips (top)
+                    VStack {
+                        CategoryFilterView(viewModel: viewModel)
+                            .frame(height: 50)
+                        Spacer()
+                    }
 
 
 
-                // Conditional UI: Show bottom sheet, preview modal, or detail modal
-                VStack {
-                    Spacer()
-                    switch viewModel.modalType {
-                    case .none:
-                        // Bottom sheet - "한 눈에 보기" (when no modal is shown)
-                        BottomSheetView(viewModel: viewModel)
-                            .frame(height: viewModel.sheetDetent.height)
-                            .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.sheetDetent)
+                    // Conditional UI: Show bottom sheet, preview modal, or detail modal
+                    VStack {
+                        Spacer()
+                        switch viewModel.modalType {
+                        case .none:
+                            BottomSheetView(viewModel: viewModel)
+                                .frame(height: viewModel.sheetDetent.totalHeight)
+                                .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.sheetDetent)
 
-                    case .preview:
-                        // Preview modal - 얇은 모달 (badge + title only) - 나머지 카테고리용
-                        PlacePreviewModal(
-                            place: viewModel.selectedPlaceDetail,
-                            isLoading: viewModel.isLoadingPlaceDetail,
-                            errorMessage: viewModel.placeDetailError,
-                            onTap: {
-                                // 나머지 카테고리는 탭해도 상세 모달로 전환하지 않음
-                                // 아무 동작 없음 (또는 필요시 다른 액션)
-                                print("간단한 모달 탭됨 - 추가 동작 없음")
-                            },
-                            onDismiss: {
-                                // Close modal and return to bottom sheet
-                                viewModel.hideModal()
-                            }
-                        )
+                        case .preview:
+                            PlacePreviewModal(
+                                place: viewModel.selectedPlaceDetail,
+                                isLoading: viewModel.isLoadingPlaceDetail,
+                                errorMessage: viewModel.placeDetailError,
+                                onTap: nil,
+                                onDismiss: {
+                                    viewModel.hideModal()
+                                }
+                            )
                             .frame(maxWidth: .infinity)
                             .padding(.horizontal, 16)
                             .padding(.bottom, geometry.safeAreaInsets.bottom + 60)
                             .animation(.easeInOut(duration: 0.25), value: viewModel.modalType == .preview)
 
-                    case .detail:
-                        // Detail modal - 상세 모달 (full info)
-                        PlaceDetailModal(
-                            place: viewModel.selectedPlaceDetail,
-                            isLoading: viewModel.isLoadingPlaceDetail,
-                            errorMessage: viewModel.placeDetailError
-                        ) {
-                            // Close modal and return to bottom sheet
-                            viewModel.hideModal()
+                        case .detail:
+                            detailModal(geometry: geometry)
                         }
-                            .frame(maxWidth: .infinity)
-                            .padding(.horizontal, 16)
-                            .padding(.bottom, geometry.safeAreaInsets.bottom + 60)
-                            .animation(.easeInOut(duration: 0.25), value: viewModel.modalType == .detail)
+                    }
+
+                    // Floating current location button that tracks sheet height
+                    if viewModel.modalType == .none && viewModel.sheetDetent != .large {
+                        VStack {
+                            Spacer()
+                            HStack {
+                                CurrentLocationButton(viewModel: viewModel)
+                                    .padding(.leading, 16)
+                                Spacer()
+                            }
+                            .padding(.bottom, viewModel.sheetDetent.height + 12)
+                        }
                     }
                 }
+            }
+            .navigationDestination(for: PlaceDetail.self) { place in
+                PlaceDetailView(
+                    place: place,
+                    onClose: {
+                        navigationPath.removeAll()
+                    }
+                )
             }
         }
         .task {
             await viewModel.loadMapData()
         }
         .onReceive(NotificationCenter.default.publisher(for: .mapTabReselected)) { _ in
-            viewModel.resetCameraToInitial()
+            viewModel.resetToInitialState()
         }
         .alert("오류", isPresented: $viewModel.showError) {
             Button("다시 시도") {
@@ -97,4 +102,37 @@ struct MapView: View {
         }
     }
 
+}
+
+// MARK: - Private Helpers
+
+private extension MapView {
+    @ViewBuilder
+    func detailModal(geometry: GeometryProxy) -> some View {
+        let place = viewModel.selectedPlaceDetail
+        let isNavigableCategory = ["BOOTH", "BAR", "FOOD_TRUCK"].contains(place?.category ?? "")
+
+        let modal = PlaceDetailModal(
+            place: place,
+            isLoading: viewModel.isLoadingPlaceDetail,
+            errorMessage: viewModel.placeDetailError
+        ) {
+            viewModel.hideModal()
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 16)
+        .padding(.bottom, geometry.safeAreaInsets.bottom + 60)
+        .animation(.easeInOut(duration: 0.25), value: viewModel.modalType == .detail)
+
+        if isNavigableCategory, let place {
+            modal
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    navigationPath.append(place)
+                }
+                .accessibilityAddTraits(.isButton)
+        } else {
+            modal
+        }
+    }
 }

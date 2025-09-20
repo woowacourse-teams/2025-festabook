@@ -92,7 +92,7 @@ struct PlaceMiniCard: View {
             Spacer(minLength: 12)
 
             // Right thumbnail
-            ThumbnailView(imageUrl: place.imageUrl)
+            ThumbnailView(imageUrl: place.resolvedImageURL)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 16)
@@ -148,7 +148,7 @@ struct ThumbnailView: View {
     let imageUrl: String?
 
     var body: some View {
-        if let imageUrl = imageUrl, let url = URL(string: imageUrl) {
+        if let resolved = ImageURLResolver.resolve(imageUrl), let url = URL(string: resolved) {
             AsyncImage(url: url) { image in
                 image
                     .resizable()

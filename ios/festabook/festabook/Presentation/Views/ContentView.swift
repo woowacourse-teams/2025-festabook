@@ -122,10 +122,17 @@ struct MainTabView: View {
             .frame(maxWidth: .infinity, maxHeight: .infinity)
 
             // Custom Tab Bar
-            CustomTabBar(selectedTab: $tabManager.selectedTab)
+            CustomTabBar(
+                selectedTab: $tabManager.selectedTab,
+                onMapButtonTap: { wasAlreadySelected in
+                    if wasAlreadySelected {
+                        mapViewModel.resetToInitialState()
+                    }
+                }
+            )
         }
         .ignoresSafeArea(.keyboard, edges: .bottom)
-        .onChange(of: tabManager.pendingSelection) { newValue in
+        .onChange(of: tabManager.pendingSelection) { _, newValue in
             guard let tab = newValue else { return }
             tabManager.pendingSelection = nil
             let shouldAnimate = tabManager.shouldAnimatePendingSelection
@@ -139,11 +146,16 @@ struct MainTabView: View {
                 tabManager.selectedTab = tab
             }
         }
-        .onChange(of: appState.shouldNavigateToNews) { shouldNavigate in
+        .onChange(of: appState.shouldNavigateToNews) { _, shouldNavigate in
             guard shouldNavigate else { return }
             appState.shouldNavigateToNews = false
             withAnimation(.easeInOut) {
                 tabManager.selectedTab = .news
+            }
+        }
+        .onChange(of: tabManager.selectedTab) { _, newTab in
+            if newTab == .map {
+                mapViewModel.resetToInitialState()
             }
         }
         .onAppear {
@@ -157,6 +169,7 @@ struct MainTabView: View {
 
 struct CustomTabBar: View {
     @Binding var selectedTab: MainTabView.Tab
+    var onMapButtonTap: (_ wasAlreadySelected: Bool) -> Void = { _ in }
 
     var body: some View {
         VStack(spacing: 0) {
@@ -177,7 +190,9 @@ struct CustomTabBar: View {
 
                 // Center Map button (circular and elevated)
                 Button(action: {
+                    let wasSelected = selectedTab == .map
                     selectedTab = .map
+                    onMapButtonTap(wasSelected)
                 }) {
                     Image(systemName: "map.fill")
                         .font(.system(size: 26, weight: .medium))

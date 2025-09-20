@@ -64,6 +64,9 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             }
         }
 
+        // 앱 시작 시 업데이트 확인
+        scheduleUpdateCheck()
+
         return true
     }
 
@@ -98,6 +101,19 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     // APNs 등록 실패
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("[AppDelegate] APNs 등록 실패: \(error.localizedDescription)")
+    }
+
+    // 앱이 foreground로 돌아올 때 업데이트 확인
+    func applicationWillEnterForeground(_ application: UIApplication) {
+        scheduleUpdateCheck()
+    }
+
+    // MARK: - Update Check
+    private func scheduleUpdateCheck() {
+        // 앱 초기화 완료 후 업데이트 확인
+        DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
+            UpdateManager.shared.checkForUpdates()
+        }
     }
 
 }
