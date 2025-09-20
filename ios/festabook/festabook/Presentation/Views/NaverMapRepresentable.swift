@@ -89,7 +89,7 @@ struct NaverMapRepresentable: UIViewRepresentable {
             private var markerTitles: [Int: String] = [:]
             private var pendingMoveToCurrentLocation = false
             private var selectedMarkerId: Int?
-            private let captionVisibilityZoomThreshold: Double = 17.0
+            private let captionVisibilityZoomThreshold: Double = 16.0
             private var markerGeographies: [Int: PlaceGeography] = [:]
             private var lastCameraMoveTargetId: Int?
             private var lastLocationRequestId: UUID?
