@@ -9,6 +9,7 @@ import com.daedan.festabook.timetag.dto.TimeTagCreateResponse;
 import com.daedan.festabook.timetag.dto.TimeTagResponses;
 import com.daedan.festabook.timetag.dto.TimeTagUpdateRequest;
 import com.daedan.festabook.timetag.dto.TimeTagUpdateResponse;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ public class TimeTagService {
 
     private final FestivalJpaRepository festivalJpaRepository;
     private final TimeTagJpaRepository timeTagJpaRepository;
+    private final PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
 
     @Transactional
     public TimeTagCreateResponse createTimeTag(Long festivalId, TimeTagCreateRequest request) {
@@ -53,6 +55,7 @@ public class TimeTagService {
     public void deleteTimeTag(Long festivalId, Long timeTagId) {
         TimeTag timeTag = getTimeTagById(timeTagId);
         validateTimeTagBelongsToFestival(timeTag, festivalId);
+        validateTimeTagNotInUse(timeTag);
 
         timeTagJpaRepository.deleteById(timeTagId);
     }
@@ -70,6 +73,12 @@ public class TimeTagService {
     private void validateTimeTagBelongsToFestival(TimeTag timeTag, Long festivalId) {
         if (!timeTag.isFestivalIdEqualTo(festivalId)) {
             throw new BusinessException("해당 축제의 시간 태그가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validateTimeTagNotInUse(TimeTag timeTag) {
+        if (placeTimeTagJpaRepository.existsByTimeTag(timeTag)) {
+            throw new BusinessException("해당 시간 태그는 사용 중이므로 삭제할 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }
