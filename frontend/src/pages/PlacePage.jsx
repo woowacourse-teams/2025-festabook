@@ -232,7 +232,7 @@ const PlacePage = () => {
         location: getDefaultValueIfNull('미지정', booth.location),
         host: getDefaultValueIfNull('미지정', booth.host),
         images: (booth.placeImages || []).map(img => img.imageUrl),
-        timeTags: booth.timeTags || [], // 시간 태그 추가
+        timeTags: booth.timeTags || [], // 시간 태그 배열 (객체 배열)
     });
 
     // 시간 태그 목록 불러오기
@@ -437,9 +437,16 @@ const PlacePage = () => {
                 return tag ? tag.name : null;
             }).filter(name => name !== null);
             
-            matchesTimeTag = selectedTagNames.some(tagName => 
-                place.timeTags && place.timeTags.includes(tagName)
-            );
+            matchesTimeTag = selectedTagNames.some(tagName => {
+                if (!place.timeTags) return false;
+                
+                // timeTags가 문자열 배열인지 객체 배열인지 확인
+                const placeTagNames = place.timeTags.map(tag => 
+                    typeof tag === 'string' ? tag : tag.name
+                );
+                
+                return placeTagNames.includes(tagName);
+            });
         }
         
         if (viewMode === 'main') {

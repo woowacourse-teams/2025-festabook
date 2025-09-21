@@ -116,12 +116,17 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
         host: place.host || '',
         startTime: startTime,
         endTime: endTime,
-        timeTags: place.timeTags || []
+        timeTags: place.timeTags ? place.timeTags.map(tag => 
+          typeof tag === 'string' ? tag : tag.name
+        ) : []
       });
       
-      // 시간 태그 선택 상태 초기화
+      // 시간 태그 선택 상태 초기화 (객체 배열에서 이름만 추출)
       if (place.timeTags) {
-        setSelectedTimeTags(place.timeTags);
+        const tagNames = place.timeTags.map(tag => 
+          typeof tag === 'string' ? tag : tag.name
+        );
+        setSelectedTimeTags(tagNames);
       }
       
       // 개별 시간 상태도 업데이트
