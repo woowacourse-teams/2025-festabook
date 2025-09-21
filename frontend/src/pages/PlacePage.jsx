@@ -240,6 +240,7 @@ const PlacePage = () => {
         const fetchTimeTags = async () => {
             try {
                 const timeTagData = await timeTagAPI.getTimeTags();
+                console.log('PlacePage - Time tag data:', timeTagData);
                 setTimeTags(timeTagData);
             } catch (error) {
                 console.error('Failed to fetch time tags:', error);
