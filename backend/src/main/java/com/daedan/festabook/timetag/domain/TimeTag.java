@@ -48,7 +48,7 @@ public class TimeTag extends BaseEntity {
 
     private void validateName(String name) {
         if (!StringUtils.hasText(name)) {
-            throw new BusinessException("시간 태그의 이름은 공백일 수 없습니다.", HttpStatus.BAD_REQUEST);
+            throw new BusinessException("시간 태그의 이름은 공백이거나 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
 
         if (name.length() > MAX_NAME_LENGTH) {
