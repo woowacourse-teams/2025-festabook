@@ -1,2 +1,2 @@
 ALTER TABLE `time_tag`
-    ADD CONSTRAINT `FK_TIME_TAG_FESTIVAL` FOREIGN KEY (`festival_id`) REFERENCES `festival` (`id`);
+    ADD CONSTRAINT `fk_time_tag_festival` FOREIGN KEY (`festival_id`) REFERENCES `festival` (`id`);
