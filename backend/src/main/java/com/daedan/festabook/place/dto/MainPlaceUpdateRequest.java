@@ -3,6 +3,7 @@ package com.daedan.festabook.place.dto;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalTime;
+import java.util.List;
 
 public record MainPlaceUpdateRequest(
 
@@ -25,6 +26,9 @@ public record MainPlaceUpdateRequest(
         LocalTime startTime,
 
         @Schema(description = "플레이스 운영 종료 시간", example = "23:50")
-        LocalTime endTime
+        LocalTime endTime,
+
+        @Schema(description = "시간 태그 id 목록", example = "1, 2, 3")
+        List<Long> timeTags
 ) {
 }

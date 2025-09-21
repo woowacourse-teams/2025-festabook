@@ -17,6 +17,10 @@ import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.domain.PlaceTimeTag;
+import com.daedan.festabook.timetag.domain.TimeTag;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,6 +36,8 @@ public class PlaceService {
     private final FestivalJpaRepository festivalJpaRepository;
     private final PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
+    private final PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
+    private final TimeTagJpaRepository timeTagJpaRepository;
 
     public PlaceResponse createPlace(Long festivalId, PlaceRequest request) {
         Festival festival = getFestivalById(festivalId);
@@ -72,7 +78,53 @@ public class PlaceService {
                 request.endTime()
         );
 
+        // 업데이트 중 제외된 시간 태그 삭제
+        List<Long> existingTimeTagIds = getExistingTimeTagIdsByPlaceId(placeId);
+        List<Long> deleteTimeTagIds = getDeleteTimeTagIds(existingTimeTagIds, request.timeTags());
+        placeTimeTagJpaRepository.deleteAllByPlaceIdAndTimeTagIdIn(placeId, deleteTimeTagIds);
+
+        // 업데이트 중 추가된 시간 태그 추가
+        List<TimeTag> addTimeTags = getAddTimeTags(existingTimeTagIds, request.timeTags());
+        validateTimeTagsBelongsToFestival(addTimeTags, festivalId);
+
+        List<PlaceTimeTag> addPlaceTimeTags = createAddPlaceTimeTags(place, addTimeTags);
+        placeTimeTagJpaRepository.saveAll(addPlaceTimeTags);
+
         return MainPlaceUpdateResponse.from(place);
+    }
+
+    private void validateTimeTagsBelongsToFestival(List<TimeTag> addTimeTags, Long festivalId) {
+        addTimeTags.forEach(addTimeTag -> {
+            if (!addTimeTag.isFestivalIdEqualTo(festivalId)) {
+                throw new BusinessException("해당 축제의 시간 태그가 아닙니다.", HttpStatus.FORBIDDEN);
+            }
+        });
+    }
+
+    private List<Long> getDeleteTimeTagIds(List<Long> existingTimeTagIds, List<Long> requestTimeTagIds) {
+        return existingTimeTagIds.stream()
+                .filter(timeTagId -> !requestTimeTagIds.contains(timeTagId))
+                .toList();
+    }
+
+    private List<TimeTag> getAddTimeTags(List<Long> existingTimeTagIds, List<Long> requestTimeTagIds) {
+        List<Long> addTimeTagIds = requestTimeTagIds.stream()
+                .filter(timeTagId -> !existingTimeTagIds.contains(timeTagId))
+                .toList();
+
+        return timeTagJpaRepository.findAllById(addTimeTagIds);
+    }
+
+    private List<PlaceTimeTag> createAddPlaceTimeTags(Place place, List<TimeTag> addTimeTags) {
+        return addTimeTags.stream()
+                .map(timeTag -> new PlaceTimeTag(place, timeTag))
+                .toList();
+    }
+
+    private List<Long> getExistingTimeTagIdsByPlaceId(Long placeId) {
+        return placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
+                .map(placeTimeTag -> placeTimeTag.getTimeTag().getId())
+                .toList();
     }
 
     @Transactional

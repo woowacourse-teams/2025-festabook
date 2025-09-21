@@ -32,4 +32,9 @@ public class PlaceTimeTag {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "time_tag_id", nullable = false)
     private TimeTag timeTag;
+
+    public PlaceTimeTag(Place place, TimeTag timeTag) {
+        this.place = place;
+        this.timeTag = timeTag;
+    }
 }
