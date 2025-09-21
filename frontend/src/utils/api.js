@@ -656,6 +656,27 @@ export const timeTagAPI = {
       console.error('Failed to create time tag:', error);
       throw new Error('시간 태그 추가에 실패했습니다.');
     }
+  },
+
+  // 시간 태그 수정
+  updateTimeTag: async (timeTagId, timeTagData) => {
+    try {
+      const response = await api.patch(`/time-tags/${timeTagId}`, timeTagData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update time tag:', error);
+      throw new Error('시간 태그 수정에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 삭제
+  deleteTimeTag: async (timeTagId) => {
+    try {
+      await api.delete(`/time-tags/${timeTagId}`);
+    } catch (error) {
+      console.error('Failed to delete time tag:', error);
+      throw new Error('시간 태그 삭제에 실패했습니다.');
+    }
   }
 };
 

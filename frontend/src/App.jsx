@@ -40,6 +40,7 @@ import PushNotificationConfirmModal from './components/modals/PushNotificationCo
 import PasswordChangeModal from './components/modals/PasswordChangeModal';
 import LostItemGuideModal from './components/modals/LostItemGuideModal';
 import TimeTagAddModal from './components/modals/TimeTagAddModal';
+import TimeTagEditModal from './components/modals/TimeTagEditModal';
 
 // Common Components
 import Toast from './components/common/Toast';
@@ -100,6 +101,7 @@ function App() {
             case 'passwordChange': return <PasswordChangeModal isOpen={true} {...allProps} />;
             case 'lostItemGuide': return <LostItemGuideModal {...allProps} />;
             case 'timeTagAdd': return <TimeTagAddModal {...allProps} />;
+            case 'timeTagEdit': return <TimeTagEditModal {...allProps} />;
             
             default: return null;
         }
