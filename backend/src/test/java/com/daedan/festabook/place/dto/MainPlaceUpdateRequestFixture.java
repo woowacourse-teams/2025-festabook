@@ -48,4 +48,26 @@ public class MainPlaceUpdateRequestFixture {
                 DEFAULT_TIME_TAG
         );
     }
+
+    public static MainPlaceUpdateRequest createWithFullFiled(
+            PlaceCategory placeCategory,
+            String title,
+            String description,
+            String location,
+            String host,
+            LocalTime startTime,
+            LocalTime endTime,
+            List<Long> timeTagIds
+    ) {
+        return new MainPlaceUpdateRequest(
+                placeCategory,
+                title,
+                description,
+                location,
+                host,
+                startTime,
+                endTime,
+                timeTagIds
+        );
+    }
 }

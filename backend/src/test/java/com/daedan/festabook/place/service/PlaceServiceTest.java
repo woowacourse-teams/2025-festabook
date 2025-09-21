@@ -33,6 +33,10 @@ import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.domain.PlaceTimeTag;
+import com.daedan.festabook.timetag.domain.PlaceTimeTagFixture;
+import com.daedan.festabook.timetag.domain.TimeTag;
+import com.daedan.festabook.timetag.domain.TimeTagFixture;
 import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import java.time.LocalTime;
@@ -225,22 +229,25 @@ class PlaceServiceTest {
         @Test
         void 성공() {
             // given
-            Long placeId = 1L;
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
+
+            Long placeId = 1L;
             Place place = PlaceFixture.create(festival, placeId);
 
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
 
-            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(
+            List<Long> updateTimeTagIds = List.of(1L);
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.createWithFullFiled(
                     PlaceCategory.BAR,
                     "수정된 플레이스 이름",
                     "수정된 플레이스 설명",
                     "수정된 위치",
                     "수정된 호스트",
                     LocalTime.of(12, 00),
-                    LocalTime.of(13, 00)
+                    LocalTime.of(13, 00),
+                    updateTimeTagIds
             );
 
             // when
@@ -255,6 +262,78 @@ class PlaceServiceTest {
                 s.assertThat(result.host()).isEqualTo(request.host());
                 s.assertThat(result.startTime()).isEqualTo(request.startTime());
                 s.assertThat(result.endTime()).isEqualTo(request.endTime());
+                s.assertThat(result.timeTags()).containsAll(updateTimeTagIds);
+            });
+        }
+
+        @Test
+        void 성공_시간_태그_수정() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long placeId = 1L;
+            Place place = PlaceFixture.create(festival, placeId);
+
+            Long originalTimeTagId1 = 1L;
+            TimeTag originalTimeTag1 = TimeTagFixture.createWithFestivalAndId(festival, originalTimeTagId1);
+            PlaceTimeTag placeTimeTag1 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, originalTimeTag1);
+
+            Long originalAndUpdateTimeTagId2 = 2L;
+            TimeTag originalAndUpdateTimeTag2 = TimeTagFixture.createWithFestivalAndId(
+                    festival,
+                    originalAndUpdateTimeTagId2
+            );
+            PlaceTimeTag placeTimeTag2 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(
+                    place,
+                    originalAndUpdateTimeTag2
+            );
+
+            Long updateTimeTagId3 = 3L;
+            TimeTag updateTimeTag3 = TimeTagFixture.createWithFestivalAndId(festival, updateTimeTagId3);
+
+            List<PlaceTimeTag> originalPlaceTimeTags = List.of(placeTimeTag1, placeTimeTag2);
+            List<Long> updateTimeTagIds = List.of(originalAndUpdateTimeTagId2, updateTimeTagId3);
+
+            // 2는 기존 존재하므로 추가 항목에서 제외.
+            List<TimeTag> updateTimeTags = List.of(updateTimeTag3);
+
+            // 기존 존재하는 시간 태그 조회
+            given(placeTimeTagJpaRepository.findAllByPlaceId(placeId))
+                    .willReturn(originalPlaceTimeTags);
+
+            // 추가할 시간 태그 조회
+            given(timeTagJpaRepository.findAllById(any()))
+                    .willReturn(updateTimeTags);
+
+            // place 조회
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.createWithFullFiled(
+                    PlaceCategory.BAR,
+                    "수정된 플레이스 이름",
+                    "수정된 플레이스 설명",
+                    "수정된 위치",
+                    "수정된 호스트",
+                    LocalTime.of(12, 00),
+                    LocalTime.of(13, 00),
+                    updateTimeTagIds
+            );
+
+            // when
+            MainPlaceUpdateResponse result = placeService.updateMainPlace(festivalId, placeId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.placeCategory()).isEqualTo(request.placeCategory());
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.description()).isEqualTo(request.description());
+                s.assertThat(result.location()).isEqualTo(request.location());
+                s.assertThat(result.host()).isEqualTo(request.host());
+                s.assertThat(result.startTime()).isEqualTo(request.startTime());
+                s.assertThat(result.endTime()).isEqualTo(request.endTime());
+                s.assertThat(result.timeTags()).containsAll(updateTimeTagIds);
             });
         }
 
@@ -276,6 +355,49 @@ class PlaceServiceTest {
             assertThatThrownBy(() -> placeService.updateMainPlace(otherFestival.getId(), place.getId(), request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스가 아닙니다.");
+        }
+
+        @Test
+        void 예외_다른_축제_시간_태그() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long otherFestivalId = 999L;
+            Festival otherFestival = FestivalFixture.create(otherFestivalId);
+
+            Long placeId = 1L;
+            Place place = PlaceFixture.create(festival, placeId);
+
+            Long otherTimeTagId = 1L;
+            TimeTag otherTimeTag = TimeTagFixture.createWithFestivalAndId(otherFestival, otherTimeTagId);
+
+            List<Long> updateTimeTagIds = List.of(otherTimeTagId);
+            List<TimeTag> updateTimeTags = List.of(otherTimeTag);
+
+            // place 조회
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+
+            // 추가할 시간 태그 조회
+            given(timeTagJpaRepository.findAllById(any()))
+                    .willReturn(updateTimeTags);
+
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.createWithFullFiled(
+                    PlaceCategory.BAR,
+                    "수정된 플레이스 이름",
+                    "수정된 플레이스 설명",
+                    "수정된 위치",
+                    "수정된 호스트",
+                    LocalTime.of(12, 00),
+                    LocalTime.of(13, 00),
+                    updateTimeTagIds
+            );
+
+            // when & then
+            assertThatThrownBy(() -> placeService.updateMainPlace(festivalId, placeId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("해당 축제의 시간 태그가 아닙니다.");
         }
     }
 

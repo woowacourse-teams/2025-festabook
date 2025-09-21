@@ -498,7 +498,7 @@ class PlaceControllerTest {
                     LocalTime.of(13, 11)
             );
 
-            int expectedFieldSize = 7;
+            int expectedFieldSize = 8;
 
             // when & then
             RestAssured

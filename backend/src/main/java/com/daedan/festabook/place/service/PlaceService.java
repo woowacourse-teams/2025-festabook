@@ -90,7 +90,7 @@ public class PlaceService {
         List<PlaceTimeTag> addPlaceTimeTags = createAddPlaceTimeTags(place, addTimeTags);
         placeTimeTagJpaRepository.saveAll(addPlaceTimeTags);
 
-        return MainPlaceUpdateResponse.from(place);
+        return MainPlaceUpdateResponse.from(place, request.timeTags());
     }
 
     private void validateTimeTagsBelongsToFestival(List<TimeTag> addTimeTags, Long festivalId) {
