@@ -48,6 +48,7 @@ public class SecurityConfig {
             "/lost-items",
             "/questions",
             "/lineups",
+            "/time-tags",
             "/actuator/health"
     };
 
