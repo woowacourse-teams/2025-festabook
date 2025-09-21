@@ -99,7 +99,6 @@ const PlaceGeographyPage = () => {
     const fetchTimeTags = async () => {
       try {
         const timeTagData = await timeTagAPI.getTimeTags();
-        console.log('PlaceGeographyPage - Time tag data:', timeTagData);
         setTimeTags(timeTagData);
       } catch (error) {
         console.error('시간 태그 로드 실패:', error);
@@ -108,10 +107,7 @@ const PlaceGeographyPage = () => {
     fetchTimeTags();
   }, []);
 
-  // 디버깅: timeTags 상태 변경 추적
-  useEffect(() => {
-    console.log('PlaceGeographyPage - timeTags state changed:', timeTags);
-  }, [timeTags]);
+
 
   // 초기 데이터 로드 시 filteredPlaces 설정
   useEffect(() => {
@@ -147,28 +143,17 @@ const PlaceGeographyPage = () => {
         return tag ? tag.name : null;
       }).filter(name => name !== null);
       
-      console.log('PlaceGeographyPage - Selected tag names:', selectedTagNames);
-      
       filtered = filtered.filter(place => {
-        if (!place.timeTags) {
-          console.log('PlaceGeographyPage - Place has no timeTags:', place.title);
-          return false;
-        }
+        if (!place.timeTags) return false;
         
         // timeTags가 문자열 배열인지 객체 배열인지 확인
         const placeTagNames = place.timeTags.map(tag => 
           typeof tag === 'string' ? tag : tag.name
         );
         
-        console.log('PlaceGeographyPage - Place timeTags:', place.title, placeTagNames);
-        
-        const matches = selectedTagNames.some(tagName => 
+        return selectedTagNames.some(tagName => 
           placeTagNames.includes(tagName)
         );
-        
-        console.log('PlaceGeographyPage - Place matches filter:', place.title, matches);
-        
-        return matches;
       });
     }
 
@@ -182,7 +167,6 @@ const PlaceGeographyPage = () => {
 
   // 시간 태그 필터 핸들러
   const handleTimeTagFilterChange = (tagId, isChecked) => {
-    console.log('PlaceGeographyPage - Time tag filter change:', tagId, isChecked);
     if (isChecked) {
       setSelectedTimeTags(prev => [...prev, tagId]);
     } else {
