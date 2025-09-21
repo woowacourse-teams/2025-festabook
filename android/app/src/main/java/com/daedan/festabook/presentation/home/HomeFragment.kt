@@ -42,7 +42,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     }
 
     private fun setupNavigateToExploreButton() {
-        binding.btnNavigateToExplore.setOnClickListener {
+        binding.layoutTitleWithIcon.setOnClickListener {
             startActivity(ExploreActivity.newIntent(requireContext()))
         }
     }
@@ -108,7 +108,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 .sortedBy { it.sequence }
                 .map { it.imageUrl }
 
-        if (!posterUrls.isEmpty()) {
+        if (posterUrls.isNotEmpty()) {
             posterAdapter.submitList(posterUrls) {
                 scrollToInitialPosition(posterUrls.size)
             }

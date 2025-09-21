@@ -169,6 +169,7 @@ class ExploreActivity :
         }
         viewModel.hasFestivalId.observe(this) { hasId ->
             binding.btnExploreClose.visibility = if (hasId) View.VISIBLE else View.GONE
+            binding.ivLogoTitle.visibility = if (hasId) View.GONE else View.VISIBLE
         }
     }
 
