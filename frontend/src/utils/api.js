@@ -654,6 +654,12 @@ export const timeTagAPI = {
       return response.data;
     } catch (error) {
       console.error('Failed to create time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
       throw new Error('시간 태그 추가에 실패했습니다.');
     }
   },
@@ -665,6 +671,12 @@ export const timeTagAPI = {
       return response.data;
     } catch (error) {
       console.error('Failed to update time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
       throw new Error('시간 태그 수정에 실패했습니다.');
     }
   },
@@ -675,6 +687,12 @@ export const timeTagAPI = {
       await api.delete(`/time-tags/${timeTagId}`);
     } catch (error) {
       console.error('Failed to delete time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.status === 400 && error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
       throw new Error('시간 태그 삭제에 실패했습니다.');
     }
   }
