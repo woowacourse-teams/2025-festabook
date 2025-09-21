@@ -7,8 +7,13 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DataAccessResourceFailureException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.query.BadJpqlGrammarException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.AuthenticationCredentialsNotFoundException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -70,6 +75,54 @@ public class GlobalExceptionHandler {
                     ""
             );
             log.info("", kv("event", exceptionLog));
+        }
+    }
+
+    @ExceptionHandler({
+            DataIntegrityViolationException.class,
+            DataAccessResourceFailureException.class
+    })
+    public ResponseEntity<ExceptionResponse> handleWarnDatabaseException(DataAccessException exception) {
+        try {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new ExceptionResponse("서버에 일시적으로 문제가 발생하였습니다. 잠시후 재시도 해주세요."));
+        } finally {
+            ExceptionLog exceptionLog = ExceptionLog.from(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    exception.getMessage(),
+                    exception.getClass().getSimpleName(),
+                    ""
+            );
+            log.warn("", kv("event", exceptionLog));
+        }
+    }
+
+    @ExceptionHandler({
+            BadSqlGrammarException.class,
+            BadJpqlGrammarException.class
+    })
+    public ResponseEntity<ExceptionResponse> handleErrorDatabaseException(DataAccessException exception) {
+        StringWriter stringWriter = new StringWriter();
+        try (PrintWriter printWriter = new PrintWriter(stringWriter)) {
+
+            exception.printStackTrace(printWriter);
+            return ResponseEntity
+                    .internalServerError()
+                    .body(new ExceptionResponse(INTERNAL_ERROR_MESSAGE));
+        } finally {
+            ExceptionLog exceptionLog = ExceptionLog.from(
+                    HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                    exception.getMessage(),
+                    exception.getClass().getSimpleName(),
+                    stringWriter.toString()
+            );
+            log.error("", kv("event", exceptionLog));
+            try {
+                stringWriter.close();
+            } catch (IOException e) {
+                log.warn("자원할당 해제에 실패하였습니다.");
+            }
         }
     }
 
