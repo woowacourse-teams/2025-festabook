@@ -38,14 +38,22 @@ class DefaultFirebaseLogger(
         )
     }
 
-    fun getBaseLogData() = BaseLogData.CommonLogData(
-        festivalId = festivalLocalDataSource.getFestivalId() ?: -1L,
-        notificationId = festivalNotificationLocalDataSource.getFestivalNotificationId(),
-        deviceInfo = Build.MODEL,
-        eventTime = LocalDateTime.now().toString(),
-        userId = userId ?: KEY_UNINITIALIZED_USER_ID,
-        sessionId = sessionId ?: KEY_UNINITIALIZED_SESSION_ID,
-    )
+    fun getBaseLogData():BaseLogData.CommonLogData {
+        val festivalId = festivalLocalDataSource.getFestivalId()
+        val notificationId = if (festivalId != null) {
+            festivalNotificationLocalDataSource.getFestivalNotificationId(festivalId)
+        } else {
+            -1L
+        }
+        return BaseLogData.CommonLogData(
+            festivalId = festivalId ?: -1L,
+            notificationId = notificationId,
+            deviceInfo = Build.MODEL,
+            eventTime = LocalDateTime.now().toString(),
+            userId = userId ?: KEY_UNINITIALIZED_USER_ID,
+            sessionId = sessionId ?: KEY_UNINITIALIZED_SESSION_ID,
+        )
+    }
 
     companion object {
         @Volatile
