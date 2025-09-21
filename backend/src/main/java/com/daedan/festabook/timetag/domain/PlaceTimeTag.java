@@ -1,5 +1,6 @@
 package com.daedan.festabook.timetag.domain;
 
+import com.daedan.festabook.global.domain.BaseEntity;
 import com.daedan.festabook.place.domain.Place;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -19,7 +20,7 @@ import org.hibernate.annotations.SQLRestriction;
 @SQLRestriction("deleted = false")
 @SQLDelete(sql = "UPDATE place_time_tag SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class PlaceTimeTag {
+public class PlaceTimeTag extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
