@@ -38,6 +38,7 @@ import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
@@ -79,6 +80,9 @@ class PlaceControllerTest {
     private PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
 
     @Autowired
+    private PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
+
+    @Autowired
     private DeviceJpaRepository deviceJpaRepository;
 
     @Autowired
@@ -111,7 +115,7 @@ class PlaceControllerTest {
             String expectedPlaceTitle = "동문 주차장";
             PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
 
-            int expectedFieldSize = 10;
+            int expectedFieldSize = 11;
 
             // when & then
             RestAssured
@@ -229,7 +233,7 @@ class PlaceControllerTest {
                     .willReturn(List.of(place));
 
             int expectedSize = 1;
-            int expectedFieldSize = 6;
+            int expectedFieldSize = 7;
 
             // when & then
             RestAssured
@@ -246,7 +250,8 @@ class PlaceControllerTest {
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].title", equalTo(place.getTitle()))
                     .body("[0].description", equalTo(place.getDescription()))
-                    .body("[0].location", equalTo(place.getLocation()));
+                    .body("[0].location", equalTo(place.getLocation()))
+                    .body("[0].timeTags", notNullValue());
             then(shuffleManager).should()
                     .getShuffledList(anyList());
         }

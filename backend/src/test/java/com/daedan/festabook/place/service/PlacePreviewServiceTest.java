@@ -13,6 +13,7 @@ import com.daedan.festabook.place.domain.PlaceImageFixture;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -32,6 +33,9 @@ class PlacePreviewServiceTest {
 
     @Mock
     private PlaceImageJpaRepository placeImageJpaRepository;
+
+    @Mock
+    private PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
 
     @Mock
     private ShuffleManager shuffleManager;

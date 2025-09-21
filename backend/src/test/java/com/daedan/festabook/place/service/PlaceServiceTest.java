@@ -33,6 +33,8 @@ import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +56,12 @@ class PlaceServiceTest {
 
     @Mock
     private PlaceImageJpaRepository placeImageJpaRepository;
+
+    @Mock
+    private PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
+
+    @Mock
+    private TimeTagJpaRepository timeTagJpaRepository;
 
     @Mock
     private FestivalJpaRepository festivalJpaRepository;
