@@ -163,11 +163,10 @@ public class PlaceService {
             Long placeId = place.getId();
             List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId);
             List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
-            List<String> timeTagNames = placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
+            List<TimeTag> timeTags = placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
                     .map(PlaceTimeTag::getTimeTag)
-                    .map(TimeTag::getName)
                     .toList();
-            return PlaceResponse.from(place, placeImages, placeAnnouncements, timeTagNames);
+            return PlaceResponse.from(place, placeImages, placeAnnouncements, timeTags);
         }
 
         return PlaceResponse.from(place, List.of(), List.of(), List.of());
