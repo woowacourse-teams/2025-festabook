@@ -15,8 +15,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
-@Loggable
 @Slf4j
+@Loggable
 @Component
 @Profile("dev")
 public class LocalStorageManager implements StorageManager {
