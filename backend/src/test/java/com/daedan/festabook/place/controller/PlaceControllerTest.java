@@ -345,7 +345,7 @@ class PlaceControllerTest {
             PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
             placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
 
-            int expectedFieldSize = 10;
+            int expectedFieldSize = 11;
             int expectedPlaceImagesSize = 2;
             int expectedPlaceAnnouncementsSize = 2;
 
@@ -383,7 +383,9 @@ class PlaceControllerTest {
                     .body("placeAnnouncements[1].id", equalTo(placeAnnouncement2.getId().intValue()))
                     .body("placeAnnouncements[1].title", equalTo(placeAnnouncement2.getTitle()))
                     .body("placeAnnouncements[1].content", equalTo(placeAnnouncement2.getContent()))
-                    .body("placeAnnouncements[1].createdAt", notNullValue());
+                    .body("placeAnnouncements[1].createdAt", notNullValue())
+
+                    .body("timeTags", notNullValue());
         }
 
         @Test
