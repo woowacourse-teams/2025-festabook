@@ -634,6 +634,31 @@ export const lineupAPI = {
   }
 };
 
+// 시간 태그 관련 API
+export const timeTagAPI = {
+  // 시간 태그 목록 조회
+  getTimeTags: async () => {
+    try {
+      const response = await api.get('/time-tags');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch time tags:', error);
+      throw new Error('시간 태그 조회에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 추가
+  createTimeTag: async (timeTagData) => {
+    try {
+      const response = await api.post('/time-tags', timeTagData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create time tag:', error);
+      throw new Error('시간 태그 추가에 실패했습니다.');
+    }
+  }
+};
+
 // 학생회 관련 API
 export const councilAPI = {
   // 학생회 비밀번호 변경

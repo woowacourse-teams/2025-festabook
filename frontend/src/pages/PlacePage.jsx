@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../data/categories';
-import { placeAPI } from '../utils/api';
+import { placeAPI, timeTagAPI } from '../utils/api';
 import { PlacePageSkeleton } from '../components/common/Skeleton';
 import { getCategoryIcon } from '../components/icons/CategoryIcons';
 
@@ -216,6 +216,8 @@ const PlacePage = () => {
     const [loading, setLoading] = useState(false);
     const [viewMode, setViewMode] = useState('all'); // 'all', 'main', 'other'
     const [searchTerm, setSearchTerm] = useState('');
+    const [timeTags, setTimeTags] = useState([]);
+    const [selectedTimeTags, setSelectedTimeTags] = useState([]); // 선택된 시간 태그 ID 배열
 
     // defaultBooth 메서드
     const getDefaultValueIfNull = (defaultValue, nullableValue) => nullableValue === null ? defaultValue : nullableValue;
@@ -230,7 +232,48 @@ const PlacePage = () => {
         location: getDefaultValueIfNull('미지정', booth.location),
         host: getDefaultValueIfNull('미지정', booth.host),
         images: (booth.placeImages || []).map(img => img.imageUrl),
+        timeTags: booth.timeTags || [], // 시간 태그 추가
     });
+
+    // 시간 태그 목록 불러오기
+    useEffect(() => {
+        const fetchTimeTags = async () => {
+            try {
+                const timeTagData = await timeTagAPI.getTimeTags();
+                setTimeTags(timeTagData);
+            } catch (error) {
+                console.error('Failed to fetch time tags:', error);
+                showToast('네트워크 문제로 시간 태그를 불러오지 못했습니다. 시간 태그 필터링이 동작하지 않을 수 있습니다.');
+            }
+        };
+        
+        fetchTimeTags();
+    }, [showToast]);
+
+    // 시간 태그 체크박스 처리
+    const handleTimeTagFilterChange = (tagId, isChecked) => {
+        if (isChecked) {
+            setSelectedTimeTags(prev => [...prev, tagId]);
+        } else {
+            setSelectedTimeTags(prev => prev.filter(id => id !== tagId));
+        }
+    };
+
+    // 시간 태그 추가
+    const handleTimeTagAdd = async (data) => {
+        if (!data.name || !data.name.trim()) {
+            showToast('시간 태그 이름을 입력해주세요.');
+            return;
+        }
+        try {
+            await timeTagAPI.createTimeTag({ name: data.name.trim() });
+            const timeTagData = await timeTagAPI.getTimeTags();
+            setTimeTags(timeTagData);
+            showToast('새 시간 태그가 추가되었습니다.');
+        } catch (error) {
+            showToast(error.message || '시간 태그 추가에 실패했습니다.');
+        }
+    };
 
     // 플레이스 목록 불러오기
     useEffect(() => {
@@ -347,12 +390,25 @@ const PlacePage = () => {
         const matchesSearch = place.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             placeCategories[place.category].toLowerCase().includes(searchTerm.toLowerCase());
         
-        if (viewMode === 'main') {
-            return matchesSearch && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
-        } else if (viewMode === 'other') {
-            return matchesSearch && ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+        // 시간 태그 필터링 (선택된 태그가 없거나, 선택된 태그 중 하나라도 플레이스에 포함되어 있으면 통과)
+        let matchesTimeTag = true;
+        if (selectedTimeTags.length > 0) {
+            const selectedTagNames = selectedTimeTags.map(tagId => {
+                const tag = timeTags.find(t => t.id === tagId);
+                return tag ? tag.name : null;
+            }).filter(name => name !== null);
+            
+            matchesTimeTag = selectedTagNames.some(tagName => 
+                place.timeTags && place.timeTags.includes(tagName)
+            );
         }
-        return matchesSearch;
+        
+        if (viewMode === 'main') {
+            return matchesSearch && matchesTimeTag && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+        } else if (viewMode === 'other') {
+            return matchesSearch && matchesTimeTag && ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+        }
+        return matchesSearch && matchesTimeTag;
     });
 
     // 카테고리별 그룹화
@@ -440,6 +496,36 @@ const PlacePage = () => {
                                 />
                             </div>
                         </div>
+
+                        {/* 시간 태그 필터 */}
+                        {timeTags.length > 0 && (
+                            <div className="flex items-center space-x-4">
+                                <div className="bg-white border border-gray-300 rounded-lg p-3">
+                                    <div className="text-sm font-medium text-gray-700 mb-2">시간 태그 필터</div>
+                                    <div className="space-y-2 max-h-32 overflow-y-auto">
+                                        {timeTags.map(tag => (
+                                            <label key={tag.id} className="flex items-center space-x-2 cursor-pointer">
+                                                <input
+                                                    type="checkbox"
+                                                    checked={selectedTimeTags.includes(tag.id)}
+                                                    onChange={(e) => handleTimeTagFilterChange(tag.id, e.target.checked)}
+                                                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                />
+                                                <span className="text-sm text-gray-700">{tag.name}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+                                <button
+                                    onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd })}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200 text-sm whitespace-nowrap"
+                                    title="새 시간 태그 추가"
+                                >
+                                    <i className="fas fa-plus mr-2"></i>
+                                    시간 태그 추가
+                                </button>
+                            </div>
+                        )}
 
                         {/* 뷰 모드 필터 */}
                         <div className="flex bg-gray-100 rounded-lg p-1">

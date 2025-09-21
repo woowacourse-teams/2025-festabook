@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import { placeAPI } from '../../utils/api';
+import { placeAPI, timeTagAPI } from '../../utils/api';
 
 const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
   const [formData, setFormData] = useState({
@@ -10,10 +10,13 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     location: '',
     host: '',
     startTime: '',
-    endTime: ''
+    endTime: '',
+    timeTags: []
   });
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const [timeTags, setTimeTags] = useState([]);
+  const [selectedTimeTags, setSelectedTimeTags] = useState([]);
   
   // 시작 시간 개별 필드 관리
   const [startHours, setStartHoursState] = useState('');
@@ -73,6 +76,21 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     });
   };
 
+  // 시간 태그 목록 불러오기
+  useEffect(() => {
+    const fetchTimeTags = async () => {
+      try {
+        const timeTagData = await timeTagAPI.getTimeTags();
+        setTimeTags(timeTagData);
+      } catch (error) {
+        console.error('Failed to fetch time tags:', error);
+        // 시간 태그 로딩 실패는 전체 기능을 막지 않도록 조용히 처리
+      }
+    };
+    
+    fetchTimeTags();
+  }, []);
+
   // 플레이스 데이터로 폼 초기화
   useEffect(() => {
     if (place) {
@@ -97,8 +115,14 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
         location: place.location || '',
         host: place.host || '',
         startTime: startTime,
-        endTime: endTime
+        endTime: endTime,
+        timeTags: place.timeTags || []
       });
+      
+      // 시간 태그 선택 상태 초기화
+      if (place.timeTags) {
+        setSelectedTimeTags(place.timeTags);
+      }
       
       // 개별 시간 상태도 업데이트
       setStartHoursState(startHoursPart);
@@ -106,7 +130,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
       setEndHoursState(endHoursPart);
       setEndMinutesState(endMinutesPart);
     }
-  }, [place]);
+  }, [place, timeTags]); // timeTags가 로드된 후에 실행되도록
 
   // ESC 키 이벤트 리스너
   useEffect(() => {
@@ -158,6 +182,21 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
     }
   };
 
+  // 시간 태그 체크박스 처리
+  const handleTimeTagChange = (tagName, isChecked) => {
+    let updatedTags;
+    if (isChecked) {
+      updatedTags = [...selectedTimeTags, tagName];
+    } else {
+      updatedTags = selectedTimeTags.filter(tag => tag !== tagName);
+    }
+    setSelectedTimeTags(updatedTags);
+    setFormData(prev => ({
+      ...prev,
+      timeTags: updatedTags
+    }));
+  };
+
     const validateForm = () => {
     const newErrors = {};
 
@@ -200,7 +239,18 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
 
     setLoading(true);
     try {
-      await placeAPI.updateMainPlace(place.placeId, formData);
+      // timeTags 이름을 ID로 변환
+      const timeTagIds = selectedTimeTags.map(tagName => {
+        const tag = timeTags.find(t => t.name === tagName);
+        return tag ? tag.id : null;
+      }).filter(id => id !== null);
+
+      const updateData = {
+        ...formData,
+        timeTags: timeTagIds // 이름 대신 ID 배열로 전송
+      };
+
+      await placeAPI.updateMainPlace(place.placeId, updateData);
       showToast('플레이스 정보가 성공적으로 수정되었습니다.');
       // 수정된 플레이스 ID를 전달하여 부모 컴포넌트에서 최신 데이터를 다시 조회하도록 함
       onSave({ placeId: place.placeId });
@@ -420,6 +470,28 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
               </div>
             </div>
           </div>
+
+          {/* 시간 태그 선택 */}
+          {timeTags.length > 0 && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">
+                시간 태그
+              </label>
+              <div className="space-y-2">
+                {timeTags.map(tag => (
+                  <label key={tag.id} className="flex items-center space-x-3 cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={selectedTimeTags.includes(tag.name)}
+                      onChange={(e) => handleTimeTagChange(tag.name, e.target.checked)}
+                      className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                    />
+                    <span className="text-sm text-gray-700">{tag.name}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* 버튼 */}
           <div className="flex justify-end space-x-3 pt-4">
