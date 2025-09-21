@@ -2,6 +2,7 @@ package com.daedan.festabook.notification.infrastructure;
 
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.logging.Loggable;
 import com.daedan.festabook.notification.dto.NotificationSendRequest;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -13,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+@Loggable
 @Component
 @RequiredArgsConstructor
 public class FcmNotificationManager implements FestivalNotificationManager {
