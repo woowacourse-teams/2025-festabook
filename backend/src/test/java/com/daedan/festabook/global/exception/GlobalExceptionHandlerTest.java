@@ -22,6 +22,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DataAccessResourceFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.data.jpa.repository.query.BadJpqlGrammarException;
 import org.springframework.http.HttpStatus;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.security.access.AccessDeniedException;
@@ -182,7 +183,7 @@ class GlobalExceptionHandlerTest {
         private static Stream<DataAccessException> 데이터베이스_치명적인_예외_발생시_500_응답() {
             return Stream.of(
                     new BadSqlGrammarException("", "", new SQLException()),
-                    new DataAccessResourceFailureException("")
+                    new BadJpqlGrammarException("", "", new Throwable())
             );
         }
     }
