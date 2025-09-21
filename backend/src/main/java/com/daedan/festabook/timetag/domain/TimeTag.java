@@ -1,4 +1,4 @@
-package com.daedan.festabook.place.domain;
+package com.daedan.festabook.timetag.domain;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.global.domain.BaseEntity;
@@ -57,5 +57,13 @@ public class TimeTag extends BaseEntity {
                     HttpStatus.BAD_REQUEST
             );
         }
+    }
+
+    public boolean isFestivalIdEqualTo(Long festivalId) {
+        return this.festival.getId().equals(festivalId);
+    }
+
+    public void updateTimeTag(TimeTag newTimeTag) {
+        this.name = newTimeTag.getName();
     }
 }
