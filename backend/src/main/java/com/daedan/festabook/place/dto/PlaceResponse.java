@@ -4,6 +4,7 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceImage;
+import com.daedan.festabook.timetag.dto.TimeTagNameResponses;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import java.time.LocalTime;
 import java.util.List;
@@ -18,13 +19,15 @@ public record PlaceResponse(
         String location,
         String host,
         String description,
-        PlaceAnnouncementResponses placeAnnouncements
+        PlaceAnnouncementResponses placeAnnouncements,
+        TimeTagNameResponses timeTags
 ) {
 
     public static PlaceResponse from(
             Place place,
             List<PlaceImage> images,
-            List<PlaceAnnouncement> announcements
+            List<PlaceAnnouncement> announcements,
+            List<String> timeTagNames
     ) {
         return new PlaceResponse(
                 place.getId(),
@@ -36,7 +39,8 @@ public record PlaceResponse(
                 place.getLocation(),
                 place.getHost(),
                 place.getDescription(),
-                PlaceAnnouncementResponses.from(announcements)
+                PlaceAnnouncementResponses.from(announcements),
+                new TimeTagNameResponses(timeTagNames)
         );
     }
 
@@ -51,7 +55,8 @@ public record PlaceResponse(
                 place.getLocation(),
                 place.getHost(),
                 place.getDescription(),
-                PlaceAnnouncementResponses.from(List.of())
+                PlaceAnnouncementResponses.from(List.of()),
+                new TimeTagNameResponses(List.of())
         );
     }
 }

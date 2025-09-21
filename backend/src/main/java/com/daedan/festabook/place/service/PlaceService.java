@@ -163,10 +163,14 @@ public class PlaceService {
             Long placeId = place.getId();
             List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId);
             List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
-            return PlaceResponse.from(place, placeImages, placeAnnouncements);
+            List<String> timeTagNames = placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
+                    .map(PlaceTimeTag::getTimeTag)
+                    .map(TimeTag::getName)
+                    .toList();
+            return PlaceResponse.from(place, placeImages, placeAnnouncements, timeTagNames);
         }
 
-        return PlaceResponse.from(place, List.of(), List.of());
+        return PlaceResponse.from(place, List.of(), List.of(), List.of());
     }
 
     private void validatePlaceBelongsToFestival(Place place, Long festivalId) {

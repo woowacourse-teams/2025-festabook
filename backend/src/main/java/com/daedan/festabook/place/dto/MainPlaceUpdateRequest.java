@@ -28,7 +28,7 @@ public record MainPlaceUpdateRequest(
         @Schema(description = "플레이스 운영 종료 시간", example = "23:50")
         LocalTime endTime,
 
-        @Schema(description = "시간 태그 id 목록", example = "1, 2, 3")
+        @Schema(description = "시간 태그 id 목록", example = "[1, 2, 3]")
         List<Long> timeTags
 ) {
 }
