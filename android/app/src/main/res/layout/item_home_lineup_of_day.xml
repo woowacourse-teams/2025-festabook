@@ -43,7 +43,7 @@
             android:layout_marginStart="16dp"
             android:layout_height="1dp"
             android:layout_marginTop="4dp"
-            android:background="@color/gray900"
+            android:background="@color/gray700"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_lineup_day" />
 
