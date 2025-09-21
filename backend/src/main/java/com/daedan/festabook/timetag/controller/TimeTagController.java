@@ -68,7 +68,7 @@ public class TimeTagController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public TimeTagUpdateResponse updateMainPlace(
+    public TimeTagUpdateResponse updateTimeTag(
             @PathVariable Long timeTagId,
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody TimeTagUpdateRequest request
