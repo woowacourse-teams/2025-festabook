@@ -1,6 +1,7 @@
 package com.daedan.festabook.storage.infrastructure;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.logging.Loggable;
 import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
@@ -14,6 +15,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
+@Loggable
 @Slf4j
 @Component
 @Profile("dev")
