@@ -54,7 +54,7 @@ class MapViewModel: NSObject, ObservableObject {
             markers = markers.filter { active.contains($0.category) }
         }
 
-        // Time tag filtering (markers don't have time tags, so we filter by place IDs that have the selected time tag)
+        // Time tag filtering
         if let selectedTimeTag = selectedTimeTag {
             let filteredPlaceIds = Set<Int>(previewsByPlaceId.values.compactMap { preview in
                 guard let timeTags = preview.timeTags,
@@ -150,19 +150,12 @@ class MapViewModel: NSObject, ObservableObject {
             do {
                 let timeTags = try await repository.fetchTimeTags()
                 self.timeTags = timeTags
-
-                // timeTags가 있으면 첫 번째 태그를 기본 선택, 없으면 전체(nil) 선택
-                if !timeTags.isEmpty {
-                    self.selectedTimeTag = timeTags.first
-                    print("  - TimeTags: \(timeTags.count)개, 첫 번째 태그 '\(timeTags.first?.name ?? "")' 자동 선택")
-                } else {
-                    self.selectedTimeTag = nil
-                    print("  - TimeTags: 0개, '전체' 선택")
-                }
+                self.selectedTimeTag = timeTags.first  // 첫 번째 Time Tag를 디폴트로 선택
+                print("  - TimeTags: \(timeTags.count)개, 첫 번째 태그 '\(timeTags.first?.name ?? "nil")' 자동 선택")
             } catch {
                 print("[MapViewModel] ⚠️ TimeTags API 호출 실패 (서버에서 아직 구현되지 않음): \(error)")
                 self.timeTags = []  // 빈 배열로 설정하여 UI는 정상 작동
-                self.selectedTimeTag = nil  // 실패 시 전체 선택
+                self.selectedTimeTag = nil  // 실패 시 nil
             }
 
         } catch {
@@ -190,7 +183,7 @@ class MapViewModel: NSObject, ObservableObject {
 
     func selectTimeTag(_ timeTag: TimeTag?) {
         selectedTimeTag = timeTag
-        print("[MapViewModel] 🏷️ Time-Tag 선택됨: \(timeTag?.name ?? "전체")")
+        print("[MapViewModel] 🏷️ Time-Tag 선택됨: \(timeTag?.name ?? "nil")")
     }
 
     func toggleTimeTagDropdown() {

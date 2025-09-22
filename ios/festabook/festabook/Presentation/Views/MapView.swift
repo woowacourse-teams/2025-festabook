@@ -136,7 +136,7 @@ private extension MapView {
             }
         }) {
             HStack(spacing: 6) {
-                Text(viewModel.timeTags.isEmpty ? "전체" : (viewModel.selectedTimeTag?.name ?? "전체"))
+                Text(viewModel.selectedTimeTag?.name ?? "")
                     .font(.system(size: 16, weight: .semibold))
                     .foregroundColor(.black)
                     .lineLimit(1)
@@ -146,6 +146,7 @@ private extension MapView {
                     .foregroundColor(.gray)
                     .rotationEffect(.degrees(viewModel.isTimeTagDropdownOpen ? 180 : 0))
                     .animation(.easeInOut(duration: 0.2), value: viewModel.isTimeTagDropdownOpen)
+                    .opacity(1)  // 항상 표시
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
@@ -161,7 +162,7 @@ private extension MapView {
 
     @ViewBuilder
     func timeTagDropdownOverlay(geometry: GeometryProxy) -> some View {
-        if viewModel.isTimeTagDropdownOpen {
+        if viewModel.isTimeTagDropdownOpen && !viewModel.timeTags.isEmpty {
             ZStack {
                 // 완전 투명한 배경 (blur 없음)
                 Color.clear
@@ -176,21 +177,13 @@ private extension MapView {
                 // 드롭다운 리스트 - 베젤 바로 밑에 딱 붙게 배치
                 VStack(spacing: 0) {
                     VStack(spacing: 0) {
-                        // "전체" 항목 - timeTags가 비어있을 때만 표시
-                        if viewModel.timeTags.isEmpty {
-                            customDropdownItem(
-                                title: "전체",
-                                isSelected: viewModel.selectedTimeTag == nil,
-                                isFirst: true
-                            ) { viewModel.selectTimeTag(nil) }
-                        }
-
-                        // TimeTag 항목들
+                        // TimeTag 항목들 - timeTags가 비어있지 않을 때만 표시
                         ForEach(Array(viewModel.timeTags.enumerated()), id: \.element.id) { index, timeTag in
                             customDropdownItem(
                                 title: timeTag.name,
                                 isSelected: viewModel.selectedTimeTag?.id == timeTag.id,
-                                isFirst: viewModel.timeTags.isEmpty ? false : index == 0 // timeTags가 있으면 첫 번째 항목이 first
+                                isFirst: index == 0,
+                                isDisabled: false
                             ) { viewModel.selectTimeTag(timeTag) }
                         }
                     }
@@ -222,6 +215,7 @@ private extension MapView {
         title: String,
         isSelected: Bool,
         isFirst: Bool,
+        isDisabled: Bool = false,
         action: @escaping () -> Void
     ) -> some View {
         Button(action: {
