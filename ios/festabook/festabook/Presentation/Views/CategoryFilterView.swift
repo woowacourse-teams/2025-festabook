@@ -9,10 +9,13 @@ struct CategoryFilterView: View {
                 ForEach(MapCategory.allCases, id: \.self) { category in
                     CategoryChip(
                         category: category,
-                        isSelected: viewModel.selectedCategory == category
+                        isSelected: viewModel.selectedCategories.contains(category)
                     ) {
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            viewModel.selectCategory(category)
+                            viewModel.toggleCategory(category)
+                            if category == .all {
+                                viewModel.clearAllSelections()
+                            }
                         }
                     }
                 }

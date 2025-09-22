@@ -8,7 +8,8 @@ class MapViewModel: NSObject, ObservableObject {
     @Published var geography: GeographyResponse?
     @Published var allMarkers: [PlaceGeography] = []
     @Published var previewsByPlaceId: [Int: PlacePreview] = [:]
-    @Published var selectedCategory: MapCategory = .all
+    // 카테고리 다중 선택 (.all 포함)
+    @Published var selectedCategories: Set<MapCategory> = [.all]
     @Published var timeTags: [TimeTag] = []
     @Published var selectedTimeTag: TimeTag?
     @Published var isTimeTagDropdownOpen = false
@@ -26,8 +27,9 @@ class MapViewModel: NSObject, ObservableObject {
     @Published var modalType: ModalType = .none
     @Published var selectedPlace: PlacePreview?
 
-    // Place detail 관련 상태
-    @Published var selectedPlaceDetail: PlaceDetail?
+    // Place detail 다중 선택 상태
+    @Published var selectedPlaceDetails: Set<PlaceDetail> = []
+    @Published private(set) var tappedOrder: [Int] = []
     @Published var isLoadingPlaceDetail = false
     @Published var placeDetailError: String?
     @Published var resetCameraRequest: UUID?
@@ -44,9 +46,12 @@ class MapViewModel: NSObject, ObservableObject {
     var filteredMarkers: [PlaceGeography] {
         var markers = allMarkers
 
-        // Category filtering
-        if selectedCategory != .all {
-            markers = markers.filter { $0.category == selectedCategory.rawValue }
+        // Category filtering (다중 선택)
+        let activeCategories = selectedCategories.contains(.all) || selectedCategories.isEmpty
+            ? nil
+            : Set(selectedCategories.map { $0.rawValue })
+        if let active = activeCategories {
+            markers = markers.filter { active.contains($0.category) }
         }
 
         // Time tag filtering (markers don't have time tags, so we filter by place IDs that have the selected time tag)
@@ -67,9 +72,15 @@ class MapViewModel: NSObject, ObservableObject {
     var filteredPreviews: [PlacePreview] {
         var previews = Array(previewsByPlaceId.values)
 
-        // Category filtering
-        if selectedCategory != .all {
-            previews = previews.filter { $0.category == selectedCategory.rawValue }
+        // 바텀시트에는 BOOTH, FOOD_TRUCK, BAR만 표시
+        previews = previews.filter { ["BOOTH", "FOOD_TRUCK", "BAR"].contains($0.category) }
+
+        // Category filtering (다중 선택)
+        let activeCategories = selectedCategories.contains(.all) || selectedCategories.isEmpty
+            ? nil
+            : Set(selectedCategories.map { $0.rawValue })
+        if let active = activeCategories {
+            previews = previews.filter { active.contains($0.category) }
         }
 
         // Time tag filtering
@@ -86,6 +97,12 @@ class MapViewModel: NSObject, ObservableObject {
     var selectedPreview: PlacePreview? {
         guard let selectedPlaceId = selectedPlaceId else { return nil }
         return previewsByPlaceId[selectedPlaceId]
+    }
+
+    // 현재 모달에 표시할 마지막 선택 PlaceDetail
+    var currentSelectedPlace: PlaceDetail? {
+        guard let selectedPlaceId = selectedPlaceId else { return nil }
+        return selectedPlaceDetails.first { $0.placeId == selectedPlaceId }
     }
 
     // Helper method to get preview by place ID
@@ -158,14 +175,21 @@ class MapViewModel: NSObject, ObservableObject {
         print("[MapViewModel] loadMapData 완료")
     }
 
-    func selectCategory(_ category: MapCategory) {
-        selectedCategory = category
-        hideModal()
+    // 카테고리 토글 (다중 선택), 필터 변경 시 바텀시트 크기/모달 유지
+    func toggleCategory(_ category: MapCategory) {
+        var newSet = selectedCategories
+        if category == .all {
+            newSet = [.all]
+        } else {
+            if newSet.contains(.all) { newSet.remove(.all) }
+            if newSet.contains(category) { newSet.remove(category) } else { newSet.insert(category) }
+            if newSet.isEmpty { newSet = [.all] }
+        }
+        selectedCategories = newSet
     }
 
     func selectTimeTag(_ timeTag: TimeTag?) {
         selectedTimeTag = timeTag
-        hideModal()
         print("[MapViewModel] 🏷️ Time-Tag 선택됨: \(timeTag?.name ?? "전체")")
     }
 
@@ -182,25 +206,44 @@ class MapViewModel: NSObject, ObservableObject {
     func selectPlace(_ placeId: Int) {
         print("[MapViewModel] 📍 selectPlace 호출됨: placeId=\(placeId)")
 
-        guard selectedPlaceId != placeId || selectedPlaceDetail == nil else {
-            print("[MapViewModel] 동일 장소 재선택 - 상태 유지")
-            return
-        }
+        let alreadySelected = selectedPlaceDetails.contains { $0.placeId == placeId }
 
-        selectedPlaceId = placeId
+        if alreadySelected {
+            if let remove = selectedPlaceDetails.first(where: { $0.placeId == placeId }) {
+                selectedPlaceDetails.remove(remove)
+            }
+            tappedOrder.removeAll { $0 == placeId }
 
-        // 기존 상태 초기화
-        selectedPlaceDetail = nil
-        placeDetailError = nil
-
-        // 상세 정보 가져오기
-        Task {
-            await fetchPlaceDetail(placeId)
+            let removedWasCurrent = (selectedPlaceId == placeId)
+            if selectedPlaceDetails.isEmpty {
+                selectedPlaceId = nil
+                hideModal()
+            } else if removedWasCurrent {
+                if let nextId = tappedOrder.last,
+                   let next = selectedPlaceDetails.first(where: { $0.placeId == nextId }) {
+                    selectedPlaceId = next.placeId
+                    showModalForPlace(next)
+                } else if let any = selectedPlaceDetails.first {
+                    selectedPlaceId = any.placeId
+                    showModalForPlace(any)
+                }
+            } else {
+                if let currentId = selectedPlaceId,
+                   let current = selectedPlaceDetails.first(where: { $0.placeId == currentId }) {
+                    showModalForPlace(current)
+                }
+            }
+        } else {
+            selectedPlaceId = placeId
+            placeDetailError = nil
+            tappedOrder.removeAll { $0 == placeId }
+            tappedOrder.append(placeId)
+            Task { await fetchAndAddPlaceDetail(placeId) }
         }
     }
 
-    func fetchPlaceDetail(_ placeId: Int) async {
-        print("[MapViewModel] 🔄 fetchPlaceDetail 시작: placeId=\(placeId)")
+    private func fetchAndAddPlaceDetail(_ placeId: Int) async {
+        print("[MapViewModel] 🔄 fetchAndAddPlaceDetail 시작: placeId=\(placeId)")
 
         isLoadingPlaceDetail = true
         placeDetailError = nil
@@ -208,19 +251,11 @@ class MapViewModel: NSObject, ObservableObject {
         do {
             let placeDetail = try await repository.fetchPlaceDetail(placeId)
 
-            self.selectedPlaceDetail = placeDetail
-
-            print("[MapViewModel] ✅ PlaceDetail 가져오기 성공: title=\(placeDetail.title), category=\(placeDetail.category)")
-
-            // 카테고리에 따라 적절한 모달 표시
-            switch placeDetail.category {
-            case "BAR", "BOOTH", "FOOD_TRUCK":
-                modalType = .detail
-                print("[MapViewModel] 🎯 상세 모달 표시: \(placeDetail.title) (category: \(placeDetail.category))")
-            default:
-                modalType = .preview
-                print("[MapViewModel] 🎯 간단한 모달 표시: \(placeDetail.title) (category: \(placeDetail.category))")
-            }
+            selectedPlaceDetails.insert(placeDetail)
+            print("[MapViewModel] ✅ 마커 선택 추가: \(placeDetail.title)")
+            tappedOrder.removeAll { $0 == placeDetail.placeId }
+            tappedOrder.append(placeDetail.placeId)
+            showModalForPlace(placeDetail)
 
         } catch {
             print("[MapViewModel] ❌ PlaceDetail 가져오기 실패: \(error)")
@@ -229,6 +264,15 @@ class MapViewModel: NSObject, ObservableObject {
         }
 
         isLoadingPlaceDetail = false
+    }
+
+    private func showModalForPlace(_ place: PlaceDetail) {
+        switch place.category {
+        case "BAR", "BOOTH", "FOOD_TRUCK":
+            modalType = .detail
+        default:
+            modalType = .preview
+        }
     }
 
     // Mini card management
@@ -254,8 +298,7 @@ class MapViewModel: NSObject, ObservableObject {
         selectedPlace = nil
         selectedPlaceId = nil
 
-        // PlaceDetail 관련 상태 초기화
-        selectedPlaceDetail = nil
+        // PlaceDetail 관련 상태 초기화 (다중 선택은 유지)
         isLoadingPlaceDetail = false
         placeDetailError = nil
 
@@ -270,7 +313,8 @@ class MapViewModel: NSObject, ObservableObject {
 
         modalType = .none
         selectedPlaceId = nil
-        selectedPlaceDetail = nil
+        selectedPlaceDetails.removeAll()
+        tappedOrder.removeAll()
         isLoadingPlaceDetail = false
         placeDetailError = nil
         isMiniCardVisible = false
@@ -315,5 +359,16 @@ class MapViewModel: NSObject, ObservableObject {
         isMarkerModalPresented = false
         selectedMarkerPlace = nil
         selectedPlaceId = nil
+    }
+
+    // 전체 버튼에서 호출: 모든 마커 선택/모달 해제, 시트 크기 유지
+    func clearAllSelections() {
+        selectedPlaceDetails.removeAll()
+        tappedOrder.removeAll()
+        selectedPlaceId = nil
+        modalType = .none
+        isLoadingPlaceDetail = false
+        placeDetailError = nil
+        print("[MapViewModel] 🔄 clearAllSelections 호출 - 선택/모달 초기화")
     }
 }

@@ -6,8 +6,10 @@ struct BottomSheetView: View {
 
     var body: some View {
         VStack(spacing: 0) {
+            // 상단 여백: large일 때 마커와 겹치지 않도록 추가 간격 부여
+            let topGap = viewModel.sheetDetent.topSpacing + (viewModel.sheetDetent == .large ? 40 : 0)
             Color.clear
-                .frame(height: viewModel.sheetDetent.topSpacing)
+                .frame(height: topGap)
                 .allowsHitTesting(false)
 
             sheetContent
@@ -46,7 +48,7 @@ struct BottomSheetView: View {
                 .shadow(color: .black.opacity(0.1), radius: 10, x: 0, y: -5)
         )
         .offset(y: dragOffset)
-        .gesture(
+            .gesture(
             DragGesture()
                 .onChanged { value in
                     dragOffset = max(value.translation.height, -100)
@@ -57,7 +59,8 @@ struct BottomSheetView: View {
                         dragOffset = 0
                     }
                 }
-        )
+            )
+            // 필터 변경에 따른 바텀시트 크기/포지션 자동 변경 방지: 추가 애니메이션 바인딩 제거
     }
 
     private func handleDragEnd(translation: CGFloat) {
@@ -115,7 +118,14 @@ struct PreviewListView: View {
 
     var body: some View {
         ScrollView {
-            if viewModel.filteredPreviews.isEmpty {
+            // 대상 카테고리 (BOOTH, FOOD_TRUCK, BAR)가 선택되었을 때만 빈 상태 메시지 표시
+            // 빈 상태 문구는 BOOTH/BAR/FOOD_TRUCK 범위 내에서만 표시
+            let selectedCategoryNames: Set<String> = Set(viewModel.selectedCategories.map { $0.rawValue })
+            let allowed: Set<String> = ["ALL", "BOOTH", "FOOD_TRUCK", "BAR"]
+            let withinAllowedRange = selectedCategoryNames.isSubset(of: allowed)
+            let shouldShowEmptyState = viewModel.filteredPreviews.isEmpty && withinAllowedRange
+
+            if shouldShowEmptyState {
                 // 빈 상태 메시지
                 VStack(spacing: 12) {
                     Image(systemName: "storefront")
@@ -128,7 +138,7 @@ struct PreviewListView: View {
                 .frame(maxWidth: .infinity)
                 .padding(.top, 20)     // 상단 여백 줄임
                 .padding(.bottom, 40)   // 하단 여백은 유지
-            } else {
+            } else if !viewModel.filteredPreviews.isEmpty {
                 LazyVStack(spacing: 0) {
                     ForEach(viewModel.filteredPreviews, id: \.id) { preview in
                         PreviewCard(preview: preview) {

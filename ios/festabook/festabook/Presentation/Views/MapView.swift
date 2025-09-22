@@ -54,7 +54,7 @@ struct MapView: View {
 
                         case .preview:
                             PlacePreviewModal(
-                                place: viewModel.selectedPlaceDetail,
+                                place: viewModel.currentSelectedPlace,
                                 isLoading: viewModel.isLoadingPlaceDetail,
                                 errorMessage: viewModel.placeDetailError,
                                 onTap: nil,
@@ -65,13 +65,12 @@ struct MapView: View {
                             .frame(maxWidth: .infinity)
                             .padding(.horizontal, 16)
                             .padding(.bottom, geometry.safeAreaInsets.bottom + 60)
-                            .animation(.easeInOut(duration: 0.25), value: viewModel.modalType == .preview)
 
                         case .detail:
                             detailModal(geometry: geometry)
                         }
                     }
-
+                    
                     // Floating current location button that tracks sheet height
                     if viewModel.modalType == .none && viewModel.sheetDetent != .large {
                         VStack {
@@ -256,7 +255,7 @@ private extension MapView {
     }
     @ViewBuilder
     func detailModal(geometry: GeometryProxy) -> some View {
-        let place = viewModel.selectedPlaceDetail
+        let place = viewModel.currentSelectedPlace
         let isNavigableCategory = ["BOOTH", "BAR", "FOOD_TRUCK"].contains(place?.category ?? "")
 
         let modal = PlaceDetailModal(
