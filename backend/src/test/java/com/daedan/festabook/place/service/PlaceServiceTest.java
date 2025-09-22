@@ -108,7 +108,6 @@ class PlaceServiceTest {
             // then
             assertSoftly(s -> {
                 s.assertThat(response.placeId()).isEqualTo(expectedPlaceId);
-                s.assertThat(response.festivalId()).isEqualTo(festivalId);
                 s.assertThat(response.category()).isEqualTo(expectedPlaceCategory);
                 s.assertThat(response.title()).isEqualTo(expectedPlaceTitle);
             });

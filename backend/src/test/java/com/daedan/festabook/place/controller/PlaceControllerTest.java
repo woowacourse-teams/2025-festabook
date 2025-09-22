@@ -120,7 +120,7 @@ class PlaceControllerTest {
             String expectedPlaceTitle = "동문 주차장";
             PlaceCreateRequest request = PlaceCreateRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
 
-            int expectedFieldSize = 4;
+            int expectedFieldSize = 3;
 
             Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
@@ -135,7 +135,6 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("placeId", notNullValue())
-                    .body("festivalId", equalTo(festival.getId().intValue()))
                     .body("category", equalTo(expectedPlaceCategory.toString()))
                     .body("title", equalTo(expectedPlaceTitle));
         }
