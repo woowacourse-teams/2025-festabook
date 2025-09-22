@@ -238,7 +238,7 @@ class EventTest {
                 "2025-05-05, 14:00, 17:00, ONGOING",     // 진행중
                 "2025-05-05, 17:00, 18:00, UPCOMING",    // 예정
         })
-        void 이벤트_상태_판별_파라미터_테스트(LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus expected) {
+        void 성공_이벤트_상태_판별_파라미터_테스트(LocalDate date, LocalTime startTime, LocalTime endTime, EventStatus expected) {
             // given
             ZoneId korea = ZoneId.of("Asia/Seoul");
             Clock clock = Clock.fixed(
@@ -264,7 +264,7 @@ class EventTest {
     class isFestivalIdEqualTo {
 
         @Test
-        void 같은_축제의_id이면_true() {
+        void 성공_같은_축제의_id이면_true() {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
@@ -279,7 +279,7 @@ class EventTest {
         }
 
         @Test
-        void 다른_축제의_id이면_false() {
+        void 성공_다른_축제의_id이면_false() {
             // given
             Long festivalId = 1L;
             Long otherFestivalId = 999L;
