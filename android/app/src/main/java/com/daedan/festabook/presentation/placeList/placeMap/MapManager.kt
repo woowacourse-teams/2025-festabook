@@ -1,6 +1,5 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
-import android.content.Context
 import androidx.core.content.ContextCompat
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
@@ -133,9 +132,9 @@ class MapManager(
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()
         return currentPosition.distanceTo(initialCenter) >
-            (maxLength * zoomWeight).coerceAtLeast(
-                maxLength,
-            )
+                (maxLength * zoomWeight).coerceAtLeast(
+                    maxLength,
+                )
     }
 
     fun clearMapManager() {
@@ -170,7 +169,7 @@ class MapManager(
             16.toPx(context),
             0,
             0,
-            context.getRootPixel() - 410.toPx(context),
+            getHalfRootPixel() + 20.toPx(context)
         )
     }
 
@@ -206,7 +205,7 @@ class MapManager(
         }
     }
 
-    private fun Context.getRootPixel() = context.resources.displayMetrics.heightPixels
+    private fun getHalfRootPixel() = context.resources.displayMetrics.heightPixels / 2
 
     private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
         width = Marker.SIZE_AUTO
