@@ -5,7 +5,7 @@ files:
     destination: /home/ubuntu/app
 
 hooks:
-  AfterInstall:
-    - location: backend/infra/output/deploy.sh
-      timeout: 180
+  ApplicationStart:
+    - location: backend/infra/output/start.sh
+      timeout: 60
       runas: ubuntu
