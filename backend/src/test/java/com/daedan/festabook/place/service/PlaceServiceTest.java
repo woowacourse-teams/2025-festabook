@@ -290,17 +290,14 @@ class PlaceServiceTest {
             // 2는 기존 존재하므로 추가 항목에서 제외.
             List<TimeTag> updateTimeTags = List.of(updateTimeTag3);
 
-            // 기존 존재하는 시간 태그 조회
+            // 첫 번째는 기존 존재하는 시간 태그 조회
+            // 두 번째는 최종 저장된 PlaceTimeTag 조회
             given(placeTimeTagJpaRepository.findAllByPlaceId(placeId))
-                    .willReturn(originalPlaceTimeTags);
+                    .willReturn(originalPlaceTimeTags, List.of(placeTimeTag2, placeTimeTag3));
 
             // 추가할 시간 태그 조회
             given(timeTagJpaRepository.findAllById(any()))
                     .willReturn(updateTimeTags);
-
-            // 최종 저장된 PlaceTimeTag 조회
-            given(placeTimeTagJpaRepository.findAllByPlaceId(placeId))
-                    .willReturn(List.of(placeTimeTag2, placeTimeTag3));
 
             // place 조회
             given(placeJpaRepository.findById(placeId))
