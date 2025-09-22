@@ -8,6 +8,9 @@ import coil3.request.transformations
 import coil3.transform.RoundedCornersTransformation
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemHomePosterBinding
+import com.daedan.festabook.logging.DefaultFirebaseLogger
+import com.daedan.festabook.logging.model.PosterTouchLogData
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.loadImage
 
 class PosterItemViewHolder(
@@ -20,6 +23,14 @@ class PosterItemViewHolder(
         }
         binding.motionLayout.progress = 0f
         binding.motionLayout.transitionToState(R.id.collapsed)
+        binding.root.setOnClickListener {
+            binding.logger.log(
+                PosterTouchLogData(
+                    baseLogData = binding.logger.getBaseLogData(),
+                    url = url,
+                ),
+            )
+        }
     }
 
     fun transitionToExpanded() {
