@@ -3,7 +3,26 @@ import Foundation
 class APIClient {
     static let shared = APIClient()
 
-    var session: URLSession = .shared
+    var session: URLSession = {
+        // 전역 URLCache 구성 (브라우저 유사 캐싱)
+        let cache = URLCache(
+            memoryCapacity: 50 * 1024 * 1024,
+            diskCapacity: 200 * 1024 * 1024,
+            directory: nil
+        )
+        URLCache.shared = cache
+
+        let config = URLSessionConfiguration.default
+        config.urlCache = cache
+        // 서버 Cache-Control/ETag를 우선 활용하고, 캐시가 있으면 재사용
+        config.requestCachePolicy = .returnCacheDataElseLoad
+        // 압축 응답 허용
+        config.httpAdditionalHeaders = [
+            "Accept-Encoding": "gzip, deflate, br",
+            "Accept": "application/json"
+        ]
+        return URLSession(configuration: config)
+    }()
     private var _currentFestivalId: Int = 0
 
     init() {}
@@ -39,6 +58,8 @@ class APIClient {
         var req = URLRequest(url: url)
         req.httpMethod = "GET"
         req.setValue("application/json", forHTTPHeaderField: "Accept")
+        // 서버 정책 존중: 기본은 useProtocolCachePolicy (세션 기본 설정으로도 동작)
+        req.cachePolicy = .useProtocolCachePolicy
 
         if requiresFestivalId {
             // 최신 festivalId를 저장소에서 동기화 (단일 소스: UserDefaults)
