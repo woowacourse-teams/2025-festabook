@@ -451,8 +451,9 @@ const PlacePage = () => {
 
     // 필터링된 플레이스 목록
     const filteredPlaces = places.filter(place => {
-        const matchesSearch = place.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            placeCategories[place.category].toLowerCase().includes(searchTerm.toLowerCase());
+        const matchesSearch = (place.title || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+            placeCategories[place.category].toLowerCase().includes(searchTerm.toLowerCase()) ||
+            (place.host || '').toLowerCase().includes(searchTerm.toLowerCase());
 
         // 시간 태그 필터링 (선택된 태그가 없거나, 선택된 태그 중 하나라도 플레이스에 포함되어 있으면 통과)
         let matchesTimeTag = true;
@@ -562,7 +563,7 @@ const PlacePage = () => {
                                     <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                                     <input
                                         type="text"
-                                        placeholder="플레이스 이름이나 카테고리로 검색..."
+                                        placeholder="플레이스 이름이나 카테고리, 운영 주체로 검색..."
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
