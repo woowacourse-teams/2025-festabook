@@ -139,7 +139,7 @@ const PlaceGeographyPage = () => {
     // 시간 태그 필터링 (PlacePage와 동일한 로직)
     if (selectedTimeTags.length > 0) {
       const selectedTagNames = selectedTimeTags.map(tagId => {
-        const tag = timeTags.find(t => t.id === tagId);
+        const tag = timeTags.find(t => t.timeTagId === tagId);
         return tag ? tag.name : null;
       }).filter(name => name !== null);
       
@@ -410,18 +410,18 @@ const PlaceGeographyPage = () => {
                 <div className="flex flex-wrap gap-1">
                   {timeTags.map(tag => (
                     <label
-                      key={tag.id}
+                      key={tag.timeTagId}
                       className="inline-flex items-center cursor-pointer"
                     >
                       <input
                         type="checkbox"
-                        checked={selectedTimeTags.includes(tag.id)}
-                        onChange={(e) => handleTimeTagFilterChange(tag.id, e.target.checked)}
+                        checked={selectedTimeTags.includes(tag.timeTagId)}
+                        onChange={(e) => handleTimeTagFilterChange(tag.timeTagId, e.target.checked)}
                         className="sr-only"
                       />
                       <span
                         className={`px-2 py-1 text-xs rounded-full border transition-colors ${
-                          selectedTimeTags.includes(tag.id)
+                          selectedTimeTags.includes(tag.timeTagId)
                             ? 'bg-blue-500 text-white border-blue-500'
                             : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
                         }`}

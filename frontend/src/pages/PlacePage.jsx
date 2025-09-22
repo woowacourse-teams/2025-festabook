@@ -310,7 +310,7 @@ const PlacePage = () => {
         openModal('confirm', {
             title: '시간 태그 삭제 확인',
             message: `'${tag.name}' 시간 태그를 정말 삭제하시겠습니까?`,
-            onConfirm: () => handleTimeTagDelete(tag.id)
+            onConfirm: () => handleTimeTagDelete(tag.timeTagId)
         });
     };
 
@@ -433,7 +433,7 @@ const PlacePage = () => {
         let matchesTimeTag = true;
         if (selectedTimeTags.length > 0) {
             const selectedTagNames = selectedTimeTags.map(tagId => {
-                const tag = timeTags.find(t => t.id === tagId);
+                const tag = timeTags.find(t => t.timeTagId === tagId);
                 return tag ? tag.name : null;
             }).filter(name => name !== null);
             
@@ -600,12 +600,12 @@ const PlacePage = () => {
                                         </div>
                                         <div className="flex flex-wrap gap-2">
                                             {timeTags.map(tag => (
-                                                <div key={tag.id} className="group relative">
+                                                <div key={tag.timeTagId} className="group relative">
                                                     <label className="inline-flex items-center space-x-2 cursor-pointer bg-white border border-gray-300 rounded-full px-3 py-1 hover:bg-gray-50 transition-colors duration-150">
                                                         <input
                                                             type="checkbox"
-                                                            checked={selectedTimeTags.includes(tag.id)}
-                                                            onChange={(e) => handleTimeTagFilterChange(tag.id, e.target.checked)}
+                                                            checked={selectedTimeTags.includes(tag.timeTagId)}
+                                                            onChange={(e) => handleTimeTagFilterChange(tag.timeTagId, e.target.checked)}
                                                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                                         />
                                                         <span className="text-sm text-gray-700 font-medium">{tag.name}</span>

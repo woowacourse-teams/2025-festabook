@@ -247,7 +247,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
       // timeTags 이름을 ID로 변환
       const timeTagIds = selectedTimeTags.map(tagName => {
         const tag = timeTags.find(t => t.name === tagName);
-        return tag ? tag.id : null;
+        return tag ? tag.timeTagId : null;
       }).filter(id => id !== null);
 
       const updateData = {
@@ -484,7 +484,7 @@ const PlaceEditModal = ({ place, onClose, onSave, showToast }) => {
               </label>
               <div className="space-y-2">
                 {timeTags.map(tag => (
-                  <label key={tag.id} className="flex items-center space-x-3 cursor-pointer">
+                  <label key={tag.timeTagId} className="flex items-center space-x-3 cursor-pointer">
                     <input
                       type="checkbox"
                       checked={selectedTimeTags.includes(tag.name)}

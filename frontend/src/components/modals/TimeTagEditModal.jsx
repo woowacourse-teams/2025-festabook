@@ -77,7 +77,7 @@ const TimeTagEditModal = ({ timeTag, onSave, onClose, showToast }) => {
 
     setLoading(true);
     try {
-      await onSave(timeTag.id, formData);
+      await onSave(timeTag.timeTagId, formData);
       onClose();
     } catch (error) {
       console.error('Failed to update time tag:', error);
