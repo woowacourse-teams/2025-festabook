@@ -17,7 +17,7 @@ const KOREA_BOUNDARY = [
 
 const PlaceGeographyPage = () => {
   const { setPage } = usePage();
-  const { openModal } = useModal();
+  const { openModal, showToast } = useModal();
   const [booths, setBooths] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -398,7 +398,7 @@ const PlaceGeographyPage = () => {
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">시간 태그 필터</span>
                 <button
-                  onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd })}
+                  onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd, showToast })}
                   className="text-blue-600 hover:text-blue-800 text-xs font-medium"
                 >
                   + 추가

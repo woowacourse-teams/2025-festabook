@@ -588,7 +588,7 @@ const PlacePage = () => {
                                         <h3 className="text-sm font-semibold text-gray-700">시간 태그 필터</h3>
                                         <div className="flex items-center gap-2">
                                             <button
-                                                onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd })}
+                                                onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd, showToast })}
                                                 className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-xs"
                                                 title="새 시간 태그 추가"
                                             >
@@ -615,7 +615,7 @@ const PlacePage = () => {
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
-                                                                openModal('timeTagEdit', { timeTag: tag, onSave: handleTimeTagEdit });
+                                                                openModal('timeTagEdit', { timeTag: tag, onSave: handleTimeTagEdit, showToast });
                                                             }}
                                                             className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors duration-200"
                                                             title="수정"

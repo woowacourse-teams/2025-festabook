@@ -100,7 +100,6 @@ const TimeTagAddModal = ({ onSave, onClose, showToast }) => {
               className={`w-full border rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
-              maxLength={MAX_NAME_LEN}
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-600">{errors.name}</p>
