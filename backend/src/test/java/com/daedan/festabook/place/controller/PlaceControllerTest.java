@@ -193,7 +193,7 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedItemSize))
-                    .body("[0].timeTags[0].timeTagId", equalTo(placeTimeTag.getId().intValue()))
+                    .body("[0].timeTags[0].timeTagId", equalTo(timeTag.getId().intValue()))
                     .body("[0].timeTags[0].name", equalTo(timeTag.getName()));
         }
 
@@ -265,7 +265,7 @@ class PlaceControllerTest {
                     .body("[0].title", equalTo(place.getTitle()))
                     .body("[0].description", equalTo(place.getDescription()))
                     .body("[0].location", equalTo(place.getLocation()))
-                    .body("[0].timeTags[0].timeTagId", equalTo(placeTimeTag.getId().intValue()))
+                    .body("[0].timeTags[0].timeTagId", equalTo(timeTag.getId().intValue()))
                     .body("[0].timeTags[0].name", equalTo(timeTag.getName()));
 
             then(shuffleManager).should()
