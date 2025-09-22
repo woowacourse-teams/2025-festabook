@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ScheduleView: View {
     @ObservedObject var viewModel: ScheduleViewModel
-    private let bottomBarHeight: CGFloat = 70
+    private let bottomBarHeight: CGFloat = 90
 
     init(viewModel: ScheduleViewModel) {
         self.viewModel = viewModel
