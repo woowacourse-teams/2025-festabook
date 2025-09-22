@@ -5,7 +5,7 @@ import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import io.swagger.v3.oas.annotations.media.Schema;
 
-public record PlaceRequest(
+public record PlaceCreateRequest(
 
         @Schema(description = "플레이스 카테고리", example = "BAR")
         PlaceCategory placeCategory,

@@ -2,6 +2,7 @@ package com.daedan.festabook.place.dto;
 
 import com.daedan.festabook.place.domain.PlaceCategory;
 import java.time.LocalTime;
+import java.util.List;
 
 public class MainPlaceUpdateRequestFixture {
 
@@ -12,6 +13,7 @@ public class MainPlaceUpdateRequestFixture {
     private static final String DEFAULT_HOST = "수정된 호스트";
     private static final LocalTime DEFAULT_START_TIME = LocalTime.of(14, 12);
     private static final LocalTime DEFAULT_END_TIME = LocalTime.of(14, 39);
+    private static final List<Long> DEFAULT_TIME_TAG = List.of();
 
     public static MainPlaceUpdateRequest create() {
         return new MainPlaceUpdateRequest(
@@ -21,7 +23,8 @@ public class MainPlaceUpdateRequestFixture {
                 DEFAULT_LOCATION,
                 DEFAULT_HOST,
                 DEFAULT_START_TIME,
-                DEFAULT_END_TIME
+                DEFAULT_END_TIME,
+                DEFAULT_TIME_TAG
         );
     }
 
@@ -41,7 +44,30 @@ public class MainPlaceUpdateRequestFixture {
                 location,
                 host,
                 startTime,
-                endTime
+                endTime,
+                DEFAULT_TIME_TAG
+        );
+    }
+
+    public static MainPlaceUpdateRequest createWithFullFiled(
+            PlaceCategory placeCategory,
+            String title,
+            String description,
+            String location,
+            String host,
+            LocalTime startTime,
+            LocalTime endTime,
+            List<Long> timeTagIds
+    ) {
+        return new MainPlaceUpdateRequest(
+                placeCategory,
+                title,
+                description,
+                location,
+                host,
+                startTime,
+                endTime,
+                timeTagIds
         );
     }
 }
