@@ -82,7 +82,7 @@ class TimeTagControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("id", notNullValue())
+                    .body("timeTagId", notNullValue())
                     .body("festivalId", equalTo(festival.getId().intValue()))
                     .body("name", equalTo(request.name()));
         }
@@ -113,7 +113,7 @@ class TimeTagControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("$", hasSize(expectedItemSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
-                    .body("[0].id", equalTo(timeTag.getId().intValue()))
+                    .body("[0].timeTagId", equalTo(timeTag.getId().intValue()))
                     .body("[0].name", equalTo(timeTag.getName()));
         }
     }

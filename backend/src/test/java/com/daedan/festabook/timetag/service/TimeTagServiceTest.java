@@ -127,7 +127,7 @@ class TimeTagServiceTest {
             // then
             int responseSize = response.responses().size();
             assertSoftly(s -> {
-                s.assertThat(response.responses().get(0).id()).isEqualTo(timeTagId);
+                s.assertThat(response.responses().get(0).timeTagId()).isEqualTo(timeTagId);
                 s.assertThat(response.responses().get(0).name()).isEqualTo(timeTag.getName());
             });
         }

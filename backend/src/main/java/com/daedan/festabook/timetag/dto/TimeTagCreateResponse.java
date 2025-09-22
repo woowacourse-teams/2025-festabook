@@ -3,7 +3,7 @@ package com.daedan.festabook.timetag.dto;
 import com.daedan.festabook.timetag.domain.TimeTag;
 
 public record TimeTagCreateResponse(
-        Long id,
+        Long timeTagId,
         Long festivalId,
         String name
 ) {
