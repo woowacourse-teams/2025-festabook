@@ -1,2 +1,0 @@
-ALTER TABLE lineup
-    CHANGE COLUMN name_tmp name VARCHAR(50) NOT NULL;
