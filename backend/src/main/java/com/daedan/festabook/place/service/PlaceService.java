@@ -10,7 +10,8 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
-import com.daedan.festabook.place.dto.PlaceRequest;
+import com.daedan.festabook.place.dto.PlaceCreateRequest;
+import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -39,13 +40,13 @@ public class PlaceService {
     private final PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
     private final TimeTagJpaRepository timeTagJpaRepository;
 
-    public PlaceResponse createPlace(Long festivalId, PlaceRequest request) {
+    public PlaceCreateResponse createPlace(Long festivalId, PlaceCreateRequest request) {
         Festival festival = getFestivalById(festivalId);
 
         Place notSavedPlace = request.toPlace(festival);
         Place savedPlace = placeJpaRepository.save(notSavedPlace);
 
-        return PlaceResponse.from(savedPlace);
+        return PlaceCreateResponse.from(savedPlace);
     }
 
     @Transactional(readOnly = true)

@@ -44,20 +44,4 @@ public record PlaceResponse(
                 TimeTagResponses.from(timeTags)
         );
     }
-
-    public static PlaceResponse from(Place place) {
-        return new PlaceResponse(
-                place.getId(),
-                PlaceImageResponses.from(List.of()),
-                place.getCategory(),
-                place.getTitle(),
-                place.getStartTime(),
-                place.getEndTime(),
-                place.getLocation(),
-                place.getHost(),
-                place.getDescription(),
-                PlaceAnnouncementResponses.from(List.of()),
-                TimeTagResponses.from(List.of())
-        );
-    }
 }

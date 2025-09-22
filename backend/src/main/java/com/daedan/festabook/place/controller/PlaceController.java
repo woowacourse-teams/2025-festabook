@@ -6,8 +6,9 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.PlaceCreateRequest;
+import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
-import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.service.PlacePreviewService;
@@ -47,9 +48,9 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public PlaceResponse createPlace(
+    public PlaceCreateResponse createPlace(
             @AuthenticationPrincipal CouncilDetails councilDetails,
-            @RequestBody PlaceRequest request
+            @RequestBody PlaceCreateRequest request
     ) {
         return placeService.createPlace(councilDetails.getFestivalId(), request);
     }

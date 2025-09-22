@@ -25,8 +25,9 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
-import com.daedan.festabook.place.dto.PlaceRequest;
-import com.daedan.festabook.place.dto.PlaceRequestFixture;
+import com.daedan.festabook.place.dto.PlaceCreateRequest;
+import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
+import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -89,7 +90,8 @@ class PlaceServiceTest {
             Long expectedPlaceId = 1L;
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
             String expectedPlaceTitle = "남문 주차장";
-            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
+            PlaceCreateRequest placeRequest = PlaceCreateRequestFixture.create(expectedPlaceCategory,
+                    expectedPlaceTitle);
 
             Festival festival = FestivalFixture.create(festivalId);
             Place place = PlaceFixture.createWithNullDefaults(festival, expectedPlaceCategory, expectedPlaceTitle,
@@ -101,22 +103,14 @@ class PlaceServiceTest {
                     .willReturn(place);
 
             // when
-            PlaceResponse result = placeService.createPlace(festivalId, placeRequest);
+            PlaceCreateResponse response = placeService.createPlace(festivalId, placeRequest);
 
             // then
             assertSoftly(s -> {
-                s.assertThat(result.placeId()).isEqualTo(expectedPlaceId);
-                s.assertThat(result.category()).isEqualTo(expectedPlaceCategory);
-                s.assertThat(result.title()).isEqualTo(expectedPlaceTitle);
-
-                s.assertThat(result.placeImages().responses()).isEmpty();
-                s.assertThat(result.placeAnnouncements().responses()).isEmpty();
-
-                s.assertThat(result.startTime()).isNull();
-                s.assertThat(result.endTime()).isNull();
-                s.assertThat(result.location()).isNull();
-                s.assertThat(result.host()).isNull();
-                s.assertThat(result.description()).isNull();
+                s.assertThat(response.placeId()).isEqualTo(expectedPlaceId);
+                s.assertThat(response.festivalId()).isEqualTo(festivalId);
+                s.assertThat(response.category()).isEqualTo(expectedPlaceCategory);
+                s.assertThat(response.title()).isEqualTo(expectedPlaceTitle);
             });
         }
 
@@ -125,7 +119,7 @@ class PlaceServiceTest {
             // given
             Long invalidFestivalId = 0L;
 
-            PlaceRequest placeRequest = PlaceRequestFixture.create();
+            PlaceCreateRequest placeRequest = PlaceCreateRequestFixture.create();
 
             given(festivalJpaRepository.findById(invalidFestivalId))
                     .willReturn(Optional.empty());
