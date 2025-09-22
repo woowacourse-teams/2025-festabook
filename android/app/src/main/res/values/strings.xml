@@ -142,4 +142,6 @@
     <string name="update_failed_title">서버 통신 실패</string>
     <string name="update_failed_message">앱 서버에 접속할 수 없습니다. 다시 시도해주세요</string>
     <string name="update_failed_confirm">종료</string>
+    <string name="explore_btn_backToMain_content_desc">홈화면으로 돌아가기</string>
+    <string name="explore_toolbar_title">축제 검색</string>
 </resources>
