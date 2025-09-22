@@ -24,6 +24,7 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, onCoordinateEdi
     };
 
     const mainImage = place.images && place.images.length > 0 ? place.images[0] : null;
+    const timeTags = place.timeTags || [];
 
     return (
         <div
@@ -111,6 +112,17 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, onCoordinateEdi
 
             {/* 콘텐츠 섹션 */}
             <div className="p-4">
+                <div className='grid grid-cols-4 gap-1 w-11/12 mb-1'>
+                    {timeTags.map(tag => (
+                        <div key={tag.timeTagId} className="flex items-center shrink-0">
+                            <div className="inline-flex items-center px-1 font-extrabold bg-yellow-200 border-yellow-300 py-1 rounded-lg text-[9px] border">
+                                {tag.name}
+                            </div>
+                        </div>
+                    ))}
+                </div>
+
+
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-lg text-gray-900 truncate" title={place.title}>
@@ -173,6 +185,8 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
         return colorMap[category] || 'bg-gray-100 text-gray-900 border-gray-200';
     };
 
+    const timeTags = place.timeTags || [];
+
     return (
         <div
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group"
@@ -181,6 +195,15 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
         >
             {/* 콘텐츠 섹션 */}
             <div className="p-4">
+            <div className='grid grid-cols-4 gap-1 w-11/12 mb-1'>
+                    {timeTags.map(tag => (
+                        <div key={tag.timeTagId} className="flex items-center shrink-0">
+                            <div className="inline-flex items-center px-1 font-extrabold bg-yellow-200 border-yellow-300 py-1 rounded-lg text-[9px] border">
+                                {tag.name}
+                            </div>
+                        </div>
+                    ))}
+                </div>
                 <div className="flex items-center justify-between mb-1">
                     <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-lg text-gray-900 truncate" title={place.title}>
@@ -576,8 +599,8 @@ const PlacePage = () => {
                                 <button
                                     onClick={() => setViewMode('all')}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'all'
-                                            ? 'bg-white text-gray-800 shadow-sm'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-white text-gray-800 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     전체 ({places.length})
@@ -585,8 +608,8 @@ const PlacePage = () => {
                                 <button
                                     onClick={() => setViewMode('main')}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'main'
-                                            ? 'bg-white text-gray-800 shadow-sm'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-white text-gray-800 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     메인 ({places.filter(p => !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
@@ -594,8 +617,8 @@ const PlacePage = () => {
                                 <button
                                     onClick={() => setViewMode('other')}
                                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'other'
-                                            ? 'bg-white text-gray-800 shadow-sm'
-                                            : 'text-gray-600 hover:text-gray-900'
+                                        ? 'bg-white text-gray-800 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
                                     기타 ({places.filter(p => ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
