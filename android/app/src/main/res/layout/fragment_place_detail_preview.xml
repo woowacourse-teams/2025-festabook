@@ -111,13 +111,16 @@
 
             <TextView
                 android:id="@+id/tv_selected_place_description"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
                 android:textAppearance="@style/PretendardRegular12"
                 android:autoLink="web"
                 android:textColorLink="@color/gray500"
+                android:maxLines="2"
+                android:ellipsize="end"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="@id/cv_place_image"
                 app:layout_constraintStart_toStartOf="@id/iv_selected_place_host"
                 app:layout_constraintTop_toBottomOf="@id/iv_selected_place_host"
                 tools:text="시원한 맥주와 맛있는 파전" />

@@ -77,6 +77,7 @@ class PlaceDetailActivity :
         binding.vpPlaceImages.adapter = placeImageAdapter
         binding.tvLocation.setExpandedWhenClicked()
         binding.tvHost.setExpandedWhenClicked()
+        binding.tvPlaceDescription.setExpandedWhenClicked(2)
         binding.ivBackToPrevious.setOnClickListener {
             finish()
         }
@@ -136,13 +137,13 @@ class PlaceDetailActivity :
         binding.sflScheduleSkeleton.stopShimmer()
     }
 
-    private fun TextView.setExpandedWhenClicked() {
+    private fun TextView.setExpandedWhenClicked(defaultMaxLines:Int = DEFAULT_MAX_LINES) {
         setOnClickListener {
             maxLines =
-                if (maxLines == DEFAULT_MAX_LINES) {
+                if (maxLines == defaultMaxLines) {
                     Integer.MAX_VALUE
                 } else {
-                    DEFAULT_MAX_LINES
+                    defaultMaxLines
                 }
         }
     }
