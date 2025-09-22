@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useModal } from '../hooks/useModal';
 import { placeCategories } from '../data/categories';
-import { placeAPI } from '../utils/api';
+import { placeAPI, timeTagAPI } from '../utils/api';
 import { PlacePageSkeleton } from '../components/common/Skeleton';
 import { getCategoryIcon } from '../components/icons/CategoryIcons';
 
@@ -216,6 +216,8 @@ const PlacePage = () => {
     const [loading, setLoading] = useState(false);
     const [viewMode, setViewMode] = useState('all'); // 'all', 'main', 'other'
     const [searchTerm, setSearchTerm] = useState('');
+    const [timeTags, setTimeTags] = useState([]);
+    const [selectedTimeTags, setSelectedTimeTags] = useState([]); // 선택된 시간 태그 ID 배열
 
     // defaultBooth 메서드
     const getDefaultValueIfNull = (defaultValue, nullableValue) => nullableValue === null ? defaultValue : nullableValue;
@@ -230,7 +232,87 @@ const PlacePage = () => {
         location: getDefaultValueIfNull('미지정', booth.location),
         host: getDefaultValueIfNull('미지정', booth.host),
         images: (booth.placeImages || []).map(img => img.imageUrl),
+        timeTags: booth.timeTags || [], // 시간 태그 배열 (객체 배열)
     });
+
+    // 시간 태그 목록 불러오기
+    useEffect(() => {
+        const fetchTimeTags = async () => {
+            try {
+                const timeTagData = await timeTagAPI.getTimeTags();
+                setTimeTags(timeTagData);
+            } catch (error) {
+                console.error('Failed to fetch time tags:', error);
+                showToast('네트워크 문제로 시간 태그를 불러오지 못했습니다. 시간 태그 필터링이 동작하지 않을 수 있습니다.');
+            }
+        };
+        
+        fetchTimeTags();
+    }, [showToast]);
+
+    // 시간 태그 체크박스 처리
+    const handleTimeTagFilterChange = (tagId, isChecked) => {
+        if (isChecked) {
+            setSelectedTimeTags(prev => [...prev, tagId]);
+        } else {
+            setSelectedTimeTags(prev => prev.filter(id => id !== tagId));
+        }
+    };
+
+    // 시간 태그 추가
+    const handleTimeTagAdd = async (data) => {
+        if (!data.name || !data.name.trim()) {
+            showToast('시간 태그 이름을 입력해주세요.');
+            return;
+        }
+        try {
+            await timeTagAPI.createTimeTag({ name: data.name.trim() });
+            const timeTagData = await timeTagAPI.getTimeTags();
+            setTimeTags(timeTagData);
+            showToast('새 시간 태그가 추가되었습니다.');
+        } catch (error) {
+            showToast(error.message || '시간 태그 추가에 실패했습니다.');
+        }
+    };
+
+    // 시간 태그 수정
+    const handleTimeTagEdit = async (timeTagId, data) => {
+        if (!data.name || !data.name.trim()) {
+            showToast('시간 태그 이름을 입력해주세요.');
+            return;
+        }
+        try {
+            await timeTagAPI.updateTimeTag(timeTagId, { name: data.name.trim() });
+            const timeTagData = await timeTagAPI.getTimeTags();
+            setTimeTags(timeTagData);
+            showToast('시간 태그가 수정되었습니다.');
+        } catch (error) {
+            showToast(error.message || '시간 태그 수정에 실패했습니다.');
+        }
+    };
+
+    // 시간 태그 삭제
+    const handleTimeTagDelete = async (timeTagId) => {
+        try {
+            await timeTagAPI.deleteTimeTag(timeTagId);
+            const timeTagData = await timeTagAPI.getTimeTags();
+            setTimeTags(timeTagData);
+            // 삭제된 태그가 선택되어 있다면 선택에서 제거
+            setSelectedTimeTags(prev => prev.filter(id => id !== timeTagId));
+            showToast('시간 태그가 삭제되었습니다.');
+        } catch (error) {
+            showToast(error.message || '시간 태그 삭제에 실패했습니다.');
+        }
+    };
+
+    // 시간 태그 삭제 확인 모달
+    const openTimeTagDeleteModal = (tag) => {
+        openModal('confirm', {
+            title: '시간 태그 삭제 확인',
+            message: `'${tag.name}' 시간 태그를 정말 삭제하시겠습니까?`,
+            onConfirm: () => handleTimeTagDelete(tag.timeTagId)
+        });
+    };
 
     // 플레이스 목록 불러오기
     useEffect(() => {
@@ -347,12 +429,32 @@ const PlacePage = () => {
         const matchesSearch = place.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             placeCategories[place.category].toLowerCase().includes(searchTerm.toLowerCase());
         
-        if (viewMode === 'main') {
-            return matchesSearch && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
-        } else if (viewMode === 'other') {
-            return matchesSearch && ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+        // 시간 태그 필터링 (선택된 태그가 없거나, 선택된 태그 중 하나라도 플레이스에 포함되어 있으면 통과)
+        let matchesTimeTag = true;
+        if (selectedTimeTags.length > 0) {
+            const selectedTagNames = selectedTimeTags.map(tagId => {
+                const tag = timeTags.find(t => t.timeTagId === tagId);
+                return tag ? tag.name : null;
+            }).filter(name => name !== null);
+            
+            matchesTimeTag = selectedTagNames.some(tagName => {
+                if (!place.timeTags) return false;
+                
+                // timeTags가 문자열 배열인지 객체 배열인지 확인
+                const placeTagNames = place.timeTags.map(tag => 
+                    typeof tag === 'string' ? tag : tag.name
+                );
+                
+                return placeTagNames.includes(tagName);
+            });
         }
-        return matchesSearch;
+        
+        if (viewMode === 'main') {
+            return matchesSearch && matchesTimeTag && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+        } else if (viewMode === 'other') {
+            return matchesSearch && matchesTimeTag && ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+        }
+        return matchesSearch && matchesTimeTag;
     });
 
     // 카테고리별 그룹화
@@ -426,53 +528,126 @@ const PlacePage = () => {
 
                 {/* 필터 및 검색 */}
                 <div className="px-6 pb-4">
-                    <div className="flex flex-col sm:flex-row gap-4">
-                        {/* 검색 */}
-                        <div className="flex-1">
-                            <div className="relative">
-                                <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                                <input
-                                    type="text"
-                                    placeholder="플레이스 이름이나 카테고리로 검색..."
-                                    value={searchTerm}
-                                    onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                                />
+                    <div className="space-y-4">
+                        {/* 첫 번째 행: 검색창과 뷰 모드 필터 */}
+                        <div className="flex flex-col sm:flex-row gap-4">
+                            {/* 검색 */}
+                            <div className="flex-1">
+                                <div className="relative">
+                                    <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                                    <input
+                                        type="text"
+                                        placeholder="플레이스 이름이나 카테고리로 검색..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                    />
+                                </div>
+                            </div>
+
+                            {/* 뷰 모드 필터 */}
+                            <div className="flex bg-gray-100 rounded-lg p-1">
+                                <button
+                                    onClick={() => setViewMode('all')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                                        viewMode === 'all' 
+                                            ? 'bg-white text-gray-800 shadow-sm' 
+                                            : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    전체 ({places.length})
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('main')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                                        viewMode === 'main' 
+                                            ? 'bg-white text-gray-800 shadow-sm' 
+                                            : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    메인 ({places.filter(p => !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('other')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
+                                        viewMode === 'other' 
+                                            ? 'bg-white text-gray-800 shadow-sm' 
+                                            : 'text-gray-600 hover:text-gray-900'
+                                    }`}
+                                >
+                                    기타 ({places.filter(p => ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
+                                </button>
                             </div>
                         </div>
 
-                        {/* 뷰 모드 필터 */}
-                        <div className="flex bg-gray-100 rounded-lg p-1">
-                            <button
-                                onClick={() => setViewMode('all')}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                    viewMode === 'all' 
-                                        ? 'bg-white text-gray-800 shadow-sm' 
-                                        : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                            >
-                                전체 ({places.length})
-                            </button>
-                            <button
-                                onClick={() => setViewMode('main')}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                    viewMode === 'main' 
-                                        ? 'bg-white text-gray-800 shadow-sm' 
-                                        : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                            >
-                                메인 ({places.filter(p => !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
-                            </button>
-                            <button
-                                onClick={() => setViewMode('other')}
-                                className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                    viewMode === 'other' 
-                                        ? 'bg-white text-gray-800 shadow-sm' 
-                                        : 'text-gray-600 hover:text-gray-900'
-                                }`}
-                            >
-                                기타 ({places.filter(p => ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
-                            </button>
+                        {/* 두 번째 행: 시간 태그 필터 */}
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <h3 className="text-sm font-semibold text-gray-700">시간 태그 필터</h3>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd, showToast })}
+                                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-xs"
+                                                title="새 시간 태그 추가"
+                                            >
+                                                <i className="fas fa-plus mr-1"></i>
+                                                추가
+                                            </button>
+                                        </div>
+                                    </div>
+                                    {timeTags.length > 0 ? (
+                                        <div className="flex flex-wrap gap-2">
+                                            {timeTags.map(tag => (
+                                                <div key={tag.timeTagId} className="group relative">
+                                                    <label className="inline-flex items-center space-x-2 cursor-pointer bg-white border border-gray-300 rounded-full px-3 py-1 hover:bg-gray-50 transition-colors duration-150">
+                                                        <input
+                                                            type="checkbox"
+                                                            checked={selectedTimeTags.includes(tag.timeTagId)}
+                                                            onChange={(e) => handleTimeTagFilterChange(tag.timeTagId, e.target.checked)}
+                                                            className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                                                        />
+                                                        <span className="text-sm text-gray-700 font-medium">{tag.name}</span>
+                                                    </label>
+                                                    {/* 수정/삭제 버튼 - hover 시 표시 */}
+                                                    <div className="absolute -top-1 -right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                openModal('timeTagEdit', { timeTag: tag, onSave: handleTimeTagEdit, showToast });
+                                                            }}
+                                                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors duration-200"
+                                                            title="수정"
+                                                        >
+                                                            <i className="fas fa-edit"></i>
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation();
+                                                                openTimeTagDeleteModal(tag);
+                                                            }}
+                                                            className="bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors duration-200"
+                                                            title="삭제"
+                                                        >
+                                                            <i className="fas fa-trash"></i>
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-sm text-gray-500">
+                                            아직 시간 태그가 없습니다. 새 시간 태그를 추가해보세요.
+                                        </div>
+                                    )}
+                                    {selectedTimeTags.length > 0 && (
+                                        <div className="mt-2 text-xs text-gray-500">
+                                            {selectedTimeTags.length}개 태그 선택됨
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

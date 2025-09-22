@@ -3,6 +3,8 @@ import { placeCategories, getCategoryIcon } from '../data/categories';
 import Modal from '../components/common/Modal';
 import MapSelector from '../components/map/MapSelector';
 import { usePage } from '../hooks/usePage';
+import { useModal } from '../hooks/useModal';
+import { timeTagAPI } from '../utils/api';
 import api from '../utils/api';
 
 const NAVER_MAP_CLIENT_ID = '09h8qpimmp';
@@ -15,6 +17,7 @@ const KOREA_BOUNDARY = [
 
 const PlaceGeographyPage = () => {
   const { setPage } = usePage();
+  const { openModal, showToast } = useModal();
   const [booths, setBooths] = useState([]);
   const [selectedPlace, setSelectedPlace] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
@@ -28,6 +31,12 @@ const PlaceGeographyPage = () => {
   const [mapHeight, setMapHeight] = useState(() =>
     window.innerWidth < 1024 ? Math.min(Math.max(window.innerWidth * 0.8, 400), 600) : '100%'
   );
+
+  // 시간 태그 관련 상태
+  const [timeTags, setTimeTags] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTimeTags, setSelectedTimeTags] = useState([]);
+  const [filteredPlaces, setFilteredPlaces] = useState([]);
 
   const mapRef = useRef(null);
   const mapInstanceRef = useRef(null);
@@ -85,6 +94,107 @@ const PlaceGeographyPage = () => {
     fetchAll();
   }, []);
 
+  // 시간 태그 데이터 로드
+  useEffect(() => {
+    const fetchTimeTags = async () => {
+      try {
+        const timeTagData = await timeTagAPI.getTimeTags();
+        setTimeTags(timeTagData);
+      } catch (error) {
+        console.error('시간 태그 로드 실패:', error);
+      }
+    };
+    fetchTimeTags();
+  }, []);
+
+
+
+  // 초기 데이터 로드 시 filteredPlaces 설정
+  useEffect(() => {
+    if (booths && booths.length > 0) {
+      setFilteredPlaces(booths);
+    }
+  }, [booths]);
+
+  // 필터링 로직 (PlacePage와 동일한 방식)
+  useEffect(() => {
+    if (!booths || booths.length === 0) {
+      setFilteredPlaces([]);
+      return;
+    }
+
+    let filtered = [...booths];
+
+    // 검색어 필터링
+    if (searchTerm.trim()) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(place => {
+        const title = place.title || place.name || '';
+        const categoryName = getCategoryName(place.category) || '';
+        return title.toLowerCase().includes(searchLower) ||
+               categoryName.toLowerCase().includes(searchLower);
+      });
+    }
+
+    // 시간 태그 필터링 (PlacePage와 동일한 로직)
+    if (selectedTimeTags.length > 0) {
+      const selectedTagNames = selectedTimeTags.map(tagId => {
+        const tag = timeTags.find(t => t.timeTagId === tagId);
+        return tag ? tag.name : null;
+      }).filter(name => name !== null);
+      
+      filtered = filtered.filter(place => {
+        if (!place.timeTags) return false;
+        
+        // timeTags가 문자열 배열인지 객체 배열인지 확인
+        const placeTagNames = place.timeTags.map(tag => 
+          typeof tag === 'string' ? tag : tag.name
+        );
+        
+        return selectedTagNames.some(tagName => 
+          placeTagNames.includes(tagName)
+        );
+      });
+    }
+
+    setFilteredPlaces(filtered);
+  }, [booths, searchTerm, selectedTimeTags, timeTags]);
+
+  // 헬퍼 함수
+  const getCategoryName = (categoryKey) => {
+    return placeCategories[categoryKey] || '';
+  };
+
+  // 시간 태그 필터 핸들러
+  const handleTimeTagFilterChange = (tagId, isChecked) => {
+    if (isChecked) {
+      setSelectedTimeTags(prev => [...prev, tagId]);
+    } else {
+      setSelectedTimeTags(prev => prev.filter(id => id !== tagId));
+    }
+  };
+
+  // 검색어 핸들러
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+  };
+
+  // 시간 태그 추가 핸들러
+  const handleTimeTagAdd = async (data) => {
+    if (!data.name || !data.name.trim()) {
+      console.error('시간 태그 이름이 없습니다.');
+      return;
+    }
+    try {
+      await timeTagAPI.createTimeTag({ name: data.name.trim() });
+      // 시간 태그 목록 새로고침
+      const timeTagData = await timeTagAPI.getTimeTags();
+      setTimeTags(timeTagData);
+    } catch (error) {
+      console.error('시간 태그 추가 실패:', error);
+    }
+  };
+
   // 3. 지도 초기화 (최초 1회)
   useEffect(() => {
     if (loading || !mapReady || !center || !zoom || mapInstanceRef.current || !mapRef.current) return;
@@ -127,9 +237,9 @@ const PlaceGeographyPage = () => {
     }
   }, [loading, mapReady, center, zoom, holeBoundary]);
 
-  // 4. 마커 업데이트만 따로
+  // 4. 마커 업데이트만 따로 (필터링된 결과만 표시)
   useEffect(() => {
-    if (!mapInstanceRef.current || !window.naver) return;
+    if (!mapInstanceRef.current || !window.naver || !filteredPlaces || !markers) return;
     const naver = window.naver;
     const map = mapInstanceRef.current;
 
@@ -141,8 +251,14 @@ const PlaceGeographyPage = () => {
     });
     markerRefs.current = [];
 
+    // 필터링된 플레이스에 해당하는 마커만 표시
+    const filteredPlaceIds = new Set(filteredPlaces.map(place => place.id || place.placeId));
+    const filteredMarkers = markers.filter(marker => 
+      filteredPlaceIds.has(marker.placeId || marker.id)
+    );
+
     // 새로운 마커들 생성
-    markers.forEach(marker => {
+    filteredMarkers.forEach(marker => {
       if (!marker.markerCoordinate || !marker.markerCoordinate.latitude || !marker.markerCoordinate.longitude) return;
       const markerId = marker.placeId || marker.id;
       const isSelected = selectedPlaceId === markerId;
@@ -176,7 +292,7 @@ const PlaceGeographyPage = () => {
       });
       markerRefs.current.push(m);
     });
-  }, [markers, selectedPlaceId]);
+  }, [markers, selectedPlaceId, filteredPlaces]);
 
   // 5. 반응형 높이
   useEffect(() => {
@@ -266,9 +382,61 @@ const PlaceGeographyPage = () => {
           >
             <h3 className="text-xl font-bold mb-4">플레이스 목록</h3>
 
-            {booths.length > 0 ? (
+            {/* 검색창 */}
+            <div className="mb-4">
+              <input
+                type="text"
+                placeholder="플레이스 이름 또는 카테고리 검색..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              />
+            </div>
+
+            {/* 시간 태그 필터 */}
+            <div className="mb-4">
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm font-medium text-gray-700">시간 태그 필터</span>
+                <button
+                  onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd, showToast })}
+                  className="text-blue-600 hover:text-blue-800 text-xs font-medium"
+                >
+                  + 추가
+                </button>
+              </div>
+              {timeTags && timeTags.length > 0 ? (
+                <div className="flex flex-wrap gap-1">
+                  {timeTags.map(tag => (
+                    <label
+                      key={tag.timeTagId}
+                      className="inline-flex items-center cursor-pointer"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selectedTimeTags.includes(tag.timeTagId)}
+                        onChange={(e) => handleTimeTagFilterChange(tag.timeTagId, e.target.checked)}
+                        className="sr-only"
+                      />
+                      <span
+                        className={`px-2 py-1 text-xs rounded-full border transition-colors ${
+                          selectedTimeTags.includes(tag.timeTagId)
+                            ? 'bg-blue-500 text-white border-blue-500'
+                            : 'bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200'
+                        }`}
+                      >
+                        {tag.name}
+                      </span>
+                    </label>
+                  ))}
+                </div>
+              ) : (
+                <p className="text-xs text-gray-500">시간 태그가 없습니다.</p>
+              )}
+            </div>
+
+            {filteredPlaces.length > 0 ? (
               <div className="space-y-2">
-                {booths.map(booth => {
+                {filteredPlaces.map(booth => {
                   const boothId = booth.placeId || booth.id;
                   const matchedMarker = markers.find(m => (m.placeId || m.id) === boothId);
                   const hasCoordinates = matchedMarker?.markerCoordinate?.latitude != null && matchedMarker?.markerCoordinate?.longitude != null;
@@ -292,7 +460,7 @@ const PlaceGeographyPage = () => {
                           })()}
                         </p>
                         <div className="flex items-center gap-2">
-                          <p className="text-sm text-gray-500">{placeCategories[booth.category]}</p>
+                          <p className="text-sm text-gray-500">{getCategoryName(booth.category)}</p>
                           {!hasCoordinates && (
                             <p className="text-xs text-red-500">좌표 미설정</p>
                           )}
@@ -316,16 +484,22 @@ const PlaceGeographyPage = () => {
                 })}
               </div>
             ) : (
-              /* 플레이스가 없을 때 */
+              /* 플레이스가 없을 때 또는 필터링 결과가 없을 때 */
               <div className="text-center py-12">
                 <i className="fas fa-map-marker-alt text-4xl text-gray-400 mb-4"></i>
-                <p className="text-gray-500 mb-4">등록된 플레이스가 없습니다</p>
-                <button
-                  onClick={() => setPage('place')}
-                  className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
-                >
-                  플레이스 관리로 이동
-                </button>
+                {booths.length === 0 ? (
+                  <>
+                    <p className="text-gray-500 mb-4">등록된 플레이스가 없습니다</p>
+                    <button
+                      onClick={() => setPage('place')}
+                      className="bg-gray-800 hover:bg-gray-900 text-white px-4 py-2 rounded-lg transition-colors"
+                    >
+                      플레이스 관리로 이동
+                    </button>
+                  </>
+                ) : (
+                  <p className="text-gray-500">필터 조건에 맞는 플레이스가 없습니다</p>
+                )}
               </div>
             )}
           </div>
