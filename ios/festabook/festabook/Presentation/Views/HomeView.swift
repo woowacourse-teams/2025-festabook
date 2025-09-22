@@ -26,6 +26,10 @@ struct HomeView: View {
                             Text(universityName)
                                 .font(.system(size: 24, weight: .bold))
                                 .foregroundColor(.primary)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    appState.resetFestivalSelection()
+                                }
                         } else if isLoading {
                             UniversityNamePlaceholder()
                         } else {
@@ -34,6 +38,10 @@ struct HomeView: View {
                                  "페스타북대학교")
                                 .font(.system(size: 24, weight: .bold))
                                 .foregroundColor(.primary)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    appState.resetFestivalSelection()
+                                }
                         }
 
                         Button(action: {
