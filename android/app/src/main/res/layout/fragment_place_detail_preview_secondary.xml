@@ -31,7 +31,7 @@
                 android:id="@+id/tv_selected_place_title"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="4dp"
+                android:layout_marginStart="8dp"
                 android:layout_marginEnd="16dp"
                 android:textAppearance="@style/PretendardBold18"
                 android:textColor="@color/gray900"

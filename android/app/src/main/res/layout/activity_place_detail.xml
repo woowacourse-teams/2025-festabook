@@ -183,6 +183,8 @@
                     android:textAppearance="@style/PretendardRegular14"
                     android:autoLink="web"
                     android:textColorLink="@color/gray500"
+                    android:maxLines="2"
+                    android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/iv_host"
                     app:layout_constraintTop_toBottomOf="@id/tv_host"
