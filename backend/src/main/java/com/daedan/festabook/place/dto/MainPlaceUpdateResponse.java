@@ -17,19 +17,6 @@ public record MainPlaceUpdateResponse(
         List<Long> timeTags
 ) {
 
-    public static MainPlaceUpdateResponse from(Place place) {
-        return new MainPlaceUpdateResponse(
-                place.getCategory(),
-                place.getTitle(),
-                place.getDescription(),
-                place.getLocation(),
-                place.getHost(),
-                place.getStartTime(),
-                place.getEndTime(),
-                List.of()
-        );
-    }
-
     public static MainPlaceUpdateResponse from(Place place, List<Long> timeTags) {
         return new MainPlaceUpdateResponse(
                 place.getCategory(),
