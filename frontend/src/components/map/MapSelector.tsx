@@ -85,6 +85,15 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
         ]);
         setExistingMarkers(markersRes.data || []);
         setCurrentPlace(placeRes.data);
+
+        // 편집 대상 마커 좌표가 존재하면 모달 초기 지도를 해당 좌표로 센터링
+        const target = (markersRes.data || []).find((m: any) => getMarkerId(m) === placeIdNum);
+        const tLat = target?.markerCoordinate?.latitude;
+        const tLng = target?.markerCoordinate?.longitude;
+        if (tLat && tLng) {
+          setCenter({ lat: tLat, lng: tLng });
+          setZoom((z) => z ?? 18);
+        }
       } catch {
         setExistingMarkers([]);
         setCurrentPlace(null);
@@ -94,13 +103,13 @@ const MapSelector: React.FC<MapSelectorProps> = ({ placeId, onSaved }) => {
   }, [placeId]);
 
   useEffect(() => {
-    if (loading || !center || !zoom) return;
+    if (loading || !center) return;
     if (!window.naver || !mapRef.current) return;
     const naver = window.naver;
 
     const mapInstance = new naver.maps.Map(mapRef.current, {
       center: new naver.maps.LatLng(center.lat, center.lng),
-      zoom: zoom + 1,
+      zoom: (zoom ?? 17) + 1,
       gl: true,
       customStyleId: '4b934c2a-71f5-4506-ab90-4e6aa14c0820',
       logoControl: false, mapDataControl: false, scaleControl: false,
