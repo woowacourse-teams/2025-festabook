@@ -55,12 +55,17 @@ class PlaceMapFragment :
         PlaceDetailPreviewSecondaryFragment().newInstance()
     }
 
+    private val mapFragment by lazy {
+        MapFragment().newInstance() as MapFragment
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
         childFragmentManager.commit {
+            add(R.id.fcv_map_container, mapFragment, null)
             add(R.id.fcv_place_list_container, placeListFragment, null)
             add(R.id.fcv_map_container, placeDetailPreviewFragment, null)
             add(R.id.fcv_place_category_container, placeCategoryFragment, null)
@@ -80,7 +85,6 @@ class PlaceMapFragment :
     }
 
     private suspend fun setUpMapManager() {
-        val mapFragment = binding.fcvMapContainer.getFragment<MapFragment>()
         naverMap = mapFragment.getMap()
         (placeListFragment as? OnMapReadyCallback)?.onMapReady(naverMap)
         naverMap.locationSource = locationSource
