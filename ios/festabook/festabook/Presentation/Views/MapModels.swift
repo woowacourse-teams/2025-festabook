@@ -49,9 +49,16 @@ struct PlaceGeography: Codable, Identifiable {
 
 // MARK: - Time Tag API Response
 
-struct TimeTag: Codable, Identifiable {
-    let id: Int
+struct TimeTag: Codable, Identifiable, Hashable {
+    let timeTagId: Int
     let name: String
+
+    var id: Int { timeTagId }
+
+    enum CodingKeys: String, CodingKey {
+        case timeTagId
+        case name
+    }
 }
 
 // MARK: - Place Preview API Response
