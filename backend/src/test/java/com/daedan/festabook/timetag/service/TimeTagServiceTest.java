@@ -105,8 +105,8 @@ class TimeTagServiceTest {
             TimeTagResponses response = timeTagService.getAllTimeTagsByFestivalId(festivalId);
 
             // then
-            int responseSize = response.responses().size();
-            assertThat(responseSize).isEqualTo(expectedSize);
+            int responseItemSize = response.responses().size();
+            assertThat(responseItemSize).isEqualTo(expectedSize);
         }
 
         @Test
@@ -125,8 +125,9 @@ class TimeTagServiceTest {
             TimeTagResponses response = timeTagService.getAllTimeTagsByFestivalId(festivalId);
 
             // then
-            int responseSize = response.responses().size();
+            int responseItemSize = response.responses().size();
             assertSoftly(s -> {
+                s.assertThat(responseItemSize).isEqualTo(timeTags.size());
                 s.assertThat(response.responses().get(0).timeTagId()).isEqualTo(timeTagId);
                 s.assertThat(response.responses().get(0).name()).isEqualTo(timeTag.getName());
             });
