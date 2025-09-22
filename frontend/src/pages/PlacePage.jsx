@@ -185,6 +185,8 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
         return colorMap[category] || 'bg-gray-100 text-gray-900 border-gray-200';
     };
 
+    const timeTags = place.timeTags || [];
+
     return (
         <div
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group"
@@ -193,6 +195,15 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
         >
             {/* 콘텐츠 섹션 */}
             <div className="p-4">
+            <div className='grid grid-cols-4 gap-1 w-11/12 mb-1'>
+                    {timeTags.map(tag => (
+                        <div key={tag.timeTagId} className="flex items-center shrink-0">
+                            <div className="inline-flex items-center px-1 font-extrabold bg-yellow-200 border-yellow-300 py-1 rounded-lg text-[9px] border">
+                                {tag.name}
+                            </div>
+                        </div>
+                    ))}
+                </div>
                 <div className="flex items-center justify-between mb-1">
                     <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-lg text-gray-900 truncate" title={place.title}>
