@@ -9,6 +9,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.adapter.NewsPagerAdapter
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostGuideItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
@@ -48,6 +49,10 @@ class NewsFragment :
 
     override fun onLostItemClick(lostItem: LostItemUiModel) {
         newsViewModel.lostItemClick(lostItem)
+    }
+
+    override fun onLostGuideItemClick(lostGuideItem: LostGuideItemUiModel) {
+        TODO("Not yet implemented")
     }
 
     private fun setupNewsTabLayout() {
