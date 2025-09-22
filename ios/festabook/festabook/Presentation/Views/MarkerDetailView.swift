@@ -288,6 +288,7 @@ struct MarkerInfoRow: View {
         host: "사회과학대학",
         startTime: "18:00",
         endTime: "23:59",
-        coordinate: nil
+        coordinate: nil,
+        timeTags: nil
     ))
 }

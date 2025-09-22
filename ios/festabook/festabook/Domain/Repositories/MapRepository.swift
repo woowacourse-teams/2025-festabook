@@ -5,6 +5,7 @@ protocol MapRepositoryProtocol {
     func fetchPlaceGeographies() async throws -> [PlaceGeography]
     func fetchPlacePreviews() async throws -> [PlacePreview]
     func fetchPlaceDetail(_ placeId: Int) async throws -> PlaceDetail
+    func fetchTimeTags() async throws -> [TimeTag]
 }
 
 class MapRepository: MapRepositoryProtocol {
@@ -28,5 +29,9 @@ class MapRepository: MapRepositoryProtocol {
 
     func fetchPlaceDetail(_ placeId: Int) async throws -> PlaceDetail {
         return try await apiClient.get(Endpoints.Places.detail(placeId))
+    }
+
+    func fetchTimeTags() async throws -> [TimeTag] {
+        return try await apiClient.get(Endpoints.TimeTags.list)
     }
 }

@@ -47,6 +47,13 @@ struct PlaceGeography: Codable, Identifiable {
     }
 }
 
+// MARK: - Time Tag API Response
+
+struct TimeTag: Codable, Identifiable {
+    let id: Int
+    let name: String
+}
+
 // MARK: - Place Preview API Response
 
 struct PlacePreview: Codable, Identifiable {
@@ -60,6 +67,7 @@ struct PlacePreview: Codable, Identifiable {
     let startTime: String?
     let endTime: String?
     let coordinate: LatLng?
+    let timeTags: [TimeTag]?
 
     var id: Int { placeId }
 

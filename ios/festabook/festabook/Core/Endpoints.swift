@@ -23,6 +23,10 @@ enum Endpoints {
         }
     }
 
+    enum TimeTags {
+        static let list = "/time-tags"
+    }
+
     enum Devices {
         static let register = "/devices"
         static func detail(_ deviceId: Int) -> String {
