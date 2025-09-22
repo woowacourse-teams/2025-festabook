@@ -4,10 +4,12 @@ import { placeCategories } from '../data/categories';
 import { placeAPI, timeTagAPI } from '../utils/api';
 import { PlacePageSkeleton } from '../components/common/Skeleton';
 import { getCategoryIcon } from '../components/icons/CategoryIcons';
+import Modal from '../components/common/Modal';
+import MapSelector from '../components/map/MapSelector';
 
 
 // 메인 플레이스 카드 (이미지 포함)
-const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, showToast }) => {
+const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, onCoordinateEdit, showToast }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
 
@@ -69,6 +71,17 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, showToast }) =>
                         >
                             <i className="fas fa-images mr-1"></i>
                             이미지
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                onCoordinateEdit(place);
+                            }}
+                            className="bg-indigo-50 bg-opacity-90 hover:bg-indigo-100 text-indigo-700 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200 hover:scale-105"
+                            title="좌표 수정"
+                        >
+                            <i className="fas fa-map-marker-alt mr-1"></i>
+                            좌표
                         </button>
                         <button
                             onClick={(e) => {
@@ -142,7 +155,7 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, showToast }) =>
 };
 
 // 기타 플레이스 카드 (이미지 없음, 간단한 형태)
-const OtherPlaceCard = ({ place, onEdit, onDelete, showToast }) => {
+const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }) => {
     const [isHovered, setIsHovered] = useState(false);
 
     // 카테고리별 색상 매핑 (배경만 연하게, 글씨는 검정색)
@@ -186,6 +199,16 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, showToast }) => {
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
+                                onCoordinateEdit(place);
+                            }}
+                            className="bg-indigo-50 hover:bg-indigo-100 text-indigo-700 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
+                            title="좌표 수정"
+                        >
+                            <i className="fas fa-map-marker-alt"></i>
+                        </button>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
                                 onEdit(place);
                             }}
                             className="bg-blue-50 hover:bg-blue-100 text-blue-600 px-3 py-2 rounded-lg text-sm font-semibold transition-all duration-200"
@@ -218,6 +241,8 @@ const PlacePage = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [timeTags, setTimeTags] = useState([]);
     const [selectedTimeTags, setSelectedTimeTags] = useState([]); // 선택된 시간 태그 ID 배열
+    const [coordModalOpen, setCoordModalOpen] = useState(false);
+    const [selectedPlace, setSelectedPlace] = useState(null);
 
     // defaultBooth 메서드
     const getDefaultValueIfNull = (defaultValue, nullableValue) => nullableValue === null ? defaultValue : nullableValue;
@@ -710,6 +735,7 @@ const PlacePage = () => {
                                                             onEdit={(place) => openModal('placeEdit', { place, onSave: handleSave })}
                                                             onDelete={openDeleteModal}
                                                             onImageManage={(place) => openModal('placeImages', { place, onUpdate: handleImageUpdate })}
+                                                            onCoordinateEdit={(place) => { setSelectedPlace(place); setCoordModalOpen(true); }}
                                                             showToast={showToast}
                                                         />
                                                     ) : (
@@ -718,6 +744,7 @@ const PlacePage = () => {
                                                             place={place}
                                                             onEdit={(place) => openModal('otherPlaceEdit', { place, onSave: handleSave })}
                                                             onDelete={openDeleteModal}
+                                                            onCoordinateEdit={(place) => { setSelectedPlace(place); setCoordModalOpen(true); }}
                                                             showToast={showToast}
                                                         />
                                                     );
@@ -747,6 +774,24 @@ const PlacePage = () => {
                     </div>
                 )}
             </div>
+            {coordModalOpen && selectedPlace && (
+                <Modal isOpen={coordModalOpen} onClose={() => setCoordModalOpen(false)} maxWidth="max-w-2xl">
+                    <h3 className="text-xl font-bold mb-4">{selectedPlace.title} 좌표 설정</h3>
+                    <MapSelector
+                        placeId={selectedPlace.placeId}
+                        onSaved={async () => {
+                            setCoordModalOpen(false);
+                            try {
+                                const placesData = await placeAPI.getPlaces();
+                                setPlaces(placesData.map(defaultBooth));
+                                showToast('플레이스 좌표가 저장되었습니다.');
+                            } catch {
+                                showToast('플레이스 좌표 저장 후 목록 갱신에 실패했습니다.');
+                            }
+                        }}
+                    />
+                </Modal>
+            )}
         </div>
     );
 };
