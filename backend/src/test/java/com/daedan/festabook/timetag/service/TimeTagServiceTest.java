@@ -80,6 +80,9 @@ class TimeTagServiceTest {
             Long invalidFestivalId = 0L;
             TimeTagCreateRequest request = TimeTagCreateRequestFixture.createDefault();
 
+            given(festivalJpaRepository.findById(invalidFestivalId))
+                    .willReturn(Optional.empty());
+
             // when & then
             assertThatThrownBy(() -> timeTagService.createTimeTag(invalidFestivalId, request))
                     .isInstanceOf(BusinessException.class)
@@ -188,6 +191,9 @@ class TimeTagServiceTest {
             Long invalidTimeTagId = 0L;
             TimeTagUpdateRequest request = TimeTagUpdateRequestFixture.createDefault();
 
+            given(timeTagJpaRepository.findById(invalidTimeTagId))
+                    .willReturn(Optional.empty());
+
             // when & then
             assertThatThrownBy(() -> timeTagService.updateTimeTag(festivalId, invalidTimeTagId, request))
                     .isInstanceOf(BusinessException.class)
@@ -222,6 +228,9 @@ class TimeTagServiceTest {
             // given
             Long festivalId = 1L;
             Long invalidTimeTagId = 0L;
+
+            given(timeTagJpaRepository.findById(invalidTimeTagId))
+                    .willReturn(Optional.empty());
 
             // when & then
             assertThatThrownBy(() -> timeTagService.deleteTimeTag(festivalId, invalidTimeTagId))
