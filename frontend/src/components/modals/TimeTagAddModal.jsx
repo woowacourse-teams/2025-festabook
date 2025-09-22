@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
 
+const MAX_NAME_LEN = 40;
+
 const TimeTagAddModal = ({ onSave, onClose, showToast }) => {
   const [formData, setFormData] = useState({
     name: ''
@@ -27,8 +29,8 @@ const TimeTagAddModal = ({ onSave, onClose, showToast }) => {
     const { name, value } = e.target;
     
     // 글자 수 제한 체크
-    if (name === 'name' && value.length > 40) {
-      showToast('시간 태그 이름은 40자 이내로 입력해주세요.');
+    if (name === 'name' && value.length > MAX_NAME_LEN) {
+      showToast(`시간 태그 이름은 ${MAX_NAME_LEN}자 이내로 입력해주세요.`);
       return;
     }
     
@@ -51,8 +53,8 @@ const TimeTagAddModal = ({ onSave, onClose, showToast }) => {
 
     if (!formData.name.trim()) {
       newErrors.name = '시간 태그 이름을 입력해주세요.';
-    } else if (formData.name.length > 40) {
-      newErrors.name = '시간 태그 이름은 40자를 초과할 수 없습니다.';
+    } else if (formData.name.length > MAX_NAME_LEN) {
+      newErrors.name = `시간 태그 이름은 ${MAX_NAME_LEN}자를 초과할 수 없습니다.`;
     }
 
     setErrors(newErrors);
@@ -98,13 +100,13 @@ const TimeTagAddModal = ({ onSave, onClose, showToast }) => {
               className={`w-full border rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
                 errors.name ? 'border-red-500' : 'border-gray-300'
               }`}
-              maxLength={50}
+              maxLength={MAX_NAME_LEN}
             />
             {errors.name && (
               <p className="mt-1 text-sm text-red-600">{errors.name}</p>
             )}
             <p className="mt-1 text-xs text-gray-500">
-              {formData.name.length}/40자
+              {formData.name.length}/{MAX_NAME_LEN}자
             </p>
           </div>
 

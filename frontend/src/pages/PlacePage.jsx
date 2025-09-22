@@ -581,23 +581,23 @@ const PlacePage = () => {
                         </div>
 
                         {/* 두 번째 행: 시간 태그 필터 */}
-                        {timeTags.length > 0 && (
-                            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
-                                <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-                                    <div className="flex-1">
-                                        <div className="flex items-center gap-3 mb-3">
-                                            <h3 className="text-sm font-semibold text-gray-700">시간 태그 필터</h3>
-                                            <div className="flex items-center gap-2">
-                                                <button
-                                                    onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd })}
-                                                    className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-xs"
-                                                    title="새 시간 태그 추가"
-                                                >
-                                                    <i className="fas fa-plus mr-1"></i>
-                                                    추가
-                                                </button>
-                                            </div>
+                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                                <div className="flex-1">
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <h3 className="text-sm font-semibold text-gray-700">시간 태그 필터</h3>
+                                        <div className="flex items-center gap-2">
+                                            <button
+                                                onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd })}
+                                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-xs"
+                                                title="새 시간 태그 추가"
+                                            >
+                                                <i className="fas fa-plus mr-1"></i>
+                                                추가
+                                            </button>
                                         </div>
+                                    </div>
+                                    {timeTags.length > 0 ? (
                                         <div className="flex flex-wrap gap-2">
                                             {timeTags.map(tag => (
                                                 <div key={tag.timeTagId} className="group relative">
@@ -636,15 +636,19 @@ const PlacePage = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                        {selectedTimeTags.length > 0 && (
-                                            <div className="mt-2 text-xs text-gray-500">
-                                                {selectedTimeTags.length}개 태그 선택됨
-                                            </div>
-                                        )}
-                                    </div>
+                                    ) : (
+                                        <div className="text-sm text-gray-500">
+                                            아직 시간 태그가 없습니다. 새 시간 태그를 추가해보세요.
+                                        </div>
+                                    )}
+                                    {selectedTimeTags.length > 0 && (
+                                        <div className="mt-2 text-xs text-gray-500">
+                                            {selectedTimeTags.length}개 태그 선택됨
+                                        </div>
+                                    )}
                                 </div>
                             </div>
-                        )}
+                        </div>
                     </div>
                 </div>
             </div>

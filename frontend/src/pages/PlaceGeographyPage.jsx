@@ -180,21 +180,19 @@ const PlaceGeographyPage = () => {
   };
 
   // 시간 태그 추가 핸들러
-  const handleTimeTagAdd = () => {
-    openModal('timeTagAdd', {
-      onSaved: () => {
-        // 시간 태그 목록 새로고침
-        const fetchTimeTags = async () => {
-          try {
-            const timeTagData = await timeTagAPI.getTimeTags();
-            setTimeTags(timeTagData);
-          } catch (error) {
-            console.error('시간 태그 로드 실패:', error);
-          }
-        };
-        fetchTimeTags();
-      }
-    });
+  const handleTimeTagAdd = async (data) => {
+    if (!data.name || !data.name.trim()) {
+      console.error('시간 태그 이름이 없습니다.');
+      return;
+    }
+    try {
+      await timeTagAPI.createTimeTag({ name: data.name.trim() });
+      // 시간 태그 목록 새로고침
+      const timeTagData = await timeTagAPI.getTimeTags();
+      setTimeTags(timeTagData);
+    } catch (error) {
+      console.error('시간 태그 추가 실패:', error);
+    }
   };
 
   // 3. 지도 초기화 (최초 1회)
@@ -400,7 +398,7 @@ const PlaceGeographyPage = () => {
               <div className="flex justify-between items-center mb-2">
                 <span className="text-sm font-medium text-gray-700">시간 태그 필터</span>
                 <button
-                  onClick={handleTimeTagAdd}
+                  onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd })}
                   className="text-blue-600 hover:text-blue-800 text-xs font-medium"
                 >
                   + 추가
