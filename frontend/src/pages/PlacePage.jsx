@@ -10,7 +10,7 @@ import { getCategoryIcon } from '../components/icons/CategoryIcons';
 const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, showToast }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [imageLoading, setImageLoading] = useState(true);
-    
+
     // 카테고리별 색상 매핑 (배경만 연하게, 글씨는 검정색)
     const getCategoryColor = (category) => {
         const colorMap = {
@@ -24,7 +24,7 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, showToast }) =>
     const mainImage = place.images && place.images.length > 0 ? place.images[0] : null;
 
     return (
-        <div 
+        <div
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group ring-2 ring-gray-100"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -144,7 +144,7 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, showToast }) =>
 // 기타 플레이스 카드 (이미지 없음, 간단한 형태)
 const OtherPlaceCard = ({ place, onEdit, onDelete, showToast }) => {
     const [isHovered, setIsHovered] = useState(false);
-    
+
     // 카테고리별 색상 매핑 (배경만 연하게, 글씨는 검정색)
     const getCategoryColor = (category) => {
         const colorMap = {
@@ -161,7 +161,7 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, showToast }) => {
     };
 
     return (
-        <div 
+        <div
             className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden transition-all duration-300 hover:shadow-lg hover:scale-[1.02] group"
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -180,7 +180,7 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, showToast }) => {
                             {placeCategories[place.category]}
                         </div>
                     </div>
-                    
+
                     {/* 호버 시 액션 버튼 */}
                     <div className={`flex space-x-2 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
                         <button
@@ -246,7 +246,7 @@ const PlacePage = () => {
                 showToast('네트워크 문제로 시간 태그를 불러오지 못했습니다. 시간 태그 필터링이 동작하지 않을 수 있습니다.');
             }
         };
-        
+
         fetchTimeTags();
     }, [showToast]);
 
@@ -328,7 +328,7 @@ const PlacePage = () => {
                 setLoading(false);
             }
         };
-        
+
         fetchPlaces();
     }, []);
 
@@ -338,7 +338,7 @@ const PlacePage = () => {
         if (!data.title) { showToast('플레이스 이름은 필수 항목입니다.'); return; }
         try {
             setLoading(true);
-            await placeAPI.createPlace({ 
+            await placeAPI.createPlace({
                 placeCategory: data.category,
                 title: data.title
             });
@@ -373,17 +373,17 @@ const PlacePage = () => {
         openModal('confirm', {
             title: '플레이스 삭제 확인',
             message: (
-            <>
-                '{place.title}' 플레이스를 정말 삭제하시겠습니까?
-                {isMain && (
                 <>
-                    <br />
-                    <div className="font-bold text-red-500 text-xs">
-                    플레이스의 이미지, 세부 정보도 모두 삭제됩니다.
-                    </div>
+                    '{place.title}' 플레이스를 정말 삭제하시겠습니까?
+                    {isMain && (
+                        <>
+                            <br />
+                            <div className="font-bold text-red-500 text-xs">
+                                플레이스의 이미지, 세부 정보도 모두 삭제됩니다.
+                            </div>
+                        </>
+                    )}
                 </>
-                )}
-            </>
             ),
             onConfirm: () => handleDelete(place.placeId)
         });
@@ -427,8 +427,8 @@ const PlacePage = () => {
     // 필터링된 플레이스 목록
     const filteredPlaces = places.filter(place => {
         const matchesSearch = place.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            placeCategories[place.category].toLowerCase().includes(searchTerm.toLowerCase());
-        
+            placeCategories[place.category].toLowerCase().includes(searchTerm.toLowerCase());
+
         // 시간 태그 필터링 (선택된 태그가 없거나, 선택된 태그 중 하나라도 플레이스에 포함되어 있으면 통과)
         let matchesTimeTag = true;
         if (selectedTimeTags.length > 0) {
@@ -436,19 +436,19 @@ const PlacePage = () => {
                 const tag = timeTags.find(t => t.timeTagId === tagId);
                 return tag ? tag.name : null;
             }).filter(name => name !== null);
-            
+
             matchesTimeTag = selectedTagNames.some(tagName => {
                 if (!place.timeTags) return false;
-                
+
                 // timeTags가 문자열 배열인지 객체 배열인지 확인
-                const placeTagNames = place.timeTags.map(tag => 
+                const placeTagNames = place.timeTags.map(tag =>
                     typeof tag === 'string' ? tag : tag.name
                 );
-                
+
                 return placeTagNames.includes(tagName);
             });
         }
-        
+
         if (viewMode === 'main') {
             return matchesSearch && matchesTimeTag && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
         } else if (viewMode === 'other') {
@@ -470,10 +470,10 @@ const PlacePage = () => {
     // 한국어 조사 자동 판단 함수
     const getKoreanParticle = (word, particle) => {
         if (!word) return '';
-        
+
         const lastChar = word.charAt(word.length - 1);
         const hasFinalConsonant = (lastChar.charCodeAt(0) - 44032) % 28 !== 0;
-        
+
         if (particle === '이/가') {
             return hasFinalConsonant ? '이' : '가';
         } else if (particle === '을/를') {
@@ -513,10 +513,10 @@ const PlacePage = () => {
                         <div>
                             <h1 className="text-3xl font-bold text-gray-900">플레이스 관리</h1>
                         </div>
-                        
+
                         <div className="flex items-center gap-3">
-                            <button 
-                                onClick={() => openModal('booth', { onSave: handleCreate })} 
+                            <button
+                                onClick={() => openModal('booth', { onSave: handleCreate })}
                                 className="bg-gradient-to-r from-black to-black hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all duration-200 hover:scale-105 shadow-lg"
                             >
                                 <i className="fas fa-plus mr-2"></i>
@@ -549,31 +549,28 @@ const PlacePage = () => {
                             <div className="flex bg-gray-100 rounded-lg p-1">
                                 <button
                                     onClick={() => setViewMode('all')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                        viewMode === 'all' 
-                                            ? 'bg-white text-gray-800 shadow-sm' 
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'all'
+                                            ? 'bg-white text-gray-800 shadow-sm'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     전체 ({places.length})
                                 </button>
                                 <button
                                     onClick={() => setViewMode('main')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                        viewMode === 'main' 
-                                            ? 'bg-white text-gray-800 shadow-sm' 
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'main'
+                                            ? 'bg-white text-gray-800 shadow-sm'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     메인 ({places.filter(p => !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
                                 </button>
                                 <button
                                     onClick={() => setViewMode('other')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${
-                                        viewMode === 'other' 
-                                            ? 'bg-white text-gray-800 shadow-sm' 
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'other'
+                                            ? 'bg-white text-gray-800 shadow-sm'
                                             : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                        }`}
                                 >
                                     기타 ({places.filter(p => ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
                                 </button>
@@ -691,13 +688,21 @@ const PlacePage = () => {
                                             <span className="ml-3 bg-gray-200 text-gray-800 text-sm font-semibold px-2 py-1 rounded-full">
                                                 {categoryPlaces.length}
                                             </span>
+                                            <button
+                                                onClick={() => openModal('booth', { onSave: handleCreate })}
+                                                className="bg-gradient-to-r ml-5 from-black to-black hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-1.5 px-3 rounded-lg flex items-center transition-all duration-200 hover:scale-105 shadow-lg"
+                                            >
+                                                <i className="fas fa-plus mr-2"></i>
+                                                새 플레이스 추가
+                                            </button>
                                         </div>
-                                        
+
+
                                         {categoryPlaces.length > 0 ? (
                                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                                                 {categoryPlaces.map(place => {
                                                     const isMainPlace = !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
-                                                    
+
                                                     return isMainPlace ? (
                                                         <MainPlaceCard
                                                             key={place.placeId}
@@ -724,7 +729,7 @@ const PlacePage = () => {
                                                 <p className="text-gray-500 text-lg font-medium mb-2">{placeCategories[category]}{getKoreanParticle(placeCategories[category], '이/가')} 없습니다</p>
                                                 <p className="text-gray-400 text-sm mb-4">새로운 {placeCategories[category]}{getKoreanParticle(placeCategories[category], '을/를')} 추가해보세요</p>
                                                 <button
-                                                    onClick={() => openModal('place', { 
+                                                    onClick={() => openModal('place', {
                                                         onSave: handleCreate,
                                                         initialData: { category: category }
                                                     })}
