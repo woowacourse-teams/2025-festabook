@@ -43,8 +43,8 @@ public class PlaceService {
     public PlaceCreateResponse createPlace(Long festivalId, PlaceCreateRequest request) {
         Festival festival = getFestivalById(festivalId);
 
-        Place notSavedPlace = request.toPlace(festival);
-        Place savedPlace = placeJpaRepository.save(notSavedPlace);
+        Place place = request.toPlace(festival);
+        Place savedPlace = placeJpaRepository.save(place);
 
         return PlaceCreateResponse.from(savedPlace);
     }
