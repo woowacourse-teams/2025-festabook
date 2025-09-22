@@ -79,19 +79,32 @@ public class PlaceService {
                 request.endTime()
         );
 
-        // 업데이트 중 제외된 시간 태그 삭제
-        List<Long> existingTimeTagIds = getExistingTimeTagIdsByPlaceId(placeId);
-        List<Long> deleteTimeTagIds = getDeleteTimeTagIds(existingTimeTagIds, request.timeTags());
-        placeTimeTagJpaRepository.deleteAllByPlaceIdAndTimeTagIdIn(placeId, deleteTimeTagIds);
+        updateTimeTags(festivalId, place, request.timeTags());
 
-        // 업데이트 중 추가된 시간 태그 추가
-        List<TimeTag> addTimeTags = getAddTimeTags(existingTimeTagIds, request.timeTags());
+        // 실제 저장된 시간 태그 조회
+        List<Long> responseTimeTagIds = getResponseTimeTagIds(placeId);
+        return MainPlaceUpdateResponse.from(place, responseTimeTagIds);
+    }
+
+    private void updateTimeTags(Long festivalId, Place place, List<Long> timeTagIds) {
+        // 중복 id 제거
+        List<Long> distinctRequestTimeTagIds = timeTagIds.stream()
+                .distinct()
+                .toList();
+
+        // 기존 시간 태그 ID 조회
+        List<Long> existingTimeTagIds = getExistingTimeTagIdsByPlaceId(place.getId());
+
+        // 삭제할 시간 태그 ID 목록 찾기
+        List<Long> deleteTimeTagIds = getDeleteTimeTagIds(existingTimeTagIds, distinctRequestTimeTagIds);
+        placeTimeTagJpaRepository.deleteAllByPlaceIdAndTimeTagIdIn(place.getId(), deleteTimeTagIds);
+
+        // 추가할 시간 태그 ID 목록 찾기
+        List<TimeTag> addTimeTags = getAddTimeTags(existingTimeTagIds, distinctRequestTimeTagIds);
         validateTimeTagsBelongsToFestival(addTimeTags, festivalId);
 
         List<PlaceTimeTag> addPlaceTimeTags = createAddPlaceTimeTags(place, addTimeTags);
         placeTimeTagJpaRepository.saveAll(addPlaceTimeTags);
-
-        return MainPlaceUpdateResponse.from(place, request.timeTags());
     }
 
     private void validateTimeTagsBelongsToFestival(List<TimeTag> addTimeTags, Long festivalId) {
@@ -119,6 +132,12 @@ public class PlaceService {
     private List<PlaceTimeTag> createAddPlaceTimeTags(Place place, List<TimeTag> addTimeTags) {
         return addTimeTags.stream()
                 .map(timeTag -> new PlaceTimeTag(place, timeTag))
+                .toList();
+    }
+
+    private List<Long> getResponseTimeTagIds(final Long placeId) {
+        return placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
+                .map(placeTimeTag -> placeTimeTag.getTimeTag().getId())
                 .toList();
     }
 

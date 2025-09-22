@@ -221,7 +221,7 @@ class PlaceServiceTest {
     class updateMainPlace {
 
         @Test
-        void 성공() {
+        void 성공_place_필드_값() {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
@@ -232,16 +232,14 @@ class PlaceServiceTest {
             given(placeJpaRepository.findById(placeId))
                     .willReturn(Optional.of(place));
 
-            List<Long> updateTimeTagIds = List.of(1L);
-            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.createWithFullFiled(
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(
                     PlaceCategory.BAR,
                     "수정된 플레이스 이름",
                     "수정된 플레이스 설명",
                     "수정된 위치",
                     "수정된 호스트",
                     LocalTime.of(12, 00),
-                    LocalTime.of(13, 00),
-                    updateTimeTagIds
+                    LocalTime.of(13, 00)
             );
 
             // when
@@ -256,7 +254,7 @@ class PlaceServiceTest {
                 s.assertThat(result.host()).isEqualTo(request.host());
                 s.assertThat(result.startTime()).isEqualTo(request.startTime());
                 s.assertThat(result.endTime()).isEqualTo(request.endTime());
-                s.assertThat(result.timeTags()).containsAll(updateTimeTagIds);
+                s.assertThat(result.timeTags()).isEmpty();
             });
         }
 
@@ -285,6 +283,7 @@ class PlaceServiceTest {
 
             Long updateTimeTagId3 = 3L;
             TimeTag updateTimeTag3 = TimeTagFixture.createWithFestivalAndId(festival, updateTimeTagId3);
+            PlaceTimeTag placeTimeTag3 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, updateTimeTag3);
 
             List<PlaceTimeTag> originalPlaceTimeTags = List.of(placeTimeTag1, placeTimeTag2);
             List<Long> updateTimeTagIds = List.of(originalAndUpdateTimeTagId2, updateTimeTagId3);
@@ -299,6 +298,10 @@ class PlaceServiceTest {
             // 추가할 시간 태그 조회
             given(timeTagJpaRepository.findAllById(any()))
                     .willReturn(updateTimeTags);
+
+            // 최종 저장된 PlaceTimeTag 조회
+            given(placeTimeTagJpaRepository.findAllByPlaceId(placeId))
+                    .willReturn(List.of(placeTimeTag2, placeTimeTag3));
 
             // place 조회
             given(placeJpaRepository.findById(placeId))
