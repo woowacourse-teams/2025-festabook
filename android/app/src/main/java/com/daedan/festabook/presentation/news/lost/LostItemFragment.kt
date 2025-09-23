@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.GridLayout
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemBinding
@@ -28,6 +29,19 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        binding.rvLostItemList.adapter = adapter
+        (binding.rvLostItemList.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
+            false
+
+        val spacing = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
+        setupLostItemDecoration(spacing)
+
+        setupObservers()
+        onSwipeRefreshLostItemsListener()
+        setupSkeletonView(spacing)
+    }
+
+    private fun setupLostItemDecoration(spacing: Int) {
         val gridLayoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
         binding.rvLostItemList.layoutManager = gridLayoutManager
 
@@ -36,17 +50,12 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
                 override fun getSpanSize(position: Int): Int = if (position == 0) SPAN_COUNT else 1
             }
 
-        binding.rvLostItemList.adapter = adapter
-        val spacing = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
         binding.rvLostItemList.addItemDecoration(
             LostItemDecoration(
                 spanCount = SPAN_COUNT,
                 spacing = spacing,
             ),
         )
-        setupObservers()
-        onSwipeRefreshLostItemsListener()
-        setupSkeletonView(spacing)
     }
 
     private fun setupObservers() {
