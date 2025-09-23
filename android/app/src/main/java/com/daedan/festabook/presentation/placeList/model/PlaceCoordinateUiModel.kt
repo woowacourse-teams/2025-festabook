@@ -7,7 +7,7 @@ data class PlaceCoordinateUiModel(
     val coordinate: CoordinateUiModel,
     val category: PlaceCategoryUiModel,
     val title: String,
-    val timeTagId: List<Long> = emptyList(),
+    val timeTagIds: List<Long>,
 )
 
 fun PlaceGeography.toUiModel() =
@@ -16,5 +16,5 @@ fun PlaceGeography.toUiModel() =
         coordinate = markerCoordinate.toUiModel(),
         category = category.toUiModel(),
         title = title,
-        timeTagId = timeTag.map { it.timeTagId },
+        timeTagIds = timeTags.map { it.timeTagId },
     )

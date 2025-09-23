@@ -130,15 +130,15 @@ class PlaceMapFragment :
                 adapter.notifyDataSetChanged()
             }
         }
-        viewModel.selectedTimeTag.observe(viewLifecycleOwner) { selectedTimeTag ->
-            mapManager?.filterMarkersByTimeTag(selectedTimeTag.timeTagId)
-        }
 
         viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> {
                     mapManager?.setPlaceLocation(placeGeographies.value)
+                    viewModel.selectedTimeTag.observe(viewLifecycleOwner) { selectedTimeTag ->
+                        mapManager?.filterMarkersByTimeTag(selectedTimeTag.timeTagId)
+                    }
                 }
 
                 is PlaceListUiState.Error -> {

@@ -56,11 +56,14 @@ class MapManager(
 
     fun filterMarkersByCategories(categories: List<PlaceCategoryUiModel>) {
         markers.forEach { marker ->
-            val place = marker.tag as? PlaceCoordinateUiModel
+            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
             val isSelectedMarker = marker == selectedMarker
 
             // 필터링된 마커이거나 선택된 마커인 경우에만 보이게 처리
-            marker.isVisible = place?.category in categories || isSelectedMarker
+            marker.isVisible =
+                place.category in categories &&
+                place.timeTagIds.contains(selectedTimeTagId) ||
+                isSelectedMarker
 
             // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
             updateMarkerIcon(isSelectedMarker, marker)
@@ -71,7 +74,8 @@ class MapManager(
         markers.forEach { marker ->
             val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
             val isSelectedMarker = marker == selectedMarker
-            marker.isVisible = place.timeTagId.contains(selectedTimeTagId) || isSelectedMarker
+
+            marker.isVisible = place.timeTagIds.contains(selectedTimeTagId) || isSelectedMarker
 
             // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
             updateMarkerIcon(isSelectedMarker, marker)
@@ -82,7 +86,7 @@ class MapManager(
     fun clearFilter() {
         markers.forEach { marker ->
             val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
-            marker.isVisible = place.timeTagId.contains(selectedTimeTagId)
+            marker.isVisible = place.timeTagIds.contains(selectedTimeTagId)
 
             val isSelectedMarker = marker == selectedMarker
 

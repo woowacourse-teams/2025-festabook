@@ -79,7 +79,6 @@ class PlaceListChildViewModel(
             result
                 .onSuccess { places ->
                     val placeUiModels = places.map { it.toUiModel() }
-
                     cachedPlaces = placeUiModels
                 }.onFailure {
                     _places.value = PlaceListUiState.Error(it)
