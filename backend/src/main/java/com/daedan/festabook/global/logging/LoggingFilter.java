@@ -48,6 +48,7 @@ public class LoggingFilter extends OncePerRequestFilter {
     private static final String REQUEST_USER_IP_HEADER_NAME = "X-Forwarded-For";
     private static final String AUTHENTICATION_HEADER = "Authorization";
     private static final String AUTHENTICATION_SCHEME = "Bearer ";
+    private static final String FESTIVAL_HEADER_NAME = "festival";
 
     private final ObjectMapper objectMapper;
     private final JwtProvider jwtProvider;
@@ -66,6 +67,7 @@ public class LoggingFilter extends OncePerRequestFilter {
         String httpMethod = request.getMethod();
         String ipAddress = request.getHeader(REQUEST_USER_IP_HEADER_NAME);
         String token = extractTokenFromHeader(request);
+        String festivalId = request.getHeader(FESTIVAL_HEADER_NAME);
         String username = extractUsernameFromToken(token);
 
         stopWatch.start();
@@ -87,6 +89,7 @@ public class LoggingFilter extends OncePerRequestFilter {
                     uri,
                     ipAddress,
                     username,
+                    festivalId,
                     statusCode,
                     maskIfContainsMaskingPath(uri, httpMethod, requestBody),
                     executionTime
