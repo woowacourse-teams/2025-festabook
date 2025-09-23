@@ -249,13 +249,13 @@ enum MapCategory: String, CaseIterable {
     case foodTruck = "FOOD_TRUCK"
     case booth = "BOOTH"
     case stage = "STAGE"
-    case toilet = "TOILET"
-    case trashCan = "TRASH_CAN"
-    case parking = "PARKING"
-    case primary = "PRIMARY"
-    case smoking = "SMOKING"
     case photobooth = "PHOTO_BOOTH"
+    case primary = "PRIMARY"
     case extra = "EXTRA"
+    case parking = "PARKING"
+    case toilet = "TOILET"
+    case smoking = "SMOKING"
+    case trashCan = "TRASH_CAN"
 
     var displayName: String {
         switch self {
