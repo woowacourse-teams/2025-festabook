@@ -82,8 +82,8 @@ public class PlaceService {
         updateTimeTags(festivalId, place, request.timeTags());
 
         // 실제 저장된 시간 태그 조회
-        List<Long> responseTimeTagIds = getResponseTimeTagIds(placeId);
-        return MainPlaceUpdateResponse.from(place, responseTimeTagIds);
+        List<Long> timeTagIds = getResponseTimeTagIds(placeId);
+        return MainPlaceUpdateResponse.from(place, timeTagIds);
     }
 
     private void updateTimeTags(Long festivalId, Place place, List<Long> timeTagIds) {
@@ -156,8 +156,8 @@ public class PlaceService {
         updateTimeTags(festivalId, place, request.timeTags());
 
         // 실제 저장된 시간 태그 조회
-        List<Long> responseTimeTagIds = getResponseTimeTagIds(placeId);
-        return EtcPlaceUpdateResponse.from(place, responseTimeTagIds);
+        List<Long> timeTagIds = getResponseTimeTagIds(placeId);
+        return EtcPlaceUpdateResponse.from(place, timeTagIds);
     }
 
     @Transactional
