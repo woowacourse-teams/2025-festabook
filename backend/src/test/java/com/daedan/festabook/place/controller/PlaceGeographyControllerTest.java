@@ -15,6 +15,12 @@ import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.domain.PlaceTimeTag;
+import com.daedan.festabook.timetag.domain.PlaceTimeTagFixture;
+import com.daedan.festabook.timetag.domain.TimeTag;
+import com.daedan.festabook.timetag.domain.TimeTagFixture;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -52,6 +58,12 @@ class PlaceGeographyControllerTest {
     @Autowired
     private JwtTestHelper jwtTestHelper;
 
+    @Autowired
+    private TimeTagJpaRepository timeTagJpaRepository;
+
+    @Autowired
+    private PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
+
     @LocalServerPort
     private int port;
 
@@ -84,8 +96,16 @@ class PlaceGeographyControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.saveAll(List.of(place));
 
-            int expectedSize = 1;
-            int expectedFieldSize = 4;
+            TimeTag timeTag = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.save(timeTag);
+
+            PlaceTimeTag placeTimeTag = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag);
+            placeTimeTagJpaRepository.save(placeTimeTag);
+
+            int expectedItemSize = 1;
+            int expectedTimeTagsItemSize = 1;
+            int expectedFieldSize = 5;
+            int expectedTimeTagsFieldSize = 2;
             int expectedMarkerFieldSize = 2;
 
             // when & then
@@ -96,18 +116,22 @@ class PlaceGeographyControllerTest {
                     .get("/places/geographies")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
+                    .body("$", hasSize(expectedItemSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].placeId", equalTo(place.getId().intValue()))
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
                     .body("[0].markerCoordinate.latitude", equalTo(place.getCoordinate().getLatitude()))
                     .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()))
-                    .body("[0].title", equalTo(place.getTitle()));
+                    .body("[0].title", equalTo(place.getTitle()))
+                    .body("[0].timeTags", hasSize(expectedTimeTagsItemSize))
+                    .body("[0].timeTags[0].size()", equalTo(expectedTimeTagsFieldSize))
+                    .body("[0].timeTags[0].timeTagId", equalTo(timeTag.getId().intValue()))
+                    .body("[0].timeTags[0].name", equalTo(timeTag.getName()));
         }
 
         @Test
-        void 성공_특정_축제의_플레이스_지리_목록() {
+        void 성공_특정_축제의_플레이스_지리_목록_요소_개수() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
