@@ -233,6 +233,7 @@ class PlaceMapFragment :
     }
 
     override fun onTimeTagSelected(item: TimeTag) {
+        viewModel.unselectPlace()
         viewModel.onDaySelected(item)
     }
 
