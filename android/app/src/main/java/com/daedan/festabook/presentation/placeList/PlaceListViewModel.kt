@@ -81,7 +81,7 @@ class PlaceListViewModel(
         if (!timeTags.value.isNullOrEmpty()) {
             _selectedTimeTag.value = _timeTags.value?.first()
         } else {
-            _selectedTimeTag.value = TimeTag(-1, "")
+            _selectedTimeTag.value = TimeTag.EMPTY
         }
     }
 

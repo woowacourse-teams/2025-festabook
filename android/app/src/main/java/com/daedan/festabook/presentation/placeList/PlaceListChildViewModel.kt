@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.model.PlaceCategory
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
@@ -60,7 +61,7 @@ class PlaceListChildViewModel(
 
     fun updatePlacesByTimeTag(timeTagId: Long) {
         val filteredPlaces =
-            if (timeTagId == -1L) {
+            if (timeTagId == TimeTag.EMTPY_TIME_TAG_ID) {
                 cachedPlaces
             } else {
                 filterPlacesByTimeTag(timeTagId)

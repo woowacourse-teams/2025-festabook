@@ -137,7 +137,6 @@ class PlaceMapFragment :
                 is PlaceListUiState.Success -> {
                     mapManager?.setPlaceLocation(placeGeographies.value)
                     viewModel.selectedTimeTag.observe(viewLifecycleOwner) { selectedTimeTag ->
-                        if (selectedTimeTag.timeTagId == -1L) return@observe
                         mapManager?.filterMarkersByTimeTag(selectedTimeTag.timeTagId)
                     }
                 }

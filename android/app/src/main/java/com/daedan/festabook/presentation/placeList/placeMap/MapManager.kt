@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -70,7 +71,8 @@ class MapManager(
         }
     }
 
-    fun filterMarkersByTimeTag(selectedTimeTagId: Long) {
+    fun filterMarkersByTimeTag(selectedTimeTagId: Long?) {
+        if (selectedTimeTagId == TimeTag.EMTPY_TIME_TAG_ID) return
         markers.forEach { marker ->
             val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
             val isSelectedMarker = marker == selectedMarker
