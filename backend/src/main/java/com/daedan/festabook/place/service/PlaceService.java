@@ -153,8 +153,11 @@ public class PlaceService {
         validatePlaceBelongsToFestival(place, festivalId);
 
         place.updatePlace(request.title());
+        updateTimeTags(festivalId, place, request.timeTags());
 
-        return EtcPlaceUpdateResponse.from(place);
+        // 실제 저장된 시간 태그 조회
+        List<Long> responseTimeTagIds = getResponseTimeTagIds(placeId);
+        return EtcPlaceUpdateResponse.from(place, responseTimeTagIds);
     }
 
     @Transactional
@@ -189,7 +192,10 @@ public class PlaceService {
             return PlaceResponse.from(place, placeImages, placeAnnouncements, timeTags);
         }
 
-        return PlaceResponse.from(place, List.of(), List.of(), List.of());
+        List<TimeTag> timeTags = placeTimeTagJpaRepository.findAllByPlaceId(place.getId()).stream()
+                .map(PlaceTimeTag::getTimeTag)
+                .toList();
+        return PlaceResponse.from(place, List.of(), List.of(), timeTags);
     }
 
     private void validatePlaceBelongsToFestival(Place place, Long festivalId) {

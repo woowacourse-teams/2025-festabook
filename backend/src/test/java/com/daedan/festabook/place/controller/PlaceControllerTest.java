@@ -533,6 +533,43 @@ class PlaceControllerTest {
                     .body("startTime", equalTo(request.startTime().toString()))
                     .body("endTime", equalTo(request.endTime().toString()));
         }
+
+        @Test
+        void 성공_타임_태그_수정() {
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            TimeTag timeTag1 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag2 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag3 = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.saveAll(List.of(timeTag1, timeTag2, timeTag3));
+
+            PlaceTimeTag placeTimeTag1 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag1);
+            PlaceTimeTag placeTimeTag2 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag2);
+            placeTimeTagJpaRepository.saveAll(List.of(placeTimeTag1, placeTimeTag2));
+
+            Long updatedTimeTagId3 = timeTag3.getId();
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(List.of(updatedTimeTagId3));
+
+            Header authHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            int expectedFieldSize = 8;
+
+            RestAssured
+                    .given()
+                    .header(authHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/places/main/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("timeTags[0]", equalTo(updatedTimeTagId3.intValue()));
+        }
     }
 
     @Nested
@@ -552,7 +589,7 @@ class PlaceControllerTest {
 
             EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create("수정된 플레이스 이름");
 
-            int expectedFieldSize = 1;
+            int expectedFieldSize = 2;
 
             // when & then
             RestAssured
@@ -565,6 +602,44 @@ class PlaceControllerTest {
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("title", equalTo(request.title()));
+        }
+
+        @Test
+        void 성공_타임_태그_수정() {
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.createWithNullDefaults(festival);
+            placeJpaRepository.save(place);
+
+            TimeTag timeTag1 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag2 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag3 = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.saveAll(List.of(timeTag1, timeTag2, timeTag3));
+
+            PlaceTimeTag placeTimeTag1 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag1);
+            PlaceTimeTag placeTimeTag2 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag2);
+            placeTimeTagJpaRepository.saveAll(List.of(placeTimeTag1, placeTimeTag2));
+
+            Long updatedTimeTagId3 = timeTag3.getId();
+            EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create(place.getTitle(),
+                    List.of(updatedTimeTagId3));
+
+            Header authHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            int expectedFieldSize = 2;
+
+            RestAssured
+                    .given()
+                    .header(authHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/places/etc/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("timeTags[0]", equalTo(updatedTimeTagId3.intValue()));
         }
     }
 

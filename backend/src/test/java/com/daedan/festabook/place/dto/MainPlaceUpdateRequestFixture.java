@@ -28,6 +28,19 @@ public class MainPlaceUpdateRequestFixture {
         );
     }
 
+    public static MainPlaceUpdateRequest create(List<Long> timeTags) {
+        return new MainPlaceUpdateRequest(
+                DEFAULT_CATEGORY,
+                DEFAULT_TITLE,
+                DEFAULT_DESCRIPTION,
+                DEFAULT_LOCATION,
+                DEFAULT_HOST,
+                DEFAULT_START_TIME,
+                DEFAULT_END_TIME,
+                timeTags
+        );
+    }
+
     public static MainPlaceUpdateRequest create(
             PlaceCategory placeCategory,
             String title,
