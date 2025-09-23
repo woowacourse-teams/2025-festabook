@@ -344,13 +344,13 @@ enum SheetDetent: String, CaseIterable {
         
         switch self {
         case .collapsed:
-            return usableHeight * 0.12  // 약 12% (최소 높이)
+            return usableHeight * 0.12
         case .small:
-            return usableHeight * 0.28  // 약 22% (한 눈에 보기 헤더 + 아이템 1개)
+            return usableHeight * 0.28
         case .medium:
-            return usableHeight * 0.47  // 약 35% (한 눈에 보기 헤더 + 아이템 2개)
+            return usableHeight * 0.47
         case .large:
-            return usableHeight * 0.85  // 약 85% (전체 화면의 대부분)
+            return usableHeight * 0.85
         }
     }
 

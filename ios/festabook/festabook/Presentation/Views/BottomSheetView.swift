@@ -130,26 +130,29 @@ struct PreviewListView: View {
 
     var body: some View {
         ScrollView {
-            // 대상 카테고리 (BOOTH, FOOD_TRUCK, BAR)가 선택되었을 때만 빈 상태 메시지 표시
-            // 빈 상태 문구는 BOOTH/BAR/FOOD_TRUCK 범위 내에서만 표시
             let selectedCategoryNames: Set<String> = Set(viewModel.selectedCategories.map { $0.rawValue })
-            let allowed: Set<String> = ["ALL", "BOOTH", "FOOD_TRUCK", "BAR"]
-            let withinAllowedRange = selectedCategoryNames.isSubset(of: allowed)
-            let shouldShowEmptyState = viewModel.filteredPreviews.isEmpty && withinAllowedRange
-
-            if shouldShowEmptyState {
+            let mainCategories: Set<String> = ["ALL", "BOOTH", "FOOD_TRUCK", "BAR"]
+            
+            // 메인 카테고리가 하나라도 선택되어 있는지 확인
+            let hasMainCategory = !selectedCategoryNames.intersection(mainCategories).isEmpty
+            
+            if viewModel.filteredPreviews.isEmpty {
                 // 빈 상태 메시지
                 VStack(spacing: 12) {
-                    Image(systemName: "storefront")
+                    Image(systemName: hasMainCategory ? "storefront" : "info.circle")
                         .font(.system(size: 24))
                         .foregroundColor(.gray)
-                    Text("등록된 부스 정보가 없습니다")
+                    Text(hasMainCategory ? 
+                        "등록된 부스 정보가 없습니다" :
+                        "기타 부스는 '한눈에 보기'에서 확인할 수 없습니다.")
                         .font(.system(size: 14))
                         .foregroundColor(.gray)
+                        .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
-                .padding(.top, 20)     // 상단 여백 줄임
-                .padding(.bottom, 40)   // 하단 여백은 유지
+                .padding(.horizontal, 20)
+                .padding(.top, 20)
+                .padding(.bottom, 40)
             } else if !viewModel.filteredPreviews.isEmpty {
                 LazyVStack(spacing: 0) {
                     ForEach(viewModel.filteredPreviews, id: \.id) { preview in
