@@ -132,6 +132,7 @@ class NewsViewModel(
                             when (lost) {
                                 is Lost.Guide -> lost.toLostGuideItemUiModel()
                                 is Lost.Item -> lost.toLostItemUiModel()
+                                null -> LostUiModel.Guide()
                             }
                         }
                     _lostUiState.value = LostUiState.Success(lostUiModels)

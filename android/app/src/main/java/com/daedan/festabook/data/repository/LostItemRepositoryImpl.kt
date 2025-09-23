@@ -28,7 +28,7 @@ class LostItemRepositoryImpl(
             it.toDomain()
         }
 
-    override suspend fun getLost(): Result<List<Lost>> =
+    override suspend fun getLost(): Result<List<Lost?>> =
         runCatching {
             coroutineScope {
                 val guide = async { getLostGuideItem() }
@@ -37,8 +37,9 @@ class LostItemRepositoryImpl(
                 val guideResult = guide.await()
                 val pendingItemsResult = pendingItems.await()
 
-                val total = mutableListOf<Lost>()
-                guideResult.getOrNull()?.let { total.add(it) }
+                val total = mutableListOf<Lost?>()
+
+                total.add(guideResult.getOrNull())
                 pendingItemsResult.getOrNull()?.let { total.addAll(it) }
 
                 total
