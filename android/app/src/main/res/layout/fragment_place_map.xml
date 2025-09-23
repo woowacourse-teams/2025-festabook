@@ -58,6 +58,13 @@
                 android:layout_height="wrap_content"
                 app:layout_constraintTop_toBottomOf="@id/layout_map_menu" />
 
+            <com.naver.maps.map.widget.LogoView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toBottomOf="@id/fcv_place_category_container"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fcv_place_list_container"
                 android:layout_width="match_parent"

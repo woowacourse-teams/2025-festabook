@@ -198,7 +198,7 @@ class MapManager(
             16.toPx(context),
             0,
             0,
-            context.getRootPixel() - 410.toPx(context),
+            Int.MAX_VALUE
         )
     }
 
