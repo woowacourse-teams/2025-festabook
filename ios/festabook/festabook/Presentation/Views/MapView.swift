@@ -48,8 +48,8 @@ struct MapView: View {
                         Spacer()
                         switch viewModel.modalType {
                         case .none:
-                            BottomSheetView(viewModel: viewModel)
-                                .frame(height: viewModel.sheetDetent.totalHeight)
+                            BottomSheetView(viewModel: viewModel, maxHeight: viewModel.bottomSheetMaxHeight)
+                                .frame(height: viewModel.heightForDetent(viewModel.sheetDetent))
                                 .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.sheetDetent)
 
                         case .preview:
@@ -80,7 +80,7 @@ struct MapView: View {
                                     .padding(.leading, 16)
                                 Spacer()
                             }
-                            .padding(.bottom, viewModel.sheetDetent.height + 12)
+                            .padding(.bottom, viewModel.heightForDetent(viewModel.sheetDetent) + 20)
                         }
                     }
                 }
@@ -120,7 +120,9 @@ private extension MapView {
     @ViewBuilder
     func topBezelWithFilter(geometry: GeometryProxy) -> some View {
         HStack {
-            timeTagButton
+            if !viewModel.timeTags.isEmpty {
+                timeTagButton
+            }
             Spacer()
         }
         .padding(.horizontal, 16)
@@ -136,10 +138,12 @@ private extension MapView {
             }
         }) {
             HStack(spacing: 6) {
-                Text(viewModel.selectedTimeTag?.name ?? "")
-                    .font(.system(size: 16, weight: .semibold))
-                    .foregroundColor(.black)
-                    .lineLimit(1)
+                if let selectedTimeTag = viewModel.selectedTimeTag {
+                    Text(selectedTimeTag.name)
+                        .font(.system(size: 16, weight: .semibold))
+                        .foregroundColor(.black)
+                        .lineLimit(1)
+                }
 
                 Image(systemName: "chevron.down")
                     .font(.system(size: 12, weight: .semibold))

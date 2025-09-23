@@ -69,6 +69,22 @@ class MapViewModel: NSObject, ObservableObject {
         return markers
     }
 
+    // TimeTag 존재 여부에 따른 바텀시트 최대 높이
+    var bottomSheetMaxHeight: CGFloat {
+        let screenHeight = UIScreen.main.bounds.height
+        return timeTags.isEmpty ? screenHeight : screenHeight * 0.9
+    }
+
+    // SheetDetent의 높이를 동적으로 계산 (TimeTag 존재 여부에 따라 .large 높이 조정)
+    func heightForDetent(_ detent: SheetDetent) -> CGFloat {
+        switch detent {
+        case .collapsed: return 96
+        case .small: return 250
+        case .medium: return UIScreen.main.bounds.height * 0.5
+        case .large: return bottomSheetMaxHeight
+        }
+    }
+
     var filteredPreviews: [PlacePreview] {
         var previews = Array(previewsByPlaceId.values)
 
@@ -334,7 +350,7 @@ class MapViewModel: NSObject, ObservableObject {
     func handleSheetChange(_ detent: SheetDetent) {
         sheetDetent = detent
         // 바텀시트 높이 업데이트
-        visibleBottomSheetHeight = detent.height
+        visibleBottomSheetHeight = heightForDetent(detent)
     }
 
     func dismissError() {

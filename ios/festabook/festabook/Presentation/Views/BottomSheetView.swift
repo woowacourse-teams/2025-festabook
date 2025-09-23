@@ -3,17 +3,26 @@ import SwiftUI
 struct BottomSheetView: View {
     @ObservedObject var viewModel: MapViewModel
     @State private var dragOffset: CGFloat = 0
+    let maxHeight: CGFloat
 
     var body: some View {
         VStack(spacing: 0) {
             // 상단 여백: large일 때 마커와 겹치지 않도록 추가 간격 부여
-            let topGap = viewModel.sheetDetent.topSpacing + (viewModel.sheetDetent == .large ? 40 : 0)
-            Color.clear
-                .frame(height: topGap)
-                .allowsHitTesting(false)
+            if viewModel.timeTags.isEmpty {
+                // 타임태그 없을 때: 마커 바로 밑에서 시작하므로 최소 여백만
+                Color.clear
+                    .frame(height: viewModel.sheetDetent.topSpacing + (viewModel.sheetDetent == .large ? 8 : 0))
+                    .allowsHitTesting(false)
+            } else {
+                // 타임태그 있을 때: 기존처럼 안전한 여백 유지
+                Color.clear
+                    .frame(height: viewModel.sheetDetent.topSpacing + (viewModel.sheetDetent == .large ? 40 : 0))
+                    .allowsHitTesting(false)
+            }
 
             sheetContent
         }
+        .modifier(IgnoresSafeAreaModifier(shouldIgnore: viewModel.timeTags.isEmpty))
     }
 
     private var sheetContent: some View {
@@ -86,7 +95,10 @@ struct BottomSheetView: View {
             case .small:
                 viewModel.handleSheetChange(.medium)
             case .medium:
-                viewModel.handleSheetChange(.large)
+                // .large로 갈 때 maxHeight를 초과하지 않도록 제한
+                if viewModel.sheetDetent.totalHeight < maxHeight {
+                    viewModel.handleSheetChange(.large)
+                }
             case .large:
                 break
             }
@@ -423,5 +435,18 @@ struct InfoRow: View {
 }
 
 #Preview {
-    BottomSheetView(viewModel: MapViewModel())
+    BottomSheetView(viewModel: MapViewModel(), maxHeight: UIScreen.main.bounds.height)
+}
+
+// MARK: - Custom Modifier
+struct IgnoresSafeAreaModifier: ViewModifier {
+    let shouldIgnore: Bool
+
+    func body(content: Content) -> some View {
+        if shouldIgnore {
+            content.ignoresSafeArea(edges: .top)
+        } else {
+            content
+        }
+    }
 }
