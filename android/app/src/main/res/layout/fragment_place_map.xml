@@ -45,7 +45,7 @@
                     android:layout_height="wrap_content"
                     android:background="@null"
                     android:dropDownWidth="wrap_content"
-                    android:dropDownVerticalOffset="40dp"
+                    android:dropDownVerticalOffset="60dp"
                     android:popupBackground="@drawable/bg_spinner_dropdown"
                     android:spinnerMode="dropdown" />
 
