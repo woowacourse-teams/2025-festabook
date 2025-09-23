@@ -568,7 +568,7 @@ class PlaceControllerTest {
         }
 
         @Test
-        void 성공_타임_태그_수정() {
+        void 성공_time_tag_수정() {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
@@ -640,7 +640,7 @@ class PlaceControllerTest {
         }
 
         @Test
-        void 성공_타임_태그_수정() {
+        void 성공_time_tag_수정() {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 

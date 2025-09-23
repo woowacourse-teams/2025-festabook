@@ -421,7 +421,7 @@ class PlaceServiceTest {
         }
 
         @Test
-        void 성공_시간_태그_수정() {
+        void 성공_time_tag_수정() {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
