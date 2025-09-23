@@ -247,6 +247,7 @@ class MapManager(
         tag = place
         captionText = place.title
         isHideCollidedCaptions = true
+        isVisible = false
         captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
 
         setOnClickListener {
