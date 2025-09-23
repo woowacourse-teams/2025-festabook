@@ -7,5 +7,5 @@ interface LostItemRepository {
 
     suspend fun getLostGuideItem(): Result<Lost>
 
-    suspend fun getLost(): Result<List<Lost?>>
+    suspend fun getLost(): List<Lost?>
 }

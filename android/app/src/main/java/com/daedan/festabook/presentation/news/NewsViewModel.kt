@@ -125,20 +125,15 @@ class NewsViewModel(
             _lostUiState.value = state
             val result = lostItemRepository.getLost()
 
-            result
-                .onSuccess {
-                    val lostUiModels =
-                        it.map { lost ->
-                            when (lost) {
-                                is Lost.Guide -> lost.toLostGuideItemUiModel()
-                                is Lost.Item -> lost.toLostItemUiModel()
-                                null -> LostUiModel.Guide()
-                            }
-                        }
-                    _lostUiState.value = LostUiState.Success(lostUiModels)
-                }.onFailure {
-                    _lostUiState.value = LostUiState.Error(it)
+            val lostUiModels =
+                result.map { lost ->
+                    when (lost) {
+                        is Lost.Guide -> lost.toLostGuideItemUiModel()
+                        is Lost.Item -> lost.toLostItemUiModel()
+                        null -> LostUiModel.Guide()
+                    }
                 }
+            _lostUiState.value = LostUiState.Success(lostUiModels)
         }
     }
 
