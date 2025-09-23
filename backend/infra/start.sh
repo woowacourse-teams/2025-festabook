@@ -7,7 +7,7 @@ echo "🚀========== ApplicationStart =========="
 
 echo "▶️ Spring WAS 실행 중..."
 if [ -f "$JAR_NAME" ]; then
-  nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" \
+  sudo nohup java -jar -Duser.timezone=Asia/Seoul "$JAR_NAME" \
     --spring.profiles.active=prod > $LOG_FILE 2>&1 &
   echo "📦 실행 파일: $JAR_NAME"
 else
