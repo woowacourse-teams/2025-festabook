@@ -414,7 +414,68 @@ class PlaceServiceTest {
             EtcPlaceUpdateResponse result = placeService.updateEtcPlace(festivalId, placeId, request);
 
             // then
-            assertThat(result.title()).isEqualTo(request.title());
+            assertSoftly(s -> {
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.timeTags()).isEmpty();
+            });
+        }
+
+        @Test
+        void 성공_time_tag_수정() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            Long placeId = 1L;
+            Place place = PlaceFixture.createWithNullDefaults(festival, placeId);
+
+            Long originalTimeTagId1 = 1L;
+            TimeTag originalTimeTag1 = TimeTagFixture.createWithFestivalAndId(festival, originalTimeTagId1);
+            PlaceTimeTag placeTimeTag1 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, originalTimeTag1);
+
+            Long originalAndUpdateTimeTagId2 = 2L;
+            TimeTag originalAndUpdateTimeTag2 = TimeTagFixture.createWithFestivalAndId(
+                    festival,
+                    originalAndUpdateTimeTagId2
+            );
+            PlaceTimeTag placeTimeTag2 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(
+                    place,
+                    originalAndUpdateTimeTag2
+            );
+
+            Long updateTimeTagId3 = 3L;
+            TimeTag updateTimeTag3 = TimeTagFixture.createWithFestivalAndId(festival, updateTimeTagId3);
+            PlaceTimeTag placeTimeTag3 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, updateTimeTag3);
+
+            List<PlaceTimeTag> originalPlaceTimeTags = List.of(placeTimeTag1, placeTimeTag2);
+            List<Long> updateTimeTagIds = List.of(originalAndUpdateTimeTagId2, updateTimeTagId3);
+
+            // 2는 기존 존재하므로 추가 항목에서 제외.
+            List<TimeTag> updateTimeTags = List.of(updateTimeTag3);
+
+            // 첫 번째는 기존 존재하는 시간 태그 조회
+            // 두 번째는 최종 저장된 PlaceTimeTag 조회
+            given(placeTimeTagJpaRepository.findAllByPlaceId(placeId))
+                    .willReturn(originalPlaceTimeTags, List.of(placeTimeTag2, placeTimeTag3));
+
+            // 추가할 시간 태그 조회
+            given(timeTagJpaRepository.findAllById(any()))
+                    .willReturn(updateTimeTags);
+
+            // place 조회
+            given(placeJpaRepository.findById(placeId))
+                    .willReturn(Optional.of(place));
+
+            EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create("수정된 플레이스 이름", updateTimeTagIds);
+
+            // when
+            EtcPlaceUpdateResponse result = placeService.updateEtcPlace(festivalId, placeId, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.title()).isEqualTo(request.title());
+                s.assertThat(result.timeTags()).containsAll(updateTimeTagIds);
+            });
         }
 
         @Test
