@@ -337,11 +337,17 @@ enum SheetDetent: String, CaseIterable {
     case large
 
     var height: CGFloat {
+        let screenHeight = UIScreen.main.bounds.height
+        
         switch self {
-        case .collapsed: return 96
-        case .small: return 250    // 아이템 2개 + 헤더 + 여백
-        case .medium: return UIScreen.main.bounds.height * 0.5
-        case .large: return UIScreen.main.bounds.height * 0.85
+        case .collapsed:
+            return screenHeight * 0.11  // 약 12% (최소 높이)
+        case .small:
+            return screenHeight * 0.25  // 약 22% (한 눈에 보기 헤더 + 아이템 1개)
+        case .medium:
+            return screenHeight * 0.42  // 약 35% (한 눈에 보기 헤더 + 아이템 2개)
+        case .large:
+            return screenHeight * 0.85  // 약 85% (전체 화면의 대부분)
         }
     }
 

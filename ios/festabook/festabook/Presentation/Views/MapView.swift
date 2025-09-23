@@ -80,7 +80,7 @@ struct MapView: View {
                                     .padding(.leading, 16)
                                 Spacer()
                             }
-                            .padding(.bottom, viewModel.heightForDetent(viewModel.sheetDetent) + 20)
+                            .padding(.bottom, viewModel.sheetDetent.totalHeight + 20)
                         }
                     }
                 }
