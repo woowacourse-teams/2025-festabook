@@ -2,6 +2,8 @@ package com.daedan.festabook.presentation.placeList.placeMap
 
 import android.content.Context
 import android.os.Bundle
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
@@ -82,6 +84,9 @@ class PlaceMapFragment :
         naverMap = mapFragment.getMap()
         (placeListFragment as? OnMapReadyCallback)?.onMapReady(naverMap)
         naverMap.locationSource = locationSource
+        binding.viewMapTouchEventIntercept.setOnMapDragListener {
+            viewModel.onMapViewClick()
+        }
     }
 
     private fun setUpObserver() {

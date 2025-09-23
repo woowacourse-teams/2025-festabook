@@ -1,6 +1,10 @@
 <resources>
     <string name="app_name">Festabook</string>
 
+
+    <!--공통-->
+    <string name="empty_state_message">현재 표시할 항목이 없습니다.</string>
+
     <!--바텀 네비게이션 바-->
     <string name="menu_home_title">홈</string>
     <string name="menu_schedule_title">일정</string>
@@ -54,6 +58,8 @@
     <string name="map_category_stage">무대</string>
     <string name="map_category_primary">주요시설</string>
     <string name="map_category_parking">주차장</string>
+    <string name="map_category_photo_booth">포토부스</string>
+    <string name="map_category_extra">기타시설</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
 

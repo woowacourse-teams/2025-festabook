@@ -3,7 +3,6 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
@@ -11,6 +10,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.common.setFormatDate
+import com.daedan.festabook.presentation.common.showBottomAnimation
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
@@ -45,7 +45,10 @@ class PlaceDetailPreviewFragment :
     }
 
     private fun setUpBackPressedCallback() {
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback
+        )
     }
 
     private fun setupBinding() {
@@ -64,11 +67,12 @@ class PlaceDetailPreviewFragment :
                 if (selectedPlace == SelectedPlaceUiState.Empty) View.GONE else View.VISIBLE
 
             when (selectedPlace) {
-                is SelectedPlaceUiState.Loading -> {
-                    binding.layoutSelectedPlace.visibility = View.INVISIBLE
+                is SelectedPlaceUiState.Loading -> Unit
+                is SelectedPlaceUiState.Success -> {
+                    binding.layoutSelectedPlace.showBottomAnimation()
+                    updateSelectedPlaceUi(selectedPlace.value)
                 }
 
-                is SelectedPlaceUiState.Success -> updateSelectedPlaceUi(selectedPlace.value)
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
                 is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false
             }
@@ -78,8 +82,6 @@ class PlaceDetailPreviewFragment :
     private fun updateSelectedPlaceUi(selectedPlace: PlaceDetailUiModel) {
         with(binding) {
             layoutSelectedPlace.visibility = View.VISIBLE
-            makeChildVisible()
-
             tvSelectedPlaceTitle.text =
                 selectedPlace.place.title ?: getString(R.string.place_list_default_title)
             tvSelectedPlaceLocation.text =
@@ -100,11 +102,5 @@ class PlaceDetailPreviewFragment :
 
     private fun startPlaceDetailActivity(placeDetail: PlaceDetailUiModel) {
         startActivity(PlaceDetailActivity.newIntent(requireContext(), placeDetail))
-    }
-
-    private fun FragmentPlaceDetailPreviewBinding.makeChildVisible() {
-        layoutSelectedPlace.children.forEach {
-            it.visibility = View.VISIBLE
-        }
     }
 }

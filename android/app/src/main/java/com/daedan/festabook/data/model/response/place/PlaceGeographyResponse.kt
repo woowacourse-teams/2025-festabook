@@ -35,6 +35,8 @@ data class PlaceGeographyResponse(
         PARKING,
         PRIMARY,
         STAGE,
+        PHOTO_BOOTH,
+        EXTRA
     }
 }
 
@@ -61,4 +63,6 @@ fun PlaceGeographyResponse.PlaceCategory.toDomain() =
         PlaceGeographyResponse.PlaceCategory.PARKING -> PlaceCategory.PARKING
         PlaceGeographyResponse.PlaceCategory.PRIMARY -> PlaceCategory.PRIMARY
         PlaceGeographyResponse.PlaceCategory.STAGE -> PlaceCategory.STAGE
+        PlaceGeographyResponse.PlaceCategory.PHOTO_BOOTH -> PlaceCategory.PHOTO_BOOTH
+        PlaceGeographyResponse.PlaceCategory.EXTRA -> PlaceCategory.EXTRA
     }

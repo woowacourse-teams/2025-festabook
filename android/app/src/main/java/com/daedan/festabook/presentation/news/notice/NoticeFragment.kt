@@ -68,6 +68,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
 
                 is NoticeUiState.Success -> {
                     noticeAdapter.submitList(noticeState.notices) {
+                        showEmptyStateMessage()
                         scrollExpandedNoticeToTop(noticeState)
                     }
                     binding.srlNoticeList.isRefreshing = false
@@ -101,6 +102,12 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
         binding.srlNoticeList.visibility = View.VISIBLE
         binding.sflNoticeSkeleton.visibility = View.GONE
         binding.sflNoticeSkeleton.stopShimmer()
+    }
+
+    private fun showEmptyStateMessage() {
+        val itemCount = binding.rvNoticeList.adapter?.itemCount ?: 0
+
+        binding.tvEmptyState.root.visibility = if (itemCount == 0) View.VISIBLE else View.GONE
     }
 
     companion object {

@@ -52,6 +52,8 @@
             android:text="@{notice.content}"
             android:textColor="@color/gray500"
             android:visibility="gone"
+            android:autoLink="web"
+            android:textColorLink="@color/gray500"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tv_notice_title"
