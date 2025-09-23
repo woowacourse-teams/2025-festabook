@@ -51,5 +51,6 @@ enum Endpoints {
         }
         static let faqs = "/questions"
         static let lostItems = "/lost-items"
+        static let lostItemGuide = "/festivals/lost-item-guide"
     }
 }

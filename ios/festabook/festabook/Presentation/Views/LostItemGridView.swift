@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LostItemGridView: View {
     @ObservedObject var viewModel: LostItemViewModel
+    @StateObject private var guideViewModel = LostItemGuideViewModel()
 
     private let columns = Array(repeating: GridItem(.flexible(), spacing: 16), count: 2)
 
@@ -12,7 +13,7 @@ struct LostItemGridView: View {
 
             switch viewModel.state {
             case .idle:
-                Color.clear
+                idleView
             case .loading:
                 loadingView
             case .loaded:
@@ -33,19 +34,43 @@ struct LostItemGridView: View {
                 .transition(.opacity)
             }
         }
-        .refreshable { await viewModel.refresh() }
+        .refreshable {
+            async let lostItemTask = viewModel.refresh()
+            async let guideTask = guideViewModel.loadLostItemGuide()
+            await (lostItemTask, guideTask)
+        }
+        .task {
+            await guideViewModel.loadLostItemGuide()
+        }
     }
 
     // MARK: - Loading View (공지사항과 동일한 형태)
     private var loadingView: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            LazyVStack(spacing: 16) {
+                // 분실물 가이드 카드 (항상 상단에 표시)
+                LostItemGuideCard(viewModel: guideViewModel)
+                    .padding(.horizontal, 20)
+
                 ProgressView("분실물을 불러오는 중...")
                     .padding(.vertical, 40)
             }
-            .padding(.horizontal, 20)
             .padding(.top, 16)
             .padding(.bottom, 40)
+        }
+        }
+
+
+    // MARK: - Idle View
+    private var idleView: some View {
+        ScrollView {
+            LazyVStack(spacing: 16) {
+                // 분실물 가이드 카드 (항상 상단에 표시)
+                LostItemGuideCard(viewModel: guideViewModel)
+                    .padding(.horizontal, 20)
+            }
+            .padding(.top, 16)
+            .padding(.bottom, 100)
         }
     }
 
@@ -53,17 +78,25 @@ struct LostItemGridView: View {
     // MARK: - Grid View
     private var gridView: some View {
         ScrollView {
-            LazyVGrid(columns: columns, spacing: 16) {
-                ForEach(viewModel.items) { item in
-                    LostItemCell(item: item) {
-                        withAnimation(.easeInOut(duration: 0.15)) {
-                            viewModel.selectItem(item)
+            LazyVStack(spacing: 16) {
+                // 분실물 가이드 카드 (항상 상단에 표시)
+                LostItemGuideCard(viewModel: guideViewModel)
+                    .padding(.horizontal, 20)
+
+                // 분실물 그리드
+                LazyVGrid(columns: columns, spacing: 16) {
+                    ForEach(viewModel.items) { item in
+                        LostItemCell(item: item) {
+                            withAnimation(.easeInOut(duration: 0.15)) {
+                                viewModel.selectItem(item)
+                            }
                         }
+                        .aspectRatio(1, contentMode: .fit)
                     }
-                    .aspectRatio(1, contentMode: .fit)
                 }
+                .padding(.horizontal, 16)
+                .padding(.top, 0)
             }
-            .padding(.horizontal, 16)
             .padding(.top, 16)
             .padding(.bottom, 100)
         }
@@ -72,7 +105,11 @@ struct LostItemGridView: View {
     // MARK: - Empty View (공지사항과 동일한 형태)
     private var emptyView: some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            LazyVStack(spacing: 16) {
+                // 분실물 가이드 카드 (항상 상단에 표시)
+                LostItemGuideCard(viewModel: guideViewModel)
+                    .padding(.horizontal, 20)
+
                 VStack(spacing: 12) {
                     Image(systemName: "shippingbox")
                         .font(.system(size: 24))
@@ -83,7 +120,6 @@ struct LostItemGridView: View {
                 }
                 .padding(.vertical, 40)
             }
-            .padding(.horizontal, 20)
             .padding(.top, 16)
             .padding(.bottom, 100)
         }
@@ -92,7 +128,11 @@ struct LostItemGridView: View {
     // MARK: - Error View (공지사항과 동일한 형태)
     private func errorView(message: String) -> some View {
         ScrollView {
-            LazyVStack(spacing: 12) {
+            LazyVStack(spacing: 16) {
+                // 분실물 가이드 카드 (항상 상단에 표시)
+                LostItemGuideCard(viewModel: guideViewModel)
+                    .padding(.horizontal, 20)
+
                 VStack(spacing: 12) {
                     Image(systemName: "exclamationmark.triangle")
                         .font(.system(size: 24))
@@ -104,7 +144,6 @@ struct LostItemGridView: View {
                 }
                 .padding(.vertical, 40)
             }
-            .padding(.horizontal, 20)
             .padding(.top, 16)
             .padding(.bottom, 100)
         }
