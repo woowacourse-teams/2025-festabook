@@ -1,22 +1,42 @@
 import React, { useState, useEffect } from 'react';
 import Modal from '../common/Modal';
-import { placeAPI } from '../../utils/api';
+import { placeAPI, timeTagAPI } from '../../utils/api';
 
 const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
     const [form, setForm] = useState({
         title: '',
-        category: 'EXTRA'
+        category: 'EXTRA',
+        timeTags: []
     });
     const [loading, setLoading] = useState(false);
+    const [timeTags, setTimeTags] = useState([]);
+    const [selectedTimeTags, setSelectedTimeTags] = useState([]);
 
     useEffect(() => {
         if (place) {
+            const initialSelected = (place.timeTags || []).map(tag => typeof tag === 'string' ? tag : tag.name);
             setForm({
                 title: place.title || '',
-                category: place.category || 'EXTRA'
+                category: place.category || 'EXTRA',
+                timeTags: initialSelected
             });
+            setSelectedTimeTags(initialSelected);
         }
     }, [place]);
+
+    // 시간 태그 목록 불러오기
+    useEffect(() => {
+        const fetchTimeTags = async () => {
+            try {
+                const timeTagData = await timeTagAPI.getTimeTags();
+                setTimeTags(timeTagData);
+            } catch (error) {
+                // 로딩 실패는 조용히 처리
+                console.error('Failed to fetch time tags:', error);
+            }
+        };
+        fetchTimeTags();
+    }, []);
 
     // ESC 키 이벤트 리스너
     useEffect(() => {
@@ -42,9 +62,16 @@ const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
 
         setLoading(true);
         try {
+            // 선택된 태그 이름을 ID로 변환
+            const timeTagIds = selectedTimeTags.map(tagName => {
+                const tag = timeTags.find(t => t.name === tagName);
+                return tag ? tag.timeTagId : null;
+            }).filter(id => id !== null);
+
             // ✅ PATCH /places/etc/{placeId} 호출
             await placeAPI.updateEtcPlace(place.placeId, {
-                title: form.title.trim()
+                title: form.title.trim(),
+                timeTags: timeTagIds
             });
 
             showToast('기타 시설이 성공적으로 수정되었습니다.');
@@ -63,6 +90,21 @@ const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
         setForm(prev => ({
             ...prev,
             [name]: value
+        }));
+    };
+
+    // 시간 태그 체크박스 변경 핸들러
+    const handleTimeTagChange = (tagName, isChecked) => {
+        let updated;
+        if (isChecked) {
+            updated = [...selectedTimeTags, tagName];
+        } else {
+            updated = selectedTimeTags.filter(t => t !== tagName);
+        }
+        setSelectedTimeTags(updated);
+        setForm(prev => ({
+            ...prev,
+            timeTags: updated
         }));
     };
 
@@ -90,6 +132,28 @@ const OtherPlaceEditModal = ({ place, onSave, onClose, showToast }) => {
                         disabled={loading}
                     />
                 </div>
+
+                {/* 시간 태그 선택 */}
+                {timeTags.length > 0 && (
+                    <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                            시간 태그
+                        </label>
+                        <div className="space-y-2">
+                            {timeTags.map(tag => (
+                                <label key={tag.timeTagId} className="flex items-center space-x-3 cursor-pointer">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedTimeTags.includes(tag.name)}
+                                        onChange={(e) => handleTimeTagChange(tag.name, e.target.checked)}
+                                        className="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+                                    />
+                                    <span className="text-sm text-gray-700">{tag.name}</span>
+                                </label>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* 버튼 */}
                 <div className="mt-6 flex justify-end w-full relative z-10">
