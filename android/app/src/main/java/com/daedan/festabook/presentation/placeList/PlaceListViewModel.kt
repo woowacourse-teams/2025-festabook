@@ -80,6 +80,8 @@ class PlaceListViewModel(
 //         기본 선택값
         if (!timeTags.value.isNullOrEmpty()) {
             _selectedTimeTag.value = _timeTags.value?.first()
+        } else {
+            _selectedTimeTag.value = TimeTag(-1, "")
         }
     }
 

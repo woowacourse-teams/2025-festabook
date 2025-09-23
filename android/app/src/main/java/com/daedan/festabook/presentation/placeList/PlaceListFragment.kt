@@ -108,6 +108,12 @@ class PlaceListFragment :
                     }
                 }
 
+                is PlaceListUiState.PlaceLoaded -> {
+                    viewModel.selectedTimeTag.observe(viewLifecycleOwner) { timeTag ->
+                        childViewModel.updatePlacesByTimeTag(timeTag.timeTagId)
+                    }
+                }
+
                 is PlaceListUiState.Complete -> {
                     hideSkeleton()
                 }
@@ -141,10 +147,6 @@ class PlaceListFragment :
 
         viewModel.onMapViewClick.observe(viewLifecycleOwner) {
             placeListBottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
-        }
-
-        viewModel.selectedTimeTag.observe(viewLifecycleOwner) { timeTag ->
-            childViewModel.updatePlacesByTimeTag(timeTag.timeTagId)
         }
     }
 

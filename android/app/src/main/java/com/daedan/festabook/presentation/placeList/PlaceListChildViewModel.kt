@@ -59,7 +59,12 @@ class PlaceListChildViewModel(
     }
 
     fun updatePlacesByTimeTag(timeTagId: Long) {
-        val filteredPlaces = filterPlacesByTimeTag(timeTagId)
+        val filteredPlaces =
+            if (timeTagId == -1L) {
+                cachedPlaces
+            } else {
+                filterPlacesByTimeTag(timeTagId)
+            }
 
         _places.value = PlaceListUiState.Success(filteredPlaces)
         cachedPlaceByTimeTag = filteredPlaces
@@ -80,6 +85,7 @@ class PlaceListChildViewModel(
                 .onSuccess { places ->
                     val placeUiModels = places.map { it.toUiModel() }
                     cachedPlaces = placeUiModels
+                    _places.value = PlaceListUiState.PlaceLoaded(placeUiModels)
                 }.onFailure {
                     _places.value = PlaceListUiState.Error(it)
                 }
