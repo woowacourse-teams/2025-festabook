@@ -72,7 +72,10 @@ class MapManager(
     }
 
     fun filterMarkersByTimeTag(selectedTimeTagId: Long?) {
-        if (selectedTimeTagId == TimeTag.EMTPY_TIME_TAG_ID) return
+        if (selectedTimeTagId == TimeTag.EMTPY_TIME_TAG_ID) {
+            markers.forEach { it.isVisible = true }
+            return
+        }
         markers.forEach { marker ->
             val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
             val isSelectedMarker = marker == selectedMarker
