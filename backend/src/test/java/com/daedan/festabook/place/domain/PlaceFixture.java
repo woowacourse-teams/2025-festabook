@@ -285,4 +285,40 @@ public class PlaceFixture {
         BaseEntityTestHelper.setId(place, placeId);
         return place;
     }
+
+    public static Place createWithNullDefaults(
+            Festival festival,
+            Long placeId
+    ) {
+        Place place = new Place(
+                festival,
+                PlaceCategory.SMOKING,
+                null,
+                "흡연실",
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        BaseEntityTestHelper.setId(place, placeId);
+        return place;
+    }
+
+    public static Place createWithNullDefaults(
+            Festival festival
+    ) {
+        Place place = new Place(
+                festival,
+                PlaceCategory.SMOKING,
+                null,
+                "흡연실",
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+        return place;
+    }
 }

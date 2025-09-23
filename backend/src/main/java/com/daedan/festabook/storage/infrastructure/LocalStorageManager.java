@@ -1,6 +1,7 @@
 package com.daedan.festabook.storage.infrastructure;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.logging.Loggable;
 import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
@@ -15,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 
 @Slf4j
+@Loggable
 @Component
 @Profile("dev")
 public class LocalStorageManager implements StorageManager {

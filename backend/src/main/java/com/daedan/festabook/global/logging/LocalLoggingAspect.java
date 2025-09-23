@@ -19,6 +19,7 @@ public class LocalLoggingAspect {
             (
                 within(@org.springframework.web.bind.annotation.RestController *) ||
                 within(@org.springframework.stereotype.Service *) ||
+                within(@com.daedan.festabook.global.logging.Loggable *) ||
                 execution(* org.springframework.data.jpa.repository.JpaRepository+.*(..))
             )
             """
