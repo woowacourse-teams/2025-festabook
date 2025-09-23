@@ -535,6 +535,39 @@ class PlaceControllerTest {
         }
 
         @Test
+        void 성공_time_tag_값_추가() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            TimeTag timeTags = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.save(timeTags);
+
+            // 추가 요청을 보내는 값 1개
+            List<Long> updateTimeTagIds = List.of(timeTags.getId());
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(updateTimeTagIds);
+
+            int expectedTimeTagsItemSize = updateTimeTagIds.size();
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .patch("/places/main/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("timeTags", hasSize(expectedTimeTagsItemSize))
+                    .body("timeTags[0]", equalTo(updateTimeTagIds.get(0).intValue()));
+        }
+
+        @Test
         void 성공_타임_태그_수정() {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
@@ -552,7 +585,8 @@ class PlaceControllerTest {
             placeTimeTagJpaRepository.saveAll(List.of(placeTimeTag1, placeTimeTag2));
 
             Long updatedTimeTagId3 = timeTag3.getId();
-            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(List.of(updatedTimeTagId3));
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(
+                    List.of(timeTag2.getId(), updatedTimeTagId3));
 
             Header authHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
@@ -568,7 +602,8 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("timeTags[0]", equalTo(updatedTimeTagId3.intValue()));
+                    .body("timeTags[0]", equalTo(placeTimeTag2.getId().intValue()))
+                    .body("timeTags[1]", equalTo(updatedTimeTagId3.intValue()));
         }
     }
 
@@ -623,7 +658,7 @@ class PlaceControllerTest {
 
             Long updatedTimeTagId3 = timeTag3.getId();
             EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create(place.getTitle(),
-                    List.of(updatedTimeTagId3));
+                    List.of(placeTimeTag2.getId(), updatedTimeTagId3));
 
             Header authHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
@@ -639,7 +674,8 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("timeTags[0]", equalTo(updatedTimeTagId3.intValue()));
+                    .body("timeTags[0]", equalTo(placeTimeTag2.getId().intValue()))
+                    .body("timeTags[1]", equalTo(updatedTimeTagId3.intValue()));
         }
     }
 
