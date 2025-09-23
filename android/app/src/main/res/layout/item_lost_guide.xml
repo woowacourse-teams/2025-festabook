@@ -4,13 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/bg_gray100_stroke_gray200_radius_16dp"
+    android:background="@drawable/bg_gray100_stroke_gray200_radius_10dp"
     android:padding="16dp">
 
     <ImageView
         android:id="@+id/iv_lost_guide_info"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:contentDescription="@string/info"
         android:src="@drawable/ic_info"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,7 +22,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="분실물 수령/제보 가이드"
+        android:text="@string/lost_item_guide"
         app:layout_constraintBottom_toBottomOf="@id/iv_lost_guide_info"
         app:layout_constraintEnd_toStartOf="@id/iv_lost_guide_expand"
         app:layout_constraintStart_toEndOf="@id/iv_lost_guide_info"
@@ -31,7 +32,8 @@
         android:id="@+id/iv_lost_guide_expand"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:src="@drawable/ic_chevron_up"
+        android:contentDescription="@string/chevron_down"
+        android:src="@drawable/ic_chevron_down"
         app:layout_constraintBottom_toBottomOf="@id/tv_lost_guide_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@id/tv_lost_guide_title" />
