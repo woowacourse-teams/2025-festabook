@@ -1,9 +1,12 @@
 import SwiftUI
+import UIKit
 
 struct BottomSheetView: View {
     @ObservedObject var viewModel: MapViewModel
     @State private var dragOffset: CGFloat = 0
     let maxHeight: CGFloat
+    let safeAreaBottom: CGFloat
+    let hasTopBezel: Bool
 
     var body: some View {
         VStack(spacing: 0) {
@@ -46,9 +49,9 @@ struct BottomSheetView: View {
 
             // Content
             if viewModel.isLoading {
-                LoadingContentView()
+                LoadingContentView(safeAreaBottom: safeAreaBottom, hasTopBezel: hasTopBezel)
             } else {
-                PreviewListView(viewModel: viewModel)
+                PreviewListView(viewModel: viewModel, safeAreaBottom: safeAreaBottom, hasTopBezel: hasTopBezel)
             }
         }
         .background(
@@ -107,6 +110,16 @@ struct BottomSheetView: View {
 }
 
 struct LoadingContentView: View {
+    let safeAreaBottom: CGFloat
+    let hasTopBezel: Bool
+    private func bottomPadding() -> CGFloat {
+        // 홈 인디케이터 있는 기기(>=30): 기본 176, 베젤 있으면 더 작게(120)
+        if safeAreaBottom >= 30 {
+            return hasTopBezel ? 120 : 176
+        } else {
+            return 40
+        }
+    }
     var body: some View {
         ScrollView {
             LazyVStack(spacing: 0) {
@@ -120,31 +133,40 @@ struct LoadingContentView: View {
                 }
             }
             .padding(.top, 4)
-            .padding(.bottom, 100)
+            .padding(.bottom, bottomPadding())
         }
     }
 }
 
 struct PreviewListView: View {
     @ObservedObject var viewModel: MapViewModel
+    let safeAreaBottom: CGFloat
+    let hasTopBezel: Bool
+    private func bottomPadding() -> CGFloat {
+        if safeAreaBottom >= 30 {
+            return hasTopBezel ? 95 : 174
+        } else {
+            return 40
+        }
+    }
 
     var body: some View {
         ScrollView {
             let selectedCategoryNames: Set<String> = Set(viewModel.selectedCategories.map { $0.rawValue })
-            let mainCategories: Set<String> = ["ALL", "BOOTH", "FOOD_TRUCK", "BAR"]
+            let otherCategories: Set<String> = ["STAGE", "PHOTO_BOOTH", "PRIMARY", "EXTRA", "PARKING", "TOILET", "SMOKING", "TRASH_CAN"]
             
-            // 메인 카테고리가 하나라도 선택되어 있는지 확인
-            let hasMainCategory = !selectedCategoryNames.intersection(mainCategories).isEmpty
+            // 선택된 카테고리가 모두 기타 카테고리인지 확인
+            let onlyOtherCategories = !selectedCategoryNames.isEmpty && selectedCategoryNames.isSubset(of: otherCategories)
             
             if viewModel.filteredPreviews.isEmpty {
                 // 빈 상태 메시지
                 VStack(spacing: 12) {
-                    Image(systemName: hasMainCategory ? "storefront" : "info.circle")
+                    Image(systemName: onlyOtherCategories ? "info.circle" : "storefront")
                         .font(.system(size: 24))
                         .foregroundColor(.gray)
-                    Text(hasMainCategory ? 
-                        "등록된 부스 정보가 없습니다" :
-                        "기타 부스는 '한눈에 보기'에서 확인할 수 없습니다.")
+                    Text(onlyOtherCategories ? 
+                        "기타 부스는 '한눈에 보기'에서 확인할 수 없습니다." :
+                        "등록된 부스 정보가 없습니다")
                         .font(.system(size: 14))
                         .foregroundColor(.gray)
                         .multilineTextAlignment(.center)
@@ -168,7 +190,7 @@ struct PreviewListView: View {
                     }
                 }
                 .padding(.top, 4) // 간격 축소
-                .padding(.bottom, 100) // Safe area for bottom navigation
+            .padding(.bottom, bottomPadding())
             }
         }
     }
@@ -438,7 +460,7 @@ struct InfoRow: View {
 }
 
 #Preview {
-    BottomSheetView(viewModel: MapViewModel(), maxHeight: UIScreen.main.bounds.height)
+    BottomSheetView(viewModel: MapViewModel(), maxHeight: UIScreen.main.bounds.height, safeAreaBottom: 34, hasTopBezel: false)
 }
 
 // MARK: - Custom Modifier

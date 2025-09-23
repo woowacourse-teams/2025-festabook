@@ -48,7 +48,12 @@ struct MapView: View {
                         Spacer()
                         switch viewModel.modalType {
                         case .none:
-                            BottomSheetView(viewModel: viewModel, maxHeight: viewModel.bottomSheetMaxHeight)
+                            BottomSheetView(
+                                viewModel: viewModel,
+                                maxHeight: viewModel.bottomSheetMaxHeight,
+                                safeAreaBottom: geometry.safeAreaInsets.bottom,
+                                hasTopBezel: !viewModel.timeTags.isEmpty
+                            )
                                 .frame(height: viewModel.heightForDetent(viewModel.sheetDetent))
                                 .animation(.spring(response: 0.5, dampingFraction: 0.8), value: viewModel.sheetDetent)
 
