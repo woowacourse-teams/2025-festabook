@@ -13,7 +13,7 @@ sealed interface Lost {
     ) : Lost
 
     data class Guide(
-        val value: String,
+        val guide: String,
     ) : Lost
 }
 

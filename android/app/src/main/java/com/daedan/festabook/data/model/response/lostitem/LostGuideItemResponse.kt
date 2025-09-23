@@ -12,5 +12,5 @@ data class LostGuideItemResponse(
 
 fun LostGuideItemResponse.toDomain(): Lost.Guide =
     Lost.Guide(
-        value = lostItemGuide,
+        guide = lostItemGuide,
     )

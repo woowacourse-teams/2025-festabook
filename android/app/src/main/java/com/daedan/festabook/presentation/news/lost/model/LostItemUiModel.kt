@@ -37,4 +37,4 @@ fun Lost.Item.toLostItemUiModel(): LostUiModel =
         createdAt = createdAt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd  HH:mm")),
     )
 
-fun Lost.Guide.toLostGuideItemUiModel(): LostUiModel = LostUiModel.Guide(guide = value)
+fun Lost.Guide.toLostGuideItemUiModel(): LostUiModel = LostUiModel.Guide(guide = guide)
