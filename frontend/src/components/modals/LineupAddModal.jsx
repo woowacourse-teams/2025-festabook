@@ -14,16 +14,13 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = useRef(null);
     
-    // 날짜 필드들을 개별적으로 관리
     const [year, setYearState] = useState('');
     const [month, setMonthState] = useState('');
     const [day, setDayState] = useState('');
     
-    // 시간 필드들을 개별적으로 관리
     const [hours, setHoursState] = useState('');
     const [minutes, setMinutesState] = useState('');
 
-    // 날짜 개별 필드 업데이트 함수들
     const setYear = (newYear) => {
         setYearState(newYear);
         setFormData(prev => {
@@ -182,11 +179,6 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
             return;
         }
 
-        if (!selectedFile) {
-            showToast('이미지를 선택해주세요.');
-            return;
-        }
-
         if (!formData.performanceDate || !formData.performanceTime) {
             showToast('공연 일시를 입력해주세요.');
             return;
@@ -195,15 +187,19 @@ const LineupAddModal = ({ isOpen, onClose, showToast, onUpdate }) => {
         setIsUploading(true);
         
         try {
-            // 1단계: 이미지 파일을 백엔드 이미지 업로드 API로 전송
-            const uploadResponse = await imageAPI.uploadImage(selectedFile);
-            const imageUrl = uploadResponse.imageUrl;
+            let imageUrl = null;
+            
+            // 이미지가 선택된 경우에만 업로드
+            if (selectedFile) {
+                const uploadResponse = await imageAPI.uploadImage(selectedFile);
+                imageUrl = uploadResponse.imageUrl;
+            }
 
             // 2단계: 라인업 API에 이미지 URL과 함께 데이터 전송
             const performanceAt = `${formData.performanceDate}T${formData.performanceTime}:00`;
             const response = await lineupAPI.addLineup({
                 name: formData.name,
-                imageUrl: imageUrl,
+                imageUrl: imageUrl,  // null이 될 수 있음
                 performanceAt: performanceAt
             });
             

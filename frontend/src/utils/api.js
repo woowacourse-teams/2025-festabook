@@ -1,7 +1,7 @@
 // src/utils/api.js
 import axios from 'axios';
 
-const API_HOST = import.meta.env.VITE_API_HOST;
+const API_HOST = "https://dev.festabook.app/api";
 const api = axios.create({
   baseURL: API_HOST,
   headers: {
@@ -630,6 +630,70 @@ export const lineupAPI = {
     } catch (error) {
       console.error('Failed to delete lineup:', error);
       throw new Error('라인업 삭제에 실패했습니다.');
+    }
+  }
+};
+
+// 시간 태그 관련 API
+export const timeTagAPI = {
+  // 시간 태그 목록 조회
+  getTimeTags: async () => {
+    try {
+      const response = await api.get('/time-tags');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch time tags:', error);
+      throw new Error('시간 태그 조회에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 추가
+  createTimeTag: async (timeTagData) => {
+    try {
+      const response = await api.post('/time-tags', timeTagData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
+      throw new Error('시간 태그 추가에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 수정
+  updateTimeTag: async (timeTagId, timeTagData) => {
+    try {
+      const response = await api.patch(`/time-tags/${timeTagId}`, timeTagData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
+      throw new Error('시간 태그 수정에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 삭제
+  deleteTimeTag: async (timeTagId) => {
+    try {
+      await api.delete(`/time-tags/${timeTagId}`);
+    } catch (error) {
+      console.error('Failed to delete time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.status === 400 && error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
+      throw new Error('시간 태그 삭제에 실패했습니다.');
     }
   }
 };
