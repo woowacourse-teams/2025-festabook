@@ -112,17 +112,6 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, onCoordinateEdi
 
             {/* 콘텐츠 섹션 */}
             <div className="p-4">
-                <div className='grid grid-cols-4 gap-1 w-11/12 mb-1'>
-                    {timeTags.map(tag => (
-                        <div key={tag.timeTagId} className="flex items-center shrink-0">
-                            <div className="inline-flex items-center px-1 font-extrabold bg-yellow-200 border-yellow-300 py-1 rounded-lg text-[9px] border">
-                                {tag.name}
-                            </div>
-                        </div>
-                    ))}
-                </div>
-
-
                 <div className="flex items-start justify-between mb-3">
                     <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-lg text-gray-900 truncate" title={place.title}>
@@ -134,6 +123,15 @@ const MainPlaceCard = ({ place, onEdit, onDelete, onImageManage, onCoordinateEdi
                             </div>
                             {placeCategories[place.category]}
                         </div>
+                        {timeTags.length > 0 && (
+                            <div className='flex flex-wrap gap-1 mt-2'>
+                                {timeTags.map(tag => (
+                                    <div key={tag.timeTagId} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-200">
+                                        {tag.name}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
                 </div>
 
@@ -195,15 +193,6 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
         >
             {/* 콘텐츠 섹션 */}
             <div className="p-4">
-            <div className='grid grid-cols-4 gap-1 w-11/12 mb-1'>
-                    {timeTags.map(tag => (
-                        <div key={tag.timeTagId} className="flex items-center shrink-0">
-                            <div className="inline-flex items-center px-1 font-extrabold bg-yellow-200 border-yellow-300 py-1 rounded-lg text-[9px] border">
-                                {tag.name}
-                            </div>
-                        </div>
-                    ))}
-                </div>
                 <div className="flex items-center justify-between mb-1">
                     <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-lg text-gray-900 truncate" title={place.title}>
@@ -215,6 +204,15 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
                             </div>
                             {placeCategories[place.category]}
                         </div>
+                        {timeTags.length > 0 && (
+                            <div className='flex flex-wrap gap-1 mt-2'>
+                                {timeTags.map(tag => (
+                                    <div key={tag.timeTagId} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-200">
+                                        {tag.name}
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                     </div>
 
                     {/* 호버 시 액션 버튼 */}
@@ -260,7 +258,7 @@ const PlacePage = () => {
     const { openModal, showToast } = useModal();
     const [places, setPlaces] = useState([]);
     const [loading, setLoading] = useState(false);
-    const [viewMode, setViewMode] = useState('all'); // 'all', 'main', 'other'
+    const [viewMode, setViewMode] = useState('all'); // 'all', 'booth', 'bar', 'food_truck', 'other'
     const [searchTerm, setSearchTerm] = useState('');
     const [timeTags, setTimeTags] = useState([]);
     const [selectedTimeTags, setSelectedTimeTags] = useState([]); // 선택된 시간 태그 ID 배열
@@ -498,10 +496,14 @@ const PlacePage = () => {
             });
         }
 
-        if (viewMode === 'main') {
-            return matchesSearch && matchesTimeTag && !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+        if (viewMode === 'booth') {
+            return matchesSearch && matchesTimeTag && place.category === 'BOOTH';
+        } else if (viewMode === 'bar') {
+            return matchesSearch && matchesTimeTag && place.category === 'BAR';
+        } else if (viewMode === 'food_truck') {
+            return matchesSearch && matchesTimeTag && place.category === 'FOOD_TRUCK';
         } else if (viewMode === 'other') {
-            return matchesSearch && matchesTimeTag && ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(place.category);
+            return matchesSearch && matchesTimeTag && !['BOOTH', 'BAR', 'FOOD_TRUCK'].includes(place.category);
         }
         return matchesSearch && matchesTimeTag;
     });
@@ -540,11 +542,15 @@ const PlacePage = () => {
     // 순서대로 카테고리 정렬 (빈 카테고리도 포함)
     const sortedGroupedPlaces = categoryOrder
         .filter(category => {
-            // 필터링된 플레이스가 있는 카테고리만 포함
-            if (viewMode === 'main') {
-                return !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(category);
+            // 뷰 모드에 따라 표시할 카테고리 필터링
+            if (viewMode === 'booth') {
+                return category === 'BOOTH';
+            } else if (viewMode === 'bar') {
+                return category === 'BAR';
+            } else if (viewMode === 'food_truck') {
+                return category === 'FOOD_TRUCK';
             } else if (viewMode === 'other') {
-                return ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(category);
+                return !['BOOTH', 'BAR', 'FOOD_TRUCK'].includes(category);
             }
             return true; // 전체 보기일 때는 모든 카테고리
         })
@@ -578,15 +584,15 @@ const PlacePage = () => {
                 {/* 필터 및 검색 */}
                 <div className="px-6 pb-4">
                     <div className="space-y-4">
-                        {/* 첫 번째 행: 검색창과 뷰 모드 필터 */}
+                        {/* 검색창과 뷰 모드 필터 */}
                         <div className="flex flex-col sm:flex-row gap-4">
-                            {/* 검색 */}
+                            {/* 검색창 */}
                             <div className="flex-1">
                                 <div className="relative">
                                     <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
                                     <input
                                         type="text"
-                                        placeholder="플레이스 이름이나 카테고리, 운영 주체로 검색..."
+                                        placeholder="플레이스 이름이나 운영 주체로 검색"
                                         value={searchTerm}
                                         onChange={(e) => setSearchTerm(e.target.value)}
                                         className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -595,10 +601,10 @@ const PlacePage = () => {
                             </div>
 
                             {/* 뷰 모드 필터 */}
-                            <div className="flex bg-gray-100 rounded-lg p-1">
+                            <div className="grid grid-cols-1 sm:grid-cols-5 bg-gray-100 rounded-lg p-1 gap-1 sm:gap-0">
                                 <button
                                     onClick={() => setViewMode('all')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'all'
+                                    className={`px-2 py-1 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'all'
                                         ? 'bg-white text-gray-800 shadow-sm'
                                         : 'text-gray-600 hover:text-gray-900'
                                         }`}
@@ -606,64 +612,80 @@ const PlacePage = () => {
                                     전체 ({places.length})
                                 </button>
                                 <button
-                                    onClick={() => setViewMode('main')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'main'
+                                    onClick={() => setViewMode('booth')}
+                                    className={`px-2 py-1 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'booth'
                                         ? 'bg-white text-gray-800 shadow-sm'
                                         : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
-                                    메인 ({places.filter(p => !['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
+                                    부스 ({places.filter(p => p.category === 'BOOTH').length})
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('bar')}
+                                    className={`px-2 py-1 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'bar'
+                                        ? 'bg-white text-gray-800 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                        }`}
+                                >
+                                    주점 ({places.filter(p => p.category === 'BAR').length})
+                                </button>
+                                <button
+                                    onClick={() => setViewMode('food_truck')}
+                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'food_truck'
+                                        ? 'bg-white text-gray-800 shadow-sm'
+                                        : 'text-gray-600 hover:text-gray-900'
+                                        }`}
+                                >
+                                    푸드트럭 ({places.filter(p => p.category === 'FOOD_TRUCK').length})
                                 </button>
                                 <button
                                     onClick={() => setViewMode('other')}
-                                    className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'other'
+                                    className={`px-2 py-1 rounded-md text-sm font-medium transition-all duration-200 ${viewMode === 'other'
                                         ? 'bg-white text-gray-800 shadow-sm'
                                         : 'text-gray-600 hover:text-gray-900'
                                         }`}
                                 >
-                                    기타 ({places.filter(p => ['SMOKING', 'TRASH_CAN', 'TOILET', 'PARKING', 'PRIMARY', 'STAGE', 'PHOTO_BOOTH', 'EXTRA'].includes(p.category)).length})
+                                    그 외 ({places.filter(p => !['BOOTH', 'BAR', 'FOOD_TRUCK'].includes(p.category)).length})
                                 </button>
                             </div>
                         </div>
 
-                        {/* 두 번째 행: 시간 태그 필터 */}
-                        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        {/* 시간 태그 필터 */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                             <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                                 <div className="flex-1">
-                                    <div className="flex items-center gap-3 mb-3">
-                                        <h3 className="text-sm font-semibold text-gray-700">시간 태그 필터</h3>
-                                        <div className="flex items-center gap-2">
-                                            <button
-                                                onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd, showToast })}
-                                                className="bg-blue-600 hover:bg-blue-700 text-white font-medium py-1 px-3 rounded-md transition-colors duration-200 text-xs"
-                                                title="새 시간 태그 추가"
-                                            >
-                                                <i className="fas fa-plus mr-1"></i>
-                                                추가
-                                            </button>
-                                        </div>
+                                    <div className="flex items-center gap-3 mb-4">
+                                        <h3 className="text-lg font-bold text-gray-900">시간 태그 필터</h3>
+                                        <button
+                                            onClick={() => openModal('timeTagAdd', { onSave: handleTimeTagAdd, showToast })}
+                                            className="h-7 bg-gray-800 hover:bg-gray-700 text-white font-medium py-1 px-3 rounded-lg transition-colors duration-200 text-xs"
+                                            title="새 시간 태그 추가"
+                                        >
+                                            <i className="fas fa-plus mr-1"></i>
+                                            추가
+                                        </button>
                                     </div>
                                     {timeTags.length > 0 ? (
-                                        <div className="flex flex-wrap gap-2">
+                                        <div className="flex flex-wrap gap-3">
                                             {timeTags.map(tag => (
                                                 <div key={tag.timeTagId} className="group relative">
-                                                    <label className="inline-flex items-center space-x-2 cursor-pointer bg-white border border-gray-300 rounded-full px-3 py-1 hover:bg-gray-50 transition-colors duration-150">
+                                                    <label className="inline-flex items-center space-x-3 cursor-pointer bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 hover:bg-gray-100 transition-all duration-200 hover:shadow-md">
                                                         <input
                                                             type="checkbox"
                                                             checked={selectedTimeTags.includes(tag.timeTagId)}
                                                             onChange={(e) => handleTimeTagFilterChange(tag.timeTagId, e.target.checked)}
                                                             className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                                                         />
-                                                        <span className="text-sm text-gray-700 font-medium">{tag.name}</span>
+                                                        <span className="text-sm text-gray-800 font-medium">{tag.name}</span>
                                                     </label>
                                                     {/* 수정/삭제 버튼 - hover 시 표시 */}
-                                                    <div className="absolute -top-1 -right-1 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                                                    <div className="absolute -top-2 -right-2 flex space-x-1 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation();
                                                                 openModal('timeTagEdit', { timeTag: tag, onSave: handleTimeTagEdit, showToast });
                                                             }}
-                                                            className="bg-blue-500 hover:bg-blue-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors duration-200"
+                                                            className="bg-blue-600 hover:bg-blue-700 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs transition-all duration-200 hover:scale-110 shadow-lg"
                                                             title="수정"
                                                         >
                                                             <i className="fas fa-edit"></i>
@@ -673,7 +695,7 @@ const PlacePage = () => {
                                                                 e.stopPropagation();
                                                                 openTimeTagDeleteModal(tag);
                                                             }}
-                                                            className="bg-red-500 hover:bg-red-600 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs transition-colors duration-200"
+                                                            className="bg-red-600 hover:bg-red-700 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs transition-all duration-200 hover:scale-110 shadow-lg"
                                                             title="삭제"
                                                         >
                                                             <i className="fas fa-trash"></i>
@@ -683,13 +705,10 @@ const PlacePage = () => {
                                             ))}
                                         </div>
                                     ) : (
-                                        <div className="text-sm text-gray-500">
-                                            아직 시간 태그가 없습니다. 새 시간 태그를 추가해보세요.
-                                        </div>
-                                    )}
-                                    {selectedTimeTags.length > 0 && (
-                                        <div className="mt-2 text-xs text-gray-500">
-                                            {selectedTimeTags.length}개 태그 선택됨
+                                        <div className="text-center py-8 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
+                                            <i className="fas fa-clock text-3xl text-gray-400 mb-3"></i>
+                                            <p className="text-gray-600 text-sm font-medium mb-2">아직 시간 태그가 없습니다</p>
+                                            <p className="text-gray-400 text-xs mb-4">새 시간 태그를 추가해보세요</p>
                                         </div>
                                     )}
                                 </div>
@@ -738,11 +757,15 @@ const PlacePage = () => {
                                                 {categoryPlaces.length}
                                             </span>
                                             <button
-                                                onClick={() => openModal('booth', { onSave: handleCreate })}
-                                                className="bg-gradient-to-r ml-5 from-black to-black hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-1.5 px-3 rounded-lg flex items-center transition-all duration-200 hover:scale-105 shadow-lg"
+                                                onClick={() => openModal('booth', {
+                                                    onSave: handleCreate,
+                                                    initialData: { category: category }
+                                                })}
+                                                className="ml-3 h-7 bg-gray-800 hover:bg-gray-700 text-white font-medium py-1 px-3 rounded-lg transition-colors duration-200 text-xs"
+                                                title={`새 ${placeCategories[category]} 추가`}
                                             >
-                                                <i className="fas fa-plus mr-2"></i>
-                                                새 플레이스 추가
+                                                <i className="fas fa-plus mr-1"></i>
+                                                추가
                                             </button>
                                         </div>
 
@@ -780,7 +803,7 @@ const PlacePage = () => {
                                                 <p className="text-gray-500 text-lg font-medium mb-2">{placeCategories[category]}{getKoreanParticle(placeCategories[category], '이/가')} 없습니다</p>
                                                 <p className="text-gray-400 text-sm mb-4">새로운 {placeCategories[category]}{getKoreanParticle(placeCategories[category], '을/를')} 추가해보세요</p>
                                                 <button
-                                                    onClick={() => openModal('place', {
+                                                    onClick={() => openModal('booth', {
                                                         onSave: handleCreate,
                                                         initialData: { category: category }
                                                     })}
