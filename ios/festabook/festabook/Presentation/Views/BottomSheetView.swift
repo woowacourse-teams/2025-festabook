@@ -49,9 +49,9 @@ struct BottomSheetView: View {
 
             // Content
             if viewModel.isLoading {
-                LoadingContentView(safeAreaBottom: safeAreaBottom, hasTopBezel: hasTopBezel)
+                LoadingContentView(safeAreaBottom: safeAreaBottom, hasTopBezel: hasTopBezel, detent: viewModel.sheetDetent)
             } else {
-                PreviewListView(viewModel: viewModel, safeAreaBottom: safeAreaBottom, hasTopBezel: hasTopBezel)
+                PreviewListView(viewModel: viewModel, safeAreaBottom: safeAreaBottom, hasTopBezel: hasTopBezel, detent: viewModel.sheetDetent)
             }
         }
         .background(
@@ -112,12 +112,18 @@ struct BottomSheetView: View {
 struct LoadingContentView: View {
     let safeAreaBottom: CGFloat
     let hasTopBezel: Bool
+    let detent: SheetDetent
     private func bottomPadding() -> CGFloat {
-        // 홈 인디케이터 있는 기기(>=30): 기본 176, 베젤 있으면 더 작게(120)
-        if safeAreaBottom >= 30 {
-            return hasTopBezel ? 120 : 176
-        } else {
-            return 40
+        let base = max(safeAreaBottom, 8) + 16
+        switch detent {
+        case .collapsed:
+            return base
+        case .small:
+            return base + 20
+        case .medium:
+            return base + 24
+        case .large:
+            return base + (hasTopBezel ? 46 : 126)
         }
     }
     var body: some View {
@@ -142,11 +148,18 @@ struct PreviewListView: View {
     @ObservedObject var viewModel: MapViewModel
     let safeAreaBottom: CGFloat
     let hasTopBezel: Bool
+    let detent: SheetDetent
     private func bottomPadding() -> CGFloat {
-        if safeAreaBottom >= 30 {
-            return hasTopBezel ? 95 : 174
-        } else {
-            return 40
+        let base = max(safeAreaBottom, 8) + 16
+        switch detent {
+        case .collapsed:
+            return base
+        case .small:
+            return base + 20
+        case .medium:
+            return base + 24
+        case .large:
+            return base + (hasTopBezel ? 46 : 126)
         }
     }
 
