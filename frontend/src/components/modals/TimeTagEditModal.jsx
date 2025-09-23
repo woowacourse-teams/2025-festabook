@@ -90,54 +90,63 @@ const TimeTagEditModal = ({ timeTag, onSave, onClose, showToast }) => {
   };
 
   return (
-    <Modal isOpen={true} onClose={onClose} maxWidth="max-w-md">
-      <div className="p-6">
-        <h3 className="text-xl font-bold mb-6">시간 태그 수정</h3>
-        
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* 시간 태그 이름 */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              시간 태그 이름 *
-            </label>
-            <input
-              type="text"
-              name="name"
-              value={formData.name}
-              onChange={handleChange}
-              placeholder="예: 1일차 오후, 2일차 저녁 등"
-              className={`w-full border rounded-lg shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
-                errors.name ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.name && (
-              <p className="mt-1 text-sm text-red-600">{errors.name}</p>
-            )}
-            <p className="mt-1 text-xs text-gray-500">
-              {formData.name.length}/{MAX_NAME_LEN}자
-            </p>
-          </div>
+    <Modal isOpen={true} onClose={onClose} maxWidth="max-w-sm">
+      <h3 className="text-xl font-bold mb-6">시간 태그 수정</h3>
 
-          {/* 버튼 */}
-          <div className="flex justify-end space-x-3 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 bg-gray-300 text-gray-700 font-bold py-2 px-4 rounded-lg hover:bg-gray-400 transition-all duration-200"
-            >
-              취소
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className={`flex-1 bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-all duration-200 disabled:opacity-50 ${
-                loading ? 'cursor-not-allowed' : ''
-              }`}
-            >
-              {loading ? '수정 중...' : '수정 완료'}
-            </button>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* 시간 태그 이름 */}
+        <div>
+          <div className="flex justify-between items-center mb-1">
+            <label className="block text-sm font-medium text-gray-700">
+              시간 태그 이름
+            </label>
+            <span className="text-xs text-gray-500">
+              {formData.name.length}/{MAX_NAME_LEN}
+            </span>
           </div>
-        </form>
+          <input
+            type="text"
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="예: 1일차 오후, 2일차 저녁 등"
+            className={`mt-1 block w-full border rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500 ${
+              errors.name ? 'border-red-500' : 'border-gray-300'
+            }`}
+          />
+          {errors.name && (
+            <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+          )}
+        </div>
+      </form>
+
+      {/* 버튼 */}
+      <div className="mt-6 flex justify-end w-full relative z-10">
+        <div className="space-x-3">
+          <button
+            type="button"
+            onClick={onClose}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-800 font-bold py-2 px-4 rounded-lg transition-colors duration-200"
+            disabled={loading}
+          >
+            취소
+          </button>
+          <button
+            type="submit"
+            onClick={handleSubmit}
+            disabled={loading}
+            className="bg-gray-800 hover:bg-gray-900 text-white font-bold py-2 px-4 rounded-lg transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <div className="flex items-center">
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                수정 중...
+              </div>
+            ) : (
+              '수정 완료'
+            )}
+          </button>
+        </div>
       </div>
     </Modal>
   );
