@@ -67,13 +67,15 @@ class PlaceListViewModel(
     }
 
     private fun loadTimeTags() {
-        _timeTags.value =
-            listOf(
-                TimeTag(timeTagId = 1, name = "1일차"),
-                TimeTag(timeTagId = 2, name = "1일차 오후"),
-                TimeTag(timeTagId = 3, name = "2일차"),
-                TimeTag(timeTagId = 4, name = "3일차"),
-            )
+        viewModelScope.launch {
+            placeListRepository
+                .getTimeTags()
+                .onSuccess { timeTags ->
+                    _timeTags.value = timeTags
+                }.onFailure {
+                    _timeTags.value = emptyList()
+                }
+        }
 
         // 기본 선택값
         if (!timeTags.value.isNullOrEmpty()) {
