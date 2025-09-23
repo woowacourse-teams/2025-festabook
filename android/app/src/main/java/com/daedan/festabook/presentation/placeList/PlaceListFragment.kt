@@ -104,6 +104,9 @@ class PlaceListFragment :
                         places.value,
                     )
                     placeAdapter.submitList(places.value) {
+                        if (places.value.isEmpty()) {
+                            binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
+                        }
                         binding.rvPlaces.scrollToPosition(0)
                     }
                 }
