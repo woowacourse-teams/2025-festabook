@@ -3,6 +3,7 @@ package com.daedan.festabook.place.service;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 
 import com.daedan.festabook.festival.domain.Festival;
@@ -16,6 +17,11 @@ import com.daedan.festabook.place.dto.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateResponse;
 import com.daedan.festabook.place.dto.PlaceGeographyResponses;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.domain.PlaceTimeTag;
+import com.daedan.festabook.timetag.domain.PlaceTimeTagFixture;
+import com.daedan.festabook.timetag.domain.TimeTag;
+import com.daedan.festabook.timetag.domain.TimeTagFixture;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -34,6 +40,9 @@ class PlaceGeographyServiceTest {
     @Mock
     private PlaceJpaRepository placeJpaRepository;
 
+    @Mock
+    private PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
+
     @InjectMocks
     private PlaceGeographyService placeGeographyService;
 
@@ -41,7 +50,7 @@ class PlaceGeographyServiceTest {
     class getAllPlaceGeographyByFestivalId {
 
         @Test
-        void 성공() {
+        void 성공_place_주요_필드() {
             // given
             Festival festival = FestivalFixture.create(1L);
 
@@ -50,6 +59,9 @@ class PlaceGeographyServiceTest {
 
             given(placeJpaRepository.findAllByFestivalId(festival.getId()))
                     .willReturn(List.of(place1, place2));
+
+            given(placeTimeTagJpaRepository.findAllByPlaceIn(any()))
+                    .willReturn(List.of());
 
             // when
             PlaceGeographyResponses result = placeGeographyService.getAllPlaceGeographyByFestivalId(
@@ -71,6 +83,40 @@ class PlaceGeographyServiceTest {
                         .isEqualTo(place2.getCoordinate().getLatitude());
                 s.assertThat(result.responses().getLast().markerCoordinate().longitude())
                         .isEqualTo(place2.getCoordinate().getLongitude());
+            });
+        }
+
+        @Test
+        void 성공_timeTag() {
+            // given
+            Festival festival = FestivalFixture.create(1L);
+
+            Long placeId1 = 1L;
+            Place place1 = PlaceFixture.create(festival, placeId1);
+
+            given(placeJpaRepository.findAllByFestivalId(festival.getId()))
+                    .willReturn(List.of(place1));
+
+            Long timeTagId1 = 100L;
+            TimeTag timeTag1 = TimeTagFixture.createWithFestivalAndId(festival, timeTagId1);
+            PlaceTimeTag place1TimeTag1 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place1, timeTag1);
+            List<PlaceTimeTag> placeTimeTags = List.of(place1TimeTag1);
+
+            given(placeTimeTagJpaRepository.findAllByPlaceIn(List.of(place1)))
+                    .willReturn(placeTimeTags);
+
+            // when
+            PlaceGeographyResponses result = placeGeographyService.getAllPlaceGeographyByFestivalId(
+                    festival.getId()
+            );
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(result.responses()).hasSize(1);
+                s.assertThat(result.responses().getFirst().timeTags().responses().getFirst().timeTagId())
+                        .isEqualTo(timeTag1.getId());
+                s.assertThat(result.responses().getFirst().timeTags().responses().getFirst().name())
+                        .isEqualTo(timeTag1.getName());
             });
         }
 
