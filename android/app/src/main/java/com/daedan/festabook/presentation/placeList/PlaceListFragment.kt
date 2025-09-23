@@ -129,7 +129,7 @@ class PlaceListFragment :
             if (selectedCategories.isEmpty()) {
                 childViewModel.clearPlacesFilter()
             } else {
-                childViewModel.filterPlaces(selectedCategories)
+                childViewModel.updatePlacesByCategories(selectedCategories)
             }
         }
 
@@ -144,7 +144,7 @@ class PlaceListFragment :
         }
 
         viewModel.selectedTimeTag.observe(viewLifecycleOwner) { timeTag ->
-            childViewModel.filterPlacesByTimeTag(timeTag.timeTagId)
+            childViewModel.updatePlacesByTimeTag(timeTag.timeTagId)
         }
     }
 

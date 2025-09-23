@@ -20,7 +20,8 @@ import kotlinx.coroutines.launch
 class PlaceListChildViewModel(
     private val placeListRepository: PlaceListRepository,
 ) : ViewModel() {
-    private var _cachedPlaces = listOf<PlaceUiModel>()
+    private var cachedPlaces = listOf<PlaceUiModel>()
+    private var cachedPlaceByTimeTag: List<PlaceUiModel> = emptyList()
 
     private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
         MutableLiveData(PlaceListUiState.Loading())
@@ -30,7 +31,7 @@ class PlaceListChildViewModel(
         loadAllPlaces()
     }
 
-    fun filterPlaces(category: List<PlaceCategoryUiModel>) {
+    fun updatePlacesByCategories(category: List<PlaceCategoryUiModel>) {
         val secondaryCategories =
             PlaceCategory.SECONDARY_CATEGORIES.map {
                 it.toUiModel()
@@ -41,25 +42,31 @@ class PlaceListChildViewModel(
             clearPlacesFilter()
             return
         }
-
         val filteredPlaces =
-            _cachedPlaces.filter { place ->
-                place.category in category
-            }
-
+            cachedPlaceByTimeTag
+                .filter { place ->
+                    place.category in category
+                }
         _places.value = PlaceListUiState.Success(filteredPlaces)
     }
 
-    fun filterPlacesByTimeTag(timeTagId: Long) {
+    private fun filterPlacesByTimeTag(timeTagId: Long): List<PlaceUiModel> {
         val filteredPlaces =
-            _cachedPlaces.filter { place ->
+            cachedPlaces.filter { place ->
                 place.timeTagId.contains(timeTagId)
             }
+        return filteredPlaces
+    }
+
+    fun updatePlacesByTimeTag(timeTagId: Long) {
+        val filteredPlaces = filterPlacesByTimeTag(timeTagId)
+
         _places.value = PlaceListUiState.Success(filteredPlaces)
+        cachedPlaceByTimeTag = filteredPlaces
     }
 
     fun clearPlacesFilter() {
-        _places.value = PlaceListUiState.Success(_cachedPlaces)
+        _places.value = PlaceListUiState.Success(cachedPlaceByTimeTag)
     }
 
     fun setPlacesStateComplete() {
@@ -73,7 +80,7 @@ class PlaceListChildViewModel(
                 .onSuccess { places ->
                     val placeUiModels = places.map { it.toUiModel() }
 
-                    _cachedPlaces = placeUiModels
+                    cachedPlaces = placeUiModels
                 }.onFailure {
                     _places.value = PlaceListUiState.Error(it)
                 }
