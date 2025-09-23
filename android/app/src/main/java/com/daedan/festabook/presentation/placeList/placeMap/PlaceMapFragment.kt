@@ -130,7 +130,8 @@ class PlaceMapFragment :
                 adapter.notifyDataSetChanged()
             }
         }
-        viewModel.selectedPlace.observe(viewLifecycleOwner) {
+        viewModel.selectedTimeTag.observe(viewLifecycleOwner) { selectedTimeTag ->
+            mapManager?.filterMarkersByTimeTag(selectedTimeTag.timeTagId)
         }
 
         viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
@@ -177,7 +178,7 @@ class PlaceMapFragment :
             if (selectedCategories.isEmpty()) {
                 mapManager?.clearFilter()
             } else {
-                mapManager?.filterPlace(selectedCategories)
+                mapManager?.filterMarkersByCategories(selectedCategories)
             }
         }
 

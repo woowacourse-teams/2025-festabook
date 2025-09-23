@@ -45,6 +45,7 @@ class MapManager(
     private var onCameraChangeListener: NaverMap.OnCameraChangeListener? = null
 
     private var selectedMarker: Marker? = null
+    private var selectedTimeTagId: Long? = null
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         markers =
@@ -53,7 +54,7 @@ class MapManager(
             }
     }
 
-    fun filterPlace(categories: List<PlaceCategoryUiModel>) {
+    fun filterMarkersByCategories(categories: List<PlaceCategoryUiModel>) {
         markers.forEach { marker ->
             val place = marker.tag as? PlaceCoordinateUiModel
             val isSelectedMarker = marker == selectedMarker
@@ -62,24 +63,27 @@ class MapManager(
             marker.isVisible = place?.category in categories || isSelectedMarker
 
             // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
-            if (isSelectedMarker) {
-                setMarkerIcon(marker, isSelected = true)
-            } else {
-                setMarkerIcon(marker, isSelected = false)
-            }
+            updateMarkerIcon(isSelectedMarker, marker)
         }
     }
 
-    fun filterPlaceByTimeTag(selectedTimeTagId: Long) {
+    fun filterMarkersByTimeTag(selectedTimeTagId: Long) {
         markers.forEach { marker ->
-            val place = marker.tag as? PlaceCoordinateUiModel
+            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
             val isSelectedMarker = marker == selectedMarker
+            marker.isVisible = place.timeTagId.contains(selectedTimeTagId) || isSelectedMarker
+
+            // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
+            updateMarkerIcon(isSelectedMarker, marker)
         }
+        this.selectedTimeTagId = selectedTimeTagId
     }
 
     fun clearFilter() {
         markers.forEach { marker ->
-            marker.isVisible = true
+            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
+            marker.isVisible = place.timeTagId.contains(selectedTimeTagId)
+
             val isSelectedMarker = marker == selectedMarker
 
             // 선택된 마커는 크기를 유지하고, 나머지는 원래 크기로 복원
@@ -160,6 +164,17 @@ class MapManager(
             }?.let {
                 onMarkerClick(it)
             }
+    }
+
+    private fun updateMarkerIcon(
+        isSelectedMarker: Boolean,
+        marker: Marker,
+    ) {
+        if (isSelectedMarker) {
+            setMarkerIcon(marker, isSelected = true)
+        } else {
+            setMarkerIcon(marker, isSelected = false)
+        }
     }
 
     private fun setContentPaddingBottom(height: Int) {
