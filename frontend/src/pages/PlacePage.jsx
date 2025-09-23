@@ -204,15 +204,6 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
                             </div>
                             {placeCategories[place.category]}
                         </div>
-                        {timeTags.length > 0 && (
-                            <div className='flex flex-wrap gap-1 mt-2'>
-                                {timeTags.map(tag => (
-                                    <div key={tag.timeTagId} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-200">
-                                        {tag.name}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
                     </div>
 
                     {/* 호버 시 액션 버튼 */}
@@ -249,6 +240,15 @@ const OtherPlaceCard = ({ place, onEdit, onDelete, onCoordinateEdit, showToast }
                         </button>
                     </div>
                 </div>
+                {timeTags.length > 0 && (
+                    <div className='flex flex-wrap gap-1 mt-2'>
+                        {timeTags.map(tag => (
+                            <div key={tag.timeTagId} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border bg-yellow-50 text-yellow-800 border-yellow-200">
+                                {tag.name}
+                            </div>
+                        ))}
+                    </div>
+                )}
             </div>
         </div>
     );
