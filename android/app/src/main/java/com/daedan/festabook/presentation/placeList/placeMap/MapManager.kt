@@ -48,7 +48,7 @@ class MapManager(
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         markers =
-            coordinates.mapIndexed { idx, place ->
+            coordinates.mapIndexed { _, place ->
                 Marker().generate(place)
             }
     }
@@ -67,6 +67,13 @@ class MapManager(
             } else {
                 setMarkerIcon(marker, isSelected = false)
             }
+        }
+    }
+
+    fun filterPlaceByTimeTag(selectedTimeTagId: Long) {
+        markers.forEach { marker ->
+            val place = marker.tag as? PlaceCoordinateUiModel
+            val isSelectedMarker = marker == selectedMarker
         }
     }
 

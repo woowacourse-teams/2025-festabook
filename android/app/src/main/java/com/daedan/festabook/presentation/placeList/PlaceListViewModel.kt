@@ -40,8 +40,8 @@ class PlaceListViewModel(
     private val _timeTags = MutableLiveData<List<TimeTag>>()
     val timeTags: LiveData<List<TimeTag>> = _timeTags
 
-    private val _selectedTimeTag = MutableLiveData<TimeTag?>()
-    val selectedTimeTag: LiveData<TimeTag?> = _selectedTimeTag
+    private val _selectedTimeTag = MutableLiveData<TimeTag>()
+    val selectedTimeTag: LiveData<TimeTag> = _selectedTimeTag
 
     private val _selectedPlace: MutableLiveData<SelectedPlaceUiState> = MutableLiveData()
     val selectedPlace: LiveData<SelectedPlaceUiState> = _selectedPlace
@@ -77,7 +77,7 @@ class PlaceListViewModel(
                 }
         }
 
-        // 기본 선택값
+//         기본 선택값
         if (!timeTags.value.isNullOrEmpty()) {
             _selectedTimeTag.value = _timeTags.value?.first()
         }

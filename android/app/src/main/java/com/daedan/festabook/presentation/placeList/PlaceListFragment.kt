@@ -142,6 +142,10 @@ class PlaceListFragment :
         viewModel.onMapViewClick.observe(viewLifecycleOwner) {
             placeListBottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         }
+
+        viewModel.selectedTimeTag.observe(viewLifecycleOwner) { timeTag ->
+            childViewModel.filterPlacesByTimeTag(timeTag.timeTagId)
+        }
     }
 
     private fun setUpBinding() {

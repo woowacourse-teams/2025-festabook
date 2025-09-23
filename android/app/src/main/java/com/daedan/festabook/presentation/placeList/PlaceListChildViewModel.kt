@@ -50,6 +50,14 @@ class PlaceListChildViewModel(
         _places.value = PlaceListUiState.Success(filteredPlaces)
     }
 
+    fun filterPlacesByTimeTag(timeTagId: Long) {
+        val filteredPlaces =
+            _cachedPlaces.filter { place ->
+                place.timeTagId.contains(timeTagId)
+            }
+        _places.value = PlaceListUiState.Success(filteredPlaces)
+    }
+
     fun clearPlacesFilter() {
         _places.value = PlaceListUiState.Success(_cachedPlaces)
     }
@@ -64,10 +72,7 @@ class PlaceListChildViewModel(
             result
                 .onSuccess { places ->
                     val placeUiModels = places.map { it.toUiModel() }
-                    _places.value =
-                        PlaceListUiState.Success(
-                            placeUiModels,
-                        )
+
                     _cachedPlaces = placeUiModels
                 }.onFailure {
                     _places.value = PlaceListUiState.Error(it)

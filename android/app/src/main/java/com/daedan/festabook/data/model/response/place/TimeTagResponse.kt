@@ -9,7 +9,7 @@ data class TimeTagResponse(
     @SerialName("name")
     val name: String,
     @SerialName("timeTagId")
-    val timeTagId: Int,
+    val timeTagId: Long,
 )
 
 fun TimeTagResponse.toDomain() =

@@ -13,6 +13,7 @@ data class PlaceUiModel(
     val description: String?,
     val location: String?,
     val isBookmarked: Boolean = false,
+    val timeTagId: List<Long>,
 ) : Parcelable
 
 fun Place.toUiModel(): PlaceUiModel =
@@ -23,4 +24,8 @@ fun Place.toUiModel(): PlaceUiModel =
         title = title,
         description = description,
         location = location,
+        timeTagId =
+            timeTags.map {
+                it.timeTagId
+            },
     )

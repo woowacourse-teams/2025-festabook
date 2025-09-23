@@ -130,6 +130,8 @@ class PlaceMapFragment :
                 adapter.notifyDataSetChanged()
             }
         }
+        viewModel.selectedPlace.observe(viewLifecycleOwner) {
+        }
 
         viewModel.placeGeographies.observe(viewLifecycleOwner) { placeGeographies ->
             when (placeGeographies) {
