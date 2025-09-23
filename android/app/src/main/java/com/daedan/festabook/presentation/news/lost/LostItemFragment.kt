@@ -74,7 +74,7 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
                 is LostUiState.Success -> {
                     binding.srlLostItemList.isRefreshing = false
                     adapter.submitList(state.lostItems) {
-                        showEmptyStateMessage()
+                        showEmptyStateMessage(state.lostItems)
                     }
                     hideSkeleton()
                 }
@@ -134,10 +134,11 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         binding.sflLostItemSkeleton.stopShimmer()
     }
 
-    private fun showEmptyStateMessage() {
-        val itemCount = binding.rvLostItemList.adapter?.itemCount ?: 0
+    private fun showEmptyStateMessage(lostItems: List<LostUiModel>) {
+        val isExistLostIem = lostItems.none { it is LostUiModel.Item }
 
-        binding.tvEmptyState.root.visibility = if (itemCount == 0) View.VISIBLE else View.GONE
+        binding.tvEmptyState.root.visibility =
+            if (isExistLostIem) View.VISIBLE else View.GONE
     }
 
     companion object {
