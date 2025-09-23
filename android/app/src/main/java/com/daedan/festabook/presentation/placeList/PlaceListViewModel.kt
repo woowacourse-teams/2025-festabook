@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.common.Event
@@ -36,6 +37,12 @@ class PlaceListViewModel(
     val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
         _placeGeographies
 
+    private val _timeTags = MutableLiveData<List<TimeTag>>()
+    val timeTags: LiveData<List<TimeTag>> = _timeTags
+
+    private val _selectedTimeTag = MutableLiveData<TimeTag?>()
+    val selectedTimeTag: LiveData<TimeTag?> = _selectedTimeTag
+
     private val _selectedPlace: MutableLiveData<SelectedPlaceUiState> = MutableLiveData()
     val selectedPlace: LiveData<SelectedPlaceUiState> = _selectedPlace
 
@@ -56,6 +63,26 @@ class PlaceListViewModel(
 
     init {
         loadOrganizationGeography()
+        loadTimeTags()
+    }
+
+    private fun loadTimeTags() {
+        _timeTags.value =
+            listOf(
+                TimeTag(timeTagId = 1, name = "1일차"),
+                TimeTag(timeTagId = 2, name = "1일차 오후"),
+                TimeTag(timeTagId = 3, name = "2일차"),
+                TimeTag(timeTagId = 4, name = "3일차"),
+            )
+
+        // 기본 선택값
+        if (!timeTags.value.isNullOrEmpty()) {
+            _selectedTimeTag.value = _timeTags.value?.first()
+        }
+    }
+
+    fun onDaySelected(item: TimeTag) {
+        _selectedTimeTag.value = item
     }
 
     fun selectPlace(placeId: Long) {
@@ -101,7 +128,8 @@ class PlaceListViewModel(
     private fun loadOrganizationGeography() {
         viewModelScope.launch {
             placeListRepository.getOrganizationGeography().onSuccess { organizationGeography ->
-                _initialMapSetting.value = PlaceListUiState.Success(organizationGeography.toUiModel())
+                _initialMapSetting.value =
+                    PlaceListUiState.Success(organizationGeography.toUiModel())
             }
 
             launch {
