@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/bg_gray100_stroke_gray200_radius_16dp"
     android:padding="16dp">
 
     <ImageView
@@ -21,10 +22,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
         android:text="분실물 수령/제보 가이드"
-        app:layout_constraintBottom_toBottomOf="iv_lost_guide_info"
+        app:layout_constraintBottom_toBottomOf="@id/iv_lost_guide_info"
         app:layout_constraintEnd_toStartOf="@id/iv_lost_guide_expand"
         app:layout_constraintStart_toEndOf="@id/iv_lost_guide_info"
-        app:layout_constraintTop_toTopOf="iv_lost_guide_info" />
+        app:layout_constraintTop_toTopOf="@id/iv_lost_guide_info" />
 
     <ImageView
         android:id="@+id/iv_lost_guide_expand"
@@ -44,6 +45,6 @@
         app:layout_constraintEnd_toStartOf="@id/iv_lost_guide_expand"
         app:layout_constraintStart_toStartOf="@id/tv_lost_guide_title"
         app:layout_constraintTop_toBottomOf="@id/iv_lost_guide_info"
-        tools:text="testtesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttesttest" />
+        tools:text="분실물 습득/수령 가이드를 추가하여주십시오" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
