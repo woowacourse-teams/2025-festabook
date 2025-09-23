@@ -7,14 +7,14 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.databinding.ItemLostGuideBinding
-import com.daedan.festabook.presentation.news.lost.model.LostGuideItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
 class LostGuideItemViewHolder private constructor(
     private val binding: ItemLostGuideBinding,
     private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
-    private var lostGuideItem: LostGuideItemUiModel? = null
+    private var lostGuideItem: LostUiModel.Guide? = null
 
     init {
         binding.root.setOnClickListener {
@@ -24,11 +24,12 @@ class LostGuideItemViewHolder private constructor(
         }
     }
 
-    fun bind(lostGuideItem: LostGuideItemUiModel) {
+    fun bind(lostGuideItem: LostUiModel.Guide) {
         this.lostGuideItem = lostGuideItem
         binding.tvLostGuideDescription.text = lostGuideItem.guide
         binding.tvLostGuideDescription.visibility =
-            if (lostGuideItem.isExpanded) View.VISIBLE else View.VISIBLE
+            if (lostGuideItem.isExpanded) View.VISIBLE else View.GONE
+
         TransitionManager.beginDelayedTransition(binding.root, AutoTransition())
 
         val targetRotation =
