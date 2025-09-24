@@ -7,11 +7,19 @@ import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.OrganizationGeography
 import com.daedan.festabook.domain.model.Place
 import com.daedan.festabook.domain.model.PlaceGeography
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceListRepository
 
 class PlaceListRepositoryImpl(
     private val placeDataSource: PlaceDataSource,
 ) : PlaceListRepository {
+    override suspend fun getTimeTags(): Result<List<TimeTag>> {
+        val response = placeDataSource.fetchTimeTag().toResult()
+        return response.mapCatching { timeTags ->
+            timeTags.map { it.toDomain() }
+        }
+    }
+
     override suspend fun getPlaces(): Result<List<Place>> {
         val response = placeDataSource.fetchPlaces().toResult()
         return response.mapCatching { places ->

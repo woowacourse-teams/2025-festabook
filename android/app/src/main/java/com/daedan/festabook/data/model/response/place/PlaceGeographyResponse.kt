@@ -16,6 +16,8 @@ data class PlaceGeographyResponse(
     val markerCoordinate: MarkerCoordinate,
     @SerialName("title")
     val title: String,
+    @SerialName("timeTags")
+    val timeTags: List<TimeTagResponse>,
 ) {
     @Serializable
     data class MarkerCoordinate(
@@ -36,7 +38,7 @@ data class PlaceGeographyResponse(
         PRIMARY,
         STAGE,
         PHOTO_BOOTH,
-        EXTRA
+        EXTRA,
     }
 }
 
@@ -50,6 +52,7 @@ fun PlaceGeographyResponse.toDomain() =
                 longitude = markerCoordinate.longitude,
             ),
         title = title,
+        timeTags = timeTags.map { it.toDomain() },
     )
 
 fun PlaceGeographyResponse.PlaceCategory.toDomain() =

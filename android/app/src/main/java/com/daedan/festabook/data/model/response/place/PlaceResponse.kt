@@ -19,6 +19,8 @@ data class PlaceResponse(
     val imageUrl: String?,
     @SerialName("location")
     val location: String?,
+    @SerialName("timeTags")
+    val timeTags: List<TimeTagResponse>,
 )
 
 fun PlaceResponse.toDomain() =
@@ -29,4 +31,5 @@ fun PlaceResponse.toDomain() =
         description = description,
         imageUrl = imageUrl,
         location = location,
+        timeTags = timeTags.map { it.toDomain() },
     )
