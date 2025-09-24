@@ -1,8 +1,10 @@
 package com.daedan.festabook.presentation.placeList.placeMap
 
+import android.content.Context
 import androidx.core.content.ContextCompat
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -234,9 +236,6 @@ class MapManager(
             map = this@MapManager.map
         }
     }
-
-    private fun Context.getRootPixel() = context.resources.displayMetrics.heightPixels
-
     private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
         width = Marker.SIZE_AUTO
         height = Marker.SIZE_AUTO
