@@ -44,10 +44,11 @@ class ExploreViewModel(
                 .debounce(300L)
                 .distinctUntilChanged()
                 .collectLatest { query ->
-                    if (query.isEmpty()) {
-                        _searchState.value = SearchUiState.Idle
-                        return@collectLatest
-                    }
+// 현재는 검색어가 없을 시, 전체 리스트를 보여주기 위해 아래의 코드를 주석처리해두었음.
+//                    if (query.isEmpty()) {
+//                        _searchState.value = SearchUiState.Idle
+//                        return@collectLatest
+//                    }
 
                     _searchState.value = SearchUiState.Loading
 
