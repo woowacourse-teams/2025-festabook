@@ -57,6 +57,13 @@ class UpdateManager: ObservableObject {
             return true
         }
 
+        // Major, Minor 버전이 같으면 Patch 버전 비교
+        if currentComponents[0] == latestComponents[0] && currentComponents[1] == latestComponents[1] {
+            let currentPatch = currentComponents.count >= 3 ? currentComponents[2] : 0
+            let latestPatch = latestComponents.count >= 3 ? latestComponents[2] : 0
+            return currentPatch < latestPatch
+        }
+
         return false
     }
 
