@@ -16,7 +16,9 @@ class AppStoreCheck {
         let currentVersion = Self.appVersion ?? "알 수 없음"
         print("[AppStoreCheck] 현재 앱 버전: \(currentVersion)")
 
-        let urlString = "https://itunes.apple.com/lookup?id=\(Self.appleID)&country=kr"
+        // Cache-busting을 위한 타임스탬프 파라미터 추가
+        let timestamp = Int(Date().timeIntervalSince1970)
+        let urlString = "https://itunes.apple.com/lookup?id=\(Self.appleID)&country=kr&t=\(timestamp)"
 
         guard let url = URL(string: urlString) else {
             print("[AppStoreCheck] URL 생성 실패")
@@ -24,7 +26,14 @@ class AppStoreCheck {
             return
         }
 
-        URLSession.shared.dataTask(with: url) { data, response, error in
+        // URLRequest 생성 및 캐시 무효화 설정
+        var request = URLRequest(url: url)
+        request.cachePolicy = .reloadIgnoringLocalAndRemoteCacheData
+        request.setValue("no-cache", forHTTPHeaderField: "Cache-Control")
+        request.setValue("no-cache", forHTTPHeaderField: "Pragma")
+        request.timeoutInterval = 30.0
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
             if let error = error {
                 print("[AppStoreCheck] 네트워크 오류: \(error.localizedDescription)")
                 completion(nil)
