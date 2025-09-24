@@ -6,6 +6,7 @@ import { PlacePageSkeleton } from '../components/common/Skeleton';
 import { getCategoryIcon } from '../components/icons/CategoryIcons';
 import Modal from '../components/common/Modal';
 import MapSelector from '../components/map/MapSelector';
+import PlaceCloneModal from '../components/modals/PlaceCloneModal';
 
 
 // 메인 플레이스 카드 (이미지 포함)
@@ -264,6 +265,7 @@ const PlacePage = () => {
     const [selectedTimeTags, setSelectedTimeTags] = useState([]); // 선택된 시간 태그 ID 배열
     const [coordModalOpen, setCoordModalOpen] = useState(false);
     const [selectedPlace, setSelectedPlace] = useState(null);
+    const [cloneModalOpen, setCloneModalOpen] = useState(false);
 
     // defaultBooth 메서드
     const getDefaultValueIfNull = (defaultValue, nullableValue) => nullableValue === null ? defaultValue : nullableValue;
@@ -408,6 +410,20 @@ const PlacePage = () => {
             showToast('성공적으로 플레이스가 삭제되었습니다.');
         } catch {
             showToast('플레이스 삭제에 실패했습니다.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // 플레이스 복제
+    const handleClone = async (selectedPlaceIds) => {
+        try {
+            setLoading(true);
+            await placeAPI.clonePlaces(selectedPlaceIds);
+            const placesData = await placeAPI.getPlaces();
+            setPlaces(placesData.map(defaultBooth));
+        } catch (error) {
+            throw error; // 에러를 다시 던져서 모달에서 처리하도록 함
         } finally {
             setLoading(false);
         }
@@ -570,6 +586,13 @@ const PlacePage = () => {
                         </div>
 
                         <div className="flex items-center gap-3">
+                            <button
+                                onClick={() => setCloneModalOpen(true)}
+                                className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all duration-200 hover:scale-105 shadow-lg"
+                            >
+                                <i className="fas fa-copy mr-2"></i>
+                                플레이스 복제
+                            </button>
                             <button
                                 onClick={() => openModal('booth', { onSave: handleCreate })}
                                 className="bg-gradient-to-r from-black to-black hover:from-gray-700 hover:to-gray-800 text-white font-semibold py-3 px-6 rounded-lg flex items-center transition-all duration-200 hover:scale-105 shadow-lg"
@@ -838,6 +861,15 @@ const PlacePage = () => {
                         }}
                     />
                 </Modal>
+            )}
+
+            {cloneModalOpen && (
+                <PlaceCloneModal
+                    places={places}
+                    onClone={handleClone}
+                    onClose={() => setCloneModalOpen(false)}
+                    showToast={showToast}
+                />
             )}
         </div>
     );
