@@ -114,7 +114,7 @@ class ExploreActivity :
             handleSearchAction()
         }
 
-        binding.btnExploreClose.setOnClickListener {
+        binding.btnBackToMain.setOnClickListener {
             finish()
         }
     }
@@ -168,7 +168,7 @@ class ExploreActivity :
             }
         }
         viewModel.hasFestivalId.observe(this) { hasId ->
-            binding.btnExploreClose.visibility = if (hasId) View.VISIBLE else View.GONE
+            binding.layoutExploreToolbar.visibility = if (hasId) View.VISIBLE else View.GONE
             binding.ivLogoTitle.visibility = if (hasId) View.GONE else View.VISIBLE
         }
     }
