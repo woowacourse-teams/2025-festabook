@@ -13,11 +13,11 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemModalDialogBinding
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.common.loadImage
-import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import timber.log.Timber
 
 class LostItemModalDialogFragment : DialogFragment() {
-    private val lostItem: LostItemUiModel? by lazy {
+    private val lostItem: LostUiModel.Item? by lazy {
         arguments?.getObject(KEY_LOST_ITEM)
     }
 
@@ -89,7 +89,7 @@ class LostItemModalDialogFragment : DialogFragment() {
         const val TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT = "lostItemModalDialogFragment"
         const val KEY_LOST_ITEM = "lostItem"
 
-        fun newInstance(lostItem: LostItemUiModel) =
+        fun newInstance(lostItem: LostUiModel.Item) =
             LostItemModalDialogFragment().apply {
                 arguments =
                     Bundle().apply {

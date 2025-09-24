@@ -16,7 +16,7 @@ import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
-import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
@@ -51,9 +51,15 @@ class PlaceDetailActivity :
 
         viewModel =
             if (placeDetailObject != null) {
-                ViewModelProvider(this, PlaceDetailViewModel.factory(placeDetailObject))[PlaceDetailViewModel::class.java]
+                ViewModelProvider(
+                    this,
+                    PlaceDetailViewModel.factory(placeDetailObject),
+                )[PlaceDetailViewModel::class.java]
             } else if (placeUiObject != null) {
-                ViewModelProvider(this, PlaceDetailViewModel.factory(placeUiObject))[PlaceDetailViewModel::class.java]
+                ViewModelProvider(
+                    this,
+                    PlaceDetailViewModel.factory(placeUiObject),
+                )[PlaceDetailViewModel::class.java]
             } else {
                 finish()
                 return
@@ -154,7 +160,9 @@ class PlaceDetailActivity :
 
     override fun onFAQClick(faqItem: FAQItemUiModel) = Unit
 
-    override fun onLostItemClick(lostItem: LostItemUiModel) = Unit
+    override fun onLostItemClick(lostItem: LostUiModel.Item) = Unit
+
+    override fun onLostGuideItemClick(lostGuideItem: LostUiModel.Guide) = Unit
 
     companion object {
         private const val DEFAULT_MAX_LINES = 1

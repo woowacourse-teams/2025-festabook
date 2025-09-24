@@ -1,22 +1,30 @@
 package com.daedan.festabook.presentation.news.lost.model
 
 import android.os.Parcelable
-import com.daedan.festabook.domain.model.LostItem
+import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.model.LostItemStatus
 import kotlinx.parcelize.Parcelize
 import java.time.format.DateTimeFormatter
 
-@Parcelize
-data class LostItemUiModel(
-    val lostItemId: Long,
-    val imageUrl: String,
-    val storageLocation: String,
-    val status: LostItemUiStatus,
-    val createdAt: String,
-) : Parcelable
+sealed interface LostUiModel {
+    @Parcelize
+    data class Item(
+        val lostItemId: Long,
+        val imageUrl: String,
+        val storageLocation: String,
+        val status: LostItemUiStatus,
+        val createdAt: String,
+    ) : Parcelable,
+        LostUiModel
 
-fun LostItem.toUiModel(): LostItemUiModel =
-    LostItemUiModel(
+    data class Guide(
+        val guide: String = "",
+        val isExpanded: Boolean = false,
+    ) : LostUiModel
+}
+
+fun Lost.Item.toLostItemUiModel(): LostUiModel =
+    LostUiModel.Item(
         lostItemId = lostItemId,
         imageUrl = imageUrl,
         storageLocation = storageLocation,
@@ -28,3 +36,5 @@ fun LostItem.toUiModel(): LostItemUiModel =
             },
         createdAt = createdAt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd  HH:mm")),
     )
+
+fun Lost.Guide.toLostGuideItemUiModel(): LostUiModel = LostUiModel.Guide(guide = guide)
