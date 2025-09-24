@@ -3,6 +3,7 @@ package com.daedan.festabook
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.data.service.api.ApiClient
+import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
@@ -81,7 +82,6 @@ class FestaBookApp : Application() {
         Thread.setDefaultUncaughtExceptionHandler(
             FestabookGlobalExceptionHandler(
                 this,
-                FirebaseCrashlytics.getInstance()
             )
         )
     }
