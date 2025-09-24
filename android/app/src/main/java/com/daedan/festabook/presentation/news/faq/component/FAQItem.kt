@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.news.faq.component
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -51,6 +52,10 @@ fun FAQItem(
                 .fillMaxWidth()
                 .wrapContentHeight()
                 .background(
+                    color = colorResource(R.color.gray100),
+                    shape = RoundedCornerShape(16.dp),
+                ).border(
+                    width = 1.dp,
                     color = colorResource(R.color.gray200),
                     shape = RoundedCornerShape(16.dp),
                 ).animateContentSize()
