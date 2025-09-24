@@ -14,7 +14,6 @@ import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
-import com.daedan.festabook.festival.dto.PlaceBulkCloneRequestFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.global.security.JwtTestHelper;
@@ -33,6 +32,8 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
+import com.daedan.festabook.place.dto.PlaceBulkCloneRequestFixture;
+import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -174,6 +175,47 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("$", hasSize(expectedSize));
+        }
+
+        @Test
+        void 성공_이미지도_같이_복제() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
+
+            List<Long> originalPlaceIds = List.of(place.getId());
+            PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create(originalPlaceIds);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            // when & then
+            PlaceBulkCloneResponse placeBulkCloneResponse = RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .post("/places/clone")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .as(PlaceBulkCloneResponse.class);
+
+            assertSoftly(s -> {
+                Place p = placeJpaRepository.findById(placeBulkCloneResponse.clonedPlaceIds().getFirst()).get();
+                List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlace(p);
+                String placeImageUrl1 = placeImages.get(0).getImageUrl();
+                String placeImageUrl2 = placeImages.get(1).getImageUrl();
+
+                s.assertThat(placeImageUrl1).isEqualTo(placeImage1.getImageUrl());
+                s.assertThat(placeImageUrl2).isEqualTo(placeImage1.getImageUrl());
+            });
         }
     }
 

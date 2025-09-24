@@ -1,6 +1,5 @@
-package com.daedan.festabook.festival.dto;
+package com.daedan.festabook.place.dto;
 
-import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
 import java.util.ArrayList;
 import java.util.List;
 

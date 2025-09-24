@@ -62,10 +62,17 @@ public class PlaceService {
         validatePlacesBelongsToFestival(originalPlaces.size(), request.originalPlaceIds().size());
 
         List<Place> clonedPlaces = new ArrayList<>();
+        List<PlaceImage> clonedPlaceImages = new ArrayList<>();
         for (Place place : originalPlaces) {
-            clonedPlaces.add(place.clone());
+            Place clonedPlace = place.clone();
+            clonedPlaces.add(clonedPlace);
+            List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlace(place).stream()
+                    .map(placeImage -> placeImage.cloneByPlace(clonedPlace))
+                    .toList();
+            clonedPlaceImages.addAll(placeImages);
         }
         List<Place> savedClonePlaces = placeJpaRepository.saveAll(clonedPlaces);
+        placeImageJpaRepository.saveAll(clonedPlaceImages);
 
         return PlaceBulkCloneResponse.from(savedClonePlaces);
     }

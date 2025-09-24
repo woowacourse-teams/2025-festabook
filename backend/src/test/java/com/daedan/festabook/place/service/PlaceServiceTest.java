@@ -10,7 +10,6 @@ import static org.mockito.Mockito.never;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
-import com.daedan.festabook.festival.dto.PlaceBulkCloneRequestFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
@@ -27,6 +26,7 @@ import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
+import com.daedan.festabook.place.dto.PlaceBulkCloneRequestFixture;
 import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
@@ -157,6 +157,9 @@ class PlaceServiceTest {
             given(placeJpaRepository.findAllByIdInAndFestivalId(originalPlaceIds, festivalId))
                     .willReturn(originalPlaces);
 
+            given(placeImageJpaRepository.findAllByPlace(any()))
+                    .willReturn(List.of());
+
             // 복제한 플레이스 저장
             Place clonedPlace1 = PlaceFixture.create();
             Place clonedPlace2 = PlaceFixture.create();
@@ -180,6 +183,41 @@ class PlaceServiceTest {
 
             // then
             assertThat(result.clonedPlaceIds()).containsExactly(expected.toArray(new Long[]{}));
+        }
+
+        @Test
+        void 성공_이미지도_같이_복제() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
+
+            // 기존 플레이스 조회
+            Place place1 = PlaceFixture.create(festival, 1L);
+            List<Long> originalPlaceIds = List.of(place1.getId());
+            List<Place> originalPlaces = List.of(place1);
+            given(placeJpaRepository.findAllByIdInAndFestivalId(originalPlaceIds, festivalId))
+                    .willReturn(originalPlaces);
+
+            PlaceImageFixture.create(place1);
+            given(placeImageJpaRepository.findAllByPlace(any()))
+                    .willReturn(List.of());
+
+            // 복제한 플레이스 저장
+            Place clonedPlace1 = PlaceFixture.create();
+            List<Place> clonedPlaces = List.of(clonedPlace1);
+            List<Place> savedClonePlaces = List.of(PlaceFixture.create(4L));
+            given(placeJpaRepository.saveAll(clonedPlaces))
+                    .willReturn(savedClonePlaces);
+
+            PlaceBulkCloneRequest request = new PlaceBulkCloneRequest(List.of(place1.getId()));
+
+            // when
+            placeService.bulkClonePlaces(festivalId, request);
+
+            // then
+            then(placeImageJpaRepository).should().saveAll(any());
         }
 
         @Test
