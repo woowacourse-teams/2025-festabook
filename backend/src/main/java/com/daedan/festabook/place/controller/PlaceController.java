@@ -6,6 +6,8 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
+import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
@@ -53,6 +55,20 @@ public class PlaceController {
             @RequestBody PlaceCreateRequest request
     ) {
         return placeService.createPlace(councilDetails.getFestivalId(), request);
+    }
+
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
+    @PostMapping("/clone")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "특정 축제에 대한 여러 플레이스들을 복제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
+    })
+    public PlaceBulkCloneResponse bulkClonePlaces(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody PlaceBulkCloneRequest request
+    ) {
+        return placeService.bulkClonePlaces(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping

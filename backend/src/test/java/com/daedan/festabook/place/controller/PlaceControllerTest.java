@@ -14,6 +14,7 @@ import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
+import com.daedan.festabook.festival.dto.PlaceBulkCloneRequestFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.global.security.JwtTestHelper;
@@ -31,6 +32,7 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
@@ -137,6 +139,41 @@ class PlaceControllerTest {
                     .body("placeId", notNullValue())
                     .body("category", equalTo(expectedPlaceCategory.toString()))
                     .body("title", equalTo(expectedPlaceTitle));
+        }
+    }
+
+    @Nested
+    class bulkClonePlaces {
+
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place1 = PlaceFixture.create(festival);
+            Place place2 = PlaceFixture.create(festival);
+            Place place3 = PlaceFixture.create(festival);
+            placeJpaRepository.saveAll(List.of(place1, place2, place3));
+
+            List<Long> originalPlaceIds = List.of(place1.getId(), place2.getId(), place3.getId());
+            PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create(originalPlaceIds);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
+
+            int expectedSize = originalPlaceIds.size();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .post("/places/clone")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("$", hasSize(expectedSize));
         }
     }
 

@@ -10,6 +10,8 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
+import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlaceResponse;
@@ -22,6 +24,7 @@ import com.daedan.festabook.timetag.domain.PlaceTimeTag;
 import com.daedan.festabook.timetag.domain.TimeTag;
 import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -47,6 +50,24 @@ public class PlaceService {
         Place savedPlace = placeJpaRepository.save(place);
 
         return PlaceCreateResponse.from(savedPlace);
+    }
+
+    @Transactional
+    public PlaceBulkCloneResponse bulkClonePlaces(Long festivalId, PlaceBulkCloneRequest request) {
+        validateBulkCloneSize(request.originalPlaceIds().size());
+        getFestivalById(festivalId);
+
+        List<Place> originalPlaces = placeJpaRepository.findAllByIdInAndFestivalId(request.originalPlaceIds(),
+                festivalId);
+        validatePlacesBelongsToFestival(originalPlaces.size(), request.originalPlaceIds().size());
+
+        List<Place> clonedPlaces = new ArrayList<>();
+        for (Place place : originalPlaces) {
+            clonedPlaces.add(place.clone());
+        }
+        List<Place> savedClonePlaces = placeJpaRepository.saveAll(clonedPlaces);
+
+        return PlaceBulkCloneResponse.from(savedClonePlaces);
     }
 
     @Transactional(readOnly = true)
@@ -201,6 +222,18 @@ public class PlaceService {
     private void validatePlaceBelongsToFestival(Place place, Long festivalId) {
         if (!place.isFestivalIdEqualTo(festivalId)) {
             throw new BusinessException("해당 축제의 플레이스가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validatePlacesBelongsToFestival(int originalPlacesCount, int requestPlaceCounts) {
+        if (originalPlacesCount != requestPlaceCounts) {
+            throw new BusinessException("플레이스의 접근 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validateBulkCloneSize(int size) {
+        if (size > 200) {
+            throw new BusinessException("한 번에 복제할 수 있는 사이즈가 초과하였습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }
