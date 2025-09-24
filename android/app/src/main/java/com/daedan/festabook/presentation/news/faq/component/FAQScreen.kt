@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import com.daedan.festabook.presentation.common.component.EmptyStateScreen
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
+import timber.log.Timber
 
 @Composable
 fun FAQScreen(
@@ -18,7 +19,9 @@ fun FAQScreen(
     modifier: Modifier = Modifier,
 ) {
     when (uiState) {
-        is FAQUiState.Error -> Unit
+        is FAQUiState.Error -> {
+            Timber.w(uiState.throwable.stackTraceToString())
+        }
 
         is FAQUiState.InitialLoading -> Unit
 
