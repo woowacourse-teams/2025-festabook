@@ -38,6 +38,7 @@ struct PlaceGeography: Codable, Identifiable {
     let host: String?
     let startTime: String?
     let endTime: String?
+    let timeTags: [TimeTag]?    // 지오메트리 응답에도 포함되는 타임태그
 
     var id: Int { placeId }
 

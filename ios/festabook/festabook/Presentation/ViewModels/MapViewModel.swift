@@ -54,16 +54,12 @@ class MapViewModel: NSObject, ObservableObject {
             markers = markers.filter { active.contains($0.category) }
         }
 
-        // Time tag filtering
+        // Time tag filtering: 지오메트리의 timeTags를 직접 사용
         if let selectedTimeTag = selectedTimeTag {
-            let filteredPlaceIds = Set<Int>(previewsByPlaceId.values.compactMap { preview in
-                guard let timeTags = preview.timeTags,
-                      timeTags.contains(where: { $0.id == selectedTimeTag.id }) else {
-                    return nil
-                }
-                return preview.placeId
-            })
-            markers = markers.filter { filteredPlaceIds.contains($0.placeId) }
+            markers = markers.filter { geography in
+                guard let tags = geography.timeTags else { return false }
+                return tags.contains(where: { $0.id == selectedTimeTag.id })
+            }
         }
 
         return markers
