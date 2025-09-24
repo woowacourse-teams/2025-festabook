@@ -58,8 +58,6 @@ import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.domain.repository.ScheduleRepository
-import com.daedan.festabook.presentation.splash.AppVersionManager
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.firebase.messaging.FirebaseMessaging
 import timber.log.Timber
 import java.util.UUID
@@ -113,7 +111,7 @@ class AppContainer(
     }
 
     private val lostItemDataSource: LostItemDataSource by lazy {
-        LostItemDataSourceImpl(lostItemService)
+        LostItemDataSourceImpl(lostItemService, festivalService)
     }
 
     private val lineupDataSource: LineupDataSource by lazy {

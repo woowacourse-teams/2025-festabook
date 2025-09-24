@@ -3,13 +3,19 @@ package com.daedan.festabook.domain.model
 import timber.log.Timber
 import java.time.LocalDateTime
 
-data class LostItem(
-    val lostItemId: Long,
-    val imageUrl: String,
-    val storageLocation: String,
-    val status: LostItemStatus,
-    val createdAt: LocalDateTime,
-)
+sealed interface Lost {
+    data class Item(
+        val lostItemId: Long,
+        val imageUrl: String,
+        val storageLocation: String,
+        val status: LostItemStatus,
+        val createdAt: LocalDateTime,
+    ) : Lost
+
+    data class Guide(
+        val guide: String,
+    ) : Lost
+}
 
 fun String.toLocalDateTime(): LocalDateTime =
     runCatching {

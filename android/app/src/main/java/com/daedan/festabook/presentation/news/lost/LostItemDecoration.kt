@@ -17,7 +17,12 @@ class LostItemDecoration(
         val position = parent.getChildAdapterPosition(view)
         if (position == RecyclerView.NO_POSITION) return
 
-        val column = position % spanCount
+        if (position == 0) {
+            outRect.top = spacing
+            return
+        }
+
+        val column = (position - 1) % spanCount
         outRect.left = column * spacing / spanCount
         outRect.right = spacing - (column + 1) * spacing / spanCount
         outRect.top = spacing

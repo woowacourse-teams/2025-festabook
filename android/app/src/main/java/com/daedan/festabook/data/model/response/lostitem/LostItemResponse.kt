@@ -1,6 +1,6 @@
 package com.daedan.festabook.data.model.response.lostitem
 
-import com.daedan.festabook.domain.model.LostItem
+import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.model.LostItemStatus
 import com.daedan.festabook.domain.model.toLocalDateTime
 import kotlinx.serialization.SerialName
@@ -22,8 +22,8 @@ data class LostItemResponse(
     val createdAt: String,
 )
 
-fun LostItemResponse.toDomain(): LostItem =
-    LostItem(
+fun LostItemResponse.toDomain(): Lost.Item =
+    Lost.Item(
         lostItemId = lostItemId,
         imageUrl = imageUrl,
         storageLocation = storageLocation,
