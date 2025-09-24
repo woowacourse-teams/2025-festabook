@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		197CA0C22E83979200539AE0 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = 197CA0C12E83979200539AE0 /* FirebaseCrashlytics */; };
 		1998BF7B2E7939230054F32B /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 1998BEC82E792C4C0054F32B /* FirebaseCore */; };
 		1998BF7C2E7939230054F32B /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = 1998BEC92E792C4C0054F32B /* FirebaseMessaging */; };
 		19ECEA6D2E78021000BB6CD8 /* NMapsMap in Frameworks */ = {isa = PBXBuildFile; productRef = 19ECEA6C2E78021000BB6CD8 /* NMapsMap */; };
@@ -72,6 +73,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				1998BF7C2E7939230054F32B /* FirebaseMessaging in Frameworks */,
+				197CA0C22E83979200539AE0 /* FirebaseCrashlytics in Frameworks */,
 				1998BF7B2E7939230054F32B /* FirebaseCore in Frameworks */,
 				19ECEA6D2E78021000BB6CD8 /* NMapsMap in Frameworks */,
 			);
@@ -132,6 +134,7 @@
 				195B4D9E2E76A57E00740AF2 /* Sources */,
 				195B4D9F2E76A57E00740AF2 /* Frameworks */,
 				195B4DA02E76A57E00740AF2 /* Resources */,
+				197CA0C32E83AE4800539AE0 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -145,6 +148,7 @@
 				19ECEA6C2E78021000BB6CD8 /* NMapsMap */,
 				1998BEC82E792C4C0054F32B /* FirebaseCore */,
 				1998BEC92E792C4C0054F32B /* FirebaseMessaging */,
+				197CA0C12E83979200539AE0 /* FirebaseCrashlytics */,
 			);
 			productName = festabook;
 			productReference = 195B4DA22E76A57E00740AF2 /* festabook.app */;
@@ -269,6 +273,32 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		197CA0C32E83AE4800539AE0 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Info.plist",
+				"$(TARGET_BUILD_DIR)/$(UNLOCALIZED_RESOURCES_FOLDER_PATH)/GoogleService-Info.plist",
+				"$(TARGET_BUILD_DIR)/$(EXECUTABLE_PATH)",
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${PRODUCT_NAME}.debug.dylib",
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%/Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		195B4D9E2E76A57E00740AF2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -341,7 +371,7 @@
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
 				COPY_PHASE_STRIP = NO;
-				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = L8HZU9MP64;
 				ENABLE_STRICT_OBJC_MSGSEND = YES;
 				ENABLE_TESTABILITY = YES;
@@ -366,6 +396,7 @@
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -424,6 +455,7 @@
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-ObjC";
 				SDKROOT = iphoneos;
 				SWIFT_COMPILATION_MODE = wholemodule;
 				VALIDATE_PRODUCT = YES;
@@ -647,6 +679,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		197CA0C12E83979200539AE0 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 1998BEC72E792C4C0054F32B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
 		1998BEC82E792C4C0054F32B /* FirebaseCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 1998BEC72E792C4C0054F32B /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
