@@ -254,7 +254,6 @@ struct TimelineEventRow: View {
                     Text(event.title)
                         .font(.system(size: 18, weight: .medium))
                         .foregroundColor(textColor)
-                        .lineLimit(2)
                         .multilineTextAlignment(.leading)
                         .layoutPriority(1)
                         .minimumScaleFactor(0.95)
