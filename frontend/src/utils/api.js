@@ -353,6 +353,17 @@ export const placeAPI = {
     }
   },
 
+  // 플레이스 복제
+  clonePlaces: async (originalPlaceIds) => {
+    try {
+      const response = await api.post('/places/clone', { originalPlaceIds });
+      return response.data;
+    } catch (error) {
+      console.error('Failed to clone places:', error);
+      throw new Error('플레이스 복제에 실패했습니다.');
+    }
+  },
+
 };
 
 // 축제 날짜 관련 API
