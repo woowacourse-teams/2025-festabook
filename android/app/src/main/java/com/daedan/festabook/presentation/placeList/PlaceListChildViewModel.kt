@@ -10,6 +10,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.model.PlaceCategory
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
@@ -20,7 +21,8 @@ import kotlinx.coroutines.launch
 class PlaceListChildViewModel(
     private val placeListRepository: PlaceListRepository,
 ) : ViewModel() {
-    private var _cachedPlaces = listOf<PlaceUiModel>()
+    private var cachedPlaces = listOf<PlaceUiModel>()
+    private var cachedPlaceByTimeTag: List<PlaceUiModel> = emptyList()
 
     private val _places: MutableLiveData<PlaceListUiState<List<PlaceUiModel>>> =
         MutableLiveData(PlaceListUiState.Loading())
@@ -30,7 +32,7 @@ class PlaceListChildViewModel(
         loadAllPlaces()
     }
 
-    fun filterPlaces(category: List<PlaceCategoryUiModel>) {
+    fun updatePlacesByCategories(category: List<PlaceCategoryUiModel>) {
         val secondaryCategories =
             PlaceCategory.SECONDARY_CATEGORIES.map {
                 it.toUiModel()
@@ -41,17 +43,36 @@ class PlaceListChildViewModel(
             clearPlacesFilter()
             return
         }
-
         val filteredPlaces =
-            _cachedPlaces.filter { place ->
-                place.category in category
-            }
-
+            cachedPlaceByTimeTag
+                .filter { place ->
+                    place.category in category
+                }
         _places.value = PlaceListUiState.Success(filteredPlaces)
     }
 
+    private fun filterPlacesByTimeTag(timeTagId: Long): List<PlaceUiModel> {
+        val filteredPlaces =
+            cachedPlaces.filter { place ->
+                place.timeTagId.contains(timeTagId)
+            }
+        return filteredPlaces
+    }
+
+    fun updatePlacesByTimeTag(timeTagId: Long) {
+        val filteredPlaces =
+            if (timeTagId == TimeTag.EMTPY_TIME_TAG_ID) {
+                cachedPlaces
+            } else {
+                filterPlacesByTimeTag(timeTagId)
+            }
+
+        _places.value = PlaceListUiState.Success(filteredPlaces)
+        cachedPlaceByTimeTag = filteredPlaces
+    }
+
     fun clearPlacesFilter() {
-        _places.value = PlaceListUiState.Success(_cachedPlaces)
+        _places.value = PlaceListUiState.Success(cachedPlaceByTimeTag)
     }
 
     fun setPlacesStateComplete() {
@@ -64,11 +85,8 @@ class PlaceListChildViewModel(
             result
                 .onSuccess { places ->
                     val placeUiModels = places.map { it.toUiModel() }
-                    _places.value =
-                        PlaceListUiState.Success(
-                            placeUiModels,
-                        )
-                    _cachedPlaces = placeUiModels
+                    cachedPlaces = placeUiModels
+                    _places.value = PlaceListUiState.PlaceLoaded(placeUiModels)
                 }.onFailure {
                     _places.value = PlaceListUiState.Error(it)
                 }

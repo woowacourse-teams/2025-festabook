@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout>
 
-    <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+ <androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -11,6 +11,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+
             <com.daedan.festabook.presentation.placeList.placeMap.MapTouchEventInterceptView
                 android:id="@+id/view_map_touch_event_intercept"
                 android:layout_width="match_parent"
@@ -19,22 +20,56 @@
                 <androidx.fragment.app.FragmentContainerView
                     android:id="@+id/fcv_map_container"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent" />
 
             </com.daedan.festabook.presentation.placeList.placeMap.MapTouchEventInterceptView>
+
+            <LinearLayout
+                android:id="@+id/layout_map_menu"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@color/gray050"
+                android:elevation="4dp"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <Spinner
+                    android:id="@+id/spinner_select_time_tag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@null"
+                    android:dropDownWidth="wrap_content"
+                    android:dropDownVerticalOffset="60dp"
+                    android:popupBackground="@drawable/bg_spinner_dropdown"
+                    android:spinnerMode="dropdown" />
+
+            </LinearLayout>
+
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fcv_place_category_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/layout_map_menu" />
+
+            <com.naver.maps.map.widget.LogoView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                app:layout_constraintTop_toBottomOf="@id/fcv_place_category_container"
+                app:layout_constraintStart_toStartOf="parent" />
 
             <androidx.fragment.app.FragmentContainerView
                 android:id="@+id/fcv_place_list_container"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                app:layout_constraintTop_toBottomOf="@id/fcv_place_category_container"
-                app:layout_constraintBottom_toBottomOf="parent" />
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/fcv_place_category_container" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.coordinatorlayout.widget.CoordinatorLayout>

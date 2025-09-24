@@ -78,6 +78,9 @@
     <string name="modal_lost_item_location">보관 장소 : %1$s</string>
     <string name="modal_lost_item_created_at">보관 일시 : %1$s</string>
 
+    <!--분실물 화면-->
+    <string name="lost_item_guide">분실물 수령/제보 가이드</string>
+
     <!-- 설정 화면 -->
     <string name="setting_title">설정</string>
     <string name="setting_notice_title">알림</string>
@@ -100,6 +103,8 @@
     <string name="content_description_floating_action_button">플로팅 지도 버튼</string>
     <string name="move">이동</string>
     <string name="lost_item">분실물 이미지</string>
+    <string name="chevron_down">펼치기</string>
+    <string name="info">정보</string>
 
     <!--실패 시 출력 -->
     <string name="fail_snackbar_confirm">확인</string>
@@ -108,7 +113,6 @@
     <string name="error_network_exception">현재 연결이 불안정합니다. 잠시 후 다시 시도해주세요</string>
     <string name="error_unknown_exception">알 수 없는 에러가 발생했습니다 잠시 후 다시 시도해주세요</string>
     <string name="error_fail_to_load_place_info">정보를 불러오는데 실패했습니다</string>
-    <string name="faq_expand">답변 펼치기</string>
 
     <!--다이어로그-->
     <string name="notification_permission_title">알림 권한 필요</string>
@@ -142,4 +146,6 @@
     <string name="update_failed_title">서버 통신 실패</string>
     <string name="update_failed_message">앱 서버에 접속할 수 없습니다. 다시 시도해주세요</string>
     <string name="update_failed_confirm">종료</string>
+    <string name="explore_btn_backToMain_content_desc">홈화면으로 돌아가기</string>
+    <string name="explore_toolbar_title">축제 검색</string>
 </resources>

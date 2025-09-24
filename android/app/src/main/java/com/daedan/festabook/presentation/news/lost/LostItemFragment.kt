@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.GridLayout
 import androidx.fragment.app.viewModels
+import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemBinding
@@ -11,7 +12,7 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.lost.LostItemModalDialogFragment.Companion.TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT
 import com.daedan.festabook.presentation.news.lost.adapter.LostItemAdapter
-import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
 class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment_lost_item) {
@@ -28,42 +29,57 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        binding.rvLostItemList.layoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
         binding.rvLostItemList.adapter = adapter
+        (binding.rvLostItemList.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
+            false
+
         val spacing = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
+        setupLostItemDecoration(spacing)
+
+        setupObservers()
+        onSwipeRefreshLostItemsListener()
+        setupSkeletonView(spacing)
+    }
+
+    private fun setupLostItemDecoration(spacing: Int) {
+        val gridLayoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
+        binding.rvLostItemList.layoutManager = gridLayoutManager
+
+        gridLayoutManager.spanSizeLookup =
+            object : GridLayoutManager.SpanSizeLookup() {
+                override fun getSpanSize(position: Int): Int = if (position == 0) SPAN_COUNT else 1
+            }
+
         binding.rvLostItemList.addItemDecoration(
             LostItemDecoration(
                 spanCount = SPAN_COUNT,
                 spacing = spacing,
             ),
         )
-        setupObservers()
-        onSwipeRefreshLostItemsListener()
-        setupSkeletonView(spacing)
     }
 
     private fun setupObservers() {
-        viewModel.lostItemUiState.observe(viewLifecycleOwner) { state ->
+        viewModel.lostUiState.observe(viewLifecycleOwner) { state ->
             when (state) {
-                is LostItemUiState.InitialLoading -> {
+                is LostUiState.InitialLoading -> {
                     binding.srlLostItemList.isRefreshing = false
                     showSkeleton()
                 }
 
-                is LostItemUiState.Refreshing -> {
+                is LostUiState.Refreshing -> {
                     binding.srlLostItemList.isRefreshing = true
                     showSkeleton()
                 }
 
-                is LostItemUiState.Success -> {
+                is LostUiState.Success -> {
                     binding.srlLostItemList.isRefreshing = false
                     adapter.submitList(state.lostItems) {
-                        showEmptyStateMessage()
+                        showEmptyStateMessage(state.lostItems)
                     }
                     hideSkeleton()
                 }
 
-                is LostItemUiState.Error -> {
+                is LostUiState.Error -> {
                     binding.srlLostItemList.isRefreshing = false
                     hideSkeleton()
                 }
@@ -77,7 +93,7 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         }
     }
 
-    private fun showLostItemModalDialog(lostItem: LostItemUiModel) {
+    private fun showLostItemModalDialog(lostItem: LostUiModel.Item) {
         LostItemModalDialogFragment
             .newInstance(lostItem)
             .show(childFragmentManager, TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT)
@@ -85,7 +101,7 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
 
     private fun onSwipeRefreshLostItemsListener() {
         binding.srlLostItemList.setOnRefreshListener {
-            viewModel.loadPendingLostItems(LostItemUiState.Refreshing)
+            viewModel.loadAllLostItems(LostUiState.Refreshing)
         }
     }
 
@@ -118,10 +134,11 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment
         binding.sflLostItemSkeleton.stopShimmer()
     }
 
-    private fun showEmptyStateMessage() {
-        val itemCount = binding.rvLostItemList.adapter?.itemCount ?: 0
+    private fun showEmptyStateMessage(lostItems: List<LostUiModel>) {
+        val isExistLostIem = lostItems.none { it is LostUiModel.Item }
 
-        binding.tvEmptyState.root.visibility = if (itemCount == 0) View.VISIBLE else View.GONE
+        binding.tvEmptyState.root.visibility =
+            if (isExistLostIem) View.VISIBLE else View.GONE
     }
 
     companion object {

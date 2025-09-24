@@ -104,7 +104,16 @@ class PlaceListFragment :
                         places.value,
                     )
                     placeAdapter.submitList(places.value) {
+                        if (places.value.isEmpty()) {
+                            binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
+                        }
                         binding.rvPlaces.scrollToPosition(0)
+                    }
+                }
+
+                is PlaceListUiState.PlaceLoaded -> {
+                    viewModel.selectedTimeTag.observe(viewLifecycleOwner) { timeTag ->
+                        childViewModel.updatePlacesByTimeTag(timeTag.timeTagId)
                     }
                 }
 
@@ -129,7 +138,7 @@ class PlaceListFragment :
             if (selectedCategories.isEmpty()) {
                 childViewModel.clearPlacesFilter()
             } else {
-                childViewModel.filterPlaces(selectedCategories)
+                childViewModel.updatePlacesByCategories(selectedCategories)
             }
         }
 

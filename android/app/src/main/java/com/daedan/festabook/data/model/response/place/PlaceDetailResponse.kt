@@ -33,6 +33,8 @@ data class PlaceDetailResponse(
     val placeImages: List<PlaceImage>,
     @SerialName("title")
     val title: String?,
+    @SerialName("timeTags")
+    val timeTags: List<TimeTagResponse>,
 ) {
     @Serializable
     data class PlaceAnnouncement(
@@ -76,6 +78,7 @@ private fun PlaceDetailResponse.toPlace() =
         description = description,
         imageUrl = placeImages.find { it.sequence == 1 }?.imageUrl,
         location = location,
+        timeTags = timeTags.map { it.toDomain() },
     )
 
 private fun PlaceDetailResponse.toNotices() =

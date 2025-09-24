@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/tv_selected_item"
+    style="@style/PretendardBold18"
+    android:layout_width="140dp"
+    android:layout_height="wrap_content"
+    android:background="?selectableItemBackground"
+    android:drawablePadding="8dp"
+    android:ellipsize="end"
+    android:padding="8dp"
+    android:singleLine="true"
+    android:textColor="@color/gray800"
+    app:drawableEndCompat="@drawable/ic_arrow_down"
+    tools:text="1일차 오전" />

@@ -6,7 +6,6 @@ import com.daedan.festabook.data.service.api.ApiClient
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
-import com.daedan.festabook.util.FestabookGlobalExceptionHandler
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
@@ -16,7 +15,7 @@ class FestaBookApp : Application() {
         AppContainer(this)
     }
 
-    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
+    val fireBaseAnalytics: FirebaseAnalytics by lazy {
         FirebaseAnalytics.getInstance(this)
     }
 
@@ -27,7 +26,6 @@ class FestaBookApp : Application() {
         setupNaverSdk()
         setupNotificationChannel()
         setLightTheme()
-        setGlobalExceptionHandler()
     }
 
     override fun onLowMemory() {
@@ -46,11 +44,14 @@ class FestaBookApp : Application() {
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) {
-            plantDebugTimberTree()
-        } else {
-            plantInfoTimberTree()
-        }
+        plantDebugTimberTree()
+        plantInfoTimberTree()
+
+//        if (BuildConfig.DEBUG) {
+//            plantDebugTimberTree()
+//        } else {
+//            plantInfoTimberTree()
+//        }
         Timber.plant(FirebaseCrashlyticsTree())
     }
 
@@ -74,17 +75,6 @@ class FestaBookApp : Application() {
 
     private fun setLightTheme() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
-    }
-
-    private fun setGlobalExceptionHandler() {
-        val defaultExceptionHandler: Thread.UncaughtExceptionHandler? =
-            Thread.getDefaultUncaughtExceptionHandler()
-        Thread.setDefaultUncaughtExceptionHandler(
-            FestabookGlobalExceptionHandler(
-                this,
-                defaultExceptionHandler,
-            ),
-        )
     }
 
     private fun initializeApiClient() {
