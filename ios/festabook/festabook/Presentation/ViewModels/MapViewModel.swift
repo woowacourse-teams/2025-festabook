@@ -224,14 +224,10 @@ class MapViewModel: NSObject, ObservableObject {
                 selectedPlaceId = nil
                 hideModal()
             } else if removedWasCurrent {
-                if let nextId = tappedOrder.last,
-                   let next = selectedPlaceDetails.first(where: { $0.placeId == nextId }) {
-                    selectedPlaceId = next.placeId
-                    showModalForPlace(next)
-                } else if let any = selectedPlaceDetails.first {
-                    selectedPlaceId = any.placeId
-                    showModalForPlace(any)
-                }
+                selectedPlaceId = nil
+                selectedPlaceDetails.removeAll()
+                tappedOrder.removeAll()
+                hideModal()
             } else {
                 if let currentId = selectedPlaceId,
                    let current = selectedPlaceDetails.first(where: { $0.placeId == currentId }) {
