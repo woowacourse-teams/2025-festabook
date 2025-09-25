@@ -153,9 +153,9 @@ class MapManager(
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()
         return currentPosition.distanceTo(initialCenter) >
-            (maxLength * zoomWeight).coerceAtLeast(
-                maxLength,
-            )
+                (maxLength * zoomWeight).coerceAtLeast(
+                    maxLength,
+                )
     }
 
     fun clearMapManager() {
@@ -236,9 +236,6 @@ class MapManager(
             map = this@MapManager.map
         }
     }
-
-    private fun Context.getRootPixel() = context.resources.displayMetrics.heightPixels
-
     private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
         width = Marker.SIZE_AUTO
         height = Marker.SIZE_AUTO
