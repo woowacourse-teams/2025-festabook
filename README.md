@@ -76,19 +76,16 @@
 </table>
 
 ---
+## 📱 앱 미리보기
 
-## 📚 주요 기능
+| 탐색 | 홈 | 일정 | 지도 | 소식 |
+|---|---|---|---|---|
+| <img width="1200" height="2133" alt="542380817_18081825346927603_8857504627003636425_n" src="https://github.com/user-attachments/assets/a092026a-0621-4cb8-a5b0-4a7680ad4214" />| <img width="1200" height="2133" alt="Frame 2" src="https://github.com/user-attachments/assets/5fcaeb5a-3ae8-4f2f-84e6-d5fb506299ac" /> |<img width="1200" height="2133" alt="Frame 3" src="https://github.com/user-attachments/assets/5edcfd57-1c7b-4582-b91e-6930218d4dbd" /> | <img width="1200" height="2133" alt="Frame 4" src="https://github.com/user-attachments/assets/f7d5f5c6-4692-4a8c-87fd-e4b550ffb3e3" /> | <img width="1200" height="2133" alt="Frame 5" src="https://github.com/user-attachments/assets/79783764-0171-44c0-9db8-e7f6ff615209" /> |
 
+- **탐색** : 다양한 학교 축제를 검색
 - **홈** : 축제 포스터와 연예인 라인업을 한눈에 확인  
 - **일정** : 공연과 행사를 놓치지 않도록 일정 확인  
 - **지도** : 부스 · 학생 주점 · 무대 · 주요 시설 위치와 상세정보 제공  
 - **소식** : 학생회 공지, FAQ, 분실물 안내까지 빠르고 정확하게 확인  
 
 페스타북과 함께라면, 여러분의 축제는 더 즐겁고 편리해집니다 🎉  
-
----
-## 📱 앱 미리보기
-
-| 탐색 | 홈 | 일정 | 지도 | 소식 |
-|---|---|---|---|---|
-| <img width="1200" height="2133" alt="542380817_18081825346927603_8857504627003636425_n" src="https://github.com/user-attachments/assets/a092026a-0621-4cb8-a5b0-4a7680ad4214" />| <img width="1200" height="2133" alt="Frame 2" src="https://github.com/user-attachments/assets/5fcaeb5a-3ae8-4f2f-84e6-d5fb506299ac" /> |<img width="1200" height="2133" alt="Frame 3" src="https://github.com/user-attachments/assets/5edcfd57-1c7b-4582-b91e-6930218d4dbd" /> | <img width="1200" height="2133" alt="Frame 4" src="https://github.com/user-attachments/assets/f7d5f5c6-4692-4a8c-87fd-e4b550ffb3e3" /> | <img width="1200" height="2133" alt="Frame 5" src="https://github.com/user-attachments/assets/79783764-0171-44c0-9db8-e7f6ff615209" /> |
