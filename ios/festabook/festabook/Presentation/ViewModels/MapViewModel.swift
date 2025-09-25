@@ -136,7 +136,23 @@ class MapViewModel: NSObject, ObservableObject {
     }
 
     // MARK: - Public Methods
-    func loadMapData() async {
+    private var hasLoadedInitialData = false
+
+    func loadMapData(forceReload: Bool = false) async {
+        if isLoading {
+            print("[MapViewModel] loadMapData 스킵 - 이미 로딩 중")
+            return
+        }
+
+        if hasLoadedInitialData && !forceReload {
+            print("[MapViewModel] loadMapData 스킵 - 초기 데이터가 이미 로드됨")
+            return
+        }
+
+        if forceReload {
+            hasLoadedInitialData = false
+        }
+
         print("[MapViewModel] loadMapData 시작")
         isLoading = true
         errorMessage = nil
@@ -160,10 +176,18 @@ class MapViewModel: NSObject, ObservableObject {
 
             // Fetch time tags separately and handle failure gracefully
             do {
+                let previousSelectedId = selectedTimeTag?.id
                 let timeTags = try await repository.fetchTimeTags()
                 self.timeTags = timeTags
-                self.selectedTimeTag = timeTags.first  // 첫 번째 Time Tag를 디폴트로 선택
-                print("  - TimeTags: \(timeTags.count)개, 첫 번째 태그 '\(timeTags.first?.name ?? "nil")' 자동 선택")
+
+                if let previousSelectedId,
+                   let matchedTag = timeTags.first(where: { $0.id == previousSelectedId }) {
+                    self.selectedTimeTag = matchedTag
+                    print("  - TimeTags: \(timeTags.count)개, 이전 선택 유지: '\(matchedTag.name)'")
+                } else {
+                    self.selectedTimeTag = timeTags.first  // 첫 번째 Time Tag를 디폴트로 선택
+                    print("  - TimeTags: \(timeTags.count)개, 첫 번째 태그 '\(timeTags.first?.name ?? "nil")' 자동 선택")
+                }
             } catch {
                 print("[MapViewModel] ⚠️ TimeTags API 호출 실패 (서버에서 아직 구현되지 않음): \(error)")
                 self.timeTags = []  // 빈 배열로 설정하여 UI는 정상 작동
@@ -177,6 +201,7 @@ class MapViewModel: NSObject, ObservableObject {
         }
 
         isLoading = false
+        hasLoadedInitialData = true
         print("[MapViewModel] loadMapData 완료")
     }
 
@@ -352,7 +377,7 @@ class MapViewModel: NSObject, ObservableObject {
 
     func retryLoading() {
         Task {
-            await loadMapData()
+            await loadMapData(forceReload: true)
         }
     }
 
