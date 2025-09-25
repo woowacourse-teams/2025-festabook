@@ -3,10 +3,15 @@ package com.daedan.festabook
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.data.service.api.ApiClient
+import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
+import com.daedan.festabook.util.FestabookGlobalExceptionHandler
+import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.crashlytics
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
 
@@ -21,16 +26,22 @@ class FestaBookApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
+        setGlobalExceptionHandler()
         initializeApiClient()
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
         setLightTheme()
+        sendUnsentReports()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         Timber.w("FestabookApp: onLowMemory 호출됨")
+    }
+
+    private fun sendUnsentReports() {
+        Firebase.crashlytics.sendUnsentReports()
     }
 
     private fun setupNotificationChannel() {
@@ -44,14 +55,11 @@ class FestaBookApp : Application() {
     }
 
     private fun setupTimber() {
-        plantDebugTimberTree()
-        plantInfoTimberTree()
-
-//        if (BuildConfig.DEBUG) {
-//            plantDebugTimberTree()
-//        } else {
-//            plantInfoTimberTree()
-//        }
+        if (BuildConfig.DEBUG) {
+            plantDebugTimberTree()
+        } else {
+            plantInfoTimberTree()
+        }
         Timber.plant(FirebaseCrashlyticsTree())
     }
 
@@ -75,6 +83,14 @@ class FestaBookApp : Application() {
 
     private fun setLightTheme() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
+    }
+
+    private fun setGlobalExceptionHandler() {
+        Thread.setDefaultUncaughtExceptionHandler(
+            FestabookGlobalExceptionHandler(
+                this,
+            )
+        )
     }
 
     private fun initializeApiClient() {

@@ -10,6 +10,7 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.os.BundleCompat.getSerializable
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
@@ -17,12 +18,20 @@ import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import java.io.Serializable
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelable(key, T::class.java)
     } else {
         getParcelable(key) as? T
+    }
+
+inline fun <reified T : Serializable> Intent.getSerializableCompat(key: String):T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        getSerializableExtra(key, T::class.java)
+    } else {
+        getSerializableExtra(key) as? T
     }
 
 inline fun <reified T : Parcelable> Intent.getObject(key: String): T? =
