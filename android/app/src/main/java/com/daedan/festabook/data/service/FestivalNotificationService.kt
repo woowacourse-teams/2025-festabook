@@ -9,7 +9,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 
 interface FestivalNotificationService {
-    @POST("festivals/{festivalId}/notifications")
+    @POST("festivals/{festivalId}/notifications/android")
     suspend fun saveFestivalNotification(
         @Path("festivalId") id: Long,
         @Body request: FestivalNotificationRequest,
