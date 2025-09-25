@@ -13,6 +13,7 @@ struct PlaceDetailView: View {
     @State private var safeAreaTop: CGFloat = 0
     @State private var backSwipeOffset: CGFloat = 0
     @State private var isBackSwiping = false
+    @State private var isScrollDisabled = false
 
     private var imageUrls: [String] {
         place.orderedImageUrls
@@ -40,6 +41,7 @@ struct PlaceDetailView: View {
                     .padding(.top, topInset + 12)
                     .padding(.bottom, 40)
                 }
+                .scrollDisabled(isScrollDisabled)
                 .offset(x: backSwipeOffset)
                 .contentShape(Rectangle())
                 .gesture(backSwipeGesture)
@@ -64,6 +66,7 @@ struct PlaceDetailView: View {
                 safeAreaTop = topInset
                 backSwipeOffset = 0
                 isBackSwiping = false
+                isScrollDisabled = false
             }
             .onChange(of: topInset) { _, newValue in
                 safeAreaTop = newValue
@@ -247,6 +250,7 @@ struct PlaceDetailView: View {
                 guard value.translation.width > 0 else { return }
 
                 isBackSwiping = true
+                if !isScrollDisabled { isScrollDisabled = true }
                 backSwipeOffset = max(0, value.translation.width)
             }
             .onEnded { value in
@@ -267,6 +271,7 @@ struct PlaceDetailView: View {
                 }
 
                 isBackSwiping = false
+                isScrollDisabled = false
             }
     }
 
