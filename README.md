@@ -89,3 +89,9 @@
 - **소식** : 학생회 공지, FAQ, 분실물 안내까지 빠르고 정확하게 확인  
 
 페스타북과 함께라면, 여러분의 축제는 더 즐겁고 편리해집니다 🎉  
+
+## 📬 Contact & Links
+
+[![Gmail](https://img.shields.io/badge/Email-festabook2025@gmail.com-red?style=for-the-badge&logo=gmail&logoColor=white)](mailto:festabook2025@gmail.com)
+[![Instagram](https://img.shields.io/badge/Instagram-@festabook.official-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/festabook.official)
+
