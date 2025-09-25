@@ -3,6 +3,9 @@ import SwiftUI
 struct SettingsView: View {
     @StateObject private var notificationService = NotificationService.shared
     @EnvironmentObject var appState: AppState
+    @State private var isToggleLocked = false
+    @State private var shouldIgnoreToggleChange = false
+    @State private var lastCommittedToggleValue = false
 
     var body: some View {
         VStack(spacing: 0) {
@@ -56,6 +59,7 @@ struct SettingsView: View {
                                     .tint(.black) // 토글 버튼 색상을 검정색으로 변경
                                     .scaleEffect(0.8) // 토글 버튼 크기 축소
                                     .frame(width: 40) // 토글 버튼 영역 제한
+                                    .disabled(isToggleLocked)
                                     .onChange(of: notificationService.isNotificationEnabled) { _, newValue in
                                         handleToggleChange(newValue)
                                     }
@@ -148,6 +152,7 @@ struct SettingsView: View {
         .background(Color.white)
         .onAppear {
             updateToggleState()
+            lastCommittedToggleValue = notificationService.isNotificationEnabled
 
             // 설정 화면 진입 시 NotificationService의 저장된 상태를 다시 로드하여 동기화
             notificationService.objectWillChange.send()
@@ -170,17 +175,29 @@ struct SettingsView: View {
 
     // MARK: - 토글 변경 처리
     private func handleToggleChange(_ newValue: Bool) {
-        // 이전 값 백업 (API 실패 시 롤백용)
-        let previousValue = notificationService.isNotificationEnabled
+        guard !shouldIgnoreToggleChange else {
+            shouldIgnoreToggleChange = false
+            return
+        }
+
+        guard !isToggleLocked else {
+            revertToggle(to: lastCommittedToggleValue)
+            return
+        }
+
+        let previousValue = lastCommittedToggleValue
+        isToggleLocked = true
 
         Task {
             guard let festivalId = appState.currentFestivalId else {
+                await revertToggle(to: previousValue)
                 await MainActor.run {
-                    notificationService.isNotificationEnabled = previousValue
                     print("[SettingsView] ❌ 축제 ID가 없어 알림 구독을 변경할 수 없습니다")
                 }
+                await unlockToggleAfterDelay()
                 return
             }
+
             do {
                 if newValue {
                     // 구독 - festival 헤더 제거된 API 호출
@@ -190,17 +207,37 @@ struct SettingsView: View {
                     try await notificationService.unsubscribeFromFestivalNotifications()
                 }
                 print("[SettingsView] 토글 변경 성공: \(newValue)")
-            } catch {
-                // API 실패 시 토글 상태 롤백
                 await MainActor.run {
-                    notificationService.isNotificationEnabled = previousValue
+                    lastCommittedToggleValue = newValue
+                }
+            } catch {
+                await revertToggle(to: previousValue)
+                await MainActor.run {
                     print("[SettingsView] 토글 변경 실패, 롤백: \(error)")
                 }
             }
+
+            await unlockToggleAfterDelay()
         }
     }
-    
-    
+
+    @MainActor
+    private func revertToggle(to value: Bool) {
+        shouldIgnoreToggleChange = true
+        notificationService.isNotificationEnabled = value
+        lastCommittedToggleValue = value
+        Task { @MainActor in
+            shouldIgnoreToggleChange = false
+        }
+    }
+
+    private func unlockToggleAfterDelay() async {
+        try? await Task.sleep(nanoseconds: 1_000_000_000)
+        await MainActor.run {
+            isToggleLocked = false
+        }
+    }
+
     // MARK: - 앱 버전 가져오기
     private func getAppVersion() -> String {
         guard let version = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String else {
