@@ -8,8 +8,10 @@ import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
+import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.crashlytics
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
 
@@ -30,11 +32,16 @@ class FestaBookApp : Application() {
         setupNaverSdk()
         setupNotificationChannel()
         setLightTheme()
+        sendUnsentReports()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         Timber.w("FestabookApp: onLowMemory 호출됨")
+    }
+
+    private fun sendUnsentReports() {
+        Firebase.crashlytics.sendUnsentReports()
     }
 
     private fun setupNotificationChannel() {

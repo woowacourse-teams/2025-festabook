@@ -152,5 +152,5 @@
     <!--전역 예외 처리기-->
     <string name="uncaught_exception_title">앗! 잠시 문제가 생겼어요</string>
     <string name="uncaught_exception_message">이용에 불편을 드려 정말 죄송합니다. \n 앱을 다시 시작해 주시면 대부분 해결되니, \n 잠시 후에 앱을 다시 실행해주세요 !</string>
-    <string name="uncaught_exception_confirm">앱 종료하기</string>
+    <string name="uncaught_exception_confirm">앱 재시작하기</string>
 </resources>
