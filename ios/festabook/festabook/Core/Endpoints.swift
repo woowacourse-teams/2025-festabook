@@ -42,6 +42,10 @@ enum Endpoints {
         static func subscription(_ notificationId: Int) -> String {
             "/festivals/notifications/\(notificationId)"
         }
+
+        static func deviceSubscriptions(_ deviceId: Int) -> String {
+            "/festivals/notifications/\(deviceId)"
+        }
     }
 
     enum News {

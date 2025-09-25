@@ -220,6 +220,31 @@ class APIClient {
           catch { throw HTTPError.transport(error) }
     }
 
+    func getNotification<T: Decodable>(endpoint: String) async throws -> T {
+        var comps = URLComponents(url: BuildConfig.apiBaseURL, resolvingAgainstBaseURL: false)!
+        comps.path += endpoint
+        guard let url = comps.url else { throw HTTPError.invalidURL }
+
+        var req = URLRequest(url: url)
+        req.httpMethod = "GET"
+        req.setValue("application/json", forHTTPHeaderField: "Accept")
+
+        do {
+            let (data, resp) = try await session.data(for: req)
+            guard let http = resp as? HTTPURLResponse else { throw HTTPError.transport(URLError(.badServerResponse)) }
+
+            print("[APIClient] Notification GET Response Status: \(http.statusCode)")
+
+            guard (200..<300).contains(http.statusCode) else {
+                throw HTTPError.server(http.statusCode, data)
+            }
+
+            let result: T = try APIClient.jsonDecoder.decode(T.self, from: data)
+            return result
+        } catch let e as HTTPError { throw e }
+          catch { throw HTTPError.transport(error) }
+    }
+
     // MARK: - Device API methods (without festival header)
     func postDevice<T: Decodable, U: Encodable>(endpoint: String, body: U) async throws -> T {
         var comps = URLComponents(url: BuildConfig.apiBaseURL, resolvingAgainstBaseURL: false)!

@@ -199,6 +199,15 @@ struct HomeView: View {
             festivalDetail = try await festivalDetailTask
             lineups = try await lineupsTask
 
+            if let festival = festivalDetail {
+                await notificationService.synchronizeSubscriptionsWithServer(
+                    focusFestivalId: festival.festivalId,
+                    focusUniversityName: festival.universityName
+                )
+            } else {
+                await notificationService.synchronizeSubscriptionsWithServer(focusFestivalId: nil, focusUniversityName: nil)
+            }
+
             // Update university name in AppState for use in other screens
             if let universityName = festivalDetail?.universityName {
                 appState.updateUniversityName(universityName)
@@ -216,6 +225,7 @@ struct HomeView: View {
             lineups = []
             // 에러 시 기본값으로 설정
             appState.updateUniversityName("페스타북대학교")
+            await notificationService.synchronizeSubscriptionsWithServer(focusFestivalId: nil, focusUniversityName: nil)
         }
 
         isLoading = false
@@ -261,6 +271,10 @@ struct HomeView: View {
         if granted {
             print("[HomeView] ✅ 사용자가 모달에서 알림 허용을 선택했습니다")
 
+            await MainActor.run {
+                notificationService.updateNotificationEnabled(true, for: festivalId)
+            }
+
             // 1. 시스템 알림 권한 요청 (권한만 요청, 구독은 FCM 토큰 수신 시)
             let permissionGranted = await notificationService.requestNotificationPermission()
 
@@ -274,37 +288,34 @@ struct HomeView: View {
                 } else {
                     print("[HomeView] ⏳ FCM 토큰 대기 중 - 토큰 수신 시 자동 구독")
                     pendingFestivalId = festivalId
+
+                    Task { [festivalId] in
+                        try? await Task.sleep(nanoseconds: 5_000_000_000)
+                        await MainActor.run {
+                            if pendingFestivalId == festivalId && !notificationService.isFestivalSubscribed(festivalId: festivalId) {
+                                notificationService.updateNotificationEnabled(false, for: festivalId)
+                                pendingFestivalId = nil
+                                print("[HomeView] ⏱️ FCM 토큰 대기 타임아웃 - 토글 OFF 재설정")
+                            }
+                        }
+                    }
                 }
 
             } else {
                 print("[HomeView] ❌ 시스템 알림 권한이 거부됨 - 안내 메시지 표시")
                 await showPermissionDeniedMessage()
+                pendingFestivalId = nil
 
                 // 시스템 권한 거부 시 토글 상태를 OFF로 설정
                 await MainActor.run {
-                    notificationService.updateNotificationEnabled(false)
+                    notificationService.updateNotificationEnabled(false, for: festivalId)
                 }
                 print("[HomeView] ❌ 시스템 권한 거부로 인해 토글 OFF 설정")
             }
 
         } else {
             print("[HomeView] ⚠️ 사용자가 모달에서 알림을 거부했습니다")
-
-            // 알림 거부 시 기존 구독이 있다면 취소
-            if notificationService.isFestivalSubscribed() {
-                do {
-                    try await notificationService.unsubscribeFromFestivalNotifications()
-                    print("[HomeView] ✅ 모달 거부로 인한 구독 취소 성공")
-                } catch {
-                    print("[HomeView] ❌ 모달 거부 시 구독 취소 실패: \(error)")
-                }
-            }
-
-            // 구독 상태와 관계없이 모달 거부 시 항상 토글을 OFF로 설정
-            await MainActor.run {
-                notificationService.updateNotificationEnabled(false)
-            }
-            print("[HomeView] ✅ 모달 거부로 인해 토글 OFF 설정")
+            pendingFestivalId = nil
         }
 
         // 모달 표시 완료로 기록
@@ -319,8 +330,11 @@ struct HomeView: View {
     // MARK: - FCM 토큰 수신 시 구독 처리
     private func handleFCMTokenReceived(festivalId: Int) async {
         // 1. 이미 구독된 학교인지 확인
-        if notificationService.isFestivalSubscribed() {
-            print("[HomeView] ✅ 이미 구독된 상태 - 구독 스킵")
+        if notificationService.isFestivalSubscribed(festivalId: festivalId) {
+            print("[HomeView] ✅ 이미 해당 축제에 구독된 상태 - 구독 스킵")
+            await MainActor.run {
+                notificationService.updateNotificationEnabled(true, for: festivalId)
+            }
             pendingFestivalId = nil
             return
         }
@@ -328,6 +342,9 @@ struct HomeView: View {
         // 2. 디바이스 등록 상태 확인 (FCM 토큰 발급시 이미 등록됨)
         if !notificationService.isDeviceRegistered() {
             print("[HomeView] ❌ 디바이스가 아직 등록되지 않음 - 구독 실패")
+            await MainActor.run {
+                notificationService.updateNotificationEnabled(false, for: festivalId)
+            }
             pendingFestivalId = nil
             return
         }
@@ -337,12 +354,16 @@ struct HomeView: View {
         // 3. 축제 알림 구독
         print("[HomeView] 🎪 축제 알림 구독 시작")
         do {
-            let _ = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
+            let universityName = festivalDetail?.universityName
+            let _ = try await notificationService.subscribeToFestivalNotifications(
+                festivalId: festivalId,
+                universityName: universityName
+            )
             print("[APIClient] ✅ 축제 알림 구독 성공")
 
             // 구독 성공 시 토글 상태 확실히 동기화 (NotificationService에서 이미 처리하지만 명시적으로)
             await MainActor.run {
-                notificationService.updateNotificationEnabled(true)
+                notificationService.updateNotificationEnabled(true, for: festivalId)
             }
             print("[HomeView] ✅ 구독 성공으로 인해 토글 ON 동기화")
         } catch {
@@ -350,7 +371,7 @@ struct HomeView: View {
 
             // 구독 실패 시 토글 상태를 OFF로 설정
             await MainActor.run {
-                notificationService.updateNotificationEnabled(false)
+                notificationService.updateNotificationEnabled(false, for: festivalId)
             }
             print("[HomeView] ❌ 구독 실패로 인해 토글 OFF 설정")
         }

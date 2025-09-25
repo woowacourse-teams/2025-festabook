@@ -151,11 +151,31 @@ struct SettingsView: View {
         }
         .background(Color.white)
         .onAppear {
+            notificationService.refreshNotificationEnabledState(for: appState.currentFestivalId)
             updateToggleState()
             lastCommittedToggleValue = notificationService.isNotificationEnabled
 
             // 설정 화면 진입 시 NotificationService의 저장된 상태를 다시 로드하여 동기화
             notificationService.objectWillChange.send()
+
+            Task {
+                await notificationService.synchronizeSubscriptionsWithServer(
+                    focusFestivalId: appState.currentFestivalId,
+                    focusUniversityName: appState.currentUniversityName
+                )
+            }
+        }
+        .onChange(of: appState.currentFestivalId) { _, newValue in
+            notificationService.refreshNotificationEnabledState(for: newValue)
+            updateToggleState()
+            lastCommittedToggleValue = notificationService.isNotificationEnabled
+
+            Task {
+                await notificationService.synchronizeSubscriptionsWithServer(
+                    focusFestivalId: newValue,
+                    focusUniversityName: appState.currentUniversityName
+                )
+            }
         }
     }
 
@@ -164,10 +184,17 @@ struct SettingsView: View {
         // 설정 화면 진입 시 NotificationService의 현재 상태로 동기화
         print("[SettingsView] 설정 화면 진입 - 현재 알림 상태: \(notificationService.isNotificationEnabled)")
 
+        guard let festivalId = appState.currentFestivalId else {
+            print("[SettingsView] ⚠️ 현재 축제 ID 없음 - 토글 비활성 상태")
+            notificationService.updateNotificationEnabled(false, for: nil)
+            return
+        }
+
         // NotificationService의 상태가 이미 올바르게 설정되어 있어야 하므로
         // 별도 업데이트는 필요하지 않지만, 로그로 현재 상태 확인
-        if notificationService.isFestivalSubscribed() {
-            print("[SettingsView] 축제 구독 상태: 구독됨 (ID: \(notificationService.festivalNotificationId ?? -1))")
+        if notificationService.isFestivalSubscribed(festivalId: festivalId) {
+            let subscriptionId = notificationService.festivalNotificationId(for: festivalId) ?? -1
+            print("[SettingsView] 축제 구독 상태: 구독됨 (ID: \(subscriptionId))")
         } else {
             print("[SettingsView] 축제 구독 상태: 미구독")
         }
@@ -198,13 +225,20 @@ struct SettingsView: View {
                 return
             }
 
+            await MainActor.run {
+                notificationService.updateNotificationEnabled(newValue, for: festivalId)
+            }
+
             do {
                 if newValue {
                     // 구독 - festival 헤더 제거된 API 호출
-                    _ = try await notificationService.subscribeToFestivalNotifications(festivalId: festivalId)
+                    _ = try await notificationService.subscribeToFestivalNotifications(
+                        festivalId: festivalId,
+                        universityName: appState.currentUniversityName
+                    )
                 } else {
                     // 구독 취소 - festival 헤더 제거된 API 호출
-                    try await notificationService.unsubscribeFromFestivalNotifications()
+                    try await notificationService.unsubscribeFromFestivalNotifications(festivalId: festivalId)
                 }
                 print("[SettingsView] 토글 변경 성공: \(newValue)")
                 await MainActor.run {
@@ -224,7 +258,7 @@ struct SettingsView: View {
     @MainActor
     private func revertToggle(to value: Bool) {
         shouldIgnoreToggleChange = true
-        notificationService.isNotificationEnabled = value
+        notificationService.updateNotificationEnabled(value, for: appState.currentFestivalId)
         lastCommittedToggleValue = value
         Task { @MainActor in
             shouldIgnoreToggleChange = false

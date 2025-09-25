@@ -25,3 +25,9 @@ struct FestivalNotificationRequest: Codable {
 struct FestivalNotificationResponse: Codable {
     let festivalNotificationId: Int
 }
+
+struct FestivalNotificationSubscription: Codable {
+    let festivalNotificationId: Int
+    let universityName: String
+    let festivalName: String
+}

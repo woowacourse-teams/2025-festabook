@@ -41,6 +41,13 @@ final class AppState: ObservableObject {
         UserDefaults.standard.set(festivalId, forKey: UserDefaultsKey.currentFestivalId)
         APIClient.shared.updateFestivalId(festivalId)
         ServiceLocator.shared.updateFestivalId(festivalId)
+
+        Task {
+            await NotificationService.shared.synchronizeSubscriptionsWithServer(
+                focusFestivalId: festivalId,
+                focusUniversityName: nil
+            )
+        }
     }
 
     func updateUniversityName(_ universityName: String) {
@@ -59,6 +66,13 @@ final class AppState: ObservableObject {
 
         APIClient.shared.updateFestivalId(0)
         ServiceLocator.shared.updateFestivalId(0)
+
+        Task {
+            await NotificationService.shared.synchronizeSubscriptionsWithServer(
+                focusFestivalId: nil,
+                focusUniversityName: nil
+            )
+        }
     }
 
     func bootstrapFestivalIfNeeded() {

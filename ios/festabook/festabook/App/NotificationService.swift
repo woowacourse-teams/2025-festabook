@@ -14,32 +14,41 @@ class NotificationService: ObservableObject {
     
     @Published var isNotificationEnabled = false
     @Published var deviceId: Int? = nil
-    @Published var festivalNotificationId: Int? = nil
+    @Published private(set) var festivalNotificationIds: [Int: Int] = [:]
     @Published var fcmToken: String? = nil
     @Published var isTokenGenerating = false
 
     private let userDefaults = UserDefaults.standard
     private let deviceIdKey = "deviceId"
-    private let festivalNotificationIdKey = "festivalNotificationId"
-    private let notificationEnabledKey = "notificationEnabled"
     private let notificationModalShownKey = "notificationModalShown_"
     private let fcmTokenKey = "fcmToken"
     private let syncedFcmTokenKey = "syncedFcmToken"
 
     private var syncedFcmToken: String? = nil
+    private var currentObservedFestivalId: Int?
+    private var subscribeTasks: [Int: Task<Int, Error>] = [:]
+    private var unsubscribeTasks: [Int: Task<Void, Error>] = [:]
     
+    private func decodeFestivalNotificationId(from data: Data?) -> Int? {
+        guard let data else { return nil }
+        return try? APIClient.jsonDecoder.decode(FestivalNotificationResponse.self, from: data).festivalNotificationId
+    }
+
     private init() {
         loadStoredValues()
+        Task { [weak self] in
+            await self?.synchronizeSubscriptionsWithServer(focusFestivalId: nil, focusUniversityName: nil)
+        }
     }
     
     // MARK: - 저장된 값 로드
     private func loadStoredValues() {
         deviceId = userDefaults.object(forKey: deviceIdKey) as? Int
-        festivalNotificationId = userDefaults.object(forKey: festivalNotificationIdKey) as? Int
-        isNotificationEnabled = userDefaults.bool(forKey: notificationEnabledKey)
+        festivalNotificationIds.removeAll()
+        isNotificationEnabled = false
         fcmToken = userDefaults.string(forKey: fcmTokenKey)
         syncedFcmToken = userDefaults.string(forKey: syncedFcmTokenKey)
-        print("[NotificationService] Loaded deviceId: \(deviceId ?? -1), festivalNotificationId: \(festivalNotificationId ?? -1), isNotificationEnabled: \(isNotificationEnabled), fcmToken: \(fcmToken?.prefix(20) ?? "nil"), syncedFcmToken: \(syncedFcmToken?.prefix(20) ?? "nil")...")
+        print("[NotificationService] Loaded deviceId: \(deviceId ?? -1), isNotificationEnabled: \(isNotificationEnabled), fcmToken: \(fcmToken?.prefix(20) ?? "nil"), syncedFcmToken: \(syncedFcmToken?.prefix(20) ?? "nil")...")
     }
     
     // MARK: - 디바이스 ID 저장
@@ -60,24 +69,71 @@ class NotificationService: ObservableObject {
         userDefaults.removeObject(forKey: deviceIdKey)
         syncedFcmToken = nil
         userDefaults.removeObject(forKey: syncedFcmTokenKey)
+        festivalNotificationIds.removeAll()
+        currentObservedFestivalId = nil
+        isNotificationEnabled = false
     }
     
-    // MARK: - 축제 알림 ID 저장
-    private func saveFestivalNotificationId(_ id: Int) {
-        festivalNotificationId = id
-        userDefaults.set(id, forKey: festivalNotificationIdKey)
-    }
-    
-    // MARK: - 알림 설정 저장
-    private func saveNotificationEnabled(_ enabled: Bool) {
-        isNotificationEnabled = enabled
-        userDefaults.set(enabled, forKey: notificationEnabledKey)
+    // MARK: - 축제 알림 구독 정보 저장
+    private func saveFestivalSubscription(notificationId: Int, festivalId: Int) {
+        festivalNotificationIds[festivalId] = notificationId
     }
 
-    // MARK: - 알림 설정 업데이트 (public access)
-    func updateNotificationEnabled(_ enabled: Bool) {
-        saveNotificationEnabled(enabled)
-        print("[NotificationService] 알림 설정 업데이트: \(enabled)")
+    private func removeFestivalSubscription(festivalId: Int) {
+        festivalNotificationIds.removeValue(forKey: festivalId)
+    }
+
+    // MARK: - 토글 상태 동기화
+    func updateNotificationEnabled(_ enabled: Bool, for festivalId: Int?) {
+        currentObservedFestivalId = festivalId
+        isNotificationEnabled = enabled
+        print("[NotificationService] 알림 토글 임시 업데이트: \(enabled) for festivalId: \(festivalId ?? -1)")
+    }
+
+    func refreshNotificationEnabledState(for festivalId: Int?) {
+        currentObservedFestivalId = festivalId
+        guard let festivalId else {
+            isNotificationEnabled = false
+            return
+        }
+        isNotificationEnabled = festivalNotificationIds[festivalId] != nil
+    }
+
+    func synchronizeSubscriptionsWithServer(focusFestivalId: Int?, focusUniversityName: String? = nil) async {
+        let currentDeviceId = await MainActor.run { self.deviceId }
+
+        guard let deviceId = currentDeviceId, deviceId > 0 else {
+            print("[NotificationService] ⚠️ synchronizeSubscriptionsWithServer - deviceId 없음")
+            await MainActor.run {
+                self.refreshNotificationEnabledState(for: focusFestivalId)
+            }
+            return
+        }
+
+        let endpoint = Endpoints.Notifications.deviceSubscriptions(deviceId)
+
+        do {
+            let subscriptions: [FestivalNotificationSubscription] = try await APIClient.shared.getNotification(endpoint: endpoint)
+
+            await MainActor.run {
+                var updated: [Int: Int] = [:]
+
+                if let focusFestivalId,
+                   let focusUniversityName,
+                   let matched = subscriptions.first(where: { $0.universityName == focusUniversityName }) {
+                    updated[focusFestivalId] = matched.festivalNotificationId
+                }
+
+                festivalNotificationIds = updated
+                refreshNotificationEnabledState(for: focusFestivalId)
+                print("[NotificationService] ✅ 서버 구독 정보 동기화 완료 - 총 \(subscriptions.count)건")
+            }
+        } catch {
+            await MainActor.run {
+                refreshNotificationEnabledState(for: focusFestivalId)
+            }
+            print("[NotificationService] ❌ 서버 구독 정보 동기화 실패: \(error)")
+        }
     }
     
     // MARK: - 알림 권한 상태 확인
@@ -136,8 +192,16 @@ class NotificationService: ObservableObject {
     }
 
     // MARK: - 축제 구독 상태 확인
-    func isFestivalSubscribed() -> Bool {
-        return festivalNotificationId != nil && festivalNotificationId! > 0
+    func isFestivalSubscribed(festivalId: Int) -> Bool {
+        return festivalNotificationIds[festivalId] != nil
+    }
+
+    func hasAnyFestivalSubscriptions() -> Bool {
+        return !festivalNotificationIds.isEmpty
+    }
+
+    func festivalNotificationId(for festivalId: Int) -> Int? {
+        return festivalNotificationIds[festivalId]
     }
 
     // MARK: - 현재 FCM 토큰 반환 (단순)
@@ -274,58 +338,140 @@ class NotificationService: ObservableObject {
     }
     
     // MARK: - 축제 알림 구독
-    func subscribeToFestivalNotifications(festivalId: Int) async throws -> Int {
+    func subscribeToFestivalNotifications(festivalId: Int, universityName: String? = nil) async throws -> Int {
+        if let existing = festivalNotificationIds[festivalId] {
+            print("[NotificationService] ✅ 이미 구독된 축제 - API 호출 스킵")
+            return existing
+        }
+
+        if let task = subscribeTasks[festivalId] {
+            print("[NotificationService] ⏳ 구독 요청 진행 중 - 기존 요청 결과 대기")
+            return try await task.value
+        }
+
         guard let deviceId = deviceId else {
             throw NotificationError.deviceNotRegistered
         }
 
-        let request = FestivalNotificationRequest(deviceId: deviceId)
-        let endpoint = Endpoints.Notifications.subscribe(festivalId: festivalId)
+        let task = Task<Int, Error> {
+            let request = FestivalNotificationRequest(deviceId: deviceId)
+            let endpoint = Endpoints.Notifications.subscribe(festivalId: festivalId)
 
-        // Use notification-specific POST method (no festival header)
-        let response: FestivalNotificationResponse = try await APIClient.shared.postNotification(
-            endpoint: endpoint,
-            body: request
-        )
+            do {
+                // Use notification-specific POST method (no festival header)
+                let response: FestivalNotificationResponse = try await APIClient.shared.postNotification(
+                    endpoint: endpoint,
+                    body: request
+                )
 
-        await MainActor.run {
-            saveFestivalNotificationId(response.festivalNotificationId)
-            saveNotificationEnabled(true)
-            print("[NotificationService] 축제 알림 구독 성공: \(response.festivalNotificationId)")
+                await MainActor.run {
+                    saveFestivalSubscription(notificationId: response.festivalNotificationId, festivalId: festivalId)
+                    if currentObservedFestivalId == festivalId {
+                        isNotificationEnabled = true
+                    }
+                    print("[NotificationService] 축제 알림 구독 성공: \(response.festivalNotificationId)")
+                }
+
+                return response.festivalNotificationId
+            } catch HTTPError.server(let statusCode, let data) where statusCode == 400 {
+                if let existingId = decodeFestivalNotificationId(from: data) {
+                    await MainActor.run {
+                        saveFestivalSubscription(notificationId: existingId, festivalId: festivalId)
+                        if currentObservedFestivalId == festivalId {
+                            isNotificationEnabled = true
+                        }
+                        print("[NotificationService] ⚠️ 이미 구독된 축제 - 로컬 상태 동기화 (ID: \(existingId))")
+                    }
+                    return existingId
+                }
+
+                await synchronizeSubscriptionsWithServer(
+                    focusFestivalId: festivalId,
+                    focusUniversityName: universityName
+                )
+                if let syncedId = await MainActor.run { festivalNotificationIds[festivalId] } {
+                    print("[NotificationService] ⚠️ 서버 구독 상태 복구 - ID: \(syncedId)")
+                    return syncedId
+                }
+
+                throw NotificationError.notificationAlreadySubscribed
+            } catch let error {
+                throw error
+            }
         }
 
-        return response.festivalNotificationId
+        subscribeTasks[festivalId] = task
+
+        do {
+            let result = try await task.value
+            subscribeTasks.removeValue(forKey: festivalId)
+            return result
+        } catch {
+            subscribeTasks.removeValue(forKey: festivalId)
+            throw error
+        }
     }
-    
+
     // MARK: - 축제 알림 구독 취소
-    func unsubscribeFromFestivalNotifications() async throws {
-        guard let festivalNotificationId = festivalNotificationId else {
+    func unsubscribeFromFestivalNotifications(festivalId: Int) async throws {
+        guard let festivalNotificationId = festivalNotificationIds[festivalId] else {
             throw NotificationError.notificationNotSubscribed
         }
 
-        let endpoint = Endpoints.Notifications.subscription(festivalNotificationId)
+        if let task = unsubscribeTasks[festivalId] {
+            print("[NotificationService] ⏳ 구독 취소 진행 중 - 기존 요청 결과 대기")
+            return try await task.value
+        }
 
-        // Use notification-specific DELETE method (no festival header)
-        try await APIClient.shared.deleteNotification(endpoint: endpoint)
+        let task = Task<Void, Error> {
+            let endpoint = Endpoints.Notifications.subscription(festivalNotificationId)
 
-        await MainActor.run {
-            saveFestivalNotificationId(0) // 0으로 리셋
-            saveNotificationEnabled(false)
-            print("[NotificationService] 축제 알림 구독 취소 성공")
+            do {
+                // Use notification-specific DELETE method (no festival header)
+                try await APIClient.shared.deleteNotification(endpoint: endpoint)
+            } catch HTTPError.server(let statusCode, _) where statusCode == 404 {
+                print("[NotificationService] ⚠️ 서버에 구독 내역 없음 - 로컬 상태만 정리")
+            }
+
+            await MainActor.run {
+                removeFestivalSubscription(festivalId: festivalId)
+                if currentObservedFestivalId == festivalId {
+                    isNotificationEnabled = false
+                }
+                print("[NotificationService] 축제 알림 구독 취소 성공")
+            }
+        }
+
+        unsubscribeTasks[festivalId] = task
+
+        do {
+            try await task.value
+            unsubscribeTasks.removeValue(forKey: festivalId)
+        } catch {
+            unsubscribeTasks.removeValue(forKey: festivalId)
+            throw error
         }
     }
     
     // MARK: - 알림 토글 (설정 화면에서 사용)
     func toggleNotification(festivalId: Int) async {
         do {
-            if isNotificationEnabled {
-                try await unsubscribeFromFestivalNotifications()
+            if isFestivalSubscribed(festivalId: festivalId) {
+                await MainActor.run {
+                    updateNotificationEnabled(false, for: festivalId)
+                }
+                try await unsubscribeFromFestivalNotifications(festivalId: festivalId)
             } else {
+                await MainActor.run {
+                    updateNotificationEnabled(true, for: festivalId)
+                }
                 _ = try await subscribeToFestivalNotifications(festivalId: festivalId)
             }
         } catch {
             await MainActor.run {
                 print("[NotificationService] 알림 토글 실패: \(error)")
+                let currentState = self.isFestivalSubscribed(festivalId: festivalId)
+                self.updateNotificationEnabled(currentState, for: festivalId)
             }
         }
     }
@@ -348,7 +494,8 @@ enum NotificationError: Error, LocalizedError {
     case fcmTokenNotFound
     case deviceNotRegistered
     case notificationNotSubscribed
-    
+    case notificationAlreadySubscribed
+
     var errorDescription: String? {
         switch self {
         case .fcmTokenNotFound:
@@ -357,6 +504,8 @@ enum NotificationError: Error, LocalizedError {
             return "디바이스가 등록되지 않았습니다"
         case .notificationNotSubscribed:
             return "알림이 구독되지 않았습니다"
+        case .notificationAlreadySubscribed:
+            return "이미 구독된 축제입니다"
         }
     }
 }
