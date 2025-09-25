@@ -21,14 +21,7 @@ fun ImageView.loadImage(
     url: String?,
     block: ImageRequest.Builder.() -> Unit = {},
 ) {
-    val finalUrl =
-        if (url != null && url.startsWith("/images/")) {
-            BuildConfig.FESTABOOK_URL.removeSuffix("/api/") + url
-        } else {
-            url
-        }
-
-    this.load(finalUrl) {
+    this.load(url.convertImageUrl()) {
         block()
         crossfade(true)
         placeholder(Color.LTGRAY.toDrawable())
@@ -36,6 +29,13 @@ fun ImageView.loadImage(
         error(R.drawable.img_fallback)
     }
 }
+
+fun String?.convertImageUrl() = if (this != null && this.startsWith("/images/")) {
+    BuildConfig.FESTABOOK_URL.removeSuffix("/api/") + this
+} else {
+    this
+}
+
 
 fun vectorToBitmap(
     context: Context,
