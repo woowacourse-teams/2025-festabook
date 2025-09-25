@@ -90,8 +90,9 @@
 
 페스타북과 함께라면, 여러분의 축제는 더 즐겁고 편리해집니다 🎉  
 
-## 📬 Contact & Links
+---
 
+## 📬 Contact
 [![Gmail](https://img.shields.io/badge/Email-festabook2025@gmail.com-red?style=for-the-badge&logo=gmail&logoColor=white)](mailto:festabook2025@gmail.com)
 [![Instagram](https://img.shields.io/badge/Instagram-@festabook.official-E4405F?style=for-the-badge&logo=instagram&logoColor=white)](https://www.instagram.com/festabook.official)
 
