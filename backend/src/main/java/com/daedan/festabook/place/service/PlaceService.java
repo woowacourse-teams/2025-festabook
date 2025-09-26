@@ -55,7 +55,6 @@ public class PlaceService {
     @Transactional
     public PlacesCloneResponse clonePlaces(Long festivalId, PlacesCloneRequest request) {
         validateClonePlacesSize(request.originalPlaceIds().size());
-        getFestivalById(festivalId);
 
         List<Place> originalPlaces = placeJpaRepository.findAllByIdInAndFestivalId(request.originalPlaceIds(),
                 festivalId);

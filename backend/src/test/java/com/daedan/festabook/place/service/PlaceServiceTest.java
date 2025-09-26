@@ -145,8 +145,6 @@ class PlaceServiceTest {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            given(festivalJpaRepository.findById(festivalId))
-                    .willReturn(Optional.of(festival));
 
             // 기존 플레이스 조회
             Place place1 = PlaceFixture.create(festival, 1L);
@@ -190,9 +188,7 @@ class PlaceServiceTest {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            given(festivalJpaRepository.findById(festivalId))
-                    .willReturn(Optional.of(festival));
-
+            
             // 기존 플레이스 조회
             Place place1 = PlaceFixture.create(festival, 1L);
             List<Long> originalPlaceIds = List.of(place1.getId());
@@ -225,8 +221,6 @@ class PlaceServiceTest {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            given(festivalJpaRepository.findById(festivalId))
-                    .willReturn(Optional.of(festival));
 
             Long anotherFestivalId = 2L;
             Festival anotherFestival = FestivalFixture.create(anotherFestivalId);
@@ -246,21 +240,6 @@ class PlaceServiceTest {
             assertThatThrownBy(() -> placeService.clonePlaces(festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스의 접근 권한이 없습니다.");
-        }
-
-        @Test
-        void 예외_존재하지_않는_축제() {
-            // given
-            Long invalidFestivalId = 1L;
-            given(festivalJpaRepository.findById(invalidFestivalId))
-                    .willReturn(Optional.empty());
-
-            PlacesCloneRequest request = PlacesCloneRequestFixture.create();
-
-            // when & then
-            assertThatThrownBy(() -> placeService.clonePlaces(invalidFestivalId, request))
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 축제입니다.");
         }
 
         @Test
