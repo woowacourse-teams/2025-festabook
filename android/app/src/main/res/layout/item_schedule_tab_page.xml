@@ -9,10 +9,6 @@
             name="scheduleEvent"
             type="com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel" />
 
-        <variable
-            name="onBookmarkCheckedListener"
-            type="com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener" />
-
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -105,23 +101,8 @@
                 app:layout_constraintTop_toTopOf="@id/iv_schedule_event_clock"
                 tools:text="09:00 ~ 18:00" />
 
-            <ImageView
-                android:id="@+id/iv_schedule_event_book_mark"
-                isBookmarked="@{scheduleEvent.isBookmarked}"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="20dp"
-                android:clickable="false"
-                android:contentDescription="@string/all_book_mark"
-                android:onClick="@{() -> onBookmarkCheckedListener.onBookmarkChecked(scheduleEvent.id)}"
-                android:src="@drawable/ic_bookmark_normal"
-                android:visibility="invisible"
-                app:layout_constraintBottom_toBottomOf="@id/cl_schedule_event_card"
-                app:layout_constraintEnd_toEndOf="@id/cl_schedule_event_card" />
-
         </androidx.constraintlayout.widget.ConstraintLayout>
-        
+
         <com.airbnb.lottie.LottieAnimationView
             android:id="@+id/lav_schedule_event_time_line_circle"
             android:layout_width="60dp"

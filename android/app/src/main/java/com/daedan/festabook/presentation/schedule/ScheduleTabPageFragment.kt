@@ -19,9 +19,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         ScheduleViewModel.factory(dateId)
     }
     private val adapter: ScheduleAdapter by lazy {
-        ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
-            viewModel.updateBookmark(scheduleEventId)
-        })
+        ScheduleAdapter()
     }
 
     override fun onViewCreated(
