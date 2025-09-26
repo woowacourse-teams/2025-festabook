@@ -62,10 +62,6 @@ class ScheduleFragment :
             )
         tab.customView = itemScheduleTabBinding.root
 
-        itemScheduleTabBinding.clScheduleTabItem.setOnClickListener {
-            binding.logger.log(binding.logger.getBaseLogData())
-        }
-
         itemScheduleTabBinding.tvScheduleTabItem.text =
             viewModel.scheduleDatesUiState.value
                 .let {
