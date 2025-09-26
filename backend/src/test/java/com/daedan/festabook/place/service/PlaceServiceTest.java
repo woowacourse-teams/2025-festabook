@@ -25,14 +25,14 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
-import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
-import com.daedan.festabook.place.dto.PlaceBulkCloneRequestFixture;
-import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneRequestFixture;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -173,13 +173,13 @@ class PlaceServiceTest {
             given(placeJpaRepository.saveAll(clonedPlaces))
                     .willReturn(savedClonePlaces);
 
-            PlaceBulkCloneRequest request = new PlaceBulkCloneRequest(
+            PlacesCloneRequest request = new PlacesCloneRequest(
                     List.of(place1.getId(), place2.getId(), place3.getId()));
 
             List<Long> expected = savedClonePlaces.stream().map(Place::getId).toList();
 
             // when
-            PlaceBulkCloneResponse result = placeService.clonePlaces(festivalId, request);
+            PlacesCloneResponse result = placeService.clonePlaces(festivalId, request);
 
             // then
             assertThat(result.clonedPlaceIds()).containsExactly(expected.toArray(new Long[]{}));
@@ -211,7 +211,7 @@ class PlaceServiceTest {
             given(placeJpaRepository.saveAll(clonedPlaces))
                     .willReturn(savedClonePlaces);
 
-            PlaceBulkCloneRequest request = new PlaceBulkCloneRequest(List.of(place1.getId()));
+            PlacesCloneRequest request = new PlacesCloneRequest(List.of(place1.getId()));
 
             // when
             placeService.clonePlaces(festivalId, request);
@@ -239,7 +239,7 @@ class PlaceServiceTest {
             given(placeJpaRepository.findAllByIdInAndFestivalId(originalPlaceIds, festivalId))
                     .willReturn(originalPlaces);
 
-            PlaceBulkCloneRequest request = new PlaceBulkCloneRequest(
+            PlacesCloneRequest request = new PlacesCloneRequest(
                     List.of(place.getId(), anotherFestivalPlace.getId()));
 
             // when & then
@@ -255,7 +255,7 @@ class PlaceServiceTest {
             given(festivalJpaRepository.findById(invalidFestivalId))
                     .willReturn(Optional.empty());
 
-            PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create();
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create();
 
             // when & then
             assertThatThrownBy(() -> placeService.clonePlaces(invalidFestivalId, request))
@@ -271,7 +271,7 @@ class PlaceServiceTest {
                     .boxed()
                     .toList();
 
-            PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create(originalPlaceIds);
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create(originalPlaceIds);
 
             // when & then
             assertThatThrownBy(() -> placeService.clonePlaces(festivalId, request))

@@ -4,12 +4,12 @@ import com.daedan.festabook.place.domain.Place;
 import com.fasterxml.jackson.annotation.JsonValue;
 import java.util.List;
 
-public record PlaceBulkCloneResponse(
+public record PlacesCloneResponse(
         @JsonValue List<Long> clonedPlaceIds
 ) {
 
-    public static PlaceBulkCloneResponse from(List<Place> clonedPlaces) {
-        return new PlaceBulkCloneResponse(
+    public static PlacesCloneResponse from(List<Place> clonedPlaces) {
+        return new PlacesCloneResponse(
                 clonedPlaces.stream()
                         .map(Place::getId)
                         .toList()

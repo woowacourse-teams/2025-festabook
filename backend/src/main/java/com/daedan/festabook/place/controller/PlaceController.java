@@ -6,13 +6,13 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
-import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
-import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -64,9 +64,9 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public PlaceBulkCloneResponse clonePlaces(
+    public PlacesCloneResponse clonePlaces(
             @AuthenticationPrincipal CouncilDetails councilDetails,
-            @RequestBody PlaceBulkCloneRequest request
+            @RequestBody PlacesCloneRequest request
     ) {
         return placeService.clonePlaces(councilDetails.getFestivalId(), request);
     }

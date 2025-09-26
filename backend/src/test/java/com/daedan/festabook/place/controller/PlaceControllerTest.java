@@ -31,11 +31,11 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
-import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
-import com.daedan.festabook.place.dto.PlaceBulkCloneRequestFixture;
-import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneRequestFixture;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -159,7 +159,7 @@ class PlaceControllerTest {
             placeJpaRepository.saveAll(List.of(place1, place2, place3));
 
             List<Long> originalPlaceIds = List.of(place1.getId(), place2.getId(), place3.getId());
-            PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create(originalPlaceIds);
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create(originalPlaceIds);
 
             Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
@@ -191,12 +191,12 @@ class PlaceControllerTest {
             placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
 
             List<Long> originalPlaceIds = List.of(place.getId());
-            PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create(originalPlaceIds);
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create(originalPlaceIds);
 
             Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             // when & then
-            PlaceBulkCloneResponse placeBulkCloneResponse = RestAssured
+            PlacesCloneResponse placesCloneResponse = RestAssured
                     .given()
                     .header(authorizationHeader)
                     .contentType(ContentType.JSON)
@@ -205,10 +205,10 @@ class PlaceControllerTest {
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .extract()
-                    .as(PlaceBulkCloneResponse.class);
+                    .as(PlacesCloneResponse.class);
 
             assertSoftly(s -> {
-                Place p = placeJpaRepository.findById(placeBulkCloneResponse.clonedPlaceIds().getFirst()).get();
+                Place p = placeJpaRepository.findById(placesCloneResponse.clonedPlaceIds().getFirst()).get();
                 List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlace(p);
                 String placeImageUrl1 = placeImages.get(0).getImageUrl();
                 String placeImageUrl2 = placeImages.get(1).getImageUrl();

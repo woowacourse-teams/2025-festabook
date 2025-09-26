@@ -10,12 +10,12 @@ import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
-import com.daedan.festabook.place.dto.PlaceBulkCloneRequest;
-import com.daedan.festabook.place.dto.PlaceBulkCloneResponse;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -53,8 +53,8 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceBulkCloneResponse clonePlaces(Long festivalId, PlaceBulkCloneRequest request) {
-        validateBulkCloneSize(request.originalPlaceIds().size());
+    public PlacesCloneResponse clonePlaces(Long festivalId, PlacesCloneRequest request) {
+        validateClonePlacesSize(request.originalPlaceIds().size());
         getFestivalById(festivalId);
 
         List<Place> originalPlaces = placeJpaRepository.findAllByIdInAndFestivalId(request.originalPlaceIds(),
@@ -74,7 +74,7 @@ public class PlaceService {
         List<Place> savedClonePlaces = placeJpaRepository.saveAll(clonedPlaces);
         placeImageJpaRepository.saveAll(clonedPlaceImages);
 
-        return PlaceBulkCloneResponse.from(savedClonePlaces);
+        return PlacesCloneResponse.from(savedClonePlaces);
     }
 
     @Transactional(readOnly = true)
@@ -238,7 +238,7 @@ public class PlaceService {
         }
     }
 
-    private void validateBulkCloneSize(int size) {
+    private void validateClonePlacesSize(int size) {
         if (size > 200) {
             throw new BusinessException("한 번에 복제할 수 있는 사이즈가 초과하였습니다.", HttpStatus.BAD_REQUEST);
         }
