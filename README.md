@@ -1,4 +1,4 @@
-# 🎆 페스타북 Festabook : 축제를 한 권에 담다 
+# 🎆 페스타북 festabook : 축제를 한 권에 담다 
 
 [![Google Play](https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.daedan.festabook)
 [![App Store](https://img.shields.io/badge/App_Store-0D96F6?style=for-the-badge&logo=appstore&logoColor=white)](https://apps.apple.com/kr/app/%ED%8E%98%EC%8A%A4%ED%83%80%EB%B6%81-festabook/id6752591661)
@@ -9,7 +9,7 @@
 
 공연 일정은 SNS에 흩어져 있고, 부스 위치는 직접 찾아가야 하고, 공지사항은 또 다른 채널에서 찾아야 하죠.  
 
-**페스타북(Festabook)** 은 이런 불편함을 해결하기 위해 만들어졌습니다.  
+**페스타북(festabook)** 은 이런 불편함을 해결하기 위해 만들어졌습니다.  
 이제 흩어진 정보를 찾느라 헤매지 말고, 한 권의 책처럼 정리된 축제를 경험하세요.  
 
 
