@@ -62,14 +62,14 @@ public class PlaceService {
 
         List<Place> clonedPlaces = new ArrayList<>();
         List<PlaceImage> clonedPlaceImages = new ArrayList<>();
-        for (Place place : originalPlaces) {
-            Place clonedPlace = place.clone();
+        for (Place currentOriginalPlace : originalPlaces) {
+            Place clonedPlace = currentOriginalPlace.clone();
             clonedPlaces.add(clonedPlace);
-            List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlace(place).stream()
-                    .map(placeImage -> placeImage.cloneByPlace(clonedPlace))
-                    .toList();
+
+            List<PlaceImage> placeImages = getPlaceImagesByOriginalPlace(currentOriginalPlace, clonedPlace);
             clonedPlaceImages.addAll(placeImages);
         }
+
         List<Place> savedClonePlaces = placeJpaRepository.saveAll(clonedPlaces);
         placeImageJpaRepository.saveAll(clonedPlaceImages);
 
@@ -140,6 +140,12 @@ public class PlaceService {
                 throw new BusinessException("해당 축제의 시간 태그가 아닙니다.", HttpStatus.FORBIDDEN);
             }
         });
+    }
+
+    private List<PlaceImage> getPlaceImagesByOriginalPlace(Place currentOriginalPlace, Place clonedPlace) {
+        return placeImageJpaRepository.findAllByPlace(currentOriginalPlace).stream()
+                .map(placeImage -> placeImage.cloneByPlace(clonedPlace))
+                .toList();
     }
 
     private List<Long> getDeleteTimeTagIds(List<Long> existingTimeTagIds, List<Long> requestTimeTagIds) {
