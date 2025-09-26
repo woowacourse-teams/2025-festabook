@@ -64,11 +64,11 @@ public class PlaceController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public PlaceBulkCloneResponse bulkClonePlaces(
+    public PlaceBulkCloneResponse clonePlaces(
             @AuthenticationPrincipal CouncilDetails councilDetails,
             @RequestBody PlaceBulkCloneRequest request
     ) {
-        return placeService.bulkClonePlaces(councilDetails.getFestivalId(), request);
+        return placeService.clonePlaces(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping

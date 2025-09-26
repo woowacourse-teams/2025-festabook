@@ -144,7 +144,7 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class bulkClonePlaces {
+    class clonePlaces {
 
         @ParameterizedTest
         @EnumSource(RoleType.class)

@@ -138,7 +138,7 @@ class PlaceServiceTest {
     }
 
     @Nested
-    class bulkClonePlaces {
+    class clonePlaces {
 
         @Test
         void 성공() {
@@ -179,7 +179,7 @@ class PlaceServiceTest {
             List<Long> expected = savedClonePlaces.stream().map(Place::getId).toList();
 
             // when
-            PlaceBulkCloneResponse result = placeService.bulkClonePlaces(festivalId, request);
+            PlaceBulkCloneResponse result = placeService.clonePlaces(festivalId, request);
 
             // then
             assertThat(result.clonedPlaceIds()).containsExactly(expected.toArray(new Long[]{}));
@@ -214,7 +214,7 @@ class PlaceServiceTest {
             PlaceBulkCloneRequest request = new PlaceBulkCloneRequest(List.of(place1.getId()));
 
             // when
-            placeService.bulkClonePlaces(festivalId, request);
+            placeService.clonePlaces(festivalId, request);
 
             // then
             then(placeImageJpaRepository).should().saveAll(any());
@@ -243,7 +243,7 @@ class PlaceServiceTest {
                     List.of(place.getId(), anotherFestivalPlace.getId()));
 
             // when & then
-            assertThatThrownBy(() -> placeService.bulkClonePlaces(festivalId, request))
+            assertThatThrownBy(() -> placeService.clonePlaces(festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("플레이스의 접근 권한이 없습니다.");
         }
@@ -258,7 +258,7 @@ class PlaceServiceTest {
             PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create();
 
             // when & then
-            assertThatThrownBy(() -> placeService.bulkClonePlaces(invalidFestivalId, request))
+            assertThatThrownBy(() -> placeService.clonePlaces(invalidFestivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("존재하지 않는 축제입니다.");
         }
@@ -274,7 +274,7 @@ class PlaceServiceTest {
             PlaceBulkCloneRequest request = PlaceBulkCloneRequestFixture.create(originalPlaceIds);
 
             // when & then
-            assertThatThrownBy(() -> placeService.bulkClonePlaces(festivalId, request))
+            assertThatThrownBy(() -> placeService.clonePlaces(festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("한 번에 복제할 수 있는 사이즈가 초과하였습니다.");
         }

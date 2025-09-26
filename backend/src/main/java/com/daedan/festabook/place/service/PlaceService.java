@@ -53,7 +53,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceBulkCloneResponse bulkClonePlaces(Long festivalId, PlaceBulkCloneRequest request) {
+    public PlaceBulkCloneResponse clonePlaces(Long festivalId, PlaceBulkCloneRequest request) {
         validateBulkCloneSize(request.originalPlaceIds().size());
         getFestivalById(festivalId);
 
