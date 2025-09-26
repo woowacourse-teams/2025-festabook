@@ -186,8 +186,8 @@ class PlaceControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            PlaceImage placeImage1 = PlaceImageFixture.create(place);
-            PlaceImage placeImage2 = PlaceImageFixture.create(place);
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, "https://thisisimage/1", 1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, "https://thisisimage/2", 2);
             placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
 
             List<Long> originalPlaceIds = List.of(place.getId());
@@ -214,7 +214,7 @@ class PlaceControllerTest {
                 String placeImageUrl2 = placeImages.get(1).getImageUrl();
 
                 s.assertThat(placeImageUrl1).isEqualTo(placeImage1.getImageUrl());
-                s.assertThat(placeImageUrl2).isEqualTo(placeImage1.getImageUrl());
+                s.assertThat(placeImageUrl2).isEqualTo(placeImage2.getImageUrl());
             });
         }
     }
