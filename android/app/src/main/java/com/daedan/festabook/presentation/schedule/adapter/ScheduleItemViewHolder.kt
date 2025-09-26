@@ -17,10 +17,21 @@ import com.daedan.festabook.presentation.schedule.model.toKoreanString
 class ScheduleItemViewHolder(
     private val binding: ItemScheduleTabPageBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
+    private var scheduleEventItem: ScheduleEventUiModel? = null
+
+    init {
+        scheduleEventItem?.let {
+            binding.clScheduleEventCard.setOnClickListener {
+                binding.logger.log(binding.logger.getBaseLogData())
+            }
+        }
+    }
+
     fun bind(
         scheduleEventItem: ScheduleEventUiModel,
         itemCount: Int,
     ) {
+        this.scheduleEventItem = scheduleEventItem
         setupBottomMargin(itemCount)
         binding.scheduleEvent = scheduleEventItem
         setupEventViewByStatus(scheduleEventItem.status)
