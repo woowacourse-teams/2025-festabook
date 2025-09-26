@@ -35,6 +35,8 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PlaceService {
 
+    private static final int MAX_CLONE_SIZE = 200;
+
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
@@ -244,7 +246,7 @@ public class PlaceService {
     }
 
     private void validateClonePlacesSize(int size) {
-        if (size > 200) {
+        if (size > MAX_CLONE_SIZE) {
             throw new BusinessException("한 번에 복제할 수 있는 사이즈가 초과하였습니다.", HttpStatus.BAD_REQUEST);
         }
     }
