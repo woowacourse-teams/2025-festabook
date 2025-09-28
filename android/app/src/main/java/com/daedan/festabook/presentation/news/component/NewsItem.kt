@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.news.faq.component
+package com.daedan.festabook.presentation.news.component
 
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
