@@ -55,7 +55,7 @@ public class PlaceService {
     public PlaceResponses getAllPlaceByFestivalId(Long festivalId) {
         List<Place> places = placeJpaRepository.findAllByFestivalId(festivalId);
 
-        Map<Long, List<PlaceImage>> placeImages = placeImageJpaRepository.findAllByPlaceInOrderBySequence(places)
+        Map<Long, List<PlaceImage>> placeImages = placeImageJpaRepository.findAllByPlaceInOrderBySequenceAsc(places)
                 .stream()
                 .collect(Collectors.groupingBy(
                         placeImage -> placeImage.getPlace().getId(),

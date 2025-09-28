@@ -151,7 +151,7 @@ class PlaceServiceTest {
 
             given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(List.of(place));
-            given(placeImageJpaRepository.findAllByPlaceInOrderBySequence(List.of(place)))
+            given(placeImageJpaRepository.findAllByPlaceInOrderBySequenceAsc(List.of(place)))
                     .willReturn(List.of(image));
             given(placeAnnouncementJpaRepository.findAllByPlaceIn(List.of(place)))
                     .willReturn(List.of(announcement));
