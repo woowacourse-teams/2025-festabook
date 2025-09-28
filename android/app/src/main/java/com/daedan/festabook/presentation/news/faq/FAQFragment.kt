@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentFaqBinding
@@ -20,16 +21,15 @@ class FAQFragment : BaseFragment<FragmentFaqBinding>(R.layout.fragment_faq) {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        val composeView = ComposeView(requireContext())
-        composeView.setContent {
-            FAQScreen(uiState = viewModel.faqUiState, onFaqClick = { faqItemUiModel ->
-                (requireParentFragment() as OnNewsClickListener).onFAQClick(faqItemUiModel)
-            })
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                FAQScreen(uiState = viewModel.faqUiState, onFaqClick = { faqItemUiModel ->
+                    (requireParentFragment() as OnNewsClickListener).onFAQClick(faqItemUiModel)
+                })
+            }
         }
-
-        return composeView
-    }
 
     companion object {
         fun newInstance() = FAQFragment()
