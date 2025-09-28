@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
-import com.daedan.festabook.logging.DefaultFirebaseLogger
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.home.ExploreClickLogData
 import com.daedan.festabook.logging.model.home.HomeViewLogData
 import com.daedan.festabook.logging.model.home.ScheduleClickLogData
@@ -23,7 +23,6 @@ import timber.log.Timber
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     private val viewModel: HomeViewModel by viewModels({ requireActivity() }) { HomeViewModel.Factory }
-    private val logger by lazy { DefaultFirebaseLogger.getInstance(requireContext()) }
 
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 
@@ -49,7 +48,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     private fun setupNavigateToExploreButton() {
         binding.layoutTitleWithIcon.setOnClickListener {
-            logger.log(ExploreClickLogData(logger.getBaseLogData()))
+            binding.logger.log(ExploreClickLogData(binding.logger.getBaseLogData()))
 
             startActivity(ExploreActivity.newIntent(requireContext()))
         }
@@ -57,9 +56,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     private fun setupNavigateToScheduleButton() {
         binding.btnNavigateToSchedule.setOnClickListener {
-            logger.log(
+            binding.logger.log(
                 ScheduleClickLogData(
-                    baseLogData = logger.getBaseLogData(),
+                    baseLogData = binding.logger.getBaseLogData(),
                 ),
             )
 
@@ -127,9 +126,9 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 scrollToInitialPosition(posterUrls.size)
             }
         }
-        logger.log(
+        binding.logger.log(
             HomeViewLogData(
-                baseLogData = logger.getBaseLogData(),
+                baseLogData = binding.logger.getBaseLogData(),
                 universityName = festivalUiState.organization.universityName,
                 festivalId = festivalUiState.organization.id,
             ),
