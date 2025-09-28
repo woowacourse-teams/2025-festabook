@@ -9,5 +9,7 @@ public interface PlaceJpaRepository extends JpaRepository<Place, Long> {
 
     List<Place> findAllByFestivalId(Long festivalId);
 
+    Integer countByIdIn(Collection<Long> ids);
+
     List<Place> findAllByIdInAndFestivalId(Collection<Long> places, Long festivalId);
 }

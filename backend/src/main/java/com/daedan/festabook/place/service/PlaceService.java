@@ -57,6 +57,7 @@ public class PlaceService {
     @Transactional
     public PlacesCloneResponse clonePlaces(Long festivalId, PlacesCloneRequest request) {
         validateClonePlacesSize(request.originalPlaceIds().size());
+        validateExistsPlace(request);
 
         List<Place> originalPlaces = placeJpaRepository.findAllByIdInAndFestivalId(request.originalPlaceIds(),
                 festivalId);
@@ -134,6 +135,12 @@ public class PlaceService {
 
         List<PlaceTimeTag> addPlaceTimeTags = createAddPlaceTimeTags(place, addTimeTags);
         placeTimeTagJpaRepository.saveAll(addPlaceTimeTags);
+    }
+
+    private void validateExistsPlace(PlacesCloneRequest request) {
+        if (placeJpaRepository.countByIdIn(request.originalPlaceIds()) != request.originalPlaceIds().size()) {
+            throw new BusinessException("요청한 id 중 존재하지 않는 id가 존재합니다.", HttpStatus.BAD_REQUEST);
+        }
     }
 
     private void validateTimeTagsBelongsToFestival(List<TimeTag> addTimeTags, Long festivalId) {

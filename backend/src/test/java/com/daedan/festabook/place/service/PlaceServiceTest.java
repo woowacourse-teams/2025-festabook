@@ -152,6 +152,8 @@ class PlaceServiceTest {
             Place place3 = PlaceFixture.create(festival, 3L);
             List<Long> originalPlaceIds = List.of(place1.getId(), place2.getId(), place3.getId());
             List<Place> originalPlaces = List.of(place1, place2, place3);
+            given(placeJpaRepository.countByIdIn(originalPlaceIds))
+                    .willReturn(originalPlaceIds.size());
             given(placeJpaRepository.findAllByIdInAndFestivalId(originalPlaceIds, festivalId))
                     .willReturn(originalPlaces);
 
@@ -188,11 +190,13 @@ class PlaceServiceTest {
             // given
             Long festivalId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            
+
             // 기존 플레이스 조회
             Place place1 = PlaceFixture.create(festival, 1L);
             List<Long> originalPlaceIds = List.of(place1.getId());
             List<Place> originalPlaces = List.of(place1);
+            given(placeJpaRepository.countByIdIn(originalPlaceIds))
+                    .willReturn(originalPlaceIds.size());
             given(placeJpaRepository.findAllByIdInAndFestivalId(originalPlaceIds, festivalId))
                     .willReturn(originalPlaces);
 
@@ -230,6 +234,8 @@ class PlaceServiceTest {
             Place anotherFestivalPlace = PlaceFixture.create(anotherFestival, 2L);
             List<Long> originalPlaceIds = List.of(place.getId(), anotherFestivalPlace.getId());
             List<Place> originalPlaces = List.of(place);
+            given(placeJpaRepository.countByIdIn(originalPlaceIds))
+                    .willReturn(originalPlaceIds.size());
             given(placeJpaRepository.findAllByIdInAndFestivalId(originalPlaceIds, festivalId))
                     .willReturn(originalPlaces);
 
@@ -256,6 +262,28 @@ class PlaceServiceTest {
             assertThatThrownBy(() -> placeService.clonePlaces(festivalId, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("한 번에 복제할 수 있는 사이즈가 초과하였습니다.");
+        }
+
+        @Test
+        void 예외_존재하지_않는_place_id가_포함() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+
+            // 기존 플레이스 조회
+            Place place1 = PlaceFixture.create(festival, 1L);
+            Place place2 = PlaceFixture.create(festival, 2L);
+            Place place3 = PlaceFixture.create(festival, 3L);
+            List<Long> originalPlaceIds = List.of(place1.getId(), place2.getId(), place3.getId());
+            given(placeJpaRepository.countByIdIn(originalPlaceIds))
+                    .willReturn(originalPlaceIds.size() - 1);
+
+            PlacesCloneRequest request = new PlacesCloneRequest(
+                    List.of(place1.getId(), place2.getId(), place3.getId()));
+            // when & then
+            assertThatThrownBy(() -> placeService.clonePlaces(festivalId, request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("요청한 id 중 존재하지 않는 id가 존재합니다.");
         }
     }
 
