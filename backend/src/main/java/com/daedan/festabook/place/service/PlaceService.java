@@ -22,6 +22,7 @@ import com.daedan.festabook.timetag.domain.PlaceTimeTag;
 import com.daedan.festabook.timetag.domain.TimeTag;
 import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -90,7 +91,9 @@ public class PlaceService {
                 places.stream()
                         .map(place -> convertPlaceToPlaceResponse(
                                 place,
-                                placeImages.getOrDefault(place.getId(), List.of()),
+                                placeImages.getOrDefault(place.getId(), List.of()).stream()
+                                        .sorted(Comparator.comparingInt(placeImage -> placeImage.getSequence()))
+                                        .toList(),
                                 placeAnnouncements.getOrDefault(place.getId(), List.of()),
                                 timeTags.getOrDefault(place.getId(), List.of())
                         ))
