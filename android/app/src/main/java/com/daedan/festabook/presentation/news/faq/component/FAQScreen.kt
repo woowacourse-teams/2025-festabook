@@ -4,9 +4,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.component.EmptyStateScreen
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
@@ -20,7 +23,9 @@ fun FAQScreen(
 ) {
     when (uiState) {
         is FAQUiState.Error -> {
-            Timber.w(uiState.throwable.stackTraceToString())
+            LaunchedEffect(uiState) {
+                Timber.w(uiState.throwable.stackTraceToString())
+            }
         }
 
         is FAQUiState.InitialLoading -> Unit
@@ -34,8 +39,10 @@ fun FAQScreen(
                         items = uiState.faqs,
                         key = { _, faq -> faq.questionId },
                     ) { index, faq ->
-                        FAQItem(
-                            faqItemUiModel = faq,
+                        NewsItem(
+                            title = stringResource(R.string.tab_faq_question, faq.question),
+                            description = faq.answer,
+                            isExpanded = faq.isExpanded,
                             onclick = { onFaqClick(faq) },
                             modifier =
                                 Modifier.padding(
