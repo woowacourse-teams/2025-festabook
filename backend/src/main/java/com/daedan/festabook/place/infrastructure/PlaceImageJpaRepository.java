@@ -15,7 +15,7 @@ public interface PlaceImageJpaRepository extends JpaRepository<PlaceImage, Long>
 
     List<PlaceImage> findAllByPlaceInAndSequence(List<Place> places, int sequence);
 
-    List<PlaceImage> findAllByPlaceIn(Collection<Place> places);
+    List<PlaceImage> findAllByPlaceInOrderBySequence(Collection<Place> places);
 
     @Query("SELECT MAX(p.sequence) FROM PlaceImage p WHERE p.place = :place AND p.deleted = false")
     Optional<Integer> findMaxSequenceByPlace(@Param("place") Place place);

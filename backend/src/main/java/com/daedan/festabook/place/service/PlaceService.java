@@ -22,7 +22,6 @@ import com.daedan.festabook.timetag.domain.PlaceTimeTag;
 import com.daedan.festabook.timetag.domain.TimeTag;
 import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -56,7 +55,8 @@ public class PlaceService {
     public PlaceResponses getAllPlaceByFestivalId(Long festivalId) {
         List<Place> places = placeJpaRepository.findAllByFestivalId(festivalId);
 
-        Map<Long, List<PlaceImage>> placeImages = placeImageJpaRepository.findAllByPlaceIn(places).stream()
+        Map<Long, List<PlaceImage>> placeImages = placeImageJpaRepository.findAllByPlaceInOrderBySequence(places)
+                .stream()
                 .collect(Collectors.groupingBy(
                         placeImage -> placeImage.getPlace().getId(),
                         Collectors.toList()
@@ -73,41 +73,12 @@ public class PlaceService {
                 .collect(Collectors.groupingBy(
                         placeTimeTag -> placeTimeTag.getPlace().getId(),
                         Collectors.mapping(
-                                placeTimeTag -> placeTimeTag.getTimeTag(),
+                                PlaceTimeTag::getTimeTag,
                                 Collectors.toList()
                         )
                 ));
 
-        return convertPlacesToPlaceResponses(places, placeImages, placeAnnouncements, timeTags);
-    }
-
-    private PlaceResponses convertPlacesToPlaceResponses(
-            List<Place> places,
-            Map<Long, List<PlaceImage>> placeImages,
-            Map<Long, List<PlaceAnnouncement>> placeAnnouncements,
-            Map<Long, List<TimeTag>> timeTags
-    ) {
-        return PlaceResponses.from(
-                places.stream()
-                        .map(place -> convertPlaceToPlaceResponse(
-                                place,
-                                placeImages.getOrDefault(place.getId(), List.of()).stream()
-                                        .sorted(Comparator.comparingInt(placeImage -> placeImage.getSequence()))
-                                        .toList(),
-                                placeAnnouncements.getOrDefault(place.getId(), List.of()),
-                                timeTags.getOrDefault(place.getId(), List.of())
-                        ))
-                        .toList()
-        );
-    }
-
-    private PlaceResponse convertPlaceToPlaceResponse(
-            Place place,
-            List<PlaceImage> placeImages,
-            List<PlaceAnnouncement> placeAnnouncements,
-            List<TimeTag> timeTags
-    ) {
-        return PlaceResponse.from(place, placeImages, placeAnnouncements, timeTags);
+        return PlaceResponses.from(places, placeImages, placeAnnouncements, timeTags);
     }
 
     @Transactional(readOnly = true)
