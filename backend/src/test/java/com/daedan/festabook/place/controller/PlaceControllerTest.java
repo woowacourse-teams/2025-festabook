@@ -33,6 +33,9 @@ import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
 import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceCreateRequest;
 import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneRequestFixture;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
@@ -137,6 +140,82 @@ class PlaceControllerTest {
                     .body("placeId", notNullValue())
                     .body("category", equalTo(expectedPlaceCategory.toString()))
                     .body("title", equalTo(expectedPlaceTitle));
+        }
+    }
+
+    @Nested
+    class clonePlaces {
+
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place1 = PlaceFixture.create(festival);
+            Place place2 = PlaceFixture.create(festival);
+            Place place3 = PlaceFixture.create(festival);
+            placeJpaRepository.saveAll(List.of(place1, place2, place3));
+
+            List<Long> originalPlaceIds = List.of(place1.getId(), place2.getId(), place3.getId());
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create(originalPlaceIds);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
+
+            int expectedSize = originalPlaceIds.size();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .post("/places/clone")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("$", hasSize(expectedSize));
+        }
+
+        @Test
+        void 성공_이미지도_같이_복제() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, "https://thisisimage/1", 1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, "https://thisisimage/2", 2);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
+
+            List<Long> originalPlaceIds = List.of(place.getId());
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create(originalPlaceIds);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            // when & then
+            PlacesCloneResponse placesCloneResponse = RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .post("/places/clone")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .as(PlacesCloneResponse.class);
+
+            assertSoftly(s -> {
+                Place p = placeJpaRepository.findById(placesCloneResponse.clonedPlaceIds().getFirst()).get();
+                List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlace(p);
+                String placeImageUrl1 = placeImages.get(0).getImageUrl();
+                String placeImageUrl2 = placeImages.get(1).getImageUrl();
+
+                s.assertThat(placeImageUrl1).isEqualTo(placeImage1.getImageUrl());
+                s.assertThat(placeImageUrl2).isEqualTo(placeImage2.getImageUrl());
+            });
         }
     }
 
