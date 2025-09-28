@@ -6,13 +6,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
@@ -32,19 +32,22 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daedan.festabook.R
-import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 
 private const val ICON_ROTATION_EXPANDED: Float = 180F
 private const val ICON_ROTATION_COLLAPSED: Float = 0F
 
 @Composable
-fun FAQItem(
-    faqItemUiModel: FAQItemUiModel,
+fun NewsItem(
+    title: String,
+    description: String,
+    isExpanded: Boolean,
     onclick: () -> Unit,
     modifier: Modifier = Modifier,
+    icon: (@Composable () -> Unit)? = null,
+    createdAt: String? = null,
 ) {
     val rotation by animateFloatAsState(
-        targetValue = if (faqItemUiModel.isExpanded) ICON_ROTATION_EXPANDED else ICON_ROTATION_COLLAPSED,
+        targetValue = if (isExpanded) ICON_ROTATION_EXPANDED else ICON_ROTATION_COLLAPSED,
     )
     Column(
         modifier =
@@ -67,24 +70,37 @@ fun FAQItem(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically,
         ) {
+            if (icon != null) {
+                icon()
+                Spacer(modifier = Modifier.width(8.dp))
+            }
             Text(
-                text = faqItemUiModel.question,
+                text = title,
                 fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                 fontSize = 14.sp,
             )
-            Icon(
-                painter = painterResource(R.drawable.ic_chevron_down),
-                contentDescription = stringResource(R.string.faq_expand),
-                modifier = Modifier.rotate(rotation),
-            )
+            Spacer(modifier = modifier.weight(1f))
+            if (createdAt != null) {
+                Text(
+                    text = createdAt,
+                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
+                    fontSize = 10.sp,
+                    color = colorResource(R.color.gray500),
+                )
+            } else {
+                Icon(
+                    painter = painterResource(R.drawable.ic_chevron_down),
+                    contentDescription = stringResource(R.string.faq_expand),
+                    modifier = Modifier.rotate(rotation),
+                )
+            }
         }
 
-        if (faqItemUiModel.isExpanded) {
+        if (isExpanded) {
             Spacer(modifier = Modifier.height(8.dp))
-            Text(text = faqItemUiModel.answer)
+            Text(text = description)
         }
     }
 }
@@ -92,15 +108,28 @@ fun FAQItem(
 @Preview
 @Composable
 private fun FAQItemPreview() {
-    FAQItem(
-        faqItemUiModel =
-            FAQItemUiModel(
-                questionId = 1,
-                question = "Q. 주차는 어디에 가능한가요?",
-                answer = "널린게 미소집 앞마당입니다.널린게 미소집 앞마당입니다널린게 미소집 앞마당입니다널린게 미소집 앞마당입니다널린게 미소집 앞마당입니다",
-                sequence = 1,
-                isExpanded = true,
-            ),
+    NewsItem(
+        title = stringResource(R.string.tab_faq_question, "주차는 어디에 가능한가요"),
+        description = "미소집이요미소집이요미소집이요미소집이요미소집이요미소집이요미소집이요미소집이요",
+        isExpanded = false,
         onclick = {},
+    )
+}
+
+@Preview
+@Composable
+private fun NoticeItemPreview() {
+    NewsItem(
+        title = "공지사항 제목입니다.",
+        description = "설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.설명입니다.",
+        isExpanded = true,
+        onclick = {},
+        icon = {
+            Icon(
+                painter = painterResource(R.drawable.ic_pin),
+                contentDescription = "",
+            )
+        },
+        createdAt = "11/12 12:00",
     )
 }
