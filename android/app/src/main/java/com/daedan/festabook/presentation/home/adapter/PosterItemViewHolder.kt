@@ -8,9 +8,8 @@ import coil3.request.transformations
 import coil3.transform.RoundedCornersTransformation
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemHomePosterBinding
-import com.daedan.festabook.logging.DefaultFirebaseLogger
-import com.daedan.festabook.logging.model.PosterTouchLogData
 import com.daedan.festabook.logging.logger
+import com.daedan.festabook.logging.model.PosterTouchLogData
 import com.daedan.festabook.presentation.common.loadImage
 
 class PosterItemViewHolder(
