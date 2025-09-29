@@ -4,6 +4,7 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.databinding.ItemPlaceImageBinding
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 
 class PlaceImageViewPagerViewHolder(

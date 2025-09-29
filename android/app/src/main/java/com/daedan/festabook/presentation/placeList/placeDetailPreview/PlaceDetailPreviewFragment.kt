@@ -6,6 +6,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.loadImage
@@ -15,6 +16,7 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
+import com.daedan.festabook.presentation.placeList.logging.PlacePreviewClick
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 
 class PlaceDetailPreviewFragment :
@@ -56,6 +58,14 @@ class PlaceDetailPreviewFragment :
             val selectedPlaceState = viewModel.selectedPlace.value
             if (selectedPlaceState is SelectedPlaceUiState.Success) {
                 startPlaceDetailActivity(selectedPlaceState.value)
+                binding.logger.log(
+                    PlacePreviewClick(
+                        baseLogData = binding.logger.getBaseLogData(),
+                        placeName = selectedPlaceState.value.place.title?:"undefined",
+                        timeTag = viewModel.selectedTimeTag.value?.name?:"undefined",
+                        category = selectedPlaceState.value.place.category.name
+                    )
+                )
             }
         }
     }
