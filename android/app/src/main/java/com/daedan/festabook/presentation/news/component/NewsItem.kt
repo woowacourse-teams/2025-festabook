@@ -92,7 +92,7 @@ fun NewsItem(
             } else {
                 Icon(
                     painter = painterResource(R.drawable.ic_chevron_down),
-                    contentDescription = stringResource(R.string.faq_expand),
+                    contentDescription = stringResource(R.string.chevron_down),
                     modifier = Modifier.rotate(rotation),
                 )
             }
