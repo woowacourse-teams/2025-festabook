@@ -21,6 +21,7 @@ import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.logging.LocationPermissionChanged
 import com.daedan.festabook.presentation.placeList.logging.PlaceFragmentEnter
 import com.daedan.festabook.presentation.placeList.logging.PlaceMarkerClick
+import com.daedan.festabook.presentation.placeList.logging.PlaceTimeTagSelected
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
@@ -262,6 +263,12 @@ class PlaceMapFragment :
     override fun onTimeTagSelected(item: TimeTag) {
         viewModel.unselectPlace()
         viewModel.onDaySelected(item)
+        binding.logger.log(
+            PlaceTimeTagSelected(
+                baseLogData = binding.logger.getBaseLogData(),
+                timeTagName = item.name
+            )
+        )
     }
 
     override fun onNothingSelected() {
