@@ -19,6 +19,7 @@ import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
+import com.daedan.festabook.presentation.news.faq.model.toUiModel
 import com.daedan.festabook.presentation.news.lost.LostUiState
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.lost.model.toLostGuideItemUiModel
@@ -27,7 +28,6 @@ import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import kotlinx.coroutines.launch
-import com.daedan.festabook.presentation.news.faq.model.toUiModel as faqToUiModel
 
 class NewsViewModel(
     private val noticeRepository: NoticeRepository,
