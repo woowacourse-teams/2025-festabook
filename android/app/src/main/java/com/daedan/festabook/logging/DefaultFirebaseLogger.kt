@@ -31,7 +31,7 @@ class DefaultFirebaseLogger(
     }
 
     fun log(value: LogData) {
-        if (BuildConfig.DEBUG) return
+//        if (BuildConfig.DEBUG) return
         firebaseAnalytics.logEvent(
             value.javaClass.simpleName,
             value.writeToBundle(),
