@@ -21,8 +21,10 @@ import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -173,12 +175,8 @@ public class PlaceImageServiceTest {
                     PlaceImageSequenceUpdateRequestFixture.create(placeImageId3, 1)
             );
 
-            given(placeImageJpaRepository.findById(placeImageId1))
-                    .willReturn(Optional.of(placeImage1));
-            given(placeImageJpaRepository.findById(placeImageId2))
-                    .willReturn(Optional.of(placeImage2));
-            given(placeImageJpaRepository.findById(placeImageId3))
-                    .willReturn(Optional.of(placeImage3));
+            given(placeImageJpaRepository.findAllById(Set.of(placeImageId1, placeImageId2, placeImageId3)))
+                    .willReturn(new ArrayList<>(List.of(placeImage1, placeImage2, placeImage3)));
 
             // when
             PlaceImageSequenceUpdateResponses result = placeImageService.updatePlaceImagesSequence(
@@ -208,7 +206,7 @@ public class PlaceImageServiceTest {
             // when & then
             assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(festivalId, requests))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 플레이스 이미지입니다.");
+                    .hasMessage("존재하지 않는 플레이스 이미지가 있습니다.");
         }
 
         @Test
@@ -222,8 +220,8 @@ public class PlaceImageServiceTest {
             Place place = PlaceFixture.create(requestFestival);
             PlaceImage placeImage = PlaceImageFixture.create(place, placeImageId);
 
-            given(placeImageJpaRepository.findById(placeImage.getId()))
-                    .willReturn(Optional.of(placeImage));
+            given(placeImageJpaRepository.findAllById(Set.of(placeImageId)))
+                    .willReturn(List.of(placeImage));
 
             List<PlaceImageSequenceUpdateRequest> requests = PlaceImageSequenceUpdateRequestFixture.createList(1);
 
