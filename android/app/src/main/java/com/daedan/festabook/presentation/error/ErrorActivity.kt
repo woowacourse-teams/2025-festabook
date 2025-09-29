@@ -12,7 +12,7 @@ import com.daedan.festabook.presentation.common.getSerializableCompat
 import com.google.firebase.crashlytics.FirebaseCrashlytics
 import kotlin.system.exitProcess
 
-class ErrorActivity : AppCompatActivity(R.layout.activity_error) {
+class ErrorActivity : AppCompatActivity() {
     private val binding: ActivityErrorBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_error)
     }
