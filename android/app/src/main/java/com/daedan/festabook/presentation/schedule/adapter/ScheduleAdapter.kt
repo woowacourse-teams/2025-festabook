@@ -6,13 +6,11 @@ import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 
-class ScheduleAdapter(
-    private val onBookmarkCheckedListener: OnBookmarkCheckedListener,
-) : ListAdapter<ScheduleEventUiModel, ScheduleItemViewHolder>(DIFF_UTIL) {
+class ScheduleAdapter : ListAdapter<ScheduleEventUiModel, ScheduleItemViewHolder>(DIFF_UTIL) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): ScheduleItemViewHolder = ScheduleItemViewHolder.from(parent, onBookmarkCheckedListener)
+    ): ScheduleItemViewHolder = ScheduleItemViewHolder.from(parent)
 
     override fun onBindViewHolder(
         holder: ScheduleItemViewHolder,

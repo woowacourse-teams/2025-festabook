@@ -7,6 +7,8 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
+import com.daedan.festabook.logging.logger
+import com.daedan.festabook.logging.model.schedule.ScheduleSwipeRefreshLogData
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.INVALID_ID
@@ -19,9 +21,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
         ScheduleViewModel.factory(dateId)
     }
     private val adapter: ScheduleAdapter by lazy {
-        ScheduleAdapter(onBookmarkCheckedListener = { scheduleEventId ->
-            viewModel.updateBookmark(scheduleEventId)
-        })
+        ScheduleAdapter()
     }
 
     override fun onViewCreated(
@@ -45,6 +45,7 @@ class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.l
 
     private fun onSwipeRefreshScheduleByDateListener() {
         binding.srlScheduleEvent.setOnRefreshListener {
+            binding.logger.log(ScheduleSwipeRefreshLogData(binding.logger.getBaseLogData()))
             viewModel.loadScheduleByDate()
         }
     }
