@@ -31,7 +31,7 @@ import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import timber.log.Timber
 
 class PlaceDetailActivity :
-    AppCompatActivity(R.layout.activity_place_detail),
+    AppCompatActivity(),
     OnNewsClickListener {
     private val noticeAdapter by lazy {
         NoticeAdapter(this)
