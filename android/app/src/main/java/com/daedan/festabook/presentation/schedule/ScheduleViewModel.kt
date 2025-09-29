@@ -33,18 +33,6 @@ class ScheduleViewModel(
         if (dateId != INVALID_ID) loadScheduleByDate()
     }
 
-    fun updateBookmark(scheduleEventId: Long) {
-        updateScheduleEvents { scheduleEvents ->
-            scheduleEvents.map { scheduleEvent ->
-                if (scheduleEvent.id == scheduleEventId) {
-                    scheduleEvent.copy(isBookmarked = !scheduleEvent.isBookmarked)
-                } else {
-                    scheduleEvent
-                }
-            }
-        }
-    }
-
     fun loadScheduleByDate() {
         if (dateId == INVALID_ID) return
         viewModelScope.launch {
@@ -89,17 +77,6 @@ class ScheduleViewModel(
                     _scheduleDatesUiState.value = ScheduleDatesUiState.Error(it)
                 }
         }
-    }
-
-    private fun updateScheduleEvents(onUpdate: (List<ScheduleEventUiModel>) -> List<ScheduleEventUiModel>) {
-        val currentState = _scheduleEventsUiState.value ?: return
-        _scheduleEventsUiState.value =
-            when (currentState) {
-                is ScheduleEventsUiState.Success -> currentState.copy(events = onUpdate(currentState.events))
-                is ScheduleEventsUiState.Loading,
-                is ScheduleEventsUiState.Error,
-                -> currentState
-            }
     }
 
     companion object {

@@ -20,7 +20,7 @@ class FestaBookApp : Application() {
         AppContainer(this)
     }
 
-    val fireBaseAnalytics: FirebaseAnalytics by lazy {
+    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
         FirebaseAnalytics.getInstance(this)
     }
 

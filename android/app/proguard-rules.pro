@@ -21,3 +21,8 @@
 #-renamesourcefileattribute SourceFile
 -keep class com.daedan.festabook.logging.** {*;}
 -keep class com.daedan.festabook.presentation.**Fragment { *; }
+-keep class * implements com.daedan.festabook.logging.model.LogData {
+    <init>(...); # 생성자 유지
+    <fields>;    # 모든 필드 유지
+    <methods>;   # 모든 메서드 유지
+}

@@ -11,9 +11,12 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager2.widget.ViewPager2
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.getObject
+import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
@@ -21,14 +24,16 @@ import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
+import com.daedan.festabook.presentation.placeDetail.logging.PlaceDetailImageSwipe
 import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import io.getstream.photoview.dialog.PhotoViewDialog
 import timber.log.Timber
 
 class PlaceDetailActivity :
-    AppCompatActivity(R.layout.activity_place_detail),
+    AppCompatActivity(),
     OnNewsClickListener {
     private val noticeAdapter by lazy {
         NoticeAdapter(this)
@@ -122,6 +127,22 @@ class PlaceDetailActivity :
             placeImageAdapter.submitList(placeDetail.images)
             binding.clImageIndicator.setViewPager(binding.vpPlaceImages)
         }
+        binding.vpPlaceImages.registerOnPageChangeCallback(
+            object : ViewPager2.OnPageChangeCallback() {
+                override fun onPageScrolled(
+                    position: Int,
+                    positionOffset: Float,
+                    positionOffsetPixels: Int,
+                ) {
+                    binding.logger.log(
+                        PlaceDetailImageSwipe(
+                            baseLogData = binding.logger.getBaseLogData(),
+                            startIndex = position,
+                        )
+                    )
+                }
+            }
+        )
         // 임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다
 //        if (placeDetail.notices.isEmpty()) {
 //            binding.rvPlaceNotice.visibility = View.GONE
@@ -143,7 +164,7 @@ class PlaceDetailActivity :
         binding.sflScheduleSkeleton.stopShimmer()
     }
 
-    private fun TextView.setExpandedWhenClicked(defaultMaxLines:Int = DEFAULT_MAX_LINES) {
+    private fun TextView.setExpandedWhenClicked(defaultMaxLines: Int = DEFAULT_MAX_LINES) {
         setOnClickListener {
             maxLines =
                 if (maxLines == defaultMaxLines) {

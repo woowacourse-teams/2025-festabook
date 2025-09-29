@@ -14,6 +14,10 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
+import com.daedan.festabook.logging.logger
+import com.daedan.festabook.logging.model.explore.ExploreSearchResultLogData
+import com.daedan.festabook.logging.model.explore.ExploreSelectUniversityLogData
+import com.daedan.festabook.logging.model.explore.ExploreViewLogData
 import com.daedan.festabook.presentation.explore.adapter.OnUniversityClickListener
 import com.daedan.festabook.presentation.explore.adapter.SearchResultAdapter
 import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
@@ -34,6 +38,13 @@ class ExploreActivity :
         viewModel.onUniversitySelected(university)
         binding.tilSearchInputLayout.endIconMode = TextInputLayout.END_ICON_CUSTOM
         binding.tilSearchInputLayout.setEndIconDrawable(R.drawable.ic_arrow_right)
+
+        binding.logger.log(
+            ExploreSelectUniversityLogData(
+                baseLogData = binding.logger.getBaseLogData(),
+                universityName = university.universityName,
+            ),
+        )
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -69,6 +80,13 @@ class ExploreActivity :
         setupBinding()
         setupRecyclerView()
         setupObservers()
+
+        binding.logger.log(
+            ExploreViewLogData(
+                baseLogData = binding.logger.getBaseLogData(),
+                hasFestivalId = viewModel.hasFestivalId.value ?: false,
+            ),
+        )
     }
 
     private fun setupBinding() {
@@ -151,6 +169,17 @@ class ExploreActivity :
                         binding.tilSearchInputLayout.isErrorEnabled = false
                         searchResultAdapter.submitList(state.universitiesFound)
                     }
+
+                    binding.logger.log(
+                        ExploreSearchResultLogData(
+                            baseLogData = binding.logger.getBaseLogData(),
+                            query =
+                                binding.etSearchText.text
+                                    ?.toString()
+                                    .orEmpty(),
+                            resultCount = state.universitiesFound.size,
+                        ),
+                    )
                 }
 
                 is SearchUiState.Error -> {

@@ -15,6 +15,7 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.placeListBottomSheetFollowBehavior
@@ -25,6 +26,10 @@ import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
 import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior
+import com.daedan.festabook.presentation.placeList.logging.PlaceBackToSchoolClick
+import com.daedan.festabook.presentation.placeList.logging.PlaceItemClick
+import com.daedan.festabook.presentation.placeList.logging.PlaceListSwipeUp
+import com.daedan.festabook.presentation.placeList.logging.PlaceMapButtonReClick
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -76,6 +81,14 @@ class PlaceListFragment :
     override fun onPlaceClicked(place: PlaceUiModel) {
         Timber.d("onPlaceClicked: $place")
         startPlaceDetailActivity(place)
+        binding.logger.log(
+            PlaceItemClick(
+                baseLogData = binding.logger.getBaseLogData(),
+                placeId = place.id,
+                timeTagName = viewModel.selectedTimeTag.value?.name?:"undefinded",
+                category = place.category.name
+            )
+        )
     }
 
     override fun onMenuItemReClick() {
@@ -83,6 +96,11 @@ class PlaceListFragment :
         val layoutParams = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
         val behavior = layoutParams?.behavior as? BottomSheetBehavior
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
+        binding.logger.log(
+            PlaceMapButtonReClick(
+                baseLogData = binding.logger.getBaseLogData()
+            )
+        )
     }
 
     override fun onMapReady(naverMap: NaverMap) {
@@ -156,6 +174,9 @@ class PlaceListFragment :
     private fun setUpBinding() {
         binding.chipBackToInitialPosition.setOnClickListener {
             viewModel.onBackToInitialPositionClicked()
+            binding.logger.log(PlaceBackToSchoolClick(
+                baseLogData = binding.logger.getBaseLogData()
+            ))
         }
         binding.rvPlaces.itemAnimator = null
     }

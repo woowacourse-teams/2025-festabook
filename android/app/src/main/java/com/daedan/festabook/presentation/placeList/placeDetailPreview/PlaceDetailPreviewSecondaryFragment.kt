@@ -8,12 +8,14 @@ import androidx.fragment.app.viewModels
 import coil3.load
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewSecondaryBinding
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showBottomAnimation
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
+import com.daedan.festabook.presentation.placeList.logging.PlacePreviewClick
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.getIconId
 import com.daedan.festabook.presentation.placeList.model.getTextId
@@ -54,6 +56,14 @@ class PlaceDetailPreviewSecondaryFragment :
                     binding.layoutSelectedPlace.visibility = View.VISIBLE
                     binding.layoutSelectedPlace.showBottomAnimation()
                     updateSelectedPlaceUi(selectedPlace.value)
+                    binding.logger.log(
+                        PlacePreviewClick(
+                            baseLogData = binding.logger.getBaseLogData(),
+                            placeName = selectedPlace.value.place.title?:"undefined",
+                            timeTag = viewModel.selectedTimeTag.value?.name?:"undefined",
+                            category = selectedPlace.value.place.category.name
+                        )
+                    )
                 }
 
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)

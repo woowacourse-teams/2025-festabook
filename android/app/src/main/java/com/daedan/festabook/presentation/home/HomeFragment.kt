@@ -7,6 +7,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
+import com.daedan.festabook.logging.logger
+import com.daedan.festabook.logging.model.home.ExploreClickLogData
+import com.daedan.festabook.logging.model.home.HomeViewLogData
+import com.daedan.festabook.logging.model.home.ScheduleClickLogData
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.formatFestivalPeriod
 import com.daedan.festabook.presentation.common.showErrorSnackBar
@@ -19,6 +23,7 @@ import timber.log.Timber
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     private val viewModel: HomeViewModel by viewModels({ requireActivity() }) { HomeViewModel.Factory }
+
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 
     private val posterAdapter: PosterAdapter by lazy {
@@ -43,12 +48,20 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
 
     private fun setupNavigateToExploreButton() {
         binding.layoutTitleWithIcon.setOnClickListener {
+            binding.logger.log(ExploreClickLogData(binding.logger.getBaseLogData()))
+
             startActivity(ExploreActivity.newIntent(requireContext()))
         }
     }
 
     private fun setupNavigateToScheduleButton() {
         binding.btnNavigateToSchedule.setOnClickListener {
+            binding.logger.log(
+                ScheduleClickLogData(
+                    baseLogData = binding.logger.getBaseLogData(),
+                ),
+            )
+
             viewModel.navigateToScheduleClick()
         }
     }
@@ -113,6 +126,13 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
                 scrollToInitialPosition(posterUrls.size)
             }
         }
+        binding.logger.log(
+            HomeViewLogData(
+                baseLogData = binding.logger.getBaseLogData(),
+                universityName = festivalUiState.organization.universityName,
+                festivalId = festivalUiState.organization.id,
+            ),
+        )
     }
 
     private fun attachSnapHelper() {

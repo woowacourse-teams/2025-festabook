@@ -1,58 +1,35 @@
 package com.daedan.festabook.presentation.news.faq
 
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.DefaultItemAnimator
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentFaqBinding
 import com.daedan.festabook.presentation.common.BaseFragment
-import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.NewsViewModel
-import com.daedan.festabook.presentation.news.faq.adapter.FAQAdapter
+import com.daedan.festabook.presentation.news.faq.component.FAQScreen
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
-import timber.log.Timber
 
 class FAQFragment : BaseFragment<FragmentFaqBinding>(R.layout.fragment_faq) {
     private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
-    private val adapter by lazy {
-        FAQAdapter(requireParentFragment() as OnNewsClickListener)
-    }
 
-    override fun onViewCreated(
-        view: View,
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        binding.rvFaq.adapter = adapter
-        (binding.rvFaq.itemAnimator as DefaultItemAnimator).supportsChangeAnimations = false
-        setupObservers()
-    }
-
-    private fun setupObservers() {
-        viewModel.faqUiState.observe(viewLifecycleOwner) { state ->
-            when (state) {
-                FAQUiState.InitialLoading -> {}
-                FAQUiState.Refreshing -> {}
-                is FAQUiState.Success -> {
-                    adapter.submitList(state.faqs) {
-                        showEmptyStateMessage()
-                    }
-                }
-
-                is FAQUiState.Error -> {
-                    Timber.w(state.throwable.stackTraceToString())
-                    showErrorSnackBar(state.throwable)
-                }
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                FAQScreen(uiState = viewModel.faqUiState, onFaqClick = { faqItemUiModel ->
+                    (requireParentFragment() as OnNewsClickListener).onFAQClick(faqItemUiModel)
+                })
             }
         }
-    }
-
-    private fun showEmptyStateMessage() {
-        val itemCount = binding.rvFaq.adapter?.itemCount ?: 0
-
-        binding.tvEmptyState.root.visibility = if (itemCount == 0) View.VISIBLE else View.GONE
-    }
 
     companion object {
         fun newInstance() = FAQFragment()

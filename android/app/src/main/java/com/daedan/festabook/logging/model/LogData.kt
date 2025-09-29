@@ -5,16 +5,16 @@ import android.os.Parcelable
 import java.lang.reflect.Field
 
 interface LogData : Parcelable {
-    fun writeToBundle(bundle: Bundle = Bundle()) = bundle.apply {
-        this@LogData.javaClass.declaredFields.forEach { field ->
-            putObject(field)
+    fun writeToBundle(bundle: Bundle = Bundle()) =
+        bundle.apply {
+            this@LogData.javaClass.declaredFields.forEach { field ->
+                putObject(field)
+            }
         }
-    }
 
     private fun Bundle.putObject(field: Field) {
         field.isAccessible = true
-        val value = field.get(this@LogData)
-        when (value) {
+        when (val value = field.get(this@LogData)) {
             is String -> putString(field.name, value)
             is Int -> putInt(field.name, value)
             is Long -> putLong(field.name, value)

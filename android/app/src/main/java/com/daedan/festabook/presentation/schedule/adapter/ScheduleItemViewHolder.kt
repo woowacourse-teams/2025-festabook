@@ -8,24 +8,40 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemScheduleTabPageBinding
+import com.daedan.festabook.logging.logger
+import com.daedan.festabook.logging.model.schedule.ScheduleEventClickLogData
 import com.daedan.festabook.presentation.common.toPx
-import com.daedan.festabook.presentation.schedule.OnBookmarkCheckedListener
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
 import com.daedan.festabook.presentation.schedule.model.toKoreanString
 
 class ScheduleItemViewHolder(
     private val binding: ItemScheduleTabPageBinding,
-    private val onBookmarkCheckedListener: OnBookmarkCheckedListener,
 ) : RecyclerView.ViewHolder(binding.root) {
+    private var scheduleEventItem: ScheduleEventUiModel? = null
+
+    init {
+        binding.clScheduleEventCard.setOnClickListener {
+            scheduleEventItem?.let {
+                binding.logger.log(
+                    ScheduleEventClickLogData(
+                        binding.logger.getBaseLogData(),
+                        it.id,
+                        it.title,
+                    ),
+                )
+            }
+        }
+    }
+
     fun bind(
-        item: ScheduleEventUiModel,
+        scheduleEventItem: ScheduleEventUiModel,
         itemCount: Int,
     ) {
+        this.scheduleEventItem = scheduleEventItem
         setupBottomMargin(itemCount)
-        binding.scheduleEvent = item
-        binding.onBookmarkCheckedListener = onBookmarkCheckedListener
-        setupEventViewByStatus(item.status)
+        binding.scheduleEvent = scheduleEventItem
+        setupEventViewByStatus(scheduleEventItem.status)
     }
 
     private fun setupBottomMargin(itemCount: Int) {
@@ -43,7 +59,6 @@ class ScheduleItemViewHolder(
         val gray400 = ContextCompat.getColor(context, R.color.gray400)
         val gray500 = ContextCompat.getColor(context, R.color.gray500)
         val gray900 = ContextCompat.getColor(context, R.color.gray900)
-        val black400 = ContextCompat.getColor(context, R.color.black400)
 
         when (status) {
             ScheduleEventUiStatus.COMPLETED -> {
@@ -59,7 +74,6 @@ class ScheduleItemViewHolder(
                     titleColor = gray400,
                     timeColor = gray400,
                     locationColor = gray400,
-                    bookmarkColor = gray400,
                 )
             }
 
@@ -76,7 +90,6 @@ class ScheduleItemViewHolder(
                     titleColor = gray900,
                     timeColor = gray500,
                     locationColor = gray500,
-                    bookmarkColor = black400,
                 )
             }
 
@@ -93,7 +106,6 @@ class ScheduleItemViewHolder(
                     titleColor = gray900,
                     timeColor = gray500,
                     locationColor = gray500,
-                    bookmarkColor = black400,
                 )
                 binding.tvScheduleEventStatus.layoutParams =
                     binding.tvScheduleEventStatus.layoutParams.apply {
@@ -108,14 +120,12 @@ class ScheduleItemViewHolder(
         titleColor: Int,
         timeColor: Int,
         locationColor: Int,
-        bookmarkColor: Int,
     ) {
         binding.tvScheduleEventTitle.setTextColor(titleColor)
         binding.ivScheduleEventLocation.setColorFilter(locationColor)
         binding.tvScheduleEventLocation.setTextColor(locationColor)
         binding.ivScheduleEventClock.setColorFilter(timeColor)
         binding.tvScheduleEventTime.setTextColor(timeColor)
-        binding.ivScheduleEventBookMark.setColorFilter(bookmarkColor)
     }
 
     private fun setupScheduleEventStatusText(
@@ -136,13 +146,10 @@ class ScheduleItemViewHolder(
         private const val UPCOMING_TEXT_HEIGHT = 24
         private const val BOTTOM_MARGIN = 20
 
-        fun from(
-            parent: ViewGroup,
-            onBookmarkCheckedListener: OnBookmarkCheckedListener,
-        ): ScheduleItemViewHolder {
+        fun from(parent: ViewGroup): ScheduleItemViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ItemScheduleTabPageBinding.inflate(inflater, parent, false)
-            return ScheduleItemViewHolder(binding, onBookmarkCheckedListener)
+            return ScheduleItemViewHolder(binding)
         }
     }
 }
