@@ -34,17 +34,18 @@ class DefaultFirebaseLogger(
         if (BuildConfig.DEBUG) return
         firebaseAnalytics.logEvent(
             value.javaClass.simpleName,
-            value.writeToBundle()
+            value.writeToBundle(),
         )
     }
 
-    fun getBaseLogData():BaseLogData.CommonLogData {
+    fun getBaseLogData(): BaseLogData.CommonLogData {
         val festivalId = festivalLocalDataSource.getFestivalId()
-        val notificationId = if (festivalId != null) {
-            festivalNotificationLocalDataSource.getFestivalNotificationId(festivalId)
-        } else {
-            -1L
-        }
+        val notificationId =
+            if (festivalId != null) {
+                festivalNotificationLocalDataSource.getFestivalNotificationId(festivalId)
+            } else {
+                -1L
+            }
         return BaseLogData.CommonLogData(
             festivalId = festivalId ?: -1L,
             notificationId = notificationId,
