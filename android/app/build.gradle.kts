@@ -67,8 +67,8 @@ android {
         applicationId = "com.daedan.festabook"
         minSdk = 28
         targetSdk = 36
-        versionCode = 10_200
-        versionName = "v 1.2.0"
+        versionCode = 10_201
+        versionName = "v 1.2.1"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField(
