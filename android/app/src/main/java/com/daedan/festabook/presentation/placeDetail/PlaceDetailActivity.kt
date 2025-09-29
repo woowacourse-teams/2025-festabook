@@ -16,6 +16,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.getObject
+import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
@@ -28,6 +29,7 @@ import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import io.getstream.photoview.dialog.PhotoViewDialog
 import timber.log.Timber
 
 class PlaceDetailActivity :
@@ -162,7 +164,7 @@ class PlaceDetailActivity :
         binding.sflScheduleSkeleton.stopShimmer()
     }
 
-    private fun TextView.setExpandedWhenClicked(defaultMaxLines:Int = DEFAULT_MAX_LINES) {
+    private fun TextView.setExpandedWhenClicked(defaultMaxLines: Int = DEFAULT_MAX_LINES) {
         setOnClickListener {
             maxLines =
                 if (maxLines == defaultMaxLines) {
