@@ -9,7 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemScheduleTabPageBinding
 import com.daedan.festabook.logging.logger
-import com.daedan.festabook.logging.model.schedule.ScheduleEventLogData
+import com.daedan.festabook.logging.model.schedule.ScheduleEventClickLogData
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
@@ -18,9 +18,19 @@ import com.daedan.festabook.presentation.schedule.model.toKoreanString
 class ScheduleItemViewHolder(
     private val binding: ItemScheduleTabPageBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
+    private var scheduleEventItem: ScheduleEventUiModel? = null
+
     init {
         binding.clScheduleEventCard.setOnClickListener {
-            binding.logger.log(ScheduleEventLogData(binding.logger.getBaseLogData()))
+            scheduleEventItem?.let {
+                binding.logger.log(
+                    ScheduleEventClickLogData(
+                        binding.logger.getBaseLogData(),
+                        it.id,
+                        it.title,
+                    ),
+                )
+            }
         }
     }
 
@@ -28,6 +38,7 @@ class ScheduleItemViewHolder(
         scheduleEventItem: ScheduleEventUiModel,
         itemCount: Int,
     ) {
+        this.scheduleEventItem = scheduleEventItem
         setupBottomMargin(itemCount)
         binding.scheduleEvent = scheduleEventItem
         setupEventViewByStatus(scheduleEventItem.status)
