@@ -6,8 +6,11 @@ import androidx.core.view.children
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceCategoryBinding
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
+import com.daedan.festabook.presentation.placeList.logging.LocationPermissionChanged
+import com.daedan.festabook.presentation.placeList.logging.PlaceCategoryClick
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.google.android.material.chip.Chip
 
@@ -33,6 +36,12 @@ class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>(R.layou
             viewModel.unselectPlace()
             viewModel.setSelectedCategories(selectedCategories)
             binding.chipCategoryAll.isChecked = selectedCategories.isEmpty()
+            binding.logger.log(
+                PlaceCategoryClick(
+                    baseLogData = binding.logger.getBaseLogData(),
+                    currentCategories = selectedCategories.joinToString(",") { it.toString() }
+                )
+            )
         }
 
         setUpChipCategoryAllListener()

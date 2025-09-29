@@ -10,6 +10,7 @@ import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.domain.model.TimeTag
+import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
@@ -17,6 +18,10 @@ import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
+import com.daedan.festabook.presentation.placeList.logging.LocationPermissionChanged
+import com.daedan.festabook.presentation.placeList.logging.PlaceFragmentEnter
+import com.daedan.festabook.presentation.placeList.logging.PlaceMarkerClick
+import com.daedan.festabook.presentation.placeList.logging.PlaceTimeTagSelected
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.placeCategory.PlaceCategoryFragment
@@ -42,7 +47,13 @@ class PlaceMapFragment :
     OnTimeTagSelectedListener {
     private lateinit var naverMap: NaverMap
     private val locationSource by lazy {
-        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
+        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE).apply {
+            activate {
+                binding.logger.log(LocationPermissionChanged(
+                    baseLogData = binding.logger.getBaseLogData()
+                ))
+            }
+        }
     }
     private var mapManager: MapManager? = null
     private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
@@ -104,6 +115,11 @@ class PlaceMapFragment :
             setUpMapManager()
             setUpObserver()
         }
+        binding.logger.log(
+            PlaceFragmentEnter(
+                baseLogData = binding.logger.getBaseLogData()
+            )
+        )
     }
 
     override fun onDestroy() {
@@ -202,6 +218,14 @@ class PlaceMapFragment :
                             hide(placeDetailPreviewSecondaryFragment)
                             show(placeDetailPreviewFragment)
                         }
+                        binding.logger.log(
+                            PlaceMarkerClick(
+                                baseLogData = binding.logger.getBaseLogData(),
+                                placeId = selectedPlace.value.place.id,
+                                timeTagName = viewModel.selectedTimeTag.value?.name?:"undefined",
+                                category = selectedPlace.value.place.category.name
+                            )
+                        )
                     }
 
                     is SelectedPlaceUiState.Empty -> {
@@ -239,6 +263,12 @@ class PlaceMapFragment :
     override fun onTimeTagSelected(item: TimeTag) {
         viewModel.unselectPlace()
         viewModel.onDaySelected(item)
+        binding.logger.log(
+            PlaceTimeTagSelected(
+                baseLogData = binding.logger.getBaseLogData(),
+                timeTagName = item.name
+            )
+        )
     }
 
     override fun onNothingSelected() {
