@@ -4,6 +4,10 @@ struct LostItemDetailModal: View {
     let item: LostItem
     let onDismiss: () -> Void
 
+    private let modalWidth: CGFloat = 280
+    private let horizontalPadding: CGFloat = 16
+    private var imageSide: CGFloat { modalWidth - horizontalPadding * 2 }
+
     var body: some View {
         ZStack {
             // Dimmed background
@@ -11,14 +15,15 @@ struct LostItemDetailModal: View {
                 .ignoresSafeArea()
                 .onTapGesture { onDismiss() }
 
-            VStack(spacing: 0) {
-                // Image with padding (여백) - 전체 요소 크기 축소
+            VStack(spacing: 18) {
+                // Image
                 CachedAsyncImage(url: item.imageAbsoluteURLString) { image in
                     image
                         .resizable()
-                        .scaledToFit()
-                        .padding(.horizontal, 12) // 이미지 좌우 여백 살짝 축소
-                        .padding(.top, 16)
+                        .scaledToFill()
+                        .frame(width: imageSide, height: imageSide)
+                        .clipped()
+                        .cornerRadius(14)
                 } placeholder: {
                     ZStack {
                         Color.gray.opacity(0.2)
@@ -26,6 +31,8 @@ struct LostItemDetailModal: View {
                             .font(.system(size: 36))
                             .foregroundColor(.gray)
                     }
+                    .frame(width: imageSide, height: imageSide)
+                    .cornerRadius(14)
                 } errorView: {
                     ZStack {
                         Color.gray.opacity(0.2)
@@ -33,10 +40,11 @@ struct LostItemDetailModal: View {
                             .font(.system(size: 28))
                             .foregroundColor(.gray)
                     }
+                    .frame(width: imageSide, height: imageSide)
+                    .cornerRadius(14)
                 }
-                .frame(maxWidth: .infinity)
-                .frame(height: 260)
-                .clipped()
+                .padding(.top, 20)
+                .padding(.horizontal, horizontalPadding)
 
                 // Info - 이미지와의 거리 축소 및 한 줄 구성
                 VStack(alignment: .leading, spacing: 10) {
@@ -60,17 +68,15 @@ struct LostItemDetailModal: View {
                     }
                 }
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 16)
+                .padding(.horizontal, horizontalPadding)
+                .padding(.bottom, 20)
             }
             .background(Color.white)
             .cornerRadius(18)
             .shadow(color: Color.black.opacity(0.2), radius: 20, x: 0, y: 10)
-            .padding(.horizontal, 40) // 카드 폭을 조금 더 줄여 가로폭 좁게
+            .frame(width: modalWidth)
             .padding(.bottom, 12)
         }
         .accessibilityAddTraits(.isModal)
     }
 }
-
-
