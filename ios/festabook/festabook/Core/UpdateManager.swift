@@ -40,31 +40,39 @@ class UpdateManager: ObservableObject {
     }
 
     private func shouldUpdate(current: String, latest: String) -> Bool {
-        let currentComponents = current.split(separator: ".").compactMap { Int($0) }
-        let latestComponents = latest.split(separator: ".").compactMap { Int($0) }
-
-        guard currentComponents.count >= 2 && latestComponents.count >= 2 else {
+        guard let currentVersion = parseVersion(current),
+              let latestVersion = parseVersion(latest) else {
             return false
         }
 
-        // Major 버전 비교
-        if currentComponents[0] < latestComponents[0] {
-            return true
+        if currentVersion.major != latestVersion.major {
+            return latestVersion.major > currentVersion.major
         }
 
-        // Major 버전이 같으면 Minor 버전 비교
-        if currentComponents[0] == latestComponents[0] && currentComponents[1] < latestComponents[1] {
-            return true
-        }
-
-        // Major, Minor 버전이 같으면 Patch 버전 비교
-        if currentComponents[0] == latestComponents[0] && currentComponents[1] == latestComponents[1] {
-            let currentPatch = currentComponents.count >= 3 ? currentComponents[2] : 0
-            let latestPatch = latestComponents.count >= 3 ? latestComponents[2] : 0
-            return currentPatch < latestPatch
+        if currentVersion.minor != latestVersion.minor {
+            return latestVersion.minor > currentVersion.minor
         }
 
         return false
+    }
+
+    private func parseVersion(_ version: String) -> (major: Int, minor: Int, patch: Int)? {
+        let components = version.split(separator: ".").map(String.init)
+
+        guard components.count >= 2,
+              let major = Int(components[0]),
+              let minor = Int(components[1]) else {
+            return nil
+        }
+
+        let patchValue: Int
+        if components.count >= 3 {
+            patchValue = Int(components[2]) ?? 0
+        } else {
+            patchValue = 0
+        }
+
+        return (major, minor, patchValue)
     }
 
     private func showUpdateAlert(version: String) {
