@@ -3,9 +3,11 @@ import SwiftUI
 struct MapView: View {
     @ObservedObject var viewModel: MapViewModel
     @State private var navigationPath: [PlaceDetail] = []
+    private let loadTrigger: UUID?
 
-    init(viewModel: MapViewModel) {
+    init(viewModel: MapViewModel, loadTrigger: UUID? = nil) {
         self.viewModel = viewModel
+        self.loadTrigger = loadTrigger
     }
 
     var body: some View {
@@ -99,7 +101,8 @@ struct MapView: View {
                 )
             }
         }
-        .task {
+        .task(id: loadTrigger) {
+            guard loadTrigger != nil else { return }
             await viewModel.loadMapData()
         }
         .onReceive(NotificationCenter.default.publisher(for: .mapTabReselected)) { _ in

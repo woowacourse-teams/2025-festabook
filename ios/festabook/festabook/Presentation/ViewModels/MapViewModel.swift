@@ -205,6 +205,26 @@ class MapViewModel: NSObject, ObservableObject {
         print("[MapViewModel] loadMapData 완료")
     }
 
+    func prepareForFestivalChange() {
+        hasLoadedInitialData = false
+        geography = nil
+        allMarkers = []
+        previewsByPlaceId = [:]
+        selectedCategories = [.all]
+        timeTags = []
+        selectedTimeTag = nil
+        selectedPlaceId = nil
+        selectedPlaceDetails.removeAll()
+        tappedOrder.removeAll()
+        modalType = .none
+        isLoading = false
+        errorMessage = nil
+        showError = false
+        resetCameraRequest = UUID()
+        currentLocationRequestId = nil
+        print("[MapViewModel] 🔄 새 축제 진입 - 지도 데이터 초기화")
+    }
+
     // 카테고리 토글 (다중 선택), 필터 변경 시 바텀시트 크기/모달 유지
     func toggleCategory(_ category: MapCategory) {
         var newSet = selectedCategories

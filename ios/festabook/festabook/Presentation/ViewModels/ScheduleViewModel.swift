@@ -67,6 +67,17 @@ class ScheduleViewModel: ObservableObject {
         applyEvents(for: eventDate.eventDateId, scrollToOngoing: false)
     }
 
+    func resetForNewFestival() {
+        eventDates = []
+        events = []
+        selectedEventDate = nil
+        isLoadingDates = false
+        isLoadingEvents = false
+        errorMessage = nil
+        scrollTargetEventId = nil
+        eventsByDate = [:]
+    }
+
     func events(for eventDateId: Int) -> [ScheduleEvent] {
         eventsByDate[eventDateId] ?? []
     }

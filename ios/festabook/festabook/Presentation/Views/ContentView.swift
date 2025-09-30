@@ -56,6 +56,11 @@ struct MainTabView: View {
     // Persistent ViewModels for each tab to prevent re-initialization
     @StateObject private var scheduleViewModel = ScheduleViewModel(repository: ServiceLocator.shared.scheduleRepository)
     @StateObject private var mapViewModel = MapViewModel()
+    @State private var loadedTabs: Set<Tab> = [.home]
+    @State private var scheduleLoadTrigger: UUID?
+    @State private var mapLoadTrigger: UUID?
+    @State private var newsLoadTrigger: UUID?
+    @State private var newsViewID = UUID()
 
     enum Tab: String, CaseIterable {
         case home = "홈"
@@ -100,17 +105,18 @@ struct MainTabView: View {
                     .allowsHitTesting(tabManager.selectedTab == .home)
 
                 // Schedule view with persistent ViewModel
-                ScheduleView(viewModel: scheduleViewModel)
+                ScheduleView(viewModel: scheduleViewModel, loadTrigger: scheduleLoadTrigger)
                     .opacity(tabManager.selectedTab == .schedule ? 1 : 0)
                     .allowsHitTesting(tabManager.selectedTab == .schedule)
 
                 // Map view with persistent ViewModel
-                MapView(viewModel: mapViewModel)
+                MapView(viewModel: mapViewModel, loadTrigger: mapLoadTrigger)
                     .opacity(tabManager.selectedTab == .map ? 1 : 0)
                     .allowsHitTesting(tabManager.selectedTab == .map)
 
                 // News view
-                NewsRootView()
+                NewsRootView(loadTrigger: newsLoadTrigger)
+                    .id(newsViewID)
                     .opacity(tabManager.selectedTab == .news ? 1 : 0)
                     .allowsHitTesting(tabManager.selectedTab == .news)
 
@@ -154,15 +160,55 @@ struct MainTabView: View {
             }
         }
         .onChange(of: tabManager.selectedTab) { _, newTab in
-            if newTab == .map {
-                mapViewModel.resetToInitialState()
-            }
+            triggerLoad(for: newTab)
         }
         .onAppear {
             if appState.shouldNavigateToNews {
                 appState.shouldNavigateToNews = false
                 tabManager.selectedTab = .news
             }
+            triggerLoad(for: tabManager.selectedTab, force: true)
+        }
+        .onChange(of: appState.currentFestivalId) { _, _ in
+            handleFestivalChange()
+        }
+    }
+}
+
+private extension MainTabView {
+    func triggerLoad(for tab: Tab, force: Bool = false) {
+        if !force && loadedTabs.contains(tab) { return }
+
+        switch tab {
+        case .home:
+            loadedTabs.insert(.home)
+        case .schedule:
+            scheduleLoadTrigger = UUID()
+            loadedTabs.insert(.schedule)
+        case .map:
+            mapLoadTrigger = UUID()
+            loadedTabs.insert(.map)
+        case .news:
+            newsLoadTrigger = UUID()
+            loadedTabs.insert(.news)
+        case .settings:
+            loadedTabs.insert(.settings)
+        }
+    }
+
+    func handleFestivalChange() {
+        loadedTabs = [.home]
+        scheduleLoadTrigger = nil
+        mapLoadTrigger = nil
+        newsLoadTrigger = nil
+        newsViewID = UUID()
+
+        scheduleViewModel.resetForNewFestival()
+        mapViewModel.prepareForFestivalChange()
+
+        let currentTab = tabManager.selectedTab
+        if currentTab != .home {
+            triggerLoad(for: currentTab, force: true)
         }
     }
 }

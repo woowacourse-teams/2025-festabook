@@ -3,9 +3,11 @@ import SwiftUI
 struct ScheduleView: View {
     @ObservedObject var viewModel: ScheduleViewModel
     private let bottomBarHeight: CGFloat = 90
+    private let loadTrigger: UUID?
 
-    init(viewModel: ScheduleViewModel) {
+    init(viewModel: ScheduleViewModel, loadTrigger: UUID? = nil) {
         self.viewModel = viewModel
+        self.loadTrigger = loadTrigger
     }
 
     var body: some View {
@@ -29,7 +31,8 @@ struct ScheduleView: View {
             // 타임라인 컨텐츠
             timelineContent
         }
-        .task {
+        .task(id: loadTrigger) {
+            guard loadTrigger != nil else { return }
             await viewModel.loadEventDates(preserveSelection: false, scrollToOngoing: true)
         }
     }

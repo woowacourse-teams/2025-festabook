@@ -1,6 +1,12 @@
 import SwiftUI
 
 struct NewsRootView: View {
+    private let loadTrigger: UUID?
+
+    init(loadTrigger: UUID? = nil) {
+        self.loadTrigger = loadTrigger
+    }
+
     enum Tab: String, CaseIterable {
         case notice = "공지"
         case faq = "FAQ"
@@ -48,7 +54,8 @@ struct NewsRootView: View {
                 )
             }
         }
-        .task {
+        .task(id: loadTrigger) {
+            guard loadTrigger != nil else { return }
             // 홈 진입시 소식 탭 데이터 모두 미리 로딩
             async let announcementsTask = announcementsViewModel.loadAnnouncements()
             async let faqTask = faqViewModel.loadFAQs()
