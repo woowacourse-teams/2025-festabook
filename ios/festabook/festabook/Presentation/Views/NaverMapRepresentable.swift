@@ -19,6 +19,8 @@ struct NaverMapRepresentable: UIViewRepresentable {
         mapView.positionMode = .disabled
         mapView.locationOverlay.hidden = true
         mapView.mapType = .basic
+        mapView.logoAlign = .leftTop
+        mapView.logoMargin = UIEdgeInsets(top: 28, left: -100, bottom: 0, right: 0)
 
         // Apply custom style
         print("[NaverMapRepresentable] 커스텀 스타일 적용 시작")
