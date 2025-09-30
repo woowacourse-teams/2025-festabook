@@ -136,14 +136,19 @@ class NotificationModalManager: ObservableObject {
     
     func handleViewDetails(festivalId: String?, announcementId: String?) {
         print("[NotificationModalManager] ➡️ 공지 상세 이동: festivalId=\(festivalId ?? "nil") / announcementId=\(announcementId ?? "nil")")
-        
-        // 딥링크 데이터를 SwiftUI에 전달
-        let deepLinkData: [String: Any] = [
-            "type": "announcement",
-            "festivalId": festivalId ?? "",
-            "announcementId": announcementId ?? ""
-        ]
-        
+
+        // festivalId와 announcementId가 모두 있어야 상세 화면으로 이동할 수 있음
+        let deepLinkData: [String: Any]
+        if let festivalId, let announcementId {
+            deepLinkData = [
+                "type": "announcement_detail",
+                "festivalId": festivalId,
+                "announcementId": announcementId
+            ]
+        } else {
+            deepLinkData = ["type": "news"]
+        }
+
         NotificationCenter.default.post(name: .notificationTapped, object: deepLinkData)
     }
 }

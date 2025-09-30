@@ -16,6 +16,7 @@ struct HomeView: View {
     @State private var showNotificationModal = false
     @State private var pendingFestivalId: Int? // FCM 토큰 대기 중인 축제 ID
     @State private var posterImageViewerState: PosterImageViewerState?
+    @State private var lastLoadedFestivalId: Int?
 
     var body: some View {
         NavigationView {
@@ -152,7 +153,7 @@ struct HomeView: View {
                 }
             }
             .navigationBarHidden(true)
-            .task {
+            .task(id: appState.currentFestivalId) {
                 await loadFestivalDetail()
             }
             .onReceive(NotificationCenter.default.publisher(for: Notification.Name("FCMToken"))) { notification in
@@ -200,6 +201,11 @@ struct HomeView: View {
     private func loadFestivalDetail() async {
         isLoading = true
         errorMessage = nil
+        let currentFestivalId = appState.currentFestivalId
+        if lastLoadedFestivalId != currentFestivalId {
+            festivalDetail = nil
+            lineups = []
+        }
         
         do {
             print("[HomeView] Loading festival detail for festival ID: \(locator.api.currentFestivalId)")
@@ -229,6 +235,7 @@ struct HomeView: View {
             print("[HomeView] Festival images: \(festivalDetail?.festivalImages.map { $0.imageUrl } ?? [])")
             print("[HomeView] Successfully loaded lineups count: \(lineups.count)")
             print("[HomeView] Lineup image URLs: \(lineups.map { $0.imageUrl })")
+            lastLoadedFestivalId = festivalDetail?.festivalId
         } catch {
             print("[HomeView] Error loading festival data: \(error)")
             errorMessage = "축제 정보를 불러올 수 없습니다: \(error.localizedDescription)"
@@ -238,6 +245,7 @@ struct HomeView: View {
             // 에러 시 기본값으로 설정
             appState.updateUniversityName("페스타북대학교")
             await notificationService.synchronizeSubscriptionsWithServer(focusFestivalId: nil, focusUniversityName: nil)
+            lastLoadedFestivalId = nil
         }
 
         isLoading = false

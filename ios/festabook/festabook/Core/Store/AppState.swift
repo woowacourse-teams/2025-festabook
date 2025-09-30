@@ -175,7 +175,7 @@ final class AppState: ObservableObject {
         guard let type = payload["type"] as? String else { return }
 
         switch type {
-        case "announcement_detail":
+        case "announcement_detail", "announcement":
             handleAnnouncementDeepLink(payload)
         default:
             break
