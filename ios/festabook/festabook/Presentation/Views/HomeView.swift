@@ -15,6 +15,7 @@ struct HomeView: View {
     @State private var errorMessage: String?
     @State private var showNotificationModal = false
     @State private var pendingFestivalId: Int? // FCM 토큰 대기 중인 축제 ID
+    @State private var posterImageViewerState: PosterImageViewerState?
 
     var body: some View {
         NavigationView {
@@ -61,7 +62,13 @@ struct HomeView: View {
 
                     // 메인 축제 포스터 - 3:4 비율 고정
                     if let festival = festivalDetail, !festival.festivalImages.isEmpty {
-                        FestivalPosterCarousel(festival: festival)
+                        FestivalPosterCarousel(festival: festival) { index, imageUrls in
+                            posterImageViewerState = PosterImageViewerState(
+                                imageUrls: imageUrls,
+                                initialIndex: index,
+                                isPagingEnabled: false
+                            )
+                        }
                             .padding(.bottom, 15) // 간격 줄임
                     } else if isLoading {
                         // 로딩 중 포스터 스켈레톤
@@ -182,8 +189,13 @@ struct HomeView: View {
                 )
             }
         }
+        .fullScreenCover(item: $posterImageViewerState) { state in
+            PosterImageViewer(state: state) {
+                posterImageViewerState = nil
+            }
+        }
     }
-    
+
     @MainActor
     private func loadFestivalDetail() async {
         isLoading = true
@@ -386,6 +398,7 @@ struct HomeView: View {
 struct FestivalPosterCarousel: View {
     let festival: FestivalDetail
     @State private var currentIndex = 0
+    var onPosterTap: ((Int, [String]) -> Void)? = nil
 
     private var sortedImages: [FestivalImage] {
         festival.festivalImages.sorted { $0.sequence < $1.sequence }
@@ -394,7 +407,10 @@ struct FestivalPosterCarousel: View {
     var body: some View {
         PosterCarousel(
             imageUrls: sortedImages.compactMap { ImageURLResolver.resolve($0.imageUrl) },
-            currentIndex: $currentIndex
+            currentIndex: $currentIndex,
+            onPosterTap: { index, urls in
+                onPosterTap?(index, urls)
+            }
         )
         .onAppear {
             currentIndex = 0
@@ -406,6 +422,7 @@ struct FestivalPosterCarousel: View {
 struct PosterCarousel: View {
     let imageUrls: [String]
     @Binding var currentIndex: Int
+    var onPosterTap: ((Int, [String]) -> Void)? = nil
 
     private var cardWidthRatio: CGFloat { PosterCarouselConstants.cardWidthRatio }
     private var posterWidth: CGFloat { UIScreen.main.bounds.width * cardWidthRatio }
@@ -426,7 +443,8 @@ struct PosterCarousel: View {
                 shadowColor: UIColor.black.withAlphaComponent(0.18),
                 shadowOpacity: 0.25,
                 shadowRadius: 12,
-                shadowOffset: CGSize(width: 0, height: 8)
+                shadowOffset: CGSize(width: 0, height: 8),
+                onPosterTap: onPosterTap
             )
             .frame(maxWidth: .infinity)
             .frame(height: containerHeight)
@@ -480,6 +498,40 @@ struct PosterCarousel: View {
         }
     }
 }
+
+private struct PosterImageViewerState: Identifiable {
+    let id = UUID()
+    let imageUrls: [String]
+    let initialIndex: Int
+    let isPagingEnabled: Bool
+}
+
+private struct PosterImageViewer: View {
+    let state: PosterImageViewerState
+    let onDismiss: () -> Void
+
+    @State private var currentIndex: Int
+
+    init(state: PosterImageViewerState, onDismiss: @escaping () -> Void) {
+        self.state = state
+        self.onDismiss = onDismiss
+        _currentIndex = State(initialValue: state.initialIndex)
+    }
+
+    var body: some View {
+        GeometryReader { geometry in
+            ImageGalleryView(
+                imageUrls: state.imageUrls,
+                initialIndex: state.initialIndex,
+                currentIndex: $currentIndex,
+                allowPaging: state.isPagingEnabled,
+                topInset: geometry.safeAreaInsets.top,
+                onClose: onDismiss
+            )
+        }
+        .ignoresSafeArea()
+    }
+}
 // MARK: - UIKit Carousel Wrapper
 struct PosterCarouselContainerView: UIViewControllerRepresentable {
     let imageUrls: [String]
@@ -490,6 +542,7 @@ struct PosterCarouselContainerView: UIViewControllerRepresentable {
     let shadowOpacity: Float
     let shadowRadius: CGFloat
     let shadowOffset: CGSize
+    let onPosterTap: ((Int, [String]) -> Void)?
 
     func makeCoordinator() -> Coordinator {
         Coordinator(parent: self)
@@ -520,7 +573,7 @@ struct PosterCarouselContainerView: UIViewControllerRepresentable {
             shadowRadius: shadowRadius,
             shadowOffset: shadowOffset
         )
-        controller.update(imageUrls: imageUrls, currentIndex: currentIndex, animated: true)
+        controller.update(imageUrls: imageUrls, currentIndex: currentIndex, animated: false)
     }
 
     final class Coordinator: NSObject, PosterCarouselViewControllerDelegate {
@@ -536,11 +589,21 @@ struct PosterCarouselContainerView: UIViewControllerRepresentable {
                 self?.parent.currentIndex = index
             }
         }
+
+        func posterCarousel(_ controller: PosterCarouselViewController, didSelectPosterAt index: Int) {
+            guard let handler = parent.onPosterTap,
+                  parent.imageUrls.indices.contains(index) else { return }
+            DispatchQueue.main.async { [weak self] in
+                guard let self else { return }
+                handler(index, self.parent.imageUrls)
+            }
+        }
     }
 }
 
 protocol PosterCarouselViewControllerDelegate: AnyObject {
     func posterCarousel(_ controller: PosterCarouselViewController, didUpdateIndex index: Int)
+    func posterCarousel(_ controller: PosterCarouselViewController, didSelectPosterAt index: Int)
 }
 
 final class PosterCarouselViewController: UIViewController {
@@ -880,6 +943,12 @@ extension PosterCarouselViewController: UICollectionViewDelegateFlowLayout {
             pendingProgrammaticNotification = nil
             delegate?.posterCarousel(self, didUpdateIndex: pending)
         }
+    }
+
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard repeatedImageUrls.indices.contains(indexPath.item) else { return }
+        let actual = actualIndex(forRepeated: indexPath.item)
+        delegate?.posterCarousel(self, didSelectPosterAt: actual)
     }
 }
 // MARK: - Carousel Cell & Loader
