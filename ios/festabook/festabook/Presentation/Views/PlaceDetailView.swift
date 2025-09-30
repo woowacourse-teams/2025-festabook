@@ -379,8 +379,11 @@ private struct PagingImageView: UIViewControllerRepresentable {
                 pageViewController.setViewControllers([desiredController], direction: direction, animated: currentController != nil)
             }
 
-            parent.currentIndex = desiredIndex
-            parent.onZoomChange(false)
+            if self.parent.currentIndex != desiredIndex {
+                DispatchQueue.main.async { [weak self] in
+                    self?.parent.currentIndex = desiredIndex
+                }
+            }
             pageViewController.dataSource = (parent.isPagingEnabled && controllers.count > 1) ? self : nil
             pageViewController.delegate = self
         }
@@ -451,6 +454,20 @@ private extension Array {
         return self[index]
     }
 }
+
+#if canImport(UIKit)
+private extension Image {
+    var asUIImage: UIImage? {
+        let mirror = Mirror(reflecting: self)
+        for child in mirror.children {
+            if let image = child.value as? UIImage {
+                return image
+            }
+        }
+        return nil
+    }
+}
+#endif
 
 private final class ZoomableImageHostingController: UIHostingController<ZoomableAsyncImage> {
     private(set) var index: Int
@@ -559,10 +576,11 @@ private struct ShadowModifier: ViewModifier {
     }
 }
 
-private struct ImageGalleryView: View {
+struct ImageGalleryView: View {
     let imageUrls: [String]
     private let initialIndex: Int
     @Binding var currentIndex: Int
+    let allowPaging: Bool
     let topInset: CGFloat
     let onClose: () -> Void
 
@@ -576,6 +594,7 @@ private struct ImageGalleryView: View {
         imageUrls: [String],
         initialIndex: Int,
         currentIndex: Binding<Int>,
+        allowPaging: Bool = true,
         topInset: CGFloat,
         onClose: @escaping () -> Void
     ) {
@@ -583,6 +602,7 @@ private struct ImageGalleryView: View {
         let clampedInitialIndex = min(max(initialIndex, 0), max(imageUrls.count - 1, 0))
         self.initialIndex = clampedInitialIndex
         self._currentIndex = currentIndex
+        self.allowPaging = allowPaging
         self.topInset = topInset
         self.onClose = onClose
         _displayedIndex = State(initialValue: clampedInitialIndex)
@@ -608,8 +628,13 @@ private struct ImageGalleryView: View {
                 PagingImageView(
                     imageUrls: imageUrls,
                     currentIndex: $displayedIndex,
-                    isPagingEnabled: !isDismissDragActive && !isZoomed,
-                    onZoomChange: { isZoomed = $0 }
+                    isPagingEnabled: allowPaging && !isDismissDragActive && !isZoomed,
+                    onZoomChange: { zooming in
+                        guard isZoomed != zooming else { return }
+                        DispatchQueue.main.async {
+                            self.isZoomed = zooming
+                        }
+                    }
                 )
                 .background(Color.black.ignoresSafeArea())
                 .offset(y: dismissalOffset)
@@ -617,7 +642,7 @@ private struct ImageGalleryView: View {
                 .simultaneousGesture(dismissGesture)
             }
 
-            if imageUrls.count > 1 {
+            if allowPaging && imageUrls.count > 1 {
                 PageIndicator(total: imageUrls.count, currentIndex: displayedIndex)
                     .padding(.bottom, 24)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .bottom)
@@ -744,11 +769,15 @@ private struct ZoomableAsyncImage: View {
     @State private var lastScale: CGFloat = 1
     @State private var offset: CGSize = .zero
     @State private var accumulatedOffset: CGSize = .zero
+    @State private var intrinsicImageSize: CGSize?
+    @State private var hasRequestedIntrinsicSize = false
+    @State private var containerSize: CGSize = .zero
 
     private let maxScale: CGFloat = 4
 
     var body: some View {
         GeometryReader { proxy in
+            let size = proxy.size
             ZStack {
                 if let url {
                     AsyncImage(url: url) { phase in
@@ -767,6 +796,9 @@ private struct ZoomableAsyncImage: View {
                             renderedImage
                                 .simultaneousGesture(zoomGesture)
                                 .simultaneousGesture(panGesture)
+                                .onAppear {
+                                    updateIntrinsicSizeIfNeeded(from: image, fallbackURL: url)
+                                }
                         case .failure:
                             placeholder
                         @unknown default:
@@ -782,6 +814,21 @@ private struct ZoomableAsyncImage: View {
                 }
             }
             .frame(width: proxy.size.width, height: proxy.size.height)
+            .onAppear {
+                if containerSize != size {
+                    containerSize = size
+                }
+            }
+            .onChange(of: size) { newSize in
+                if containerSize != newSize {
+                    containerSize = newSize
+                }
+            }
+        }
+        .onChange(of: url) { _ in
+            resetPosition(animated: false)
+            intrinsicImageSize = nil
+            hasRequestedIntrinsicSize = false
         }
     }
 
@@ -790,14 +837,33 @@ private struct ZoomableAsyncImage: View {
             .onChanged { value in
                 var newScale = lastScale * value
                 newScale = min(max(newScale, 1), maxScale)
+                guard scale != newScale else { return }
+
                 scale = newScale
+
+                if scale <= 1.02 {
+                    offset = .zero
+                    accumulatedOffset = .zero
+                } else {
+                    let clamped = clampedOffset(for: offset)
+                    offset = clamped
+                    accumulatedOffset = clamped
+                }
+
                 onZoomChange(scale > 1.02)
             }
             .onEnded { _ in
+                scale = min(max(scale, 1), maxScale)
                 lastScale = scale
                 if scale <= 1.01 {
                     resetPosition()
                     onZoomChange(false)
+                } else {
+                    let clamped = clampedOffset(for: offset)
+                    withAnimation(.spring(response: 0.45, dampingFraction: 0.85)) {
+                        offset = clamped
+                        accumulatedOffset = clamped
+                    }
                 }
             }
     }
@@ -806,15 +872,21 @@ private struct ZoomableAsyncImage: View {
         DragGesture()
             .onChanged { value in
                 guard scale > 1.01 else { return }
-                let translated = CGSize(
+                let proposed = CGSize(
                     width: accumulatedOffset.width + value.translation.width,
                     height: accumulatedOffset.height + value.translation.height
                 )
-                offset = translated
+                offset = clampedOffset(for: proposed)
             }
-            .onEnded { _ in
+            .onEnded { value in
                 guard scale > 1.01 else { return }
-                accumulatedOffset = offset
+                let proposed = CGSize(
+                    width: accumulatedOffset.width + value.translation.width,
+                    height: accumulatedOffset.height + value.translation.height
+                )
+                let clamped = clampedOffset(for: proposed)
+                offset = clamped
+                accumulatedOffset = clamped
             }
     }
 
@@ -824,12 +896,80 @@ private struct ZoomableAsyncImage: View {
             .foregroundColor(.white.opacity(0.7))
     }
 
-    private func resetPosition() {
-        withAnimation(.spring()) {
+    private func resetPosition(animated: Bool = true) {
+        let resetBlock = {
             scale = 1
             lastScale = 1
             offset = .zero
             accumulatedOffset = .zero
+        }
+
+        if animated {
+            withAnimation(.spring()) { resetBlock() }
+        } else {
+            resetBlock()
+        }
+    }
+
+    private func updateIntrinsicSizeIfNeeded(from image: Image, fallbackURL: URL?) {
+        guard !hasRequestedIntrinsicSize, intrinsicImageSize == nil else { return }
+
+#if canImport(UIKit)
+        if let uiImage = image.asUIImage {
+            hasRequestedIntrinsicSize = true
+            intrinsicImageSize = uiImage.size
+            return
+        }
+#endif
+
+        guard let url = fallbackURL else { return }
+        hasRequestedIntrinsicSize = true
+
+        Task.detached(priority: .utility) {
+            do {
+                let (data, _) = try await URLSession.shared.data(from: url)
+                if let uiImage = UIImage(data: data) {
+                    await MainActor.run {
+                        intrinsicImageSize = uiImage.size
+                    }
+                }
+            } catch {
+                // ignore failures; fallback to container size
+            }
+        }
+    }
+
+    private func clampedOffset(for proposed: CGSize) -> CGSize {
+        guard scale > 1.01 else { return .zero }
+
+        let container = containerSize == .zero ? UIScreen.main.bounds.size : containerSize
+        let baseSize = intrinsicImageSize.map { fittedSize(for: $0, in: container) } ?? container
+
+        let scaledWidth = baseSize.width * scale
+        let scaledHeight = baseSize.height * scale
+
+        let maxOffsetX = max((scaledWidth - baseSize.width) / 2, 0)
+        let maxOffsetY = max((scaledHeight - baseSize.height) / 2, 0)
+
+        let clampedX = min(max(proposed.width, -maxOffsetX), maxOffsetX)
+        let clampedY = min(max(proposed.height, -maxOffsetY), maxOffsetY)
+
+        return CGSize(width: clampedX, height: clampedY)
+    }
+
+    private func fittedSize(for imageSize: CGSize, in container: CGSize) -> CGSize {
+        guard imageSize.width > 0, imageSize.height > 0 else { return container }
+        let imageAspect = imageSize.width / imageSize.height
+        let containerAspect = container.width / container.height
+
+        if imageAspect > containerAspect {
+            let width = container.width
+            let height = width / imageAspect
+            return CGSize(width: width, height: height)
+        } else {
+            let height = container.height
+            let width = height * imageAspect
+            return CGSize(width: width, height: height)
         }
     }
 }
