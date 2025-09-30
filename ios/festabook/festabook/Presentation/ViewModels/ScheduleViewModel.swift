@@ -44,6 +44,10 @@ class ScheduleViewModel: ObservableObject {
                let matchedDate = eventDates.first(where: { $0.eventDateId == previousSelectedId }) {
                 selectedEventDate = matchedDate
                 applyEvents(for: matchedDate.eventDateId, scrollToOngoing: scrollToOngoing)
+            } else if let todayIndex = indexForToday(in: eventDates) {
+                let todayDate = eventDates[todayIndex]
+                selectedEventDate = todayDate
+                applyEvents(for: todayDate.eventDateId, scrollToOngoing: scrollToOngoing)
             } else if let firstDate = eventDates.first {
                 selectedEventDate = firstDate
                 applyEvents(for: firstDate.eventDateId, scrollToOngoing: scrollToOngoing)
@@ -81,6 +85,29 @@ class ScheduleViewModel: ObservableObject {
     func events(for eventDateId: Int) -> [ScheduleEvent] {
         eventsByDate[eventDateId] ?? []
     }
+
+    private func indexForToday(in eventDates: [EventDate]) -> Int? {
+        let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
+
+        for (index, eventDate) in eventDates.enumerated() {
+            if let date = ScheduleViewModel.dateFormatter.date(from: eventDate.date),
+               calendar.isDate(date, inSameDayAs: today) {
+                return index
+            }
+        }
+
+        return nil
+    }
+
+    private static let dateFormatter: DateFormatter = {
+        let formatter = DateFormatter()
+        formatter.calendar = Calendar(identifier: .gregorian)
+        formatter.locale = Locale(identifier: "en_US_POSIX")
+        formatter.timeZone = TimeZone.current
+        formatter.dateFormat = "yyyy-MM-dd"
+        return formatter
+    }()
 
     private func applyEvents(for eventDateId: Int, scrollToOngoing: Bool) {
         isLoadingEvents = false
