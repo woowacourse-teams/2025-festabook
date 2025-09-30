@@ -329,6 +329,7 @@ struct PlaceDetailView: View {
 private struct PagingImageView: UIViewControllerRepresentable {
     let imageUrls: [String]
     @Binding var currentIndex: Int
+    let isPagingEnabled: Bool
     let onZoomChange: (Bool) -> Void
 
     func makeCoordinator() -> Coordinator {
@@ -359,9 +360,12 @@ private struct PagingImageView: UIViewControllerRepresentable {
         func configure(with parent: PagingImageView, pageViewController: UIPageViewController) {
             self.parent = parent
 
+            updateScrollState(for: pageViewController)
+
             rebuildControllers()
 
             guard !controllers.isEmpty else {
+                pageViewController.dataSource = nil
                 pageViewController.setViewControllers([], direction: .forward, animated: false)
                 return
             }
@@ -377,9 +381,15 @@ private struct PagingImageView: UIViewControllerRepresentable {
 
             parent.currentIndex = desiredIndex
             parent.onZoomChange(false)
-
-            pageViewController.dataSource = controllers.count > 1 ? self : nil
+            pageViewController.dataSource = (parent.isPagingEnabled && controllers.count > 1) ? self : nil
             pageViewController.delegate = self
+        }
+
+        private func updateScrollState(for pageViewController: UIPageViewController) {
+            pageViewController.view.subviews.compactMap { $0 as? UIScrollView }.forEach { scrollView in
+                scrollView.isScrollEnabled = parent.isPagingEnabled
+                scrollView.panGestureRecognizer.isEnabled = parent.isPagingEnabled
+            }
         }
 
         private func rebuildControllers() {
@@ -559,6 +569,7 @@ private struct ImageGalleryView: View {
     @Environment(\.dismiss) private var dismiss
     @State private var dismissalOffset: CGFloat = 0
     @State private var isZoomed = false
+    @State private var isDismissDragActive = false
     @State private var displayedIndex: Int
 
     init(
@@ -597,6 +608,7 @@ private struct ImageGalleryView: View {
                 PagingImageView(
                     imageUrls: imageUrls,
                     currentIndex: $displayedIndex,
+                    isPagingEnabled: !isDismissDragActive && !isZoomed,
                     onZoomChange: { isZoomed = $0 }
                 )
                 .background(Color.black.ignoresSafeArea())
@@ -658,6 +670,7 @@ private struct ImageGalleryView: View {
         dismiss()
         dismissalOffset = 0
         isZoomed = false
+        isDismissDragActive = false
         onClose()
     }
 
@@ -687,21 +700,29 @@ private struct ImageGalleryView: View {
         DragGesture(minimumDistance: 20)
             .onChanged { value in
                 guard !isZoomed else { return }
-                guard abs(value.translation.height) > abs(value.translation.width) else { return }
+                guard abs(value.translation.height) > abs(value.translation.width) else {
+                    isDismissDragActive = false
+                    return
+                }
+
                 if value.translation.height > 0 {
+                    isDismissDragActive = true
                     dismissalOffset = value.translation.height
                 } else {
+                    isDismissDragActive = false
                     dismissalOffset = 0
                 }
             }
             .onEnded { value in
                 guard !isZoomed else {
                     withAnimation(.spring()) { dismissalOffset = 0 }
+                    isDismissDragActive = false
                     return
                 }
 
                 guard abs(value.translation.height) > abs(value.translation.width) else {
                     withAnimation(.spring()) { dismissalOffset = 0 }
+                    isDismissDragActive = false
                     return
                 }
 
@@ -709,6 +730,7 @@ private struct ImageGalleryView: View {
                     close()
                 } else {
                     withAnimation(.spring()) { dismissalOffset = 0 }
+                    isDismissDragActive = false
                 }
             }
     }
