@@ -28,6 +28,10 @@ public class AnnouncementService {
 
     private static final int MAX_PINNED_ANNOUNCEMENTS = 3;
 
+    private static final String LEFT_SQUARE_BRACKET = "[";
+    private static final String RIGHT_SQUARE_BRACKET = "]";
+    private static final String SPACE = " ";
+
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
     private final FestivalNotificationManager notificationManager;
@@ -95,15 +99,21 @@ public class AnnouncementService {
 
     public void sendAnnouncementNotification(Long festivalId, Long announcementId) {
         Announcement announcement = getAnnouncementById(announcementId);
-        validateAnnouncementBelongsToFestival(announcement, festivalId);
+        Festival festival = getFestivalById(festivalId);
+        validateAnnouncementBelongsToFestival(announcement, festival.getId());
 
         NotificationSendRequest request = NotificationSendRequest.builder()
-                .title(announcement.getTitle())
+                .title(formatTitleWithUniversityName(festival, announcement))
                 .body(announcement.getContent())
                 .putData("announcementId", String.valueOf(announcement.getId()))
                 .build();
 
         notificationManager.sendToFestivalTopic(festivalId, request);
+    }
+
+    private static String formatTitleWithUniversityName(Festival festival, Announcement announcement) {
+        String bracketedUniversityName = LEFT_SQUARE_BRACKET + festival.getUniversityName() + RIGHT_SQUARE_BRACKET;
+        return bracketedUniversityName + SPACE + announcement.getTitle();
     }
 
     private Announcement getAnnouncementById(Long announcementId) {
