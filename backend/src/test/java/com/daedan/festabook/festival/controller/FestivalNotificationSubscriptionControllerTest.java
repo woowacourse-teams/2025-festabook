@@ -200,10 +200,12 @@ class FestivalNotificationSubscriptionControllerTest {
                     .body("$", hasSize(expectedSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].festivalNotificationId", notNullValue())
+                    .body("[0].festivalId", notNullValue())
                     .body("[0].universityName", equalTo(festivalNotification1.getFestival().getUniversityName()))
                     .body("[0].festivalName", equalTo(festivalNotification1.getFestival().getFestivalName()))
                     .body("[1].size()", equalTo(expectedFieldSize))
                     .body("[1].festivalNotificationId", notNullValue())
+                    .body("[1].festivalId", notNullValue())
                     .body("[1].universityName", equalTo(festivalNotification2.getFestival().getUniversityName()))
                     .body("[1].festivalName", equalTo(festivalNotification2.getFestival().getFestivalName()));
         }
