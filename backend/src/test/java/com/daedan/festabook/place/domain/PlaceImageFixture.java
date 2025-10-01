@@ -19,6 +19,18 @@ public class PlaceImageFixture {
 
     public static PlaceImage create(
             Place place,
+            String imageUrl,
+            int sequence
+    ) {
+        return new PlaceImage(
+                place,
+                imageUrl,
+                sequence
+        );
+    }
+
+    public static PlaceImage create(
+            Place place,
             Long placeImageId
     ) {
         PlaceImage placeImage = new PlaceImage(

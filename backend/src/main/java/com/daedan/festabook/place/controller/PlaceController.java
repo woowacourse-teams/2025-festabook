@@ -11,6 +11,8 @@ import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,6 +55,20 @@ public class PlaceController {
             @RequestBody PlaceCreateRequest request
     ) {
         return placeService.createPlace(councilDetails.getFestivalId(), request);
+    }
+
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
+    @PostMapping("/clone")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "특정 축제에 대한 여러 플레이스들을 복제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
+    })
+    public PlacesCloneResponse clonePlaces(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody PlacesCloneRequest request
+    ) {
+        return placeService.clonePlaces(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping

@@ -484,6 +484,8 @@ class AnnouncementServiceTest {
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
 
             // when
             announcementService.sendAnnouncementNotification(festivalId, announcementId);
@@ -521,6 +523,8 @@ class AnnouncementServiceTest {
 
             given(announcementJpaRepository.findById(announcement.getId()))
                     .willReturn(Optional.of(announcement));
+            given(festivalJpaRepository.findById(otherFestivalId))
+                    .willReturn(Optional.of(otherFestival));
 
             // when & then
             assertThatThrownBy(() ->
@@ -540,6 +544,8 @@ class AnnouncementServiceTest {
 
             given(announcementJpaRepository.findById(announcementId))
                     .willReturn(Optional.of(announcement));
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(festival));
 
             willThrow(new BusinessException("FCM 메시지 전송을 실패했습니다.", HttpStatus.INTERNAL_SERVER_ERROR))
                     .given(festivalNotificationManager)

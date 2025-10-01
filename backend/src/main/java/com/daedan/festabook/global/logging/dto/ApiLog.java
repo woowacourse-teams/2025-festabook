@@ -7,6 +7,7 @@ public record ApiLog(
         String uri,
         String ipAddress,
         String username,
+        String festivalId,
         int httpStatusCode,
         Object requestBody,
         long executionTime
@@ -18,6 +19,7 @@ public record ApiLog(
             String uri,
             String ipAddress,
             String username,
+            String festivalId,
             int httpStatusCode,
             Object requestBody,
             long executionTime
@@ -29,6 +31,7 @@ public record ApiLog(
                 uri,
                 ipAddress,
                 username,
+                festivalId,
                 httpStatusCode,
                 requestBody,
                 executionTime
