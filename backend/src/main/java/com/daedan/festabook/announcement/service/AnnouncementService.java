@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AnnouncementService {
 
     private static final int MAX_PINNED_ANNOUNCEMENTS = 3;
+    private static final String ANNOUNCEMENT_TITLE_WITH_UNIVERSITY_NAME_FORMAT = "[%s] %s";
 
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
@@ -95,15 +96,23 @@ public class AnnouncementService {
 
     public void sendAnnouncementNotification(Long festivalId, Long announcementId) {
         Announcement announcement = getAnnouncementById(announcementId);
-        validateAnnouncementBelongsToFestival(announcement, festivalId);
+        Festival festival = getFestivalById(festivalId);
+        validateAnnouncementBelongsToFestival(announcement, festival.getId());
 
         NotificationSendRequest request = NotificationSendRequest.builder()
-                .title(announcement.getTitle())
+                .title(formatTitleWithUniversityName(festival, announcement))
                 .body(announcement.getContent())
                 .putData("announcementId", String.valueOf(announcement.getId()))
                 .build();
 
         notificationManager.sendToFestivalTopic(festivalId, request);
+    }
+
+    private static String formatTitleWithUniversityName(Festival festival, Announcement announcement) {
+        return String.format(
+                ANNOUNCEMENT_TITLE_WITH_UNIVERSITY_NAME_FORMAT,
+                festival.getUniversityName(), announcement.getTitle()
+        );
     }
 
     private Announcement getAnnouncementById(Long announcementId) {
