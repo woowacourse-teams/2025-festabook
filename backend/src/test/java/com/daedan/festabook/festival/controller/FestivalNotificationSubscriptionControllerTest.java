@@ -187,7 +187,7 @@ class FestivalNotificationSubscriptionControllerTest {
             festivalNotificationJpaRepository.saveAll(festivalNotifications);
 
             int expectedSize = 2;
-            int expectedFieldSize = 3;
+            int expectedFieldSize = 4;
 
             // when & then
             RestAssured.
