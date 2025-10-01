@@ -27,10 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AnnouncementService {
 
     private static final int MAX_PINNED_ANNOUNCEMENTS = 3;
-
-    private static final String LEFT_SQUARE_BRACKET = "[";
-    private static final String RIGHT_SQUARE_BRACKET = "]";
-    private static final String SPACE = " ";
+    private static final String ANNOUNCEMENT_TITLE_WITH_UNIVERSITY_NAME_FORMAT = "[%s] %s";
 
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
@@ -112,8 +109,10 @@ public class AnnouncementService {
     }
 
     private static String formatTitleWithUniversityName(Festival festival, Announcement announcement) {
-        String bracketedUniversityName = LEFT_SQUARE_BRACKET + festival.getUniversityName() + RIGHT_SQUARE_BRACKET;
-        return bracketedUniversityName + SPACE + announcement.getTitle();
+        return String.format(
+                ANNOUNCEMENT_TITLE_WITH_UNIVERSITY_NAME_FORMAT,
+                festival.getUniversityName(), announcement.getTitle()
+        );
     }
 
     private Announcement getAnnouncementById(Long announcementId) {
