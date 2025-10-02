@@ -82,14 +82,13 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_not
     }
 
     private fun scrollExpandedNoticeToTop(noticeState: NoticeUiState.Success) {
-        if (noticeState.noticeIdToExpandPosition != -1) {
-            val layoutManager =
-                binding.rvNoticeList.layoutManager as LinearLayoutManager
-            layoutManager.scrollToPositionWithOffset(
-                noticeState.noticeIdToExpandPosition,
-                0,
-            )
-        }
+        if (noticeState.noticeIdToExpandPosition == -1) return
+        val layoutManager =
+            binding.rvNoticeList.layoutManager as LinearLayoutManager
+        layoutManager.scrollToPositionWithOffset(
+            noticeState.noticeIdToExpandPosition,
+            0,
+        )
     }
 
     private fun showSkeleton() {
