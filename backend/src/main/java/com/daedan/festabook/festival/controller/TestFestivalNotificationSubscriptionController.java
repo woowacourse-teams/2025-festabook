@@ -40,32 +40,6 @@ public class TestFestivalNotificationSubscriptionController {
         return testFestivalNotificationService.subscribeFestivalNotification(festivalId, request);
     }
 
-    @PostMapping("/{festivalId}/notifications/android")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "[테스트용] 안드로이드 장치 축제 공지사항 알림 구독 (FCM 호출 제외)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
-    })
-    public FestivalNotificationResponse subscribeAndroidFestivalNotification(
-            @PathVariable Long festivalId,
-            @RequestBody FestivalNotificationRequest request
-    ) {
-        return testFestivalNotificationService.subscribeAndroidFestivalNotification(festivalId, request);
-    }
-
-    @PostMapping("/{festivalId}/notifications/ios")
-    @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "[테스트용] iOS 장치 축제 공지사항 알림 구독 (FCM 호출 제외)")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
-    })
-    public FestivalNotificationResponse subscribeIosFestivalNotification(
-            @PathVariable Long festivalId,
-            @RequestBody FestivalNotificationRequest request
-    ) {
-        return testFestivalNotificationService.subscribeIosFestivalNotification(festivalId, request);
-    }
-
     @GetMapping("/notifications/{deviceId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "[테스트용] 특정 디바이스의 모든 축제 알림 조회")

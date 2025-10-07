@@ -43,44 +43,6 @@ public class TestFestivalNotificationService {
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
 
-    @Transactional
-    public FestivalNotificationResponse subscribeAndroidFestivalNotification(
-            Long festivalId,
-            FestivalNotificationRequest request
-    ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
-
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
-
-        // FCM 호출 제거 (테스트용)
-        // festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, device.getFcmToken());
-
-        return FestivalNotificationResponse.from(savedFestivalNotification);
-    }
-
-    @Transactional
-    public FestivalNotificationResponse subscribeIosFestivalNotification(
-            Long festivalId,
-            FestivalNotificationRequest request
-    ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
-
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
-
-        // FCM 호출 제거 (테스트용)
-        // festivalNotificationManager.subscribeIosFestivalTopic(festivalId, device.getFcmToken());
-
-        return FestivalNotificationResponse.from(savedFestivalNotification);
-    }
-
     @Transactional(readOnly = true)
     public FestivalNotificationReadResponses getAllFestivalNotificationByDeviceId(Long deviceId) {
         Device device = getDeviceById(deviceId);
@@ -107,10 +69,11 @@ public class TestFestivalNotificationService {
         }
 
         festivalNotificationJpaRepository.deleteById(festivalNotificationId);
-        
+
+        Long festivalId = festivalNotification.getFestival().getId();
         // FCM 호출 제거 (테스트용)
         // festivalNotificationManager.unsubscribeFestivalTopic(
-        //         festivalNotification.getFestival().getId(),
+        //         festivalId,
         //         device.getFcmToken()
         // );
     }
