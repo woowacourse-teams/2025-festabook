@@ -10,6 +10,8 @@ import org.springframework.data.repository.query.Param;
 
 public interface PlaceImageJpaRepository extends JpaRepository<PlaceImage, Long> {
 
+    List<PlaceImage> findAllByPlace(Place place);
+
     List<PlaceImage> findAllByPlaceIdOrderBySequenceAsc(Long placeId);
 
     List<PlaceImage> findAllByPlaceInAndSequence(List<Place> places, int sequence);

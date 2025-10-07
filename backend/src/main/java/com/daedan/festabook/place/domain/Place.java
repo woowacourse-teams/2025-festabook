@@ -18,6 +18,7 @@ import jakarta.persistence.ManyToOne;
 import java.time.LocalTime;
 import java.util.Set;
 import lombok.AccessLevel;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
@@ -30,6 +31,7 @@ import org.springframework.util.StringUtils;
 @SQLRestriction("deleted = false")
 @SQLDelete(sql = "UPDATE place SET deleted = true, deleted_at = CURRENT_TIMESTAMP WHERE id = ?")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class Place extends BaseEntity {
 
     private static final Set<PlaceCategory> MAIN_PLACE = Set.of(
@@ -44,6 +46,7 @@ public class Place extends BaseEntity {
     private static final int MAX_HOST_LENGTH = 100;
 
     @Id
+    @EqualsAndHashCode.Include
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
@@ -151,7 +154,7 @@ public class Place extends BaseEntity {
         this.startTime = startTime;
         this.endTime = endTime;
     }
-    
+
     public void updatePlace(String title) {
         validateTitle(title);
 
@@ -160,6 +163,20 @@ public class Place extends BaseEntity {
 
     public boolean isFestivalIdEqualTo(Long festivalId) {
         return this.getFestival().getId().equals(festivalId);
+    }
+
+    public Place clone() {
+        return new Place(
+                festival,
+                category,
+                coordinate,
+                title,
+                description,
+                location,
+                host,
+                startTime,
+                endTime
+        );
     }
 
     private void validateTitle(String title) {
