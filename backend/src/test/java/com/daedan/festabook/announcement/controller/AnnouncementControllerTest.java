@@ -30,6 +30,9 @@ import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -132,6 +135,63 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("공지글은 최대 3개까지 고정할 수 있습니다."));
+        }
+
+        @Test
+        void _3개_이상의_동시_요청시_3개의_고정_공지만_생성된다() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            AnnouncementRequest request = new AnnouncementRequest(
+                    "폭우가 내립니다.",
+                    "우산을 챙겨주세요.",
+                    true
+            );
+
+            int concurrencyRequestCount = 10;
+            int startFlag = 1;
+            ExecutorService threadPool = Executors.newFixedThreadPool(concurrencyRequestCount);
+
+            CountDownLatch startLatch = new CountDownLatch(startFlag);
+            CountDownLatch endLatch = new CountDownLatch(concurrencyRequestCount);
+
+            for (int i = 0; i < concurrencyRequestCount; i++) {
+                threadPool.submit(() -> {
+                    try {
+                        startLatch.await();
+
+                        RestAssured
+                                .given()
+                                .header(authorizationHeader)
+                                .contentType(ContentType.JSON)
+                                .body(request)
+                                .when()
+                                .post("/announcements");
+                    } catch (InterruptedException ignore) {
+                    } finally {
+                        endLatch.countDown();
+                    }
+                });
+            }
+
+            int expectedPinnedAnnouncementCount = 3;
+
+            // when
+            startLatch.countDown();
+
+            try {
+                endLatch.await();
+            } catch (InterruptedException ignore) {
+            }
+
+            // then
+            Long result = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festival.getId());
+            assertThat(result).isEqualTo(expectedPinnedAnnouncementCount);
+
+            threadPool.shutdown();
         }
     }
 
