@@ -64,4 +64,3 @@ public class TestFestivalNotificationSubscriptionController {
         testFestivalNotificationService.unsubscribeFestivalNotification(festivalNotificationId);
     }
 }
-

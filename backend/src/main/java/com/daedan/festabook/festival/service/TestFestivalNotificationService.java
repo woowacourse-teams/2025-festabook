@@ -57,13 +57,13 @@ public class TestFestivalNotificationService {
     public void unsubscribeFestivalNotification(Long festivalNotificationId) {
         FestivalNotification festivalNotification = festivalNotificationJpaRepository
                 .findById(festivalNotificationId)
-                .orElseGet(() -> null);
+                .orElse(null);
         if (festivalNotification == null) {
             return;
         }
 
         Device device = deviceJpaRepository.findById(festivalNotification.getDevice().getId())
-                .orElseGet(() -> null);
+                .orElse(null);
         if (device == null) {
             return;
         }
@@ -94,4 +94,3 @@ public class TestFestivalNotificationService {
                 .orElseThrow(() -> new BusinessException("존재하지 않는 축제입니다.", HttpStatus.BAD_REQUEST));
     }
 }
-
