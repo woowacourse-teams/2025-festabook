@@ -81,7 +81,7 @@ public class TestFestivalNotificationService {
     }
 
     private void validateDuplicatedFestivalNotification(Long festivalId, Long deviceId) {
-        if (festivalNotificationJpaRepository.existsByFestivalIdAndDeviceId(festivalId, deviceId)) {
+        if (festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId) > 0) {
             throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
         }
     }

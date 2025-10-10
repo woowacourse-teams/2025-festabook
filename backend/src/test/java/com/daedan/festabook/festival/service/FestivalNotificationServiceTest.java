@@ -97,8 +97,8 @@ class FestivalNotificationServiceTest {
 
             FestivalNotificationRequest request = FestivalNotificationRequestFixture.create(deviceId);
 
-            given(festivalNotificationJpaRepository.existsByFestivalIdAndDeviceId(festivalId, deviceId))
-                    .willReturn(true);
+            given(festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId))
+                    .willReturn(1);
 
             // when & then
             assertThatThrownBy(() ->
@@ -180,7 +180,7 @@ class FestivalNotificationServiceTest {
                         .isEqualTo(festivalNotification1.getFestival().getUniversityName());
                 s.assertThat(response1.festivalName())
                         .isEqualTo(festivalNotification1.getFestival().getFestivalName());
-                
+
                 FestivalNotificationReadResponse response2 = result.responses().get(1);
                 s.assertThat(response2.universityName())
                         .isEqualTo(festivalNotification2.getFestival().getUniversityName());
