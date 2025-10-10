@@ -12,12 +12,14 @@ import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepos
 import com.daedan.festabook.global.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Profile({"dev", "local"})
 public class TestFestivalNotificationService {
 
     private final FestivalNotificationJpaRepository festivalNotificationJpaRepository;
