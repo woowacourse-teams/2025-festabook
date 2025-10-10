@@ -49,7 +49,8 @@ public class SecurityConfig {
             "/questions",
             "/lineups",
             "/time-tags",
-            "/actuator/health"
+            "/actuator/health",
+            "/test/**"
     };
 
     private static final String[] POST_WHITELIST = {
@@ -57,7 +58,8 @@ public class SecurityConfig {
             "/festivals/*/notifications",
             "/festivals/*/notifications/*",
             "/places/*/favorites",
-            "/councils/login"
+            "/councils/login",
+            "/test/**"
     };
 
     private static final String[] PATCH_WHITELIST = {
@@ -66,7 +68,8 @@ public class SecurityConfig {
 
     private static final String[] DELETE_WHITELIST = {
             "/festivals/notifications/*",
-            "/places/favorites/*"
+            "/places/favorites/*",
+            "/test/**"
     };
 
     private final CorsFilter corsFilter;
