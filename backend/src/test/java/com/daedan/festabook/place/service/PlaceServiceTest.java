@@ -296,17 +296,21 @@ class PlaceServiceTest {
             Long festivalId = 1L;
 
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(festival);
+            Place place = PlaceFixture.createWithNullDefaults(festival, 1L);
 
             PlaceImage image = PlaceImageFixture.create(place);
             PlaceAnnouncement announcement = PlaceAnnouncementFixture.create(place);
+            TimeTag timeTag = TimeTagFixture.createWithFestival(festival);
+            PlaceTimeTag placeTimeTag = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag);
 
             given(placeJpaRepository.findAllByFestivalId(festivalId))
                     .willReturn(List.of(place));
-            given(placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(place.getId()))
+            given(placeImageJpaRepository.findAllByPlaceInOrderBySequenceAsc(List.of(place)))
                     .willReturn(List.of(image));
-            given(placeAnnouncementJpaRepository.findAllByPlaceId(place.getId()))
+            given(placeAnnouncementJpaRepository.findAllByPlaceIn(List.of(place)))
                     .willReturn(List.of(announcement));
+            given(placeTimeTagJpaRepository.findAllByPlaceInWithTimeTag(List.of(place)))
+                    .willReturn(List.of(placeTimeTag));
 
             // when
             PlaceResponses result = placeService.getAllPlaceByFestivalId(festivalId);
