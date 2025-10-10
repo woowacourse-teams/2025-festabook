@@ -34,6 +34,7 @@ public class LockAspect {
                 joinPoint.getArgs(),
                 lockable.spelKey()
         );
+        boolean isLockAcquired = false;
         try {
             lockStorage.tryLock(
                     parsedKey,
@@ -41,10 +42,13 @@ public class LockAspect {
                     lockable.leaseTime(),
                     lockable.timeUnit()
             );
+            isLockAcquired = true;
 
             return joinPoint.proceed();
         } finally {
-            lockStorage.unlock(parsedKey);
+            if (isLockAcquired) {
+                lockStorage.unlock(parsedKey);
+            }
         }
     }
 
