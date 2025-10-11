@@ -9,9 +9,10 @@ import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequest;
 import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -43,19 +44,25 @@ public class PlaceImageService {
         return PlaceImageResponse.from(savedPlaceImage);
     }
 
+    // TODO: sequence DTO 값 검증 추가
     @Transactional
     public PlaceImageSequenceUpdateResponses updatePlaceImagesSequence(
             Long festivalId,
             List<PlaceImageSequenceUpdateRequest> requests
     ) {
-        // TODO: sequence DTO 값 검증 추가
-        List<PlaceImage> placeImages = new ArrayList<>();
+        Map<Long, Integer> sequenceMap = requests.stream()
+                .collect(Collectors.toMap(
+                        PlaceImageSequenceUpdateRequest::placeImageId,
+                        PlaceImageSequenceUpdateRequest::sequence
+                ));
 
-        for (PlaceImageSequenceUpdateRequest request : requests) {
-            PlaceImage placeImage = getPlaceImageById(request.placeImageId());
-            validatePlaceImageBelongsToFestival(placeImage, festivalId);
-            placeImage.updateSequence(request.sequence());
-            placeImages.add(placeImage);
+        List<PlaceImage> placeImages = placeImageJpaRepository.findAllById(sequenceMap.keySet());
+
+        validateAllPlaceImagesExist(placeImages, sequenceMap);
+        validateAllBelongsToFestival(placeImages, festivalId);
+
+        for (PlaceImage placeImage : placeImages) {
+            placeImage.updateSequence(sequenceMap.get(placeImage.getId()));
         }
 
         Collections.sort(placeImages);
@@ -100,6 +107,21 @@ public class PlaceImageService {
     private void validatePlaceBelongsToFestival(Place place, Long festivalId) {
         if (!place.isFestivalIdEqualTo(festivalId)) {
             throw new BusinessException("해당 축제의 플레이스가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validateAllPlaceImagesExist(List<PlaceImage> placeImages, Map<Long, Integer> sequenceMap) {
+        if (placeImages.size() != sequenceMap.size()) {
+            throw new BusinessException("존재하지 않는 플레이스 이미지가 있습니다.", HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private void validateAllBelongsToFestival(List<PlaceImage> placeImages, Long festivalId) {
+        boolean anyMismatch = placeImages.stream()
+                .anyMatch(placeImage -> !placeImage.isFestivalIdEqualTo(festivalId));
+
+        if (anyMismatch) {
+            throw new BusinessException("해당 축제의 플레이스 이미지가 아닙니다.", HttpStatus.FORBIDDEN);
         }
     }
 }
