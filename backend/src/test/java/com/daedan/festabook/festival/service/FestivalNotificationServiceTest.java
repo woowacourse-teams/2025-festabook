@@ -165,7 +165,7 @@ class FestivalNotificationServiceTest {
 
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
-            given(festivalNotificationJpaRepository.getAllByDeviceId(deviceId))
+            given(festivalNotificationJpaRepository.findAllWithFestivalByDeviceId(deviceId))
                     .willReturn(festivalNotifications);
 
             // when

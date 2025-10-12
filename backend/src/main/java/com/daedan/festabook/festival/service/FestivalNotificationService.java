@@ -83,7 +83,7 @@ public class FestivalNotificationService {
     @Transactional(readOnly = true)
     public FestivalNotificationReadResponses getAllFestivalNotificationByDeviceId(Long deviceId) {
         Device device = getDeviceById(deviceId);
-        List<FestivalNotification> festivalNotifications = festivalNotificationJpaRepository.getAllByDeviceId(
+        List<FestivalNotification> festivalNotifications = festivalNotificationJpaRepository.findAllWithFestivalByDeviceId(
                 device.getId()
         );
 
