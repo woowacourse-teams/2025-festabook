@@ -26,6 +26,8 @@ import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
 import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -81,11 +83,32 @@ public class PlaceService {
 
     @Transactional(readOnly = true)
     public PlaceResponses getAllPlaceByFestivalId(Long festivalId) {
-        return PlaceResponses.from(
-                placeJpaRepository.findAllByFestivalId(festivalId).stream()
-                        .map(this::convertPlaceToResponse)
-                        .toList()
-        );
+        List<Place> places = placeJpaRepository.findAllByFestivalId(festivalId);
+
+        Map<Long, List<PlaceImage>> placeImages = placeImageJpaRepository.findAllByPlaceInOrderBySequenceAsc(places)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        placeImage -> placeImage.getPlace().getId(),
+                        Collectors.toList()
+                ));
+
+        Map<Long, List<PlaceAnnouncement>> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceIn(places)
+                .stream()
+                .collect(Collectors.groupingBy(
+                        placeAnnouncement -> placeAnnouncement.getPlace().getId(),
+                        Collectors.toList()
+                ));
+
+        Map<Long, List<TimeTag>> timeTags = placeTimeTagJpaRepository.findAllByPlaceInWithTimeTag(places).stream()
+                .collect(Collectors.groupingBy(
+                        placeTimeTag -> placeTimeTag.getPlace().getId(),
+                        Collectors.mapping(
+                                PlaceTimeTag::getTimeTag,
+                                Collectors.toList()
+                        )
+                ));
+
+        return PlaceResponses.from(places, placeImages, placeAnnouncements, timeTags);
     }
 
     @Transactional(readOnly = true)
