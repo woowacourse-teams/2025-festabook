@@ -13,6 +13,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -51,16 +52,16 @@ public class PlaceImageService {
             Long festivalId,
             List<PlaceImageSequenceUpdateRequest> requests
     ) {
+        validateDuplicatePlaceImageIds(requests);
+
         Map<Long, Integer> sequenceMap = requests.stream()
                 .collect(Collectors.toMap(
                         PlaceImageSequenceUpdateRequest::placeImageId,
-                        PlaceImageSequenceUpdateRequest::sequence,
-                        (existing, duplicate) -> existing
+                        PlaceImageSequenceUpdateRequest::sequence
                 ));
 
         List<PlaceImage> placeImages = placeImageJpaRepository.findAllById(sequenceMap.keySet());
 
-        validateDuplicatePlaceImageIds(requests, sequenceMap);
         validateAllPlaceImagesExist(placeImages, sequenceMap);
         validateAllBelongsToFestival(placeImages, festivalId);
 
@@ -113,11 +114,12 @@ public class PlaceImageService {
         }
     }
 
-    private void validateDuplicatePlaceImageIds(
-            List<PlaceImageSequenceUpdateRequest> requests,
-            Map<Long, Integer> sequenceMap
-    ) {
-        if (requests.size() != sequenceMap.size()) {
+    private void validateDuplicatePlaceImageIds(List<PlaceImageSequenceUpdateRequest> requests) {
+        Set<Long> placeImageIds = requests.stream()
+                .map(PlaceImageSequenceUpdateRequest::placeImageId)
+                .collect(Collectors.toSet());
+
+        if (requests.size() != placeImageIds.size()) {
             throw new BusinessException("중복된 플레이스 이미지 ID가 포함되어 있습니다.", HttpStatus.BAD_REQUEST);
         }
     }
