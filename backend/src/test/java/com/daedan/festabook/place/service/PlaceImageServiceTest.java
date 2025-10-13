@@ -158,8 +158,9 @@ public class PlaceImageServiceTest {
         void 성공_수정_후_응답값_오름차순_정렬() {
             // given
             Long festivalId = 1L;
+            Long placeId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(festival);
+            Place place = PlaceFixture.create(festival, placeId);
 
             Long placeImageId1 = 1L;
             Long placeImageId2 = 2L;
