@@ -10,7 +10,6 @@ import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -64,6 +63,7 @@ public class PlaceImageService {
 
         validateAllPlaceImagesExist(placeImages, sequenceMap);
         validateAllBelongsToFestival(placeImages, festivalId);
+        validateAllBelongToPlace(placeImages);
 
         for (PlaceImage placeImage : placeImages) {
             placeImage.updateSequence(sequenceMap.get(placeImage.getId()));
@@ -136,6 +136,22 @@ public class PlaceImageService {
 
         if (anyMismatch) {
             throw new BusinessException("해당 축제의 플레이스 이미지가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validateAllBelongToPlace(List<PlaceImage> placeImages) {
+        if (placeImages.isEmpty()) {
+            return;
+        }
+
+        Long firstPlaceId = placeImages.get(0).getPlace().getId();
+
+        boolean hasDifferentPlace = placeImages.stream()
+                .map(placeImage -> placeImage.getPlace().getId())
+                .anyMatch(placeId -> !placeId.equals(firstPlaceId));
+
+        if (hasDifferentPlace) {
+            throw new BusinessException("서로 다른 플레이스의 이미지가 함께 요청되었습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }
