@@ -7,6 +7,10 @@ sealed interface PlaceListUiState<T> {
         val value: T,
     ) : PlaceListUiState<T>
 
+    data class PlaceLoaded(
+        val value: List<PlaceUiModel>,
+    ) : PlaceListUiState<List<PlaceUiModel>>
+
     data class Error<T>(
         val throwable: Throwable,
     ) : PlaceListUiState<T>

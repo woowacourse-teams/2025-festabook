@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.core.content.ContextCompat
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
@@ -32,7 +33,7 @@ class MapManager(
 
     private val overlayImageManager =
         OverlayImageManager(
-            PlaceCategoryUiModel.iconResources + listOf(R.drawable.ic_cluster_marker),
+            PlaceCategoryUiModel.iconResources,
         )
 
     private val context = map.context
@@ -45,34 +46,53 @@ class MapManager(
     private var onCameraChangeListener: NaverMap.OnCameraChangeListener? = null
 
     private var selectedMarker: Marker? = null
+    private var selectedTimeTagId: Long? = null
 
     fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
         markers =
-            coordinates.mapIndexed { idx, place ->
+            coordinates.mapIndexed { _, place ->
                 Marker().generate(place)
             }
     }
 
-    fun filterPlace(categories: List<PlaceCategoryUiModel>) {
+    fun filterMarkersByCategories(categories: List<PlaceCategoryUiModel>) {
         markers.forEach { marker ->
-            val place = marker.tag as? PlaceCoordinateUiModel
+            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
             val isSelectedMarker = marker == selectedMarker
 
             // 필터링된 마커이거나 선택된 마커인 경우에만 보이게 처리
-            marker.isVisible = place?.category in categories || isSelectedMarker
+            marker.isVisible =
+                place.category in categories &&
+                place.timeTagIds.contains(selectedTimeTagId) ||
+                isSelectedMarker
 
             // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
-            if (isSelectedMarker) {
-                setMarkerIcon(marker, isSelected = true)
-            } else {
-                setMarkerIcon(marker, isSelected = false)
-            }
+            updateMarkerIcon(isSelectedMarker, marker)
         }
+    }
+
+    fun filterMarkersByTimeTag(selectedTimeTagId: Long?) {
+        if (selectedTimeTagId == TimeTag.EMTPY_TIME_TAG_ID) {
+            markers.forEach { it.isVisible = true }
+            return
+        }
+        markers.forEach { marker ->
+            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
+            val isSelectedMarker = marker == selectedMarker
+
+            marker.isVisible = place.timeTagIds.contains(selectedTimeTagId) || isSelectedMarker
+
+            // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
+            updateMarkerIcon(isSelectedMarker, marker)
+        }
+        this.selectedTimeTagId = selectedTimeTagId
     }
 
     fun clearFilter() {
         markers.forEach { marker ->
-            marker.isVisible = true
+            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
+            marker.isVisible = place.timeTagIds.contains(selectedTimeTagId)
+
             val isSelectedMarker = marker == selectedMarker
 
             // 선택된 마커는 크기를 유지하고, 나머지는 원래 크기로 복원
@@ -133,9 +153,9 @@ class MapManager(
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()
         return currentPosition.distanceTo(initialCenter) >
-            (maxLength * zoomWeight).coerceAtLeast(
-                maxLength,
-            )
+                (maxLength * zoomWeight).coerceAtLeast(
+                    maxLength,
+                )
     }
 
     fun clearMapManager() {
@@ -155,6 +175,17 @@ class MapManager(
             }
     }
 
+    private fun updateMarkerIcon(
+        isSelectedMarker: Boolean,
+        marker: Marker,
+    ) {
+        if (isSelectedMarker) {
+            setMarkerIcon(marker, isSelected = true)
+        } else {
+            setMarkerIcon(marker, isSelected = false)
+        }
+    }
+
     private fun setContentPaddingBottom(height: Int) {
         map.setContentPadding(
             0,
@@ -170,7 +201,7 @@ class MapManager(
             16.toPx(context),
             0,
             0,
-            context.getRootPixel() - 410.toPx(context),
+            Int.MAX_VALUE
         )
     }
 
@@ -205,9 +236,6 @@ class MapManager(
             map = this@MapManager.map
         }
     }
-
-    private fun Context.getRootPixel() = context.resources.displayMetrics.heightPixels
-
     private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
         width = Marker.SIZE_AUTO
         height = Marker.SIZE_AUTO
@@ -219,11 +247,8 @@ class MapManager(
         tag = place
         captionText = place.title
         isHideCollidedCaptions = true
-        if (place.category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
-            captionMinZoom = SECONDARY_PLACE_ZOOM_LEVEL
-        } else {
-            captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
-        }
+        isVisible = false
+        captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
 
         setOnClickListener {
             mapClickListener.onMarkerListener(place.placeId, place.category)
@@ -249,11 +274,7 @@ class MapManager(
             }
             marker.isForceShowCaption = false
             marker.zIndex = 0
-            if (category in PlaceCategoryUiModel.SECONDARY_CATEGORIES) {
-                marker.captionMinZoom = SECONDARY_PLACE_ZOOM_LEVEL
-            } else {
-                marker.captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
-            }
+            marker.captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
         }
     }
 
@@ -276,8 +297,7 @@ class MapManager(
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
         private const val DEFAULT_ZOOM_LEVEL = 15
-        private const val PRIMARY_PLACE_ZOOM_LEVEL = 16.5
-        private const val SECONDARY_PLACE_ZOOM_LEVEL = 17.5
+        private const val PRIMARY_PLACE_ZOOM_LEVEL = 16.0
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다
         private val EDGE_COORS =

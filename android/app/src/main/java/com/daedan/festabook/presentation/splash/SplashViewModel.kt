@@ -5,11 +5,13 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
+import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
 import com.daedan.festabook.presentation.common.SingleLiveData
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class SplashViewModel(
@@ -25,7 +27,7 @@ class SplashViewModel(
         checkFestivalId()
     }
 
-    fun checkFestivalId() {
+    private fun checkFestivalId() {
         val festivalId = festivalLocalDataSource.getFestivalId()
         Timber.d("festival ID : $festivalId")
 
@@ -34,7 +36,6 @@ class SplashViewModel(
         } else {
             _navigationState.setValue(NavigationState.NavigateToMain(festivalId))
         }
-
         _isValidationComplete.value = true
     }
 

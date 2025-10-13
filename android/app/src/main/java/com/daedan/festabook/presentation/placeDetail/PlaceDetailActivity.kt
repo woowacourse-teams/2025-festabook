@@ -16,7 +16,7 @@ import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
 import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
-import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
@@ -51,9 +51,15 @@ class PlaceDetailActivity :
 
         viewModel =
             if (placeDetailObject != null) {
-                ViewModelProvider(this, PlaceDetailViewModel.factory(placeDetailObject))[PlaceDetailViewModel::class.java]
+                ViewModelProvider(
+                    this,
+                    PlaceDetailViewModel.factory(placeDetailObject),
+                )[PlaceDetailViewModel::class.java]
             } else if (placeUiObject != null) {
-                ViewModelProvider(this, PlaceDetailViewModel.factory(placeUiObject))[PlaceDetailViewModel::class.java]
+                ViewModelProvider(
+                    this,
+                    PlaceDetailViewModel.factory(placeUiObject),
+                )[PlaceDetailViewModel::class.java]
             } else {
                 finish()
                 return
@@ -77,6 +83,7 @@ class PlaceDetailActivity :
         binding.vpPlaceImages.adapter = placeImageAdapter
         binding.tvLocation.setExpandedWhenClicked()
         binding.tvHost.setExpandedWhenClicked()
+        binding.tvPlaceDescription.setExpandedWhenClicked(2)
         binding.ivBackToPrevious.setOnClickListener {
             finish()
         }
@@ -115,13 +122,13 @@ class PlaceDetailActivity :
             placeImageAdapter.submitList(placeDetail.images)
             binding.clImageIndicator.setViewPager(binding.vpPlaceImages)
         }
-
-        if (placeDetail.notices.isEmpty()) {
-            binding.rvPlaceNotice.visibility = View.GONE
-            binding.tvNoNoticeDescription.visibility = View.VISIBLE
-        } else {
-            noticeAdapter.submitList(placeDetail.notices)
-        }
+        // 임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다
+//        if (placeDetail.notices.isEmpty()) {
+//            binding.rvPlaceNotice.visibility = View.GONE
+//            binding.tvNoNoticeDescription.visibility = View.VISIBLE
+//        } else {
+//            noticeAdapter.submitList(placeDetail.notices)
+//        }
     }
 
     private fun showSkeleton() {
@@ -136,13 +143,13 @@ class PlaceDetailActivity :
         binding.sflScheduleSkeleton.stopShimmer()
     }
 
-    private fun TextView.setExpandedWhenClicked() {
+    private fun TextView.setExpandedWhenClicked(defaultMaxLines:Int = DEFAULT_MAX_LINES) {
         setOnClickListener {
             maxLines =
-                if (maxLines == DEFAULT_MAX_LINES) {
+                if (maxLines == defaultMaxLines) {
                     Integer.MAX_VALUE
                 } else {
-                    DEFAULT_MAX_LINES
+                    defaultMaxLines
                 }
         }
     }
@@ -153,7 +160,9 @@ class PlaceDetailActivity :
 
     override fun onFAQClick(faqItem: FAQItemUiModel) = Unit
 
-    override fun onLostItemClick(lostItem: LostItemUiModel) = Unit
+    override fun onLostItemClick(lostItem: LostUiModel.Item) = Unit
+
+    override fun onLostGuideItemClick(lostGuideItem: LostUiModel.Guide) = Unit
 
     companion object {
         private const val DEFAULT_MAX_LINES = 1

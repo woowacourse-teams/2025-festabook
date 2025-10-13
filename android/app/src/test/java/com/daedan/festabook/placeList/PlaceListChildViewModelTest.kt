@@ -80,7 +80,7 @@ class PlaceListChildViewModelTest {
                 listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
 
             // when
-            placeListChildViewModel.filterPlaces(targetCategories)
+            placeListChildViewModel.updatePlacesByCategories(targetCategories)
             advanceUntilIdle()
 
             // then
@@ -100,7 +100,7 @@ class PlaceListChildViewModelTest {
                 listOf(PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET)
 
             // when
-            placeListChildViewModel.filterPlaces(targetCategories)
+            placeListChildViewModel.updatePlacesByCategories(targetCategories)
             advanceUntilIdle()
 
             // then
@@ -115,7 +115,7 @@ class PlaceListChildViewModelTest {
             // given
             val targetCategories =
                 listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
-            placeListChildViewModel.filterPlaces(targetCategories)
+            placeListChildViewModel.updatePlacesByCategories(targetCategories)
             advanceUntilIdle()
 
             // when

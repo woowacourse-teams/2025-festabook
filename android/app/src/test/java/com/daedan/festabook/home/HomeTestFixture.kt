@@ -5,6 +5,7 @@ import com.daedan.festabook.domain.model.LineupItem
 import com.daedan.festabook.domain.model.Organization
 import com.daedan.festabook.domain.model.Poster
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 val FAKE_ORGANIZATION =
     Organization(
@@ -32,5 +33,6 @@ val FAKE_LINEUP =
             id = 1L,
             imageUrl = "aa.com",
             name = "SINGER",
+            performanceAt = LocalDateTime.of(2025, 9, 16, 0, 0, 0),
         ),
     )

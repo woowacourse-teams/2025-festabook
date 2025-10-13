@@ -3,6 +3,7 @@ package com.daedan.festabook.data.model.response.lineup
 import com.daedan.festabook.domain.model.LineupItem
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
+import java.time.LocalDateTime
 
 @Serializable
 data class LineupResponse(
@@ -21,4 +22,5 @@ fun LineupResponse.toDomain(): LineupItem =
         id = lineupId,
         imageUrl = imageUrl,
         name = name,
+        performanceAt = LocalDateTime.parse(performanceAt),
     )

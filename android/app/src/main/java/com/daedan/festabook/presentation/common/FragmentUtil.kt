@@ -8,26 +8,37 @@ import android.os.Bundle
 import android.os.Parcelable
 import android.util.TypedValue
 import android.view.View
+import android.view.ViewGroup
 import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.os.BundleCompat.getSerializable
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.data.util.ApiResultException
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
+import java.io.Serializable
 
 inline fun <reified T : Parcelable> Bundle.getObject(key: String): T? =
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelable(key, T::class.java)
     } else {
-        getParcelable(key)
+        getParcelable(key) as? T
+    }
+
+inline fun <reified T : Serializable> Intent.getSerializableCompat(key: String):T? =
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+        getSerializableExtra(key, T::class.java)
+    } else {
+        getSerializableExtra(key) as? T
     }
 
 inline fun <reified T : Parcelable> Intent.getObject(key: String): T? =
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
         getParcelableExtra(key, T::class.java)
     } else {
-        getParcelableExtra(key)
+        getParcelableExtra(key) as? T
     }
 
 fun Int.toPx(context: Context) =
@@ -53,7 +64,15 @@ fun Fragment.showErrorSnackBar(exception: Throwable?) {
 }
 
 fun Activity.showErrorSnackBar(msg: String) {
-    val snackBar = Snackbar.make(window.decorView.rootView, msg, Snackbar.LENGTH_SHORT)
+    val snackBar =
+        Snackbar.make(
+            findViewById<ViewGroup>(android.R.id.content).getChildAt(0),
+            msg,
+            Snackbar.LENGTH_SHORT,
+        )
+    snackBar.setAnchorView(
+        findViewById<FloatingActionButton>(R.id.bab_menu),
+    )
     snackBar
         .setAction(
             getString(R.string.fail_snackbar_confirm),
@@ -95,6 +114,25 @@ fun Activity.showErrorSnackBar(exception: Throwable?) {
             )
         }
     }
+}
+
+fun Activity.showSnackBar(msg: String) {
+    val snackBar =
+        Snackbar.make(
+            findViewById<ViewGroup>(android.R.id.content).getChildAt(0),
+            msg,
+            Snackbar.LENGTH_SHORT,
+        )
+    snackBar.setAnchorView(
+        findViewById<FloatingActionButton>(R.id.bab_menu),
+    )
+    snackBar
+        .setAction(
+            getString(R.string.fail_snackbar_confirm),
+        ) {
+            snackBar.dismiss()
+        }.setActionTextColor(getColor(R.color.blue400))
+    snackBar.show()
 }
 
 fun View.placeListBottomSheetFollowBehavior(): PlaceListBottomSheetFollowBehavior? {

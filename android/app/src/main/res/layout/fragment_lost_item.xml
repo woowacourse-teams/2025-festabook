@@ -25,6 +25,15 @@
                 app:layout_constraintTop_toTopOf="parent" />
         </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
 
+        <include
+            android:id="@+id/tv_empty_state"
+            layout="@layout/item_empty_state"
+            android:visibility="gone"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <com.facebook.shimmer.ShimmerFrameLayout
             android:id="@+id/sfl_lost_item_skeleton"
             android:layout_width="match_parent"

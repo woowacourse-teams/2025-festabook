@@ -5,4 +5,5 @@ data class PlaceGeography(
     val category: PlaceCategory,
     val markerCoordinate: Coordinate,
     val title: String,
+    val timeTags: List<TimeTag>,
 )
