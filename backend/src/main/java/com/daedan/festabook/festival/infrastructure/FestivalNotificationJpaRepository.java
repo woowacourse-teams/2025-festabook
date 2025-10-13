@@ -23,10 +23,10 @@ public interface FestivalNotificationJpaRepository extends JpaRepository<Festiva
     );
 
     @Query("""
-                SELECT FN
-                FROM FestivalNotification FN
-                JOIN FETCH FN.festival F
-                WHERE FN.device.id = :deviceId
+                SELECT fn
+                FROM FestivalNotification fn
+                JOIN FETCH fn.festival f
+                WHERE fn.device.id = :deviceId
             """)
     List<FestivalNotification> findAllWithFestivalByDeviceId(Long deviceId);
 }
