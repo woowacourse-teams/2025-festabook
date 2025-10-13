@@ -94,13 +94,13 @@ public class FestivalNotificationService {
     public void unsubscribeFestivalNotification(Long festivalNotificationId) {
         FestivalNotification festivalNotification = festivalNotificationJpaRepository
                 .findById(festivalNotificationId)
-                .orElseGet(() -> null);
+                .orElse(null);
         if (festivalNotification == null) {
             return;
         }
 
         Device device = deviceJpaRepository.findById(festivalNotification.getDevice().getId())
-                .orElseGet(() -> null);
+                .orElse(null);
         if (device == null) {
             return;
         }
