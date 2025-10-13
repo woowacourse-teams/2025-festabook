@@ -230,6 +230,50 @@ public class PlaceImageServiceTest {
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스 이미지가 아닙니다.");
         }
+
+        @Test
+        void 예외_중복된_플레이스_이미지_ID가_포함된_경우() {
+            // given
+            Long festivalId = 1L;
+            Long duplicatedPlaceImageId = 1L;
+
+            List<PlaceImageSequenceUpdateRequest> requests = List.of(
+                    PlaceImageSequenceUpdateRequestFixture.create(duplicatedPlaceImageId, 1),
+                    PlaceImageSequenceUpdateRequestFixture.create(duplicatedPlaceImageId, 2)
+            );
+
+            // when & then
+            assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(festivalId, requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("중복된 플레이스 이미지 ID가 포함되어 있습니다.");
+        }
+
+        @Test
+        void 예외_서로_다른_플레이스의_이미지가_함께_요청된_경우() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place1 = PlaceFixture.create(festival, 1L);
+            Place place2 = PlaceFixture.create(festival, 2L);
+
+            Long placeImageId1 = 1L;
+            Long placeImageId2 = 2L;
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, 1, placeImageId1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, 2, placeImageId2);
+
+            List<PlaceImageSequenceUpdateRequest> requests = List.of(
+                    PlaceImageSequenceUpdateRequestFixture.create(placeImageId1, 1),
+                    PlaceImageSequenceUpdateRequestFixture.create(placeImageId2, 2)
+            );
+
+            given(placeImageJpaRepository.findAllById(Set.of(placeImageId1, placeImageId2)))
+                    .willReturn(List.of(placeImage1, placeImage2));
+
+            // when & then
+            assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(festivalId, requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("서로 다른 플레이스의 이미지가 함께 요청되었습니다.");
+        }
     }
 
     @Nested
