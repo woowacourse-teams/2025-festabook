@@ -41,9 +41,7 @@ public class InMemoryLockStorage implements LockStorage {
 
             synchronized (existing) {
                 long nanosLeft = deadline - System.nanoTime();
-                if (nanosLeft <= 0) {
-                    throw new BusinessException("락 획득 시간 초과", HttpStatus.BAD_REQUEST);
-                }
+                validateLockTimeOut(nanosLeft);
                 try {
                     long millisPart = calculateMillisPart(nanosLeft);
                     int nanosPart = calculateNanosPart(nanosLeft, millisPart);
@@ -102,6 +100,12 @@ public class InMemoryLockStorage implements LockStorage {
     private void validateNotExistsLock(Lock lock) {
         if (lock == null) {
             throw new BusinessException("존재하지 않는 락입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    private void validateLockTimeOut(long nanosLeft) {
+        if (nanosLeft <= 0) {
+            throw new BusinessException("락 획득 시간 초과", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
