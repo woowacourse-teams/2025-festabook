@@ -1,5 +1,6 @@
 package com.daedan.festabook.storage.infrastructure;
 
+import com.daedan.festabook.global.logging.Loggable;
 import com.daedan.festabook.storage.domain.StorageManager;
 import com.daedan.festabook.storage.dto.StorageUploadRequest;
 import com.daedan.festabook.storage.dto.StorageUploadResponse;
@@ -14,6 +15,7 @@ import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import software.amazon.awssdk.services.s3.model.S3Exception;
 
+@Loggable
 @Component
 @Profile("prod")
 public class S3StorageManager implements StorageManager {

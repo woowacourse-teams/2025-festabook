@@ -6,15 +6,25 @@ import com.daedan.festabook.global.exception.BusinessException;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceImage;
-import com.daedan.festabook.place.dto.PlaceRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.PlaceCreateRequest;
+import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
-import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateResponse;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.domain.PlaceTimeTag;
+import com.daedan.festabook.timetag.domain.TimeTag;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
+import java.util.ArrayList;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -25,19 +35,48 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PlaceService {
 
+    private static final int MAX_CLONE_SIZE = 200;
+
     private final PlaceJpaRepository placeJpaRepository;
     private final PlaceImageJpaRepository placeImageJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
     private final PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
     private final PlaceAnnouncementJpaRepository placeAnnouncementJpaRepository;
+    private final PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
+    private final TimeTagJpaRepository timeTagJpaRepository;
 
-    public PlaceResponse createPlace(Long festivalId, PlaceRequest request) {
+    public PlaceCreateResponse createPlace(Long festivalId, PlaceCreateRequest request) {
         Festival festival = getFestivalById(festivalId);
 
-        Place notSavedPlace = request.toPlace(festival);
-        Place savedPlace = placeJpaRepository.save(notSavedPlace);
+        Place place = request.toPlace(festival);
+        Place savedPlace = placeJpaRepository.save(place);
 
-        return PlaceResponse.from(savedPlace);
+        return PlaceCreateResponse.from(savedPlace);
+    }
+
+    @Transactional
+    public PlacesCloneResponse clonePlaces(Long festivalId, PlacesCloneRequest request) {
+        validateClonePlacesSize(request.originalPlaceIds().size());
+        validateExistsPlace(request);
+
+        List<Place> originalPlaces = placeJpaRepository.findAllByIdInAndFestivalId(request.originalPlaceIds(),
+                festivalId);
+        validatePlacesBelongsToFestival(originalPlaces.size(), request.originalPlaceIds().size());
+
+        List<Place> clonedPlaces = new ArrayList<>();
+        List<PlaceImage> clonedPlaceImages = new ArrayList<>();
+        for (Place currentOriginalPlace : originalPlaces) {
+            Place clonedPlace = currentOriginalPlace.clone();
+            clonedPlaces.add(clonedPlace);
+
+            List<PlaceImage> placeImages = getPlaceImagesByOriginalPlace(currentOriginalPlace, clonedPlace);
+            clonedPlaceImages.addAll(placeImages);
+        }
+
+        List<Place> savedClonePlaces = placeJpaRepository.saveAll(clonedPlaces);
+        placeImageJpaRepository.saveAll(clonedPlaceImages);
+
+        return PlacesCloneResponse.from(savedClonePlaces);
     }
 
     @Transactional(readOnly = true)
@@ -56,7 +95,7 @@ public class PlaceService {
     }
 
     @Transactional
-    public PlaceUpdateResponse updatePlace(Long festivalId, Long placeId, PlaceUpdateRequest request) {
+    public MainPlaceUpdateResponse updateMainPlace(Long festivalId, Long placeId, MainPlaceUpdateRequest request) {
         Place place = getPlaceById(placeId);
         validatePlaceBelongsToFestival(place, festivalId);
 
@@ -70,7 +109,97 @@ public class PlaceService {
                 request.endTime()
         );
 
-        return PlaceUpdateResponse.from(place);
+        updateTimeTags(festivalId, place, request.timeTags());
+
+        // 실제 저장된 시간 태그 조회
+        List<Long> timeTagIds = getResponseTimeTagIds(placeId);
+        return MainPlaceUpdateResponse.from(place, timeTagIds);
+    }
+
+    private void updateTimeTags(Long festivalId, Place place, List<Long> timeTagIds) {
+        // 중복 id 제거
+        List<Long> distinctRequestTimeTagIds = timeTagIds.stream()
+                .distinct()
+                .toList();
+
+        // 기존 시간 태그 ID 조회
+        List<Long> existingTimeTagIds = getExistingTimeTagIdsByPlaceId(place.getId());
+
+        // 삭제할 시간 태그 ID 목록 찾기
+        List<Long> deleteTimeTagIds = getDeleteTimeTagIds(existingTimeTagIds, distinctRequestTimeTagIds);
+        placeTimeTagJpaRepository.deleteAllByPlaceIdAndTimeTagIdIn(place.getId(), deleteTimeTagIds);
+
+        // 추가할 시간 태그 ID 목록 찾기
+        List<TimeTag> addTimeTags = getAddTimeTags(existingTimeTagIds, distinctRequestTimeTagIds);
+        validateTimeTagsBelongsToFestival(addTimeTags, festivalId);
+
+        List<PlaceTimeTag> addPlaceTimeTags = createAddPlaceTimeTags(place, addTimeTags);
+        placeTimeTagJpaRepository.saveAll(addPlaceTimeTags);
+    }
+
+    private void validateExistsPlace(PlacesCloneRequest request) {
+        if (placeJpaRepository.countByIdIn(request.originalPlaceIds()) != request.originalPlaceIds().size()) {
+            throw new BusinessException("요청한 id 중 존재하지 않는 id가 존재합니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateTimeTagsBelongsToFestival(List<TimeTag> addTimeTags, Long festivalId) {
+        addTimeTags.forEach(addTimeTag -> {
+            if (!addTimeTag.isFestivalIdEqualTo(festivalId)) {
+                throw new BusinessException("해당 축제의 시간 태그가 아닙니다.", HttpStatus.FORBIDDEN);
+            }
+        });
+    }
+
+    private List<PlaceImage> getPlaceImagesByOriginalPlace(Place currentOriginalPlace, Place clonedPlace) {
+        return placeImageJpaRepository.findAllByPlace(currentOriginalPlace).stream()
+                .map(placeImage -> placeImage.cloneByPlace(clonedPlace))
+                .toList();
+    }
+
+    private List<Long> getDeleteTimeTagIds(List<Long> existingTimeTagIds, List<Long> requestTimeTagIds) {
+        return existingTimeTagIds.stream()
+                .filter(timeTagId -> !requestTimeTagIds.contains(timeTagId))
+                .toList();
+    }
+
+    private List<TimeTag> getAddTimeTags(List<Long> existingTimeTagIds, List<Long> requestTimeTagIds) {
+        List<Long> addTimeTagIds = requestTimeTagIds.stream()
+                .filter(timeTagId -> !existingTimeTagIds.contains(timeTagId))
+                .toList();
+
+        return timeTagJpaRepository.findAllById(addTimeTagIds);
+    }
+
+    private List<PlaceTimeTag> createAddPlaceTimeTags(Place place, List<TimeTag> addTimeTags) {
+        return addTimeTags.stream()
+                .map(timeTag -> new PlaceTimeTag(place, timeTag))
+                .toList();
+    }
+
+    private List<Long> getResponseTimeTagIds(final Long placeId) {
+        return placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
+                .map(placeTimeTag -> placeTimeTag.getTimeTag().getId())
+                .toList();
+    }
+
+    private List<Long> getExistingTimeTagIdsByPlaceId(Long placeId) {
+        return placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
+                .map(placeTimeTag -> placeTimeTag.getTimeTag().getId())
+                .toList();
+    }
+
+    @Transactional
+    public EtcPlaceUpdateResponse updateEtcPlace(Long festivalId, Long placeId, EtcPlaceUpdateRequest request) {
+        Place place = getPlaceById(placeId);
+        validatePlaceBelongsToFestival(place, festivalId);
+
+        place.updatePlace(request.title());
+        updateTimeTags(festivalId, place, request.timeTags());
+
+        // 실제 저장된 시간 태그 조회
+        List<Long> timeTagIds = getResponseTimeTagIds(placeId);
+        return EtcPlaceUpdateResponse.from(place, timeTagIds);
     }
 
     @Transactional
@@ -99,15 +228,33 @@ public class PlaceService {
             Long placeId = place.getId();
             List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlaceIdOrderBySequenceAsc(placeId);
             List<PlaceAnnouncement> placeAnnouncements = placeAnnouncementJpaRepository.findAllByPlaceId(placeId);
-            return PlaceResponse.from(place, placeImages, placeAnnouncements);
+            List<TimeTag> timeTags = placeTimeTagJpaRepository.findAllByPlaceId(placeId).stream()
+                    .map(PlaceTimeTag::getTimeTag)
+                    .toList();
+            return PlaceResponse.from(place, placeImages, placeAnnouncements, timeTags);
         }
 
-        return PlaceResponse.from(place, List.of(), List.of());
+        List<TimeTag> timeTags = placeTimeTagJpaRepository.findAllByPlaceId(place.getId()).stream()
+                .map(PlaceTimeTag::getTimeTag)
+                .toList();
+        return PlaceResponse.from(place, List.of(), List.of(), timeTags);
     }
 
     private void validatePlaceBelongsToFestival(Place place, Long festivalId) {
         if (!place.isFestivalIdEqualTo(festivalId)) {
             throw new BusinessException("해당 축제의 플레이스가 아닙니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validatePlacesBelongsToFestival(int originalPlacesCount, int requestPlaceCounts) {
+        if (originalPlacesCount != requestPlaceCounts) {
+            throw new BusinessException("플레이스의 접근 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+    }
+
+    private void validateClonePlacesSize(int size) {
+        if (size > MAX_CLONE_SIZE) {
+            throw new BusinessException("한 번에 복제할 수 있는 사이즈가 초과하였습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }

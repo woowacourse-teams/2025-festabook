@@ -9,6 +9,9 @@ import com.daedan.festabook.festival.dto.FestivalImageResponses;
 import com.daedan.festabook.festival.dto.FestivalImageSequenceUpdateRequest;
 import com.daedan.festabook.festival.dto.FestivalInformationResponse;
 import com.daedan.festabook.festival.dto.FestivalInformationUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideResponse;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateRequest;
+import com.daedan.festabook.festival.dto.FestivalLostItemGuideUpdateResponse;
 import com.daedan.festabook.festival.dto.FestivalResponse;
 import com.daedan.festabook.festival.dto.FestivalUniversityResponses;
 import com.daedan.festabook.festival.service.FestivalImageService;
@@ -23,6 +26,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -44,11 +48,12 @@ public class FestivalController {
     private final FestivalService festivalService;
     private final FestivalImageService festivalImageService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "축제 생성")
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
     public FestivalCreateResponse createFestival(
             @RequestBody FestivalCreateRequest request
@@ -56,6 +61,7 @@ public class FestivalController {
         return festivalService.createFestival(request);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping("/images")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제의 이미지 추가")
@@ -105,6 +111,19 @@ public class FestivalController {
         return festivalService.getUniversitiesByUniversityName(universityName);
     }
 
+    @GetMapping("/lost-item-guide")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 분실물 가이드 조회")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalLostItemGuideResponse getFestivalLostItemGuide(
+            @Parameter(hidden = true) @FestivalId Long festivalId
+    ) {
+        return festivalService.getFestivalLostItemGuide(festivalId);
+    }
+
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/information")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 정보 수정")
@@ -118,6 +137,21 @@ public class FestivalController {
         return festivalService.updateFestivalInformation(councilDetails.getFestivalId(), request);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
+    @PatchMapping("/lost-item-guide")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제의 분실물 가이드 정보 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public FestivalLostItemGuideUpdateResponse updateFestivalLostItemGuide(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody FestivalLostItemGuideUpdateRequest request
+    ) {
+        return festivalService.updateFestivalLostItemGuide(councilDetails.getFestivalId(), request);
+    }
+
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/images/sequences")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 축제의 이미지들 순서 수정")
@@ -131,6 +165,7 @@ public class FestivalController {
         return festivalImageService.updateFestivalImagesSequence(councilDetails.getFestivalId(), requests);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/images/{festivalImageId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 축제의 이미지 삭제")

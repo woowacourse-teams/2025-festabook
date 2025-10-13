@@ -5,7 +5,6 @@ import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -18,6 +17,7 @@ import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.infrastructure.ShuffleManager;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -27,14 +27,25 @@ import com.daedan.festabook.place.domain.PlaceFavoriteFixture;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.domain.PlaceImage;
 import com.daedan.festabook.place.domain.PlaceImageFixture;
-import com.daedan.festabook.place.dto.PlaceRequest;
-import com.daedan.festabook.place.dto.PlaceRequestFixture;
-import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequestFixture;
+import com.daedan.festabook.place.dto.PlaceCreateRequest;
+import com.daedan.festabook.place.dto.PlaceCreateRequestFixture;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneRequestFixture;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.infrastructure.PlaceAnnouncementJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceFavoriteJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.domain.PlaceTimeTag;
+import com.daedan.festabook.timetag.domain.PlaceTimeTagFixture;
+import com.daedan.festabook.timetag.domain.TimeTag;
+import com.daedan.festabook.timetag.domain.TimeTagFixture;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
@@ -45,6 +56,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -74,6 +87,12 @@ class PlaceControllerTest {
     private PlaceFavoriteJpaRepository placeFavoriteJpaRepository;
 
     @Autowired
+    private TimeTagJpaRepository timeTagJpaRepository;
+
+    @Autowired
+    private PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
+
+    @Autowired
     private DeviceJpaRepository deviceJpaRepository;
 
     @Autowired
@@ -93,42 +112,110 @@ class PlaceControllerTest {
     @Nested
     class createPlace {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
-
             PlaceCategory expectedPlaceCategory = PlaceCategory.BAR;
             String expectedPlaceTitle = "동문 주차장";
-            PlaceRequest placeRequest = PlaceRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
+            PlaceCreateRequest request = PlaceCreateRequestFixture.create(expectedPlaceCategory, expectedPlaceTitle);
 
-            int expectedFieldSize = 10;
+            int expectedFieldSize = 3;
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             // when & then
             RestAssured
                     .given()
                     .header(authorizationHeader)
                     .contentType(ContentType.JSON)
-                    .body(placeRequest)
+                    .body(request)
                     .post("/places")
                     .then()
                     .statusCode(HttpStatus.CREATED.value())
                     .body("size()", equalTo(expectedFieldSize))
                     .body("placeId", notNullValue())
                     .body("category", equalTo(expectedPlaceCategory.toString()))
-                    .body("title", equalTo(expectedPlaceTitle))
+                    .body("title", equalTo(expectedPlaceTitle));
+        }
+    }
 
-                    .body("placeImages", empty())
-                    .body("placeAnnouncements", empty())
+    @Nested
+    class clonePlaces {
 
-                    .body("startTime", nullValue())
-                    .body("endTime", nullValue())
-                    .body("location", nullValue())
-                    .body("host", nullValue())
-                    .body("description", nullValue());
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place1 = PlaceFixture.create(festival);
+            Place place2 = PlaceFixture.create(festival);
+            Place place3 = PlaceFixture.create(festival);
+            placeJpaRepository.saveAll(List.of(place1, place2, place3));
+
+            List<Long> originalPlaceIds = List.of(place1.getId(), place2.getId(), place3.getId());
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create(originalPlaceIds);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
+
+            int expectedSize = originalPlaceIds.size();
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .post("/places/clone")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("$", hasSize(expectedSize));
+        }
+
+        @Test
+        void 성공_이미지도_같이_복제() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceImage placeImage1 = PlaceImageFixture.create(place, "https://thisisimage/1", 1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place, "https://thisisimage/2", 2);
+            placeImageJpaRepository.saveAll(List.of(placeImage1, placeImage2));
+
+            List<Long> originalPlaceIds = List.of(place.getId());
+            PlacesCloneRequest request = PlacesCloneRequestFixture.create(originalPlaceIds);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            // when & then
+            PlacesCloneResponse placesCloneResponse = RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .post("/places/clone")
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .extract()
+                    .as(PlacesCloneResponse.class);
+
+            assertSoftly(s -> {
+                Place p = placeJpaRepository.findById(placesCloneResponse.clonedPlaceIds().getFirst()).get();
+                List<PlaceImage> placeImages = placeImageJpaRepository.findAllByPlace(p);
+                String placeImageUrl1 = placeImages.get(0).getImageUrl();
+                String placeImageUrl2 = placeImages.get(1).getImageUrl();
+
+                s.assertThat(placeImageUrl1).isEqualTo(placeImage1.getImageUrl());
+                s.assertThat(placeImageUrl2).isEqualTo(placeImage2.getImageUrl());
+            });
         }
     }
 
@@ -168,7 +255,13 @@ class PlaceControllerTest {
             Place mainPlace = PlaceFixture.create(festival);
             placeJpaRepository.save(mainPlace);
 
-            int expectedSize = 1;
+            TimeTag timeTag = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.save(timeTag);
+
+            PlaceTimeTag placeTimeTag = PlaceTimeTagFixture.createWithPlaceAndTimeTag(mainPlace, timeTag);
+            placeTimeTagJpaRepository.save(placeTimeTag);
+
+            int expectedItemSize = 1;
 
             // when & then
             RestAssured
@@ -177,7 +270,9 @@ class PlaceControllerTest {
                     .get("/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize));
+                    .body("$", hasSize(expectedItemSize))
+                    .body("[0].timeTags[0].timeTagId", equalTo(timeTag.getId().intValue()))
+                    .body("[0].timeTags[0].name", equalTo(timeTag.getName()));
         }
 
         @Test
@@ -189,7 +284,7 @@ class PlaceControllerTest {
             Place etcPlace = PlaceFixture.create(festival);
             placeJpaRepository.save(etcPlace);
 
-            int expectedSize = 1;
+            int expectedItemSize = 1;
 
             // when & then
             RestAssured
@@ -198,7 +293,8 @@ class PlaceControllerTest {
                     .get("/places")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize));
+                    .body("$", hasSize(expectedItemSize))
+                    .body("[0].timeTags", empty());
         }
     }
 
@@ -219,11 +315,17 @@ class PlaceControllerTest {
             PlaceImage placeImage = PlaceImageFixture.create(place, representativeSequence);
             placeImageJpaRepository.save(placeImage);
 
+            TimeTag timeTag = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.save(timeTag);
+
+            PlaceTimeTag placeTimeTag = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag);
+            placeTimeTagJpaRepository.save(placeTimeTag);
+
             given(shuffleManager.getShuffledList(anyList()))
                     .willReturn(List.of(place));
 
             int expectedSize = 1;
-            int expectedFieldSize = 6;
+            int expectedFieldSize = 7;
 
             // when & then
             RestAssured
@@ -240,7 +342,10 @@ class PlaceControllerTest {
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].title", equalTo(place.getTitle()))
                     .body("[0].description", equalTo(place.getDescription()))
-                    .body("[0].location", equalTo(place.getLocation()));
+                    .body("[0].location", equalTo(place.getLocation()))
+                    .body("[0].timeTags[0].timeTagId", equalTo(timeTag.getId().intValue()))
+                    .body("[0].timeTags[0].name", equalTo(timeTag.getName()));
+
             then(shuffleManager).should()
                     .getShuffledList(anyList());
         }
@@ -339,7 +444,7 @@ class PlaceControllerTest {
             PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
             placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
 
-            int expectedFieldSize = 10;
+            int expectedFieldSize = 11;
             int expectedPlaceImagesSize = 2;
             int expectedPlaceAnnouncementsSize = 2;
 
@@ -377,7 +482,9 @@ class PlaceControllerTest {
                     .body("placeAnnouncements[1].id", equalTo(placeAnnouncement2.getId().intValue()))
                     .body("placeAnnouncements[1].title", equalTo(placeAnnouncement2.getTitle()))
                     .body("placeAnnouncements[1].content", equalTo(placeAnnouncement2.getContent()))
-                    .body("placeAnnouncements[1].createdAt", notNullValue());
+                    .body("placeAnnouncements[1].createdAt", notNullValue())
+
+                    .body("timeTags", notNullValue());
         }
 
         @Test
@@ -461,20 +568,21 @@ class PlaceControllerTest {
     }
 
     @Nested
-    class updatePlace {
+    class updateMainPlace {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
 
-            PlaceUpdateRequest placeUpdateRequest = PlaceUpdateRequestFixture.create(
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(
                     PlaceCategory.FOOD_TRUCK,
                     "수정된 제목",
                     "수정된 설명",
@@ -484,38 +592,183 @@ class PlaceControllerTest {
                     LocalTime.of(13, 11)
             );
 
-            int expectedFieldSize = 7;
+            int expectedFieldSize = 8;
 
             // when & then
             RestAssured
                     .given()
                     .header(authorizationHeader)
                     .contentType(ContentType.JSON)
-                    .body(placeUpdateRequest)
-                    .patch("/places/{placeId}", place.getId())
+                    .body(request)
+                    .patch("/places/main/{placeId}", place.getId())
                     .then()
                     .statusCode(HttpStatus.OK.value())
                     .body("size()", equalTo(expectedFieldSize))
-                    .body("placeCategory", equalTo(placeUpdateRequest.placeCategory().name()))
-                    .body("title", equalTo(placeUpdateRequest.title()))
-                    .body("description", equalTo(placeUpdateRequest.description()))
-                    .body("location", equalTo(placeUpdateRequest.location()))
-                    .body("host", equalTo(placeUpdateRequest.host()))
-                    .body("startTime", equalTo(placeUpdateRequest.startTime().toString()))
-                    .body("endTime", equalTo(placeUpdateRequest.endTime().toString()));
+                    .body("placeCategory", equalTo(request.placeCategory().name()))
+                    .body("title", equalTo(request.title()))
+                    .body("description", equalTo(request.description()))
+                    .body("location", equalTo(request.location()))
+                    .body("host", equalTo(request.host()))
+                    .body("startTime", equalTo(request.startTime().toString()))
+                    .body("endTime", equalTo(request.endTime().toString()));
+        }
+
+        @Test
+        void 성공_time_tag_값_추가() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            TimeTag timeTags = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.save(timeTags);
+
+            // 추가 요청을 보내는 값 1개
+            List<Long> updateTimeTagIds = List.of(timeTags.getId());
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(updateTimeTagIds);
+
+            int expectedTimeTagsItemSize = updateTimeTagIds.size();
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .patch("/places/main/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("timeTags", hasSize(expectedTimeTagsItemSize))
+                    .body("timeTags[0]", equalTo(updateTimeTagIds.get(0).intValue()));
+        }
+
+        @Test
+        void 성공_time_tag_수정() {
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            TimeTag timeTag1 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag2 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag3 = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.saveAll(List.of(timeTag1, timeTag2, timeTag3));
+
+            PlaceTimeTag placeTimeTag1 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag1);
+            PlaceTimeTag placeTimeTag2 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag2);
+            placeTimeTagJpaRepository.saveAll(List.of(placeTimeTag1, placeTimeTag2));
+
+            Long updatedTimeTagId3 = timeTag3.getId();
+            MainPlaceUpdateRequest request = MainPlaceUpdateRequestFixture.create(
+                    List.of(timeTag2.getId(), updatedTimeTagId3));
+
+            Header authHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            int expectedFieldSize = 8;
+
+            RestAssured
+                    .given()
+                    .header(authHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/places/main/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("timeTags[0]", equalTo(placeTimeTag2.getId().intValue()))
+                    .body("timeTags[1]", equalTo(updatedTimeTagId3.intValue()));
+        }
+    }
+
+    @Nested
+    class updateEtcPlace {
+
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
+
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create("수정된 플레이스 이름");
+
+            int expectedFieldSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .patch("/places/etc/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("title", equalTo(request.title()));
+        }
+
+        @Test
+        void 성공_time_tag_수정() {
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place = PlaceFixture.createWithNullDefaults(festival);
+            placeJpaRepository.save(place);
+
+            TimeTag timeTag1 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag2 = TimeTagFixture.createWithFestival(festival);
+            TimeTag timeTag3 = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.saveAll(List.of(timeTag1, timeTag2, timeTag3));
+
+            PlaceTimeTag placeTimeTag1 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag1);
+            PlaceTimeTag placeTimeTag2 = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag2);
+            placeTimeTagJpaRepository.saveAll(List.of(placeTimeTag1, placeTimeTag2));
+
+            Long updatedTimeTagId3 = timeTag3.getId();
+            EtcPlaceUpdateRequest request = EtcPlaceUpdateRequestFixture.create(place.getTitle(),
+                    List.of(placeTimeTag2.getId(), updatedTimeTagId3));
+
+            Header authHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            int expectedFieldSize = 2;
+
+            RestAssured
+                    .given()
+                    .header(authHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/places/etc/{placeId}", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("timeTags[0]", equalTo(placeTimeTag2.getId().intValue()))
+                    .body("timeTags[1]", equalTo(updatedTimeTagId3.intValue()));
         }
     }
 
     @Nested
     class deleteByPlaceId {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);

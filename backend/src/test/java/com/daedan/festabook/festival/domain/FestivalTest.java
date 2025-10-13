@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 import com.daedan.festabook.global.exception.BusinessException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -16,14 +17,18 @@ import org.junit.jupiter.params.provider.ValueSource;
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
 class FestivalTest {
 
+    private static final int MAX_NAME_LENGTH = 50;
+    private static final int MIN_ZOOM = 0;
+    private static final int MAX_ZOOM = 30;
+    private static final int MAX_LOST_ITEM_GUIDE_LENGTH = 1000;
+
     @Nested
     class validateName {
 
         @Test
         void 성공_경계값() {
             // given
-            int maxNameLength = 50;
-            String name = "미".repeat(maxNameLength);
+            String name = "m".repeat(MAX_NAME_LENGTH);
 
             // when & then
             assertThatCode(() -> FestivalFixture.create(name))
@@ -38,7 +43,7 @@ class FestivalTest {
             // when & then
             assertThatThrownBy(() -> FestivalFixture.create(invalidName))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("축제 이름은 비어 있을 수 없습니다.");
+                    .hasMessage("이름은 비어 있을 수 없습니다.");
         }
 
         @Test
@@ -49,19 +54,80 @@ class FestivalTest {
             // when & then
             assertThatThrownBy(() -> FestivalFixture.create(invalidName))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("축제 이름은 비어 있을 수 없습니다.");
+                    .hasMessage("이름은 비어 있을 수 없습니다.");
         }
 
         @Test
         void 예외_축제_이름_길이_초과() {
             // given
-            int maxNameLength = 50;
-            String invalidName = "미".repeat(maxNameLength + 1);
+            String invalidName = "m".repeat(MAX_NAME_LENGTH + 1);
 
             // when & then
             assertThatThrownBy(() -> FestivalFixture.create(invalidName))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("축제 이름은 50자를 초과할 수 없습니다.");
+                    .hasMessage("이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH);
+        }
+    }
+
+    @Nested
+    class validateDate {
+
+        @Test
+        void 성공() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 1);
+            LocalDate endDate = LocalDate.of(2025, 5, 2);
+
+            // when & then
+            assertThatCode(() -> FestivalFixture.create(startDate, endDate))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 성공_시작일과_종료일이_같은_경우() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 1);
+            LocalDate endDate = LocalDate.of(2025, 5, 1);
+
+            // when & then
+            assertThatCode(() -> FestivalFixture.create(startDate, endDate))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_시작일_null() {
+            // given
+            LocalDate startDate = null;
+            LocalDate endDate = LocalDate.of(2025, 5, 2);
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.create(startDate, endDate))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("시작일과 종료일은 null일 수 없습니다.");
+        }
+
+        @Test
+        void 예외_종료일_null() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 1);
+            LocalDate endDate = null;
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.create(startDate, endDate))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("시작일과 종료일은 null일 수 없습니다.");
+        }
+
+        @Test
+        void 예외_종료일이_시작일보다_이전() {
+            // given
+            LocalDate startDate = LocalDate.of(2025, 5, 2);
+            LocalDate endDate = LocalDate.of(2025, 5, 1);
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.create(startDate, endDate))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("종료일은 시작일보다 이전일 수 없습니다.");
         }
     }
 
@@ -70,14 +136,10 @@ class FestivalTest {
 
         @Test
         void 성공_경계값() {
-            // given
-            Integer minZoom = 0;
-            Integer maxZoom = 30;
-
-            // when & then
+            // given & when & then
             assertThatCode(() -> {
-                FestivalFixture.create(minZoom);
-                FestivalFixture.create(maxZoom);
+                FestivalFixture.create(MIN_ZOOM);
+                FestivalFixture.create(MAX_ZOOM);
             })
                     .doesNotThrowAnyException();
         }
@@ -94,14 +156,14 @@ class FestivalTest {
         }
 
         @ParameterizedTest
-        @ValueSource(ints = {-1, 31})
+        @ValueSource(ints = {MIN_ZOOM - 1, MAX_ZOOM + 1})
         void 예외_줌_범위_초과(Integer zoom) {
             // given
 
             // when & then
             assertThatThrownBy(() -> FestivalFixture.create(zoom))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("줌은 0 이상 30 이하이어야 합니다.");
+                    .hasMessage("줌은 %d 이상 %d 이하이어야 합니다.", MIN_ZOOM, MAX_ZOOM);
         }
     }
 
@@ -163,6 +225,53 @@ class FestivalTest {
             assertThatThrownBy(() -> FestivalFixture.create(polygonHoleBoundary))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("폴리곤 내부 구멍 좌표 리스트는 비어있을 수 없습니다.");
+        }
+    }
+
+    @Nested
+    class validateLostItemGuide {
+
+        @Test
+        void 성공_경계값() {
+            // given
+            String lostItemGuide = "m".repeat(MAX_LOST_ITEM_GUIDE_LENGTH);
+
+            // when & then
+            assertThatCode(() -> FestivalFixture.createWithLostItemGuide(lostItemGuide))
+                    .doesNotThrowAnyException();
+        }
+
+        @Test
+        void 예외_축제_분실물_가이드_null() {
+            // given
+            String lostItemGuide = null;
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.createWithLostItemGuide(lostItemGuide))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("분실물 가이드는 비어 있을 수 없습니다.");
+        }
+
+        @Test
+        void 예외_축제_분실물_가이드_blank() {
+            // given
+            String lostItemGuide = " ";
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.createWithLostItemGuide(lostItemGuide))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("분실물 가이드는 비어 있을 수 없습니다.");
+        }
+
+        @Test
+        void 예외_축제_분실물_가이드_초과() {
+            // given
+            String lostItemGuide = "m".repeat(MAX_LOST_ITEM_GUIDE_LENGTH + 1);
+
+            // when & then
+            assertThatThrownBy(() -> FestivalFixture.createWithLostItemGuide(lostItemGuide))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("분실물 가이드는 %d자를 초과할 수 없습니다.", MAX_LOST_ITEM_GUIDE_LENGTH);
         }
     }
 }

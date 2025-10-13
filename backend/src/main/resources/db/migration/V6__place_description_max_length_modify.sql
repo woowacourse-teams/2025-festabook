@@ -1,0 +1,2 @@
+ALTER TABLE place
+    MODIFY COLUMN description VARCHAR(3000);

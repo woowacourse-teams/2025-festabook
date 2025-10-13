@@ -3,8 +3,8 @@ name: Backend CI Test
 on:
   pull_request:
     branches:
-      - main
-      - backend
+      - backend-prod
+      - backend-dev
 
 jobs:
   Run-PR-Test:

@@ -10,6 +10,9 @@ public enum PlaceCategory {
     TOILET,
     PARKING,
 
+    STAGE,
+    PHOTO_BOOTH,
+
     PRIMARY,
-    STAGE;
+    EXTRA,
 }

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface FestivalJpaRepository extends JpaRepository<Festival, Long> {
 
-    List<Festival> findByUniversityNameContaining(String universityName);
+    List<Festival> findByUniversityNameContainingAndUserVisibleTrue(String universityName);
 }

@@ -25,8 +25,8 @@ import org.springframework.http.HttpStatus;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Question extends BaseEntity implements Comparable<Question> {
 
-    private static final int MAX_QUESTION_LENGTH = 500;
-    private static final int MAX_ANSWER_LENGTH = 1000;
+    private static final int MAX_QUESTION_LENGTH = 255;
+    private static final int MAX_ANSWER_LENGTH = 3000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,7 @@ public class Question extends BaseEntity implements Comparable<Question> {
     @Column(nullable = false)
     private String question;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = MAX_ANSWER_LENGTH)
     private String answer;
 
     @Column(nullable = false)
@@ -54,6 +54,7 @@ public class Question extends BaseEntity implements Comparable<Question> {
         validateFestival(festival);
         validateQuestion(question);
         validateAnswer(answer);
+        validateSequence(sequence);
 
         this.festival = festival;
         this.question = question;
@@ -64,11 +65,14 @@ public class Question extends BaseEntity implements Comparable<Question> {
     public void updateQuestionAndAnswer(String question, String answer) {
         validateQuestion(question);
         validateAnswer(answer);
+
         this.question = question;
         this.answer = answer;
     }
 
     public void updateSequence(Integer sequence) {
+        validateSequence(sequence);
+
         this.sequence = sequence;
     }
 
@@ -108,6 +112,15 @@ public class Question extends BaseEntity implements Comparable<Question> {
                     String.format("답변은 %d자를 초과할 수 없습니다.", MAX_ANSWER_LENGTH),
                     HttpStatus.BAD_REQUEST
             );
+        }
+    }
+
+    private void validateSequence(Integer sequence) {
+        if (sequence == null) {
+            throw new BusinessException("순서는 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        if (sequence < 0) {
+            throw new BusinessException("순서는 음수일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 }

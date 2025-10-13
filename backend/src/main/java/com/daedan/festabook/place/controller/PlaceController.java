@@ -2,12 +2,17 @@ package com.daedan.festabook.place.controller;
 
 import com.daedan.festabook.global.argumentresolver.FestivalId;
 import com.daedan.festabook.global.security.council.CouncilDetails;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.EtcPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.MainPlaceUpdateRequest;
+import com.daedan.festabook.place.dto.MainPlaceUpdateResponse;
+import com.daedan.festabook.place.dto.PlaceCreateRequest;
+import com.daedan.festabook.place.dto.PlaceCreateResponse;
 import com.daedan.festabook.place.dto.PlacePreviewResponses;
-import com.daedan.festabook.place.dto.PlaceRequest;
 import com.daedan.festabook.place.dto.PlaceResponse;
 import com.daedan.festabook.place.dto.PlaceResponses;
-import com.daedan.festabook.place.dto.PlaceUpdateRequest;
-import com.daedan.festabook.place.dto.PlaceUpdateResponse;
+import com.daedan.festabook.place.dto.PlacesCloneRequest;
+import com.daedan.festabook.place.dto.PlacesCloneResponse;
 import com.daedan.festabook.place.service.PlacePreviewService;
 import com.daedan.festabook.place.service.PlaceService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +22,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,17 +43,32 @@ public class PlaceController {
     private final PlaceService placeService;
     private final PlacePreviewService placePreviewService;
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "특정 축제에 대한 플레이스 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
-    public PlaceResponse createPlace(
+    public PlaceCreateResponse createPlace(
             @AuthenticationPrincipal CouncilDetails councilDetails,
-            @RequestBody PlaceRequest request
+            @RequestBody PlaceCreateRequest request
     ) {
         return placeService.createPlace(councilDetails.getFestivalId(), request);
+    }
+
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
+    @PostMapping("/clone")
+    @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "특정 축제에 대한 여러 플레이스들을 복제")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
+    })
+    public PlacesCloneResponse clonePlaces(
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody PlacesCloneRequest request
+    ) {
+        return placeService.clonePlaces(councilDetails.getFestivalId(), request);
     }
 
     @GetMapping
@@ -86,20 +107,37 @@ public class PlaceController {
         return placeService.getPlaceByPlaceId(placeId);
     }
 
-    @PatchMapping("/{placeId}")
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
+    @PatchMapping("/main/{placeId}")
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "특정 축제에 대한 플레이스 세부사항 수정")
+    @Operation(summary = "특정 축제에 대한 메인 플레이스 세부사항 수정")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
     })
-    public PlaceUpdateResponse updatePlace(
+    public MainPlaceUpdateResponse updateMainPlace(
             @PathVariable Long placeId,
             @AuthenticationPrincipal CouncilDetails councilDetails,
-            @RequestBody PlaceUpdateRequest request
+            @RequestBody MainPlaceUpdateRequest request
     ) {
-        return placeService.updatePlace(councilDetails.getFestivalId(), placeId, request);
+        return placeService.updateMainPlace(councilDetails.getFestivalId(), placeId, request);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
+    @PatchMapping("/etc/{placeId}")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "특정 축제에 대한 기타 플레이스 세부사항 수정")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public EtcPlaceUpdateResponse updateEtcPlace(
+            @PathVariable Long placeId,
+            @AuthenticationPrincipal CouncilDetails councilDetails,
+            @RequestBody EtcPlaceUpdateRequest request
+    ) {
+        return placeService.updateEtcPlace(councilDetails.getFestivalId(), placeId, request);
+    }
+
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/{placeId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 플레이스 삭제")

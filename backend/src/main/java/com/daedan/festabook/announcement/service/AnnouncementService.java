@@ -13,7 +13,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.notification.dto.NotificationMessage;
+import com.daedan.festabook.notification.dto.NotificationSendRequest;
 import java.util.Comparator;
 import java.util.List;
 import java.util.function.Predicate;
@@ -27,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AnnouncementService {
 
     private static final int MAX_PINNED_ANNOUNCEMENTS = 3;
+    private static final String ANNOUNCEMENT_TITLE_WITH_UNIVERSITY_NAME_FORMAT = "[%s] %s";
 
     private final AnnouncementJpaRepository announcementJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
@@ -41,14 +42,6 @@ public class AnnouncementService {
         }
 
         announcementJpaRepository.save(announcement);
-
-        // TODO: 로직 분리
-        NotificationMessage notificationMessage = new NotificationMessage(
-                request.title(),
-                request.content()
-        );
-        notificationManager.sendToFestivalTopic(festivalId, notificationMessage);
-
         return AnnouncementResponse.from(announcement);
     }
 
@@ -99,6 +92,27 @@ public class AnnouncementService {
         validateAnnouncementBelongsToFestival(announcement, festivalId);
 
         announcementJpaRepository.delete(announcement);
+    }
+
+    public void sendAnnouncementNotification(Long festivalId, Long announcementId) {
+        Announcement announcement = getAnnouncementById(announcementId);
+        Festival festival = getFestivalById(festivalId);
+        validateAnnouncementBelongsToFestival(announcement, festival.getId());
+
+        NotificationSendRequest request = NotificationSendRequest.builder()
+                .title(formatTitleWithUniversityName(festival, announcement))
+                .body(announcement.getContent())
+                .putData("announcementId", String.valueOf(announcement.getId()))
+                .build();
+
+        notificationManager.sendToFestivalTopic(festivalId, request);
+    }
+
+    private static String formatTitleWithUniversityName(Festival festival, Announcement announcement) {
+        return String.format(
+                ANNOUNCEMENT_TITLE_WITH_UNIVERSITY_NAME_FORMAT,
+                festival.getUniversityName(), announcement.getTitle()
+        );
     }
 
     private Announcement getAnnouncementById(Long announcementId) {

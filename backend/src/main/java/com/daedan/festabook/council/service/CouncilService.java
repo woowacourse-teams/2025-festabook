@@ -5,11 +5,15 @@ import com.daedan.festabook.council.dto.CouncilLoginRequest;
 import com.daedan.festabook.council.dto.CouncilLoginResponse;
 import com.daedan.festabook.council.dto.CouncilRequest;
 import com.daedan.festabook.council.dto.CouncilResponse;
+import com.daedan.festabook.council.dto.CouncilUpdateRequest;
+import com.daedan.festabook.council.dto.CouncilUpdateResponse;
 import com.daedan.festabook.council.infrastructure.CouncilJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.global.security.util.JwtProvider;
+import java.util.Set;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -36,6 +40,10 @@ public class CouncilService {
                 request.username(),
                 encodedPassword
         );
+
+        // TODO: 추후 회원가입 방식이 생긴다면 삭제
+        council.updateRole(Set.of(RoleType.ROLE_COUNCIL));
+
         Council savedCouncil = councilJpaRepository.save(council);
 
         return CouncilResponse.from(savedCouncil);
@@ -45,11 +53,25 @@ public class CouncilService {
     public CouncilLoginResponse loginCouncil(CouncilLoginRequest request) {
         Council council = getCouncilByUsername(request.username());
 
-        validatePassword(request, council);
+        validatePasswordMatch(request.password(), council);
 
-        String accessToken = jwtProvider.createToken(council.getUsername(), council.getFestival().getId());
+        String accessToken = jwtProvider.createToken(council.getUsername(), council.getFestival().getId(),
+                council.getRoles());
 
         return CouncilLoginResponse.from(council.getFestival().getId(), accessToken);
+    }
+
+    @Transactional
+    public CouncilUpdateResponse updatePassword(String username, CouncilUpdateRequest request) {
+        Council council = getCouncilByUsername(username);
+
+        validatePasswordMatch(request.currentPassword(), council);
+
+        String encodedNewPassword = passwordEncoder.encode(request.newPassword());
+
+        council.updatePassword(encodedNewPassword);
+
+        return CouncilUpdateResponse.from(council);
     }
 
     // TODO: JWT 기반 로그아웃 구현
@@ -60,8 +82,8 @@ public class CouncilService {
         }
     }
 
-    private void validatePassword(CouncilLoginRequest request, Council council) {
-        if (!passwordEncoder.matches(request.password(), council.getPassword())) {
+    private void validatePasswordMatch(String password, Council council) {
+        if (!passwordEncoder.matches(password, council.getPassword())) {
             throw new BusinessException("비밀번호가 일치하지 않습니다.", HttpStatus.UNAUTHORIZED);
         }
     }

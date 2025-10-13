@@ -10,6 +10,7 @@ public class FestivalFixture {
     private static final String DEFAULT_FESTIVAL_NAME = "2025 시립 Water Festival: AQUA WAVE";
     private static final LocalDate DEFAULT_START_DATE = LocalDate.of(2025, 10, 15);
     private static final LocalDate DEFAULT_END_DATE = LocalDate.of(2025, 10, 17);
+    private static final boolean DEFAULT_USER_VISIBLE = true;
     private static final Integer DEFAULT_ZOOM = 16;
     private static final Coordinate DEFAULT_CENTER_COORDINATE = CoordinateFixture.create();
     private static final List<Coordinate> DEFAULT_POLYGON_HOLE_BOUNDARY = List.of(
@@ -17,6 +18,7 @@ public class FestivalFixture {
             new Coordinate(37.5801841, 127.0562684),
             new Coordinate(37.5839591, 127.0638215)
     );
+    private static final String DEFAULT_LOST_ITEM_GUIDE = "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요.";
 
     public static Festival create() {
         return new Festival(
@@ -24,9 +26,11 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -38,9 +42,11 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -52,9 +58,28 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 zoom,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
+        );
+    }
+
+    public static Festival create(
+            String universityName,
+            boolean userVisible
+    ) {
+        return new Festival(
+                universityName,
+                DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
+                userVisible,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -66,9 +91,11 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 centerCoordinate,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -80,9 +107,11 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                polygonHoleBoundary
+                polygonHoleBoundary,
+                DEFAULT_LOST_ITEM_GUIDE
         );
     }
 
@@ -94,11 +123,65 @@ public class FestivalFixture {
                 DEFAULT_FESTIVAL_NAME,
                 DEFAULT_START_DATE,
                 DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
                 DEFAULT_ZOOM,
                 DEFAULT_CENTER_COORDINATE,
-                DEFAULT_POLYGON_HOLE_BOUNDARY
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
         );
         BaseEntityTestHelper.setId(festival, festivalId);
         return festival;
+    }
+
+    public static Festival create(
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return new Festival(
+                DEFAULT_UNIVERSITY_NAME,
+                DEFAULT_FESTIVAL_NAME,
+                startDate,
+                endDate,
+                DEFAULT_USER_VISIBLE,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
+        );
+    }
+
+    public static Festival create(
+            String universityName,
+            String festivalName,
+            LocalDate startDate,
+            LocalDate endDate
+    ) {
+        return new Festival(
+                universityName,
+                festivalName,
+                startDate,
+                endDate,
+                DEFAULT_USER_VISIBLE,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                DEFAULT_LOST_ITEM_GUIDE
+        );
+    }
+
+    public static Festival createWithLostItemGuide(
+            String lostItemGuide
+    ) {
+        return new Festival(
+                DEFAULT_UNIVERSITY_NAME,
+                DEFAULT_FESTIVAL_NAME,
+                DEFAULT_START_DATE,
+                DEFAULT_END_DATE,
+                DEFAULT_USER_VISIBLE,
+                DEFAULT_ZOOM,
+                DEFAULT_CENTER_COORDINATE,
+                DEFAULT_POLYGON_HOLE_BOUNDARY,
+                lostItemGuide
+        );
     }
 }

@@ -12,6 +12,13 @@ public class EventDateFixture {
     private static final Festival DEFAULT_FESTIVAL = FestivalFixture.create();
     private static final LocalDate DEFAULT_DATE = LocalDate.of(2025, 5, 20);
 
+    public static EventDate create() {
+        return new EventDate(
+                DEFAULT_FESTIVAL,
+                DEFAULT_DATE
+        );
+    }
+
     public static EventDate create(
             Festival festival
     ) {
