@@ -159,7 +159,12 @@ class NewsViewModel(
         val currentState = _noticeUiState.value ?: return
         _noticeUiState.value =
             when (currentState) {
-                is NoticeUiState.Success -> currentState.copy(notices = onUpdate(currentState.notices))
+                is NoticeUiState.Success ->
+                    currentState.copy(
+                        notices = onUpdate(currentState.notices),
+                        noticeIdToExpandPosition = -1,
+                    )
+
                 else -> currentState
             }
     }
