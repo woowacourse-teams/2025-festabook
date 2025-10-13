@@ -34,7 +34,7 @@ class FestivalNotificationJpaRepositoryTest {
     class getExistsFlagByFestivalIdAndDeviceId {
 
         @Test
-        void 성공_축제와_디바이스가_모두_일치하는_경우_1_반환() {
+        void 성공_일치하는_알림이_있는_경우_1_반환() {
             // given
             Festival festival = festivalJpaRepository.save(FestivalFixture.create());
             Device device = deviceJpaRepository.save(DeviceFixture.create());
@@ -53,7 +53,7 @@ class FestivalNotificationJpaRepositoryTest {
         }
 
         @Test
-        void 성공_삭제된_알림은_0_반환() {
+        void 성공_삭제된_알림인_경우_없다고_판단해_0_반환() {
             // given
             Festival festival = festivalJpaRepository.save(FestivalFixture.create());
             Device device = deviceJpaRepository.save(DeviceFixture.create());
@@ -73,7 +73,7 @@ class FestivalNotificationJpaRepositoryTest {
         }
 
         @Test
-        void 성공_존재하지_않는_축제와_디바이스인_경우_0_반환() {
+        void 성공_알림이_존재하지_않는_경우_0_반환() {
             // given
             Festival festival = festivalJpaRepository.save(FestivalFixture.create());
             Device device = deviceJpaRepository.save(DeviceFixture.create());
@@ -122,7 +122,7 @@ class FestivalNotificationJpaRepositoryTest {
         }
 
         @Test
-        void 성공_다른_디바이스_알림은_제외() {
+        void 성공_다른_디바이스_알림은_제외하고_조회() {
             // given
             Festival targetFestival = festivalJpaRepository.save(FestivalFixture.create());
             Device targetDevice = deviceJpaRepository.save(DeviceFixture.create());
@@ -146,7 +146,7 @@ class FestivalNotificationJpaRepositoryTest {
         }
 
         @Test
-        void 성공_softDelete된_알림은_조회_안됨() {
+        void 성공_삭제된_알림은_조회_안됨() {
             // given
             Festival festival = festivalJpaRepository.save(FestivalFixture.create());
             Device device = deviceJpaRepository.save(DeviceFixture.create());
