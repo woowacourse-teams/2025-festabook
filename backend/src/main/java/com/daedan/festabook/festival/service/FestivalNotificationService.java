@@ -83,7 +83,7 @@ public class FestivalNotificationService {
     @Transactional(readOnly = true)
     public FestivalNotificationReadResponses getAllFestivalNotificationByDeviceId(Long deviceId) {
         Device device = getDeviceById(deviceId);
-        List<FestivalNotification> festivalNotifications = festivalNotificationJpaRepository.getAllByDeviceId(
+        List<FestivalNotification> festivalNotifications = festivalNotificationJpaRepository.findAllWithFestivalByDeviceId(
                 device.getId()
         );
 
@@ -94,13 +94,13 @@ public class FestivalNotificationService {
     public void unsubscribeFestivalNotification(Long festivalNotificationId) {
         FestivalNotification festivalNotification = festivalNotificationJpaRepository
                 .findById(festivalNotificationId)
-                .orElseGet(() -> null);
+                .orElse(null);
         if (festivalNotification == null) {
             return;
         }
 
         Device device = deviceJpaRepository.findById(festivalNotification.getDevice().getId())
-                .orElseGet(() -> null);
+                .orElse(null);
         if (device == null) {
             return;
         }
@@ -113,7 +113,7 @@ public class FestivalNotificationService {
     }
 
     private void validateDuplicatedFestivalNotification(Long festivalId, Long deviceId) {
-        if (festivalNotificationJpaRepository.existsByFestivalIdAndDeviceId(festivalId, deviceId)) {
+        if (festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId) > 0) {
             throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
         }
     }
