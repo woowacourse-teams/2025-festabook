@@ -19,7 +19,7 @@ public class InMemoryLockStorage implements LockStorage {
     private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
     private final ScheduledExecutorService scheduler =
             Executors.newSingleThreadScheduledExecutor(r ->
-                    new Thread(r, "local-lock-lease-scheduler")
+                    new Thread(r, "lock-lease-time-out-scheduler")
             );
 
     @Override
