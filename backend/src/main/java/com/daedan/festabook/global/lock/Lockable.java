@@ -12,6 +12,8 @@ public @interface Lockable {
 
     String spelKey();
 
+    boolean usePrefix() default false;
+
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
     long waitTime() default 5L;
