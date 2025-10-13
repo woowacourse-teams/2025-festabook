@@ -1,0 +1,90 @@
+### macOS ###
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+
+### Xcode ###
+# User-specific files
+*.xcuserstate
+*.xcworkspace/xcuserdata/
+*.xcworkspace/contents.xcworkspacedata
+*.xcuserdatad
+*.xccheckout
+*.moved-aside
+DerivedData/
+.idea/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+*.xcscmblueprint
+project.xcworkspace/
+xcshareddata/
+
+### Build artifacts ###
+build/
+Build/
+*.o
+*.LinkFileList
+*.sym
+*.bin
+*.dylib
+
+### CocoaPods ###
+Pods/
+Podfile.lock   # 필요하면 팀에서 공유 (버전 고정 목적이면 제외하지 말 것)
+
+### Swift Package Manager ###
+.swiftpm/
+.build/
+Package.resolved   # 필요하면 팀에서 공유 (의존성 버전 고정 목적이면 제외하지 말 것)
+
+### Carthage ###
+Carthage/Build/
+
+### Firebase / Google Services ###
+GoogleService-Info.plist
+firebase-adminsdk-*.json
+*.p8        # APNs Auth Key
+*.p12       # APNs Certificates
+*.mobileprovision
+*.keystore
+*.jks
+
+### Env / Config ###
+*.env
+*.env.*
+*.xcconfig
+*.xcconfig.local
+config/*.plist
+config/*.json
+Secrets/
+AuthKey_*.p8
+*.token
+*.account.json
+
+### Logs / Temp ###
+*.log
+*.swp
+*.swo
+*.tmp
+*.lock
+
+### Security ###
+*.key
+*.crt
+*.pem
+
+### Fastlane ###
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output
+fastlane/README.md
+
+### Other ###
+xcuserdata/
+*.mode1v3
+*.mode2v3
+*.perspectivev3
