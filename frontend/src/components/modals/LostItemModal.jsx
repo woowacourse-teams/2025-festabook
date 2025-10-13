@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Modal from '../common/Modal';
 import { imageAPI } from '../../utils/api';
 
-const LostItemModal = ({ item, onSave, onClose }) => {
+const LostItemModal = ({ item, onSave, onClose, showToast }) => {
     const [storageLocation, setStorageLocation] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
     const [isDragging, setIsDragging] = useState(false);
@@ -79,6 +79,15 @@ const LostItemModal = ({ item, onSave, onClose }) => {
         setIsUploading(false);
     }, [item]);
 
+    const handleStorageLocationChange = (e) => {
+        const value = e.target.value;
+        if (value.length > 100) {
+            showToast('보관 장소는 100자 이내로 입력해주세요.');
+            return;
+        }
+        setStorageLocation(value);
+    };
+
     const validateFile = (file) => {
         const allowedTypes = ['image/png', 'image/jpeg', 'image/jpg'];
         const maxSize = 5 * 1024 * 1024; // 5MB
@@ -146,14 +155,19 @@ const LostItemModal = ({ item, onSave, onClose }) => {
                 
                 {/* 보관 장소 입력 */}
                 <div className="mb-6">
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
-                        보관 장소
-                    </label>
+                    <div className="flex justify-between items-center mb-2">
+                        <label className="block text-sm font-medium text-gray-700">
+                            보관 장소
+                        </label>
+                        <span className="text-xs text-gray-500">
+                            {storageLocation.length}/100
+                        </span>
+                    </div>
                     <input 
                         type="text" 
                         value={storageLocation} 
-                        onChange={e => setStorageLocation(e.target.value)} 
-                        placeholder="예: 대운동장 스탠드" 
+                        onChange={handleStorageLocationChange} 
+                        placeholder="보관 장소를 입력해 주세요 (100자 이내)" 
                         className="block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:ring-indigo-500 focus:border-indigo-500" 
                     />
                 </div>
@@ -238,7 +252,7 @@ const LostItemModal = ({ item, onSave, onClose }) => {
                     <button
                         onClick={handleSave}
                         disabled={!storageLocation.trim() || (!selectedFile && !item?.imageUrl) || isUploading}
-                        className="px-4 py-2 text-white bg-gray-600 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
+                        className="px-4 py-2 text-white bg-gray-800 rounded-lg hover:bg-gray-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
                     >
                         {isUploading ? (
                             <>
