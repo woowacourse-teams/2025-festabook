@@ -3,6 +3,7 @@ package com.daedan.festabook.global.lock.infrastructure;
 import java.util.concurrent.ScheduledFuture;
 
 public class Lock {
+
     private volatile long ownerThreadId;
     private volatile ScheduledFuture<?> leaseTimeOutSchedule;
 
