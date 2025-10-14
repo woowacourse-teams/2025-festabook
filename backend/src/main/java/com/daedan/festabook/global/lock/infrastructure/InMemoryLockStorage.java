@@ -17,10 +17,7 @@ import org.springframework.util.StringUtils;
 public class InMemoryLockStorage implements LockStorage {
 
     private final ConcurrentHashMap<String, Lock> locks = new ConcurrentHashMap<>();
-    private final ScheduledExecutorService scheduler =
-            Executors.newSingleThreadScheduledExecutor(r ->
-                    new Thread(r, "lock-lease-time-out-scheduler")
-            );
+    private final ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
 
     @Override
     public void tryLock(String key, long waitTime, long leaseTime, TimeUnit timeUnit) {
@@ -75,11 +72,9 @@ public class InMemoryLockStorage implements LockStorage {
                 return;
             }
             synchronized (currentLock) {
-                // lease 만료 시점에 현재 LockInfo 가 동일하면 강제 해제
-                // 확인하는 이유는 위의 unlock()에서 locks.remove() 이후, 다른 스레드가 락을 획득한다면, cur과 info가 달라질 수 있음
                 if (currentLock == lock) {
                     locks.remove(key, currentLock);
-                    currentLock.notifyAll(); // 기다리던 스레드 깨우기
+                    currentLock.notifyAll();
                 }
             }
         };
