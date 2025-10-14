@@ -11,6 +11,7 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
+import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.presentation.common.Event
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.coroutines.launch
@@ -18,10 +19,20 @@ import timber.log.Timber
 
 class MainViewModel(
     private val deviceRepository: DeviceRepository,
+    festivalRepository: FestivalRepository,
     private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
+
+    private val _noticeIdToExpand: MutableLiveData<Long> = MutableLiveData()
+    val noticeIdToExpand: LiveData<Long> = _noticeIdToExpand
+
+    private val _isFirstVisit =
+        MutableLiveData(
+            festivalRepository.getIsFirstVisit().getOrDefault(true),
+        )
+    val isFirstVisit: LiveData<Boolean> get() = _isFirstVisit
 
     private var lastBackPressedTime: Long = 0
 
@@ -62,19 +73,6 @@ class MainViewModel(
         }
     }
 
-    fun saveNotificationId() {
-        viewModelScope.launch {
-            val result = festivalNotificationRepository.saveFestivalNotification()
-
-            result
-                .onSuccess {
-                    festivalNotificationRepository.setFestivalNotificationIsAllow(true)
-                }.onFailure {
-                    Timber.e("${::MainViewModel.javaClass.simpleName}: FestivalNotificationId 저장에 실패했습니다.")
-                }
-        }
-    }
-
     private fun registerDevice(
         uuid: String,
         fcmToken: String,
@@ -92,6 +90,10 @@ class MainViewModel(
         }
     }
 
+    fun expandNoticeItem(announcementId: Long) {
+        _noticeIdToExpand.value = announcementId
+    }
+
     companion object {
         private const val BACK_PRESS_INTERVAL: Long = 2000L
         val Factory: ViewModelProvider.Factory =
@@ -101,7 +103,12 @@ class MainViewModel(
                     val deviceRepository = app.appContainer.deviceRepository
                     val festivalNotificationRepository =
                         app.appContainer.festivalNotificationRepository
-                    MainViewModel(deviceRepository, festivalNotificationRepository)
+                    val festivalRepository = app.appContainer.festivalRepository
+                    MainViewModel(
+                        deviceRepository,
+                        festivalRepository,
+                        festivalNotificationRepository,
+                    )
                 }
             }
     }

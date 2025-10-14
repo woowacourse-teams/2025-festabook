@@ -1,9 +1,9 @@
 package com.daedan.festabook.global.security.council;
 
-import com.daedan.festabook.council.domain.Council;
 import com.daedan.festabook.global.security.role.RoleType;
 import java.util.Collection;
 import java.util.Objects;
+import java.util.Set;
 import java.util.stream.Collectors;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -15,11 +15,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 @RequiredArgsConstructor
 public class CouncilDetails implements UserDetails {
 
-    private final Council council;
+    private final String username;
+    private final Long festivalId;
+    private final Set<RoleType> roles;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return council.getRoles().stream()
+        return roles.stream()
                 .filter(Objects::nonNull)
                 .map(RoleType::name)
                 .map(SimpleGrantedAuthority::new)
@@ -28,16 +30,16 @@ public class CouncilDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return council.getPassword();
+        throw new UnsupportedOperationException("잘못된 사용입니다.");
     }
 
     @Override
     public String getUsername() {
-        return council.getUsername();
+        return username;
     }
 
     public Long getFestivalId() {
-        return council.getFestival().getId();
+        return festivalId;
     }
 
     @Override

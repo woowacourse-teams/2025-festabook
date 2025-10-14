@@ -5,23 +5,59 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
     tools:context=".presentation.explore.ExploreActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/layout_explore_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingVertical="12dp"
+        android:paddingHorizontal="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/btn_backToMain"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/explore_btn_backToMain_content_desc"
+            android:padding="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_arrow_back"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_explore_title"
+            style="@style/PretendardBold20"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/explore_toolbar_title"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <ImageView
         android:id="@+id/iv_logo_title"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="280dp"
+        android:layout_marginTop="200dp"
         android:contentDescription="@string/explore_festabook_logo"
-        android:src="@drawable/logo_title"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:src="@drawable/festabook_logo_shadow"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="gone" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/til_search_input_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="28dp"
-        android:layout_marginTop="32dp"
         android:hint="@string/explore_search_hint_text"
         app:boxBackgroundColor="@color/gray050"
         app:boxBackgroundMode="outline"
@@ -31,10 +67,14 @@
         app:boxCornerRadiusTopStart="50dp"
         app:boxStrokeColor="@color/gray400"
         app:boxStrokeErrorColor="@color/red400"
+        app:cursorColor="@color/blue400"
+        app:cursorErrorColor="@color/red400"
         app:endIconDrawable="@drawable/ic_search"
         app:endIconMode="custom"
         app:endIconTint="@color/gray500"
-        app:layout_constraintTop_toBottomOf="@id/iv_logo_title">
+        app:hintTextColor="@color/gray900"
+        app:layout_constraintTop_toBottomOf="@id/iv_logo_title"
+        app:layout_goneMarginTop="80dp">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/et_search_text"

@@ -10,6 +10,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewSecondaryBinding
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
+import com.daedan.festabook.presentation.common.showBottomAnimation
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
@@ -50,12 +51,13 @@ class PlaceDetailPreviewSecondaryFragment :
             backPressedCallback.isEnabled = true
             when (selectedPlace) {
                 is SelectedPlaceUiState.Success -> {
-                    binding.makeChildVisible()
+                    binding.layoutSelectedPlace.visibility = View.VISIBLE
+                    binding.layoutSelectedPlace.showBottomAnimation()
                     updateSelectedPlaceUi(selectedPlace.value)
                 }
 
                 is SelectedPlaceUiState.Error -> showErrorSnackBar(selectedPlace.throwable)
-                is SelectedPlaceUiState.Loading -> binding.makeChildInvisible()
+                is SelectedPlaceUiState.Loading -> Unit
                 is SelectedPlaceUiState.Empty -> backPressedCallback.isEnabled = false
             }
         }
@@ -66,18 +68,6 @@ class PlaceDetailPreviewSecondaryFragment :
             ivSecondaryCategoryItem.load(selectedPlace.place.category.getIconId())
             tvSelectedPlaceTitle.text =
                 selectedPlace.place.title ?: getString(selectedPlace.place.category.getTextId())
-        }
-    }
-
-    private fun FragmentPlaceDetailPreviewSecondaryBinding.makeChildInvisible() {
-        layoutSelectedPlace.children.forEach {
-            it.visibility = View.INVISIBLE
-        }
-    }
-
-    private fun FragmentPlaceDetailPreviewSecondaryBinding.makeChildVisible() {
-        layoutSelectedPlace.children.forEach {
-            it.visibility = View.VISIBLE
         }
     }
 }

@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willDoNothing;
 
 import com.daedan.festabook.announcement.domain.Announcement;
 import com.daedan.festabook.announcement.domain.AnnouncementFixture;
@@ -23,6 +24,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
@@ -35,6 +37,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -71,13 +74,14 @@ class AnnouncementControllerTest {
     @Nested
     class createAnnouncement {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             AnnouncementRequest request = new AnnouncementRequest(
                     "폭우가 내립니다.",
@@ -102,9 +106,6 @@ class AnnouncementControllerTest {
                     .body("content", equalTo(request.content()))
                     .body("isPinned", equalTo(request.isPinned()))
                     .body("createdAt", notNullValue());
-
-            then(fcmNotificationManager).should()
-                    .sendToFestivalTopic(any(), any());
         }
 
         @Test
@@ -113,7 +114,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             boolean isPinned = true;
             announcementJpaRepository.saveAll(AnnouncementFixture.createList(3, isPinned, festival));
@@ -274,13 +275,14 @@ class AnnouncementControllerTest {
     @Nested
     class updateAnnouncement {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
@@ -311,7 +313,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             Long notExistId = 0L;
             AnnouncementUpdateRequest request = AnnouncementUpdateRequestFixture.create();
@@ -333,6 +335,34 @@ class AnnouncementControllerTest {
     @Nested
     class updateAnnouncementPin {
 
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+            boolean initialPinned = true;
+            boolean expectedPinned = false;
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
+
+            Announcement announcement = AnnouncementFixture.create(initialPinned, festival);
+            announcementJpaRepository.save(announcement);
+
+            AnnouncementPinUpdateRequest request = AnnouncementPinUpdateRequestFixture.create(expectedPinned);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .patch("/announcements/{announcementId}/pin", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+        }
+
         @ParameterizedTest(name = "초기 고정 상태: {0}, 변경할 상태: {1}")
         @CsvSource({
                 "true, false",   // 고정 해제
@@ -343,7 +373,7 @@ class AnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             Announcement announcement = AnnouncementFixture.create(initialPinned, festival);
             announcementJpaRepository.save(announcement);
@@ -374,13 +404,14 @@ class AnnouncementControllerTest {
     @Nested
     class deleteAnnouncementByAnnouncementId {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Announcement announcement = AnnouncementFixture.create(festival);
             announcementJpaRepository.save(announcement);
@@ -393,6 +424,38 @@ class AnnouncementControllerTest {
                     .delete("/announcements/{announcementId}", announcement.getId())
                     .then()
                     .statusCode(HttpStatus.NO_CONTENT.value());
+        }
+    }
+
+    @Nested
+    class sendAnnouncementNotification {
+
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
+
+            Announcement announcement = AnnouncementFixture.create(festival);
+            announcementJpaRepository.save(announcement);
+
+            willDoNothing().given(fcmNotificationManager)
+                    .sendToFestivalTopic(any(), any());
+
+            // when & then
+            RestAssured
+                    .given()
+                    .header(authorizationHeader)
+                    .when()
+                    .post("/announcements/{announcementId}/notifications", announcement.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value());
+
+            then(fcmNotificationManager).should()
+                    .sendToFestivalTopic(any(), any());
         }
     }
 }

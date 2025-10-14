@@ -1,6 +1,5 @@
 package com.daedan.festabook.council.service;
 
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.assertj.core.api.SoftAssertions.assertSoftly;
@@ -17,13 +16,18 @@ import com.daedan.festabook.council.dto.CouncilLoginResponse;
 import com.daedan.festabook.council.dto.CouncilRequest;
 import com.daedan.festabook.council.dto.CouncilRequestFixture;
 import com.daedan.festabook.council.dto.CouncilResponse;
+import com.daedan.festabook.council.dto.CouncilUpdateRequest;
+import com.daedan.festabook.council.dto.CouncilUpdateRequestFixture;
+import com.daedan.festabook.council.dto.CouncilUpdateResponse;
 import com.daedan.festabook.council.infrastructure.CouncilJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.global.security.util.JwtProvider;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -65,6 +69,7 @@ class CouncilServiceTest {
             String username = "test";
             String rawPassword = "1234";
             String encodedPassword = "{encoded}1234";
+            RoleType roleType = RoleType.ROLE_COUNCIL;
             Long councilId = 10L;
             Council council = CouncilFixture.create(festival, username, encodedPassword, councilId);
 
@@ -98,6 +103,7 @@ class CouncilServiceTest {
                 s.assertThat(savedCouncil.getFestival()).isEqualTo(festival);
                 s.assertThat(savedCouncil.getUsername()).isEqualTo(username);
                 s.assertThat(savedCouncil.getPassword()).isEqualTo(encodedPassword);
+                s.assertThat(savedCouncil.getRoles()).containsOnly(roleType);
                 s.assertThat(result).isNotNull();
             });
         }
@@ -155,12 +161,13 @@ class CouncilServiceTest {
 
             Festival festival = FestivalFixture.create(festivalId);
             Council council = CouncilFixture.create(festival, username, encodedPassword);
+            Set<RoleType> roleTypes = council.getRoles();
 
             given(councilJpaRepository.findByUsername(username))
                     .willReturn(Optional.of(council));
             given(passwordEncoder.matches(rawPassword, encodedPassword))
                     .willReturn(true);
-            given(jwtProvider.createToken(username, festivalId))
+            given(jwtProvider.createToken(username, festivalId, council.getRoles()))
                     .willReturn(expectedToken);
 
             CouncilLoginRequest request = CouncilLoginRequestFixture.create(username, rawPassword);
@@ -172,7 +179,7 @@ class CouncilServiceTest {
             then(passwordEncoder).should()
                     .matches(rawPassword, encodedPassword);
             then(jwtProvider).should()
-                    .createToken(username, festivalId);
+                    .createToken(username, festivalId, roleTypes);
 
             assertThat(response.accessToken()).isNotNull();
             assertThat(response.festivalId()).isEqualTo(festival.getId());
@@ -215,6 +222,67 @@ class CouncilServiceTest {
 
             // when & then
             assertThatThrownBy(() -> councilService.loginCouncil(request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("비밀번호가 일치하지 않습니다.");
+        }
+    }
+
+    @Nested
+    class updatePassword {
+
+        @Test
+        void 성공() {
+            // given
+            Long festivalId = 2L;
+            Long councilId = 1L;
+            String username = "user";
+            String currentPassword = "1234";
+            String encodedCurrentPassword = "{encoded}1234";
+            String newPassword = "5678";
+            String encodedNewPassword = "{encoded}5678";
+            Festival festival = FestivalFixture.create(festivalId);
+            Council council = CouncilFixture.create(festival, username, encodedCurrentPassword, councilId);
+
+            given(councilJpaRepository.findByUsername(username))
+                    .willReturn(Optional.of(council));
+            given(passwordEncoder.matches(currentPassword, council.getPassword()))
+                    .willReturn(true);
+            given(passwordEncoder.encode(newPassword))
+                    .willReturn(encodedNewPassword);
+
+            CouncilUpdateRequest request = CouncilUpdateRequestFixture.create(currentPassword, newPassword);
+
+            // when
+            CouncilUpdateResponse response = councilService.updatePassword(username, request);
+
+            // then
+            assertSoftly(s -> {
+                s.assertThat(response.councilId()).isEqualTo(councilId);
+                s.assertThat(response.username()).isEqualTo(council.getUsername());
+                s.assertThat(council.getPassword()).isEqualTo(encodedNewPassword);
+            });
+        }
+
+        @Test
+        void 예외_비밀번호_불일치() {
+            Long councilId = 1L;
+            String username = "name";
+            String currentPassword = "wrong";
+            String encodedPassword = "{encoded}1234";
+            String newPassword = "5678";
+
+            Festival festival = FestivalFixture.create(10L);
+            Council council = CouncilFixture.create(festival, username, encodedPassword, councilId);
+
+            given(councilJpaRepository.findByUsername(username))
+                    .willReturn(Optional.of(council));
+            given(passwordEncoder.matches(currentPassword, encodedPassword))
+                    .willReturn(false);
+
+            CouncilUpdateRequest request = CouncilUpdateRequestFixture.create(currentPassword, newPassword);
+
+            // when & then
+            assertThatThrownBy(() -> councilService.updatePassword(username, request))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("비밀번호가 일치하지 않습니다.");
         }

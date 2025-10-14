@@ -8,12 +8,19 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceCategory;
 import com.daedan.festabook.place.domain.PlaceFixture;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequest;
 import com.daedan.festabook.place.dto.PlaceCoordinateRequestFixture;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import com.daedan.festabook.timetag.domain.PlaceTimeTag;
+import com.daedan.festabook.timetag.domain.PlaceTimeTagFixture;
+import com.daedan.festabook.timetag.domain.TimeTag;
+import com.daedan.festabook.timetag.domain.TimeTagFixture;
+import com.daedan.festabook.timetag.infrastructure.PlaceTimeTagJpaRepository;
+import com.daedan.festabook.timetag.infrastructure.TimeTagJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.config.JsonConfig;
 import io.restassured.config.RestAssuredConfig;
@@ -28,6 +35,8 @@ import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -48,6 +57,12 @@ class PlaceGeographyControllerTest {
 
     @Autowired
     private JwtTestHelper jwtTestHelper;
+
+    @Autowired
+    private TimeTagJpaRepository timeTagJpaRepository;
+
+    @Autowired
+    private PlaceTimeTagJpaRepository placeTimeTagJpaRepository;
 
     @LocalServerPort
     private int port;
@@ -81,8 +96,16 @@ class PlaceGeographyControllerTest {
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.saveAll(List.of(place));
 
-            int expectedSize = 1;
-            int expectedFieldSize = 4;
+            TimeTag timeTag = TimeTagFixture.createWithFestival(festival);
+            timeTagJpaRepository.save(timeTag);
+
+            PlaceTimeTag placeTimeTag = PlaceTimeTagFixture.createWithPlaceAndTimeTag(place, timeTag);
+            placeTimeTagJpaRepository.save(placeTimeTag);
+
+            int expectedItemSize = 1;
+            int expectedTimeTagsItemSize = 1;
+            int expectedFieldSize = 5;
+            int expectedTimeTagsFieldSize = 2;
             int expectedMarkerFieldSize = 2;
 
             // when & then
@@ -93,18 +116,22 @@ class PlaceGeographyControllerTest {
                     .get("/places/geographies")
                     .then()
                     .statusCode(HttpStatus.OK.value())
-                    .body("$", hasSize(expectedSize))
+                    .body("$", hasSize(expectedItemSize))
                     .body("[0].size()", equalTo(expectedFieldSize))
                     .body("[0].placeId", equalTo(place.getId().intValue()))
                     .body("[0].category", equalTo(place.getCategory().name()))
                     .body("[0].markerCoordinate.size()", equalTo(expectedMarkerFieldSize))
                     .body("[0].markerCoordinate.latitude", equalTo(place.getCoordinate().getLatitude()))
                     .body("[0].markerCoordinate.longitude", equalTo(place.getCoordinate().getLongitude()))
-                    .body("[0].title", equalTo(place.getTitle()));
+                    .body("[0].title", equalTo(place.getTitle()))
+                    .body("[0].timeTags", hasSize(expectedTimeTagsItemSize))
+                    .body("[0].timeTags[0].size()", equalTo(expectedTimeTagsFieldSize))
+                    .body("[0].timeTags[0].timeTagId", equalTo(timeTag.getId().intValue()))
+                    .body("[0].timeTags[0].name", equalTo(timeTag.getName()));
         }
 
         @Test
-        void 성공_특정_축제의_플레이스_지리_목록() {
+        void 성공_특정_축제의_플레이스_지리_목록_요소_개수() {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
@@ -152,13 +179,14 @@ class PlaceGeographyControllerTest {
     @Nested
     class updatePlaceCoordinate {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -192,7 +220,7 @@ class PlaceGeographyControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
 
             Long invalidPlaceId = 0L;
             PlaceCoordinateRequest request = PlaceCoordinateRequestFixture.create();

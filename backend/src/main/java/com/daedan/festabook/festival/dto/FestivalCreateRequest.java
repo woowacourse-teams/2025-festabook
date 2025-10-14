@@ -11,7 +11,7 @@ public record FestivalCreateRequest(
         @Schema(description = "학교 이름", example = "서울시립대학교")
         String universityName,
 
-        @Schema(description = "축제 이름", example = "2025 시립 Water Festival\n: AQUA WAVE")
+        @Schema(description = "축제 이름", example = "시립 Water Festival\n: AQUA WAVE")
         String festivalName,
 
         @Schema(description = "시작일", example = "2025-08-23")
@@ -39,7 +39,10 @@ public record FestivalCreateRequest(
                         "{\"latitude\": 37.5862547, \"longitude\": 127.0591545}, " +
                         "{\"latitude\": 37.5865607, \"longitude\": 127.0569872}]"
         )
-        List<Coordinate> polygonHoleBoundary
+        List<Coordinate> polygonHoleBoundary,
+
+        @Schema(description = "분실물 수령/습득 가이드", example = "습득하신 분실물 혹은 수령 문의는 학생회 인스타그램 DM으로 전송해주세요.")
+        String lostItemGuide
 ) {
 
     public Festival toEntity() {
@@ -48,9 +51,11 @@ public record FestivalCreateRequest(
                 festivalName,
                 startDate,
                 endDate,
+                false,
                 zoom,
                 centerCoordinate,
-                polygonHoleBoundary
+                polygonHoleBoundary,
+                lostItemGuide
         );
     }
 }

@@ -3,11 +3,15 @@ package com.daedan.festabook
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.data.service.api.ApiClient
+import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
+import com.google.firebase.Firebase
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.crashlytics.FirebaseCrashlytics
+import com.google.firebase.crashlytics.crashlytics
 import com.naver.maps.map.NaverMapSdk
 import timber.log.Timber
 
@@ -16,23 +20,28 @@ class FestaBookApp : Application() {
         AppContainer(this)
     }
 
-    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
+    val fireBaseAnalytics: FirebaseAnalytics by lazy {
         FirebaseAnalytics.getInstance(this)
     }
 
     override fun onCreate() {
         super.onCreate()
+        setGlobalExceptionHandler()
         initializeApiClient()
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
         setLightTheme()
-        setGlobalExceptionHandler()
+        sendUnsentReports()
     }
 
     override fun onLowMemory() {
         super.onLowMemory()
         Timber.w("FestabookApp: onLowMemory 호출됨")
+    }
+
+    private fun sendUnsentReports() {
+        Firebase.crashlytics.sendUnsentReports()
     }
 
     private fun setupNotificationChannel() {
@@ -77,13 +86,10 @@ class FestaBookApp : Application() {
     }
 
     private fun setGlobalExceptionHandler() {
-        val defaultExceptionHandler: Thread.UncaughtExceptionHandler? =
-            Thread.getDefaultUncaughtExceptionHandler()
         Thread.setDefaultUncaughtExceptionHandler(
             FestabookGlobalExceptionHandler(
                 this,
-                defaultExceptionHandler,
-            ),
+            )
         )
     }
 

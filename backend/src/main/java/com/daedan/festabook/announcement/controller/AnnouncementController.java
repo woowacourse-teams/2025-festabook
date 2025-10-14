@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -36,9 +37,10 @@ public class AnnouncementController {
 
     private final AnnouncementService announcementService;
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "공지 생성 (+ FCM 알림 요청)")
+    @Operation(summary = "공지 생성")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "201", useReturnTypeSchema = true),
     })
@@ -61,6 +63,7 @@ public class AnnouncementController {
         return announcementService.getGroupedAnnouncementByFestivalId(festivalId);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 공지 내용 수정")
@@ -75,6 +78,7 @@ public class AnnouncementController {
         return announcementService.updateAnnouncement(councilDetails.getFestivalId(), announcementId, request);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @PatchMapping("/{announcementId}/pin")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "특정 공지 고정 형태 수정")
@@ -89,6 +93,7 @@ public class AnnouncementController {
         return announcementService.updateAnnouncementPin(councilDetails.getFestivalId(), announcementId, request);
     }
 
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
     @DeleteMapping("/{announcementId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "특정 공지 삭제")
@@ -100,5 +105,19 @@ public class AnnouncementController {
             @AuthenticationPrincipal CouncilDetails councilDetails
     ) {
         announcementService.deleteAnnouncementByAnnouncementId(councilDetails.getFestivalId(), announcementId);
+    }
+
+    @PreAuthorize("hasAnyRole('COUNCIL', 'ADMIN')")
+    @PostMapping("/{announcementId}/notifications")
+    @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "공지 FCM 알림 요청")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", useReturnTypeSchema = true),
+    })
+    public void sendAnnouncementNotification(
+            @PathVariable Long announcementId,
+            @AuthenticationPrincipal CouncilDetails councilDetails
+    ) {
+        announcementService.sendAnnouncementNotification(councilDetails.getFestivalId(), announcementId);
     }
 }

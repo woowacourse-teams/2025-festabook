@@ -24,6 +24,7 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.adapter.PlaceListAdapter
 import com.daedan.festabook.presentation.placeList.behavior.BottomSheetFollowCallback
 import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositionCallback
+import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -50,6 +51,11 @@ class PlaceListFragment :
 
     private val placeAdapter by lazy {
         PlaceListAdapter(this)
+    }
+
+    private val placeListBottomSheetBehavior by lazy {
+        val params = binding.layoutPlaceList.layoutParams as? CoordinatorLayout.LayoutParams
+        params?.behavior as? PlaceListBottomSheetBehavior
     }
 
     private lateinit var moveToInitialPositionCallback: MoveToInitialPositionCallback
@@ -98,7 +104,16 @@ class PlaceListFragment :
                         places.value,
                     )
                     placeAdapter.submitList(places.value) {
+                        if (places.value.isEmpty()) {
+                            binding.tvErrorToLoadPlaceInfo.visibility = View.VISIBLE
+                        }
                         binding.rvPlaces.scrollToPosition(0)
+                    }
+                }
+
+                is PlaceListUiState.PlaceLoaded -> {
+                    viewModel.selectedTimeTag.observe(viewLifecycleOwner) { timeTag ->
+                        childViewModel.updatePlacesByTimeTag(timeTag.timeTagId)
                     }
                 }
 
@@ -123,7 +138,7 @@ class PlaceListFragment :
             if (selectedCategories.isEmpty()) {
                 childViewModel.clearPlacesFilter()
             } else {
-                childViewModel.filterPlaces(selectedCategories)
+                childViewModel.updatePlacesByCategories(selectedCategories)
             }
         }
 
@@ -131,6 +146,10 @@ class PlaceListFragment :
             moveToInitialPositionCallback.setIsExceededMaxLength(isExceededMaxLength)
             binding.chipBackToInitialPosition.visibility =
                 if (isExceededMaxLength) View.VISIBLE else View.GONE
+        }
+
+        viewModel.onMapViewClick.observe(viewLifecycleOwner) {
+            placeListBottomSheetBehavior?.state = BottomSheetBehavior.STATE_COLLAPSED
         }
     }
 

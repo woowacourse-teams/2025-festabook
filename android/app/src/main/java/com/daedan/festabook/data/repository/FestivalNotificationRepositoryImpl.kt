@@ -34,25 +34,33 @@ class FestivalNotificationRepositoryImpl(
         return result
             .mapCatching {
                 festivalNotificationLocalDataSource.saveFestivalNotificationId(
+                    festivalId,
                     it.festivalNotificationId,
                 )
             }
     }
 
     override suspend fun deleteFestivalNotification(): Result<Unit> {
-        val festivalNotificationId = festivalNotificationLocalDataSource.getFestivalNotificationId()
-
+        val festivalId = festivalLocalDataSource.getFestivalId() ?: return Result.failure(IllegalStateException())
+        val festivalNotificationId = festivalNotificationLocalDataSource.getFestivalNotificationId(festivalId)
         val response =
             festivalNotificationDataSource.deleteFestivalNotification(festivalNotificationId)
-
-        festivalNotificationLocalDataSource.deleteFestivalNotificationId()
+        festivalNotificationLocalDataSource.deleteFestivalNotificationId(festivalId)
 
         return response.toResult()
     }
 
-    override fun getFestivalNotificationIsAllow(): Boolean = festivalNotificationLocalDataSource.getFestivalNotificationIsAllowed()
+    override fun getFestivalNotificationIsAllow(): Boolean {
+        val festivalId = festivalLocalDataSource.getFestivalId() ?: return false
+        return festivalNotificationLocalDataSource.getFestivalNotificationIsAllowed(festivalId)
+    }
 
     override fun setFestivalNotificationIsAllow(isAllowed: Boolean) {
-        festivalNotificationLocalDataSource.saveFestivalNotificationIsAllowed(isAllowed)
+        festivalLocalDataSource.getFestivalId()?.let { festivalId ->
+            festivalNotificationLocalDataSource.saveFestivalNotificationIsAllowed(
+                festivalId,
+                isAllowed,
+            )
+        }
     }
 }

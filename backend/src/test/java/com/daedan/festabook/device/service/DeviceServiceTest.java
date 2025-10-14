@@ -1,6 +1,7 @@
 package com.daedan.festabook.device.service;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -11,7 +12,10 @@ import com.daedan.festabook.device.domain.DeviceFixture;
 import com.daedan.festabook.device.dto.DeviceRequest;
 import com.daedan.festabook.device.dto.DeviceRequestFixture;
 import com.daedan.festabook.device.dto.DeviceResponse;
+import com.daedan.festabook.device.dto.DeviceUpdateRequest;
+import com.daedan.festabook.device.dto.DeviceUpdateRequestFixture;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
+import com.daedan.festabook.global.exception.BusinessException;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -73,6 +77,44 @@ class DeviceServiceTest {
             assertThat(result.deviceId()).isEqualTo(expectedId);
             then(deviceJpaRepository).should(never())
                     .save(any());
+        }
+    }
+
+    @Nested
+    class updateDevice {
+
+        @Test
+        void 성공() {
+            // given
+            Long deviceId = 1L;
+            Device device = DeviceFixture.create(deviceId);
+
+            given(deviceJpaRepository.findById(device.getId()))
+                    .willReturn(Optional.of(device));
+
+            DeviceUpdateRequest request = DeviceUpdateRequestFixture.create();
+
+            // when
+            DeviceResponse result = deviceService.updateDevice(device.getId(), request);
+
+            // then
+            assertThat(result.deviceId()).isEqualTo(deviceId);
+        }
+
+        @Test
+        void 예외_존재하지_않는_디바이스() {
+            // given
+            Long invalidDeviceId = 0L;
+            Device device = DeviceFixture.create(invalidDeviceId);
+            DeviceUpdateRequest request = DeviceUpdateRequestFixture.create();
+
+            given(deviceJpaRepository.findById(invalidDeviceId))
+                    .willReturn(Optional.empty());
+
+            // when & then
+            assertThatThrownBy(() -> deviceService.updateDevice(device.getId(), request))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("존재하지 않는 디바이스입니다.");
         }
     }
 }

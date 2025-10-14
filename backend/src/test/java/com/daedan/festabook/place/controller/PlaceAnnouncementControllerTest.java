@@ -2,12 +2,14 @@ package com.daedan.festabook.place.controller;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.security.JwtTestHelper;
+import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.place.domain.Place;
 import com.daedan.festabook.place.domain.PlaceAnnouncement;
 import com.daedan.festabook.place.domain.PlaceAnnouncementFixture;
@@ -21,11 +23,14 @@ import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.restassured.http.Header;
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EnumSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -59,13 +64,14 @@ class PlaceAnnouncementControllerTest {
     @Nested
     class createPlaceAnnouncement {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -97,7 +103,7 @@ class PlaceAnnouncementControllerTest {
     }
 
     @Nested
-    class updatePlaceAnnouncement {
+    class getAllPlaceAnnouncementsByPlaceId {
 
         @Test
         void 성공() {
@@ -105,7 +111,75 @@ class PlaceAnnouncementControllerTest {
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Place place = PlaceFixture.create(festival);
+            placeJpaRepository.save(place);
+
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place);
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place);
+            placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
+
+            int expectedSize = 2;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/places/{placeId}/announcements", place.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize))
+
+                    .body("[0].id", notNullValue())
+                    .body("[0].title", equalTo(placeAnnouncement1.getTitle()))
+                    .body("[0].content", equalTo(placeAnnouncement1.getContent()))
+                    .body("[0].createdAt", notNullValue())
+
+                    .body("[1].id", notNullValue())
+                    .body("[1].title", equalTo(placeAnnouncement2.getTitle()))
+                    .body("[1].content", equalTo(placeAnnouncement2.getContent()))
+                    .body("[1].createdAt", notNullValue());
+        }
+
+        @Test
+        void 성공_다른_플레이스_공지는_조회되지_않음() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Place place1 = PlaceFixture.create(festival);
+            placeJpaRepository.save(place1);
+
+            Place place2 = PlaceFixture.create(festival);
+            placeJpaRepository.save(place2);
+
+            PlaceAnnouncement placeAnnouncement1 = PlaceAnnouncementFixture.create(place1);
+            PlaceAnnouncement placeAnnouncement2 = PlaceAnnouncementFixture.create(place2);
+            placeAnnouncementJpaRepository.saveAll(List.of(placeAnnouncement1, placeAnnouncement2));
+
+            int expectedSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/places/{placeId}/announcements", place1.getId())
+                    .then()
+                    .statusCode(HttpStatus.OK.value())
+                    .body("$", hasSize(expectedSize));
+        }
+    }
+
+    @Nested
+    class updatePlaceAnnouncement {
+
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);
@@ -136,13 +210,14 @@ class PlaceAnnouncementControllerTest {
     @Nested
     class deleteByPlaceAnnouncementId {
 
-        @Test
-        void 성공() {
+        @ParameterizedTest
+        @EnumSource(RoleType.class)
+        void 성공(RoleType roleType) {
             // given
             Festival festival = FestivalFixture.create();
             festivalJpaRepository.save(festival);
 
-            Header authorizationHeader = jwtTestHelper.createAuthorizationHeader(festival);
+            Header authorizationHeader = jwtTestHelper.createAuthorizationHeaderWithRole(festival, roleType);
 
             Place place = PlaceFixture.create(festival);
             placeJpaRepository.save(place);

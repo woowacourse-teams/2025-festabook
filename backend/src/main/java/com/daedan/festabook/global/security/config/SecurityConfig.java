@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -19,6 +20,7 @@ import org.springframework.web.filter.CorsFilter;
 
 @Configuration
 @EnableWebSecurity
+@EnableMethodSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
 
@@ -35,24 +37,31 @@ public class SecurityConfig {
             "/announcements",
             "/places",
             "/places/*",
+            "/places/*/announcements",
             "/places/previews",
             "/places/geographies",
             "/festivals",
             "/festivals/universities",
             "/festivals/geography",
+            "/festivals/notifications/*",
+            "/festivals/lost-item-guide",
             "/lost-items",
             "/questions",
             "/lineups",
+            "/time-tags",
             "/actuator/health"
     };
 
     private static final String[] POST_WHITELIST = {
             "/devices",
             "/festivals/*/notifications",
+            "/festivals/*/notifications/*",
             "/places/*/favorites",
-            "/councils/login",
-            "/councils", // TODO: ADMIN 생성 시 삭제
-            "/festivals" // TODO: ADMIN 생성 시 삭제
+            "/councils/login"
+    };
+
+    private static final String[] PATCH_WHITELIST = {
+            "/devices/*"
     };
 
     private static final String[] DELETE_WHITELIST = {
@@ -74,8 +83,12 @@ public class SecurityConfig {
                         .requestMatchers(SWAGGER_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.GET, GET_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.POST, POST_WHITELIST).permitAll()
+                        .requestMatchers(HttpMethod.PATCH, PATCH_WHITELIST).permitAll()
                         .requestMatchers(HttpMethod.DELETE, DELETE_WHITELIST).permitAll()
-                        .anyRequest().hasAnyAuthority(RoleType.ROLE_COUNCIL.name())
+                        .anyRequest().hasAnyAuthority(
+                                RoleType.ROLE_COUNCIL.name(),
+                                RoleType.ROLE_ADMIN.name()
+                        )
                 )
                 .exceptionHandling(ex -> ex
                         .authenticationEntryPoint(customAuthenticationEntryPoint)

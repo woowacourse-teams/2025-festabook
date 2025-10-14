@@ -76,7 +76,7 @@ class AppContainer(
         FcmDataSourceImpl(prefs)
     }
 
-    private val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource by lazy {
+    val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource by lazy {
         FestivalNotificationLocalDataSourceImpl(prefs)
     }
 
@@ -111,7 +111,7 @@ class AppContainer(
     }
 
     private val lostItemDataSource: LostItemDataSource by lazy {
-        LostItemDataSourceImpl(lostItemService)
+        LostItemDataSourceImpl(lostItemService, festivalService)
     }
 
     private val lineupDataSource: LineupDataSource by lazy {
@@ -144,7 +144,7 @@ class AppContainer(
         )
     }
     val festivalRepository: FestivalRepository by lazy {
-        FestivalRepositoryImpl(festivalDataSource, lineupDataSource)
+        FestivalRepositoryImpl(festivalDataSource, festivalLocalDataSource, lineupDataSource)
     }
     val faqRepository: FAQRepository by lazy {
         FAQRepositoryImpl(faqDataSource)

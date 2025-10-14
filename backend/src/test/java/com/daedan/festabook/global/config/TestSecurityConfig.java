@@ -24,8 +24,8 @@ public class TestSecurityConfig {
                         .requestMatchers("/test/addCorsMappings/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/test/addArgumentResolvers").permitAll()
                         .requestMatchers(HttpMethod.GET, "/test/resolveArgument").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/test/business-exception-test").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/test/runtime-exception-test").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/test/exception-controller/custom-exception").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/test/exception-controller/inject-exception").permitAll()
                 );
 
         return http.build();

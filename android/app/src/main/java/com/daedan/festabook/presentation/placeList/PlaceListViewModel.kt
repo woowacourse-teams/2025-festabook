@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.presentation.common.Event
@@ -36,6 +37,12 @@ class PlaceListViewModel(
     val placeGeographies: LiveData<PlaceListUiState<List<PlaceCoordinateUiModel>>> =
         _placeGeographies
 
+    private val _timeTags = MutableLiveData<List<TimeTag>>()
+    val timeTags: LiveData<List<TimeTag>> = _timeTags
+
+    private val _selectedTimeTag = MutableLiveData<TimeTag>()
+    val selectedTimeTag: LiveData<TimeTag> = _selectedTimeTag
+
     private val _selectedPlace: MutableLiveData<SelectedPlaceUiState> = MutableLiveData()
     val selectedPlace: LiveData<SelectedPlaceUiState> = _selectedPlace
 
@@ -51,8 +58,35 @@ class PlaceListViewModel(
     private val _selectedCategories: MutableLiveData<List<PlaceCategoryUiModel>> = MutableLiveData()
     val selectedCategories: LiveData<List<PlaceCategoryUiModel>> = _selectedCategories
 
+    private val _onMapViewClick: MutableLiveData<Event<Unit>> = MutableLiveData()
+    val onMapViewClick: LiveData<Event<Unit>> = _onMapViewClick
+
     init {
         loadOrganizationGeography()
+        loadTimeTags()
+    }
+
+    private fun loadTimeTags() {
+        viewModelScope.launch {
+            placeListRepository
+                .getTimeTags()
+                .onSuccess { timeTags ->
+                    _timeTags.value = timeTags
+                }.onFailure {
+                    _timeTags.value = emptyList()
+                }
+        }
+
+//         기본 선택값
+        if (!timeTags.value.isNullOrEmpty()) {
+            _selectedTimeTag.value = _timeTags.value?.first()
+        } else {
+            _selectedTimeTag.value = TimeTag.EMPTY
+        }
+    }
+
+    fun onDaySelected(item: TimeTag) {
+        _selectedTimeTag.value = item
     }
 
     fun selectPlace(placeId: Long) {
@@ -91,10 +125,15 @@ class PlaceListViewModel(
         _selectedCategories.value = categories
     }
 
+    fun onMapViewClick() {
+        _onMapViewClick.value = Event(Unit)
+    }
+
     private fun loadOrganizationGeography() {
         viewModelScope.launch {
             placeListRepository.getOrganizationGeography().onSuccess { organizationGeography ->
-                _initialMapSetting.value = PlaceListUiState.Success(organizationGeography.toUiModel())
+                _initialMapSetting.value =
+                    PlaceListUiState.Success(organizationGeography.toUiModel())
             }
 
             launch {

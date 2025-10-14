@@ -1,10 +1,14 @@
 package com.daedan.festabook.global.security.handler;
 
+import static net.logstash.logback.argument.StructuredArguments.kv;
+
+import com.daedan.festabook.global.logging.dto.LogType;
+import com.daedan.festabook.global.logging.dto.SecurityLog;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,22 +26,26 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception)
-            throws IOException, ServletException {
+            throws IOException {
+        try {
+            AuthenticationErrorResponse errorResponse = new AuthenticationErrorResponse(
+                    String.valueOf(HttpStatus.UNAUTHORIZED.value()),
+                    "인증이 필요합니다."
+            );
 
-        log.info("Security 인증 실패: 요청 경로={}, 메서드={}, 에러 메시지={}",
-                request.getRequestURI(),
-                request.getMethod(),
-                exception.getMessage(), exception);
-
-        AuthenticationErrorResponse errorResponse = new AuthenticationErrorResponse(
-                String.valueOf(HttpStatus.UNAUTHORIZED.value()),
-                "인증이 필요합니다."
-        );
-
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType(MediaType.APPLICATION_JSON_VALUE + ";charset=UTF-8");
-        response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
-        response.getWriter().flush();
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setContentType(MediaType.APPLICATION_JSON_VALUE);
+            response.setCharacterEncoding(StandardCharsets.UTF_8.name());
+            response.getWriter().write(objectMapper.writeValueAsString(errorResponse));
+        } finally {
+            SecurityLog securityLog = new SecurityLog(
+                    LogType.AUTHENTICATION,
+                    request.getRequestURI(),
+                    request.getMethod(),
+                    exception.getMessage()
+            );
+            log.info("", kv("event", securityLog));
+        }
     }
 
     private record AuthenticationErrorResponse(

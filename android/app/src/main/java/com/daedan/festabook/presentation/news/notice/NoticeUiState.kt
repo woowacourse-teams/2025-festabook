@@ -9,6 +9,7 @@ sealed interface NoticeUiState {
 
     data class Success(
         val notices: List<NoticeUiModel>,
+        val noticeIdToExpandPosition: Int = -1,
     ) : NoticeUiState
 
     data class Error(

@@ -12,6 +12,7 @@ import jakarta.transaction.Transactional;
 import java.util.Set;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 @Component
@@ -23,19 +24,66 @@ public class JwtTestHelper {
     private final CouncilJpaRepository councilRepository;
     private final FestivalJpaRepository festivalRepository;
     private final JwtProvider jwtProvider;
+    private final PasswordEncoder encoder;
 
     @Transactional
-    public Header createAuthorizationHeader(Festival festival) {
+    public Header createCouncilAuthorizationHeader(Festival festival) {
+        UUID uuid = UUID.randomUUID();
+        String randomUsername = "test_" + uuid;
+        String randomPassword = "password_" + uuid;
+        Set<RoleType> roleTypes = Set.of(RoleType.ROLE_COUNCIL);
+
+        festivalRepository.save(festival);
+        Council council = new Council(festival, randomUsername, encoder.encode(randomPassword));
+        council.updateRole(Set.of(RoleType.ROLE_COUNCIL));
+        councilRepository.save(council);
+
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), roleTypes);
+        return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
+    }
+
+    @Transactional
+    public Header createAdminAuthorizationHeader(Festival festival) {
+        UUID uuid = UUID.randomUUID();
+        String randomUsername = "test_" + uuid;
+        String randomPassword = "password_" + uuid;
+        Set<RoleType> roleTypes = Set.of(RoleType.ROLE_ADMIN);
+
+        festivalRepository.save(festival);
+        Council council = new Council(festival, randomUsername, encoder.encode(randomPassword));
+        council.updateRole(Set.of(RoleType.ROLE_ADMIN));
+        councilRepository.save(council);
+
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), roleTypes);
+        return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
+    }
+
+    @Transactional
+    public Header createAuthorizationHeaderWithRole(Festival festival, RoleType roleType) {
         UUID uuid = UUID.randomUUID();
         String randomUsername = "test_" + uuid;
         String randomPassword = "password_" + uuid;
 
         festivalRepository.save(festival);
-        Council council = new Council(festival, randomUsername, randomPassword);
-        council.updateRole(Set.of(RoleType.ROLE_COUNCIL));
+        Council council = new Council(festival, randomUsername, encoder.encode(randomPassword));
+        council.updateRole(Set.of(roleType));
         councilRepository.save(council);
 
-        String token = jwtProvider.createToken(randomUsername, festival.getId());
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), Set.of(roleType));
+        return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
+    }
+
+    @Transactional
+    public Header createAuthorizationHeaderWithRoleAndPassword(Festival festival, RoleType roleType, String password) {
+        UUID uuid = UUID.randomUUID();
+        String randomUsername = "test_" + uuid;
+
+        festivalRepository.save(festival);
+        Council council = new Council(festival, randomUsername, encoder.encode(password));
+        council.updateRole(Set.of(roleType));
+        councilRepository.save(council);
+
+        String token = jwtProvider.createToken(randomUsername, festival.getId(), Set.of(roleType));
         return new Header(HttpHeaders.AUTHORIZATION, BEARER_PREFIX + token);
     }
 }

@@ -66,9 +66,8 @@ android {
         applicationId = "com.daedan.festabook"
         minSdk = 28
         targetSdk = 36
-        versionCode = 1
-        versionName = "1.0"
-
+        versionCode = 10_200
+        versionName = "v 1.2.0"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField(
@@ -169,6 +168,13 @@ dependencies {
     implementation(libs.circleindicator)
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.app.update.ktx)
+    implementation(libs.androidx.activity.compose)
+    implementation(platform(libs.androidx.compose.bom))
+    implementation(libs.androidx.ui)
+    implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.ui.tooling.preview)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     testImplementation(libs.mockk)
     testImplementation(libs.androidx.core.testing)

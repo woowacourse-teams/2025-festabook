@@ -1,0 +1,2 @@
+ALTER TABLE lineup
+    MODIFY COLUMN image_url VARCHAR(255) NULL;

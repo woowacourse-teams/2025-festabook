@@ -21,6 +21,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 
 @Entity
 @Getter
@@ -32,15 +33,16 @@ public class Festival extends BaseEntity {
     private static final int MAX_NAME_LENGTH = 50;
     private static final int MIN_ZOOM = 0;
     private static final int MAX_ZOOM = 30;
+    private static final int MAX_LOST_ITEM_GUIDE_LENGTH = 1000;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = MAX_NAME_LENGTH)
     private String universityName;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = MAX_NAME_LENGTH)
     private String festivalName;
 
     @Column(nullable = false)
@@ -48,6 +50,9 @@ public class Festival extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDate endDate;
+
+    @Column(nullable = false)
+    private boolean userVisible;
 
     @Column(nullable = false)
     private Integer zoom;
@@ -63,45 +68,73 @@ public class Festival extends BaseEntity {
     )
     private List<Coordinate> polygonHoleBoundary = new ArrayList<>();
 
+    @Column(nullable = false, length = MAX_LOST_ITEM_GUIDE_LENGTH)
+    private String lostItemGuide;
+
     public Festival(
             String universityName,
             String festivalName,
             LocalDate startDate,
             LocalDate endDate,
+            boolean userVisible,
             Integer zoom,
             Coordinate centerCoordinate,
-            List<Coordinate> polygonHoleBoundary
+            List<Coordinate> polygonHoleBoundary,
+            String lostItemGuide
     ) {
         validateName(universityName);
+        validateName(festivalName);
+        validateDates(startDate, endDate);
         validateZoom(zoom);
         validateCenterCoordinate(centerCoordinate);
         validatePolygonHoleBoundary(polygonHoleBoundary);
+        validateLostItemGuide(lostItemGuide);
 
         this.universityName = universityName;
         this.festivalName = festivalName;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.userVisible = userVisible;
         this.zoom = zoom;
         this.centerCoordinate = centerCoordinate;
         this.polygonHoleBoundary = polygonHoleBoundary;
+        this.lostItemGuide = lostItemGuide;
     }
 
-    public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate) {
-        // TODO: 검증 추가
+    public void updateFestival(String festivalName, LocalDate startDate, LocalDate endDate, boolean userVisible) {
+        validateName(festivalName);
+        validateDates(startDate, endDate);
+
         this.festivalName = festivalName;
         this.startDate = startDate;
         this.endDate = endDate;
+        this.userVisible = userVisible;
+    }
+
+    public void updateFestival(String lostItemGuide) {
+        validateLostItemGuide(lostItemGuide);
+
+        this.lostItemGuide = lostItemGuide;
     }
 
     private void validateName(String name) {
-        if (name == null || name.trim().isEmpty()) {
-            throw new BusinessException("축제 이름은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        if (!StringUtils.hasText(name)) {
+            throw new BusinessException("이름은 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
         if (name.length() > MAX_NAME_LENGTH) {
             throw new BusinessException(
-                    String.format("축제 이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH),
+                    String.format("이름은 %d자를 초과할 수 없습니다.", MAX_NAME_LENGTH),
                     HttpStatus.BAD_REQUEST
             );
+        }
+    }
+
+    private void validateDates(LocalDate startDate, LocalDate endDate) {
+        if (startDate == null || endDate == null) {
+            throw new BusinessException("시작일과 종료일은 null일 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        if (endDate.isBefore(startDate)) {
+            throw new BusinessException("종료일은 시작일보다 이전일 수 없습니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -126,6 +159,18 @@ public class Festival extends BaseEntity {
     private void validatePolygonHoleBoundary(List<Coordinate> polygonHoleBoundary) {
         if (polygonHoleBoundary == null || polygonHoleBoundary.isEmpty()) {
             throw new BusinessException("폴리곤 내부 구멍 좌표 리스트는 비어있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    private void validateLostItemGuide(String lostItemGuide) {
+        if (!StringUtils.hasText(lostItemGuide)) {
+            throw new BusinessException("분실물 가이드는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
+        }
+        if (lostItemGuide.length() > MAX_LOST_ITEM_GUIDE_LENGTH) {
+            throw new BusinessException(
+                    String.format("분실물 가이드는 %d자를 초과할 수 없습니다.", MAX_LOST_ITEM_GUIDE_LENGTH),
+                    HttpStatus.BAD_REQUEST
+            );
         }
     }
 }

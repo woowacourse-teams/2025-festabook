@@ -106,6 +106,29 @@ export const festivalAPI = {
     }
   },
 
+  // 분실물 가이드 조회
+  getLostItemGuide: async () => {
+    try {
+      const response = await api.get('/festivals/lost-item-guide');
+      // 응답 구조 문서 상과 실제는 다를 수 있으나, 여기서는 lostItemGuide만 추출하도록 가정
+      return response.data?.lostItemGuide ?? '';
+    } catch (error) {
+      console.error('Failed to fetch lost item guide:', error);
+      throw new Error('분실물 가이드 조회에 실패했습니다.');
+    }
+  },
+
+  // 분실물 가이드 수정
+  updateLostItemGuide: async (lostItemGuide) => {
+    try {
+      const response = await api.patch('/festivals/lost-item-guide', { lostItemGuide });
+      return response.data?.lostItemGuide ?? lostItemGuide;
+    } catch (error) {
+      console.error('Failed to update lost item guide:', error);
+      throw new Error('분실물 가이드 수정에 실패했습니다.');
+    }
+  },
+
   // 축제 정보 수정
   updateFestivalInfo: async (festivalInfo) => {
     try {
@@ -202,6 +225,23 @@ export const announcementAPI = {
       console.error('Failed to toggle announcement pin:', error);
       throw new Error('공지사항 고정 상태 변경에 실패했습니다.');
     }
+  },
+
+  // 공지사항 알림 전송
+  sendNotification: async (announcementId) => {
+    try {
+      const response = await api.post(`/announcements/${announcementId}/notifications`);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to send notification:', error);
+      if (error.response?.status === 429) {
+        throw new Error('알림 전송 요청이 너무 많습니다. 잠시 후 다시 시도해주세요.');
+      } else if (error.response?.status === 404) {
+        throw new Error('공지사항을 찾을 수 없습니다.');
+      } else {
+        throw new Error('알림 전송에 실패했습니다.');
+      }
+    }
   }
 };
 
@@ -240,14 +280,25 @@ export const placeAPI = {
     }
   },
 
-  // 플레이스 수정
-  updatePlace: async (placeId, placeData) => {
+  // 메인 플레이스 수정
+  updateMainPlace: async (placeId, placeData) => {
     try {
-      const response = await api.patch(`/places/${placeId}`, placeData);
+      const response = await api.patch(`/places/main/${placeId}`, placeData);
       return response.data;
     } catch (error) {
-      console.error('Failed to update place:', error);
-      throw new Error('플레이스 수정에 실패했습니다.');
+      console.error('Failed to update main place:', error);
+      throw new Error('메인 플레이스 수정에 실패했습니다.');
+    }
+  },
+
+  // 기타 플레이스 수정
+  updateEtcPlace: async (placeId, placeData) => {
+    try {
+      const response = await api.patch(`/places/etc/${placeId}`, placeData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update etc place:', error);
+      throw new Error('기타 플레이스 수정에 실패했습니다.');
     }
   },
 
@@ -302,49 +353,6 @@ export const placeAPI = {
     }
   },
 
-  // 플레이스 공지사항 관련 API
-  // 특정 플레이스의 모든 공지사항 조회
-  getPlaceAnnouncements: async (placeId) => {
-    try {
-      const response = await api.get(`/places/${placeId}/announcements`);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to fetch place announcements:', error);
-      throw new Error('플레이스 공지사항 조회에 실패했습니다.');
-    }
-  },
-
-  // 플레이스 공지사항 생성
-  createPlaceAnnouncement: async (placeId, announcementData) => {
-    try {
-      const response = await api.post(`/places/${placeId}/announcements`, announcementData);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to create place announcement:', error);
-      throw new Error('플레이스 공지사항 생성에 실패했습니다.');
-    }
-  },
-
-  // 플레이스 공지사항 수정
-  updatePlaceAnnouncement: async (placeAnnouncementId, announcementData) => {
-    try {
-      const response = await api.patch(`/places/announcements/${placeAnnouncementId}`, announcementData);
-      return response.data;
-    } catch (error) {
-      console.error('Failed to update place announcement:', error);
-      throw new Error('플레이스 공지사항 수정에 실패했습니다.');
-    }
-  },
-
-  // 플레이스 공지사항 삭제
-  deletePlaceAnnouncement: async (placeAnnouncementId) => {
-    try {
-      await api.delete(`/places/announcements/${placeAnnouncementId}`);
-    } catch (error) {
-      console.error('Failed to delete place announcement:', error);
-      throw new Error('플레이스 공지사항 삭제에 실패했습니다.');
-    }
-  }
 };
 
 // 축제 날짜 관련 API
@@ -622,6 +630,84 @@ export const lineupAPI = {
     } catch (error) {
       console.error('Failed to delete lineup:', error);
       throw new Error('라인업 삭제에 실패했습니다.');
+    }
+  }
+};
+
+// 시간 태그 관련 API
+export const timeTagAPI = {
+  // 시간 태그 목록 조회
+  getTimeTags: async () => {
+    try {
+      const response = await api.get('/time-tags');
+      return response.data;
+    } catch (error) {
+      console.error('Failed to fetch time tags:', error);
+      throw new Error('시간 태그 조회에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 추가
+  createTimeTag: async (timeTagData) => {
+    try {
+      const response = await api.post('/time-tags', timeTagData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to create time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
+      throw new Error('시간 태그 추가에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 수정
+  updateTimeTag: async (timeTagId, timeTagData) => {
+    try {
+      const response = await api.patch(`/time-tags/${timeTagId}`, timeTagData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to update time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
+      throw new Error('시간 태그 수정에 실패했습니다.');
+    }
+  },
+
+  // 시간 태그 삭제
+  deleteTimeTag: async (timeTagId) => {
+    try {
+      await api.delete(`/time-tags/${timeTagId}`);
+    } catch (error) {
+      console.error('Failed to delete time tag:', error);
+      
+      // 백엔드에서 온 구체적인 오류 메시지가 있으면 사용
+      if (error.response?.status === 400 && error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      
+      throw new Error('시간 태그 삭제에 실패했습니다.');
+    }
+  }
+};
+
+// 학생회 관련 API
+export const councilAPI = {
+  // 학생회 비밀번호 변경
+  changePassword: async (passwordData) => {
+    try {
+      const response = await api.patch('/councils/password', passwordData);
+      return response.data;
+    } catch (error) {
+      console.error('Failed to change password:', error);
+      throw new Error('비밀번호 변경에 실패했습니다.');
     }
   }
 };

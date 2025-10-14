@@ -3,43 +3,35 @@ package com.daedan.festabook.presentation.news.lost.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import coil3.request.transformations
-import coil3.transform.RoundedCornersTransformation
 import com.daedan.festabook.databinding.ItemLostBinding
 import com.daedan.festabook.presentation.common.loadImage
-import com.daedan.festabook.presentation.common.toPx
-import com.daedan.festabook.presentation.news.lost.model.LostItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import timber.log.Timber
 
 class LostItemViewHolder private constructor(
     private val binding: ItemLostBinding,
     private val onNewsClickListener: OnNewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
-    private var lostItem: LostItemUiModel? = null
+    private var lostItem: LostUiModel.Item? = null
 
     init {
         binding.root.setOnClickListener {
             lostItem
                 ?.let {
                     onNewsClickListener.onLostItemClick(it)
-                }
+                } ?: run {
+                Timber.w("${this::class.java.simpleName} LostItem이 null입니다.")
+            }
         }
     }
 
-    fun bind(item: LostItemUiModel) {
+    fun bind(item: LostUiModel.Item) {
         lostItem = item
-        binding.ivLostItem.loadImage(item.imageUrl) {
-            transformations(
-                RoundedCornersTransformation(
-                    LOST_ITEM_IMAGE_RADIUS.toPx(binding.ivLostItem.context).toFloat(),
-                ),
-            )
-        }
+        binding.ivLostItem.loadImage(item.imageUrl)
     }
 
     companion object {
-        private const val LOST_ITEM_IMAGE_RADIUS: Int = 16
-
         fun from(
             parent: ViewGroup,
             onNewsClickListener: OnNewsClickListener,

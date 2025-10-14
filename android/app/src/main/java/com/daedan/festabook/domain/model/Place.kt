@@ -7,4 +7,5 @@ data class Place(
     val title: String?,
     val description: String?,
     val location: String?,
+    val timeTags: List<TimeTag>,
 )

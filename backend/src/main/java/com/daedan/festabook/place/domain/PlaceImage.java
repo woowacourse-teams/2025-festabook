@@ -54,6 +54,10 @@ public class PlaceImage extends BaseEntity implements Comparable<PlaceImage> {
         return this.place.isFestivalIdEqualTo(festivalId);
     }
 
+    public PlaceImage cloneByPlace(Place place) {
+        return new PlaceImage(place, imageUrl, sequence);
+    }
+
     @Override
     public int compareTo(PlaceImage otherPlaceImage) {
         return sequence.compareTo(otherPlaceImage.sequence);

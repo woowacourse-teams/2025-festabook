@@ -42,6 +42,12 @@ public class Device extends BaseEntity {
         this.fcmToken = fcmToken;
     }
 
+    public void updateDevice(String fcmToken) {
+        validateFcmToken(fcmToken);
+
+        this.fcmToken = fcmToken;
+    }
+
     private void validateDeviceIdentifier(String deviceIdentifier) {
         if (deviceIdentifier == null || deviceIdentifier.trim().isEmpty()) {
             throw new BusinessException("디바이스 식별자는 비어 있을 수 없습니다.", HttpStatus.BAD_REQUEST);
