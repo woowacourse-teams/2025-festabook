@@ -58,11 +58,10 @@ public class InMemoryLockStorage implements LockStorage {
         validateEmptyKey(key);
         Lock lock = locks.get(key);
         validateNotExistsLock(lock);
+        long currentThreadId = Thread.currentThread().getId();
+        validateLockOwner(lock, currentThreadId);
 
         synchronized (lock) {
-            long currentThreadId = Thread.currentThread().getId();
-            validateLockOwner(lock, currentThreadId);
-
             lock.cancelIfExistsLeaseTimeOutSchedule();
             locks.remove(key, lock);
             lock.notifyAll();
