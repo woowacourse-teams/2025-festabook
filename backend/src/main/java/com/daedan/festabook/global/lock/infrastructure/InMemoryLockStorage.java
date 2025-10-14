@@ -40,12 +40,13 @@ public class InMemoryLockStorage implements LockStorage {
             }
 
             synchronized (existing) {
-                long nanosLeft = deadline - System.nanoTime();
-                validateLockTimeOut(nanosLeft);
+                validateLockTimeOut(deadline);
                 try {
+                    long nanosLeft = deadline - System.nanoTime();
                     long millisPart = calculateMillisPart(nanosLeft);
                     int nanosPart = calculateNanosPart(nanosLeft, millisPart);
                     existing.wait(millisPart, nanosPart);
+                    validateLockTimeOut(deadline);
                 } catch (InterruptedException ignore) {
                 }
             }
@@ -103,8 +104,8 @@ public class InMemoryLockStorage implements LockStorage {
         }
     }
 
-    private void validateLockTimeOut(long nanosLeft) {
-        if (nanosLeft <= 0) {
+    private void validateLockTimeOut(long deadline) {
+        if (deadline - System.nanoTime() <= 0) {
             throw new BusinessException("락 획득 시간 초과", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
