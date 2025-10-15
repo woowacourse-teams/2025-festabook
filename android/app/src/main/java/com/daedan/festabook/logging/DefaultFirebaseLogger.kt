@@ -8,13 +8,14 @@ import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataS
 import com.daedan.festabook.logging.model.BaseLogData
 import com.daedan.festabook.logging.model.LogData
 import com.google.firebase.analytics.FirebaseAnalytics
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 
-class DefaultFirebaseLogger(
+class DefaultFirebaseLogger @Inject constructor(
     private val firebaseAnalytics: FirebaseAnalytics,
     private val festivalLocalDataSource: FestivalLocalDataSource,
     private val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource,
@@ -64,17 +65,10 @@ class DefaultFirebaseLogger(
 
         fun getInstance(context: Context): DefaultFirebaseLogger =
             INSTANCE ?: synchronized(this) {
-                val festivalLocalDataSource =
-                    (context.applicationContext as FestaBookApp).festaBookGraph.festivalLocalDataSource
-                val festivalNotificationLocalDataSource =
-                    (context.applicationContext as FestaBookApp)
-                        .festaBookGraph.festivalNotificationLocalDataSource
-                val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
-                INSTANCE ?: DefaultFirebaseLogger(
-                    firebaseAnalytics,
-                    festivalLocalDataSource,
-                    festivalNotificationLocalDataSource,
-                ).also { INSTANCE = it }
+                INSTANCE
+                    ?: (context.applicationContext as FestaBookApp)
+                        .festaBookGraph.defaultFirebaseLogger
+                        .also { INSTANCE = it }
             }
     }
 }
