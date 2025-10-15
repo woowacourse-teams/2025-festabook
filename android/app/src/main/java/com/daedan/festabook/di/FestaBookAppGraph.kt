@@ -3,10 +3,8 @@ package com.daedan.festabook.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
-import com.daedan.festabook.data.datasource.local.FcmDataSource
-import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
-import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource
+import com.daedan.festabook.logging.DefaultFirebaseLogger
+import com.google.firebase.analytics.FirebaseAnalytics
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
@@ -26,13 +24,17 @@ interface FestaBookAppGraph {
     }
 
     // dataSource
-    val deviceLocalDataSource: DeviceLocalDataSource
-    val festivalLocalDataSource: FestivalLocalDataSource
-    val fcmDataSource: FcmDataSource
-    val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource
+    val localDataSourceGraph: LocalDataSourceGraph
+    val remoteDataSourceGraph: RemoteDataSourceGraph
+
+    // logger
+    val defaultFirebaseLogger: DefaultFirebaseLogger
 
     // viewModelGraphFactory
     val viewModelGraphFactory: ViewModelGraph.Factory
+
+    @Provides
+    fun providesFirebaseAnalytics(application: Application): FirebaseAnalytics = FirebaseAnalytics.getInstance(application)
 
     @Provides
     fun provideSharedPreferences(application: Application): SharedPreferences =

@@ -19,15 +19,15 @@ interface ViewModelGraph {
     @Multibinds(allowEmpty = true)
     val viewModelProviders: Map<KClass<out ViewModel>, Provider<ViewModel>>
 
+    val metroViewModelFactory: MetroViewModelFactory
+    val scheduleViewModelFactory: ScheduleViewModel.Factory
+    val placeDetailViewModelFactory: PlaceDetailViewModel.Factory
+
     @Provides
     fun provideApplication(creationExtras: CreationExtras): Application = creationExtras[APPLICATION_KEY]!!
 
     @Provides
     fun provideSavedStateHandle(creationExtras: CreationExtras): SavedStateHandle = creationExtras.createSavedStateHandle()
-
-    val metroViewModelFactory: MetroViewModelFactory
-    val scheduleViewModelFactory: ScheduleViewModel.Factory
-    val placeDetailViewModelFactory: PlaceDetailViewModel.Factory
 
     @GraphExtension.Factory
     fun interface Factory {

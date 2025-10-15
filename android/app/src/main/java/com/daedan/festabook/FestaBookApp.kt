@@ -81,9 +81,12 @@ class FestaBookApp : Application() {
     }
 
     private fun setupDeviceIdentifiers() {
-        if (festaBookGraph.deviceLocalDataSource.getUuid().isNullOrEmpty()) {
+        if (festaBookGraph.localDataSourceGraph.deviceLocalDataSource
+                .getUuid()
+                .isNullOrEmpty()
+        ) {
             val uuid = UUID.randomUUID().toString()
-            festaBookGraph.deviceLocalDataSource.saveUuid(uuid)
+            festaBookGraph.localDataSourceGraph.deviceLocalDataSource.saveUuid(uuid)
             Timber.d("🆕 UUID 생성 및 저장: $uuid")
         }
 
@@ -91,7 +94,7 @@ class FestaBookApp : Application() {
             .getInstance()
             .token
             .addOnSuccessListener { token ->
-                festaBookGraph.fcmDataSource.saveFcmToken(token)
+                festaBookGraph.remoteDataSourceGraph.fcmDataSource.saveFcmToken(token)
                 Timber.d("📡 FCM 토큰 저장: $token")
             }.addOnFailureListener {
                 Timber.w(it, "❌ FCM 토큰 수신 실패")
