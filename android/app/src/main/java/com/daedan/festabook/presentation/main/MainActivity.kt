@@ -7,7 +7,6 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -18,6 +17,7 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -43,9 +43,9 @@ class MainActivity :
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val mainViewModel: MainViewModel by viewModels { MainViewModel.Factory }
-    private val homeViewModel: HomeViewModel by viewModels { HomeViewModel.Factory }
-    private val settingViewModel: SettingViewModel by viewModels { SettingViewModel.factory() }
+    private val mainViewModel: MainViewModel by metroViewModels()
+    private val homeViewModel: HomeViewModel by metroViewModels()
+    private val settingViewModel: SettingViewModel by metroViewModels()
 
     private val placeMapFragment by lazy {
         PlaceMapFragment().newInstance()

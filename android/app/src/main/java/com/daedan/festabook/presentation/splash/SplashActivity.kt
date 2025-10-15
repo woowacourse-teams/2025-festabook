@@ -4,18 +4,18 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.presentation.explore.ExploreActivity
 import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
-    private val viewModel: SplashViewModel by viewModels { SplashViewModel.FACTORY }
+    private val viewModel: SplashViewModel by metroViewModels()
     private val launcher by lazy {
         registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult(),

@@ -5,10 +5,10 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.fragment.app.commit
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -49,14 +49,16 @@ class PlaceMapFragment :
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE).apply {
             activate {
-                binding.logger.log(LocationPermissionChanged(
-                    baseLogData = binding.logger.getBaseLogData()
-                ))
+                binding.logger.log(
+                    LocationPermissionChanged(
+                        baseLogData = binding.logger.getBaseLogData(),
+                    ),
+                )
             }
         }
     }
     private var mapManager: MapManager? = null
-    private val viewModel by viewModels<PlaceListViewModel> { PlaceListViewModel.Factory }
+    private val viewModel: PlaceListViewModel by metroViewModels()
 
     private val placeListFragment by lazy {
         PlaceListFragment().newInstance()
@@ -117,8 +119,8 @@ class PlaceMapFragment :
         }
         binding.logger.log(
             PlaceFragmentEnter(
-                baseLogData = binding.logger.getBaseLogData()
-            )
+                baseLogData = binding.logger.getBaseLogData(),
+            ),
         )
     }
 
@@ -139,7 +141,8 @@ class PlaceMapFragment :
     private fun setUpObserver() {
         viewModel.timeTags.observe(viewLifecycleOwner) { timeTags ->
             // 타임태그가 없는 경우 메뉴 GONE
-            binding.layoutMapMenu.visibility = if (timeTags.isNullOrEmpty()) View.GONE else View.VISIBLE
+            binding.layoutMapMenu.visibility =
+                if (timeTags.isNullOrEmpty()) View.GONE else View.VISIBLE
 
             if (binding.spinnerSelectTimeTag.adapter == null) {
                 val adapter = TimeTagSpinnerAdapter(requireContext(), timeTags.toMutableList())
@@ -222,9 +225,9 @@ class PlaceMapFragment :
                             PlaceMarkerClick(
                                 baseLogData = binding.logger.getBaseLogData(),
                                 placeId = selectedPlace.value.place.id,
-                                timeTagName = viewModel.selectedTimeTag.value?.name?:"undefined",
-                                category = selectedPlace.value.place.category.name
-                            )
+                                timeTagName = viewModel.selectedTimeTag.value?.name ?: "undefined",
+                                category = selectedPlace.value.place.category.name,
+                            ),
                         )
                     }
 
@@ -266,8 +269,8 @@ class PlaceMapFragment :
         binding.logger.log(
             PlaceTimeTagSelected(
                 baseLogData = binding.logger.getBaseLogData(),
-                timeTagName = item.name
-            )
+                timeTagName = item.name,
+            ),
         )
     }
 

@@ -3,9 +3,9 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -24,7 +24,7 @@ class PlaceDetailPreviewFragment :
         R.layout.fragment_place_detail_preview,
     ),
     OnMenuItemReClickListener {
-    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
     private val backPressedCallback =
         object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
@@ -49,7 +49,7 @@ class PlaceDetailPreviewFragment :
     private fun setUpBackPressedCallback() {
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
-            backPressedCallback
+            backPressedCallback,
         )
     }
 
@@ -61,10 +61,10 @@ class PlaceDetailPreviewFragment :
                 binding.logger.log(
                     PlacePreviewClick(
                         baseLogData = binding.logger.getBaseLogData(),
-                        placeName = selectedPlaceState.value.place.title?:"undefined",
-                        timeTag = viewModel.selectedTimeTag.value?.name?:"undefined",
-                        category = selectedPlaceState.value.place.category.name
-                    )
+                        placeName = selectedPlaceState.value.place.title ?: "undefined",
+                        timeTag = viewModel.selectedTimeTag.value?.name ?: "undefined",
+                        category = selectedPlaceState.value.place.category.name,
+                    ),
                 )
             }
         }

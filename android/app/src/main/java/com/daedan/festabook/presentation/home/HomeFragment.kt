@@ -2,11 +2,11 @@ package com.daedan.festabook.presentation.home
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.home.ExploreClickLogData
 import com.daedan.festabook.logging.model.home.HomeViewLogData
@@ -22,7 +22,7 @@ import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 import timber.log.Timber
 
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
-    private val viewModel: HomeViewModel by viewModels({ requireActivity() }) { HomeViewModel.Factory }
+    private val viewModel: HomeViewModel by metroViewModels { requireActivity() }
 
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 

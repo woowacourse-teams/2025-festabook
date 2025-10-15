@@ -3,11 +3,10 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
-import androidx.core.view.children
-import androidx.fragment.app.viewModels
 import coil3.load
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewSecondaryBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -23,7 +22,7 @@ import com.daedan.festabook.presentation.placeList.model.getTextId
 class PlaceDetailPreviewSecondaryFragment :
     BaseFragment<FragmentPlaceDetailPreviewSecondaryBinding>(R.layout.fragment_place_detail_preview_secondary),
     OnMenuItemReClickListener {
-    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
     private val backPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
@@ -45,7 +44,10 @@ class PlaceDetailPreviewSecondaryFragment :
     }
 
     private fun setUpBackPressedCallback() {
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, backPressedCallback)
+        requireActivity().onBackPressedDispatcher.addCallback(
+            viewLifecycleOwner,
+            backPressedCallback,
+        )
     }
 
     private fun setUpObserver() {
@@ -59,10 +61,10 @@ class PlaceDetailPreviewSecondaryFragment :
                     binding.logger.log(
                         PlacePreviewClick(
                             baseLogData = binding.logger.getBaseLogData(),
-                            placeName = selectedPlace.value.place.title?:"undefined",
-                            timeTag = viewModel.selectedTimeTag.value?.name?:"undefined",
-                            category = selectedPlace.value.place.category.name
-                        )
+                            placeName = selectedPlace.value.place.title ?: "undefined",
+                            timeTag = viewModel.selectedTimeTag.value?.name ?: "undefined",
+                            category = selectedPlace.value.place.category.name,
+                        ),
                     )
                 }
 

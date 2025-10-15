@@ -6,16 +6,16 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
-import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentFaqBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.faq.component.FAQScreen
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
 class FAQFragment : BaseFragment<FragmentFaqBinding>(R.layout.fragment_faq) {
-    private val viewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
+    private val viewModel: NewsViewModel by metroViewModels { requireParentFragment() }
 
     override fun onCreateView(
         inflater: LayoutInflater,

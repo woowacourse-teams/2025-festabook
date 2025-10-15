@@ -2,9 +2,9 @@ package com.daedan.festabook.presentation.news
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNewsBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.adapter.NewsPagerAdapter
@@ -21,10 +21,8 @@ class NewsFragment :
         NewsPagerAdapter(this)
     }
 
-    private val newsViewModel: NewsViewModel by viewModels { NewsViewModel.Factory }
-    private val mainViewModel: MainViewModel by viewModels({ requireActivity() }) {
-        MainViewModel.Factory
-    }
+    private val newsViewModel: NewsViewModel by metroViewModels()
+    private val mainViewModel: MainViewModel by metroViewModels { requireActivity() }
 
     override fun onViewCreated(
         view: View,

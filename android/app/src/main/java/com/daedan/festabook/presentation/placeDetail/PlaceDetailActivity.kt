@@ -58,12 +58,12 @@ class PlaceDetailActivity :
             if (placeDetailObject != null) {
                 ViewModelProvider(
                     this,
-                    PlaceDetailViewModel.factory(placeDetailObject),
+                    PlaceDetailViewModel.factory(placeDetail = placeDetailObject),
                 )[PlaceDetailViewModel::class.java]
             } else if (placeUiObject != null) {
                 ViewModelProvider(
                     this,
-                    PlaceDetailViewModel.factory(placeUiObject),
+                    PlaceDetailViewModel.factory(place = placeUiObject),
                 )[PlaceDetailViewModel::class.java]
             } else {
                 finish()
@@ -138,10 +138,10 @@ class PlaceDetailActivity :
                         PlaceDetailImageSwipe(
                             baseLogData = binding.logger.getBaseLogData(),
                             startIndex = position,
-                        )
+                        ),
                     )
                 }
-            }
+            },
         )
         // 임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다
 //        if (placeDetail.notices.isEmpty()) {

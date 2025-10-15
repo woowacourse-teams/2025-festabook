@@ -2,11 +2,11 @@ package com.daedan.festabook.presentation.news.notice
 
 import android.os.Bundle
 import android.view.View
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNoticeBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.main.MainViewModel
@@ -16,8 +16,8 @@ import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import timber.log.Timber
 
 class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_notice) {
-    private val newsViewModel: NewsViewModel by viewModels({ requireParentFragment() }) { NewsViewModel.Factory }
-    private val mainViewModel: MainViewModel by viewModels({ requireActivity() }) { MainViewModel.Factory }
+    private val newsViewModel: NewsViewModel by metroViewModels { requireParentFragment() }
+    private val mainViewModel: MainViewModel by metroViewModels { requireActivity() }
 
     private val noticeAdapter: NoticeAdapter by lazy {
         NoticeAdapter(requireParentFragment() as OnNewsClickListener)

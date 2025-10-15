@@ -7,13 +7,13 @@ import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
+import com.daedan.festabook.di.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.explore.ExploreSearchResultLogData
 import com.daedan.festabook.logging.model.explore.ExploreSelectUniversityLogData
@@ -28,7 +28,7 @@ class ExploreActivity :
     AppCompatActivity(),
     OnUniversityClickListener {
     private val binding by lazy { ActivityExploreBinding.inflate(layoutInflater) }
-    private val viewModel by viewModels<ExploreViewModel> { ExploreViewModel.Factory }
+    private val viewModel: ExploreViewModel by metroViewModels()
     private val searchResultAdapter by lazy { SearchResultAdapter(this) }
 
     override fun onUniversityClick(university: SearchResultUiModel) {
