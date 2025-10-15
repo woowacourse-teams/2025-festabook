@@ -10,16 +10,23 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.ScheduleRepository
-import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
 import com.daedan.festabook.presentation.schedule.model.toUiModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class ScheduleViewModel(
+class ScheduleViewModel @Inject constructor(
     private val scheduleRepository: ScheduleRepository,
-    private val dateId: Long,
+    @Assisted private val dateId: Long,
 ) : ViewModel() {
+    @AssistedFactory
+    interface Factory {
+        fun create(dateId: Long): ScheduleViewModel
+    }
+
     private val _scheduleEventsUiState: MutableLiveData<ScheduleEventsUiState> =
         MutableLiveData<ScheduleEventsUiState>()
     val scheduleEventsUiState: LiveData<ScheduleEventsUiState> get() = _scheduleEventsUiState
@@ -87,10 +94,10 @@ class ScheduleViewModel(
         fun factory(dateId: Long = INVALID_ID): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
-                    val scheduleRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.scheduleRepository
-
-                    ScheduleViewModel(scheduleRepository, dateId)
+                    (this[APPLICATION_KEY] as FestaBookApp)
+                        .festaBookGraph
+                        .scheduleViewModelFactory
+                        .create(dateId)
                 }
             }
     }

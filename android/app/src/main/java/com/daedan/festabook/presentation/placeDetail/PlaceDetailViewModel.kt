@@ -14,13 +14,24 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-class PlaceDetailViewModel(
+class PlaceDetailViewModel @Inject constructor(
     private val placeDetailRepository: PlaceDetailRepository,
-    private val place: PlaceUiModel? = null,
-    private val receivedPlaceDetail: PlaceDetailUiModel? = null,
+    @Assisted private val place: PlaceUiModel?,
+    @Assisted private val receivedPlaceDetail: PlaceDetailUiModel?,
 ) : ViewModel() {
+    @AssistedFactory
+    interface PlaceFactory {
+        fun create(
+            place: PlaceUiModel?,
+            receivedPlaceDetail: PlaceDetailUiModel?,
+        ): PlaceDetailViewModel
+    }
+
     private val _placeDetail =
         MutableLiveData<PlaceDetailUiState>(
             PlaceDetailUiState.Loading,
@@ -73,18 +84,25 @@ class PlaceDetailViewModel(
         fun factory(place: PlaceUiModel) =
             viewModelFactory {
                 initializer {
-                    val placeDetailRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
-                    PlaceDetailViewModel(placeDetailRepository, place = place)
+                    val appGraph = (this[APPLICATION_KEY] as FestaBookApp).festaBookGraph
+
+                    appGraph
+                        .placeDetailViewModelPlaceFactory
+                        .create(
+                            place = place,
+                            receivedPlaceDetail = null,
+                        )
                 }
             }
 
         fun factory(placeDetail: PlaceDetailUiModel) =
             viewModelFactory {
                 initializer {
-                    val placeDetailRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
-                    PlaceDetailViewModel(placeDetailRepository, receivedPlaceDetail = placeDetail)
+                    val appGraph = (this[APPLICATION_KEY] as FestaBookApp).festaBookGraph
+
+                    appGraph
+                        .placeDetailViewModelPlaceFactory
+                        .create(place = null, receivedPlaceDetail = placeDetail)
                 }
             }
     }

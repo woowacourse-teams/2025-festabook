@@ -6,12 +6,9 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.di.ViewModelKey
+import com.daedan.festabook.di.ViewModelScope
 import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
@@ -27,9 +24,13 @@ import com.daedan.festabook.presentation.news.lost.model.toLostItemUiModel
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-class NewsViewModel(
+@ContributesIntoMap(ViewModelScope::class)
+@ViewModelKey(NewsViewModel::class)
+class NewsViewModel @Inject constructor(
     private val noticeRepository: NoticeRepository,
     private val faqRepository: FAQRepository,
     private val lostItemRepository: LostItemRepository,
@@ -184,20 +185,6 @@ class NewsViewModel(
             when (currentState) {
                 is LostUiState.Success -> currentState.copy(lostItems = onUpdate(currentState.lostItems))
                 else -> currentState
-            }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val festaBookApp = this[APPLICATION_KEY] as FestaBookApp
-                    val noticeRepository =
-                        festaBookApp.appContainer.noticeRepository
-                    val faqRepository = festaBookApp.appContainer.faqRepository
-                    val lostItemRepository = festaBookApp.appContainer.lostItemRepository
-                    NewsViewModel(noticeRepository, faqRepository, lostItemRepository)
-                }
             }
     }
 }
