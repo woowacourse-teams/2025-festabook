@@ -3,11 +3,7 @@ package com.daedan.festabook.presentation.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.di.ViewModelKey
 import com.daedan.festabook.di.ViewModelScope
 import com.daedan.festabook.domain.repository.FestivalRepository
@@ -69,16 +65,5 @@ class HomeViewModel @Inject constructor(
                     _lineupUiState.value = LineupUiState.Error(it)
                 }
         }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val graph =
-                        (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as FestaBookApp).festaBookGraph
-                    HomeViewModel(graph.festivalRepository)
-                }
-            }
     }
 }
