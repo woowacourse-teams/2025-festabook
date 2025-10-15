@@ -33,50 +33,46 @@ public class LockAspect {
         Method method = signature.getMethod();
         Lockable lockable = method.getAnnotation(Lockable.class);
 
-        String keyPrefix = createKeyPrefix(lockable, signature);
-        String parsedKey = keyPrefix + parseSpel(
-                signature.getParameterNames(),
-                joinPoint.getArgs(),
-                lockable.spelKey()
-        );
+        String key = buildKey(joinPoint, lockable, signature);
         boolean isLockAcquired = false;
         try {
             lockStorage.tryLock(
-                    parsedKey,
+                    key,
                     lockable.waitTime(),
                     lockable.leaseTime(),
                     lockable.timeUnit()
             );
             isLockAcquired = true;
-
             return joinPoint.proceed();
         } finally {
             if (isLockAcquired) {
-                lockStorage.unlock(parsedKey);
+                lockStorage.unlock(key);
             }
         }
     }
 
-    public String parseSpel(String[] parameterNames, Object[] args, String key) {
+    private String buildKey(ProceedingJoinPoint joinPoint, Lockable lockable, MethodSignature signature) {
+        String key = parseSpel(signature.getParameterNames(), joinPoint.getArgs(), lockable.spelKey());
+        if (lockable.useMethodScopeLock()) {
+            String keyPrefix = createMethodScopeKeyPrefix(signature);
+            return keyPrefix + key;
+        }
+        return key;
+    }
+
+    private String parseSpel(String[] parameterNames, Object[] args, String key) {
         ExpressionParser parser = new SpelExpressionParser();
         StandardEvaluationContext context = new StandardEvaluationContext();
-
         for (int i = 0; i < parameterNames.length; i++) {
             context.setVariable(parameterNames[i], args[i]);
         }
-
         return parser.parseExpression(key).getValue(context, String.class);
     }
 
-    public String createKeyPrefix(Lockable lockable, MethodSignature signature) {
-        if (lockable.useMethodScopeLock()) {
-            String className = signature.getDeclaringType().getSimpleName();
-            String methodName = signature.getName();
-
-            return String.format(DEFAULT_KEY_PREFIX_FORMAT, className, methodName);
-        }
-
-        return "";
+    private String createMethodScopeKeyPrefix(MethodSignature signature) {
+        String className = signature.getDeclaringType().getSimpleName();
+        String methodName = signature.getName();
+        return String.format(DEFAULT_KEY_PREFIX_FORMAT, className, methodName);
     }
 }
 
