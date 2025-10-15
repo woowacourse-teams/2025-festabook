@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
+import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provider
