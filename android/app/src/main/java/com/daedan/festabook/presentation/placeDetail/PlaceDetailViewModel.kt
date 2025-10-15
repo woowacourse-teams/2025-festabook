@@ -25,7 +25,7 @@ class PlaceDetailViewModel @Inject constructor(
     @Assisted private val receivedPlaceDetail: PlaceDetailUiModel?,
 ) : ViewModel() {
     @AssistedFactory
-    interface PlaceFactory {
+    interface Factory {
         fun create(
             place: PlaceUiModel?,
             receivedPlaceDetail: PlaceDetailUiModel?,
@@ -87,7 +87,9 @@ class PlaceDetailViewModel @Inject constructor(
                     val appGraph = (this[APPLICATION_KEY] as FestaBookApp).festaBookGraph
 
                     appGraph
-                        .placeDetailViewModelPlaceFactory
+                        .viewModelGraphFactory
+                        .createViewModelGraph(this)
+                        .placeDetailViewModelFactory
                         .create(
                             place = place,
                             receivedPlaceDetail = null,
@@ -101,7 +103,9 @@ class PlaceDetailViewModel @Inject constructor(
                     val appGraph = (this[APPLICATION_KEY] as FestaBookApp).festaBookGraph
 
                     appGraph
-                        .placeDetailViewModelPlaceFactory
+                        .viewModelGraphFactory
+                        .createViewModelGraph(this)
+                        .placeDetailViewModelFactory
                         .create(place = null, receivedPlaceDetail = placeDetail)
                 }
             }

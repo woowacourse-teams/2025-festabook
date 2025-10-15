@@ -6,7 +6,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.createSavedStateHandle
 import androidx.lifecycle.viewmodel.CreationExtras
-import dev.zacsweers.metro.BindingContainer
+import com.daedan.festabook.presentation.placeDetail.PlaceDetailViewModel
+import com.daedan.festabook.presentation.schedule.ScheduleViewModel
 import dev.zacsweers.metro.GraphExtension
 import dev.zacsweers.metro.Multibinds
 import dev.zacsweers.metro.Provider
@@ -23,6 +24,10 @@ interface ViewModelGraph {
 
     @Provides
     fun provideSavedStateHandle(creationExtras: CreationExtras): SavedStateHandle = creationExtras.createSavedStateHandle()
+
+    val metroViewModelFactory: MetroViewModelFactory
+    val scheduleViewModelFactory: ScheduleViewModel.Factory
+    val placeDetailViewModelFactory: PlaceDetailViewModel.Factory
 
     @GraphExtension.Factory
     fun interface Factory {

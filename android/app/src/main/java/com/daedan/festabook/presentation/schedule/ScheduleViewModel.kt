@@ -96,6 +96,8 @@ class ScheduleViewModel @Inject constructor(
                 initializer {
                     (this[APPLICATION_KEY] as FestaBookApp)
                         .festaBookGraph
+                        .viewModelGraphFactory
+                        .createViewModelGraph(this)
                         .scheduleViewModelFactory
                         .create(dateId)
                 }

@@ -15,16 +15,14 @@ import dev.zacsweers.metro.Inject
 
 @ContributesBinding(AppScope::class)
 class MetroViewModelFactory @Inject constructor(
-    private val viewModelGraphFactory: ViewModelGraph.Factory,
+    private val viewModelGraphFactory: ViewModelGraph,
 ) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(
         modelClass: Class<T>,
         extras: CreationExtras,
     ): T {
-        val viewModelGraph = viewModelGraphFactory.createViewModelGraph(extras)
-
         val provider =
-            viewModelGraph.viewModelProviders[modelClass.kotlin] ?: error("$modelClass")
+            viewModelGraphFactory.viewModelProviders[modelClass.kotlin] ?: error("$modelClass")
 
         @Suppress("NULLABILITY_MISMATCH_BASED_ON_JAVA_ANNOTATIONS")
         return modelClass.cast(provider())
@@ -36,7 +34,13 @@ inline fun <reified VM : ViewModel> AppCompatActivity.metroViewModels(): Lazy<VM
     ViewModelLazy(
         VM::class,
         { viewModelStore },
-        { (application as FestaBookApp).festaBookGraph.metroViewModelFactory },
+        {
+            (application as FestaBookApp)
+                .festaBookGraph.viewModelGraphFactory
+                .createViewModelGraph(
+                    defaultViewModelCreationExtras,
+                ).metroViewModelFactory
+        },
         { defaultViewModelCreationExtras },
     )
 
@@ -47,6 +51,12 @@ inline fun <reified VM : ViewModel> Fragment.metroViewModels(
     ViewModelLazy(
         VM::class,
         { viewModelStoreOwner().viewModelStore },
-        { (requireActivity().application as FestaBookApp).festaBookGraph.metroViewModelFactory },
+        {
+            (requireActivity().application as FestaBookApp)
+                .festaBookGraph.viewModelGraphFactory
+                .createViewModelGraph(
+                    defaultViewModelCreationExtras,
+                ).metroViewModelFactory
+        },
         { defaultViewModelCreationExtras },
     )
