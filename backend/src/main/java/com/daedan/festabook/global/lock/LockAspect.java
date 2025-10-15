@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
 @Loggable
 @Component
 @RequiredArgsConstructor
-@Order(Ordered.HIGHEST_PRECEDENCE - 10)
+@Order(Ordered.HIGHEST_PRECEDENCE + 10)
 public class LockAspect {
 
     private static final String DEFAULT_KEY_PREFIX_FORMAT = "%s::%s";
