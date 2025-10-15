@@ -35,7 +35,8 @@ public class AnnouncementService {
     private final FestivalNotificationManager notificationManager;
 
     @Lockable(
-            spelKey = "'AnnouncementService::createAnnouncement'.concat(#festivalId)",
+            spelKey = "#festivalId",
+            usePrefix = true,
             leaseTime = 10
     )
     @Transactional

@@ -12,7 +12,7 @@ public @interface Lockable {
 
     String spelKey();
 
-    boolean usePrefix() default false;
+    boolean usePrefix();
 
     TimeUnit timeUnit() default TimeUnit.SECONDS;
 
