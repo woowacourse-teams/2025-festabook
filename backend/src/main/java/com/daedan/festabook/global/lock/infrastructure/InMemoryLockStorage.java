@@ -27,6 +27,7 @@ public class InMemoryLockStorage implements LockStorage {
 
         Lock emptyLock = new Lock();
         while (true) {
+            validateLockTimeOut(deadline);
             Lock existing = locks.putIfAbsent(key, emptyLock);
             if (existing == null) {
                 emptyLock.registerOwnerThreadId(currentThreadId);
@@ -37,13 +38,11 @@ public class InMemoryLockStorage implements LockStorage {
             }
 
             synchronized (existing) {
-                validateLockTimeOut(deadline);
                 try {
                     long nanosLeft = deadline - System.nanoTime();
                     long millisPart = calculateMillisPart(nanosLeft);
                     int nanosPart = calculateNanosPart(nanosLeft, millisPart);
                     existing.wait(millisPart, nanosPart);
-                    validateLockTimeOut(deadline);
                 } catch (InterruptedException ignore) {
                 }
             }
