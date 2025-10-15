@@ -2,17 +2,20 @@ package com.daedan.festabook
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.daedan.festabook.data.service.api.ApiClient
+import com.daedan.festabook.di.FestaBookAppGraph
 import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.firebase.messaging.FirebaseMessaging
 import com.naver.maps.map.NaverMapSdk
+import dev.zacsweers.metro.createGraphFactory
 import timber.log.Timber
+import java.util.UUID
 
 class FestaBookApp : Application() {
-    val appContainer: AppContainer by lazy {
-        AppContainer(this)
+    val festaBookGraph: FestaBookAppGraph by lazy {
+        createGraphFactory<FestaBookAppGraph.Factory>().create(this)
     }
 
     private val fireBaseAnalytics: FirebaseAnalytics by lazy {
@@ -21,11 +24,11 @@ class FestaBookApp : Application() {
 
     override fun onCreate() {
         super.onCreate()
-        initializeApiClient()
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
         setLightTheme()
+        setupDeviceIdentifiers()
     }
 
     override fun onLowMemory() {
@@ -77,13 +80,21 @@ class FestaBookApp : Application() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
-    private fun initializeApiClient() {
-        runCatching {
-            ApiClient.initialize(this)
-        }.onSuccess {
-            Timber.d("API 클라이언트 초기화 완료")
-        }.onFailure { e ->
-            Timber.e(e, "FestabookApp: API 클라이언트 초기화 실패 ${e.message}")
+    private fun setupDeviceIdentifiers() {
+        if (festaBookGraph.deviceLocalDataSource.getUuid().isNullOrEmpty()) {
+            val uuid = UUID.randomUUID().toString()
+            festaBookGraph.deviceLocalDataSource.saveUuid(uuid)
+            Timber.d("🆕 UUID 생성 및 저장: $uuid")
         }
+
+        FirebaseMessaging
+            .getInstance()
+            .token
+            .addOnSuccessListener { token ->
+                festaBookGraph.fcmDataSource.saveFcmToken(token)
+                Timber.d("📡 FCM 토큰 저장: $token")
+            }.addOnFailureListener {
+                Timber.w(it, "❌ FCM 토큰 수신 실패")
+            }
     }
 }

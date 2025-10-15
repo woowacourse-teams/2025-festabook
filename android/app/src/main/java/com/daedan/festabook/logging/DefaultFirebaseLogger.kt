@@ -2,7 +2,6 @@ package com.daedan.festabook.logging
 
 import android.content.Context
 import android.os.Build
-import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
 import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataSource
@@ -57,6 +56,7 @@ class DefaultFirebaseLogger(
     }
 
     companion object {
+        @Suppress("ktlint:standard:property-naming")
         @Volatile
         private var INSTANCE: DefaultFirebaseLogger? = null
         private const val KEY_UNINITIALIZED_USER_ID = "undefined"
@@ -65,10 +65,10 @@ class DefaultFirebaseLogger(
         fun getInstance(context: Context): DefaultFirebaseLogger =
             INSTANCE ?: synchronized(this) {
                 val festivalLocalDataSource =
-                    (context.applicationContext as FestaBookApp).appContainer.festivalLocalDataSource
+                    (context.applicationContext as FestaBookApp).festaBookGraph.festivalLocalDataSource
                 val festivalNotificationLocalDataSource =
                     (context.applicationContext as FestaBookApp)
-                        .appContainer.festivalNotificationLocalDataSource
+                        .festaBookGraph.festivalNotificationLocalDataSource
                 val firebaseAnalytics = FirebaseAnalytics.getInstance(context)
                 INSTANCE ?: DefaultFirebaseLogger(
                     firebaseAnalytics,
