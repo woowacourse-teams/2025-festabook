@@ -14,7 +14,7 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener

@@ -5,7 +5,7 @@ import android.view.View
 import androidx.core.view.children
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceCategoryBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel

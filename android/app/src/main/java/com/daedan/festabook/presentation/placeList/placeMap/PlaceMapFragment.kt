@@ -8,7 +8,7 @@ import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment

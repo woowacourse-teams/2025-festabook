@@ -4,8 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.daedan.festabook.di.ViewModelKey
-import com.daedan.festabook.di.ViewModelScope
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository

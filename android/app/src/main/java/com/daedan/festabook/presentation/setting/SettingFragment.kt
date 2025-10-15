@@ -9,7 +9,7 @@ import androidx.core.net.toUri
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentSettingBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.BaseFragment

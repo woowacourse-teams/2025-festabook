@@ -7,7 +7,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.lost.LostItemModalDialogFragment.Companion.TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT

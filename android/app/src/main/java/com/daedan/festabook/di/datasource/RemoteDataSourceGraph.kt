@@ -1,4 +1,4 @@
-package com.daedan.festabook.di
+package com.daedan.festabook.di.datasource
 
 import com.daedan.festabook.data.datasource.local.FcmDataSource
 import com.daedan.festabook.data.datasource.remote.faq.FAQDataSource

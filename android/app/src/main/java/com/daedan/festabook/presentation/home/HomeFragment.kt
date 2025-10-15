@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.home.ExploreClickLogData
 import com.daedan.festabook.logging.model.home.HomeViewLogData

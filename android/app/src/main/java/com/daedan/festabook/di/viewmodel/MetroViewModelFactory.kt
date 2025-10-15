@@ -1,4 +1,4 @@
-package com.daedan.festabook.di
+package com.daedan.festabook.di.viewmodel
 
 import androidx.annotation.MainThread
 import androidx.appcompat.app.AppCompatActivity

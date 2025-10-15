@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.explore.ExploreActivity
 import com.daedan.festabook.presentation.main.MainActivity
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory

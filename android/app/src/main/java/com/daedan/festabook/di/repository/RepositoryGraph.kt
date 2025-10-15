@@ -1,4 +1,4 @@
-package com.daedan.festabook.di
+package com.daedan.festabook.di.repository
 
 import com.daedan.festabook.domain.repository.DeviceRepository
 import com.daedan.festabook.domain.repository.ExploreRepository

@@ -1,4 +1,4 @@
-package com.daedan.festabook.di
+package com.daedan.festabook.di.viewmodel
 
 import androidx.lifecycle.ViewModel
 import dev.zacsweers.metro.MapKey

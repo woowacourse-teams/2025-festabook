@@ -5,7 +5,7 @@ import android.view.View
 import androidx.activity.OnBackPressedCallback
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener

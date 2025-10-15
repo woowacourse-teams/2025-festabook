@@ -4,7 +4,7 @@ import android.os.Bundle
 import android.view.View
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNewsBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.adapter.NewsPagerAdapter

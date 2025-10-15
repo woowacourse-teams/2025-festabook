@@ -17,7 +17,7 @@ import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener

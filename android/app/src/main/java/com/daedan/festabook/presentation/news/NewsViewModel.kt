@@ -7,8 +7,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.daedan.festabook.di.ViewModelKey
-import com.daedan.festabook.di.ViewModelScope
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository

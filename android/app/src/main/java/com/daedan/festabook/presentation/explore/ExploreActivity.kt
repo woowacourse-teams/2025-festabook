@@ -13,7 +13,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.widget.doOnTextChanged
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityExploreBinding
-import com.daedan.festabook.di.metroViewModels
+import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.explore.ExploreSearchResultLogData
 import com.daedan.festabook.logging.model.explore.ExploreSelectUniversityLogData
