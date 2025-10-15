@@ -6,9 +6,13 @@ import com.daedan.festabook.data.model.response.toDomain
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.University
 import com.daedan.festabook.domain.repository.ExploreRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
-class ExploreRepositoryImpl(
+@ContributesBinding(AppScope::class)
+class ExploreRepositoryImpl @Inject constructor(
     private val festivalDataSource: FestivalDataSource,
     private val festivalLocalDataSource: FestivalLocalDataSource,
 ) : ExploreRepository {
