@@ -36,7 +36,7 @@ public class AnnouncementService {
 
     @Lockable(
             spelKey = "#festivalId",
-            usePrefix = true,
+            useMethodScopeLock = true,
             leaseTime = 10
     )
     @Transactional

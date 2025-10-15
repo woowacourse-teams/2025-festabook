@@ -69,7 +69,7 @@ public class LockAspect {
     }
 
     public String createKeyPrefix(Lockable lockable, MethodSignature signature) {
-        if (lockable.usePrefix()) {
+        if (lockable.useMethodScopeLock()) {
             String className = signature.getDeclaringType().getSimpleName();
             String methodName = signature.getName();
 
