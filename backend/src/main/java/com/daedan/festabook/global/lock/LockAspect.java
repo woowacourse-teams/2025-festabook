@@ -2,6 +2,7 @@ package com.daedan.festabook.global.lock;
 
 import com.daedan.festabook.global.logging.Loggable;
 import java.lang.reflect.Method;
+import java.util.Objects;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -66,7 +67,10 @@ public class LockAspect {
         for (int i = 0; i < parameterNames.length; i++) {
             context.setVariable(parameterNames[i], args[i]);
         }
-        return parser.parseExpression(key).getValue(context, String.class);
+        return Objects.toString(
+                parser.parseExpression(key).getValue(context, String.class),
+                ""
+        );
     }
 
     private String createMethodScopeKeyPrefix(MethodSignature signature) {
