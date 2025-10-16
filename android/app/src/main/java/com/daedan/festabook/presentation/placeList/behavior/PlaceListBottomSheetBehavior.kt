@@ -10,6 +10,7 @@ import com.daedan.festabook.R
 import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.daedan.festabook.presentation.placeList.logging.PlaceListSwipeUp
 import com.google.android.material.bottomsheet.BottomSheetBehavior
+import dev.zacsweers.metro.Inject
 
 class PlaceListBottomSheetBehavior<V : View>(
     context: Context,
@@ -21,9 +22,8 @@ class PlaceListBottomSheetBehavior<V : View>(
     private lateinit var recyclerView: RecyclerView
     private var headerRange: IntRange = 0..0
 
-    private val logger by lazy {
-        DefaultFirebaseLogger.getInstance(context)
-    }
+    @Inject
+    private lateinit var logger: DefaultFirebaseLogger
 
     init {
         state = STATE_HALF_EXPANDED
@@ -40,8 +40,8 @@ class PlaceListBottomSheetBehavior<V : View>(
                     if (newState == STATE_EXPANDED) {
                         logger.log(
                             PlaceListSwipeUp(
-                                baseLogData = logger.getBaseLogData()
-                            )
+                                baseLogData = logger.getBaseLogData(),
+                            ),
                         )
                     }
                 }

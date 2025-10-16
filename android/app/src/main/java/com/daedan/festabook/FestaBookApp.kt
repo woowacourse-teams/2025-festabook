@@ -3,11 +3,8 @@ package com.daedan.festabook
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.di.FestaBookAppGraph
-import com.daedan.festabook.logging.FirebaseAnalyticsTree
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.messaging.FirebaseMessaging
 import com.naver.maps.map.NaverMapSdk
 import dev.zacsweers.metro.createGraphFactory
 import timber.log.Timber
@@ -16,10 +13,6 @@ import java.util.UUID
 class FestaBookApp : Application() {
     val festaBookGraph: FestaBookAppGraph by lazy {
         createGraphFactory<FestaBookAppGraph.Factory>().create(this)
-    }
-
-    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
-        FirebaseAnalytics.getInstance(this)
     }
 
     override fun onCreate() {
@@ -68,7 +61,7 @@ class FestaBookApp : Application() {
     }
 
     private fun plantInfoTimberTree() {
-        Timber.plant(FirebaseAnalyticsTree(fireBaseAnalytics))
+        Timber.plant(festaBookGraph.firebaseAnalyticsTree)
     }
 
     private fun setupNaverSdk() {
@@ -90,8 +83,7 @@ class FestaBookApp : Application() {
             Timber.d("🆕 UUID 생성 및 저장: $uuid")
         }
 
-        FirebaseMessaging
-            .getInstance()
+        festaBookGraph.firebaseMessaging
             .token
             .addOnSuccessListener { token ->
                 festaBookGraph.fcmDataSource.saveFcmToken(token)
