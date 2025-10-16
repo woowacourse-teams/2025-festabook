@@ -3,8 +3,8 @@ package com.daedan.festabook.di
 import android.app.Application
 import android.content.Context
 import android.content.SharedPreferences
-import com.daedan.festabook.di.datasource.LocalDataSourceGraph
-import com.daedan.festabook.di.datasource.RemoteDataSourceGraph
+import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
+import com.daedan.festabook.data.datasource.local.FcmDataSource
 import com.daedan.festabook.di.viewmodel.ViewModelGraph
 import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.google.firebase.analytics.FirebaseAnalytics
@@ -27,8 +27,8 @@ interface FestaBookAppGraph {
     }
 
     // dataSource
-    val localDataSourceGraph: LocalDataSourceGraph
-    val remoteDataSourceGraph: RemoteDataSourceGraph
+    val fcmDataSource: FcmDataSource
+    val deviceLocalDataSource: DeviceLocalDataSource
 
     // logger
     val defaultFirebaseLogger: DefaultFirebaseLogger
