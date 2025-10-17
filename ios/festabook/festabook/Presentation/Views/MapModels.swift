@@ -16,11 +16,32 @@ struct GeographyResponse: Codable {
     let centerCoordinate: LatLng
     let polygonHoleBoundary: [LatLng]
 
-    /// 화면 표시용 조정된 중심 좌표 (원래 좌표에서 살짝 위로 이동)
+    /// 화면 표시용 조정된 중심 좌표 (줌에 따른 선형 가중치 적용)
     var adjustedCenterCoordinate: LatLng {
+        // 줌 19 기준 기준값
+        let baseLat = 0.00018
+        let baseLng = 0.00006
+
+        // 줌값별 가중치: 19는 1.0 유지, 축소(작은 줌)일수록 크게, 확대(큰 줌)일수록 작게
+        let scale: Double
+        switch zoom {
+        case Int.min..<15: scale = 14.0
+        case 15:           scale = 10.0
+        case 16:           scale = 7.0
+        case 17:           scale = 4.0
+        case 18:           scale = 2.0
+        case 19:           scale = 1.0
+        case 20:           scale = 0.8
+        case 21:           scale = 0.6
+        default:           scale = 0.2 // 22 이상
+        }
+
+        let horizontalDamping = 0.28         // 0.25~0.5 내에서 조정 권장
+        let lngScale = scale * horizontalDamping
+
         return LatLng(
-            latitude: centerCoordinate.latitude - 0.0015,
-            longitude: centerCoordinate.longitude
+            latitude: centerCoordinate.latitude - baseLat * scale,
+            longitude: centerCoordinate.longitude + baseLng * lngScale
         )
     }
 }
