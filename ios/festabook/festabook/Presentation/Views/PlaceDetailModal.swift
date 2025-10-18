@@ -89,9 +89,8 @@ struct PlaceDetailModal: View {
 
                     // Description (max 2 lines with ellipsis)
                     if !place.safeDescription.isEmpty && place.safeDescription != "설명이 없습니다" {
-                        Text(place.safeDescription)
+                        Text(LinkHelper.createAttributedString(from: place.safeDescription, baseColor: .secondary))
                             .font(.system(size: 12))
-                            .foregroundColor(.secondary)
                             .lineLimit(2)
                             .truncationMode(.tail)
                             .frame(maxWidth: .infinity, alignment: .leading)
