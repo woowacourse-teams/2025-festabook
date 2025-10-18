@@ -1,6 +1,6 @@
 package com.daedan.festabook.global.lock.infrastructure;
 
-import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.exception.LockException;
 import com.daedan.festabook.global.lock.LockStorage;
 import com.daedan.festabook.global.logging.Loggable;
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,7 +27,7 @@ public class InMemoryLockStorage implements LockStorage {
 
         Lock emptyLock = new Lock();
         while (true) {
-            validateLockTimeOut(deadline);
+            validateLockTimeOut(key, deadline);
             Lock existing = locks.putIfAbsent(key, emptyLock);
             if (existing == null) {
                 emptyLock.registerOwnerThreadId(currentThreadId);
@@ -53,9 +53,9 @@ public class InMemoryLockStorage implements LockStorage {
     public void unlock(String key) {
         validateEmptyKey(key);
         Lock lock = locks.get(key);
-        validateNotExistsLock(lock);
+        validateNotExistsLock(key, lock);
         long currentThreadId = Thread.currentThread().getId();
-        validateLockOwner(lock, currentThreadId);
+        validateLockOwner(key, lock, currentThreadId);
 
         synchronized (lock) {
             lock.cancelIfExistsLeaseTimeOutSchedule();
@@ -81,25 +81,25 @@ public class InMemoryLockStorage implements LockStorage {
 
     private void validateEmptyKey(String key) {
         if (!StringUtils.hasText(key)) {
-            throw new BusinessException("락 키는 비어있을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new LockException(key, "락 키는 비어있을 수 없습니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void validateLockOwner(Lock lock, long currentThreadId) {
+    private void validateLockOwner(String key, Lock lock, long currentThreadId) {
         if (!lock.isOwner(currentThreadId)) {
-            throw new BusinessException("해당 스레드의 락이 아닙니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new LockException(key, "해당 스레드의 락이 아닙니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void validateNotExistsLock(Lock lock) {
+    private void validateNotExistsLock(String key, Lock lock) {
         if (lock == null) {
-            throw new BusinessException("존재하지 않는 락입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new LockException(key, "존재하지 않는 락입니다.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
-    private void validateLockTimeOut(long deadline) {
+    private void validateLockTimeOut(String key, long deadline) {
         if (deadline - System.nanoTime() <= 0) {
-            throw new BusinessException("락 획득 시간 초과", HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new LockException(key, "락 획득 시간 초과", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
