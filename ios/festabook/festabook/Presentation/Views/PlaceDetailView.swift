@@ -222,9 +222,8 @@ struct PlaceDetailView: View {
             }
 
             if hasDescription {
-                Text(place.safeDescription)
+                Text(LinkHelper.createAttributedString(from: place.safeDescription, baseColor: .secondary))
                     .font(.system(size: 13))
-                    .foregroundColor(.secondary)
                     .lineSpacing(4)
             }
         }

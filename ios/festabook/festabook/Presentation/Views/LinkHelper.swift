@@ -5,8 +5,12 @@ import Foundation
 struct LinkHelper {
 
     /// 텍스트에서 링크를 감지하고 하이퍼링크로 변환하는 함수
-    static func createAttributedString(from text: String) -> AttributedString {
+    static func createAttributedString(from text: String, baseColor: Color? = nil) -> AttributedString {
         var attributedString = AttributedString(text)
+
+        if let baseColor {
+            attributedString.foregroundColor = baseColor
+        }
 
         // URL 패턴을 찾기 위한 정규식
         let urlPattern = #"https?://[^\s<>"]+"#
