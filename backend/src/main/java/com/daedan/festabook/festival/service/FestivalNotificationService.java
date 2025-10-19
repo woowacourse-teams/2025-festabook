@@ -13,6 +13,7 @@ import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepos
 import com.daedan.festabook.global.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,15 +32,11 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
+        FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
-
-        festivalNotificationManager.subscribeFestivalTopic(festivalId, device.getFcmToken());
+        String fcmToken = festivalNotification.getDevice().getFcmToken();
+        festivalNotificationManager.subscribeFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
@@ -49,15 +46,11 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
+        FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
-
-        festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, device.getFcmToken());
+        String fcmToken = festivalNotification.getDevice().getFcmToken();
+        festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
@@ -67,15 +60,11 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
+        FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
-
-        festivalNotificationManager.subscribeIosFestivalTopic(festivalId, device.getFcmToken());
+        String fcmToken = festivalNotification.getDevice().getFcmToken();
+        festivalNotificationManager.subscribeIosFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
@@ -112,8 +101,16 @@ public class FestivalNotificationService {
         );
     }
 
-    private void validateDuplicatedFestivalNotification(Long festivalId, Long deviceId) {
-        if (festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId) > 0) {
+    private FestivalNotification createFestivalNotification(Long festivalId, FestivalNotificationRequest request) {
+        Festival festival = getFestivalById(festivalId);
+        Device device = getDeviceById(request.deviceId());
+        return new FestivalNotification(festival, device);
+    }
+
+    private FestivalNotification saveFestivalNotification(FestivalNotification festivalNotification) {
+        try {
+            return festivalNotificationJpaRepository.save(festivalNotification);
+        } catch (DataIntegrityViolationException e) {
             throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
         }
     }
