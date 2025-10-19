@@ -7,6 +7,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -97,8 +99,14 @@ class FestivalNotificationServiceTest {
 
             FestivalNotificationRequest request = FestivalNotificationRequestFixture.create(deviceId);
 
-            given(festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId))
-                    .willReturn(1);
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(FestivalFixture.create()));
+            given(deviceJpaRepository.findById(deviceId))
+                    .willReturn(Optional.of(DeviceFixture.create()));
+
+            willThrow(new DataIntegrityViolationException(""))
+                    .given(festivalNotificationJpaRepository)
+                    .save(any());
 
             // when & then
             assertThatThrownBy(() ->
