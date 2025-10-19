@@ -31,65 +31,6 @@ class FestivalNotificationJpaRepositoryTest {
     private FestivalNotificationJpaRepository festivalNotificationJpaRepository;
 
     @Nested
-    class getExistsFlagByFestivalIdAndDeviceId {
-
-        @Test
-        void 성공_일치하는_알림이_있는_경우_1_반환() {
-            // given
-            Festival festival = festivalJpaRepository.save(FestivalFixture.create());
-            Device device = deviceJpaRepository.save(DeviceFixture.create());
-
-            FestivalNotification festivalNotification = FestivalNotificationFixture.create(festival, device);
-            festivalNotificationJpaRepository.save(festivalNotification);
-
-            // when
-            int existsFlag = festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(
-                    festival.getId(),
-                    device.getId()
-            );
-
-            // then
-            assertThat(existsFlag).isEqualTo(1);
-        }
-
-        @Test
-        void 성공_삭제된_알림인_경우_없다고_판단해_0_반환() {
-            // given
-            Festival festival = festivalJpaRepository.save(FestivalFixture.create());
-            Device device = deviceJpaRepository.save(DeviceFixture.create());
-
-            FestivalNotification festivalNotification = FestivalNotificationFixture.create(festival, device);
-            FestivalNotification savedNotification = festivalNotificationJpaRepository.save(festivalNotification);
-            festivalNotificationJpaRepository.delete(savedNotification);
-
-            // when
-            int existsFlag = festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(
-                    festival.getId(),
-                    device.getId()
-            );
-
-            // then
-            assertThat(existsFlag).isZero();
-        }
-
-        @Test
-        void 성공_알림이_존재하지_않는_경우_0_반환() {
-            // given
-            Festival festival = festivalJpaRepository.save(FestivalFixture.create());
-            Device device = deviceJpaRepository.save(DeviceFixture.create());
-
-            // when
-            int existsFlag = festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(
-                    festival.getId(),
-                    device.getId()
-            );
-
-            // then
-            assertThat(existsFlag).isZero();
-        }
-    }
-
-    @Nested
     class findAllWithFestivalByDeviceId {
 
         @Test
