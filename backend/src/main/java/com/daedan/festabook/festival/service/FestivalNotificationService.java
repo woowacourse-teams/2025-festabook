@@ -35,7 +35,7 @@ public class FestivalNotificationService {
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
-        String fcmToken = festivalNotification.getDevice().getFcmToken();
+        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
         festivalNotificationManager.subscribeFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
@@ -49,7 +49,7 @@ public class FestivalNotificationService {
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
-        String fcmToken = festivalNotification.getDevice().getFcmToken();
+        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
         festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
@@ -63,7 +63,7 @@ public class FestivalNotificationService {
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
-        String fcmToken = festivalNotification.getDevice().getFcmToken();
+        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
         festivalNotificationManager.subscribeIosFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
