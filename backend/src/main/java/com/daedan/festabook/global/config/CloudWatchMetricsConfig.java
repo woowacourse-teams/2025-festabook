@@ -4,16 +4,19 @@ import io.micrometer.cloudwatch2.CloudWatchConfig;
 import io.micrometer.cloudwatch2.CloudWatchMeterRegistry;
 import io.micrometer.core.instrument.Clock;
 import java.time.Duration;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import software.amazon.awssdk.services.cloudwatch.CloudWatchAsyncClient;
 
+@Profile({"prod", "dev"})
 @Configuration
-@Profile("prod")
 public class CloudWatchMetricsConfig {
 
-    private static final String CLOUDWATCH_NAMESPACE = "festabook/server";
+    @Value("${cloudwatch.namespace}")
+    private String cloudWatchNamespace;
+
     private static final Duration CLOUDWATCH_STEP = Duration.ofMinutes(1);
 
     @Bean
@@ -27,7 +30,7 @@ public class CloudWatchMetricsConfig {
 
             @Override
             public String namespace() {
-                return CLOUDWATCH_NAMESPACE;
+                return cloudWatchNamespace;
             }
 
             @Override
