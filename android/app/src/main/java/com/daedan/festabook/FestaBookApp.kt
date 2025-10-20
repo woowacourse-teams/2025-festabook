@@ -2,10 +2,14 @@ package com.daedan.festabook
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
+import com.daedan.festabook.data.datasource.local.FcmDataSource
 import com.daedan.festabook.di.FestaBookAppGraph
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
+import com.google.firebase.messaging.FirebaseMessaging
 import com.naver.maps.map.NaverMapSdk
+import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.createGraphFactory
 import timber.log.Timber
 import java.util.UUID
@@ -15,8 +19,21 @@ class FestaBookApp : Application() {
         createGraphFactory<FestaBookAppGraph.Factory>().create(this)
     }
 
+    @Inject
+    private lateinit var firebaseAnalyticsTree: Timber.Tree
+
+    @Inject
+    private lateinit var deviceLocalDataSource: DeviceLocalDataSource
+
+    @Inject
+    private lateinit var firebaseMessaging: FirebaseMessaging
+
+    @Inject
+    private lateinit var fcmDataSource: FcmDataSource
+
     override fun onCreate() {
         super.onCreate()
+        festaBookGraph.inject(this)
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
@@ -61,7 +78,7 @@ class FestaBookApp : Application() {
     }
 
     private fun plantInfoTimberTree() {
-        Timber.plant(festaBookGraph.firebaseAnalyticsTree)
+        Timber.plant(firebaseAnalyticsTree)
     }
 
     private fun setupNaverSdk() {
@@ -74,19 +91,19 @@ class FestaBookApp : Application() {
     }
 
     private fun setupDeviceIdentifiers() {
-        if (festaBookGraph.deviceLocalDataSource
+        if (deviceLocalDataSource
                 .getUuid()
                 .isNullOrEmpty()
         ) {
             val uuid = UUID.randomUUID().toString()
-            festaBookGraph.deviceLocalDataSource.saveUuid(uuid)
+            deviceLocalDataSource.saveUuid(uuid)
             Timber.d("🆕 UUID 생성 및 저장: $uuid")
         }
 
-        festaBookGraph.firebaseMessaging
+        firebaseMessaging
             .token
             .addOnSuccessListener { token ->
-                festaBookGraph.fcmDataSource.saveFcmToken(token)
+                fcmDataSource.saveFcmToken(token)
                 Timber.d("📡 FCM 토큰 저장: $token")
             }.addOnFailureListener {
                 Timber.w(it, "❌ FCM 토큰 수신 실패")

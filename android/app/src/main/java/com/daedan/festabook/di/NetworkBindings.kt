@@ -19,10 +19,10 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
-private const val BASE_URL = BuildConfig.FESTABOOK_URL
-
 @BindingContainer
 object NetworkBindings {
+    private const val BASE_URL = BuildConfig.FESTABOOK_URL
+
     @Provides
     fun provideJson(): Json = Json { ignoreUnknownKeys = true }
 
