@@ -8,10 +8,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
 
-@DependencyGraph(
-    AppScope::class,
-    bindingContainers = [NetworkBindings::class, FirebaseBindings::class, RoomBindings::class],
-)
+@DependencyGraph(AppScope::class)
 interface FestaBookAppGraph {
     @DependencyGraph.Factory
     fun interface Factory {

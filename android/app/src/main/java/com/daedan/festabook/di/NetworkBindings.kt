@@ -11,7 +11,9 @@ import com.daedan.festabook.data.service.NoticeService
 import com.daedan.festabook.data.service.PlaceService
 import com.daedan.festabook.data.service.ScheduleService
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.BindingContainer
+import dev.zacsweers.metro.ContributesTo
 import dev.zacsweers.metro.Provides
 import kotlinx.serialization.json.Json
 import okhttp3.Interceptor
@@ -20,6 +22,7 @@ import okhttp3.OkHttpClient
 import retrofit2.Retrofit
 
 @BindingContainer
+@ContributesTo(AppScope::class)
 object NetworkBindings {
     private const val BASE_URL = BuildConfig.FESTABOOK_URL
 
