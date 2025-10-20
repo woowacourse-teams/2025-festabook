@@ -35,9 +35,8 @@ public class AnnouncementService {
     private final FestivalNotificationManager notificationManager;
 
     @Lockable(
-            spelKey = "#festivalId",
-            useMethodScopeLock = true,
-            leaseTime = 10
+            spelKey = "'AnnouncementService'.concat(#festivalId)",
+            useMethodScopeLock = false
     )
     @Transactional
     public AnnouncementResponse createAnnouncement(Long festivalId, AnnouncementRequest request) {
@@ -76,6 +75,10 @@ public class AnnouncementService {
         return AnnouncementUpdateResponse.from(announcement);
     }
 
+    @Lockable(
+            spelKey = "'AnnouncementService'.concat(#festivalId)",
+            useMethodScopeLock = false
+    )
     @Transactional
     public AnnouncementPinUpdateResponse updateAnnouncementPin(
             Long festivalId,
