@@ -3,4 +3,6 @@
 -- 이후 생성될 UNIQUE 인덱스의 기반이 됩니다.
 
 ALTER TABLE festival_notification
-    ADD COLUMN active_device_id BIGINT AS (IF(deleted = false, device_id, NULL)) VIRTUAL;
+    ADD COLUMN active_device_id BIGINT AS (IF(deleted = false, device_id, NULL)) VIRTUAL,
+    ALGORITHM = INPLACE,
+    LOCK = NONE;
