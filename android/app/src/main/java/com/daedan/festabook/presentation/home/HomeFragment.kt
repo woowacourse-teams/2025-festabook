@@ -19,8 +19,15 @@ import com.daedan.festabook.presentation.home.adapter.CenterItemMotionEnlarger
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import com.daedan.festabook.presentation.home.adapter.LineUpItemOfDayAdapter
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ClassKey
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
+@ContributesIntoMap(AppScope::class)
+@ClassKey(HomeFragment::class)
+@Inject
 class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
     private val viewModel: HomeViewModel by metroViewModels { requireActivity() }
 

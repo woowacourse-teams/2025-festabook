@@ -13,8 +13,11 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.marginBottom
 import androidx.core.view.updatePadding
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
+import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
+import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
 import com.daedan.festabook.di.viewmodel.metroViewModels
@@ -34,6 +37,7 @@ import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
 import com.daedan.festabook.presentation.setting.SettingViewModel
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
 class MainActivity :
@@ -47,25 +51,8 @@ class MainActivity :
     private val homeViewModel: HomeViewModel by metroViewModels()
     private val settingViewModel: SettingViewModel by metroViewModels()
 
-    private val placeMapFragment by lazy {
-        PlaceMapFragment().newInstance()
-    }
-
-    private val homeFragment by lazy {
-        HomeFragment().newInstance()
-    }
-
-    private val scheduleFragment by lazy {
-        ScheduleFragment().newInstance()
-    }
-
-    private val newsFragment by lazy {
-        NewsFragment().newInstance()
-    }
-
-    private val settingFragment by lazy {
-        SettingFragment().newInstance()
-    }
+    @Inject
+    private lateinit var fragmentFactory: FragmentFactory
 
     private val notificationPermissionManager by lazy {
         NotificationPermissionManager(
@@ -98,6 +85,9 @@ class MainActivity :
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        (application as FestaBookApp).festaBookGraph.inject(this)
+        setupFragment()
+
         setupBinding()
 
         mainViewModel.registerDeviceAndFcmToken()
@@ -108,6 +98,10 @@ class MainActivity :
         onMenuItemReClick()
         onBackPress()
         handleNavigation(intent)
+    }
+
+    private fun setupFragment() {
+        supportFragmentManager.fragmentFactory = fragmentFactory
     }
 
     override fun onRequestPermissionsResult(
@@ -188,7 +182,7 @@ class MainActivity :
     private fun setupHomeFragment(savedInstanceState: Bundle?) {
         if (savedInstanceState == null) {
             supportFragmentManager.commitNow {
-                add(R.id.fcv_fragment_container, homeFragment, TAG_HOME_FRAGMENT)
+                add<HomeFragment>(R.id.fcv_fragment_container)
             }
         }
     }
@@ -207,10 +201,19 @@ class MainActivity :
     private fun onMenuItemClick() {
         binding.bnvMenu.setOnItemSelectedListener { icon ->
             when (icon.itemId) {
-                R.id.item_menu_home -> switchFragment(homeFragment, TAG_HOME_FRAGMENT)
-                R.id.item_menu_schedule -> switchFragment(scheduleFragment, TAG_SCHEDULE_FRAGMENT)
-                R.id.item_menu_news -> switchFragment(newsFragment, TAG_NEWS_FRAGMENT)
-                R.id.item_menu_setting -> switchFragment(settingFragment, TAG_SETTING_FRAGMENT)
+                R.id.item_menu_home -> switchFragment(HomeFragment::class.java, TAG_HOME_FRAGMENT)
+                R.id.item_menu_schedule ->
+                    switchFragment(
+                        ScheduleFragment::class.java,
+                        TAG_SCHEDULE_FRAGMENT,
+                    )
+
+                R.id.item_menu_news -> switchFragment(NewsFragment::class.java, TAG_NEWS_FRAGMENT)
+                R.id.item_menu_setting ->
+                    switchFragment(
+                        SettingFragment::class.java,
+                        TAG_SETTING_FRAGMENT,
+                    )
             }
             true
         }
@@ -218,7 +221,7 @@ class MainActivity :
             binding.bnvMenu.selectedItemId = R.id.item_menu_map
             val fragment = supportFragmentManager.findFragmentByTag(TAG_PLACE_MAP_FRAGMENT)
             if (fragment is OnMenuItemReClickListener && !fragment.isHidden) fragment.onMenuItemReClick()
-            switchFragment(placeMapFragment, TAG_PLACE_MAP_FRAGMENT)
+            switchFragment(PlaceMapFragment::class.java, TAG_PLACE_MAP_FRAGMENT)
         }
     }
 
@@ -238,7 +241,7 @@ class MainActivity :
     }
 
     private fun switchFragment(
-        fragment: Fragment,
+        fragment: Class<out Fragment>,
         tag: String,
     ) {
         supportFragmentManager.commit {
@@ -248,7 +251,7 @@ class MainActivity :
             if (existing != null) {
                 show(existing)
             } else {
-                add(R.id.fcv_fragment_container, fragment, tag)
+                add(R.id.fcv_fragment_container, fragment, null, tag)
             }
             setReorderingAllowed(true)
         }
