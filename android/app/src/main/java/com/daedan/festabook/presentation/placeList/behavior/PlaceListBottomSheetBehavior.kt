@@ -6,6 +6,7 @@ import android.view.MotionEvent
 import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
+import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.daedan.festabook.presentation.placeList.logging.PlaceListSwipeUp
@@ -26,6 +27,7 @@ class PlaceListBottomSheetBehavior<V : View>(
     private lateinit var logger: DefaultFirebaseLogger
 
     init {
+        (context.applicationContext as FestaBookApp).festaBookGraph.inject(this)
         state = STATE_HALF_EXPANDED
         isGestureInsetBottomIgnored = true
         addBottomSheetCallback(
