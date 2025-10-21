@@ -44,12 +44,11 @@ import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
 class PlaceListFragment :
-    BaseFragment<FragmentPlaceListBinding>(
-        R.layout.fragment_place_list,
-    ),
+    BaseFragment<FragmentPlaceListBinding>(),
     PlaceClickListener,
     OnMenuItemReClickListener,
     OnMapReadyCallback {
+    override val layoutId: Int = R.layout.fragment_place_list
     private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
     private val childViewModel: PlaceListChildViewModel by metroViewModels()
 

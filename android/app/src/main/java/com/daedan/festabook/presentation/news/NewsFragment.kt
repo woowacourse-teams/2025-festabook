@@ -13,14 +13,26 @@ import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.google.android.material.tabs.TabLayoutMediator
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ClassKey
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
+@ContributesIntoMap(
+    scope = AppScope::class,
+    binding = binding<BaseFragment<FragmentNewsBinding>>(),
+)
+@ClassKey(NewsFragment::class)
+@Inject
 class NewsFragment :
-    BaseFragment<FragmentNewsBinding>(R.layout.fragment_news),
+    BaseFragment<FragmentNewsBinding>(),
     OnNewsClickListener {
+    override val layoutId: Int = R.layout.fragment_news
+
     private val newsPagerAdapter by lazy {
         NewsPagerAdapter(this)
     }
-
     private val newsViewModel: NewsViewModel by metroViewModels()
     private val mainViewModel: MainViewModel by metroViewModels { requireActivity() }
 

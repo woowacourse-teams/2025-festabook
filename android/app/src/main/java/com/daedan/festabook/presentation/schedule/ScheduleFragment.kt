@@ -16,11 +16,23 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ClassKey
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import timber.log.Timber
 
+@ContributesIntoMap(
+    scope = AppScope::class,
+    binding = binding<BaseFragment<FragmentScheduleBinding>>(),
+)
+@ClassKey(ScheduleFragment::class)
+@Inject
 class ScheduleFragment :
-    BaseFragment<FragmentScheduleBinding>(R.layout.fragment_schedule),
+    BaseFragment<FragmentScheduleBinding>(),
     OnMenuItemReClickListener {
+    override val layoutId: Int = R.layout.fragment_schedule
     private val adapter: SchedulePagerAdapter by lazy {
         SchedulePagerAdapter(this)
     }

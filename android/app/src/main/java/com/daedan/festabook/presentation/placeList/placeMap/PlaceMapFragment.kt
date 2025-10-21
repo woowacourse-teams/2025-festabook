@@ -32,6 +32,11 @@ import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ClassKey
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -41,10 +46,17 @@ interface OnTimeTagSelectedListener {
     fun onNothingSelected()
 }
 
+@ContributesIntoMap(
+    scope = AppScope::class,
+    binding = binding<BaseFragment<FragmentPlaceMapBinding>>(),
+)
+@ClassKey(PlaceMapFragment::class)
+@Inject
 class PlaceMapFragment :
-    BaseFragment<FragmentPlaceMapBinding>(R.layout.fragment_place_map),
+    BaseFragment<FragmentPlaceMapBinding>(),
     OnMenuItemReClickListener,
     OnTimeTagSelectedListener {
+    override val layoutId: Int = R.layout.fragment_place_map
     private lateinit var naverMap: NaverMap
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE).apply {

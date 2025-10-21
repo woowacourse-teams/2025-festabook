@@ -9,10 +9,9 @@ import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import timber.log.Timber
 
-abstract class BaseFragment<T : ViewBinding>(
-    private val layoutId: Int,
-) : Fragment() {
+abstract class BaseFragment<T : ViewBinding> : Fragment() {
     protected lateinit var binding: T
+    protected abstract val layoutId: Int
 
     @Suppress("ktlint:standard:backing-property-naming")
     private var _binding: T? = null

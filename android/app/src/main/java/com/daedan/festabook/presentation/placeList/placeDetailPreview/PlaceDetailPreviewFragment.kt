@@ -20,10 +20,9 @@ import com.daedan.festabook.presentation.placeList.logging.PlacePreviewClick
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 
 class PlaceDetailPreviewFragment :
-    BaseFragment<FragmentPlaceDetailPreviewBinding>(
-        R.layout.fragment_place_detail_preview,
-    ),
+    BaseFragment<FragmentPlaceDetailPreviewBinding>(),
     OnMenuItemReClickListener {
+    override val layoutId: Int = R.layout.fragment_place_detail_preview
     private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
     private val backPressedCallback =
         object : OnBackPressedCallback(false) {

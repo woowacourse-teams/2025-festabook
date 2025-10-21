@@ -28,7 +28,8 @@ import timber.log.Timber
 @ContributesIntoMap(AppScope::class)
 @ClassKey(HomeFragment::class)
 @Inject
-class HomeFragment : BaseFragment<FragmentHomeBinding>(R.layout.fragment_home) {
+class HomeFragment : BaseFragment<FragmentHomeBinding>() {
+    override val layoutId: Int = R.layout.fragment_home
     private val viewModel: HomeViewModel by metroViewModels { requireActivity() }
 
     private val centerItemMotionEnlarger = CenterItemMotionEnlarger()

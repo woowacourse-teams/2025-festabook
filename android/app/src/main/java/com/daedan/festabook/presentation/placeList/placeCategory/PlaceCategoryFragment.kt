@@ -13,7 +13,8 @@ import com.daedan.festabook.presentation.placeList.logging.PlaceCategoryClick
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.google.android.material.chip.Chip
 
-class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>(R.layout.fragment_place_category) {
+class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>() {
+    override val layoutId: Int = R.layout.fragment_place_category
     private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
 
     override fun onViewCreated(

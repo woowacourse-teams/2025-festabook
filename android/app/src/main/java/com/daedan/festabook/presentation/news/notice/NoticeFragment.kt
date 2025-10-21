@@ -15,7 +15,8 @@ import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import timber.log.Timber
 
-class NoticeFragment : BaseFragment<FragmentNoticeBinding>(R.layout.fragment_notice) {
+class NoticeFragment : BaseFragment<FragmentNoticeBinding>() {
+    override val layoutId: Int = R.layout.fragment_notice
     private val newsViewModel: NewsViewModel by metroViewModels { requireParentFragment() }
     private val mainViewModel: MainViewModel by metroViewModels { requireActivity() }
 

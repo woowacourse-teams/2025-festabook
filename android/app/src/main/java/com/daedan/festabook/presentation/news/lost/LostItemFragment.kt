@@ -15,11 +15,12 @@ import com.daedan.festabook.presentation.news.lost.adapter.LostItemAdapter
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
-class LostItemFragment : BaseFragment<FragmentLostItemBinding>(R.layout.fragment_lost_item) {
+class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
+    override val layoutId: Int = R.layout.fragment_lost_item
+
     private val adapter by lazy {
         LostItemAdapter(requireParentFragment() as OnNewsClickListener)
     }
-
     private val viewModel: NewsViewModel by metroViewModels { requireParentFragment() }
 
     override fun onViewCreated(

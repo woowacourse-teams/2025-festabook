@@ -20,8 +20,9 @@ import com.daedan.festabook.presentation.placeList.model.getIconId
 import com.daedan.festabook.presentation.placeList.model.getTextId
 
 class PlaceDetailPreviewSecondaryFragment :
-    BaseFragment<FragmentPlaceDetailPreviewSecondaryBinding>(R.layout.fragment_place_detail_preview_secondary),
+    BaseFragment<FragmentPlaceDetailPreviewSecondaryBinding>(),
     OnMenuItemReClickListener {
+    override val layoutId: Int = R.layout.fragment_place_detail_preview_secondary
     private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
     private val backPressedCallback =
         object : OnBackPressedCallback(true) {

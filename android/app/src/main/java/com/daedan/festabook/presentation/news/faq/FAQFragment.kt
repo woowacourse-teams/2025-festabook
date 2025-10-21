@@ -14,7 +14,8 @@ import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.faq.component.FAQScreen
 import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 
-class FAQFragment : BaseFragment<FragmentFaqBinding>(R.layout.fragment_faq) {
+class FAQFragment : BaseFragment<FragmentFaqBinding>() {
+    override val layoutId: Int = R.layout.fragment_faq
     private val viewModel: NewsViewModel by metroViewModels { requireParentFragment() }
 
     override fun onCreateView(

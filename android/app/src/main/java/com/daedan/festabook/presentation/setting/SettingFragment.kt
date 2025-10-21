@@ -18,11 +18,24 @@ import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
 import com.daedan.festabook.presentation.common.showSnackBar
 import com.daedan.festabook.presentation.home.HomeViewModel
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
+import com.daedan.festabook.presentation.news.NewsFragment
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ClassKey
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import timber.log.Timber
 
+@ContributesIntoMap(
+    scope = AppScope::class,
+    binding = binding<BaseFragment<FragmentSettingBinding>>(),
+)
+@ClassKey(SettingFragment::class)
+@Inject
 class SettingFragment :
-    BaseFragment<FragmentSettingBinding>(R.layout.fragment_setting),
+    BaseFragment<FragmentSettingBinding>(),
     NotificationPermissionRequester {
+    override val layoutId: Int = R.layout.fragment_setting
     private val settingViewModel: SettingViewModel by metroViewModels { requireActivity() }
 
     private val homeViewModel: HomeViewModel by metroViewModels { requireActivity() }
