@@ -13,11 +13,13 @@ import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepos
 import com.daedan.festabook.global.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FestivalNotificationService {
@@ -111,6 +113,12 @@ public class FestivalNotificationService {
         try {
             return festivalNotificationJpaRepository.save(festivalNotification);
         } catch (DataIntegrityViolationException e) {
+            log.warn(
+                    "중복 알림 구독 시도 - festivalId: {}, deviceId: {}",
+                    festivalNotification.getFestival().getId(),
+                    festivalNotification.getDevice().getId(),
+                    e
+            );
             throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
         }
     }
