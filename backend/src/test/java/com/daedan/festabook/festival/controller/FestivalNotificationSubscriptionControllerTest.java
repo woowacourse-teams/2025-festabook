@@ -223,8 +223,7 @@ class FestivalNotificationSubscriptionControllerTest {
             Device device = DeviceFixture.create();
             deviceJpaRepository.save(device);
 
-            FestivalNotification festivalNotification = FestivalNotificationFixture.create(festival,
-                    device);
+            FestivalNotification festivalNotification = FestivalNotificationFixture.create(festival, device);
             festivalNotificationJpaRepository.save(festivalNotification);
 
             // when & then
@@ -238,6 +237,37 @@ class FestivalNotificationSubscriptionControllerTest {
                     .statusCode(HttpStatus.NO_CONTENT.value());
 
             boolean exists = festivalNotificationJpaRepository.existsById(festivalNotification.getId());
+            assertThat(exists).isFalse();
+            then(fcmNotificationManager).should()
+                    .unsubscribeFestivalTopic(any(), any());
+        }
+
+        @Test
+        void 성공_이전에_삭제된_알람이_존재해도_정상_처리() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Device device = DeviceFixture.create();
+            deviceJpaRepository.save(device);
+
+            FestivalNotification first = FestivalNotificationFixture.create(festival, device);
+            festivalNotificationJpaRepository.save(first);
+            festivalNotificationJpaRepository.delete(first);
+
+            FestivalNotification second = FestivalNotificationFixture.create(festival, device);
+            festivalNotificationJpaRepository.save(second);
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .when()
+                    .delete("/festivals/notifications/{festivalNotificationId}", second.getId())
+                    .then()
+                    .statusCode(HttpStatus.NO_CONTENT.value());
+
+            boolean exists = festivalNotificationJpaRepository.existsById(second.getId());
             assertThat(exists).isFalse();
             then(fcmNotificationManager).should()
                     .unsubscribeFestivalTopic(any(), any());
