@@ -91,6 +91,40 @@ class FestivalNotificationSubscriptionControllerTest {
         }
 
         @Test
+        void 성공_삭제된_알림을_재구독() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Device device = DeviceFixture.create();
+            deviceJpaRepository.save(device);
+
+            FestivalNotification festivalNotification = FestivalNotificationFixture.create(festival, device);
+            festivalNotificationJpaRepository.save(festivalNotification);
+            festivalNotificationJpaRepository.delete(festivalNotification);
+
+            FestivalNotificationRequest request = FestivalNotificationRequestFixture.create(device.getId());
+
+            // when & then
+            RestAssured
+                    .given()
+                    .contentType(ContentType.JSON)
+                    .body(request)
+                    .when()
+                    .post("/festivals/{festivalId}/notifications", festival.getId())
+                    .then()
+                    .statusCode(HttpStatus.CREATED.value())
+                    .body("festivalNotificationId", notNullValue());
+
+            long activeCount = festivalNotificationJpaRepository.countByFestivalIdAndDeviceId(
+                    festival.getId(), device.getId());
+            assertThat(activeCount).isEqualTo(1);
+
+            then(fcmNotificationManager).should()
+                    .subscribeFestivalTopic(any(), any());
+        }
+
+        @Test
         void 예외_축제에_이미_알림을_구독한_디바이스() {
             // given
             Festival festival = FestivalFixture.create();
