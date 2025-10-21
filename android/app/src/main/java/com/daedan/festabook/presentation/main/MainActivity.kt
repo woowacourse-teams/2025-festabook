@@ -86,10 +86,8 @@ class MainActivity :
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         (application as FestaBookApp).festaBookGraph.inject(this)
-        setupFragment()
-
+        setupFragmentFactory()
         setupBinding()
-
         mainViewModel.registerDeviceAndFcmToken()
         setupHomeFragment(savedInstanceState)
         setUpBottomNavigation()
@@ -100,7 +98,7 @@ class MainActivity :
         handleNavigation(intent)
     }
 
-    private fun setupFragment() {
+    private fun setupFragmentFactory() {
         supportFragmentManager.fragmentFactory = fragmentFactory
     }
 
