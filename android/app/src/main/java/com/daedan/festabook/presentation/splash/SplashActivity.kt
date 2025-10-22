@@ -7,11 +7,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.lifecycleScope
+import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
 import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.explore.ExploreActivity
 import com.daedan.festabook.presentation.main.MainActivity
-import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
@@ -28,20 +29,18 @@ class SplashActivity : AppCompatActivity() {
         }
     }
 
-    private val appVersionManager by lazy {
-        AppVersionManager(
-            AppUpdateManagerFactory.create(this),
-            launcher,
-        )
-    }
+    @Inject
+    private lateinit var appVersionManagerFactory: AppVersionManager.Factory
+
+    private val appVersionManager by lazy { appVersionManagerFactory.create(launcher) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen().setKeepOnScreenCondition {
             viewModel.isValidationComplete.value != true
         }
         enableEdgeToEdge()
-
         super.onCreate(savedInstanceState)
+        (application as FestaBookApp).festaBookGraph.inject(this)
         setContentView(R.layout.activity_splash)
         checkIsAppUpdateAvailable {
             setupObserver()
