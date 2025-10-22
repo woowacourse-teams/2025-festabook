@@ -272,6 +272,7 @@ class FestivalNotificationSubscriptionControllerTest {
 
             boolean exists = festivalNotificationJpaRepository.existsById(festivalNotification.getId());
             assertThat(exists).isFalse();
+
             then(fcmNotificationManager).should()
                     .unsubscribeFestivalTopic(any(), any());
         }
@@ -303,6 +304,7 @@ class FestivalNotificationSubscriptionControllerTest {
 
             boolean exists = festivalNotificationJpaRepository.existsById(second.getId());
             assertThat(exists).isFalse();
+
             then(fcmNotificationManager).should()
                     .unsubscribeFestivalTopic(any(), any());
         }
