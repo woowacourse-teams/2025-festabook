@@ -4,10 +4,12 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.databinding.ItemScheduleTabBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.schedule.ScheduleMenuItemReClickLogData
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -17,7 +19,6 @@ import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ClassKey
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
@@ -25,9 +26,9 @@ import timber.log.Timber
 
 @ContributesIntoMap(
     scope = AppScope::class,
-    binding = binding<BaseFragment<FragmentScheduleBinding>>(),
+    binding = binding<Fragment>(),
 )
-@ClassKey(ScheduleFragment::class)
+@FragmentKey(ScheduleFragment::class)
 @Inject
 class ScheduleFragment :
     BaseFragment<FragmentScheduleBinding>(),

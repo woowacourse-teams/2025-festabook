@@ -2,8 +2,10 @@ package com.daedan.festabook.presentation.news
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNewsBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainViewModel
@@ -14,16 +16,15 @@ import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ClassKey
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 
 @ContributesIntoMap(
     scope = AppScope::class,
-    binding = binding<BaseFragment<FragmentNewsBinding>>(),
+    binding = binding<Fragment>(),
 )
-@ClassKey(NewsFragment::class)
+@FragmentKey(NewsFragment::class)
 @Inject
 class NewsFragment :
     BaseFragment<FragmentNewsBinding>(),

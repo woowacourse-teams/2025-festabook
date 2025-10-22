@@ -2,9 +2,11 @@ package com.daedan.festabook.di
 
 import android.app.Application
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.di.viewmodel.ViewModelGraph
 import com.daedan.festabook.logging.DefaultFirebaseLogger
+import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainActivity
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior
 import com.daedan.festabook.presentation.splash.SplashActivity

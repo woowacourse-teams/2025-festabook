@@ -4,10 +4,12 @@ import android.content.Context
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.logging.logger
@@ -33,7 +35,6 @@ import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
 import com.naver.maps.map.util.FusedLocationSource
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ClassKey
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
@@ -48,9 +49,9 @@ interface OnTimeTagSelectedListener {
 
 @ContributesIntoMap(
     scope = AppScope::class,
-    binding = binding<BaseFragment<FragmentPlaceMapBinding>>(),
+    binding = binding<Fragment>(),
 )
-@ClassKey(PlaceMapFragment::class)
+@FragmentKey(PlaceMapFragment::class)
 @Inject
 class PlaceMapFragment :
     BaseFragment<FragmentPlaceMapBinding>(),

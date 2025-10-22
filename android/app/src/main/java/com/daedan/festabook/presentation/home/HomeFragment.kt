@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.home.ExploreClickLogData
@@ -20,13 +21,12 @@ import com.daedan.festabook.presentation.home.adapter.FestivalUiState
 import com.daedan.festabook.presentation.home.adapter.LineUpItemOfDayAdapter
 import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 import dev.zacsweers.metro.AppScope
-import dev.zacsweers.metro.ClassKey
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
 @ContributesIntoMap(AppScope::class)
-@ClassKey(HomeFragment::class)
+@FragmentKey(HomeFragment::class)
 @Inject
 class HomeFragment : BaseFragment<FragmentHomeBinding>() {
     override val layoutId: Int = R.layout.fragment_home
