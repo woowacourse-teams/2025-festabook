@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.http.HttpStatus;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -77,7 +78,7 @@ class FestivalNotificationConcurrencyTest {
                         .when()
                         .post("/festivals/{festivalId}/notifications", festival.getId());
 
-                if (response.getStatusCode() == 400) {
+                if (response.getStatusCode() == HttpStatus.BAD_REQUEST.value()) {
                     String responseBody = response.getBody().asString();
                     if (responseBody.contains("이미 알림을 구독한 축제입니다")) {
                         duplicateErrorCount.incrementAndGet();
