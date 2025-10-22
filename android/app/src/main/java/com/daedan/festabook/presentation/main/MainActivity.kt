@@ -54,8 +54,11 @@ class MainActivity :
     @Inject
     private lateinit var fragmentFactory: FragmentFactory
 
+    @Inject
+    private lateinit var notificationPermissionManagerFactory: NotificationPermissionManager.Factory
+
     private val notificationPermissionManager by lazy {
-        NotificationPermissionManager(
+        notificationPermissionManagerFactory.create(
             requester = this,
             onPermissionGranted = { onPermissionGranted() },
             onPermissionDenied = { onPermissionDenied() },
