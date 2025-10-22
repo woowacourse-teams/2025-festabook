@@ -104,7 +104,7 @@ class FestivalNotificationServiceTest {
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(DeviceFixture.create()));
 
-            willThrow(new DataIntegrityViolationException(""))
+            willThrow(DataIntegrityViolationException.class)
                     .given(festivalNotificationJpaRepository)
                     .save(any());
 
