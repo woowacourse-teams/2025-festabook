@@ -2,8 +2,10 @@ package com.daedan.festabook.presentation.home
 
 import android.os.Bundle
 import android.view.View
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
+import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
 import com.daedan.festabook.di.fragment.FragmentKey
@@ -23,16 +25,16 @@ import com.daedan.festabook.presentation.home.adapter.PosterAdapter
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import timber.log.Timber
 
-@ContributesIntoMap(AppScope::class)
+@ContributesIntoMap(scope = AppScope::class, binding = binding<Fragment>())
 @FragmentKey(HomeFragment::class)
-@Inject
-class HomeFragment : BaseFragment<FragmentHomeBinding>() {
+class HomeFragment @Inject constructor(
+    private val centerItemMotionEnlarger: RecyclerView.OnScrollListener,
+) : BaseFragment<FragmentHomeBinding>() {
     override val layoutId: Int = R.layout.fragment_home
     private val viewModel: HomeViewModel by metroViewModels { requireActivity() }
-
-    private val centerItemMotionEnlarger = CenterItemMotionEnlarger()
 
     private val posterAdapter: PosterAdapter by lazy {
         PosterAdapter()
@@ -159,7 +161,7 @@ class HomeFragment : BaseFragment<FragmentHomeBinding>() {
         layoutManager.scrollToPositionWithOffset(initialPosition, offset)
 
         binding.rvHomePoster.post {
-            centerItemMotionEnlarger.expandCenterItem(binding.rvHomePoster)
+            (centerItemMotionEnlarger as CenterItemMotionEnlarger).expandCenterItem(binding.rvHomePoster)
         }
     }
 
