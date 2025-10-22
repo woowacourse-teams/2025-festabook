@@ -17,7 +17,6 @@ import com.daedan.festabook.presentation.common.showBottomAnimation
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
-import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.logging.PlacePreviewClick
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
@@ -27,7 +26,7 @@ import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
 
 @ContributesIntoMap(scope = AppScope::class, binding = binding<Fragment>())
-@FragmentKey(PlaceListFragment::class)
+@FragmentKey(PlaceDetailPreviewFragment::class)
 @Inject
 class PlaceDetailPreviewFragment :
     BaseFragment<FragmentPlaceDetailPreviewBinding>(),
