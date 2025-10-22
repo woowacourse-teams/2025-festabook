@@ -23,6 +23,7 @@ import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepositor
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.lock.ConcurrencyTestHelper;
 import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
@@ -132,6 +133,41 @@ class AnnouncementControllerTest {
                     .then()
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("공지글은 최대 3개까지 고정할 수 있습니다."));
+        }
+
+        @Test
+        void 동시성_3개_이상의_동시_요청시_3개의_고정_공지만_생성된다() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            AnnouncementRequest request = new AnnouncementRequest(
+                    "폭우가 내립니다.",
+                    "우산을 챙겨주세요.",
+                    true
+            );
+
+            int requestCount = 100;
+            Runnable httpRequest = () -> {
+                RestAssured
+                        .given()
+                        .header(authorizationHeader)
+                        .contentType(ContentType.JSON)
+                        .body(request)
+                        .when()
+                        .post("/announcements");
+            };
+
+            int expectedPinnedAnnouncementCount = 3;
+
+            // when
+            ConcurrencyTestHelper.test(requestCount, httpRequest);
+
+            // then
+            Long result = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festival.getId());
+            assertThat(result).isEqualTo(expectedPinnedAnnouncementCount);
         }
     }
 
