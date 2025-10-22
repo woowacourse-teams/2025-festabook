@@ -9,16 +9,17 @@ public class ConcurrencyTestHelper {
     private ConcurrencyTestHelper() {
     }
 
-    public static void test(int requestCount, Runnable httpRequest) {
+    public static void test(int requestCount, Runnable... requests) {
         try (ExecutorService threadPool = Executors.newFixedThreadPool(requestCount)) {
             CountDownLatch startLatch = new CountDownLatch(1);
             CountDownLatch endLatch = new CountDownLatch(requestCount);
 
             for (int i = 0; i < requestCount; i++) {
+                int currentCount = i % requests.length;
                 threadPool.submit(() -> {
                     try {
                         startLatch.await();
-                        httpRequest.run();
+                        requests[currentCount].run();
                     } catch (InterruptedException ignore) {
                     } finally {
                         endLatch.countDown();
