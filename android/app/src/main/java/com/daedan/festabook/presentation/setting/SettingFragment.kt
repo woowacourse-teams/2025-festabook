@@ -32,16 +32,17 @@ import timber.log.Timber
 )
 @FragmentKey(SettingFragment::class)
 @Inject
-class SettingFragment :
-    BaseFragment<FragmentSettingBinding>(),
+class SettingFragment(
+    private val notificationPermissionManagerFactory: NotificationPermissionManager.Factory,
+) : BaseFragment<FragmentSettingBinding>(),
     NotificationPermissionRequester {
     override val layoutId: Int = R.layout.fragment_setting
-    private val settingViewModel: SettingViewModel by metroViewModels { requireActivity() }
 
+    private val settingViewModel: SettingViewModel by metroViewModels { requireActivity() }
     private val homeViewModel: HomeViewModel by metroViewModels { requireActivity() }
 
     private val notificationPermissionManager by lazy {
-        NotificationPermissionManager(
+        notificationPermissionManagerFactory.create(
             requester = this,
             onPermissionGranted = { onPermissionGranted() },
             onPermissionDenied = { onPermissionDenied() },
