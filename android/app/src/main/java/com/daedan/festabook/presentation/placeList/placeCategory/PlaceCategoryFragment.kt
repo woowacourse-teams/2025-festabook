@@ -9,7 +9,6 @@ import com.daedan.festabook.databinding.FragmentPlaceCategoryBinding
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
-import com.daedan.festabook.presentation.placeList.logging.LocationPermissionChanged
 import com.daedan.festabook.presentation.placeList.logging.PlaceCategoryClick
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.google.android.material.chip.Chip
