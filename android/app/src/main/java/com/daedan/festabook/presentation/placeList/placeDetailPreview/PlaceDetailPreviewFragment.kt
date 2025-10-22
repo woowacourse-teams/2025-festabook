@@ -3,8 +3,10 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -15,10 +17,18 @@ import com.daedan.festabook.presentation.common.showBottomAnimation
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
+import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.logging.PlacePreviewClick
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
+@ContributesIntoMap(scope = AppScope::class, binding = binding<Fragment>())
+@FragmentKey(PlaceListFragment::class)
+@Inject
 class PlaceDetailPreviewFragment :
     BaseFragment<FragmentPlaceDetailPreviewBinding>(),
     OnMenuItemReClickListener {

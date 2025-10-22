@@ -3,16 +3,26 @@ package com.daedan.festabook.presentation.placeList.placeCategory
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.children
+import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceCategoryBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
+import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.logging.PlaceCategoryClick
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.google.android.material.chip.Chip
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
+@ContributesIntoMap(scope = AppScope::class, binding = binding<Fragment>())
+@FragmentKey(PlaceListFragment::class)
+@Inject
 class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>() {
     override val layoutId: Int = R.layout.fragment_place_category
     private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }

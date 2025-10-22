@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
@@ -17,7 +18,6 @@ import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.toPx
-import com.daedan.festabook.presentation.main.MainActivity.Companion.newInstance
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.logging.LocationPermissionChanged
@@ -41,20 +41,15 @@ import dev.zacsweers.metro.binding
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-interface OnTimeTagSelectedListener {
-    fun onTimeTagSelected(item: TimeTag)
-
-    fun onNothingSelected()
-}
-
 @ContributesIntoMap(
     scope = AppScope::class,
     binding = binding<Fragment>(),
 )
 @FragmentKey(PlaceMapFragment::class)
 @Inject
-class PlaceMapFragment :
-    BaseFragment<FragmentPlaceMapBinding>(),
+class PlaceMapFragment(
+    private val fragmentFactory: FragmentFactory,
+) : BaseFragment<FragmentPlaceMapBinding>(),
     OnMenuItemReClickListener,
     OnTimeTagSelectedListener {
     override val layoutId: Int = R.layout.fragment_place_map
@@ -71,33 +66,30 @@ class PlaceMapFragment :
         }
     }
     private var mapManager: MapManager? = null
+
     private val viewModel: PlaceListViewModel by metroViewModels()
 
-    private val placeListFragment by lazy {
-        PlaceListFragment().newInstance()
-    }
+    @Inject
+    private lateinit var placeListFragment: PlaceListFragment
 
-    private val placeDetailPreviewFragment by lazy {
-        PlaceDetailPreviewFragment().newInstance()
-    }
+    @Inject
+    private lateinit var placeDetailPreviewFragment: PlaceDetailPreviewFragment
 
-    private val placeCategoryFragment by lazy {
-        PlaceCategoryFragment().newInstance()
-    }
+    @Inject
+    private lateinit var placeCategoryFragment: PlaceCategoryFragment
 
-    private val placeDetailPreviewSecondaryFragment by lazy {
-        PlaceDetailPreviewSecondaryFragment().newInstance()
-    }
+    @Inject
+    private lateinit var placeDetailPreviewSecondaryFragment: PlaceDetailPreviewSecondaryFragment
 
-    private val mapFragment by lazy {
-        MapFragment().newInstance() as MapFragment
-    }
+    @Inject
+    private lateinit var mapFragment: MapFragment
 
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
+        childFragmentManager.fragmentFactory = fragmentFactory
 
         binding.spinnerSelectTimeTag.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -118,11 +110,11 @@ class PlaceMapFragment :
             }
 
         childFragmentManager.commit {
-            add(R.id.fcv_map_container, mapFragment, null)
-            add(R.id.fcv_place_list_container, placeListFragment, null)
-            add(R.id.fcv_map_container, placeDetailPreviewFragment, null)
-            add(R.id.fcv_place_category_container, placeCategoryFragment, null)
-            add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment, null)
+            add(R.id.fcv_map_container, mapFragment)
+            add(R.id.fcv_place_list_container, placeListFragment)
+            add(R.id.fcv_map_container, placeDetailPreviewFragment)
+            add(R.id.fcv_place_category_container, placeCategoryFragment)
+            add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment)
             hide(placeDetailPreviewFragment)
             hide(placeDetailPreviewSecondaryFragment)
         }
@@ -206,7 +198,7 @@ class PlaceMapFragment :
             }
         }
 
-        viewModel.backToInitialPositionClicked.observe(viewLifecycleOwner) { event ->
+        viewModel.backToInitialPositionClicked.observe(viewLifecycleOwner) {
             mapManager?.moveToPosition()
         }
 
@@ -270,12 +262,6 @@ class PlaceMapFragment :
         mapManager?.moveToPosition()
     }
 
-    companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
-
-        private fun getInitialPadding(context: Context): Int = 254.toPx(context)
-    }
-
     override fun onTimeTagSelected(item: TimeTag) {
         viewModel.unselectPlace()
         viewModel.onDaySelected(item)
@@ -287,6 +273,11 @@ class PlaceMapFragment :
         )
     }
 
-    override fun onNothingSelected() {
+    override fun onNothingSelected() = Unit
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
+
+        private fun getInitialPadding(context: Context): Int = 254.toPx(context)
     }
 }
