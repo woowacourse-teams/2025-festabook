@@ -1,5 +1,8 @@
 package com.daedan.festabook.presentation.news
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -16,6 +19,7 @@ import com.daedan.festabook.domain.repository.NoticeRepository
 import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
+import com.daedan.festabook.presentation.news.faq.model.toUiModel
 import com.daedan.festabook.presentation.news.lost.LostUiState
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.lost.model.toLostGuideItemUiModel
@@ -24,7 +28,6 @@ import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import kotlinx.coroutines.launch
-import com.daedan.festabook.presentation.news.faq.model.toUiModel as faqToUiModel
 
 class NewsViewModel(
     private val noticeRepository: NoticeRepository,
@@ -34,8 +37,8 @@ class NewsViewModel(
     private val _noticeUiState: MutableLiveData<NoticeUiState> = MutableLiveData<NoticeUiState>()
     val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
 
-    private val _faqUiState: MutableLiveData<FAQUiState> = MutableLiveData()
-    val faqUiState: LiveData<FAQUiState> get() = _faqUiState
+    var faqUiState by mutableStateOf<FAQUiState>(FAQUiState.InitialLoading)
+        private set
 
     private val _lostUiState: MutableLiveData<LostUiState> = MutableLiveData()
     val lostUiState: LiveData<LostUiState> get() = _lostUiState
@@ -139,14 +142,15 @@ class NewsViewModel(
 
     private fun loadAllFAQs(state: FAQUiState = FAQUiState.InitialLoading) {
         viewModelScope.launch {
-            _faqUiState.value = state
+            faqUiState = state
 
             val result = faqRepository.getAllFAQ()
+
             result
-                .onSuccess { fAQItems ->
-                    _faqUiState.value = FAQUiState.Success(fAQItems.map { it.faqToUiModel() })
+                .onSuccess { faqItems ->
+                    faqUiState = FAQUiState.Success(faqItems.map { it.toUiModel() })
                 }.onFailure {
-                    _faqUiState.value = FAQUiState.Error(it)
+                    faqUiState = FAQUiState.Error(it)
                 }
         }
     }
@@ -155,14 +159,19 @@ class NewsViewModel(
         val currentState = _noticeUiState.value ?: return
         _noticeUiState.value =
             when (currentState) {
-                is NoticeUiState.Success -> currentState.copy(notices = onUpdate(currentState.notices))
+                is NoticeUiState.Success ->
+                    currentState.copy(
+                        notices = onUpdate(currentState.notices),
+                        noticeIdToExpandPosition = -1,
+                    )
+
                 else -> currentState
             }
     }
 
     private fun updateFAQUiState(onUpdate: (List<FAQItemUiModel>) -> List<FAQItemUiModel>) {
-        val currentState = _faqUiState.value ?: return
-        _faqUiState.value =
+        val currentState = faqUiState
+        faqUiState =
             when (currentState) {
                 is FAQUiState.Success -> currentState.copy(faqs = onUpdate(currentState.faqs))
                 else -> currentState

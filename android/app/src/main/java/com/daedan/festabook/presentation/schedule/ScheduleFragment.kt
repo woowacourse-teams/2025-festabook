@@ -8,6 +8,8 @@ import androidx.fragment.app.viewModels
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleBinding
 import com.daedan.festabook.databinding.ItemScheduleTabBinding
+import com.daedan.festabook.logging.logger
+import com.daedan.festabook.logging.model.schedule.ScheduleMenuItemReClickLogData
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
@@ -36,6 +38,7 @@ class ScheduleFragment :
     override fun onMenuItemReClick() {
         viewModel.loadAllDates()
         viewModel.loadScheduleByDate()
+        binding.logger.log(ScheduleMenuItemReClickLogData(binding.logger.getBaseLogData()))
     }
 
     @SuppressLint("WrongConstant")

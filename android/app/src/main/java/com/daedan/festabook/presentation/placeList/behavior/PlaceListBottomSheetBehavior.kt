@@ -7,6 +7,8 @@ import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
+import com.daedan.festabook.logging.DefaultFirebaseLogger
+import com.daedan.festabook.presentation.placeList.logging.PlaceListSwipeUp
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
 class PlaceListBottomSheetBehavior<V : View>(
@@ -19,6 +21,10 @@ class PlaceListBottomSheetBehavior<V : View>(
     private lateinit var recyclerView: RecyclerView
     private var headerRange: IntRange = 0..0
 
+    private val logger by lazy {
+        DefaultFirebaseLogger.getInstance(context)
+    }
+
     init {
         state = STATE_HALF_EXPANDED
         isGestureInsetBottomIgnored = true
@@ -30,6 +36,13 @@ class PlaceListBottomSheetBehavior<V : View>(
                 ) {
                     if (newState == STATE_HALF_EXPANDED && ::recyclerView.isInitialized) {
                         recyclerView.scrollToPosition(HEADER_POSITION)
+                    }
+                    if (newState == STATE_EXPANDED) {
+                        logger.log(
+                            PlaceListSwipeUp(
+                                baseLogData = logger.getBaseLogData()
+                            )
+                        )
                     }
                 }
 

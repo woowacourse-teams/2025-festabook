@@ -3,20 +3,38 @@ package com.daedan.festabook.presentation.home.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import coil3.load
 import coil3.request.CachePolicy
+import coil3.request.crossfade
 import coil3.request.transformations
 import coil3.transform.RoundedCornersTransformation
+import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemHomePosterBinding
-import com.daedan.festabook.logging.DefaultFirebaseLogger
-import com.daedan.festabook.logging.model.PosterTouchLogData
 import com.daedan.festabook.logging.logger
+import com.daedan.festabook.logging.model.PosterTouchLogData
+import com.daedan.festabook.presentation.common.convertImageUrl
 import com.daedan.festabook.presentation.common.loadImage
+import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
+import io.getstream.photoview.dialog.PhotoViewDialog
 
 class PosterItemViewHolder(
-    val binding: ItemHomePosterBinding,
+    private val binding: ItemHomePosterBinding,
 ) : RecyclerView.ViewHolder(binding.root) {
+
     fun bind(url: String) {
+        val imageDialog = PhotoViewDialog.Builder(
+            context = binding.root.context,
+            images = listOf(url),
+        ) { imageView, url ->
+            imageView.load(url.convertImageUrl()) {
+                crossfade(true)
+            }
+        }
+            .withHiddenStatusBar(false)
+            .withTransitionFrom(binding.ivHomePoster)
+            .build()
+
         binding.ivHomePoster.loadImage(url) {
             transformations(RoundedCornersTransformation(20f))
             memoryCachePolicy(CachePolicy.ENABLED)
@@ -30,6 +48,9 @@ class PosterItemViewHolder(
                     url = url,
                 ),
             )
+        }
+        binding.ivHomePoster.setOnClickListener {
+            imageDialog.show()
         }
     }
 
