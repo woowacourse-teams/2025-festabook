@@ -49,11 +49,18 @@ import timber.log.Timber
 @Inject
 class PlaceMapFragment(
     private val fragmentFactory: FragmentFactory,
+    private val placeListFragment: PlaceListFragment,
+    private val placeDetailPreviewFragment: PlaceDetailPreviewFragment,
+    private val placeCategoryFragment: PlaceCategoryFragment,
+    private val placeDetailPreviewSecondaryFragment: PlaceDetailPreviewSecondaryFragment,
+    private val mapFragment: MapFragment,
 ) : BaseFragment<FragmentPlaceMapBinding>(),
     OnMenuItemReClickListener,
     OnTimeTagSelectedListener {
     override val layoutId: Int = R.layout.fragment_place_map
+
     private lateinit var naverMap: NaverMap
+
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE).apply {
             activate {
@@ -68,21 +75,6 @@ class PlaceMapFragment(
     private var mapManager: MapManager? = null
 
     private val viewModel: PlaceListViewModel by metroViewModels()
-
-    @Inject
-    private lateinit var placeListFragment: PlaceListFragment
-
-    @Inject
-    private lateinit var placeDetailPreviewFragment: PlaceDetailPreviewFragment
-
-    @Inject
-    private lateinit var placeCategoryFragment: PlaceCategoryFragment
-
-    @Inject
-    private lateinit var placeDetailPreviewSecondaryFragment: PlaceDetailPreviewSecondaryFragment
-
-    @Inject
-    private lateinit var mapFragment: MapFragment
 
     override fun onViewCreated(
         view: View,
@@ -133,6 +125,32 @@ class PlaceMapFragment(
         super.onDestroy()
         mapManager?.clearMapManager()
     }
+
+    override fun onMenuItemReClick() {
+        val childFragments =
+            listOf(
+                placeListFragment,
+                placeDetailPreviewFragment,
+                placeCategoryFragment,
+            )
+        childFragments.forEach { fragment ->
+            (fragment as? OnMenuItemReClickListener)?.onMenuItemReClick()
+        }
+        mapManager?.moveToPosition()
+    }
+
+    override fun onTimeTagSelected(item: TimeTag) {
+        viewModel.unselectPlace()
+        viewModel.onDaySelected(item)
+        binding.logger.log(
+            PlaceTimeTagSelected(
+                baseLogData = binding.logger.getBaseLogData(),
+                timeTagName = item.name,
+            ),
+        )
+    }
+
+    override fun onNothingSelected() = Unit
 
     private suspend fun setUpMapManager() {
         naverMap = mapFragment.getMap()
@@ -248,32 +266,6 @@ class PlaceMapFragment(
             }
         }
     }
-
-    override fun onMenuItemReClick() {
-        val childFragments =
-            listOf(
-                placeListFragment,
-                placeDetailPreviewFragment,
-                placeCategoryFragment,
-            )
-        childFragments.forEach { fragment ->
-            (fragment as? OnMenuItemReClickListener)?.onMenuItemReClick()
-        }
-        mapManager?.moveToPosition()
-    }
-
-    override fun onTimeTagSelected(item: TimeTag) {
-        viewModel.unselectPlace()
-        viewModel.onDaySelected(item)
-        binding.logger.log(
-            PlaceTimeTagSelected(
-                baseLogData = binding.logger.getBaseLogData(),
-                timeTagName = item.name,
-            ),
-        )
-    }
-
-    override fun onNothingSelected() = Unit
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1234
