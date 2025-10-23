@@ -7,7 +7,6 @@ import androidx.fragment.app.FragmentFactory
 import androidx.lifecycle.ViewModel
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.di.viewmodel.MetroViewModelFactory
-import com.daedan.festabook.di.viewmodel.ViewModelGraph
 import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainActivity
@@ -43,18 +42,12 @@ interface FestaBookAppGraph {
 
     fun inject(placeListBottomSheetBehavior: PlaceListBottomSheetBehavior<*>)
 
-    @Multibinds(allowEmpty = true)
-    val viewModelProviders: Map<KClass<out ViewModel>, Provider<ViewModel>>
-
     // splashActivity
     @Provides
     fun provideAppUpdateManager(application: Application): AppUpdateManager = AppUpdateManagerFactory.create(application)
 
     // logger
     val defaultFirebaseLogger: DefaultFirebaseLogger
-
-    // viewModelGraphFactory
-    val viewModelGraphFactory: ViewModelGraph.Factory
 
     val metroViewModelFactory: MetroViewModelFactory
 
