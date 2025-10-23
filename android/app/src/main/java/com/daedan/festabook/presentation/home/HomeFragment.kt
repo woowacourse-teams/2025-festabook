@@ -3,13 +3,14 @@ package com.daedan.festabook.presentation.home
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentHomeBinding
 import com.daedan.festabook.di.fragment.FragmentKey
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.home.ExploreClickLogData
 import com.daedan.festabook.logging.model.home.HomeViewLogData
@@ -34,7 +35,10 @@ class HomeFragment @Inject constructor(
     private val centerItemMotionEnlarger: RecyclerView.OnScrollListener,
 ) : BaseFragment<FragmentHomeBinding>() {
     override val layoutId: Int = R.layout.fragment_home
-    private val viewModel: HomeViewModel by metroViewModels { requireActivity() }
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val viewModel: HomeViewModel by viewModels({ requireActivity() })
 
     private val posterAdapter: PosterAdapter by lazy {
         PosterAdapter()

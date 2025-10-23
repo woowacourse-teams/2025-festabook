@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.core.view.children
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceCategoryBinding
 import com.daedan.festabook.di.fragment.FragmentKey
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
@@ -24,7 +25,10 @@ import dev.zacsweers.metro.binding
 @Inject
 class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>() {
     override val layoutId: Int = R.layout.fragment_place_category
-    private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val viewModel: PlaceListViewModel by viewModels({ requireParentFragment() })
 
     override fun onViewCreated(
         view: View,

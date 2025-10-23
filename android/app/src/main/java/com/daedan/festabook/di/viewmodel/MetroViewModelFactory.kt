@@ -28,35 +28,3 @@ class MetroViewModelFactory @Inject constructor(
         return modelClass.cast(provider())
     }
 }
-
-@MainThread
-inline fun <reified VM : ViewModel> AppCompatActivity.metroViewModels(): Lazy<VM> =
-    ViewModelLazy(
-        VM::class,
-        { viewModelStore },
-        {
-            (application as FestaBookApp)
-                .festaBookGraph.viewModelGraphFactory
-                .createViewModelGraph(
-                    defaultViewModelCreationExtras,
-                ).metroViewModelFactory
-        },
-        { defaultViewModelCreationExtras },
-    )
-
-@MainThread
-inline fun <reified VM : ViewModel> Fragment.metroViewModels(
-    crossinline viewModelStoreOwner: () -> ViewModelStoreOwner = { this },
-): Lazy<VM> =
-    ViewModelLazy(
-        VM::class,
-        { viewModelStoreOwner().viewModelStore },
-        {
-            (requireActivity().application as FestaBookApp)
-                .festaBookGraph.viewModelGraphFactory
-                .createViewModelGraph(
-                    defaultViewModelCreationExtras,
-                ).metroViewModelFactory
-        },
-        { defaultViewModelCreationExtras },
-    )

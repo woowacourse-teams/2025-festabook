@@ -4,10 +4,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
 import com.daedan.festabook.di.fragment.FragmentKey
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -32,7 +33,10 @@ class PlaceDetailPreviewFragment :
     BaseFragment<FragmentPlaceDetailPreviewBinding>(),
     OnMenuItemReClickListener {
     override val layoutId: Int = R.layout.fragment_place_detail_preview
-    private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val viewModel: PlaceListViewModel by viewModels({ requireParentFragment() })
     private val backPressedCallback =
         object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {

@@ -7,11 +7,12 @@ import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentSettingBinding
 import com.daedan.festabook.di.fragment.FragmentKey
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -38,8 +39,10 @@ class SettingFragment(
     NotificationPermissionRequester {
     override val layoutId: Int = R.layout.fragment_setting
 
-    private val settingViewModel: SettingViewModel by metroViewModels { requireActivity() }
-    private val homeViewModel: HomeViewModel by metroViewModels { requireActivity() }
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val settingViewModel: SettingViewModel by viewModels({ requireActivity() })
+    private val homeViewModel: HomeViewModel by viewModels({ requireActivity() })
 
     private val notificationPermissionManager by lazy {
         notificationPermissionManagerFactory.create(
@@ -87,7 +90,8 @@ class SettingFragment(
         binding.tvSettingAppVersionName.text = versionName
     }
 
-    override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
+    override fun shouldShowPermissionRationale(permission: String): Boolean =
+        shouldShowRequestPermissionRationale(permission)
 
     private fun setupObservers() {
         settingViewModel.permissionCheckEvent.observe(viewLifecycleOwner) {

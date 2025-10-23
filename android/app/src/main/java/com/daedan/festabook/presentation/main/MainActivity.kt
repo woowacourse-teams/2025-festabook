@@ -7,6 +7,7 @@ import androidx.activity.OnBackPressedCallback
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -17,10 +18,10 @@ import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.add
 import androidx.fragment.app.commit
 import androidx.fragment.app.commitNow
-import com.daedan.festabook.FestaBookApp
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityMainBinding
-import com.daedan.festabook.di.viewmodel.metroViewModels
+import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -43,19 +44,22 @@ import timber.log.Timber
 class MainActivity :
     AppCompatActivity(),
     NotificationPermissionRequester {
-    private val binding: ActivityMainBinding by lazy {
-        ActivityMainBinding.inflate(layoutInflater)
-    }
 
-    private val mainViewModel: MainViewModel by metroViewModels()
-    private val homeViewModel: HomeViewModel by metroViewModels()
-    private val settingViewModel: SettingViewModel by metroViewModels()
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
 
     @Inject
     private lateinit var fragmentFactory: FragmentFactory
 
     @Inject
     private lateinit var notificationPermissionManagerFactory: NotificationPermissionManager.Factory
+    private val binding: ActivityMainBinding by lazy {
+        ActivityMainBinding.inflate(layoutInflater)
+    }
+
+    private val mainViewModel: MainViewModel by viewModels()
+    private val homeViewModel: HomeViewModel by viewModels()
+    private val settingViewModel: SettingViewModel by viewModels()
 
     private val notificationPermissionManager by lazy {
         notificationPermissionManagerFactory.create(
@@ -86,9 +90,9 @@ class MainActivity :
     override fun onPermissionDenied() = Unit
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        appGraph.inject(this)
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        (application as FestaBookApp).festaBookGraph.inject(this)
         setupFragmentFactory()
         setupBinding()
         mainViewModel.registerDeviceAndFcmToken()
@@ -121,7 +125,8 @@ class MainActivity :
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    override fun shouldShowPermissionRationale(permission: String): Boolean = shouldShowRequestPermissionRationale(permission)
+    override fun shouldShowPermissionRationale(permission: String): Boolean =
+        shouldShowRequestPermissionRationale(permission)
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)

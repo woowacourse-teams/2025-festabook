@@ -3,11 +3,13 @@ package com.daedan.festabook.presentation.news.lost
 import android.os.Bundle
 import android.view.View
 import android.widget.GridLayout
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.GridLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentLostItemBinding
-import com.daedan.festabook.di.viewmodel.metroViewModels
+import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.lost.LostItemModalDialogFragment.Companion.TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT
@@ -18,10 +20,13 @@ import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
     override val layoutId: Int = R.layout.fragment_lost_item
 
+    override val defaultViewModelProviderFactory: ViewModelProvider.Factory
+        get() = appGraph.metroViewModelFactory
+
     private val adapter by lazy {
         LostItemAdapter(requireParentFragment() as OnNewsClickListener)
     }
-    private val viewModel: NewsViewModel by metroViewModels { requireParentFragment() }
+    private val viewModel: NewsViewModel by viewModels({ requireParentFragment() })
 
     override fun onViewCreated(
         view: View,

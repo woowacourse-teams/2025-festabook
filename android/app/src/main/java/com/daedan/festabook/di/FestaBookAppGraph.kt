@@ -55,4 +55,6 @@ interface FestaBookAppGraph {
     val metroViewModelFactory: MetroViewModelFactory
 }
 
-val Context.appGraph get() =  (applicationContext as FestaBookApp).festaBookGraph
+val Context.appGraph get() = (applicationContext as FestaBookApp).festaBookGraph
+
+val Fragment.appGraph get() = (requireContext().applicationContext as FestaBookApp).festaBookGraph

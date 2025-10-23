@@ -8,12 +8,13 @@ import com.daedan.festabook.di.viewmodel.ViewModelKey
 import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 @ViewModelKey(SettingViewModel::class)
 class SettingViewModel @Inject constructor(
     private val festivalNotificationRepository: FestivalNotificationRepository,

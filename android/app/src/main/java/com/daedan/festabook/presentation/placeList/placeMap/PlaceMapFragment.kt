@@ -7,11 +7,12 @@ import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.commit
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.di.fragment.FragmentKey
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -59,6 +60,9 @@ class PlaceMapFragment(
     OnTimeTagSelectedListener {
     override val layoutId: Int = R.layout.fragment_place_map
 
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+
     private lateinit var naverMap: NaverMap
 
     private val locationSource by lazy {
@@ -74,7 +78,7 @@ class PlaceMapFragment(
     }
     private var mapManager: MapManager? = null
 
-    private val viewModel: PlaceListViewModel by metroViewModels()
+    private val viewModel: PlaceListViewModel by viewModels()
 
     override fun onViewCreated(
         view: View,

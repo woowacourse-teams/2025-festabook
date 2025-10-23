@@ -4,19 +4,20 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.R
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.explore.ExploreActivity
 import com.daedan.festabook.presentation.main.MainActivity
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
-    private val viewModel: SplashViewModel by metroViewModels()
+    private val viewModel: SplashViewModel by viewModels()
     private val launcher by lazy {
         registerForActivityResult(
             ActivityResultContracts.StartIntentSenderForResult(),
@@ -28,6 +29,9 @@ class SplashActivity : AppCompatActivity() {
             }
         }
     }
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
 
     @Inject
     private lateinit var appVersionManagerFactory: AppVersionManager.Factory

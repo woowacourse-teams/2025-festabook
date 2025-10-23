@@ -9,11 +9,12 @@ import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 @ViewModelKey(HomeViewModel::class)
 class HomeViewModel @Inject constructor(
     private val festivalRepository: FestivalRepository,

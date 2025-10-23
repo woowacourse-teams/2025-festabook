@@ -19,11 +19,12 @@ import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.toUiModel
+import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-@ContributesIntoMap(ViewModelScope::class)
+@ContributesIntoMap(AppScope::class)
 @ViewModelKey(PlaceListViewModel::class)
 class PlaceListViewModel @Inject constructor(
     private val placeListRepository: PlaceListRepository,

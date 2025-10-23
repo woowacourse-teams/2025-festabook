@@ -7,6 +7,8 @@ import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import coil3.ImageLoader
@@ -16,7 +18,6 @@ import coil3.request.ImageResult
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
 import com.daedan.festabook.di.fragment.FragmentKey
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -58,8 +59,11 @@ class PlaceListFragment :
     OnMenuItemReClickListener,
     OnMapReadyCallback {
     override val layoutId: Int = R.layout.fragment_place_list
-    private val viewModel: PlaceListViewModel by metroViewModels { requireParentFragment() }
-    private val childViewModel: PlaceListChildViewModel by metroViewModels()
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val viewModel: PlaceListViewModel by viewModels({ requireParentFragment() })
+    private val childViewModel: PlaceListChildViewModel by viewModels()
 
     private val placeAdapter by lazy {
         PlaceListAdapter(this)

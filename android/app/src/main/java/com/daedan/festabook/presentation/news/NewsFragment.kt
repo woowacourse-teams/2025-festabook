@@ -3,10 +3,11 @@ package com.daedan.festabook.presentation.news
 import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentNewsBinding
 import com.daedan.festabook.di.fragment.FragmentKey
-import com.daedan.festabook.di.viewmodel.metroViewModels
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.adapter.NewsPagerAdapter
@@ -29,13 +30,17 @@ import dev.zacsweers.metro.binding
 class NewsFragment :
     BaseFragment<FragmentNewsBinding>(),
     OnNewsClickListener {
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+
     override val layoutId: Int = R.layout.fragment_news
 
     private val newsPagerAdapter by lazy {
         NewsPagerAdapter(this)
     }
-    private val newsViewModel: NewsViewModel by metroViewModels()
-    private val mainViewModel: MainViewModel by metroViewModels { requireActivity() }
+    private val newsViewModel: NewsViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels({ requireActivity() })
 
     override fun onViewCreated(
         view: View,
