@@ -15,6 +15,7 @@ import com.daedan.festabook.logging.model.schedule.ScheduleMenuItemReClickLogDat
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
+import com.daedan.festabook.presentation.placeDetail.PlaceDetailViewModel
 import com.daedan.festabook.presentation.schedule.adapter.SchedulePagerAdapter
 import com.google.android.material.tabs.TabLayout
 import com.google.android.material.tabs.TabLayoutMediator
@@ -34,11 +35,16 @@ class ScheduleFragment :
     BaseFragment<FragmentScheduleBinding>(),
     OnMenuItemReClickListener {
     override val layoutId: Int = R.layout.fragment_schedule
+
+    @Inject
+    private lateinit var viewModelFactory: ScheduleViewModel.Factory
     private val adapter: SchedulePagerAdapter by lazy {
         SchedulePagerAdapter(this)
     }
 
-    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.factory() }
+    private val viewModel: ScheduleViewModel by viewModels { ScheduleViewModel.factory(
+        viewModelFactory
+    ) }
 
     override fun onViewCreated(
         view: View,

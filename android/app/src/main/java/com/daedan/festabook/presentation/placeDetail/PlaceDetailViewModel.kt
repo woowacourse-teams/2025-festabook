@@ -16,10 +16,11 @@ import com.daedan.festabook.presentation.placeDetail.model.toUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-class PlaceDetailViewModel @Inject constructor(
+class PlaceDetailViewModel @AssistedInject constructor(
     private val placeDetailRepository: PlaceDetailRepository,
     @Assisted private val place: PlaceUiModel?,
     @Assisted private val receivedPlaceDetail: PlaceDetailUiModel?,
@@ -81,32 +82,14 @@ class PlaceDetailViewModel @Inject constructor(
     }
 
     companion object {
-        fun factory(place: PlaceUiModel) =
+        fun factory(
+            factory: Factory,
+            place: PlaceUiModel?,
+            receivedPlaceDetail: PlaceDetailUiModel?,
+        ) =
             viewModelFactory {
                 initializer {
-                    val appGraph = (this[APPLICATION_KEY] as FestaBookApp).festaBookGraph
-
-                    appGraph
-                        .viewModelGraphFactory
-                        .createViewModelGraph(this)
-                        .placeDetailViewModelFactory
-                        .create(
-                            place = place,
-                            receivedPlaceDetail = null,
-                        )
-                }
-            }
-
-        fun factory(placeDetail: PlaceDetailUiModel) =
-            viewModelFactory {
-                initializer {
-                    val appGraph = (this[APPLICATION_KEY] as FestaBookApp).festaBookGraph
-
-                    appGraph
-                        .viewModelGraphFactory
-                        .createViewModelGraph(this)
-                        .placeDetailViewModelFactory
-                        .create(place = null, receivedPlaceDetail = placeDetail)
+                    factory.create(place, receivedPlaceDetail)
                 }
             }
     }

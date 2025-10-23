@@ -11,7 +11,9 @@ import com.daedan.festabook.di.viewmodel.ViewModelGraph
 import com.daedan.festabook.logging.DefaultFirebaseLogger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainActivity
+import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior
+import com.daedan.festabook.presentation.schedule.ScheduleViewModel
 import com.daedan.festabook.presentation.splash.SplashActivity
 import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -37,6 +39,8 @@ interface FestaBookAppGraph {
 
     fun inject(activity: SplashActivity)
 
+    fun inject(activity: PlaceDetailActivity)
+
     fun inject(placeListBottomSheetBehavior: PlaceListBottomSheetBehavior<*>)
 
     @Multibinds(allowEmpty = true)
@@ -53,6 +57,8 @@ interface FestaBookAppGraph {
     val viewModelGraphFactory: ViewModelGraph.Factory
 
     val metroViewModelFactory: MetroViewModelFactory
+
+    val scheduleViewModelFactory: ScheduleViewModel.Factory
 }
 
 val Context.appGraph get() = (applicationContext as FestaBookApp).festaBookGraph

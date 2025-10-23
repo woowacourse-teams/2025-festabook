@@ -14,11 +14,12 @@ import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
 import com.daedan.festabook.presentation.schedule.model.toUiModel
 import dev.zacsweers.metro.Assisted
 import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class ScheduleViewModel @Inject constructor(
+class ScheduleViewModel @AssistedInject constructor(
     private val scheduleRepository: ScheduleRepository,
     @Assisted private val dateId: Long,
 ) : ViewModel() {
@@ -91,15 +92,13 @@ class ScheduleViewModel @Inject constructor(
         private const val FIRST_INDEX: Int = 0
         private const val INVALID_INDEX: Int = -1
 
-        fun factory(dateId: Long = INVALID_ID): ViewModelProvider.Factory =
+        fun factory(
+            factory: Factory,
+            dateId: Long = INVALID_ID
+        ): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
-                    (this[APPLICATION_KEY] as FestaBookApp)
-                        .festaBookGraph
-                        .viewModelGraphFactory
-                        .createViewModelGraph(this)
-                        .scheduleViewModelFactory
-                        .create(dateId)
+                    factory.create(dateId)
                 }
             }
     }
