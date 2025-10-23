@@ -461,7 +461,7 @@ class AnnouncementControllerTest {
     }
 
     @Nested
-    class ConccurentTest {
+    class ConcurrentTest {
 
         @Test
         void 동시성_3개_이상의_동시_요청시_3개의_고정_공지만_생성된다() {
@@ -526,7 +526,7 @@ class AnnouncementControllerTest {
                         .contentType(ContentType.JSON)
                         .body(updateAnnouncement)
                         .when()
-                        .post("/{announcementId}/pin", initAnnouncement.getId());
+                        .post("announcement/{announcementId}/pin", initAnnouncement.getId());
             };
 
             int expectedPinnedAnnouncementCount = 3;

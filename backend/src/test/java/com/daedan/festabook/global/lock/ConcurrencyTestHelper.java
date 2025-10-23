@@ -10,6 +10,8 @@ public class ConcurrencyTestHelper {
     }
 
     public static void test(int requestCount, Runnable... requests) {
+        validateRequests(requests);
+
         try (ExecutorService threadPool = Executors.newFixedThreadPool(requestCount)) {
             CountDownLatch startLatch = new CountDownLatch(1);
             CountDownLatch endLatch = new CountDownLatch(requestCount);
@@ -33,6 +35,12 @@ public class ConcurrencyTestHelper {
                 endLatch.await();
             } catch (InterruptedException ignore) {
             }
+        }
+    }
+
+    private static void validateRequests(Runnable[] requests) {
+        if (requests.length == 0) {
+            throw new IllegalArgumentException("실행할 api 인자는 최소 1개 이상이어야 합니다.");
         }
     }
 }
