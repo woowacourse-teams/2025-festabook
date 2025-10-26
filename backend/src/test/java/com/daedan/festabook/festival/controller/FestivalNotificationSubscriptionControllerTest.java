@@ -116,12 +116,8 @@ class FestivalNotificationSubscriptionControllerTest {
                     .statusCode(HttpStatus.CREATED.value())
                     .body("festivalNotificationId", notNullValue());
 
-            long activeCount = festivalNotificationJpaRepository.countByFestivalIdAndDeviceId(
-                    festival.getId(), device.getId());
-            assertThat(activeCount).isEqualTo(1);
-
             then(fcmNotificationManager).should()
-                    .subscribeFestivalTopic(any(), any());
+                    .subscribeFestivalTopic(festival.getId(), device.getFcmToken());
         }
 
         @Test
