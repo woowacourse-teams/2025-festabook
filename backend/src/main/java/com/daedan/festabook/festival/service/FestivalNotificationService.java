@@ -34,6 +34,8 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
+        validateDuplicateSubscription(festivalId, request);
+
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
@@ -48,6 +50,8 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
+        validateDuplicateSubscription(festivalId, request);
+
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
@@ -62,6 +66,8 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
+        validateDuplicateSubscription(festivalId, request);
+
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
 
@@ -103,6 +109,12 @@ public class FestivalNotificationService {
         );
     }
 
+    private void validateDuplicateSubscription(Long festivalId, FestivalNotificationRequest request) {
+        if (festivalNotificationJpaRepository.existsByFestivalIdAndDeviceId(festivalId, request.deviceId())) {
+            throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
+        }
+    }
+
     private FestivalNotification createFestivalNotification(Long festivalId, FestivalNotificationRequest request) {
         Festival festival = getFestivalById(festivalId);
         Device device = getDeviceById(request.deviceId());
@@ -113,12 +125,6 @@ public class FestivalNotificationService {
         try {
             return festivalNotificationJpaRepository.save(festivalNotification);
         } catch (DataIntegrityViolationException e) {
-            log.warn(
-                    "중복 알림 구독 시도 - festivalId: {}, deviceId: {}",
-                    festivalNotification.getFestival().getId(),
-                    festivalNotification.getDevice().getId(),
-                    e
-            );
             throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
         }
     }

@@ -16,4 +16,6 @@ public interface FestivalNotificationJpaRepository extends JpaRepository<Festiva
     List<FestivalNotification> findAllWithFestivalByDeviceId(Long deviceId);
 
     Long countByFestivalIdAndDeviceId(Long festivalId, Long deviceId);
+
+    boolean existsByFestivalIdAndDeviceId(Long festivalId, Long deviceId);
 }
