@@ -80,13 +80,16 @@ class PlaceMapFragment(
 
     private val viewModel: PlaceListViewModel by viewModels()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
+        setupFragmentFactory()
+        super.onCreate(savedInstanceState)
+    }
+
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        childFragmentManager.fragmentFactory = fragmentFactory
-
         binding.spinnerSelectTimeTag.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -163,6 +166,10 @@ class PlaceMapFragment(
         binding.viewMapTouchEventIntercept.setOnMapDragListener {
             viewModel.onMapViewClick()
         }
+    }
+
+    private fun setupFragmentFactory() {
+        childFragmentManager.fragmentFactory = fragmentFactory
     }
 
     private fun setUpObserver() {
