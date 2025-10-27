@@ -4,8 +4,12 @@ import com.daedan.festabook.data.datasource.remote.ApiResult
 import com.daedan.festabook.data.model.request.DeviceRegisterRequest
 import com.daedan.festabook.data.model.response.DeviceRegisterResponse
 import com.daedan.festabook.data.service.DeviceService
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class DeviceDataSourceImpl(
+@ContributesBinding(AppScope::class)
+class DeviceDataSourceImpl @Inject constructor(
     private val deviceService: DeviceService,
 ) : DeviceDataSource {
     override suspend fun registerDevice(

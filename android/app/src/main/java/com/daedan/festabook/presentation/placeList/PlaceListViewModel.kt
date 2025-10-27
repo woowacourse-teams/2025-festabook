@@ -3,12 +3,9 @@ package com.daedan.festabook.presentation.placeList
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
@@ -22,9 +19,14 @@ import com.daedan.festabook.presentation.placeList.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeList.model.toUiModel
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-class PlaceListViewModel(
+@ContributesIntoMap(AppScope::class)
+@ViewModelKey(PlaceListViewModel::class)
+class PlaceListViewModel @Inject constructor(
     private val placeListRepository: PlaceListRepository,
     private val placeDetailRepository: PlaceDetailRepository,
 ) : ViewModel() {
@@ -147,18 +149,5 @@ class PlaceListViewModel(
                     }
             }
         }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val placeDetailRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeDetailRepository
-                    val placeListRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.placeListRepository
-                    PlaceListViewModel(placeListRepository, placeDetailRepository)
-                }
-            }
     }
 }

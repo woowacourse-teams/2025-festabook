@@ -4,8 +4,12 @@ import com.daedan.festabook.data.datasource.remote.ApiResult
 import com.daedan.festabook.data.model.request.FestivalNotificationRequest
 import com.daedan.festabook.data.model.response.festival.FestivalNotificationResponse
 import com.daedan.festabook.data.service.FestivalNotificationService
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class FestivalNotificationDataSourceImpl(
+@ContributesBinding(AppScope::class)
+class FestivalNotificationDataSourceImpl @Inject constructor(
     private val festivalNotificationService: FestivalNotificationService,
 ) : FestivalNotificationDataSource {
     override suspend fun saveFestivalNotification(

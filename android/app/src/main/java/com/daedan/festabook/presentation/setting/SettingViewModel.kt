@@ -3,18 +3,20 @@ package com.daedan.festabook.presentation.setting
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class SettingViewModel(
+@ContributesIntoMap(AppScope::class)
+@ViewModelKey(SettingViewModel::class)
+class SettingViewModel @Inject constructor(
     private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
     private val _permissionCheckEvent: SingleLiveData<Unit> = SingleLiveData()
@@ -98,16 +100,5 @@ class SettingViewModel(
                     _isLoading.value = false
                 }
         }
-    }
-
-    companion object {
-        fun factory(): ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val festivalNotificationRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.festivalNotificationRepository
-                    SettingViewModel(festivalNotificationRepository)
-                }
-            }
     }
 }
