@@ -1,22 +1,27 @@
 package com.daedan.festabook.presentation.home.adapter
 
 import androidx.recyclerview.widget.RecyclerView
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlin.math.abs
 
-class CenterItemMotionEnlarger(
-    private val centerThresholdDp: Int = DEFAULT_CENTER_THRESHOLD_DP,
-) : RecyclerView.OnScrollListener() {
+@ContributesBinding(AppScope::class)
+@Inject
+class CenterItemMotionEnlarger : RecyclerView.OnScrollListener() {
     override fun onScrolled(
         rv: RecyclerView,
         dx: Int,
         dy: Int,
     ) {
-        val thresholdPx = (centerThresholdDp * rv.context.resources.displayMetrics.density).toInt()
+        val thresholdPx =
+            (DEFAULT_CENTER_THRESHOLD_DP * rv.context.resources.displayMetrics.density).toInt()
         updateChildAnimations(rv, thresholdPx)
     }
 
     fun expandCenterItem(recyclerView: RecyclerView) {
-        val thresholdPx = (centerThresholdDp * recyclerView.context.resources.displayMetrics.density).toInt()
+        val thresholdPx =
+            (DEFAULT_CENTER_THRESHOLD_DP * recyclerView.context.resources.displayMetrics.density).toInt()
         updateChildAnimations(recyclerView, thresholdPx)
     }
 
@@ -41,6 +46,6 @@ class CenterItemMotionEnlarger(
     }
 
     companion object {
-        const val DEFAULT_CENTER_THRESHOLD_DP = 10
+        private const val DEFAULT_CENTER_THRESHOLD_DP = 10
     }
 }
