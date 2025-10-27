@@ -113,7 +113,7 @@ class FestivalNotificationServiceTest {
                     festivalNotificationService.subscribeFestivalNotification(festivalId, request)
             )
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("이미 알림을 구독한 축제입니다.");
+                    .hasMessage("FestivalNotification 이미 존재합니다.");
         }
 
         @Test
