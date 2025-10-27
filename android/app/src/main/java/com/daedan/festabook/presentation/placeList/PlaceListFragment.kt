@@ -6,7 +6,9 @@ import android.view.View
 import androidx.coordinatorlayout.widget.CoordinatorLayout
 import androidx.core.content.ContextCompat
 import androidx.core.view.isGone
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.DefaultItemAnimator
 import coil3.ImageLoader
@@ -15,6 +17,7 @@ import coil3.request.ImageRequest
 import coil3.request.ImageResult
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceListBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -28,13 +31,16 @@ import com.daedan.festabook.presentation.placeList.behavior.MoveToInitialPositio
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior
 import com.daedan.festabook.presentation.placeList.logging.PlaceBackToSchoolClick
 import com.daedan.festabook.presentation.placeList.logging.PlaceItemClick
-import com.daedan.festabook.presentation.placeList.logging.PlaceListSwipeUp
 import com.daedan.festabook.presentation.placeList.logging.PlaceMapButtonReClick
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.OnMapReadyCallback
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import kotlinx.coroutines.Deferred
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
@@ -44,15 +50,20 @@ import kotlinx.coroutines.withContext
 import kotlinx.coroutines.withTimeout
 import timber.log.Timber
 
+@ContributesIntoMap(scope = AppScope::class, binding = binding<Fragment>())
+@FragmentKey(PlaceListFragment::class)
+@Inject
 class PlaceListFragment :
-    BaseFragment<FragmentPlaceListBinding>(
-        R.layout.fragment_place_list,
-    ),
+    BaseFragment<FragmentPlaceListBinding>(),
     PlaceClickListener,
     OnMenuItemReClickListener,
     OnMapReadyCallback {
-    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
-    private val childViewModel by viewModels<PlaceListChildViewModel> { PlaceListChildViewModel.Factory }
+    override val layoutId: Int = R.layout.fragment_place_list
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val viewModel: PlaceListViewModel by viewModels({ requireParentFragment() })
+    private val childViewModel: PlaceListChildViewModel by viewModels()
 
     private val placeAdapter by lazy {
         PlaceListAdapter(this)
@@ -85,9 +96,9 @@ class PlaceListFragment :
             PlaceItemClick(
                 baseLogData = binding.logger.getBaseLogData(),
                 placeId = place.id,
-                timeTagName = viewModel.selectedTimeTag.value?.name?:"undefinded",
-                category = place.category.name
-            )
+                timeTagName = viewModel.selectedTimeTag.value?.name ?: "undefinded",
+                category = place.category.name,
+            ),
         )
     }
 
@@ -98,8 +109,8 @@ class PlaceListFragment :
         behavior?.state = BottomSheetBehavior.STATE_HALF_EXPANDED
         binding.logger.log(
             PlaceMapButtonReClick(
-                baseLogData = binding.logger.getBaseLogData()
-            )
+                baseLogData = binding.logger.getBaseLogData(),
+            ),
         )
     }
 
@@ -174,9 +185,11 @@ class PlaceListFragment :
     private fun setUpBinding() {
         binding.chipBackToInitialPosition.setOnClickListener {
             viewModel.onBackToInitialPositionClicked()
-            binding.logger.log(PlaceBackToSchoolClick(
-                baseLogData = binding.logger.getBaseLogData()
-            ))
+            binding.logger.log(
+                PlaceBackToSchoolClick(
+                    baseLogData = binding.logger.getBaseLogData(),
+                ),
+            )
         }
         binding.rvPlaces.itemAnimator = null
     }

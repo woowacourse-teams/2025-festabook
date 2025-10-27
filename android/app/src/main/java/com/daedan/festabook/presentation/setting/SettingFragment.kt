@@ -6,10 +6,13 @@ import android.view.View
 import androidx.activity.result.ActivityResultLauncher
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.net.toUri
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentSettingBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.presentation.NotificationPermissionManager
 import com.daedan.festabook.presentation.NotificationPermissionRequester
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -18,21 +21,31 @@ import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
 import com.daedan.festabook.presentation.common.showSnackBar
 import com.daedan.festabook.presentation.home.HomeViewModel
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 import timber.log.Timber
 
-class SettingFragment :
-    BaseFragment<FragmentSettingBinding>(R.layout.fragment_setting),
+@ContributesIntoMap(
+    scope = AppScope::class,
+    binding = binding<Fragment>(),
+)
+@FragmentKey(SettingFragment::class)
+@Inject
+class SettingFragment(
+    private val notificationPermissionManagerFactory: NotificationPermissionManager.Factory,
+) : BaseFragment<FragmentSettingBinding>(),
     NotificationPermissionRequester {
-    private val settingViewModel: SettingViewModel by viewModels({ requireActivity() }) {
-        SettingViewModel.factory()
-    }
+    override val layoutId: Int = R.layout.fragment_setting
 
-    private val homeViewModel: HomeViewModel by viewModels({ requireActivity() }) {
-        HomeViewModel.Factory
-    }
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val settingViewModel: SettingViewModel by viewModels({ requireActivity() })
+    private val homeViewModel: HomeViewModel by viewModels({ requireActivity() })
 
     private val notificationPermissionManager by lazy {
-        NotificationPermissionManager(
+        notificationPermissionManagerFactory.create(
             requester = this,
             onPermissionGranted = { onPermissionGranted() },
             onPermissionDenied = { onPermissionDenied() },

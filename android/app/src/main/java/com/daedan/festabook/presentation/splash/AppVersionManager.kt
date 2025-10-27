@@ -6,15 +6,21 @@ import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.DelicateCoroutinesApi
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import kotlinx.coroutines.suspendCancellableCoroutine
 
-@OptIn(DelicateCoroutinesApi::class)
+@AssistedInject
 class AppVersionManager(
     private val appUpdateManager: AppUpdateManager,
-    private val launcher: ActivityResultLauncher<IntentSenderRequest>,
+    @Assisted private val launcher: ActivityResultLauncher<IntentSenderRequest>,
 ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(launcher: ActivityResultLauncher<IntentSenderRequest>): AppVersionManager
+    }
+
     private val appUpdateInfoTask = appUpdateManager.appUpdateInfo
 
     suspend fun getIsAppUpdateAvailable(): Result<Boolean> =

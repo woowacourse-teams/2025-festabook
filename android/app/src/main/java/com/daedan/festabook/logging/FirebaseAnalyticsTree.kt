@@ -3,10 +3,14 @@ package com.daedan.festabook.logging
 import android.os.Bundle
 import android.util.Log
 import com.google.firebase.analytics.FirebaseAnalytics
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 import java.util.Locale
 
-class FirebaseAnalyticsTree(
+@ContributesBinding(AppScope::class)
+class FirebaseAnalyticsTree @Inject constructor(
     private val analytics: FirebaseAnalytics,
 ) : Timber.Tree() {
     override fun log(

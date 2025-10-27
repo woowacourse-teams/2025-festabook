@@ -6,8 +6,12 @@ import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.ScheduleDate
 import com.daedan.festabook.domain.model.ScheduleEvent
 import com.daedan.festabook.domain.repository.ScheduleRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class ScheduleRepositoryImpl(
+@ContributesBinding(AppScope::class)
+class ScheduleRepositoryImpl @Inject constructor(
     private val scheduleDataSource: ScheduleDataSource,
 ) : ScheduleRepository {
     override suspend fun fetchAllScheduleDates(): Result<List<ScheduleDate>> {

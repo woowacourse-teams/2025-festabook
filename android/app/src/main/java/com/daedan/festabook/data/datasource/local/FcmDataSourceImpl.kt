@@ -2,8 +2,12 @@ package com.daedan.festabook.data.datasource.local
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class FcmDataSourceImpl(
+@ContributesBinding(AppScope::class)
+class FcmDataSourceImpl @Inject constructor(
     private val prefs: SharedPreferences,
 ) : FcmDataSource {
     override fun saveFcmToken(token: String) {

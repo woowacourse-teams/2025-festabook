@@ -3,9 +3,12 @@ package com.daedan.festabook.presentation.placeList.placeDetailPreview
 import android.os.Bundle
 import android.view.View
 import androidx.activity.OnBackPressedCallback
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceDetailPreviewBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
@@ -18,13 +21,22 @@ import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.logging.PlacePreviewClick
 import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
+@ContributesIntoMap(scope = AppScope::class, binding = binding<Fragment>())
+@FragmentKey(PlaceDetailPreviewFragment::class)
+@Inject
 class PlaceDetailPreviewFragment :
-    BaseFragment<FragmentPlaceDetailPreviewBinding>(
-        R.layout.fragment_place_detail_preview,
-    ),
+    BaseFragment<FragmentPlaceDetailPreviewBinding>(),
     OnMenuItemReClickListener {
-    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+    override val layoutId: Int = R.layout.fragment_place_detail_preview
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val viewModel: PlaceListViewModel by viewModels({ requireParentFragment() })
     private val backPressedCallback =
         object : OnBackPressedCallback(false) {
             override fun handleOnBackPressed() {
@@ -49,7 +61,7 @@ class PlaceDetailPreviewFragment :
     private fun setUpBackPressedCallback() {
         requireActivity().onBackPressedDispatcher.addCallback(
             viewLifecycleOwner,
-            backPressedCallback
+            backPressedCallback,
         )
     }
 
@@ -61,10 +73,10 @@ class PlaceDetailPreviewFragment :
                 binding.logger.log(
                     PlacePreviewClick(
                         baseLogData = binding.logger.getBaseLogData(),
-                        placeName = selectedPlaceState.value.place.title?:"undefined",
-                        timeTag = viewModel.selectedTimeTag.value?.name?:"undefined",
-                        category = selectedPlaceState.value.place.category.name
-                    )
+                        placeName = selectedPlaceState.value.place.title ?: "undefined",
+                        timeTag = viewModel.selectedTimeTag.value?.name ?: "undefined",
+                        category = selectedPlaceState.value.place.category.name,
+                    ),
                 )
             }
         }

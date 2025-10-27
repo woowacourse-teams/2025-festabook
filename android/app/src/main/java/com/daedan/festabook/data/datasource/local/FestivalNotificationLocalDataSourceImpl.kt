@@ -2,19 +2,31 @@ package com.daedan.festabook.data.datasource.local
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class FestivalNotificationLocalDataSourceImpl(
+@ContributesBinding(AppScope::class)
+class FestivalNotificationLocalDataSourceImpl @Inject constructor(
     private val prefs: SharedPreferences,
 ) : FestivalNotificationLocalDataSource {
     override fun saveFestivalNotificationId(
         festivalId: Long,
         festivalNotificationId: Long,
     ) {
-        prefs.edit { putLong("${KEY_FESTIVAL_NOTIFICATION_ID}_$festivalId", festivalNotificationId) }
+        prefs.edit {
+            putLong(
+                "${KEY_FESTIVAL_NOTIFICATION_ID}_$festivalId",
+                festivalNotificationId,
+            )
+        }
     }
 
     override fun getFestivalNotificationId(festivalId: Long): Long =
-        prefs.getLong("${KEY_FESTIVAL_NOTIFICATION_ID}_$festivalId", DEFAULT_FESTIVAL_NOTIFICATION_ID)
+        prefs.getLong(
+            "${KEY_FESTIVAL_NOTIFICATION_ID}_$festivalId",
+            DEFAULT_FESTIVAL_NOTIFICATION_ID,
+        )
 
     override fun deleteFestivalNotificationId(festivalId: Long) {
         prefs.edit { remove("${KEY_FESTIVAL_NOTIFICATION_ID}_$festivalId") }
