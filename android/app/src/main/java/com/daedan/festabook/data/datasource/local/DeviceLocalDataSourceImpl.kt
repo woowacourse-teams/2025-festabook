@@ -2,8 +2,12 @@ package com.daedan.festabook.data.datasource.local
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class DeviceLocalDataSourceImpl(
+@ContributesBinding(AppScope::class)
+class DeviceLocalDataSourceImpl @Inject constructor(
     private val prefs: SharedPreferences,
 ) : DeviceLocalDataSource {
     override fun saveUuid(uuid: String) {

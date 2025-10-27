@@ -8,8 +8,12 @@ import com.daedan.festabook.data.model.response.place.PlaceResponse
 import com.daedan.festabook.data.model.response.place.TimeTagResponse
 import com.daedan.festabook.data.service.FestivalService
 import com.daedan.festabook.data.service.PlaceService
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class PlaceDataSourceImpl(
+@ContributesBinding(AppScope::class)
+class PlaceDataSourceImpl @Inject constructor(
     private val placeService: PlaceService,
     private val festivalService: FestivalService,
 ) : PlaceDataSource {

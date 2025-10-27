@@ -9,6 +9,7 @@ plugins {
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("dev.zacsweers.metro") version "0.6.10"
 }
 
 android {
