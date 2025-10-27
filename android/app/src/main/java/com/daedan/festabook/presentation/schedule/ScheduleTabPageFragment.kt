@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentScheduleTabPageBinding
+import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.schedule.ScheduleSwipeRefreshLogData
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -15,10 +16,11 @@ import com.daedan.festabook.presentation.schedule.ScheduleViewModel.Companion.IN
 import com.daedan.festabook.presentation.schedule.adapter.ScheduleAdapter
 import timber.log.Timber
 
-class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>(R.layout.fragment_schedule_tab_page) {
+class ScheduleTabPageFragment : BaseFragment<FragmentScheduleTabPageBinding>() {
+    override val layoutId: Int = R.layout.fragment_schedule_tab_page
     private val viewModel: ScheduleViewModel by viewModels {
         val dateId: Long = arguments?.getLong(KEY_DATE_ID, INVALID_ID) ?: INVALID_ID
-        ScheduleViewModel.factory(dateId)
+        ScheduleViewModel.factory(appGraph.scheduleViewModelFactory, dateId)
     }
     private val adapter: ScheduleAdapter by lazy {
         ScheduleAdapter()

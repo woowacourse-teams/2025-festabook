@@ -7,13 +7,26 @@ import android.os.Build
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import com.daedan.festabook.R
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
 import timber.log.Timber
 
+@AssistedInject
 class NotificationPermissionManager(
-    private val requester: NotificationPermissionRequester,
-    private val onPermissionGranted: () -> Unit = {},
-    private val onPermissionDenied: () -> Unit = {},
+    @Assisted private val requester: NotificationPermissionRequester,
+    @Assisted("granted") private val onPermissionGranted: () -> Unit = {},
+    @Assisted("denied") private val onPermissionDenied: () -> Unit = {},
 ) {
+    @AssistedFactory
+    interface Factory {
+        fun create(
+            requester: NotificationPermissionRequester,
+            @Assisted("granted") onPermissionGranted: () -> Unit = {},
+            @Assisted("denied") onPermissionDenied: () -> Unit = {},
+        ): NotificationPermissionManager
+    }
+
     fun requestNotificationPermission(context: Context) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             when {

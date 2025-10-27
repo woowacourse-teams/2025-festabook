@@ -3,16 +3,16 @@ package com.daedan.festabook.presentation.explore
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.repository.ExploreRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.explore.model.SearchResultUiModel
 import com.daedan.festabook.presentation.explore.model.toUiModel
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.debounce
@@ -20,7 +20,9 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ExploreViewModel(
+@ContributesIntoMap(AppScope::class)
+@ViewModelKey(ExploreViewModel::class)
+class ExploreViewModel @Inject constructor(
     private val exploreRepository: ExploreRepository,
 ) : ViewModel() {
     private val searchQuery = MutableStateFlow("")
@@ -96,16 +98,5 @@ class ExploreViewModel(
             _navigateToMain.setValue(selectedUniversity)
             exploreRepository.saveFestivalId(selectedUniversity.festivalId)
         }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val exploreRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.exploreRepository
-                    ExploreViewModel(exploreRepository)
-                }
-            }
     }
 }

@@ -3,18 +3,32 @@ package com.daedan.festabook.presentation.placeList.placeCategory
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.children
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceCategoryBinding
+import com.daedan.festabook.di.fragment.FragmentKey
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
 import com.daedan.festabook.presentation.placeList.logging.PlaceCategoryClick
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.google.android.material.chip.Chip
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.binding
 
-class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>(R.layout.fragment_place_category) {
-    private val viewModel by viewModels<PlaceListViewModel>({ requireParentFragment() }) { PlaceListViewModel.Factory }
+@ContributesIntoMap(scope = AppScope::class, binding = binding<Fragment>())
+@FragmentKey(PlaceCategoryFragment::class)
+@Inject
+class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>() {
+    override val layoutId: Int = R.layout.fragment_place_category
+
+    @Inject
+    override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
+    private val viewModel: PlaceListViewModel by viewModels({ requireParentFragment() })
 
     override fun onViewCreated(
         view: View,
@@ -38,8 +52,8 @@ class PlaceCategoryFragment : BaseFragment<FragmentPlaceCategoryBinding>(R.layou
             binding.logger.log(
                 PlaceCategoryClick(
                     baseLogData = binding.logger.getBaseLogData(),
-                    currentCategories = selectedCategories.joinToString(",") { it.toString() }
-                )
+                    currentCategories = selectedCategories.joinToString(",") { it.toString() },
+                ),
             )
         }
 

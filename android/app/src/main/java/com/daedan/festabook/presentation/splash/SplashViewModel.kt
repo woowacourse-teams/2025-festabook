@@ -3,18 +3,18 @@ package com.daedan.festabook.presentation.splash
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
-import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.data.datasource.local.FestivalLocalDataSource
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.presentation.common.SingleLiveData
-import kotlinx.coroutines.launch
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
-class SplashViewModel(
+@ContributesIntoMap(AppScope::class)
+@ViewModelKey(SplashViewModel::class)
+class SplashViewModel @Inject constructor(
     private val festivalLocalDataSource: FestivalLocalDataSource,
 ) : ViewModel() {
     private val _navigationState = SingleLiveData<NavigationState>()
@@ -37,18 +37,5 @@ class SplashViewModel(
             _navigationState.setValue(NavigationState.NavigateToMain(festivalId))
         }
         _isValidationComplete.value = true
-    }
-
-    companion object {
-        val FACTORY: ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val festivalLocalDataSource =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.festivalLocalDataSource
-                    SplashViewModel(
-                        festivalLocalDataSource,
-                    )
-                }
-            }
     }
 }

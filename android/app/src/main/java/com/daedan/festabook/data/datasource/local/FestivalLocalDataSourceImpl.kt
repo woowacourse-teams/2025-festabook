@@ -2,8 +2,12 @@ package com.daedan.festabook.data.datasource.local
 
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class FestivalLocalDataSourceImpl(
+@ContributesBinding(AppScope::class)
+class FestivalLocalDataSourceImpl @Inject constructor(
     private val prefs: SharedPreferences,
 ) : FestivalLocalDataSource {
     override fun saveFestivalId(festivalId: Long) {
