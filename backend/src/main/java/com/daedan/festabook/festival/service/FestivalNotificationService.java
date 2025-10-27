@@ -11,6 +11,7 @@ import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.exception.ConflictException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -113,7 +114,7 @@ public class FestivalNotificationService {
         try {
             return festivalNotificationJpaRepository.save(festivalNotification);
         } catch (DataIntegrityViolationException e) {
-            throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.CONFLICT);
+            throw new ConflictException(FestivalNotification.class);
         }
     }
 
