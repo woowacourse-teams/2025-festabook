@@ -35,6 +35,8 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
+        validateDuplicateSubscription(festivalId, request.deviceId());
+
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
@@ -49,6 +51,8 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
+        validateDuplicateSubscription(festivalId, request.deviceId());
+
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
@@ -63,6 +67,8 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
+        validateDuplicateSubscription(festivalId, request.deviceId());
+
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
@@ -102,6 +108,12 @@ public class FestivalNotificationService {
                 festivalNotification.getFestival().getId(),
                 device.getFcmToken()
         );
+    }
+
+    private void validateDuplicateSubscription(Long festivalId, Long deviceId) {
+        if (festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId) > 0) {
+            throw new ConflictException(FestivalNotification.class);
+        }
     }
 
     private FestivalNotification createFestivalNotification(Long festivalId, FestivalNotificationRequest request) {

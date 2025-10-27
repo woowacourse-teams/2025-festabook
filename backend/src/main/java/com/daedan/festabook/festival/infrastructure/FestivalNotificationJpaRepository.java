@@ -17,5 +17,13 @@ public interface FestivalNotificationJpaRepository extends JpaRepository<Festiva
 
     Long countByFestivalIdAndDeviceId(Long festivalId, Long deviceId);
 
-    boolean existsByFestivalIdAndDeviceId(Long festivalId, Long deviceId);
+    @Query(value = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM festival_notification fn
+                WHERE fn.festival_id = :festivalId
+                AND fn.active_device_id = :deviceId
+            )
+            """, nativeQuery = true)
+    int getExistsFlagByFestivalIdAndDeviceId(Long festivalId, Long deviceId);
 }
