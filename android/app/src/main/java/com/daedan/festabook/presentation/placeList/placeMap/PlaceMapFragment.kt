@@ -2,7 +2,9 @@ package com.daedan.festabook.presentation.placeList.placeMap
 
 import android.content.Context
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
@@ -80,9 +82,18 @@ class PlaceMapFragment(
 
     private val viewModel: PlaceListViewModel by viewModels()
 
-    override fun onCreate(savedInstanceState: Bundle?) {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
         setupFragmentFactory()
-        super.onCreate(savedInstanceState)
+        childFragmentManager.commit {
+            childFragmentManager.fragments.forEach { fragment ->
+                remove(fragment)
+            }
+        }
+        return super.onCreateView(inflater, container, savedInstanceState)
     }
 
     override fun onViewCreated(
