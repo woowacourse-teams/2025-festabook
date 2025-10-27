@@ -134,41 +134,6 @@ class AnnouncementControllerTest {
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .body("message", equalTo("공지글은 최대 3개까지 고정할 수 있습니다."));
         }
-
-        @Test
-        void 동시성_3개_이상의_동시_요청시_3개의_고정_공지만_생성된다() {
-            // given
-            Festival festival = FestivalFixture.create();
-            festivalJpaRepository.save(festival);
-
-            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
-
-            AnnouncementRequest request = new AnnouncementRequest(
-                    "폭우가 내립니다.",
-                    "우산을 챙겨주세요.",
-                    true
-            );
-
-            int requestCount = 100;
-            Runnable httpRequest = () -> {
-                RestAssured
-                        .given()
-                        .header(authorizationHeader)
-                        .contentType(ContentType.JSON)
-                        .body(request)
-                        .when()
-                        .post("/announcements");
-            };
-
-            int expectedPinnedAnnouncementCount = 3;
-
-            // when
-            ConcurrencyTestHelper.test(requestCount, httpRequest);
-
-            // then
-            Long result = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festival.getId());
-            assertThat(result).isEqualTo(expectedPinnedAnnouncementCount);
-        }
     }
 
     @Nested
@@ -492,6 +457,86 @@ class AnnouncementControllerTest {
 
             then(fcmNotificationManager).should()
                     .sendToFestivalTopic(any(), any());
+        }
+    }
+
+    @Nested
+    class ConcurrentTest {
+
+        @Test
+        void 동시성_3개_이상의_동시_요청시_3개의_고정_공지만_생성된다() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
+
+            int requestCount = 100;
+            Runnable httpRequest = () -> {
+                RestAssured
+                        .given()
+                        .header(authorizationHeader)
+                        .contentType(ContentType.JSON)
+                        .body(request)
+                        .when()
+                        .post("/announcements");
+            };
+
+            int expectedPinnedAnnouncementCount = 3;
+
+            // when
+            ConcurrencyTestHelper.test(requestCount, httpRequest);
+
+            // then
+            Long result = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festival.getId());
+            assertThat(result).isEqualTo(expectedPinnedAnnouncementCount);
+        }
+
+        @Test
+        void 동시성_수정과_생성이_동시에_요청더라도_3개의_고정_공지만_존재한다() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            Announcement initAnnouncement = AnnouncementFixture.create(false, festival);
+            announcementJpaRepository.save(initAnnouncement);
+
+            AnnouncementRequest createAnnouncement = AnnouncementRequestFixture.create(true);
+            AnnouncementPinUpdateRequest updateAnnouncement = AnnouncementPinUpdateRequestFixture.create(true);
+
+            int requestCount = 100;
+            Runnable createAnnouncementRequest = () -> {
+                RestAssured
+                        .given()
+                        .header(authorizationHeader)
+                        .contentType(ContentType.JSON)
+                        .body(createAnnouncement)
+                        .when()
+                        .post("/announcements");
+            };
+
+            Runnable updateAnnouncementRequest = () -> {
+                RestAssured
+                        .given()
+                        .header(authorizationHeader)
+                        .contentType(ContentType.JSON)
+                        .body(updateAnnouncement)
+                        .when()
+                        .post("announcement/{announcementId}/pin", initAnnouncement.getId());
+            };
+
+            int expectedPinnedAnnouncementCount = 3;
+
+            // when
+            ConcurrencyTestHelper.test(requestCount, createAnnouncementRequest, updateAnnouncementRequest);
+
+            // then
+            Long result = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festival.getId());
+            assertThat(result).isEqualTo(expectedPinnedAnnouncementCount);
         }
     }
 }
