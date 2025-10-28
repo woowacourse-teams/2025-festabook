@@ -21,7 +21,7 @@ import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeList.PlaceListViewModel
-import com.daedan.festabook.presentation.placeList.logging.LocationPermissionChanged
+import com.daedan.festabook.presentation.placeList.logging.CurrentLocationChecked
 import com.daedan.festabook.presentation.placeList.logging.PlaceFragmentEnter
 import com.daedan.festabook.presentation.placeList.logging.PlaceMarkerClick
 import com.daedan.festabook.presentation.placeList.logging.PlaceTimeTagSelected
@@ -66,15 +66,7 @@ class PlaceMapFragment(
     private lateinit var naverMap: NaverMap
 
     private val locationSource by lazy {
-        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE).apply {
-            activate {
-                binding.logger.log(
-                    LocationPermissionChanged(
-                        baseLogData = binding.logger.getBaseLogData(),
-                    ),
-                )
-            }
-        }
+        FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
     }
     private var mapManager: MapManager? = null
 
@@ -158,6 +150,13 @@ class PlaceMapFragment(
 
     private suspend fun setUpMapManager() {
         naverMap = mapFragment.getMap()
+        naverMap.addOnLocationChangeListener {
+            binding.logger.log(
+                CurrentLocationChecked(
+                    baseLogData = binding.logger.getBaseLogData()
+                )
+            )
+        }
         (placeListFragment as? OnMapReadyCallback)?.onMapReady(naverMap)
         naverMap.locationSource = locationSource
         binding.viewMapTouchEventIntercept.setOnMapDragListener {

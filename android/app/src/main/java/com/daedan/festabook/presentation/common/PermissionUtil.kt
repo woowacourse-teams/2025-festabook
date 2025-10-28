@@ -11,23 +11,15 @@ import com.google.android.material.snackbar.Snackbar
 
 fun Int.isGranted(): Boolean = this == 0
 
-fun Context.toLocationPermissionDeniedTextOrNull(rawText: String) =
-    when (rawText) {
-        Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION -> {
-            getString(R.string.map_request_location_permission_message)
-        }
-
-        else -> null
-    }
-
 fun showNotificationDeniedSnackbar(
     view: View,
     context: Context,
+    text: String = context.getString(R.string.notification_permission_denied_message),
 ) {
     Snackbar
         .make(
             view,
-            context.getString(R.string.notification_permission_denied_message),
+            text,
             Snackbar.LENGTH_LONG,
         ).setAnchorView(view.rootView.findViewById(R.id.bab_menu))
         .setAction(context.getString(R.string.move_to_setting_text)) {

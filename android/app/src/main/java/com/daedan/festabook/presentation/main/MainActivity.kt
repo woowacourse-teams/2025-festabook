@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.main
 
+import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -29,7 +30,6 @@ import com.daedan.festabook.presentation.common.isGranted
 import com.daedan.festabook.presentation.common.showNotificationDeniedSnackbar
 import com.daedan.festabook.presentation.common.showSnackBar
 import com.daedan.festabook.presentation.common.showToast
-import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOrNull
 import com.daedan.festabook.presentation.home.HomeFragment
 import com.daedan.festabook.presentation.home.HomeViewModel
 import com.daedan.festabook.presentation.news.NewsFragment
@@ -115,12 +115,20 @@ class MainActivity :
         grantResults: IntArray,
     ) {
         grantResults.forEachIndexed { index, result ->
-            if (!result.isGranted()) {
-                val text = permissions[index]
-                showToast(
-                    toLocationPermissionDeniedTextOrNull(text) ?: return@forEachIndexed,
-                )
+            val text = permissions[index]
+            when(text) {
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION -> {
+                    if (!result.isGranted()) {
+                        showNotificationDeniedSnackbar(
+                            binding.root,
+                            this,
+                            getString(R.string.map_request_location_permission_message)
+                        )
+                    }
+                }
             }
+
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
