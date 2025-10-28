@@ -70,7 +70,7 @@ fun NewsItem(
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically,
+            verticalAlignment = Alignment.Top,
         ) {
             if (icon != null) {
                 icon()
@@ -80,8 +80,9 @@ fun NewsItem(
                 text = title,
                 fontFamily = FontFamily(Font(R.font.pretendard_bold)),
                 fontSize = 14.sp,
+                modifier = Modifier.weight(1f),
             )
-            Spacer(modifier = modifier.weight(1f))
+            Spacer(modifier = Modifier.width(8.dp))
             if (createdAt != null) {
                 Text(
                     text = createdAt,
