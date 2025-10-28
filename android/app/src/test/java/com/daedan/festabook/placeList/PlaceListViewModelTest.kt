@@ -1,6 +1,7 @@
 package com.daedan.festabook.placeList
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
@@ -54,6 +55,12 @@ class PlaceListViewModelTest {
             Result.success(
                 FAKE_ORGANIZATION_GEOGRAPHY,
             )
+        coEvery { placeListRepository.getTimeTags() } returns Result.success(listOf(
+            TimeTag(
+                timeTagId = 1,
+                name = "테스트1"
+            )
+        ))
         placeListViewModel =
             PlaceListViewModel(
                 placeListRepository,

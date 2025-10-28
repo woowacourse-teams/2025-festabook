@@ -45,7 +45,7 @@ class MainViewModelTest {
         every { festivalRepository.getIsFirstVisit() } returns Result.success(true)
 
         mainViewModel =
-            MainViewModel(deviceRepository, festivalRepository, festivalNotificationRepository)
+            MainViewModel(deviceRepository, festivalRepository)
 
         coEvery {
             deviceRepository.registerDevice(

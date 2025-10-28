@@ -1,7 +1,7 @@
 package com.daedan.festabook.news
 
 import com.daedan.festabook.domain.model.FAQItem
-import com.daedan.festabook.domain.model.LostItem
+import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.model.LostItemStatus
 import com.daedan.festabook.domain.model.Notice
 import java.time.LocalDateTime
@@ -36,7 +36,7 @@ val FAKE_FAQS =
 
 val FAKE_LOST_ITEM =
     listOf(
-        LostItem(
+        Lost.Item(
             lostItemId = 1,
             imageUrl = "테스트 이미지 주소",
             storageLocation = "테스트 장소",

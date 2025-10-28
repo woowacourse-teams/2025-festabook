@@ -47,6 +47,8 @@ class NewsViewModelTest {
         coEvery { noticeRepository.fetchNotices() } returns Result.success(FAKE_NOTICES)
         coEvery { faqRepository.getAllFAQ() } returns Result.success(FAKE_FAQS)
         coEvery { lostItemRepository.getPendingLostItems() } returns Result.success(FAKE_LOST_ITEM)
+        coEvery { lostItemRepository.getLost() } returns FAKE_LOST_ITEM
+
 
         newsViewModel =
             NewsViewModel(
@@ -75,7 +77,9 @@ class NewsViewModelTest {
             val expected = FAKE_NOTICES.map { it.toUiModel() }
             val actual = newsViewModel.noticeUiState.getOrAwaitValue()
             coVerify { noticeRepository.fetchNotices() }
-            assertThat(actual).isEqualTo(NoticeUiState.Success(expected))
+            assertThat(actual).isEqualTo(
+                NoticeUiState.Success(expected, -1),
+            )
         }
 
     @Test
@@ -108,7 +112,7 @@ class NewsViewModelTest {
 
             // then
             val expected = FAKE_FAQS.map { it.toUiModel() }
-            val actual = newsViewModel.faqUiState.getOrAwaitValue()
+            val actual = newsViewModel.faqUiState
             coVerify { faqRepository.getAllFAQ() }
             assertThat(actual).isEqualTo(FAQUiState.Success(expected))
         }
@@ -120,13 +124,14 @@ class NewsViewModelTest {
             val exception = Throwable("테스트")
             coEvery { faqRepository.getAllFAQ() } returns Result.failure(exception)
 
+
             // when
             newsViewModel = NewsViewModel(noticeRepository, faqRepository, lostItemRepository)
             advanceUntilIdle()
 
             // then
             val expected = FAQUiState.Error(exception)
-            val actual = newsViewModel.faqUiState.getOrAwaitValue()
+            val actual = newsViewModel.faqUiState
             coVerify { faqRepository.getAllFAQ() }
             assertThat(actual).isEqualTo(expected)
         }
@@ -143,7 +148,7 @@ class NewsViewModelTest {
 
             // then
             val expected =
-                listOf<NoticeUiModel>(
+                listOf(
                     notice.copy(isExpanded = true),
                     NoticeUiModel(
                         id = 2,
@@ -154,7 +159,7 @@ class NewsViewModelTest {
                     ),
                 )
             val actual = newsViewModel.noticeUiState.getOrAwaitValue()
-            assertThat(actual).isEqualTo(NoticeUiState.Success(expected))
+            assertThat(actual).isEqualTo(NoticeUiState.Success(expected, -1))
         }
 
     @Test
@@ -169,7 +174,7 @@ class NewsViewModelTest {
 
             // then
             val expected = listOf(faq.copy(isExpanded = true))
-            val actual = newsViewModel.faqUiState.getOrAwaitValue()
+            val actual = newsViewModel.faqUiState
             assertThat(actual).isEqualTo(FAQUiState.Success(expected))
         }
 }

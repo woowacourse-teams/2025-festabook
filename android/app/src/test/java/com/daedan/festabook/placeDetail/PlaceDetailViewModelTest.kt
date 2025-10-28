@@ -37,7 +37,7 @@ class PlaceDetailViewModelTest {
         Dispatchers.setMain(testDispatcher)
         placeDetailRepository = mockk()
         coEvery { placeDetailRepository.getPlaceDetail(any()) } returns Result.success(FAKE_PLACE_DETAIL)
-        placeDetailViewModel = PlaceDetailViewModel(placeDetailRepository, FAKE_PLACES.first().toUiModel())
+        placeDetailViewModel = PlaceDetailViewModel(placeDetailRepository, FAKE_PLACES.first().toUiModel(), null)
     }
 
     @After

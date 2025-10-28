@@ -69,7 +69,7 @@ class PlaceListChildViewModelTest {
             val expected = FAKE_PLACES.map { it.toUiModel() }
             val actual = placeListChildViewModel.places.getOrAwaitValue()
             coVerify { placeListRepository.getPlaces() }
-            assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
+            assertThat(actual).isEqualTo(PlaceListUiState.PlaceLoaded(expected))
         }
 
     @Test
@@ -78,6 +78,7 @@ class PlaceListChildViewModelTest {
             // given
             val targetCategories =
                 listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
+            placeListChildViewModel.updatePlacesByTimeTag(1)
 
             // when
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
@@ -98,6 +99,7 @@ class PlaceListChildViewModelTest {
             // given
             val targetCategories =
                 listOf(PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET)
+            placeListChildViewModel.updatePlacesByTimeTag(1)
 
             // when
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
@@ -115,6 +117,7 @@ class PlaceListChildViewModelTest {
             // given
             val targetCategories =
                 listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
+            placeListChildViewModel.updatePlacesByTimeTag(1)
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
             advanceUntilIdle()
 
