@@ -20,7 +20,25 @@ val FAKE_PLACES =
                 TimeTag(
                     timeTagId = 1,
                     name = "테스트1"
+                ),
+                TimeTag(
+                    timeTagId = 2,
+                    name = "테스트2"
                 )
+            )
+        ),
+        Place(
+            id = 2,
+            imageUrl = null,
+            category = PlaceCategory.FOOD_TRUCK,
+            title = "테스트 2",
+            description = "설명 2",
+            location = "위치 2",
+            timeTags = listOf(
+                TimeTag(
+                    timeTagId = 2,
+                    name = "테스트2"
+                ),
             )
         ),
     )
@@ -90,3 +108,8 @@ val FAKE_ORGANIZATION_GEOGRAPHY =
                 ),
             ),
     )
+
+val FAKE_TIME_TAG = TimeTag(
+    timeTagId = 1,
+    name = "테스트1"
+)

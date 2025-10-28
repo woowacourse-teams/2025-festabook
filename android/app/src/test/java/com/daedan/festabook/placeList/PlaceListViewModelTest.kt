@@ -48,19 +48,18 @@ class PlaceListViewModelTest {
         placeDetailRepository = mockk()
         coEvery { placeListRepository.getPlaces() } returns Result.success(FAKE_PLACES)
         coEvery { placeListRepository.getPlaceGeographies() } returns
-            Result.success(
-                FAKE_PLACE_GEOGRAPHIES,
-            )
+                Result.success(
+                    FAKE_PLACE_GEOGRAPHIES,
+                )
         coEvery { placeListRepository.getOrganizationGeography() } returns
-            Result.success(
-                FAKE_ORGANIZATION_GEOGRAPHY,
+                Result.success(
+                    FAKE_ORGANIZATION_GEOGRAPHY,
+                )
+        coEvery { placeListRepository.getTimeTags() } returns Result.success(
+            listOf(
+                FAKE_TIME_TAG
             )
-        coEvery { placeListRepository.getTimeTags() } returns Result.success(listOf(
-            TimeTag(
-                timeTagId = 1,
-                name = "테스트1"
-            )
-        ))
+        )
         placeListViewModel =
             PlaceListViewModel(
                 placeListRepository,
@@ -74,13 +73,45 @@ class PlaceListViewModelTest {
     }
 
     @Test
+    fun `뷰모델을 생성했을 때 전체 타임 태그와 선택된 타임 태그를 불러올 수 있다`() = runTest {
+        //given - when
+        placeListViewModel =
+            PlaceListViewModel(placeListRepository, placeDetailRepository)
+        advanceUntilIdle()
+
+        //then
+        val actualAllTimeTag = placeListViewModel.timeTags.getOrAwaitValue()
+        val actualSelectedTimeTag = placeListViewModel.selectedTimeTag.getOrAwaitValue()
+        assertThat(actualAllTimeTag).isEqualTo(listOf(FAKE_TIME_TAG))
+        assertThat(actualSelectedTimeTag).isEqualTo(FAKE_TIME_TAG)
+    }
+
+    @Test
+    fun `뷰모델을 생성했을 때 타임 태그가 없다면 빈 리스트와 Empty타임 태그를 불러온다`() = runTest {
+        //given
+        coEvery {
+            placeListRepository.getTimeTags()
+        } returns Result.success(emptyList())
+
+        //when
+        placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
+        advanceUntilIdle()
+
+        //then
+        val actualAllTimeTag = placeListViewModel.timeTags.getOrAwaitValue()
+        val actualSelectedTimeTag = placeListViewModel.selectedTimeTag.getOrAwaitValue()
+        assertThat(actualAllTimeTag).isEqualTo(emptyList<TimeTag>())
+        assertThat(actualSelectedTimeTag).isEqualTo(TimeTag.EMPTY)
+    }
+
+    @Test
     fun `뷰모델을 생성했을 때 모든 플레이스의 지도 좌표 정보를 불러올 수 있다`() =
         runTest {
             // given
             coEvery { placeListRepository.getPlaceGeographies() } returns
-                Result.success(
-                    FAKE_PLACE_GEOGRAPHIES,
-                )
+                    Result.success(
+                        FAKE_PLACE_GEOGRAPHIES,
+                    )
 
             // when
             placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
@@ -98,9 +129,9 @@ class PlaceListViewModelTest {
         runTest {
             // given
             coEvery { placeListRepository.getOrganizationGeography() } returns
-                Result.success(
-                    FAKE_ORGANIZATION_GEOGRAPHY,
-                )
+                    Result.success(
+                        FAKE_ORGANIZATION_GEOGRAPHY,
+                    )
 
             // when
             placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
@@ -119,9 +150,9 @@ class PlaceListViewModelTest {
             val exception = Throwable("테스트")
             coEvery { placeListRepository.getPlaces() } returns Result.failure(exception)
             coEvery { placeListRepository.getOrganizationGeography() } returns
-                Result.success(
-                    FAKE_ORGANIZATION_GEOGRAPHY,
-                )
+                    Result.success(
+                        FAKE_ORGANIZATION_GEOGRAPHY,
+                    )
             coEvery { placeListRepository.getPlaceGeographies() } returns Result.failure(exception)
 
             // when
@@ -144,7 +175,9 @@ class PlaceListViewModelTest {
     fun `플레이스의 아이디와 카테고리가 있으면 플레이스 상세를 선택할 수 있다`() =
         runTest {
             // given
-            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
+            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(
+                FAKE_PLACE_DETAIL
+            )
 
             // when
             placeListViewModel.selectPlace(1)
@@ -162,7 +195,9 @@ class PlaceListViewModelTest {
     fun `카테고리가 기타시설일 떄에도 플레이스 상세를 선택할 수 있다`() =
         runTest {
             // given
-            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_ETC_PLACE_DETAIL)
+            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(
+                FAKE_ETC_PLACE_DETAIL
+            )
 
             // when
             placeListViewModel.selectPlace(1)
@@ -178,7 +213,9 @@ class PlaceListViewModelTest {
     fun `플레이스 상세 선택을 해제할 수 있다`() =
         runTest {
             // given
-            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
+            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(
+                FAKE_PLACE_DETAIL
+            )
             placeListViewModel.selectPlace(1)
             advanceUntilIdle()
 
@@ -232,5 +269,55 @@ class PlaceListViewModelTest {
             // then
             val actual = placeListViewModel.selectedCategories.getOrAwaitValue()
             assertThat(actual).isEqualTo(categories)
+        }
+
+    @Test
+    fun `지도를 클릭했을 때 이벤트를 발생시킬수 있다`() =
+        runTest {
+            //given
+            val expected = Unit
+
+            //when
+            placeListViewModel.onMapViewClick()
+            advanceUntilIdle()
+
+            // then
+            val actual = placeListViewModel.onMapViewClick.getOrAwaitValue()
+            assertThat(actual.peekContent()).isEqualTo(expected)
+        }
+
+    @Test
+    fun `현재 플레이스를 선택 후, 플레이스 상세로 이벤트를 발생시킬 수 있다`() =
+        runTest {
+            //given
+            coEvery {
+                placeDetailRepository.getPlaceDetail(FAKE_PLACE_DETAIL.id)
+            } returns Result.success(FAKE_PLACE_DETAIL)
+            val expected = FAKE_PLACE_DETAIL.toUiModel()
+            placeListViewModel.selectPlace(FAKE_PLACE_DETAIL.id)
+            advanceUntilIdle()
+
+            //when
+            placeListViewModel.onExpandedStateReached()
+            advanceUntilIdle()
+
+            // then
+            val actual = placeListViewModel.navigateToDetail.value
+            assertThat(actual).isEqualTo(expected)
+        }
+
+    @Test
+    fun `타임태그가 선택되었음을 알리는 이벤트를 발생시킬 수 있다`() =
+        runTest {
+            //given
+            val expected = TimeTag(1, "테스트1")
+
+            //when
+            placeListViewModel.onDaySelected(expected)
+            advanceUntilIdle()
+
+            //then
+            val actual = placeListViewModel.selectedTimeTag.getOrAwaitValue()
+            assertThat(actual).isEqualTo(expected)
         }
 }

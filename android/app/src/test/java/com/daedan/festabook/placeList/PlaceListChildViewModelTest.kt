@@ -1,11 +1,13 @@
 package com.daedan.festabook.placeList
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.presentation.placeList.PlaceListChildViewModel
 import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
+import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
 import com.daedan.festabook.presentation.placeList.model.toUiModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -78,7 +80,7 @@ class PlaceListChildViewModelTest {
             // given
             val targetCategories =
                 listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
-            placeListChildViewModel.updatePlacesByTimeTag(1)
+            placeListChildViewModel.updatePlacesByTimeTag(TimeTag.EMPTY.timeTagId)
 
             // when
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
@@ -99,7 +101,7 @@ class PlaceListChildViewModelTest {
             // given
             val targetCategories =
                 listOf(PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET)
-            placeListChildViewModel.updatePlacesByTimeTag(1)
+            placeListChildViewModel.updatePlacesByTimeTag(TimeTag.EMPTY.timeTagId)
 
             // when
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
@@ -117,7 +119,7 @@ class PlaceListChildViewModelTest {
             // given
             val targetCategories =
                 listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
-            placeListChildViewModel.updatePlacesByTimeTag(1)
+            placeListChildViewModel.updatePlacesByTimeTag(TimeTag.EMPTY.timeTagId)
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
             advanceUntilIdle()
 
@@ -129,5 +131,53 @@ class PlaceListChildViewModelTest {
             val expected = FAKE_PLACES.map { it.toUiModel() }
             val actual = placeListChildViewModel.places.getOrAwaitValue()
             assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
+        }
+
+    @Test
+    fun `타임 태그를 기준으로 필터링 할 수 있다`() =
+        runTest {
+            //given
+            val expected = listOf(
+                FAKE_PLACES.first().toUiModel(),
+            )
+
+            //when
+            placeListChildViewModel.updatePlacesByTimeTag(1)
+            advanceUntilIdle()
+
+            //then
+            val actual = placeListChildViewModel.places.getOrAwaitValue()
+            assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
+        }
+
+    @Test
+    fun `타임 태그가 없을 때 전체 목록을 반환한다`() =
+        runTest {
+            //given
+            val expected = FAKE_PLACES.map { it.toUiModel() }
+            val emptyTimeTag = TimeTag.EMPTY
+
+            //when
+            placeListChildViewModel.updatePlacesByTimeTag(emptyTimeTag.timeTagId)
+            advanceUntilIdle()
+
+            //then
+            val actual = placeListChildViewModel.places.getOrAwaitValue()
+            assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
+        }
+
+    @Test
+    fun `플레이스의 모든 정보가 로드가 완료되었을 때 이벤트를 발생시킬 수 있다`() =
+        runTest {
+            //given
+            val expected = PlaceListUiState.Complete<List<PlaceUiModel>>()
+
+            //when
+            placeListChildViewModel.setPlacesStateComplete()
+            advanceUntilIdle()
+
+            //then
+            val actual = placeListChildViewModel.places.getOrAwaitValue()
+            assertThat(actual).isInstanceOf(expected::class.java)
         }
 }
