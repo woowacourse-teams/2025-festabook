@@ -43,6 +43,7 @@ class ScheduleViewModel @AssistedInject constructor(
 
     fun loadScheduleByDate() {
         if (dateId == INVALID_ID) return
+        if (_scheduleEventsUiState.value == ScheduleEventsUiState.Loading) return
         viewModelScope.launch {
             _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
 
@@ -65,6 +66,7 @@ class ScheduleViewModel @AssistedInject constructor(
     }
 
     fun loadAllDates() {
+        if (_scheduleDatesUiState.value == ScheduleDatesUiState.Loading) return
         viewModelScope.launch {
             _scheduleDatesUiState.value = ScheduleDatesUiState.Loading
 
