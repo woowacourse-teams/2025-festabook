@@ -88,7 +88,6 @@ class PlaceDetailActivity :
         binding.vpPlaceImages.adapter = placeImageAdapter
         binding.tvLocation.setExpandedWhenClicked()
         binding.tvHost.setExpandedWhenClicked()
-        binding.tvPlaceDescription.setExpandedWhenClicked(2)
         binding.ivBackToPrevious.setOnClickListener {
             finish()
         }
