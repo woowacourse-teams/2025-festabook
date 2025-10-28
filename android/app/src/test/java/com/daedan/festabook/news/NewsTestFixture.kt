@@ -36,6 +36,9 @@ val FAKE_FAQS =
 
 val FAKE_LOST_ITEM =
     listOf(
+        Lost.Guide(
+            guide = "테스트 가이드"
+        ),
         Lost.Item(
             lostItemId = 1,
             imageUrl = "테스트 이미지 주소",
