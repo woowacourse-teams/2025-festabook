@@ -3,12 +3,9 @@ package com.daedan.festabook.di
 import android.app.Application
 import android.content.Context
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
-import androidx.lifecycle.ViewModel
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.di.viewmodel.MetroViewModelFactory
 import com.daedan.festabook.logging.DefaultFirebaseLogger
-import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainActivity
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailActivity
 import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetBehavior
@@ -18,10 +15,7 @@ import com.google.android.play.core.appupdate.AppUpdateManager
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.DependencyGraph
-import dev.zacsweers.metro.Multibinds
-import dev.zacsweers.metro.Provider
 import dev.zacsweers.metro.Provides
-import kotlin.reflect.KClass
 
 @DependencyGraph(AppScope::class)
 interface FestaBookAppGraph {
