@@ -48,7 +48,7 @@ fun FAQScreen(
                             modifier =
                                 Modifier.padding(
                                     top = if (index == 0) 12.dp else 6.dp,
-                                    bottom = 6.dp,
+                                    bottom = if (index == uiState.faqs.lastIndex) 12.dp else 6.dp,
                                 ),
                         )
                     }
