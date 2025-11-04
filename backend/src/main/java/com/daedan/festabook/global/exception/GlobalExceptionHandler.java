@@ -38,7 +38,12 @@ public class GlobalExceptionHandler {
                     databaseException.getClass().getSimpleName(),
                     databaseException.getOriginalExceptionMessage()
             );
-            log.warn("", kv("event", exceptionLog));
+
+            if (databaseException.getStatus().is5xxServerError()) {
+                log.error("", kv("event", exceptionLog));
+            } else {
+                log.warn("", kv("event", exceptionLog));
+            }
         }
     }
 
