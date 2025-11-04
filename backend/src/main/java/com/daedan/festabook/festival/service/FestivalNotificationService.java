@@ -11,7 +11,7 @@ import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.global.exception.ConflictException;
+import com.daedan.festabook.global.exception.DuplicateDataException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -112,7 +112,7 @@ public class FestivalNotificationService {
         try {
             return festivalNotificationJpaRepository.save(festivalNotification);
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(FestivalNotification.class);
+            throw new DuplicateDataException(e.getMessage());
         }
     }
 
