@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequiredArgsConstructor
-@Profile({"dev", "local"})
+@Profile({"dev", "local", "test"})
 @RequestMapping("/test/festivals")
 @Tag(name = "[테스트용] 축제 공지사항 알림", description = "FCM 외부 API 호출 제외한 성능 측정용 API")
 public class TestFestivalNotificationSubscriptionController {

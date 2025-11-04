@@ -11,8 +11,10 @@ import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.exception.ConflictException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -31,15 +33,13 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+        validateDuplicateSubscription(festivalId, request.deviceId());
 
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
+        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
+        FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
-        festivalNotificationManager.subscribeFestivalTopic(festivalId, device.getFcmToken());
+        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
+        festivalNotificationManager.subscribeFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
@@ -49,15 +49,13 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+        validateDuplicateSubscription(festivalId, request.deviceId());
 
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
+        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
+        FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
-        festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, device.getFcmToken());
+        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
+        festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
@@ -67,15 +65,13 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
+        validateDuplicateSubscription(festivalId, request.deviceId());
 
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
+        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
+        FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
-        festivalNotificationManager.subscribeIosFestivalTopic(festivalId, device.getFcmToken());
+        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
+        festivalNotificationManager.subscribeIosFestivalTopic(festivalId, fcmToken);
 
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
@@ -112,9 +108,23 @@ public class FestivalNotificationService {
         );
     }
 
-    private void validateDuplicatedFestivalNotification(Long festivalId, Long deviceId) {
+    private void validateDuplicateSubscription(Long festivalId, Long deviceId) {
         if (festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId) > 0) {
-            throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
+            throw new ConflictException(FestivalNotification.class);
+        }
+    }
+
+    private FestivalNotification createFestivalNotification(Long festivalId, FestivalNotificationRequest request) {
+        Festival festival = getFestivalById(festivalId);
+        Device device = getDeviceById(request.deviceId());
+        return new FestivalNotification(festival, device);
+    }
+
+    private FestivalNotification saveFestivalNotificationOrFailDuplicated(FestivalNotification festivalNotification) {
+        try {
+            return festivalNotificationJpaRepository.save(festivalNotification);
+        } catch (DataIntegrityViolationException e) {
+            throw new ConflictException(FestivalNotification.class);
         }
     }
 

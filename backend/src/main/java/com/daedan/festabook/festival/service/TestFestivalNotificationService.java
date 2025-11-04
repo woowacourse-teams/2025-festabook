@@ -13,13 +13,14 @@ import com.daedan.festabook.global.exception.BusinessException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Profile;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-@Profile({"dev", "local"})
+@Profile({"dev", "local", "test"})
 public class TestFestivalNotificationService {
 
     private final FestivalNotificationJpaRepository festivalNotificationJpaRepository;
@@ -31,17 +32,8 @@ public class TestFestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicatedFestivalNotification(festivalId, request.deviceId());
-
-        Festival festival = getFestivalById(festivalId);
-        Device device = getDeviceById(request.deviceId());
-        FestivalNotification festivalNotification = new FestivalNotification(festival, device);
-        FestivalNotification savedFestivalNotification = festivalNotificationJpaRepository.save(
-                festivalNotification);
-
-        // FCM 호출 제거 (테스트용)
-        // festivalNotificationManager.subscribeFestivalTopic(festivalId, device.getFcmToken());
-
+        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
+        FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
 
@@ -60,6 +52,7 @@ public class TestFestivalNotificationService {
         FestivalNotification festivalNotification = festivalNotificationJpaRepository
                 .findById(festivalNotificationId)
                 .orElse(null);
+
         if (festivalNotification == null) {
             return;
         }
@@ -73,15 +66,18 @@ public class TestFestivalNotificationService {
         festivalNotificationJpaRepository.deleteById(festivalNotificationId);
 
         Long festivalId = festivalNotification.getFestival().getId();
-        // FCM 호출 제거 (테스트용)
-        // festivalNotificationManager.unsubscribeFestivalTopic(
-        //         festivalId,
-        //         device.getFcmToken()
-        // );
     }
 
-    private void validateDuplicatedFestivalNotification(Long festivalId, Long deviceId) {
-        if (festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId) > 0) {
+    private FestivalNotification createFestivalNotification(Long festivalId, FestivalNotificationRequest request) {
+        Festival festival = getFestivalById(festivalId);
+        Device device = getDeviceById(request.deviceId());
+        return new FestivalNotification(festival, device);
+    }
+
+    private FestivalNotification saveFestivalNotification(FestivalNotification festivalNotification) {
+        try {
+            return festivalNotificationJpaRepository.save(festivalNotification);
+        } catch (DataIntegrityViolationException e) {
             throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
         }
     }
