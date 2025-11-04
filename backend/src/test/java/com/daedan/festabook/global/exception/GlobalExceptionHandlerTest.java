@@ -127,6 +127,31 @@ class GlobalExceptionHandlerTest {
     }
 
     @Nested
+    class handleDatabaseException {
+
+        @Test
+        void 데이터베이스_예외_발생시_400_응답() {
+            // given
+            exceptionController.injectException(new DuplicateDataException(""));
+            String expectedMessage = "중복된 데이터가 발생했습니다.";
+            int expectedStatusCode = HttpStatus.BAD_REQUEST.value();
+            int expectedFieldSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/test/exception-controller/inject-exception")
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(expectedStatusCode)
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("message", equalTo(expectedMessage));
+        }
+    }
+
+    @Nested
     class handleWarnDatabaseException {
 
         @ParameterizedTest
