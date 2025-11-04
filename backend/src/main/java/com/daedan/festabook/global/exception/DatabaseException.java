@@ -6,10 +6,10 @@ import org.springframework.http.HttpStatus;
 @Getter
 public abstract class DatabaseException extends BusinessException {
 
-    private final String originalMessage;
+    private final String originalExceptionMessage;
 
-    protected DatabaseException(String message, String originalMessage) {
+    protected DatabaseException(String message, String originalExceptionMessage) {
         super(message, HttpStatus.BAD_REQUEST);
-        this.originalMessage = originalMessage;
+        this.originalExceptionMessage = originalExceptionMessage;
     }
 }

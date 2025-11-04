@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
                     databaseException.getStatus().value(),
                     databaseException.getMessage(),
                     databaseException.getClass().getSimpleName(),
-                    databaseException.getOriginalMessage()
+                    databaseException.getOriginalExceptionMessage()
             );
             log.warn("", kv("event", exceptionLog));
         }
