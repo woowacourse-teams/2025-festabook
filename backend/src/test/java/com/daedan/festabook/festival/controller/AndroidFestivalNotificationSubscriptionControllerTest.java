@@ -110,8 +110,8 @@ class AndroidFestivalNotificationSubscriptionControllerTest {
                     .when()
                     .post("/festivals/{festivalId}/notifications/android", festival.getId())
                     .then()
-                    .statusCode(HttpStatus.CONFLICT.value())
-                    .body("message", equalTo("FestivalNotification 이미 존재합니다."));
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .body("message", equalTo("중복된 데이터가 발생했습니다."));
 
             then(fcmNotificationManager).shouldHaveNoInteractions();
         }

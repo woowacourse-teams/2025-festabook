@@ -78,9 +78,9 @@ class FestivalNotificationConcurrencyTest {
                         .when()
                         .post("/festivals/{festivalId}/notifications", festival.getId());
 
-                if (response.getStatusCode() == HttpStatus.CONFLICT.value()) {
+                if (response.getStatusCode() == HttpStatus.BAD_REQUEST.value()) {
                     String responseBody = response.getBody().asString();
-                    if (responseBody.contains("FestivalNotification 이미 존재합니다.")) {
+                    if (responseBody.contains("중복된 데이터가 발생했습니다.")) {
                         duplicateErrorCount.incrementAndGet();
                     }
                 }

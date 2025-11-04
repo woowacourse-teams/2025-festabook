@@ -113,7 +113,7 @@ class FestivalNotificationServiceTest {
                     festivalNotificationService.subscribeFestivalNotification(festivalId, request)
             )
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("FestivalNotification 이미 존재합니다.");
+                    .hasMessage("중복된 데이터가 발생했습니다.");
         }
 
         @Test
