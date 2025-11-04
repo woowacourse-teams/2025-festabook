@@ -132,9 +132,9 @@ class GlobalExceptionHandlerTest {
         @Test
         void 데이터베이스_예외_발생시_400_응답() {
             // given
-            exceptionController.injectException(new DuplicateDataException(""));
+            exceptionController.injectException(new DuplicateDataException("", HttpStatus.CONFLICT));
             String expectedMessage = "중복된 데이터가 발생했습니다.";
-            int expectedStatusCode = HttpStatus.BAD_REQUEST.value();
+            int expectedStatusCode = HttpStatus.CONFLICT.value();
             int expectedFieldSize = 1;
 
             // when & then

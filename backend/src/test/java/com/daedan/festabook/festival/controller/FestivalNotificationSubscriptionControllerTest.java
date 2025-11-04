@@ -143,7 +143,7 @@ class FestivalNotificationSubscriptionControllerTest {
                     .when()
                     .post("/festivals/{festivalId}/notifications", festival.getId())
                     .then()
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .statusCode(HttpStatus.CONFLICT.value())
                     .body("message", equalTo("중복된 데이터가 발생했습니다."));
 
             then(fcmNotificationManager).shouldHaveNoInteractions();
