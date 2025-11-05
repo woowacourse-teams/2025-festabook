@@ -8,7 +8,6 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
-import androidx.compose.material3.pulltorefresh.PullToRefreshDefaults
 import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.material3.pulltorefresh.pullToRefresh
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -29,11 +28,11 @@ fun PullToRefreshContainer(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     pullOffsetLimit: Float,
-    threshold: Dp,
     modifier: Modifier = Modifier,
     content: @Composable (PullToRefreshState) -> Unit,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
+    val threshold = (pullOffsetLimit / 2).dp
 
     PullToRefreshBox(
         state = pullToRefreshState,
@@ -63,7 +62,7 @@ private fun PullToRefreshIndicator(
     onRefresh: () -> Unit,
     pullOffsetLimit: Float,
     modifier: Modifier = Modifier,
-    threshold: Dp = PullToRefreshDefaults.PositionalThreshold,
+    threshold: Dp,
 ) {
     val indicatorSize = (pullOffsetLimit / 5).dp
     val centerOffset = -(threshold / 2 - indicatorSize / 2)
