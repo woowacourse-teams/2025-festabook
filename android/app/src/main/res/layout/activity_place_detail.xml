@@ -9,7 +9,7 @@
             name="placeDetail"
             type="com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel" />
 
-        <import type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
+        <import type="com.daedan.festabook.presentation.placeMap.model.PlaceUiModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -77,7 +77,7 @@
                     app:layout_constraintTop_toTopOf="@id/vp_place_images"
                     />
 
-                <com.daedan.festabook.presentation.placeList.CategoryView
+                <com.daedan.festabook.presentation.placeMap.placeList.CategoryView
                     android:id="@+id/cv_place_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

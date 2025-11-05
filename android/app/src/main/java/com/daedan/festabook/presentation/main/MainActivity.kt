@@ -33,7 +33,7 @@ import com.daedan.festabook.presentation.common.toLocationPermissionDeniedTextOr
 import com.daedan.festabook.presentation.home.HomeFragment
 import com.daedan.festabook.presentation.home.HomeViewModel
 import com.daedan.festabook.presentation.news.NewsFragment
-import com.daedan.festabook.presentation.placeList.placeMap.PlaceMapFragment
+import com.daedan.festabook.presentation.placeMap.PlaceMapFragment
 import com.daedan.festabook.presentation.schedule.ScheduleFragment
 import com.daedan.festabook.presentation.setting.SettingFragment
 import com.daedan.festabook.presentation.setting.SettingViewModel
@@ -284,11 +284,6 @@ class MainActivity :
         private const val TAG_NEWS_FRAGMENT = "newsFragment"
         private const val TAG_SETTING_FRAGMENT = "settingFragment"
         private const val INITIALIZED_ID = -1L
-
-        fun Fragment.newInstance(): Fragment =
-            this.apply {
-                arguments = Bundle()
-            }
 
         fun newIntent(context: Context) =
             Intent(context, MainActivity::class.java).apply {
