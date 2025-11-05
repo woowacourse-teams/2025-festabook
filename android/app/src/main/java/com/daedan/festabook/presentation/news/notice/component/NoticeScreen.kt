@@ -5,7 +5,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.pulltorefresh.PullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -17,13 +16,12 @@ import androidx.compose.ui.unit.dp
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.component.EmptyStateScreen
 import com.daedan.festabook.presentation.common.component.LoadingScreen
+import com.daedan.festabook.presentation.common.component.PULL_OFFSET_LIMIT
 import com.daedan.festabook.presentation.common.component.PullToRefreshContainer
 import com.daedan.festabook.presentation.news.component.NewsItem
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import timber.log.Timber
-
-private const val PULL_OFFSET_LIMIT = 180F
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -37,7 +35,6 @@ fun NoticeScreen(
     PullToRefreshContainer(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
-        pullOffsetLimit = PULL_OFFSET_LIMIT,
     ) { pullToRefreshState ->
         when (uiState) {
             NoticeUiState.InitialLoading -> LoadingScreen()
@@ -52,8 +49,10 @@ fun NoticeScreen(
                 NoticeContent(
                     notices = uiState.oldNotices,
                     onNoticeClick = onNoticeClick,
-                    modifier = modifier,
-                    pullToRefreshState = pullToRefreshState,
+                    modifier =
+                        modifier.graphicsLayer {
+                            translationY = pullToRefreshState.distanceFraction * PULL_OFFSET_LIMIT
+                        },
                 )
             }
 
@@ -61,32 +60,26 @@ fun NoticeScreen(
                 NoticeContent(
                     notices = uiState.notices,
                     onNoticeClick = onNoticeClick,
-                    modifier = modifier,
-                    pullToRefreshState = pullToRefreshState,
+                    modifier =
+                        modifier.graphicsLayer {
+                            translationY = pullToRefreshState.distanceFraction * PULL_OFFSET_LIMIT
+                        },
                 )
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NoticeContent(
     notices: List<NoticeUiModel>,
     onNoticeClick: (NoticeUiModel) -> Unit,
-    pullToRefreshState: PullToRefreshState,
     modifier: Modifier = Modifier,
 ) {
     if (notices.isEmpty()) {
         EmptyStateScreen(modifier = modifier)
     } else {
-        LazyColumn(
-            modifier =
-                modifier
-                    .graphicsLayer {
-                        translationY = pullToRefreshState.distanceFraction * PULL_OFFSET_LIMIT
-                    },
-        ) {
+        LazyColumn(modifier = modifier) {
             itemsIndexed(
                 items = notices,
                 key = { _, notice -> notice.id },

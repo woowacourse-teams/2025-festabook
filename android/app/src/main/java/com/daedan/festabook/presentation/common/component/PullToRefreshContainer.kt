@@ -22,13 +22,15 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.daedan.festabook.R
 
+const val PULL_OFFSET_LIMIT = 180F
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PullToRefreshContainer(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
-    pullOffsetLimit: Float,
     modifier: Modifier = Modifier,
+    pullOffsetLimit: Float = PULL_OFFSET_LIMIT,
     content: @Composable (PullToRefreshState) -> Unit,
 ) {
     val pullToRefreshState = rememberPullToRefreshState()
