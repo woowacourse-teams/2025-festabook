@@ -3,7 +3,6 @@ package com.daedan.festabook.presentation.common.component
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +29,7 @@ fun PullToRefreshContainer(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     pullOffsetLimit: Float,
+    threshold: Dp,
     modifier: Modifier = Modifier,
     content: @Composable (PullToRefreshState) -> Unit,
 ) {
@@ -45,8 +45,8 @@ fun PullToRefreshContainer(
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh,
                 pullOffsetLimit = pullOffsetLimit,
-                threshold = (pullOffsetLimit / 2).dp,
                 modifier = Modifier.align(Alignment.TopCenter),
+                threshold = threshold,
             )
         },
         modifier = modifier.fillMaxSize(),
@@ -65,7 +65,7 @@ private fun PullToRefreshIndicator(
     modifier: Modifier = Modifier,
     threshold: Dp = PullToRefreshDefaults.PositionalThreshold,
 ) {
-    val indicatorSize = (pullOffsetLimit / 9).dp
+    val indicatorSize = (pullOffsetLimit / 5).dp
     val centerOffset = -(threshold / 2 - indicatorSize / 2)
 
     Box(
@@ -76,26 +76,27 @@ private fun PullToRefreshIndicator(
                 threshold = threshold,
                 onRefresh = onRefresh,
             ),
-        contentAlignment = Alignment.TopCenter,
+        contentAlignment = Alignment.Center,
     ) {
-        val distanceFraction = { state.distanceFraction.coerceIn(0f, 0.5f) }
+        val distanceFraction = { state.distanceFraction.coerceIn(0f, 1f) }
 
         if (isRefreshing) {
             CircularProgressIndicator(
                 color = colorResource(R.color.gray200),
                 modifier =
                     Modifier
-                        .size(-centerOffset)
-                        .padding(top = -centerOffset / 2),
+                        .size(indicatorSize)
+                        .offset(y = -(centerOffset * 2 / 3)),
             )
         } else {
             Icon(
-                painter = painterResource(R.drawable.logo_splash),
+                painter = painterResource(R.drawable.logo_title),
                 contentDescription = stringResource(R.string.logo_splash),
                 modifier =
                     Modifier
                         .scale(distanceFraction())
-                        .offset(y = centerOffset / 2),
+                        .size((pullOffsetLimit / 2).dp)
+                        .offset(y = centerOffset / 3),
             )
         }
     }
