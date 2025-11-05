@@ -2,6 +2,7 @@ package com.daedan.festabook.presentation.common.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.CircularProgressIndicator
@@ -81,7 +82,10 @@ private fun PullToRefreshIndicator(
             Icon(
                 painter = painterResource(R.drawable.logo_splash),
                 contentDescription = stringResource(R.string.logo_splash),
-                modifier = Modifier.scale(distanceFraction()),
+                modifier =
+                    Modifier
+                        .scale(distanceFraction())
+                        .offset(y = (-12).dp),
             )
         }
     }
