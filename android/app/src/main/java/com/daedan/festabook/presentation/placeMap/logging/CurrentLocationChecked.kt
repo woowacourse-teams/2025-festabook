@@ -4,6 +4,6 @@ import com.daedan.festabook.logging.model.BaseLogData
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class LocationPermissionChanged(
+data class CurrentLocationChecked(
     override val baseLogData: BaseLogData.CommonLogData
 ) : BaseLogData
