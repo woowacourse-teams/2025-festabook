@@ -37,6 +37,7 @@ fun NoticeScreen(
     PullToRefreshContainer(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
+        pullOffsetLimit = PULL_OFFSET_LIMIT,
     ) { pullToRefreshState ->
         when (uiState) {
             NoticeUiState.InitialLoading -> LoadingScreen()

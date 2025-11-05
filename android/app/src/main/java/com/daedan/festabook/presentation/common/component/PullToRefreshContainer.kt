@@ -20,6 +20,7 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.daedan.festabook.R
 
@@ -28,6 +29,7 @@ import com.daedan.festabook.R
 fun PullToRefreshContainer(
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    pullOffsetLimit: Float,
     modifier: Modifier = Modifier,
     content: @Composable (PullToRefreshState) -> Unit,
 ) {
@@ -42,6 +44,8 @@ fun PullToRefreshContainer(
                 state = pullToRefreshState,
                 isRefreshing = isRefreshing,
                 onRefresh = onRefresh,
+                pullOffsetLimit = pullOffsetLimit,
+                threshold = (pullOffsetLimit / 2).dp,
                 modifier = Modifier.align(Alignment.TopCenter),
             )
         },
@@ -57,26 +61,32 @@ private fun PullToRefreshIndicator(
     state: PullToRefreshState,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
+    pullOffsetLimit: Float,
     modifier: Modifier = Modifier,
+    threshold: Dp = PullToRefreshDefaults.PositionalThreshold,
 ) {
+    val indicatorSize = (pullOffsetLimit / 9).dp
+    val centerOffset = -(threshold / 2 - indicatorSize / 2)
+
     Box(
         modifier =
             modifier.pullToRefresh(
                 state = state,
                 isRefreshing = isRefreshing,
-                threshold = PullToRefreshDefaults.PositionalThreshold,
+                threshold = threshold,
                 onRefresh = onRefresh,
             ),
-        contentAlignment = Alignment.Center,
+        contentAlignment = Alignment.TopCenter,
     ) {
         val distanceFraction = { state.distanceFraction.coerceIn(0f, 0.5f) }
+
         if (isRefreshing) {
             CircularProgressIndicator(
                 color = colorResource(R.color.gray200),
                 modifier =
                     Modifier
-                        .size(24.dp)
-                        .padding(top = 21.dp),
+                        .size(-centerOffset)
+                        .padding(top = -centerOffset / 2),
             )
         } else {
             Icon(
@@ -85,7 +95,7 @@ private fun PullToRefreshIndicator(
                 modifier =
                     Modifier
                         .scale(distanceFraction())
-                        .offset(y = (-12).dp),
+                        .offset(y = centerOffset / 2),
             )
         }
     }
