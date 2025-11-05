@@ -27,7 +27,6 @@ import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @ContributesIntoMap(AppScope::class)
@@ -64,7 +63,6 @@ class NewsViewModel @Inject constructor(
     fun loadAllNotices(state: NoticeUiState = NoticeUiState.InitialLoading) {
         viewModelScope.launch {
             noticeUiState = state
-            delay(2000)
             val result = noticeRepository.fetchNotices()
             result
                 .onSuccess { notices ->
