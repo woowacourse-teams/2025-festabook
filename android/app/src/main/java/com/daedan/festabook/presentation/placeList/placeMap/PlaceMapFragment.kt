@@ -82,20 +82,6 @@ class PlaceMapFragment(
 
     private val viewModel: PlaceListViewModel by viewModels()
 
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-        setupFragmentFactory()
-        childFragmentManager.commit {
-            childFragmentManager.fragments.forEach { fragment ->
-                remove(fragment)
-            }
-        }
-        return super.onCreateView(inflater, container, savedInstanceState)
-    }
-
     override fun onViewCreated(
         view: View,
         savedInstanceState: Bundle?,
@@ -118,15 +104,16 @@ class PlaceMapFragment(
                     onNothingSelected()
                 }
             }
-
-        childFragmentManager.commit {
-            add(R.id.fcv_map_container, mapFragment)
-            add(R.id.fcv_place_list_container, placeListFragment)
-            add(R.id.fcv_map_container, placeDetailPreviewFragment)
-            add(R.id.fcv_place_category_container, placeCategoryFragment)
-            add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment)
-            hide(placeDetailPreviewFragment)
-            hide(placeDetailPreviewSecondaryFragment)
+        if (savedInstanceState == null) {
+            childFragmentManager.commit {
+                add(R.id.fcv_map_container, mapFragment)
+                add(R.id.fcv_place_list_container, placeListFragment)
+                add(R.id.fcv_map_container, placeDetailPreviewFragment)
+                add(R.id.fcv_place_category_container, placeCategoryFragment)
+                add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment)
+                hide(placeDetailPreviewFragment)
+                hide(placeDetailPreviewSecondaryFragment)
+            }
         }
         lifecycleScope.launch {
             setUpMapManager()
