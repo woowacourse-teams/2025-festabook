@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.news
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -38,6 +39,10 @@ class NewsViewModel @Inject constructor(
     var noticeUiState by mutableStateOf<NoticeUiState>(NoticeUiState.InitialLoading)
         private set
 
+    val isNoticeScreenRefreshing by derivedStateOf {
+        noticeUiState is NoticeUiState.Loading
+    }
+
     var faqUiState by mutableStateOf<FAQUiState>(FAQUiState.InitialLoading)
         private set
 
@@ -50,12 +55,12 @@ class NewsViewModel @Inject constructor(
     private var noticeIdToExpand: Long? = null
 
     init {
-        loadAllNotices(NoticeUiState.InitialLoading)
+        loadAllNotices()
         loadAllFAQs()
         loadAllLostItems()
     }
 
-    fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
+    fun loadAllNotices(state: NoticeUiState = NoticeUiState.InitialLoading) {
         viewModelScope.launch {
             noticeUiState = state
             val result = noticeRepository.fetchNotices()
