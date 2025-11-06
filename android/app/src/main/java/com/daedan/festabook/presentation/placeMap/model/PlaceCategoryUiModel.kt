@@ -2,7 +2,7 @@ package com.daedan.festabook.presentation.placeMap.model
 
 import com.daedan.festabook.R
 import com.daedan.festabook.domain.model.PlaceCategory
-import com.daedan.festabook.presentation.placeMap.OverlayImageManager
+import com.daedan.festabook.presentation.placeMap.mapManager.OverlayImageManager
 import com.naver.maps.map.overlay.OverlayImage
 
 enum class PlaceCategoryUiModel {
@@ -16,7 +16,7 @@ enum class PlaceCategoryUiModel {
     PARKING,
     STAGE,
     PHOTO_BOOTH,
-    EXTRA
+    EXTRA,
     ;
 
     companion object {

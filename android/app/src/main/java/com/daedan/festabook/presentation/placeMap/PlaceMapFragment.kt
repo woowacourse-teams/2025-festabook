@@ -23,6 +23,7 @@ import com.daedan.festabook.presentation.placeMap.logging.CurrentLocationChecked
 import com.daedan.festabook.presentation.placeMap.logging.PlaceFragmentEnter
 import com.daedan.festabook.presentation.placeMap.logging.PlaceMarkerClick
 import com.daedan.festabook.presentation.placeMap.logging.PlaceTimeTagSelected
+import com.daedan.festabook.presentation.placeMap.mapManager.MapManager
 import com.daedan.festabook.presentation.placeMap.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeMap.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeMap.placeCategory.PlaceCategoryFragment

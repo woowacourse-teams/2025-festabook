@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.placeMap
+package com.daedan.festabook.presentation.placeMap.mapManager
 
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.CameraAnimation
