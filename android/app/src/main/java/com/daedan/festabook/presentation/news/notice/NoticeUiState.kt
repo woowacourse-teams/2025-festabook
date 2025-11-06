@@ -3,7 +3,7 @@ package com.daedan.festabook.presentation.news.notice
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 sealed interface NoticeUiState {
-    data class Loading(
+    data class Refreshing(
         val oldNotices: List<NoticeUiModel>,
     ) : NoticeUiState
 

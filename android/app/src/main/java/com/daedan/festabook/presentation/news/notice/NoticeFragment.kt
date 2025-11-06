@@ -44,7 +44,7 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>() {
                         val currentUiState = newsViewModel.noticeUiState
                         val oldNotices =
                             if (currentUiState is NoticeUiState.Success) currentUiState.notices else emptyList()
-                        newsViewModel.loadAllNotices(NoticeUiState.Loading(oldNotices))
+                        newsViewModel.loadAllNotices(NoticeUiState.Refreshing(oldNotices))
                     },
                 )
             }

@@ -45,7 +45,7 @@ fun NoticeScreen(
                 }
             }
 
-            is NoticeUiState.Loading -> {
+            is NoticeUiState.Refreshing -> {
                 NoticeContent(
                     notices = uiState.oldNotices,
                     onNoticeClick = onNoticeClick,

@@ -40,7 +40,7 @@ class NewsViewModel @Inject constructor(
         private set
 
     val isNoticeScreenRefreshing by derivedStateOf {
-        noticeUiState is NoticeUiState.Loading
+        noticeUiState is NoticeUiState.Refreshing
     }
 
     var faqUiState by mutableStateOf<FAQUiState>(FAQUiState.InitialLoading)
