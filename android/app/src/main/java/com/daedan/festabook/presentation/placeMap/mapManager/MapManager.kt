@@ -5,22 +5,17 @@ import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeMap.MapClickListener
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapCameraManagerImpl
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapFilterManagerImpl
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapMarkerManagerImpl
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.OverlayImageManager
 import com.daedan.festabook.presentation.placeMap.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeMap.model.InitialMapSettingUiModel
-import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
-import com.daedan.festabook.presentation.placeMap.model.iconResources
 import com.daedan.festabook.presentation.placeMap.model.toLatLng
 import com.naver.maps.geometry.LatLng
 import com.naver.maps.map.NaverMap
-import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PolygonOverlay
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
-class MapManager private constructor(
+@Inject
+class MapManager(
     private val map: NaverMap,
     private val initialPadding: Int,
     private val mapClickListener: MapClickListener,
@@ -106,40 +101,5 @@ class MapManager private constructor(
                 LatLng(32.8709533, 130.5440844),
                 LatLng(32.8709533, 123.5125660),
             )
-
-        fun create(
-            map: NaverMap,
-            settingUiModel: InitialMapSettingUiModel,
-            mapClickListener: MapClickListener,
-            initialPadding: Int,
-        ): MapManager {
-            val markers = mutableListOf<Marker>()
-            val cameraManager: MapCameraManager = MapCameraManagerImpl(map, settingUiModel)
-            val overlayImageManager = OverlayImageManager(PlaceCategoryUiModel.iconResources)
-            val markerManager: MapMarkerManager =
-                MapMarkerManagerImpl(
-                    map,
-                    overlayImageManager,
-                    cameraManager,
-                    mapClickListener,
-                    markers,
-                )
-
-            val filterManager: MapFilterManager =
-                MapFilterManagerImpl(
-                    markers,
-                    markerManager,
-                )
-
-            return MapManager(
-                map,
-                initialPadding,
-                mapClickListener,
-                settingUiModel,
-                cameraManager,
-                filterManager,
-                markerManager,
-            )
-        }
     }
 }

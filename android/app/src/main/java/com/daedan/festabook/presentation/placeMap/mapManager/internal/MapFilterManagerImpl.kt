@@ -1,14 +1,21 @@
 package com.daedan.festabook.presentation.placeMap.mapManager.internal
 
+import com.daedan.festabook.di.mapManager.PlaceMapScope
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.presentation.placeMap.mapManager.MapFilterManager
 import com.daedan.festabook.presentation.placeMap.mapManager.MapMarkerManager
 import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeMap.model.PlaceCoordinateUiModel
 import com.naver.maps.map.overlay.Marker
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
-internal class MapFilterManagerImpl(
-    private val markers: List<Marker>,
+@Inject
+@ContributesBinding(PlaceMapScope::class)
+@SingleIn(PlaceMapScope::class)
+class MapFilterManagerImpl(
+    private val markers: MutableList<Marker>,
     private val markerManager: MapMarkerManager,
 ) : MapFilterManager {
     private var selectedMarker: Marker? = null

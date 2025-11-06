@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.placeMap.mapManager.internal
 
+import com.daedan.festabook.di.mapManager.PlaceMapScope
 import com.daedan.festabook.presentation.placeMap.MapClickListener
 import com.daedan.festabook.presentation.placeMap.mapManager.MapCameraManager
 import com.daedan.festabook.presentation.placeMap.mapManager.MapMarkerManager
@@ -10,8 +11,14 @@ import com.daedan.festabook.presentation.placeMap.model.getSelectedIcon
 import com.daedan.festabook.presentation.placeMap.model.toLatLng
 import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Marker
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.SingleIn
 
-internal class MapMarkerManagerImpl(
+@Inject
+@ContributesBinding(PlaceMapScope::class)
+@SingleIn(PlaceMapScope::class)
+class MapMarkerManagerImpl(
     private val map: NaverMap,
     private val overlayImageManager: OverlayImageManager,
     private val cameraManager: MapCameraManager,

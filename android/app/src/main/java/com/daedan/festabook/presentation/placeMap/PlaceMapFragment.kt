@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.di.fragment.FragmentKey
+import com.daedan.festabook.di.mapManager.MapManagerGraph
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -39,6 +40,8 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
+import dev.zacsweers.metro.createGraph
+import dev.zacsweers.metro.createGraphFactory
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -213,13 +216,14 @@ class PlaceMapFragment(
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
             if (mapManager == null) {
-                mapManager =
-                    MapManager.create(
+                val graph =
+                    createGraphFactory<MapManagerGraph.Factory>().create(
                         naverMap,
                         initialMapSetting.value,
                         MapClickListenerImpl(viewModel),
                         getInitialPadding(requireContext()),
                     )
+                mapManager = graph.mapManager
                 mapManager?.setupMap()
                 mapManager?.setupBackToInitialPosition { isExceededMaxLength ->
                     viewModel.setIsExceededMaxLength(isExceededMaxLength)
