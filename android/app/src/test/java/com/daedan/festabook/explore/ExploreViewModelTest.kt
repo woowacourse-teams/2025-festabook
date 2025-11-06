@@ -34,9 +34,7 @@ class ExploreViewModelTest {
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
-        exploreRepository = mockk()
-        coEvery { exploreRepository.getFestivalId() } returns 1
-        coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
+        exploreRepository = mockk(relaxed = true)
         exploreViewModel = ExploreViewModel(exploreRepository)
     }
 
@@ -49,6 +47,7 @@ class ExploreViewModelTest {
     fun `뷰모델을 생성하면 저장된 축제 id가 있는지 확인한다`() = runTest {
         //given
         coEvery { exploreRepository.getFestivalId() } returns 1
+        coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
 
         //when
         exploreViewModel = ExploreViewModel(exploreRepository)
@@ -56,6 +55,8 @@ class ExploreViewModelTest {
 
         //then
         val result = exploreViewModel.hasFestivalId.getOrAwaitValue()
+        coVerify { exploreRepository.getFestivalId() }
+        coVerify { exploreRepository.search(any()) }
         assertThat(result).isTrue()
     }
 
@@ -63,6 +64,8 @@ class ExploreViewModelTest {
     fun `대학교가 선택되었을 때 축제 Id를 저장하고 Main으로 이동하는 이벤트를 발생시킨다`() = runTest {
         //given
         coEvery { exploreRepository.saveFestivalId(any()) } returns Unit
+        coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
+
         val searchResult = SearchResultUiModel(
             1, "테스트대학교", "테스트축제"
         )
@@ -74,6 +77,7 @@ class ExploreViewModelTest {
         //then
         val result = exploreViewModel.navigateToMain.value
         coVerify { exploreRepository.saveFestivalId(searchResult.festivalId) }
+        coVerify { exploreRepository.search(any()) }
         assertThat(result).isEqualTo(searchResult)
     }
 
