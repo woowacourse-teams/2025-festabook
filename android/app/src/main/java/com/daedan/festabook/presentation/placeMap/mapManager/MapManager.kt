@@ -3,14 +3,15 @@ package com.daedan.festabook.presentation.placeMap.mapManager
 import androidx.core.content.ContextCompat
 import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
-import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.presentation.common.toPx
-import com.daedan.festabook.presentation.placeMap.OnCameraChangeListener
+import com.daedan.festabook.presentation.placeMap.MapClickListener
+import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapCameraManagerImpl
+import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapFilterManagerImpl
+import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapMarkerManagerImpl
+import com.daedan.festabook.presentation.placeMap.mapManager.internal.OverlayImageManager
 import com.daedan.festabook.presentation.placeMap.model.CoordinateUiModel
 import com.daedan.festabook.presentation.placeMap.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
-import com.daedan.festabook.presentation.placeMap.model.PlaceCoordinateUiModel
-import com.daedan.festabook.presentation.placeMap.model.getNormalIcon
 import com.daedan.festabook.presentation.placeMap.model.iconResources
 import com.daedan.festabook.presentation.placeMap.model.toLatLng
 import com.naver.maps.geometry.LatLng
@@ -19,56 +20,18 @@ import com.naver.maps.map.overlay.Marker
 import com.naver.maps.map.overlay.PolygonOverlay
 import timber.log.Timber
 
-class MapManager(
+class MapManager private constructor(
     private val map: NaverMap,
     private val initialPadding: Int,
     private val mapClickListener: MapClickListener,
     private val settingUiModel: InitialMapSettingUiModel,
-) {
-    private val markers: MutableList<Marker> = mutableListOf()
-    private val markerCameraManager =
-        MapCameraManager(
-            map,
-            settingUiModel,
-        )
-    private val markerSelectionManager =
-        MapMarkerSelectionManager(
-            markers,
-            markerCameraManager,
-        )
-
-    private val filterManager =
-        MapFilterManager(
-            markers,
-            markerSelectionManager,
-        )
-
-    private val overlayImageManager =
-        OverlayImageManager(
-            PlaceCategoryUiModel.iconResources,
-        )
-
+    private val cameraManager: MapCameraManager,
+    private val filterManager: MapFilterManager,
+    private val markerManager: MapMarkerManager,
+) : MapCameraManager by cameraManager,
+    MapMarkerManager by markerManager,
+    MapFilterManager by filterManager {
     private val context = map.context
-
-    fun setPlaceLocation(coordinates: List<PlaceCoordinateUiModel>) {
-        markers.addAll(
-            coordinates.map { place ->
-                Marker().generate(place)
-            },
-        )
-    }
-
-    fun filterMarkersByCategories(categories: List<PlaceCategoryUiModel>) {
-        filterManager.filterMarkersByCategories(categories)
-    }
-
-    fun filterMarkersByTimeTag(selectedTimeTagId: Long?) {
-        filterManager.filterMarkersByTimeTag(selectedTimeTagId)
-    }
-
-    fun clearFilter() {
-        filterManager.clearFilter()
-    }
 
     fun setupMap() {
         map.apply {
@@ -77,7 +40,7 @@ class MapManager(
             uiSettings.isZoomControlEnabled = false
             uiSettings.isScaleBarEnabled = false
             customStyleId = BuildConfig.NAVER_MAP_STYLE_ID
-            markerCameraManager.setCameraInitialPosition()
+            cameraManager.setCameraInitialPosition()
             setInitialPolygon(settingUiModel.border)
             setContentPaddingBottom(initialPadding)
             setLogoMarginBottom()
@@ -85,30 +48,14 @@ class MapManager(
             setOnMapClickListener { _, latLng ->
                 println("지도 클릭됨! 위치: $latLng")
                 Timber.d("지도 클릭: $latLng")
-                markerSelectionManager.unselectMarker()
+                markerManager.unselectMarker()
                 mapClickListener.onMapClickListener()
             }
         }
     }
 
-    fun unselectMarker() {
-        markerSelectionManager.unselectMarker()
-    }
-
-    fun setupBackToInitialPosition(onCameraChangeListener: OnCameraChangeListener) {
-        markerCameraManager.setupBackToInitialPosition(onCameraChangeListener)
-    }
-
-    fun moveToPosition(position: LatLng = settingUiModel.initialCenter.toLatLng()) {
-        markerCameraManager.moveToPosition(position)
-    }
-
     fun clearMapManager() {
-        markerCameraManager.clearListener()
-    }
-
-    fun selectMarker(placeId: Long) {
-        markerSelectionManager.selectMarker(placeId)
+        cameraManager.clearListener()
     }
 
     private fun setContentPaddingBottom(height: Int) {
@@ -147,30 +94,9 @@ class MapManager(
         }
     }
 
-    private fun Marker.generate(place: PlaceCoordinateUiModel): Marker {
-        width = Marker.SIZE_AUTO
-        height = Marker.SIZE_AUTO
-        position = place.coordinate.toLatLng()
-        map = this@MapManager.map
-        overlayImageManager.getNormalIcon(place.category)?.let {
-            icon = it
-        }
-        tag = place
-        captionText = place.title
-        isHideCollidedCaptions = true
-        isVisible = false
-        captionMinZoom = PRIMARY_PLACE_ZOOM_LEVEL
-
-        setOnClickListener {
-            mapClickListener.onMarkerListener(place.placeId, place.category)
-        }
-        return this
-    }
-
     companion object {
         private const val OVERLAY_OUTLINE_STROKE_WIDTH = 4
         private const val SYMBOL_SIZE_WEIGHT = 0.8f
-        private const val PRIMARY_PLACE_ZOOM_LEVEL = 16.0
 
         // 대한민국 전체를 덮는 오버레이 좌표입니다
         private val EDGE_COORS =
@@ -180,5 +106,40 @@ class MapManager(
                 LatLng(32.8709533, 130.5440844),
                 LatLng(32.8709533, 123.5125660),
             )
+
+        fun create(
+            map: NaverMap,
+            settingUiModel: InitialMapSettingUiModel,
+            mapClickListener: MapClickListener,
+            initialPadding: Int,
+        ): MapManager {
+            val markers = mutableListOf<Marker>()
+            val cameraManager: MapCameraManager = MapCameraManagerImpl(map, settingUiModel)
+            val overlayImageManager = OverlayImageManager(PlaceCategoryUiModel.iconResources)
+            val markerManager: MapMarkerManager =
+                MapMarkerManagerImpl(
+                    map,
+                    overlayImageManager,
+                    cameraManager,
+                    mapClickListener,
+                    markers,
+                )
+
+            val filterManager: MapFilterManager =
+                MapFilterManagerImpl(
+                    markers,
+                    markerManager,
+                )
+
+            return MapManager(
+                map,
+                initialPadding,
+                mapClickListener,
+                settingUiModel,
+                cameraManager,
+                filterManager,
+                markerManager,
+            )
+        }
     }
 }

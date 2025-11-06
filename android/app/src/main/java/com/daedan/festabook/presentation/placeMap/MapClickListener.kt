@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.placeMap.mapManager
+package com.daedan.festabook.presentation.placeMap
 
 import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
 

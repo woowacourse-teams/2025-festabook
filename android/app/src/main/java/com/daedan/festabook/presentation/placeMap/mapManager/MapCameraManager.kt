@@ -1,85 +1,33 @@
 package com.daedan.festabook.presentation.placeMap.mapManager
 
 import com.daedan.festabook.presentation.placeMap.OnCameraChangeListener
-import com.daedan.festabook.presentation.placeMap.model.InitialMapSettingUiModel
-import com.daedan.festabook.presentation.placeMap.model.toLatLng
 import com.naver.maps.geometry.LatLng
-import com.naver.maps.map.CameraAnimation.Easing
-import com.naver.maps.map.CameraUpdate
-import com.naver.maps.map.NaverMap
-import kotlin.math.pow
 
-class MapCameraManager(
-    private val map: NaverMap,
-    private val settingUiModel: InitialMapSettingUiModel,
-) {
-    private val initialCenter = settingUiModel.initialCenter.toLatLng()
+interface MapCameraManager {
+    /**
+     * 지정된 위치로 카메라를 이동시키거나, 위치가 지정되지 않은 경우 초기 중심으로 이동시킵니다.
+     * @param position 카메라를 이동시킬 목표 LatLng (기본값: 초기 중심 좌표)
+     */
+    fun moveToPosition(position: LatLng)
 
-    private var onCameraChangeListener: NaverMap.OnCameraChangeListener? = null
+    /**
+     * 서버에서 받아온 초기 위치로 카메라를 이동합니다
+     */
+    fun moveToPosition()
 
-    private val maxLength =
-        settingUiModel.border.maxOf {
-            settingUiModel.initialCenter.toLatLng().distanceTo(it.toLatLng())
-        }
+    /**
+     * 카메라 변경 리스너를 설정하고, 카메라 위치가 초기 범위를 벗어났는지 여부를 콜백으로 전달합니다.
+     * @param onCameraChangeListener 카메라 변경 시 호출될 콜백 인터페이스
+     */
+    fun setupBackToInitialPosition(onCameraChangeListener: OnCameraChangeListener)
 
-    fun moveToPosition(position: LatLng = settingUiModel.initialCenter.toLatLng()) {
-        val initialCenterCoordinate =
-            CameraUpdate
-                .scrollTo(
-                    position,
-                ).animate(Easing)
-        map.moveCamera(initialCenterCoordinate)
-    }
+    /**
+     * 카메라 위치와 줌 레벨을 초기 설정값으로 복원합니다.
+     */
+    fun setCameraInitialPosition()
 
-    fun setupBackToInitialPosition(onCameraChangeListener: OnCameraChangeListener) {
-        this.onCameraChangeListener =
-            NaverMap.OnCameraChangeListener { _, _ ->
-                onCameraChangeListener.onCameraChanged(
-                    isExceededMaxLength(),
-                )
-            }
-        this.onCameraChangeListener?.let {
-            map.addOnCameraChangeListener(it)
-        }
-    }
-
-    fun setCameraInitialPosition() {
-        val initialCenterCoordinate =
-            CameraUpdate
-                .scrollTo(
-                    settingUiModel.initialCenter.toLatLng(),
-                )
-        val initialZoomLevelCoordinate =
-            CameraUpdate
-                .zoomTo(
-                    settingUiModel.zoom.toDouble(),
-                )
-        map.moveCamera(initialZoomLevelCoordinate)
-        map.moveCamera(initialCenterCoordinate)
-    }
-
-    fun clearListener() {
-        onCameraChangeListener?.let { callback ->
-            map.removeOnCameraChangeListener(callback)
-            onCameraChangeListener = null
-        }
-    }
-
-    private fun isExceededMaxLength(): Boolean {
-        val currentPosition = map.cameraPosition.target
-        val zoomWeight = map.cameraPosition.zoom.zoomWeight()
-        return currentPosition.distanceTo(initialCenter) >
-            (maxLength * zoomWeight).coerceAtLeast(
-                maxLength,
-            )
-    }
-
-    private fun Double.zoomWeight() =
-        2.0.pow(
-            DEFAULT_ZOOM_LEVEL - this,
-        )
-
-    companion object {
-        private const val DEFAULT_ZOOM_LEVEL = 15
-    }
+    /**
+     * 설정된 카메라 변경 리스너를 해제합니다. (메모리 누수 방지)
+     */
+    fun clearListener()
 }

@@ -192,7 +192,7 @@ class PlaceMapFragment(
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> {
-                    mapManager?.setPlaceLocation(placeGeographies.value)
+                    mapManager?.setupMarker(placeGeographies.value)
                     viewModel.selectedTimeTag.observe(viewLifecycleOwner) { selectedTimeTag ->
                         mapManager?.filterMarkersByTimeTag(selectedTimeTag.timeTagId)
                     }
@@ -214,11 +214,11 @@ class PlaceMapFragment(
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
             if (mapManager == null) {
                 mapManager =
-                    MapManager(
+                    MapManager.create(
                         naverMap,
-                        getInitialPadding(requireContext()),
-                        MapClickListenerImpl(viewModel),
                         initialMapSetting.value,
+                        MapClickListenerImpl(viewModel),
+                        getInitialPadding(requireContext()),
                     )
                 mapManager?.setupMap()
                 mapManager?.setupBackToInitialPosition { isExceededMaxLength ->

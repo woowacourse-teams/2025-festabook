@@ -1,60 +1,29 @@
 package com.daedan.festabook.presentation.placeMap.mapManager
 
-import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
-import com.daedan.festabook.presentation.placeMap.model.PlaceCoordinateUiModel
-import com.naver.maps.map.overlay.Marker
 
-class MapFilterManager(
-    private val markers: List<Marker>,
-    private val markerSelectionManager: MapMarkerSelectionManager,
-) {
-    private var selectedMarker: Marker? = null
+/**
+ * 지도상의 마커들을 카테고리 또는 시간 태그를 기준으로 필터링하는 기능을 정의합니다.
+ */
+interface MapFilterManager {
+    /**
+     * 주어진 카테고리 목록을 기준으로 마커를 필터링합니다.
+     * 필터링된 마커와 현재 선택된 마커만 지도에 표시됩니다.
+     *
+     * @param categories 필터링에 사용할 장소 카테고리 목록입니다.
+     */
+    fun filterMarkersByCategories(categories: List<PlaceCategoryUiModel>)
 
-    private var selectedTimeTagId: Long? = null
+    /**
+     * 주어진 시간 태그 ID를 기준으로 마커를 필터링합니다.
+     * TimeTag.EMTPY_TIME_TAG_ID가 전달되면 모든 필터를 해제합니다.
+     *
+     * @param selectedTimeTagId 필터링에 사용할 시간 태그의 ID입니다. null 또는 특정 ID가 될 수 있습니다.
+     */
+    fun filterMarkersByTimeTag(selectedTimeTagId: Long?)
 
-    fun filterMarkersByCategories(categories: List<PlaceCategoryUiModel>) {
-        markers.forEach { marker ->
-            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
-            val isSelectedMarker = marker == selectedMarker
-
-            // 필터링된 마커이거나 선택된 마커인 경우에만 보이게 처리
-            marker.isVisible =
-                place.category in categories &&
-                place.timeTagIds.contains(selectedTimeTagId) ||
-                isSelectedMarker
-
-            // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
-            markerSelectionManager.updateMarkerIcon(isSelectedMarker, marker)
-        }
-    }
-
-    fun filterMarkersByTimeTag(selectedTimeTagId: Long?) {
-        if (selectedTimeTagId == TimeTag.EMTPY_TIME_TAG_ID) {
-            markers.forEach { it.isVisible = true }
-            return
-        }
-        markers.forEach { marker ->
-            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
-            val isSelectedMarker = marker == selectedMarker
-
-            marker.isVisible = place.timeTagIds.contains(selectedTimeTagId) || isSelectedMarker
-
-            // 선택된 마커는 크기를 유지하고, 필터링되지 않은 마커는 원래 크기로 되돌림
-            markerSelectionManager.updateMarkerIcon(isSelectedMarker, marker)
-        }
-        this.selectedTimeTagId = selectedTimeTagId
-    }
-
-    fun clearFilter() {
-        markers.forEach { marker ->
-            val place = marker.tag as? PlaceCoordinateUiModel ?: return@forEach
-            marker.isVisible = place.timeTagIds.contains(selectedTimeTagId)
-
-            val isSelectedMarker = marker == selectedMarker
-
-            // 선택된 마커는 크기를 유지하고, 나머지는 원래 크기로 복원
-            markerSelectionManager.setMarkerIcon(marker, isSelectedMarker)
-        }
-    }
+    /**
+     * 모든 필터링 조건을 해제하고 마커를 초기 상태로 복원합니다.
+     */
+    fun clearFilter()
 }

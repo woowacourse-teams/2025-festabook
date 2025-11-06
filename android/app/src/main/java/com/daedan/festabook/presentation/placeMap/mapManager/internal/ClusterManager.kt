@@ -1,8 +1,8 @@
-package com.daedan.festabook.presentation.placeMap.mapManager
+package com.daedan.festabook.presentation.placeMap.mapManager.internal
 
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.toPx
-import com.daedan.festabook.presentation.placeMap.mapManager.OverlayImageManager
+import com.daedan.festabook.presentation.placeMap.mapManager.internal.OverlayImageManager
 import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeMap.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeMap.model.getNormalIcon
