@@ -44,60 +44,66 @@ class ExploreViewModelTest {
     }
 
     @Test
-    fun `뷰모델을 생성하면 저장된 축제 id가 있는지 확인한다`() = runTest {
-        //given
-        coEvery { exploreRepository.getFestivalId() } returns 1
-        coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
+    fun `뷰모델을 생성하면 저장된 축제 id가 있는지 확인한다`() =
+        runTest {
+            // given
+            coEvery { exploreRepository.getFestivalId() } returns 1
+            coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
 
-        //when
-        exploreViewModel = ExploreViewModel(exploreRepository)
-        advanceUntilIdle()
+            // when
+            exploreViewModel = ExploreViewModel(exploreRepository)
+            advanceUntilIdle()
 
-        //then
-        val result = exploreViewModel.hasFestivalId.getOrAwaitValue()
-        coVerify { exploreRepository.getFestivalId() }
-        coVerify { exploreRepository.search(any()) }
-        assertThat(result).isTrue()
-    }
-
-    @Test
-    fun `대학교가 선택되었을 때 축제 Id를 저장하고 Main으로 이동하는 이벤트를 발생시킨다`() = runTest {
-        //given
-        coEvery { exploreRepository.saveFestivalId(any()) } returns Unit
-        coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
-
-        val searchResult = SearchResultUiModel(
-            1, "테스트대학교", "테스트축제"
-        )
-
-        //when
-        exploreViewModel.onUniversitySelected(searchResult)
-        advanceUntilIdle()
-
-        //then
-        val result = exploreViewModel.navigateToMain.value
-        coVerify { exploreRepository.saveFestivalId(searchResult.festivalId) }
-        coVerify { exploreRepository.search(any()) }
-        assertThat(result).isEqualTo(searchResult)
-    }
+            // then
+            val result = exploreViewModel.hasFestivalId.getOrAwaitValue()
+            coVerify { exploreRepository.getFestivalId() }
+            coVerify { exploreRepository.search(any()) }
+            assertThat(result).isTrue()
+        }
 
     @Test
-    fun `검색 입력값이 달라지면 특정 텀을 두고 검색을 수행한다`() = runTest {
-        //given
-        coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
+    fun `대학교가 선택되었을 때 축제 Id를 저장하고 Main으로 이동하는 이벤트를 발생시킨다`() =
+        runTest {
+            // given
+            coEvery { exploreRepository.saveFestivalId(any()) } returns Unit
+            coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
 
-        //when
-        exploreViewModel.onTextInputChanged("테스트")
-        exploreViewModel.onTextInputChanged("테스트")
-        exploreViewModel.onTextInputChanged("테스트")
-        advanceUntilIdle()
-        exploreViewModel.onTextInputChanged("테스트1")
-        exploreViewModel.onTextInputChanged("테스트2")
-        advanceTimeBy(100)
+            val searchResult =
+                SearchResultUiModel(
+                    1,
+                    "테스트대학교",
+                    "테스트축제",
+                )
 
-        //then
-        coVerify(exactly = 1) { exploreRepository.search("테스트") }
-        coVerify(exactly = 0) { exploreRepository.search("테스트1") }
-        coVerify(exactly = 0) { exploreRepository.search("테스트2") }
-    }
+            // when
+            exploreViewModel.onUniversitySelected(searchResult)
+            advanceUntilIdle()
+
+            // then
+            val result = exploreViewModel.navigateToMain.value
+            coVerify { exploreRepository.saveFestivalId(searchResult.festivalId) }
+            coVerify { exploreRepository.search(any()) }
+            assertThat(result).isEqualTo(searchResult)
+        }
+
+    @Test
+    fun `검색 입력값이 달라지면 특정 텀을 두고 검색을 수행한다`() =
+        runTest {
+            // given
+            coEvery { exploreRepository.search(any()) } returns Result.success(emptyList())
+
+            // when
+            exploreViewModel.onTextInputChanged("테스트")
+            exploreViewModel.onTextInputChanged("테스트")
+            exploreViewModel.onTextInputChanged("테스트")
+            advanceUntilIdle()
+            exploreViewModel.onTextInputChanged("테스트1")
+            exploreViewModel.onTextInputChanged("테스트2")
+            advanceTimeBy(100)
+
+            // then
+            coVerify(exactly = 1) { exploreRepository.search("테스트") }
+            coVerify(exactly = 0) { exploreRepository.search("테스트1") }
+            coVerify(exactly = 0) { exploreRepository.search("테스트2") }
+        }
 }

@@ -7,11 +7,9 @@ import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.getOrAwaitValue
 import com.daedan.festabook.presentation.main.MainViewModel
 import com.google.firebase.messaging.FirebaseMessaging
-import io.mockk.Runs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
-import io.mockk.just
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.verify
@@ -73,7 +71,7 @@ class MainViewModelTest {
             advanceUntilIdle()
 
             // then
-            coVerify { deviceRepository.saveDeviceId(1)}
+            coVerify { deviceRepository.saveDeviceId(1) }
             verify { deviceRepository.getUuid() }
             verify { deviceRepository.getFcmToken() }
         }
@@ -98,11 +96,11 @@ class MainViewModelTest {
     @Test
     fun `뒤로 가기를 두 번 빠르게 두 번 클릭했을 때, 종료 이벤트가 발생한다`() =
         runTest {
-            //given - when
+            // given - when
             mainViewModel.onBackPressed()
             mainViewModel.onBackPressed()
 
-            //then
+            // then
             val actual = mainViewModel.backPressEvent.getOrAwaitValue()
             assertThat(actual.peekContent()).isTrue()
         }
@@ -110,10 +108,10 @@ class MainViewModelTest {
     @Test
     fun `뒤로 가기를 한 번만 클릭했을 때 종료 이벤트가 발생하지 않는다`() =
         runTest {
-            //given - when
+            // given - when
             mainViewModel.onBackPressed()
 
-            //then
+            // then
             val actual = mainViewModel.backPressEvent.getOrAwaitValue()
             assertThat(actual.peekContent()).isFalse()
         }
