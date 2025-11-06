@@ -84,7 +84,6 @@ class PlaceListChildViewModelTest {
 
             // when
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
-            advanceUntilIdle()
 
             // then
             val expected =
@@ -105,7 +104,6 @@ class PlaceListChildViewModelTest {
 
             // when
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
-            advanceUntilIdle()
 
             // then
             val expected = FAKE_PLACES.map { it.toUiModel() }
@@ -121,11 +119,9 @@ class PlaceListChildViewModelTest {
                 listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
             placeListChildViewModel.updatePlacesByTimeTag(TimeTag.EMPTY.timeTagId)
             placeListChildViewModel.updatePlacesByCategories(targetCategories)
-            advanceUntilIdle()
 
             // when
             placeListChildViewModel.clearPlacesFilter()
-            advanceUntilIdle()
 
             // then
             val expected = FAKE_PLACES.map { it.toUiModel() }
@@ -136,16 +132,16 @@ class PlaceListChildViewModelTest {
     @Test
     fun `타임 태그를 기준으로 필터링 할 수 있다`() =
         runTest {
-            //given
-            val expected = listOf(
-                FAKE_PLACES.first().toUiModel(),
-            )
+            // given
+            val expected =
+                listOf(
+                    FAKE_PLACES.first().toUiModel(),
+                )
 
-            //when
+            // when
             placeListChildViewModel.updatePlacesByTimeTag(1)
-            advanceUntilIdle()
 
-            //then
+            // then
             val actual = placeListChildViewModel.places.getOrAwaitValue()
             assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
         }
@@ -153,15 +149,14 @@ class PlaceListChildViewModelTest {
     @Test
     fun `타임 태그가 없을 때 전체 목록을 반환한다`() =
         runTest {
-            //given
+            // given
             val expected = FAKE_PLACES.map { it.toUiModel() }
             val emptyTimeTag = TimeTag.EMPTY
 
-            //when
+            // when
             placeListChildViewModel.updatePlacesByTimeTag(emptyTimeTag.timeTagId)
-            advanceUntilIdle()
 
-            //then
+            // then
             val actual = placeListChildViewModel.places.getOrAwaitValue()
             assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
         }
@@ -169,14 +164,13 @@ class PlaceListChildViewModelTest {
     @Test
     fun `플레이스의 모든 정보가 로드가 완료되었을 때 이벤트를 발생시킬 수 있다`() =
         runTest {
-            //given
+            // given
             val expected = PlaceListUiState.Complete<List<PlaceUiModel>>()
 
-            //when
+            // when
             placeListChildViewModel.setPlacesStateComplete()
-            advanceUntilIdle()
 
-            //then
+            // then
             val actual = placeListChildViewModel.places.getOrAwaitValue()
             assertThat(actual).isInstanceOf(expected::class.java)
         }
