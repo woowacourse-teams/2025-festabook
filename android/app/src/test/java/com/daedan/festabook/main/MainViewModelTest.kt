@@ -46,16 +46,6 @@ class MainViewModelTest {
         deviceRepository = mockk(relaxed = true)
         festivalNotificationRepository = mockk(relaxed = true)
         festivalRepository = mockk(relaxed = true)
-
-        every { festivalRepository.getIsFirstVisit() } returns Result.success(true)
-
-        coEvery {
-            deviceRepository.registerDevice(
-                FAKE_UUID,
-                FAKE_FCM_TOKEN,
-            )
-        } returns Result.success(1)
-
         mainViewModel =
             MainViewModel(deviceRepository, festivalRepository)
     }
@@ -71,6 +61,12 @@ class MainViewModelTest {
             // given
             every { deviceRepository.getUuid() } returns FAKE_UUID
             every { deviceRepository.getFcmToken() } returns FAKE_FCM_TOKEN
+            coEvery {
+                deviceRepository.registerDevice(
+                    FAKE_UUID,
+                    FAKE_FCM_TOKEN,
+                )
+            } returns Result.success(1)
 
             // when
             mainViewModel.registerDeviceAndFcmToken()
@@ -104,9 +100,7 @@ class MainViewModelTest {
         runTest {
             //given - when
             mainViewModel.onBackPressed()
-            advanceUntilIdle()
             mainViewModel.onBackPressed()
-            advanceUntilIdle()
 
             //then
             val actual = mainViewModel.backPressEvent.getOrAwaitValue()
@@ -118,7 +112,6 @@ class MainViewModelTest {
         runTest {
             //given - when
             mainViewModel.onBackPressed()
-            advanceUntilIdle()
 
             //then
             val actual = mainViewModel.backPressEvent.getOrAwaitValue()
@@ -131,6 +124,7 @@ class MainViewModelTest {
         every { festivalRepository.getIsFirstVisit() } returns Result.success(true)
 
         // when
+        mainViewModel = MainViewModel(deviceRepository, festivalRepository)
         val result = mainViewModel.isFirstVisit.value
 
         // then
