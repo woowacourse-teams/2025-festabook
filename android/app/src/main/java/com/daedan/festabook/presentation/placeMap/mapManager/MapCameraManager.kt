@@ -25,9 +25,4 @@ interface MapCameraManager {
      * 카메라 위치와 줌 레벨을 초기 설정값으로 복원합니다.
      */
     fun setCameraInitialPosition()
-
-    /**
-     * 설정된 카메라 변경 리스너를 해제합니다. (메모리 누수 방지)
-     */
-    fun clearListener()
 }

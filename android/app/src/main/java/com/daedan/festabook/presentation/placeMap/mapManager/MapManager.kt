@@ -28,7 +28,7 @@ class MapManager(
     MapFilterManager by filterManager {
     private val context = map.context
 
-    fun setupMap() {
+    init {
         map.apply {
             isIndoorEnabled = true
             symbolScale = SYMBOL_SIZE_WEIGHT
@@ -47,10 +47,6 @@ class MapManager(
                 mapClickListener.onMapClickListener()
             }
         }
-    }
-
-    fun clearMapManager() {
-        cameraManager.clearListener()
     }
 
     private fun setContentPaddingBottom(height: Int) {

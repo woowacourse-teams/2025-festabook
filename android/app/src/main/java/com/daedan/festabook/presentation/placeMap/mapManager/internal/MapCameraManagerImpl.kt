@@ -73,13 +73,6 @@ class MapCameraManagerImpl(
         map.moveCamera(initialCenterCoordinate)
     }
 
-    override fun clearListener() {
-        onCameraChangeListener?.let { callback ->
-            map.removeOnCameraChangeListener(callback)
-            onCameraChangeListener = null
-        }
-    }
-
     private fun isExceededMaxLength(): Boolean {
         val currentPosition = map.cameraPosition.target
         val zoomWeight = map.cameraPosition.zoom.zoomWeight()

@@ -128,11 +128,6 @@ class PlaceMapFragment(
         )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mapManager?.clearMapManager()
-    }
-
     override fun onMenuItemReClick() {
         val childFragments =
             listOf(
@@ -224,7 +219,6 @@ class PlaceMapFragment(
                         getInitialPadding(requireContext()),
                     )
                 mapManager = graph.mapManager
-                mapManager?.setupMap()
                 mapManager?.setupBackToInitialPosition { isExceededMaxLength ->
                     viewModel.setIsExceededMaxLength(isExceededMaxLength)
                 }
