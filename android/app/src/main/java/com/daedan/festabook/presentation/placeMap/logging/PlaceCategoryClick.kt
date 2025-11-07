@@ -6,5 +6,5 @@ import kotlinx.parcelize.Parcelize
 @Parcelize
 data class PlaceCategoryClick(
     override val baseLogData: BaseLogData.CommonLogData,
-    val currentCategories: String
+    val currentCategories: String,
 ) : BaseLogData

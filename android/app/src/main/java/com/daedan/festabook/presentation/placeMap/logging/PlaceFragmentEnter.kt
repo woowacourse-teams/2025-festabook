@@ -5,5 +5,5 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class PlaceFragmentEnter(
-    override val baseLogData: BaseLogData.CommonLogData
+    override val baseLogData: BaseLogData.CommonLogData,
 ) : BaseLogData

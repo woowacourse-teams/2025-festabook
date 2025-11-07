@@ -40,7 +40,6 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
-import dev.zacsweers.metro.createGraph
 import dev.zacsweers.metro.createGraphFactory
 import kotlinx.coroutines.launch
 import timber.log.Timber

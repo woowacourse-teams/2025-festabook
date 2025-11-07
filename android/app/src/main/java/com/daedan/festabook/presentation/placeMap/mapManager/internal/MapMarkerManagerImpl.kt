@@ -4,7 +4,6 @@ import com.daedan.festabook.di.mapManager.PlaceMapScope
 import com.daedan.festabook.presentation.placeMap.MapClickListener
 import com.daedan.festabook.presentation.placeMap.mapManager.MapCameraManager
 import com.daedan.festabook.presentation.placeMap.mapManager.MapMarkerManager
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.OverlayImageManager
 import com.daedan.festabook.presentation.placeMap.model.PlaceCoordinateUiModel
 import com.daedan.festabook.presentation.placeMap.model.getNormalIcon
 import com.daedan.festabook.presentation.placeMap.model.getSelectedIcon

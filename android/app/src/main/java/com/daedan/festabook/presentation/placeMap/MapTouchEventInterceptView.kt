@@ -10,41 +10,44 @@ class MapTouchEventInterceptView(
     context: Context,
     attrs: AttributeSet? = null,
 ) : FrameLayout(
-    context,
-    attrs,
-) {
+        context,
+        attrs,
+    ) {
     private var onMapDragListener: (() -> Unit)? = null
 
     private var isMapDragging = false
 
     private val gestureDetector by lazy {
-        GestureDetector(context, object : GestureDetector.SimpleOnGestureListener() {
-            override fun onFling(
-                e1: MotionEvent?,
-                e2: MotionEvent,
-                velocityX: Float,
-                velocityY: Float
-            ): Boolean {
-                if (!isMapDragging) {
-                    onMapDragListener?.invoke()
-                    isMapDragging = true
+        GestureDetector(
+            context,
+            object : GestureDetector.SimpleOnGestureListener() {
+                override fun onFling(
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    velocityX: Float,
+                    velocityY: Float,
+                ): Boolean {
+                    if (!isMapDragging) {
+                        onMapDragListener?.invoke()
+                        isMapDragging = true
+                    }
+                    return super.onFling(e1, e2, velocityX, velocityY)
                 }
-                return super.onFling(e1, e2, velocityX, velocityY)
-            }
 
-            override fun onScroll(
-                e1: MotionEvent?,
-                e2: MotionEvent,
-                distanceX: Float,
-                distanceY: Float,
-            ): Boolean {
-                if ((distanceY > 0 || distanceX > 0) && !isMapDragging) {
-                    isMapDragging = true
-                    onMapDragListener?.invoke()
+                override fun onScroll(
+                    e1: MotionEvent?,
+                    e2: MotionEvent,
+                    distanceX: Float,
+                    distanceY: Float,
+                ): Boolean {
+                    if ((distanceY > 0 || distanceX > 0) && !isMapDragging) {
+                        isMapDragging = true
+                        onMapDragListener?.invoke()
+                    }
+                    return super.onScroll(e1, e2, distanceX, distanceY)
                 }
-                return super.onScroll(e1, e2, distanceX, distanceY)
-            }
-        })
+            },
+        )
     }
 
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
