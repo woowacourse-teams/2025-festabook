@@ -31,7 +31,8 @@ import kotlinx.coroutines.launch
 
 @ContributesIntoMap(AppScope::class)
 @ViewModelKey(NewsViewModel::class)
-class NewsViewModel @Inject constructor(
+@Inject
+class NewsViewModel(
     private val noticeRepository: NoticeRepository,
     private val faqRepository: FAQRepository,
     private val lostItemRepository: LostItemRepository,
