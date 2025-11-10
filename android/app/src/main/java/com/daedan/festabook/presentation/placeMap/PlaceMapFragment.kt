@@ -6,6 +6,7 @@ import android.view.View
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentFactory
+import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
@@ -49,11 +50,11 @@ import timber.log.Timber
 @Inject
 class PlaceMapFragment(
     private val fragmentFactory: FragmentFactory,
-    private val placeListFragment: PlaceListFragment,
-    private val placeDetailPreviewFragment: PlaceDetailPreviewFragment,
-    private val placeCategoryFragment: PlaceCategoryFragment,
-    private val placeDetailPreviewSecondaryFragment: PlaceDetailPreviewSecondaryFragment,
-    private val mapFragment: MapFragment,
+    placeListFragment: PlaceListFragment,
+    placeDetailPreviewFragment: PlaceDetailPreviewFragment,
+    placeCategoryFragment: PlaceCategoryFragment,
+    placeDetailPreviewSecondaryFragment: PlaceDetailPreviewSecondaryFragment,
+    mapFragment: MapFragment,
 ) : BaseFragment<FragmentPlaceMapBinding>(),
     OnMenuItemReClickListener,
     OnTimeTagSelectedListener {
@@ -63,6 +64,16 @@ class PlaceMapFragment(
     override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
 
     private lateinit var naverMap: NaverMap
+
+    private val placeListFragment by lazy { getIfExists(placeListFragment) }
+    private val placeDetailPreviewFragment by lazy { getIfExists(placeDetailPreviewFragment) }
+    private val placeCategoryFragment by lazy { getIfExists(placeCategoryFragment) }
+    private val placeDetailPreviewSecondaryFragment by lazy {
+        getIfExists(
+            placeDetailPreviewSecondaryFragment,
+        )
+    }
+    private val mapFragment by lazy { getIfExists(mapFragment) }
 
     private val locationSource by lazy {
         FusedLocationSource(this, LOCATION_PERMISSION_REQUEST_CODE)
@@ -76,8 +87,6 @@ class PlaceMapFragment(
         savedInstanceState: Bundle?,
     ) {
         super.onViewCreated(view, savedInstanceState)
-        childFragmentManager.fragmentFactory = fragmentFactory
-
         binding.spinnerSelectTimeTag.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -95,15 +104,16 @@ class PlaceMapFragment(
                     onNothingSelected()
                 }
             }
-
-        childFragmentManager.commit {
-            add(R.id.fcv_map_container, mapFragment)
-            add(R.id.fcv_place_list_container, placeListFragment)
-            add(R.id.fcv_map_container, placeDetailPreviewFragment)
-            add(R.id.fcv_place_category_container, placeCategoryFragment)
-            add(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment)
-            hide(placeDetailPreviewFragment)
-            hide(placeDetailPreviewSecondaryFragment)
+        if (savedInstanceState == null) {
+            childFragmentManager.commit {
+                addWithSimpleTag(R.id.fcv_map_container, mapFragment)
+                addWithSimpleTag(R.id.fcv_place_list_container, placeListFragment)
+                addWithSimpleTag(R.id.fcv_map_container, placeDetailPreviewFragment)
+                addWithSimpleTag(R.id.fcv_place_category_container, placeCategoryFragment)
+                addWithSimpleTag(R.id.fcv_map_container, placeDetailPreviewSecondaryFragment)
+                hide(placeDetailPreviewFragment)
+                hide(placeDetailPreviewSecondaryFragment)
+            }
         }
         lifecycleScope.launch {
             setUpMapManager()
@@ -267,6 +277,17 @@ class PlaceMapFragment(
                 }
             }
         }
+    }
+
+    @Suppress("UNCHECKED_CAST")
+    private fun <T : Fragment> getIfExists(fragment: T): T =
+        childFragmentManager.findFragmentByTag(fragment::class.simpleName) as? T ?: fragment
+
+    private fun FragmentTransaction.addWithSimpleTag(
+        containerViewId: Int,
+        fragment: Fragment,
+    ) {
+        add(containerViewId, fragment, fragment::class.simpleName)
     }
 
     companion object {
