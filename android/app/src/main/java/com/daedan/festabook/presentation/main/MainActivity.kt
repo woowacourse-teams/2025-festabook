@@ -91,9 +91,9 @@ class MainActivity :
 
     override fun onCreate(savedInstanceState: Bundle?) {
         appGraph.inject(this)
+        setupFragmentFactory()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setupFragmentFactory()
         setupBinding()
         mainViewModel.registerDeviceAndFcmToken()
         setupHomeFragment(savedInstanceState)
