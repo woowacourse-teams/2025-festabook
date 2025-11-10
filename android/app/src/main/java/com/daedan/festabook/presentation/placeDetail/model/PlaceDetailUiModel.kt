@@ -4,8 +4,8 @@ import android.os.Parcelable
 import com.daedan.festabook.domain.model.PlaceDetail
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
-import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
-import com.daedan.festabook.presentation.placeList.model.toUiModel
+import com.daedan.festabook.presentation.placeMap.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeMap.model.toUiModel
 import kotlinx.parcelize.Parcelize
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter

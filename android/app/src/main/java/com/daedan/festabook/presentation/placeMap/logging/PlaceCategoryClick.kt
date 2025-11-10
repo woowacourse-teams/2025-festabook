@@ -1,10 +1,10 @@
-package com.daedan.festabook.presentation.placeDetail.logging
+package com.daedan.festabook.presentation.placeMap.logging
 
 import com.daedan.festabook.logging.model.BaseLogData
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PlaceDetailImageClick(
+data class PlaceCategoryClick(
     override val baseLogData: BaseLogData.CommonLogData,
-    val index: Int
+    val currentCategories: String
 ) : BaseLogData

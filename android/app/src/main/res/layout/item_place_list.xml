@@ -5,11 +5,11 @@
 
         <variable
             name="place"
-            type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
+            type="com.daedan.festabook.presentation.placeMap.model.PlaceUiModel" />
 
         <variable
             name="listener"
-            type="com.daedan.festabook.presentation.placeList.PlaceClickListener" />
+            type="com.daedan.festabook.presentation.placeMap.placeList.PlaceClickListener" />
 
     </data>
 
@@ -41,7 +41,7 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-        <com.daedan.festabook.presentation.placeList.CategoryView
+        <com.daedan.festabook.presentation.placeMap.placeList.CategoryView
             android:id="@+id/cv_place_category"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

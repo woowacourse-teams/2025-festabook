@@ -1,10 +1,11 @@
-package com.daedan.festabook.presentation.placeDetail.logging
+package com.daedan.festabook.presentation.placeMap.logging
 
 import com.daedan.festabook.logging.model.BaseLogData
+import com.daedan.festabook.logging.model.LogData
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class PlaceDetailImageClick(
+data class PlaceTimeTagSelected(
     override val baseLogData: BaseLogData.CommonLogData,
-    val index: Int
+    val timeTagName: String
 ) : BaseLogData

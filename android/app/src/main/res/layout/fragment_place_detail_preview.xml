@@ -19,7 +19,7 @@
             android:paddingVertical="20dp"
             android:paddingHorizontal="16dp">
 
-            <com.daedan.festabook.presentation.placeList.CategoryView
+            <com.daedan.festabook.presentation.placeMap.placeList.CategoryView
                 android:id="@+id/cv_place_category"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
