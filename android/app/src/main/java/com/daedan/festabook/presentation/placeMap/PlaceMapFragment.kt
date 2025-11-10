@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentFactory
 import androidx.fragment.app.FragmentTransaction
 import androidx.fragment.app.commit
 import androidx.fragment.app.viewModels
@@ -21,7 +20,6 @@ import com.daedan.festabook.presentation.common.OnMenuItemReClickListener
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.placeMap.logging.CurrentLocationChecked
-import com.daedan.festabook.presentation.placeMap.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeMap.logging.PlaceFragmentEnter
 import com.daedan.festabook.presentation.placeMap.logging.PlaceMarkerClick
 import com.daedan.festabook.presentation.placeMap.logging.PlaceTimeTagSelected
@@ -30,6 +28,7 @@ import com.daedan.festabook.presentation.placeMap.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeMap.placeCategory.PlaceCategoryFragment
 import com.daedan.festabook.presentation.placeMap.placeDetailPreview.PlaceDetailPreviewFragment
 import com.daedan.festabook.presentation.placeMap.placeDetailPreview.PlaceDetailPreviewSecondaryFragment
+import com.daedan.festabook.presentation.placeMap.placeList.PlaceListFragment
 import com.daedan.festabook.presentation.placeMap.timeTagSpinner.adapter.TimeTagSpinnerAdapter
 import com.naver.maps.map.MapFragment
 import com.naver.maps.map.NaverMap
@@ -49,7 +48,6 @@ import timber.log.Timber
 @FragmentKey(PlaceMapFragment::class)
 @Inject
 class PlaceMapFragment(
-    private val fragmentFactory: FragmentFactory,
     placeListFragment: PlaceListFragment,
     placeDetailPreviewFragment: PlaceDetailPreviewFragment,
     placeCategoryFragment: PlaceCategoryFragment,
@@ -162,8 +160,8 @@ class PlaceMapFragment(
         naverMap.addOnLocationChangeListener {
             binding.logger.log(
                 CurrentLocationChecked(
-                    baseLogData = binding.logger.getBaseLogData()
-                )
+                    baseLogData = binding.logger.getBaseLogData(),
+                ),
             )
         }
         (placeListFragment as? OnMapReadyCallback)?.onMapReady(naverMap)
