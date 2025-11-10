@@ -55,12 +55,12 @@ class NewsViewModel @Inject constructor(
     private var noticeIdToExpand: Long? = null
 
     init {
-        loadAllNotices()
+        loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
         loadAllLostItems()
     }
 
-    fun loadAllNotices(state: NoticeUiState = NoticeUiState.InitialLoading) {
+    fun loadAllNotices(state: NoticeUiState) {
         viewModelScope.launch {
             noticeUiState = state
             val result = noticeRepository.fetchNotices()
@@ -97,8 +97,15 @@ class NewsViewModel @Inject constructor(
 
     fun expandNotice(noticeId: Long) {
         this.noticeIdToExpand = noticeId
-        if (noticeUiState == NoticeUiState.InitialLoading) return
-        loadAllNotices()
+
+        val notices =
+            when (val currentState = noticeUiState) {
+                is NoticeUiState.Refreshing -> currentState.oldNotices
+                is NoticeUiState.Success -> currentState.notices
+                else -> return
+            }
+
+        loadAllNotices(NoticeUiState.Refreshing(notices))
     }
 
     fun toggleFAQExpanded(faqItem: FAQItemUiModel) {
