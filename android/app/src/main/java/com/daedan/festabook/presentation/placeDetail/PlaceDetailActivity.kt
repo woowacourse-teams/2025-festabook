@@ -28,7 +28,7 @@ import com.daedan.festabook.presentation.placeDetail.logging.PlaceDetailImageSwi
 import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
-import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeMap.model.PlaceUiModel
 import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
