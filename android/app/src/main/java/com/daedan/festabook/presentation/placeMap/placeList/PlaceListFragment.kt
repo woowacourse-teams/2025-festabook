@@ -56,7 +56,7 @@ import timber.log.Timber
 @Inject
 class PlaceListFragment :
     BaseFragment<FragmentPlaceListBinding>(),
-    PlaceClickListener,
+    OnPlaceClickListener,
     OnMenuItemReClickListener,
     OnMapReadyCallback {
     override val layoutId: Int = R.layout.fragment_place_list

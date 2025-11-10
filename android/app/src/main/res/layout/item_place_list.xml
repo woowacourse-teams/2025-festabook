@@ -9,7 +9,7 @@
 
         <variable
             name="listener"
-            type="com.daedan.festabook.presentation.placeMap.placeList.PlaceClickListener" />
+            type="com.daedan.festabook.presentation.placeMap.placeList.OnPlaceClickListener" />
 
     </data>
 
@@ -48,8 +48,7 @@
             android:layout_marginStart="16dp"
             app:layout_constraintStart_toEndOf="@id/cv_place_image"
             app:layout_constraintTop_toTopOf="@id/cv_place_image"
-            app:category="@{place.category}"
-            />
+            app:category="@{place.category}" />
 
         <TextView
             android:id="@+id/tv_title_place"

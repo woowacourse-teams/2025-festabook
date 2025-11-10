@@ -4,10 +4,10 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.placeMap.model.PlaceUiModel
-import com.daedan.festabook.presentation.placeMap.placeList.PlaceClickListener
+import com.daedan.festabook.presentation.placeMap.placeList.OnPlaceClickListener
 
 class PlaceListAdapter(
-    private val handler: PlaceClickListener,
+    private val handler: OnPlaceClickListener,
 ) : ListAdapter<PlaceUiModel, PlaceViewHolder>(DIFF_UTIL) {
     override fun onCreateViewHolder(
         parent: ViewGroup,

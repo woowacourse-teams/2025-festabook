@@ -2,6 +2,6 @@ package com.daedan.festabook.presentation.placeMap.placeList
 
 import com.daedan.festabook.presentation.placeMap.model.PlaceUiModel
 
-interface PlaceClickListener {
+fun interface OnPlaceClickListener {
     fun onPlaceClicked(place: PlaceUiModel)
 }
