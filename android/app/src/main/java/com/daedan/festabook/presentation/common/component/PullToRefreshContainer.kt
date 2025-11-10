@@ -79,7 +79,7 @@ private fun PullToRefreshIndicator(
             ),
         contentAlignment = Alignment.Center,
     ) {
-        val distanceFraction = { state.distanceFraction.coerceIn(0f, 1f) }
+        val distanceFraction = state.distanceFraction.coerceIn(0f, 1f)
 
         if (isRefreshing) {
             CircularProgressIndicator(
@@ -95,7 +95,7 @@ private fun PullToRefreshIndicator(
                 contentDescription = stringResource(R.string.logo_splash),
                 modifier =
                     Modifier
-                        .scale(distanceFraction())
+                        .scale(distanceFraction)
                         .size((pullOffsetLimit / 2).dp)
                         .offset(y = centerOffset / 3),
             )
