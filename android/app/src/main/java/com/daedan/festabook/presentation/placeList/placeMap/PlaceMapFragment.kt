@@ -95,7 +95,6 @@ class PlaceMapFragment(
         view: View,
         savedInstanceState: Bundle?,
     ) {
-        setupFragmentFactory()
         super.onViewCreated(view, savedInstanceState)
         binding.spinnerSelectTimeTag.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
@@ -174,10 +173,6 @@ class PlaceMapFragment(
         binding.viewMapTouchEventIntercept.setOnMapDragListener {
             viewModel.onMapViewClick()
         }
-    }
-
-    private fun setupFragmentFactory() {
-        childFragmentManager.fragmentFactory = fragmentFactory
     }
 
     private fun setUpObserver() {
