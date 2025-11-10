@@ -15,7 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.component.EmptyStateScreen
-import com.daedan.festabook.presentation.common.component.LoadingScreen
+import com.daedan.festabook.presentation.common.component.LoadingStateScreen
 import com.daedan.festabook.presentation.common.component.PULL_OFFSET_LIMIT
 import com.daedan.festabook.presentation.common.component.PullToRefreshContainer
 import com.daedan.festabook.presentation.news.component.NewsItem
@@ -37,7 +37,7 @@ fun NoticeScreen(
         onRefresh = onRefresh,
     ) { pullToRefreshState ->
         when (uiState) {
-            NoticeUiState.InitialLoading -> LoadingScreen()
+            NoticeUiState.InitialLoading -> LoadingStateScreen()
 
             is NoticeUiState.Error -> {
                 LaunchedEffect(uiState) {

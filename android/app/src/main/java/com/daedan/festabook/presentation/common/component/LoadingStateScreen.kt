@@ -12,7 +12,7 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import com.daedan.festabook.R
 
 @Composable
-fun LoadingScreen(modifier: Modifier = Modifier) {
+fun LoadingStateScreen(modifier: Modifier = Modifier) {
     val composition by rememberLottieComposition(LottieCompositionSpec.RawRes(R.raw.loading))
     val progress by animateLottieCompositionAsState(
         composition = composition,
