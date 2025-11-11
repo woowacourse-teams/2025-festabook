@@ -22,6 +22,7 @@ import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.lost.model.toLostGuideItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.toLostItemUiModel
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
+import com.daedan.festabook.presentation.news.notice.NoticeUiState.Companion.DEFAULT_POSITION
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import dev.zacsweers.metro.AppScope
@@ -73,10 +74,12 @@ class NewsViewModel(
                                 if (notice.id == noticeIdToExpand) notice.copy(isExpanded = true) else notice
                             }
                         }
-                    val noticeIdToExpandPosition =
-                        notices.indexOfFirst { it.id == noticeIdToExpand }
+                    val expandPosition =
+                        notices.indexOfFirst { it.id == noticeIdToExpand }.let {
+                            if (it == -1) DEFAULT_POSITION else it
+                        }
                     noticeUiState =
-                        NoticeUiState.Success(updatedNotices, noticeIdToExpandPosition)
+                        NoticeUiState.Success(updatedNotices, expandPosition)
                     noticeIdToExpand = null
                 }.onFailure {
                     noticeUiState = NoticeUiState.Error(it)
@@ -98,7 +101,6 @@ class NewsViewModel(
 
     fun expandNotice(noticeId: Long) {
         this.noticeIdToExpand = noticeId
-
         val notices =
             when (val currentState = noticeUiState) {
                 is NoticeUiState.Refreshing -> currentState.oldNotices
@@ -175,7 +177,6 @@ class NewsViewModel(
                 is NoticeUiState.Success ->
                     currentState.copy(
                         notices = onUpdate(currentState.notices),
-                        noticeIdToExpandPosition = -1,
                     )
 
                 else -> currentState

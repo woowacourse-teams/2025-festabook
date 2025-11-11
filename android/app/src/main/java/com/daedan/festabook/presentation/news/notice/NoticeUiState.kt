@@ -11,10 +11,14 @@ sealed interface NoticeUiState {
 
     data class Success(
         val notices: List<NoticeUiModel>,
-        val noticeIdToExpandPosition: Int,
+        val expandPosition: Int,
     ) : NoticeUiState
 
     data class Error(
         val throwable: Throwable,
     ) : NoticeUiState
+
+    companion object {
+        const val DEFAULT_POSITION: Int = 0
+    }
 }

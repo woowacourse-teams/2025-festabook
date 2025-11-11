@@ -3,6 +3,7 @@ package com.daedan.festabook.presentation.news.notice.component
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -20,6 +21,7 @@ import com.daedan.festabook.presentation.common.component.PULL_OFFSET_LIMIT
 import com.daedan.festabook.presentation.common.component.PullToRefreshContainer
 import com.daedan.festabook.presentation.news.component.NewsItem
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
+import com.daedan.festabook.presentation.news.notice.NoticeUiState.Companion.DEFAULT_POSITION
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import timber.log.Timber
 
@@ -59,6 +61,7 @@ fun NoticeScreen(
             is NoticeUiState.Success -> {
                 NoticeContent(
                     notices = uiState.notices,
+                    expandPosition = uiState.expandPosition,
                     onNoticeClick = onNoticeClick,
                     modifier =
                         modifier.graphicsLayer {
@@ -75,11 +78,17 @@ private fun NoticeContent(
     notices: List<NoticeUiModel>,
     onNoticeClick: (NoticeUiModel) -> Unit,
     modifier: Modifier = Modifier,
+    expandPosition: Int = DEFAULT_POSITION,
 ) {
+    val listState = rememberLazyListState()
+
+    LaunchedEffect(expandPosition) {
+        listState.animateScrollToItem(expandPosition)
+    }
     if (notices.isEmpty()) {
         EmptyStateScreen(modifier = modifier)
     } else {
-        LazyColumn(modifier = modifier) {
+        LazyColumn(modifier = modifier, state = listState) {
             itemsIndexed(
                 items = notices,
                 key = { _, notice -> notice.id },
@@ -121,7 +130,7 @@ private fun NoticeScreenPreview() {
         uiState =
             NoticeUiState.Success(
                 notices = emptyList(),
-                noticeIdToExpandPosition = -1,
+                expandPosition = 0,
             ),
         onNoticeClick = { },
         isRefreshing = false,
