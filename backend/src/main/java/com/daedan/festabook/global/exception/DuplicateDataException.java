@@ -4,7 +4,7 @@ import org.springframework.http.HttpStatus;
 
 public class DuplicateDataException extends DatabaseException {
 
-    public DuplicateDataException(String originalExceptionMessage) {
-        super("중복된 데이터가 발생했습니다.", originalExceptionMessage, HttpStatus.CONFLICT);
+    protected DuplicateDataException(String message, String originalExceptionMessage) {
+        super(message, originalExceptionMessage, HttpStatus.CONFLICT);
     }
 }
