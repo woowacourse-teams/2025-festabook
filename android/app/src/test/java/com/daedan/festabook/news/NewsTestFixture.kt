@@ -4,6 +4,8 @@ import com.daedan.festabook.domain.model.FAQItem
 import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.model.LostItemStatus
 import com.daedan.festabook.domain.model.Notice
+import com.daedan.festabook.presentation.news.lost.model.toLostGuideItemUiModel
+import com.daedan.festabook.presentation.news.lost.model.toLostItemUiModel
 import java.time.LocalDateTime
 
 val FAKE_NOTICES =
@@ -37,7 +39,7 @@ val FAKE_FAQS =
 val FAKE_LOST_ITEM =
     listOf(
         Lost.Guide(
-            guide = "테스트 가이드"
+            guide = "테스트 가이드",
         ),
         Lost.Item(
             lostItemId = 1,
@@ -47,3 +49,11 @@ val FAKE_LOST_ITEM =
             createdAt = LocalDateTime.of(2025, 1, 1, 0, 0, 0),
         ),
     )
+
+val FAKE_LOST_ITEM_UI_MODEL =
+    FAKE_LOST_ITEM.map {
+        when (it) {
+            is Lost.Guide -> it.toLostGuideItemUiModel()
+            is Lost.Item -> it.toLostItemUiModel()
+        }
+    }

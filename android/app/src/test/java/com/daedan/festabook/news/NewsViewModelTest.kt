@@ -216,4 +216,47 @@ class NewsViewModelTest {
             val actual = newsViewModel.lostItemClickEvent.getOrAwaitValue()
             assertThat(actual.peekContent()).isEqualTo(lostItem)
         }
+
+    @Test
+    fun `처음 로드했을 때 펼처질 공지사항을 지정할 수 있다`() =
+        runTest {
+            // given
+            coEvery { noticeRepository.fetchNotices() } returns Result.success(FAKE_NOTICES)
+            val expected =
+                listOf(
+                    FAKE_NOTICES.first().toUiModel(),
+                    FAKE_NOTICES[1].toUiModel().copy(isExpanded = true),
+                )
+
+            // when
+            newsViewModel.expandNotice(2)
+            advanceUntilIdle()
+
+            // then
+            val actual = newsViewModel.noticeUiState
+            coVerify { noticeRepository.fetchNotices() }
+            assertThat(actual).isEqualTo(NoticeUiState.Success(expected, 1))
+        }
+
+    @Test
+    fun `분실물 가이드라인을 펼칠 수 있다`() =
+        runTest {
+            // given
+            val expected =
+                LostUiState.Success(
+                    FAKE_LOST_ITEM_UI_MODEL.map {
+                        when (it) {
+                            is LostUiModel.Guide -> it.copy(isExpanded = true)
+                            else -> it
+                        }
+                    },
+                )
+
+            // when
+            newsViewModel.toggleLostGuideExpanded()
+
+            // then
+            val actual = newsViewModel.lostUiState.getOrAwaitValue()
+            assertThat(actual).isEqualTo(expected)
+        }
 }
