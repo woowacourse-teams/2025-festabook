@@ -39,11 +39,7 @@ public class GlobalExceptionHandler {
                     databaseException.getOriginalExceptionMessage()
             );
 
-            if (databaseException.getStatus().is5xxServerError()) {
-                log.error("", kv("event", exceptionLog));
-            } else {
-                log.warn("", kv("event", exceptionLog));
-            }
+            logDatabaseException(databaseException, exceptionLog);
         }
     }
 
@@ -171,5 +167,13 @@ public class GlobalExceptionHandler {
                 log.warn("자원할당 해제에 실패하였습니다.");
             }
         }
+    }
+
+    private void logDatabaseException(DatabaseException databaseException, ExceptionLog exceptionLog) {
+        if (databaseException.getStatus().is5xxServerError()) {
+            log.error("", kv("event", exceptionLog));
+            return;
+        }
+        log.warn("", kv("event", exceptionLog));
     }
 }
