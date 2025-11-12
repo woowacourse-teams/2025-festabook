@@ -30,7 +30,6 @@ import dev.zacsweers.metro.binding
 class NewsFragment :
     BaseFragment<FragmentNewsBinding>(),
     OnNewsClickListener {
-
     @Inject
     override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
 

@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.news
 
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -8,7 +9,6 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.daedan.festabook.di.viewmodel.ViewModelKey
-import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
@@ -22,6 +22,7 @@ import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.lost.model.toLostGuideItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.toLostItemUiModel
 import com.daedan.festabook.presentation.news.notice.NoticeUiState
+import com.daedan.festabook.presentation.news.notice.NoticeUiState.Companion.DEFAULT_POSITION
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import dev.zacsweers.metro.AppScope
@@ -31,13 +32,18 @@ import kotlinx.coroutines.launch
 
 @ContributesIntoMap(AppScope::class)
 @ViewModelKey(NewsViewModel::class)
-class NewsViewModel @Inject constructor(
+@Inject
+class NewsViewModel(
     private val noticeRepository: NoticeRepository,
     private val faqRepository: FAQRepository,
     private val lostItemRepository: LostItemRepository,
 ) : ViewModel() {
-    private val _noticeUiState: MutableLiveData<NoticeUiState> = MutableLiveData<NoticeUiState>()
-    val noticeUiState: LiveData<NoticeUiState> = _noticeUiState
+    var noticeUiState by mutableStateOf<NoticeUiState>(NoticeUiState.InitialLoading)
+        private set
+
+    val isNoticeScreenRefreshing by derivedStateOf {
+        noticeUiState is NoticeUiState.Refreshing
+    }
 
     var faqUiState by mutableStateOf<FAQUiState>(FAQUiState.InitialLoading)
         private set
@@ -56,9 +62,9 @@ class NewsViewModel @Inject constructor(
         loadAllLostItems()
     }
 
-    fun loadAllNotices(state: NoticeUiState = NoticeUiState.Loading) {
+    fun loadAllNotices(state: NoticeUiState) {
         viewModelScope.launch {
-            _noticeUiState.value = state
+            noticeUiState = state
             val result = noticeRepository.fetchNotices()
             result
                 .onSuccess { notices ->
@@ -68,13 +74,15 @@ class NewsViewModel @Inject constructor(
                                 if (notice.id == noticeIdToExpand) notice.copy(isExpanded = true) else notice
                             }
                         }
-                    val noticeIdToExpandPosition =
-                        notices.indexOfFirst { it.id == noticeIdToExpand }
-                    _noticeUiState.value =
-                        NoticeUiState.Success(updatedNotices, noticeIdToExpandPosition)
+                    val expandPosition =
+                        notices.indexOfFirst { it.id == noticeIdToExpand }.let {
+                            if (it == -1) DEFAULT_POSITION else it
+                        }
+                    noticeUiState =
+                        NoticeUiState.Success(updatedNotices, expandPosition)
                     noticeIdToExpand = null
                 }.onFailure {
-                    _noticeUiState.value = NoticeUiState.Error(it)
+                    noticeUiState = NoticeUiState.Error(it)
                 }
         }
     }
@@ -93,8 +101,14 @@ class NewsViewModel @Inject constructor(
 
     fun expandNotice(noticeId: Long) {
         this.noticeIdToExpand = noticeId
-        if (noticeUiState.value == NoticeUiState.InitialLoading) return
-        loadAllNotices()
+        val notices =
+            when (val currentState = noticeUiState) {
+                is NoticeUiState.Refreshing -> currentState.oldNotices
+                is NoticeUiState.Success -> currentState.notices
+                else -> return
+            }
+
+        loadAllNotices(NoticeUiState.Refreshing(notices))
     }
 
     fun toggleFAQExpanded(faqItem: FAQItemUiModel) {
@@ -158,13 +172,11 @@ class NewsViewModel @Inject constructor(
     }
 
     private fun updateNoticeUiState(onUpdate: (List<NoticeUiModel>) -> List<NoticeUiModel>) {
-        val currentState = _noticeUiState.value ?: return
-        _noticeUiState.value =
-            when (currentState) {
+        noticeUiState =
+            when (val currentState = noticeUiState) {
                 is NoticeUiState.Success ->
                     currentState.copy(
                         notices = onUpdate(currentState.notices),
-                        noticeIdToExpandPosition = -1,
                     )
 
                 else -> currentState
