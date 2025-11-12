@@ -114,7 +114,7 @@ class FestivalNotificationServiceTest {
                     festivalNotificationService.subscribeFestivalNotification(festivalId, request)
             )
                     .isInstanceOf(UniqueDuplicateDataException.class)
-                    .hasMessage("중복된 데이터 삽입이 발생했습니다.");
+                    .hasMessage("FestivalNotification 데이터가 이미 존재하여 실패했습니다.  ");
         }
 
         @Test
