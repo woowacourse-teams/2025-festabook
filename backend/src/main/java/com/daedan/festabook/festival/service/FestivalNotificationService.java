@@ -112,7 +112,7 @@ public class FestivalNotificationService {
         try {
             return festivalNotificationJpaRepository.save(festivalNotification);
         } catch (DataIntegrityViolationException e) {
-            throw new DuplicateDataException(e.getMessage(), HttpStatus.CONFLICT);
+            throw new DuplicateDataException(e.getMessage());
         }
     }
 
