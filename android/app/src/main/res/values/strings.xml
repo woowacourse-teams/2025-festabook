@@ -62,13 +62,6 @@
     <string name="map_category_extra">기타시설</string>
     <string name="map_back_to_initial_position">학교로 돌아가기</string>
 
-
-    <!-- 아이콘 contentDescription   -->
-    <string name="schedule_location">위치</string>
-    <string name="schedule_time">시간</string>
-    <string name="all_book_mark">북마크</string>
-    <string name="schedule_circle">원</string>
-
     <!-- 소식 화면 -->
     <string name="news_title">소식</string>
     <string name="tab_notice">공지</string>
@@ -95,7 +88,8 @@
     <string name="setting_notice_enabled">알림이 설정되었습니다</string>
 
     <!-- icon description -->
-    <string name="iv_speaker">speaker</string>
+    <string name="iv_speaker">공지 아이콘</string>
+    <string name="iv_pin">고정핀 아이콘</string>
     <string name="content_description_iv_location">위치 아이콘</string>
     <string name="content_description_booth_image">부스 이미지</string>
     <string name="place_detail_no_notice">공지사항이 없습니다</string>
@@ -105,6 +99,11 @@
     <string name="lost_item">분실물 이미지</string>
     <string name="chevron_down">펼치기</string>
     <string name="info">정보</string>
+    <string name="schedule_location">위치</string>
+    <string name="schedule_time">시간</string>
+    <string name="all_book_mark">북마크</string>
+    <string name="schedule_circle">원</string>
+    <string name="logo_splash">festabook</string>
 
     <!--실패 시 출력 -->
     <string name="fail_snackbar_confirm">확인</string>
