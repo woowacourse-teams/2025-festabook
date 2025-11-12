@@ -111,7 +111,7 @@ class AndroidFestivalNotificationSubscriptionControllerTest {
                     .post("/festivals/{festivalId}/notifications/android", festival.getId())
                     .then()
                     .statusCode(HttpStatus.CONFLICT.value())
-                    .body("message", equalTo("중복된 데이터가 발생했습니다."));
+                    .body("message", equalTo("중복된 데이터 삽입이 발생했습니다."));
 
             then(fcmNotificationManager).shouldHaveNoInteractions();
         }

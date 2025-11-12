@@ -25,7 +25,7 @@ import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.global.exception.DuplicateDataException;
+import com.daedan.festabook.global.exception.UniqueDuplicateDataException;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -113,8 +113,8 @@ class FestivalNotificationServiceTest {
             assertThatThrownBy(() ->
                     festivalNotificationService.subscribeFestivalNotification(festivalId, request)
             )
-                    .isInstanceOf(DuplicateDataException.class)
-                    .hasMessage("중복된 데이터가 발생했습니다.");
+                    .isInstanceOf(UniqueDuplicateDataException.class)
+                    .hasMessage("중복된 데이터 삽입이 발생했습니다.");
         }
 
         @Test

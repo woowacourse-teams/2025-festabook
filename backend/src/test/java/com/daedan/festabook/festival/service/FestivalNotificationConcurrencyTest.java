@@ -80,7 +80,7 @@ class FestivalNotificationConcurrencyTest {
 
                 if (response.getStatusCode() == HttpStatus.CONFLICT.value()) {
                     String responseBody = response.getBody().asString();
-                    if (responseBody.contains("중복된 데이터가 발생했습니다.")) {
+                    if (responseBody.contains("중복된 데이터 삽입이 발생했습니다.")) {
                         duplicateErrorCount.incrementAndGet();
                     }
                 }
