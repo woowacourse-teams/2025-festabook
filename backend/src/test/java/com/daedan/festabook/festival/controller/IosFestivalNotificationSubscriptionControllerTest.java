@@ -111,7 +111,7 @@ class IosFestivalNotificationSubscriptionControllerTest {
                     .post("/festivals/{festivalId}/notifications/ios", festival.getId())
                     .then()
                     .statusCode(HttpStatus.CONFLICT.value())
-                    .body("message", equalTo("FestivalNotification 데이터가 이미 존재하여 실패했습니다."));
+                    .body("message", equalTo("FestivalNotification 데이터베이스에 이미 존재합니다."));
 
             then(fcmNotificationManager).shouldHaveNoInteractions();
         }
