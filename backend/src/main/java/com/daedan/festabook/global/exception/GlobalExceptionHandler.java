@@ -170,10 +170,10 @@ public class GlobalExceptionHandler {
     }
 
     private void logDatabaseException(DatabaseException databaseException, ExceptionLog exceptionLog) {
-        if (databaseException.getStatus().is5xxServerError()) {
-            log.error("", kv("event", exceptionLog));
+        if (databaseException.getStatus().is4xxClientError()) {
+            log.warn("", kv("event", exceptionLog));
             return;
         }
-        log.warn("", kv("event", exceptionLog));
+        log.error("", kv("event", exceptionLog));
     }
 }
