@@ -13,7 +13,7 @@ class MapTouchEventInterceptView(
         context,
         attrs,
     ) {
-    private var onMapDragListener: (() -> Unit)? = null
+    private var onMapDragListener: OnMapDragListener? = null
 
     private var isMapDragging = false
 
@@ -28,7 +28,7 @@ class MapTouchEventInterceptView(
                     velocityY: Float,
                 ): Boolean {
                     if (!isMapDragging) {
-                        onMapDragListener?.invoke()
+                        onMapDragListener?.onDrag()
                         isMapDragging = true
                     }
                     return super.onFling(e1, e2, velocityX, velocityY)
@@ -42,7 +42,7 @@ class MapTouchEventInterceptView(
                 ): Boolean {
                     if ((distanceY > 0 || distanceX > 0) && !isMapDragging) {
                         isMapDragging = true
-                        onMapDragListener?.invoke()
+                        onMapDragListener?.onDrag()
                     }
                     return super.onScroll(e1, e2, distanceX, distanceY)
                 }
@@ -60,7 +60,7 @@ class MapTouchEventInterceptView(
         return false
     }
 
-    fun setOnMapDragListener(listener: () -> Unit) {
+    fun setOnMapDragListener(listener: OnMapDragListener) {
         onMapDragListener = listener
     }
 }
