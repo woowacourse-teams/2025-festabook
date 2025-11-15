@@ -13,6 +13,7 @@ import androidx.lifecycle.lifecycleScope
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.FragmentPlaceMapBinding
 import com.daedan.festabook.di.fragment.FragmentKey
+import com.daedan.festabook.di.mapManager.MapManagerGraph
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.BaseFragment
@@ -23,6 +24,7 @@ import com.daedan.festabook.presentation.placeMap.logging.CurrentLocationChecked
 import com.daedan.festabook.presentation.placeMap.logging.PlaceFragmentEnter
 import com.daedan.festabook.presentation.placeMap.logging.PlaceMarkerClick
 import com.daedan.festabook.presentation.placeMap.logging.PlaceTimeTagSelected
+import com.daedan.festabook.presentation.placeMap.mapManager.MapManager
 import com.daedan.festabook.presentation.placeMap.model.PlaceListUiState
 import com.daedan.festabook.presentation.placeMap.model.SelectedPlaceUiState
 import com.daedan.festabook.presentation.placeMap.placeCategory.PlaceCategoryFragment
@@ -38,6 +40,7 @@ import dev.zacsweers.metro.AppScope
 import dev.zacsweers.metro.ContributesIntoMap
 import dev.zacsweers.metro.Inject
 import dev.zacsweers.metro.binding
+import dev.zacsweers.metro.createGraphFactory
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -124,11 +127,6 @@ class PlaceMapFragment(
         )
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        mapManager?.clearMapManager()
-    }
-
     override fun onMenuItemReClick() {
         val childFragments =
             listOf(
@@ -191,7 +189,7 @@ class PlaceMapFragment(
             when (placeGeographies) {
                 is PlaceListUiState.Loading -> Unit
                 is PlaceListUiState.Success -> {
-                    mapManager?.setPlaceLocation(placeGeographies.value)
+                    mapManager?.setupMarker(placeGeographies.value)
                     viewModel.selectedTimeTag.observe(viewLifecycleOwner) { selectedTimeTag ->
                         mapManager?.filterMarkersByTimeTag(selectedTimeTag.timeTagId)
                     }
@@ -212,14 +210,14 @@ class PlaceMapFragment(
         viewModel.initialMapSetting.observe(viewLifecycleOwner) { initialMapSetting ->
             if (initialMapSetting !is PlaceListUiState.Success) return@observe
             if (mapManager == null) {
-                mapManager =
-                    MapManager(
+                val graph =
+                    createGraphFactory<MapManagerGraph.Factory>().create(
                         naverMap,
-                        getInitialPadding(requireContext()),
-                        MapClickListenerImpl(viewModel),
                         initialMapSetting.value,
+                        viewModel,
+                        getInitialPadding(requireContext()),
                     )
-                mapManager?.setupMap()
+                mapManager = graph.mapManager
                 mapManager?.setupBackToInitialPosition { isExceededMaxLength ->
                     viewModel.setIsExceededMaxLength(isExceededMaxLength)
                 }

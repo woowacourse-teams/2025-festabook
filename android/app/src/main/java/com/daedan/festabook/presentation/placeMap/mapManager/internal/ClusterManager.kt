@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.placeMap
+package com.daedan.festabook.presentation.placeMap.mapManager.internal
 
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.toPx

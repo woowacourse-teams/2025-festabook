@@ -8,5 +8,5 @@ data class PlaceMarkerClick(
     override val baseLogData: BaseLogData.CommonLogData,
     val placeId: Long,
     val timeTagName: String,
-    val category: String
+    val category: String,
 ) : BaseLogData
