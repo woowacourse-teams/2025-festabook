@@ -1,6 +1,6 @@
 package com.daedan.festabook.di.mapManager
 
-import com.daedan.festabook.presentation.placeMap.MapClickListener
+import com.daedan.festabook.presentation.placeMap.PlaceMapViewModel
 import com.daedan.festabook.presentation.placeMap.mapManager.MapManager
 import com.daedan.festabook.presentation.placeMap.model.InitialMapSettingUiModel
 import com.naver.maps.map.NaverMap
@@ -16,7 +16,7 @@ interface MapManagerGraph {
         fun create(
             @Provides map: NaverMap,
             @Provides settingUiModel: InitialMapSettingUiModel,
-            @Provides mapClickListener: MapClickListener,
+            @Provides viewModel: PlaceMapViewModel,
             @Provides initialPadding: Int,
         ): MapManagerGraph
     }

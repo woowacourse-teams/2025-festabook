@@ -41,7 +41,6 @@ class MapManager(
             setLogoMarginBottom()
 
             setOnMapClickListener { _, latLng ->
-                println("지도 클릭됨! 위치: $latLng")
                 Timber.d("지도 클릭: $latLng")
                 markerManager.unselectMarker()
                 mapClickListener.onMapClickListener()

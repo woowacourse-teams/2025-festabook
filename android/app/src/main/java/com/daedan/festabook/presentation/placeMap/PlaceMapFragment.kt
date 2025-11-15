@@ -214,7 +214,7 @@ class PlaceMapFragment(
                     createGraphFactory<MapManagerGraph.Factory>().create(
                         naverMap,
                         initialMapSetting.value,
-                        MapClickListenerImpl(viewModel),
+                        viewModel,
                         getInitialPadding(requireContext()),
                     )
                 mapManager = graph.mapManager

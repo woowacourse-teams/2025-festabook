@@ -1,5 +1,8 @@
 package com.daedan.festabook.di.mapManager
 
+import com.daedan.festabook.presentation.placeMap.MapClickListener
+import com.daedan.festabook.presentation.placeMap.MapClickListenerImpl
+import com.daedan.festabook.presentation.placeMap.PlaceMapViewModel
 import com.daedan.festabook.presentation.placeMap.mapManager.internal.OverlayImageManager
 import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeMap.model.iconResources
@@ -19,4 +22,8 @@ object MapManagerBindings {
     @Provides
     @SingleIn(PlaceMapScope::class)
     fun provideOverlayImageManager(): OverlayImageManager = OverlayImageManager(PlaceCategoryUiModel.iconResources)
+
+    @Provides
+    @SingleIn(PlaceMapScope::class)
+    fun provideMapClickListener(viewModel: PlaceMapViewModel): MapClickListener = MapClickListenerImpl(viewModel)
 }
