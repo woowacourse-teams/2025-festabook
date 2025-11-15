@@ -36,7 +36,7 @@ class PlaceDetailPreviewSecondaryFragment :
 
     @Inject
     override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
-    private val viewModel: PlaceMapViewModel by viewModels({ requireParentFragment() } )
+    private val viewModel: PlaceMapViewModel by viewModels({ requireParentFragment() })
     private val backPressedCallback =
         object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {

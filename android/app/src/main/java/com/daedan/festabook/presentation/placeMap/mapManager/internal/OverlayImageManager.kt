@@ -1,4 +1,4 @@
-package com.daedan.festabook.presentation.placeMap
+package com.daedan.festabook.presentation.placeMap.mapManager.internal
 
 import androidx.annotation.DrawableRes
 import com.naver.maps.map.overlay.OverlayImage
