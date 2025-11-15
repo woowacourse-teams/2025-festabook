@@ -51,11 +51,11 @@ class MapTouchEventInterceptView(
     }
 
     override fun onInterceptTouchEvent(event: MotionEvent?): Boolean {
-        event?.let { event ->
-            if (event.action == MotionEvent.ACTION_UP) {
+        event?.let {
+            if (it.action == MotionEvent.ACTION_UP) {
                 isMapDragging = false
             }
-            gestureDetector.onTouchEvent(event)
+            gestureDetector.onTouchEvent(it)
         }
         return false
     }
