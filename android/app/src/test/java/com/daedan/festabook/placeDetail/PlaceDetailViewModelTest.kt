@@ -3,11 +3,13 @@ package com.daedan.festabook.placeDetail
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.daedan.festabook.domain.repository.PlaceDetailRepository
 import com.daedan.festabook.getOrAwaitValue
+import com.daedan.festabook.news.FAKE_NOTICES
 import com.daedan.festabook.placeList.FAKE_PLACES
+import com.daedan.festabook.presentation.news.notice.model.toUiModel
 import com.daedan.festabook.presentation.placeDetail.PlaceDetailViewModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
 import com.daedan.festabook.presentation.placeDetail.model.toUiModel
-import com.daedan.festabook.presentation.placeList.model.toUiModel
+import com.daedan.festabook.presentation.placeMap.model.toUiModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -36,8 +38,12 @@ class PlaceDetailViewModelTest {
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         placeDetailRepository = mockk()
-        coEvery { placeDetailRepository.getPlaceDetail(any()) } returns Result.success(FAKE_PLACE_DETAIL)
-        placeDetailViewModel = PlaceDetailViewModel(placeDetailRepository, FAKE_PLACES.first().toUiModel())
+        coEvery { placeDetailRepository.getPlaceDetail(any()) } returns
+            Result.success(
+                FAKE_PLACE_DETAIL,
+            )
+        placeDetailViewModel =
+            PlaceDetailViewModel(placeDetailRepository, FAKE_PLACES.first().toUiModel(), null)
     }
 
     @After
@@ -49,7 +55,10 @@ class PlaceDetailViewModelTest {
     fun `플레이스 상세 정보를 불러올 수 있다`() =
         runTest {
             // given
-            coEvery { placeDetailRepository.getPlaceDetail(any()) } returns Result.success(FAKE_PLACE_DETAIL)
+            coEvery { placeDetailRepository.getPlaceDetail(any()) } returns
+                Result.success(
+                    FAKE_PLACE_DETAIL,
+                )
 
             // when
             placeDetailViewModel.loadPlaceDetail(1)
@@ -79,6 +88,50 @@ class PlaceDetailViewModelTest {
             val expected = PlaceDetailUiState.Error(exception)
             val actual = placeDetailViewModel.placeDetail.getOrAwaitValue()
             coVerify { placeDetailRepository.getPlaceDetail(FAKE_PLACES.first().id) }
+            assertThat(actual).isEqualTo(expected)
+        }
+
+    @Test
+    fun `처음 뷰모델 생성 시, 플레이스 상세 정보가 있다면 서버에 요청하지 않는다`() =
+        runTest {
+            // given
+            val expected = FAKE_PLACE_DETAIL.toUiModel()
+            val placeDetailRepository = mockk<PlaceDetailRepository>()
+
+            // when
+            placeDetailViewModel =
+                PlaceDetailViewModel(placeDetailRepository, null, expected)
+
+            // then
+            coVerify(exactly = 0) { placeDetailRepository.getPlaceDetail(any()) }
+            val actual = placeDetailViewModel.placeDetail.getOrAwaitValue()
+            assertThat(actual).isEqualTo(
+                PlaceDetailUiState.Success(expected),
+            )
+        }
+
+    @Test
+    fun `플레이스 공지사항을 펼칠 수 있다`() =
+        runTest {
+            // given
+            val noticeItem = FAKE_NOTICES.first().toUiModel()
+            val expected =
+                listOf(
+                    noticeItem.copy(isExpanded = true),
+                    FAKE_NOTICES[1].toUiModel(),
+                )
+
+            // when
+            placeDetailViewModel.toggleNoticeExpanded(noticeItem)
+
+            // then
+            val actual =
+                placeDetailViewModel.placeDetail
+                    .getOrAwaitValue()
+                    .let { it as PlaceDetailUiState.Success }
+                    .placeDetail
+                    .notices
+
             assertThat(actual).isEqualTo(expected)
         }
 }

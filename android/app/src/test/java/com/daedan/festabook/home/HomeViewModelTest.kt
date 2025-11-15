@@ -125,4 +125,19 @@ class HomeViewModelTest {
             val actual = homeViewModel.festivalUiState.getOrAwaitValue()
             assertThat(actual).isEqualTo(expect)
         }
+
+    @Test
+    fun `스케줄 이동 이벤트를 발생시킬 수 있다`() =
+        runTest {
+            //given
+            val expect = Unit
+
+            //when
+            homeViewModel.navigateToScheduleClick()
+            advanceUntilIdle()
+
+            //then
+            val actual = homeViewModel.navigateToScheduleEvent.value
+            assertThat(actual).isEqualTo(expect)
+        }
 }

@@ -1,20 +1,14 @@
 package com.daedan.festabook.placeList
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.daedan.festabook.domain.repository.PlaceDetailRepository
+import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceListRepository
 import com.daedan.festabook.getOrAwaitValue
-import com.daedan.festabook.placeDetail.FAKE_ETC_PLACE_DETAIL
-import com.daedan.festabook.placeDetail.FAKE_PLACE_DETAIL
-import com.daedan.festabook.presentation.common.Event
-import com.daedan.festabook.presentation.placeDetail.model.toUiModel
-import com.daedan.festabook.presentation.placeList.PlaceListViewModel
-import com.daedan.festabook.presentation.placeList.model.InitialMapSettingUiModel
-import com.daedan.festabook.presentation.placeList.model.PlaceCategoryUiModel
-import com.daedan.festabook.presentation.placeList.model.PlaceListUiState
-import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
-import com.daedan.festabook.presentation.placeList.model.SelectedPlaceUiState
-import com.daedan.festabook.presentation.placeList.model.toUiModel
+import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
+import com.daedan.festabook.presentation.placeMap.model.PlaceListUiState
+import com.daedan.festabook.presentation.placeMap.model.PlaceUiModel
+import com.daedan.festabook.presentation.placeMap.model.toUiModel
+import com.daedan.festabook.presentation.placeMap.placeList.PlaceListViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -37,14 +31,12 @@ class PlaceListViewModelTest {
     val instantTaskExecutorRule = InstantTaskExecutorRule()
     private val testDispatcher = StandardTestDispatcher()
     private lateinit var placeListRepository: PlaceListRepository
-    private lateinit var placeDetailRepository: PlaceDetailRepository
-    private lateinit var placeListViewModel: PlaceListViewModel
+    private lateinit var PlaceListViewModel: PlaceListViewModel
 
     @Before
     fun setup() {
         Dispatchers.setMain(testDispatcher)
         placeListRepository = mockk()
-        placeDetailRepository = mockk()
         coEvery { placeListRepository.getPlaces() } returns Result.success(FAKE_PLACES)
         coEvery { placeListRepository.getPlaceGeographies() } returns
             Result.success(
@@ -54,10 +46,9 @@ class PlaceListViewModelTest {
             Result.success(
                 FAKE_ORGANIZATION_GEOGRAPHY,
             )
-        placeListViewModel =
+        PlaceListViewModel =
             PlaceListViewModel(
                 placeListRepository,
-                placeDetailRepository,
             )
     }
 
@@ -67,163 +58,120 @@ class PlaceListViewModelTest {
     }
 
     @Test
-    fun `뷰모델을 생성했을 때 모든 플레이스의 지도 좌표 정보를 불러올 수 있다`() =
+    fun `뷰모델을 생성했을 때 모든 플레이스 정보를 불러올 수 있다`() =
         runTest {
             // given
-            coEvery { placeListRepository.getPlaceGeographies() } returns
-                Result.success(
-                    FAKE_PLACE_GEOGRAPHIES,
-                )
+            coEvery { placeListRepository.getPlaces() } returns Result.success(FAKE_PLACES)
 
             // when
-            placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
+            PlaceListViewModel = PlaceListViewModel(placeListRepository)
             advanceUntilIdle()
 
             // then
-            val expected = FAKE_PLACE_GEOGRAPHIES.map { it.toUiModel() }
-            val actual = placeListViewModel.placeGeographies.getOrAwaitValue()
-            coVerify { placeListRepository.getPlaceGeographies() }
+            val expected = FAKE_PLACES.map { it.toUiModel() }
+            val actual = PlaceListViewModel.places.getOrAwaitValue()
+            coVerify { placeListRepository.getPlaces() }
+            assertThat(actual).isEqualTo(PlaceListUiState.PlaceLoaded(expected))
+        }
+
+    @Test
+    fun `선택된 카테고리를 전달하면 해당 카테고리의 플레이스만 필터링 할 수 있다`() =
+        runTest {
+            // given
+            val targetCategories =
+                listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
+            PlaceListViewModel.updatePlacesByTimeTag(TimeTag.EMPTY.timeTagId)
+
+            // when
+            PlaceListViewModel.updatePlacesByCategories(targetCategories)
+
+            // then
+            val expected =
+                FAKE_PLACES
+                    .filter { it.category.toUiModel() in targetCategories }
+                    .map { it.toUiModel() }
+            val actual = PlaceListViewModel.places.getOrAwaitValue()
             assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
         }
 
     @Test
-    fun `뷰모델을 생성했을 때 초기 학교 지리 정보를 불러올 수 있다`() =
+    fun `선택된 카테고리가 부스, 주점, 푸드트럭에 해당되지 않을 때 전체 목록을 불러온다`() =
         runTest {
             // given
-            coEvery { placeListRepository.getOrganizationGeography() } returns
-                Result.success(
-                    FAKE_ORGANIZATION_GEOGRAPHY,
-                )
+            val targetCategories =
+                listOf(PlaceCategoryUiModel.SMOKING_AREA, PlaceCategoryUiModel.TOILET)
+            PlaceListViewModel.updatePlacesByTimeTag(TimeTag.EMPTY.timeTagId)
 
             // when
-            placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
-            advanceUntilIdle()
+            PlaceListViewModel.updatePlacesByCategories(targetCategories)
 
             // then
-            val expected = FAKE_ORGANIZATION_GEOGRAPHY.toUiModel()
-            val actual = placeListViewModel.initialMapSetting.getOrAwaitValue()
+            val expected = FAKE_PLACES.map { it.toUiModel() }
+            val actual = PlaceListViewModel.places.getOrAwaitValue()
             assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
         }
 
     @Test
-    fun `뷰모델을 생성했을 때 정보 로드에 실패하면 독립적으로 에러 상태를 표시한다`() =
+    fun `필터링을 해제하면 전체 목록을 반환한다`() =
         runTest {
             // given
-            val exception = Throwable("테스트")
-            coEvery { placeListRepository.getPlaces() } returns Result.failure(exception)
-            coEvery { placeListRepository.getOrganizationGeography() } returns
-                Result.success(
-                    FAKE_ORGANIZATION_GEOGRAPHY,
+            val targetCategories =
+                listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
+            PlaceListViewModel.updatePlacesByTimeTag(TimeTag.EMPTY.timeTagId)
+            PlaceListViewModel.updatePlacesByCategories(targetCategories)
+
+            // when
+            PlaceListViewModel.clearPlacesFilter()
+
+            // then
+            val expected = FAKE_PLACES.map { it.toUiModel() }
+            val actual = PlaceListViewModel.places.getOrAwaitValue()
+            assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
+        }
+
+    @Test
+    fun `타임 태그를 기준으로 필터링 할 수 있다`() =
+        runTest {
+            // given
+            val expected =
+                listOf(
+                    FAKE_PLACES.first().toUiModel(),
                 )
-            coEvery { placeListRepository.getPlaceGeographies() } returns Result.failure(exception)
 
             // when
-            placeListViewModel = PlaceListViewModel(placeListRepository, placeDetailRepository)
-            advanceUntilIdle()
+            PlaceListViewModel.updatePlacesByTimeTag(1)
 
             // then
-            val expected2 =
-                PlaceListUiState.Success<InitialMapSettingUiModel>(FAKE_ORGANIZATION_GEOGRAPHY.toUiModel())
-            val actual2 = placeListViewModel.initialMapSetting.getOrAwaitValue()
-
-            val expected3 = PlaceListUiState.Error<PlaceUiModel>(exception)
-            val actual3 = placeListViewModel.placeGeographies.getOrAwaitValue()
-
-            assertThat(actual2).isEqualTo(expected2)
-            assertThat(actual3).isEqualTo(expected3)
+            val actual = PlaceListViewModel.places.getOrAwaitValue()
+            assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
         }
 
     @Test
-    fun `플레이스의 아이디와 카테고리가 있으면 플레이스 상세를 선택할 수 있다`() =
+    fun `타임 태그가 없을 때 전체 목록을 반환한다`() =
         runTest {
             // given
-            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
+            val expected = FAKE_PLACES.map { it.toUiModel() }
+            val emptyTimeTag = TimeTag.EMPTY
 
             // when
-            placeListViewModel.selectPlace(1)
-            advanceUntilIdle()
+            PlaceListViewModel.updatePlacesByTimeTag(emptyTimeTag.timeTagId)
 
             // then
-            coVerify { placeDetailRepository.getPlaceDetail(1) }
-
-            val expected = SelectedPlaceUiState.Success(FAKE_PLACE_DETAIL.toUiModel())
-            val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
-            assertThat(actual).isEqualTo(expected)
+            val actual = PlaceListViewModel.places.getOrAwaitValue()
+            assertThat(actual).isEqualTo(PlaceListUiState.Success(expected))
         }
 
     @Test
-    fun `카테고리가 기타시설일 떄에도 플레이스 상세를 선택할 수 있다`() =
+    fun `플레이스의 모든 정보가 로드가 완료되었을 때 이벤트를 발생시킬 수 있다`() =
         runTest {
             // given
-            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_ETC_PLACE_DETAIL)
+            val expected = PlaceListUiState.Complete<List<PlaceUiModel>>()
 
             // when
-            placeListViewModel.selectPlace(1)
-            advanceUntilIdle()
+            PlaceListViewModel.setPlacesStateComplete()
 
             // then
-            val expected = SelectedPlaceUiState.Success(FAKE_ETC_PLACE_DETAIL.toUiModel())
-            val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
-            assertThat(actual).isEqualTo(expected)
-        }
-
-    @Test
-    fun `플레이스 상세 선택을 해제할 수 있다`() =
-        runTest {
-            // given
-            coEvery { placeDetailRepository.getPlaceDetail(1) } returns Result.success(FAKE_PLACE_DETAIL)
-            placeListViewModel.selectPlace(1)
-            advanceUntilIdle()
-
-            // when
-            placeListViewModel.unselectPlace()
-            advanceUntilIdle()
-
-            // then
-            val expected = SelectedPlaceUiState.Empty
-            val actual = placeListViewModel.selectedPlace.getOrAwaitValue()
-            assertThat(actual).isEqualTo(expected)
-        }
-
-    @Test
-    fun `초기 위치로 돌아가기 버튼 클릭 시 이벤트가 방출된다`() =
-        runTest {
-            // given
-
-            // when
-            placeListViewModel.onBackToInitialPositionClicked()
-            advanceUntilIdle()
-
-            // then
-            val actual = placeListViewModel.backToInitialPositionClicked.getOrAwaitValue()
-            assertThat(actual).isInstanceOf(Event::class.java)
-        }
-
-    @Test
-    fun `학교로 돌아가기 버튼이 나타나지 않는 임계값을 넣을 수 있다`() =
-        runTest {
-            // given
-            val isExceededMaxLength = true
-
-            // when
-            placeListViewModel.setIsExceededMaxLength(isExceededMaxLength)
-
-            // then
-            val actual = placeListViewModel.isExceededMaxLength.getOrAwaitValue()
-            assertThat(actual).isEqualTo(isExceededMaxLength)
-        }
-
-    @Test
-    fun `선택된 카테고리 값을 넣을 수 있다`() =
-        runTest {
-            // given
-            val categories = listOf(PlaceCategoryUiModel.FOOD_TRUCK, PlaceCategoryUiModel.BOOTH)
-
-            // when
-            placeListViewModel.setSelectedCategories(categories)
-
-            // then
-            val actual = placeListViewModel.selectedCategories.getOrAwaitValue()
-            assertThat(actual).isEqualTo(categories)
+            val actual = PlaceListViewModel.places.getOrAwaitValue()
+            assertThat(actual).isInstanceOf(expected::class.java)
         }
 }
