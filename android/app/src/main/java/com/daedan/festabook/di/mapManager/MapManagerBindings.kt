@@ -1,17 +1,8 @@
 package com.daedan.festabook.di.mapManager
 
-import com.daedan.festabook.presentation.placeMap.MapClickListener
-import com.daedan.festabook.presentation.placeMap.mapManager.MapCameraManager
-import com.daedan.festabook.presentation.placeMap.mapManager.MapFilterManager
-import com.daedan.festabook.presentation.placeMap.mapManager.MapMarkerManager
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapCameraManagerImpl
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapFilterManagerImpl
-import com.daedan.festabook.presentation.placeMap.mapManager.internal.MapMarkerManagerImpl
 import com.daedan.festabook.presentation.placeMap.mapManager.internal.OverlayImageManager
-import com.daedan.festabook.presentation.placeMap.model.InitialMapSettingUiModel
 import com.daedan.festabook.presentation.placeMap.model.PlaceCategoryUiModel
 import com.daedan.festabook.presentation.placeMap.model.iconResources
-import com.naver.maps.map.NaverMap
 import com.naver.maps.map.overlay.Marker
 import dev.zacsweers.metro.BindingContainer
 import dev.zacsweers.metro.ContributesTo

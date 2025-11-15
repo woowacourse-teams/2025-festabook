@@ -6,7 +6,6 @@ import com.daedan.festabook.presentation.placeMap.model.InitialMapSettingUiModel
 import com.naver.maps.map.NaverMap
 import dev.zacsweers.metro.DependencyGraph
 import dev.zacsweers.metro.Provides
-import dev.zacsweers.metro.SingleIn
 
 @DependencyGraph(PlaceMapScope::class)
 interface MapManagerGraph {
