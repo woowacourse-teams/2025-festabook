@@ -1,12 +1,18 @@
 package com.daedan.festabook.global.exception;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 
+import ch.qos.logback.classic.Level;
+import ch.qos.logback.classic.Logger;
+import ch.qos.logback.classic.spi.ILoggingEvent;
+import ch.qos.logback.core.read.ListAppender;
 import com.daedan.festabook.global.config.TestSecurityConfig;
 import io.restassured.RestAssured;
 import java.sql.SQLException;
 import java.util.stream.Stream;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
@@ -14,6 +20,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -48,6 +55,89 @@ class GlobalExceptionHandlerTest {
     @BeforeEach
     void setUp() {
         RestAssured.port = port;
+    }
+
+    @Nested
+    class handleDatabaseException {
+
+        private ListAppender<ILoggingEvent> listAppender;
+
+        @BeforeEach
+        void setUpLogger() {
+            Logger logger = (Logger) LoggerFactory.getLogger(GlobalExceptionHandler.class);
+            listAppender = new ListAppender<>();
+
+            listAppender.start();
+            logger.addAppender(listAppender);
+        }
+
+        @AfterEach
+        void tearDownLogger() {
+            Logger logger = (Logger) LoggerFactory.getLogger(GlobalExceptionHandler.class);
+            logger.detachAppender(listAppender);
+            listAppender.stop();
+        }
+
+        @Test
+        void 성공_데이터베이스_예외_정상_처리() {
+            // given
+            String expectedMessage = "데이터 베이스 에러가 발생했습니다.";
+            exceptionController.injectException(new TestDatabaseException(expectedMessage, HttpStatus.CONFLICT));
+            int expectedStatusCode = HttpStatus.CONFLICT.value();
+            int expectedFieldSize = 1;
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/test/exception-controller/inject-exception")
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(expectedStatusCode)
+                    .body("size()", equalTo(expectedFieldSize))
+                    .body("message", equalTo(expectedMessage));
+        }
+
+        @Test
+        void 성공_데이터베이스_예외가_4xx이면_warn로그() {
+            // given
+            HttpStatus statusCode = HttpStatus.BAD_REQUEST;
+            exceptionController.injectException(new TestDatabaseException("데이터 베이스 에러가 발생했습니다.", statusCode));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/test/exception-controller/inject-exception")
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(statusCode.value());
+
+            assertThat(listAppender.list).hasSize(1);
+            assertThat(listAppender.list.getFirst().getLevel()).isEqualTo(Level.WARN);
+        }
+
+        @Test
+        void 성공_데이터베이스_예외가_5xx이면_error로그() {
+            // given
+            HttpStatus statusCode = HttpStatus.INTERNAL_SERVER_ERROR;
+            exceptionController.injectException(new TestDatabaseException("데이터 베이스 에러가 발생했습니다.", statusCode));
+
+            // when & then
+            RestAssured
+                    .given()
+                    .when()
+                    .get("/test/exception-controller/inject-exception")
+                    .then()
+                    .log()
+                    .all()
+                    .statusCode(statusCode.value());
+
+            assertThat(listAppender.list).hasSize(1);
+            assertThat(listAppender.list.getFirst().getLevel()).isEqualTo(Level.ERROR);
+        }
     }
 
     @Nested
@@ -123,31 +213,6 @@ class GlobalExceptionHandlerTest {
                     .statusCode(expectedStatusCode)
                     .body("size()", equalTo(expectedFieldSize))
                     .body("message", containsString(expectedMessage));
-        }
-    }
-
-    @Nested
-    class handleDatabaseException {
-
-        @Test
-        void 데이터베이스_예외_발생시_응답() {
-            // given
-            String expectedMessage = "데이터 베이스 에러가 발생했습니다.";
-            exceptionController.injectException(new TestDatabaseException(expectedMessage));
-            int expectedStatusCode = HttpStatus.CONFLICT.value();
-            int expectedFieldSize = 1;
-
-            // when & then
-            RestAssured
-                    .given()
-                    .when()
-                    .get("/test/exception-controller/inject-exception")
-                    .then()
-                    .log()
-                    .all()
-                    .statusCode(expectedStatusCode)
-                    .body("size()", equalTo(expectedFieldSize))
-                    .body("message", equalTo(expectedMessage));
         }
     }
 
@@ -262,8 +327,8 @@ class GlobalExceptionHandlerTest {
     }
 
     private static class TestDatabaseException extends DatabaseException {
-        TestDatabaseException(String message) {
-            super(message, "original", HttpStatus.CONFLICT);
+        TestDatabaseException(String message, HttpStatus status) {
+            super(message, "original", status);
         }
     }
 }
