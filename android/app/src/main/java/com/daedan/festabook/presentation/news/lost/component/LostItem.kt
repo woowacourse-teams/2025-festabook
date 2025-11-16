@@ -1,5 +1,6 @@
 package com.daedan.festabook.presentation.news.lost.component
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -18,6 +19,7 @@ private const val ROUNDED_CORNER_SHAPE = 16
 @Composable
 fun LostItem(
     url: String,
+    onLostItemClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Card(
@@ -26,7 +28,8 @@ fun LostItem(
             modifier
                 .fillMaxSize()
                 .cardBackground(roundedCornerShape = ROUNDED_CORNER_SHAPE.dp)
-                .aspectRatio(1f),
+                .aspectRatio(1f)
+                .clickable { onLostItemClick() },
     ) {
         CoilImage(
             url = url,
@@ -41,5 +44,6 @@ fun LostItem(
 private fun LostItemPreview() {
     LostItem(
         url = "https://i.imgur.com/Zblctu7.png",
+        onLostItemClick = { },
     )
 }

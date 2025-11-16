@@ -13,7 +13,7 @@ import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.adapter.NewsPagerAdapter
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.google.android.material.tabs.TabLayoutMediator
 import dev.zacsweers.metro.AppScope
@@ -29,7 +29,7 @@ import dev.zacsweers.metro.binding
 @Inject
 class NewsFragment :
     BaseFragment<FragmentNewsBinding>(),
-    OnNewsClickListener {
+    NewsClickListener {
     @Inject
     override lateinit var defaultViewModelProviderFactory: ViewModelProvider.Factory
 
@@ -65,7 +65,7 @@ class NewsFragment :
         newsViewModel.lostItemClick(lostItem)
     }
 
-    override fun onLostGuideItemClick(lostGuideItem: LostUiModel.Guide) {
+    override fun onLostGuideItemClick() {
         newsViewModel.toggleLostGuideExpanded()
     }
 

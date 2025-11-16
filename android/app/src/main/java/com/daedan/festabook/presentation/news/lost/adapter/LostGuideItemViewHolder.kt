@@ -8,18 +8,18 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.databinding.ItemLostGuideBinding
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 
 class LostGuideItemViewHolder private constructor(
     private val binding: ItemLostGuideBinding,
-    private val onNewsClickListener: OnNewsClickListener,
+    private val newsClickListener: NewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     private var lostGuideItem: LostUiModel.Guide? = null
 
     init {
         binding.root.setOnClickListener {
             lostGuideItem?.let {
-                onNewsClickListener.onLostGuideItemClick(it)
+                newsClickListener.onLostGuideItemClick()
             }
         }
     }
@@ -49,7 +49,7 @@ class LostGuideItemViewHolder private constructor(
 
         fun from(
             parent: ViewGroup,
-            newsClickListener: OnNewsClickListener,
+            newsClickListener: NewsClickListener,
         ): LostGuideItemViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ItemLostGuideBinding.inflate(inflater, parent, false)

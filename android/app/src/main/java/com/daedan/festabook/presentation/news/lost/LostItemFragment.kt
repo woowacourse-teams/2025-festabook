@@ -16,6 +16,7 @@ import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.lost.LostItemModalDialogFragment.Companion.TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT
 import com.daedan.festabook.presentation.news.lost.component.LostItemScreen
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 
 class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
     override val layoutId: Int = R.layout.fragment_lost_item
@@ -23,9 +24,6 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
     override val defaultViewModelProviderFactory: ViewModelProvider.Factory
         get() = appGraph.metroViewModelFactory
 
-    //    private val adapter by lazy {
-//        LostItemAdapter(requireParentFragment() as OnNewsClickListener)
-//    }
     private val viewModel: NewsViewModel by viewModels({ requireParentFragment() })
 
     override fun onCreateView(
@@ -36,48 +34,25 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
         ComposeView(requireContext()).apply {
             setContent {
                 setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+
+                val newsClickListener = requireParentFragment() as NewsClickListener
                 LostItemScreen(
                     lostUiState = viewModel.lostUiState,
-                    onLostItemClick = { },
+                    onLostGuideClick = { newsClickListener.onLostGuideItemClick() },
+                    onLostItemClick = { newsClickListener.onLostItemClick(it) },
                 )
             }
         }
 
-//    override fun onViewCreated(
-//        view: View,
-//        savedInstanceState: Bundle?,
-//    ) {
-//        super.onViewCreated(view, savedInstanceState)
-//        binding.rvLostItemList.adapter = adapter
-//        (binding.rvLostItemList.itemAnimator as DefaultItemAnimator).supportsChangeAnimations =
-//            false
-//
-//        val spacing = resources.getDimensionPixelSize(R.dimen.lost_item_spacing_16dp)
-//        setupLostItemDecoration(spacing)
-//
-//        setupObservers()
-//        onSwipeRefreshLostItemsListener()
-//        setupSkeletonView(spacing)
-//    }
+    override fun onViewCreated(
+        view: View,
+        savedInstanceState: Bundle?,
+    ) {
+        super.onViewCreated(view, savedInstanceState)
+        setupObservers()
+    }
 
-//    private fun setupLostItemDecoration(spacing: Int) {
-//        val gridLayoutManager = GridLayoutManager(requireContext(), SPAN_COUNT)
-//        binding.rvLostItemList.layoutManager = gridLayoutManager
-//
-//        gridLayoutManager.spanSizeLookup =
-//            object : GridLayoutManager.SpanSizeLookup() {
-//                override fun getSpanSize(position: Int): Int = if (position == 0) SPAN_COUNT else 1
-//            }
-//
-//        binding.rvLostItemList.addItemDecoration(
-//            LostItemDecoration(
-//                spanCount = SPAN_COUNT,
-//                spacing = spacing,
-//            ),
-//        )
-//    }
-
-//    private fun setupObservers() {
+    private fun setupObservers() {
 //        viewModel.lostUiState.observe(viewLifecycleOwner) { state ->
 //            when (state) {
 //                is LostUiState.InitialLoading -> {
@@ -105,59 +80,17 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
 //            }
 //        }
 //
-//        viewModel.lostItemClickEvent.observe(viewLifecycleOwner) { event ->
-//            event.getContentIfNotHandled()?.let { lostItem ->
-//                showLostItemModalDialog(lostItem)
-//            }
-//        }
-//    }
+        viewModel.lostItemClickEvent.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { lostItem ->
+                showLostItemModalDialog(lostItem)
+            }
+        }
+    }
 
     private fun showLostItemModalDialog(lostItem: LostUiModel.Item) {
         LostItemModalDialogFragment
             .newInstance(lostItem)
             .show(childFragmentManager, TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT)
-    }
-
-//    private fun onSwipeRefreshLostItemsListener() {
-//        binding.srlLostItemList.setOnRefreshListener {
-//            viewModel.loadAllLostItems(LostUiState.Refreshing)
-//        }
-//    }
-
-//    private fun setupSkeletonView(spacing: Int) {
-//        val itemCount = binding.glLostItemSkeleton.childCount
-//        val spanCount = binding.glLostItemSkeleton.columnCount
-//        (0 until itemCount).forEach { index ->
-//            val child = binding.glLostItemSkeleton.getChildAt(index)
-//            val params = child.layoutParams as GridLayout.LayoutParams
-//
-//            val column = index % spanCount
-//
-//            val leftMargin = if (column == 0) 0 else spacing / SPAN_COUNT
-//            val rightMargin = if (column == spanCount - 1) 0 else spacing / SPAN_COUNT
-//            val topMargin = if (index < spanCount) spacing else 0
-//            params.setMargins(leftMargin, topMargin, rightMargin, spacing)
-//            child.layoutParams = params
-//        }
-//    }
-
-    private fun showSkeleton() {
-        binding.srlLostItemList.visibility = View.INVISIBLE
-        binding.sflLostItemSkeleton.visibility = View.VISIBLE
-        binding.sflLostItemSkeleton.startShimmer()
-    }
-
-    private fun hideSkeleton() {
-        binding.srlLostItemList.visibility = View.VISIBLE
-        binding.sflLostItemSkeleton.visibility = View.GONE
-        binding.sflLostItemSkeleton.stopShimmer()
-    }
-
-    private fun showEmptyStateMessage(lostItems: List<LostUiModel>) {
-        val isExistLostIem = lostItems.none { it is LostUiModel.Item }
-
-        binding.tvEmptyState.root.visibility =
-            if (isExistLostIem) View.VISIBLE else View.GONE
     }
 
     companion object {

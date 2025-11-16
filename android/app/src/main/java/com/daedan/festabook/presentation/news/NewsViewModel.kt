@@ -51,9 +51,6 @@ class NewsViewModel(
     var lostUiState by mutableStateOf<LostUiState>(LostUiState.InitialLoading)
         private set
 
-//    private val _lostUiState: MutableLiveData<LostUiState> = MutableLiveData()
-//    val lostUiState: LiveData<LostUiState> get() = _lostUiState
-
     private val _lostItemClickEvent: MutableLiveData<Event<LostUiModel.Item>> = MutableLiveData()
     val lostItemClickEvent: LiveData<Event<LostUiModel.Item>> get() = _lostItemClickEvent
 

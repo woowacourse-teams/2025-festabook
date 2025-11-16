@@ -14,7 +14,7 @@ import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
 import com.daedan.festabook.presentation.news.faq.component.FAQScreen
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 
 class FAQFragment : BaseFragment<FragmentFaqBinding>() {
     override val layoutId: Int = R.layout.fragment_faq
@@ -32,7 +32,7 @@ class FAQFragment : BaseFragment<FragmentFaqBinding>() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 FAQScreen(uiState = viewModel.faqUiState, onFaqClick = { faqItemUiModel ->
-                    (requireParentFragment() as OnNewsClickListener).onFAQClick(faqItemUiModel)
+                    (requireParentFragment() as NewsClickListener).onFAQClick(faqItemUiModel)
                 })
             }
         }

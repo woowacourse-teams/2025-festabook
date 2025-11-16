@@ -30,7 +30,8 @@ private const val PADDING: Int = 8
 @Composable
 fun LostItemScreen(
     lostUiState: LostUiState,
-    onLostItemClick: (LostUiModel) -> Unit,
+    onLostGuideClick: () -> Unit,
+    onLostItemClick: (LostUiModel.Item) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     when (lostUiState) {
@@ -47,7 +48,8 @@ fun LostItemScreen(
         is LostUiState.Success -> {
             LostItemContent(
                 lostItems = lostUiState.lostItems,
-                onLostItemClick = { lostItem -> onLostItemClick(lostItem) },
+                onLostGuideClick = onLostGuideClick,
+                onLostItemClick = onLostItemClick,
                 modifier = modifier.fillMaxSize(),
             )
         }
@@ -57,7 +59,8 @@ fun LostItemScreen(
 @Composable
 private fun LostItemContent(
     lostItems: List<LostUiModel>,
-    onLostItemClick: (LostUiModel) -> Unit,
+    onLostGuideClick: () -> Unit,
+    onLostItemClick: (LostUiModel.Item) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val isLostItemEmpty = lostItems.none { it is LostUiModel.Item }
@@ -79,7 +82,7 @@ private fun LostItemContent(
                     title = stringResource(R.string.lost_item_guide),
                     description = it.description,
                     isExpanded = it.isExpanded,
-                    onclick = { onLostItemClick(it) },
+                    onclick = onLostGuideClick,
                     icon =
                         {
                             Icon(
@@ -94,7 +97,10 @@ private fun LostItemContent(
             items = lostItems.drop(1).filterIsInstance<LostUiModel.Item>(),
             key = { lostItem -> lostItem.lostItemId },
         ) { lostItem ->
-            LostItem(url = lostItem.imageUrl)
+            LostItem(
+                url = lostItem.imageUrl,
+                onLostItemClick = { onLostItemClick(lostItem) },
+            )
         }
     }
 }
@@ -125,7 +131,8 @@ private fun LostItemContentPreview() {
         )
     LostItemContent(
         lostItems = dummyLostList,
-        onLostItemClick = { },
+        onLostGuideClick = { },
         modifier = Modifier.fillMaxSize(),
+        onLostItemClick = { },
     )
 }
