@@ -26,7 +26,7 @@ class LostGuideItemViewHolder private constructor(
 
     fun bind(lostGuideItem: LostUiModel.Guide) {
         this.lostGuideItem = lostGuideItem
-        binding.tvLostGuideDescription.text = lostGuideItem.guide
+        binding.tvLostGuideDescription.text = lostGuideItem.description
         binding.tvLostGuideDescription.visibility =
             if (lostGuideItem.isExpanded) View.VISIBLE else View.GONE
 

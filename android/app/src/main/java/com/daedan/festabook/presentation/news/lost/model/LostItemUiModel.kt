@@ -18,7 +18,7 @@ sealed interface LostUiModel {
         LostUiModel
 
     data class Guide(
-        val guide: String = "",
+        val description: String = "",
         val isExpanded: Boolean = false,
     ) : LostUiModel
 }
@@ -37,4 +37,4 @@ fun Lost.Item.toLostItemUiModel(): LostUiModel =
         createdAt = createdAt.format(DateTimeFormatter.ofPattern("yyyy.MM.dd  HH:mm")),
     )
 
-fun Lost.Guide.toLostGuideItemUiModel(): LostUiModel = LostUiModel.Guide(guide = guide)
+fun Lost.Guide.toLostGuideItemUiModel(): LostUiModel = LostUiModel.Guide(description = guide)

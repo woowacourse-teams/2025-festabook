@@ -48,7 +48,7 @@ class LostItemAdapter(
                             oldItem.lostItemId == newItem.lostItemId
 
                         oldItem is LostUiModel.Guide && newItem is LostUiModel.Guide ->
-                            oldItem.guide == newItem.guide
+                            oldItem.description == newItem.description
 
                         else -> false
                     }
