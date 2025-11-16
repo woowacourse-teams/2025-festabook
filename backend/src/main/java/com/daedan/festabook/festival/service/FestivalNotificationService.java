@@ -11,7 +11,7 @@ import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.global.exception.ConflictException;
+import com.daedan.festabook.global.exception.UniqueDuplicateDataException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -33,8 +33,6 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicateSubscription(festivalId, request.deviceId());
-
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
@@ -49,8 +47,6 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicateSubscription(festivalId, request.deviceId());
-
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
@@ -65,8 +61,6 @@ public class FestivalNotificationService {
             Long festivalId,
             FestivalNotificationRequest request
     ) {
-        validateDuplicateSubscription(festivalId, request.deviceId());
-
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
         FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
 
@@ -108,12 +102,6 @@ public class FestivalNotificationService {
         );
     }
 
-    private void validateDuplicateSubscription(Long festivalId, Long deviceId) {
-        if (festivalNotificationJpaRepository.getExistsFlagByFestivalIdAndDeviceId(festivalId, deviceId) > 0) {
-            throw new ConflictException(FestivalNotification.class);
-        }
-    }
-
     private FestivalNotification createFestivalNotification(Long festivalId, FestivalNotificationRequest request) {
         Festival festival = getFestivalById(festivalId);
         Device device = getDeviceById(request.deviceId());
@@ -124,7 +112,7 @@ public class FestivalNotificationService {
         try {
             return festivalNotificationJpaRepository.save(festivalNotification);
         } catch (DataIntegrityViolationException e) {
-            throw new ConflictException(FestivalNotification.class);
+            throw new UniqueDuplicateDataException(FestivalNotification.class, e.getMessage());
         }
     }
 

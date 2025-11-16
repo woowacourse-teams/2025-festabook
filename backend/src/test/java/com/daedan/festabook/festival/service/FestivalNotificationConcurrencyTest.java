@@ -80,7 +80,7 @@ class FestivalNotificationConcurrencyTest {
 
                 if (response.getStatusCode() == HttpStatus.CONFLICT.value()) {
                     String responseBody = response.getBody().asString();
-                    if (responseBody.contains("FestivalNotification 이미 존재합니다.")) {
+                    if (responseBody.contains("FestivalNotification 데이터베이스에 이미 존재합니다.")) {
                         duplicateErrorCount.incrementAndGet();
                     }
                 }
