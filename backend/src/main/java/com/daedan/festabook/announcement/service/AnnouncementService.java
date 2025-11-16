@@ -13,6 +13,7 @@ import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.lock.Lockable;
 import com.daedan.festabook.notification.dto.NotificationSendRequest;
 import java.util.Comparator;
 import java.util.List;
@@ -33,6 +34,10 @@ public class AnnouncementService {
     private final FestivalJpaRepository festivalJpaRepository;
     private final FestivalNotificationManager notificationManager;
 
+    @Lockable(
+            spelKey = "'AnnouncementService'.concat(#festivalId)",
+            useMethodScopeLock = false
+    )
     @Transactional
     public AnnouncementResponse createAnnouncement(Long festivalId, AnnouncementRequest request) {
         Festival festival = getFestivalById(festivalId);
@@ -70,6 +75,10 @@ public class AnnouncementService {
         return AnnouncementUpdateResponse.from(announcement);
     }
 
+    @Lockable(
+            spelKey = "'AnnouncementService'.concat(#festivalId)",
+            useMethodScopeLock = false
+    )
     @Transactional
     public AnnouncementPinUpdateResponse updateAnnouncementPin(
             Long festivalId,

@@ -21,8 +21,10 @@ import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateRequestFixture;
 import com.daedan.festabook.place.dto.PlaceImageSequenceUpdateResponses;
 import com.daedan.festabook.place.infrastructure.PlaceImageJpaRepository;
 import com.daedan.festabook.place.infrastructure.PlaceJpaRepository;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.DisplayNameGenerator;
 import org.junit.jupiter.api.Nested;
@@ -156,8 +158,9 @@ public class PlaceImageServiceTest {
         void 성공_수정_후_응답값_오름차순_정렬() {
             // given
             Long festivalId = 1L;
+            Long placeId = 1L;
             Festival festival = FestivalFixture.create(festivalId);
-            Place place = PlaceFixture.create(festival);
+            Place place = PlaceFixture.create(festival, placeId);
 
             Long placeImageId1 = 1L;
             Long placeImageId2 = 2L;
@@ -173,12 +176,8 @@ public class PlaceImageServiceTest {
                     PlaceImageSequenceUpdateRequestFixture.create(placeImageId3, 1)
             );
 
-            given(placeImageJpaRepository.findById(placeImageId1))
-                    .willReturn(Optional.of(placeImage1));
-            given(placeImageJpaRepository.findById(placeImageId2))
-                    .willReturn(Optional.of(placeImage2));
-            given(placeImageJpaRepository.findById(placeImageId3))
-                    .willReturn(Optional.of(placeImage3));
+            given(placeImageJpaRepository.findAllById(Set.of(placeImageId1, placeImageId2, placeImageId3)))
+                    .willReturn(new ArrayList<>(List.of(placeImage1, placeImage2, placeImage3)));
 
             // when
             PlaceImageSequenceUpdateResponses result = placeImageService.updatePlaceImagesSequence(
@@ -208,7 +207,7 @@ public class PlaceImageServiceTest {
             // when & then
             assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(festivalId, requests))
                     .isInstanceOf(BusinessException.class)
-                    .hasMessage("존재하지 않는 플레이스 이미지입니다.");
+                    .hasMessage("존재하지 않는 플레이스 이미지가 있습니다.");
         }
 
         @Test
@@ -222,8 +221,8 @@ public class PlaceImageServiceTest {
             Place place = PlaceFixture.create(requestFestival);
             PlaceImage placeImage = PlaceImageFixture.create(place, placeImageId);
 
-            given(placeImageJpaRepository.findById(placeImage.getId()))
-                    .willReturn(Optional.of(placeImage));
+            given(placeImageJpaRepository.findAllById(Set.of(placeImageId)))
+                    .willReturn(List.of(placeImage));
 
             List<PlaceImageSequenceUpdateRequest> requests = PlaceImageSequenceUpdateRequestFixture.createList(1);
 
@@ -231,6 +230,50 @@ public class PlaceImageServiceTest {
             assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(otherFestival.getId(), requests))
                     .isInstanceOf(BusinessException.class)
                     .hasMessage("해당 축제의 플레이스 이미지가 아닙니다.");
+        }
+
+        @Test
+        void 예외_중복된_플레이스_이미지_ID가_포함된_경우() {
+            // given
+            Long festivalId = 1L;
+            Long duplicatedPlaceImageId = 1L;
+
+            List<PlaceImageSequenceUpdateRequest> requests = List.of(
+                    PlaceImageSequenceUpdateRequestFixture.create(duplicatedPlaceImageId, 1),
+                    PlaceImageSequenceUpdateRequestFixture.create(duplicatedPlaceImageId, 2)
+            );
+
+            // when & then
+            assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(festivalId, requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("중복된 플레이스 이미지 ID가 포함되어 있습니다.");
+        }
+
+        @Test
+        void 예외_서로_다른_플레이스의_이미지가_함께_요청된_경우() {
+            // given
+            Long festivalId = 1L;
+            Festival festival = FestivalFixture.create(festivalId);
+            Place place1 = PlaceFixture.create(festival, 1L);
+            Place place2 = PlaceFixture.create(festival, 2L);
+
+            Long placeImageId1 = 1L;
+            Long placeImageId2 = 2L;
+            PlaceImage placeImage1 = PlaceImageFixture.create(place1, 1, placeImageId1);
+            PlaceImage placeImage2 = PlaceImageFixture.create(place2, 2, placeImageId2);
+
+            List<PlaceImageSequenceUpdateRequest> requests = List.of(
+                    PlaceImageSequenceUpdateRequestFixture.create(placeImageId1, 1),
+                    PlaceImageSequenceUpdateRequestFixture.create(placeImageId2, 2)
+            );
+
+            given(placeImageJpaRepository.findAllById(Set.of(placeImageId1, placeImageId2)))
+                    .willReturn(List.of(placeImage1, placeImage2));
+
+            // when & then
+            assertThatThrownBy(() -> placeImageService.updatePlaceImagesSequence(festivalId, requests))
+                    .isInstanceOf(BusinessException.class)
+                    .hasMessage("서로 다른 플레이스의 이미지가 함께 요청되었습니다.");
         }
     }
 

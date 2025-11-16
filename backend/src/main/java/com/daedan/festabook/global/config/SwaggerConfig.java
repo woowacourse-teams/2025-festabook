@@ -33,7 +33,8 @@ public class SwaggerConfig {
             new String[]{"학생회 API", "/councils/**"},
             new String[]{"이미지 저장 API", "/images/**"},
             new String[]{"라인업 API", "/lineups/**"},
-            new String[]{"시간 태그 API", "/time-tags/**"}
+            new String[]{"시간 태그 API", "/time-tags/**"},
+            new String[]{"테스트 API", "/test/**"}
     );
 
     private final BuildProperties buildProperties;

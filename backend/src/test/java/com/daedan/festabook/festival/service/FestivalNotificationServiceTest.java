@@ -7,6 +7,7 @@ import static org.assertj.core.api.SoftAssertions.assertSoftly;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
+import static org.mockito.BDDMockito.willThrow;
 
 import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.domain.DeviceFixture;
@@ -24,6 +25,7 @@ import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
+import com.daedan.festabook.global.exception.UniqueDuplicateDataException;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.DisplayNameGeneration;
@@ -34,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.dao.DataIntegrityViolationException;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayNameGeneration(DisplayNameGenerator.ReplaceUnderscores.class)
@@ -97,15 +100,21 @@ class FestivalNotificationServiceTest {
 
             FestivalNotificationRequest request = FestivalNotificationRequestFixture.create(deviceId);
 
-            given(festivalNotificationJpaRepository.existsByFestivalIdAndDeviceId(festivalId, deviceId))
-                    .willReturn(true);
+            given(festivalJpaRepository.findById(festivalId))
+                    .willReturn(Optional.of(FestivalFixture.create()));
+            given(deviceJpaRepository.findById(deviceId))
+                    .willReturn(Optional.of(DeviceFixture.create()));
+
+            willThrow(DataIntegrityViolationException.class)
+                    .given(festivalNotificationJpaRepository)
+                    .save(any());
 
             // when & then
             assertThatThrownBy(() ->
                     festivalNotificationService.subscribeFestivalNotification(festivalId, request)
             )
-                    .isInstanceOf(BusinessException.class)
-                    .hasMessage("이미 알림을 구독한 축제입니다.");
+                    .isInstanceOf(UniqueDuplicateDataException.class)
+                    .hasMessage("FestivalNotification 데이터베이스에 이미 존재합니다.");
         }
 
         @Test
@@ -165,7 +174,7 @@ class FestivalNotificationServiceTest {
 
             given(deviceJpaRepository.findById(deviceId))
                     .willReturn(Optional.of(device));
-            given(festivalNotificationJpaRepository.getAllByDeviceId(deviceId))
+            given(festivalNotificationJpaRepository.findAllWithFestivalByDeviceId(deviceId))
                     .willReturn(festivalNotifications);
 
             // when
@@ -180,7 +189,7 @@ class FestivalNotificationServiceTest {
                         .isEqualTo(festivalNotification1.getFestival().getUniversityName());
                 s.assertThat(response1.festivalName())
                         .isEqualTo(festivalNotification1.getFestival().getFestivalName());
-                
+
                 FestivalNotificationReadResponse response2 = result.responses().get(1);
                 s.assertThat(response2.universityName())
                         .isEqualTo(festivalNotification2.getFestival().getUniversityName());

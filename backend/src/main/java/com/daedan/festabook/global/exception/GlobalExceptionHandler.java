@@ -25,6 +25,24 @@ public class GlobalExceptionHandler {
 
     private static final String INTERNAL_ERROR_MESSAGE = "서버에 오류가 발생하였습니다. 관리자에게 문의해주세요.";
 
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<ExceptionResponse> handleDatabaseException(DatabaseException databaseException) {
+        try {
+            return ResponseEntity
+                    .status(databaseException.getStatus())
+                    .body(databaseException.toResponse());
+        } finally {
+            ExceptionLog exceptionLog = ExceptionLog.from(
+                    databaseException.getStatus().value(),
+                    databaseException.getMessage(),
+                    databaseException.getClass().getSimpleName(),
+                    databaseException.getOriginalExceptionMessage()
+            );
+
+            logDatabaseExceptionAsErrorIf5xx(databaseException, exceptionLog);
+        }
+    }
+
     @ExceptionHandler(BusinessException.class)
     public ResponseEntity<ExceptionResponse> handleBusinessException(BusinessException businessException) {
         try {
@@ -149,5 +167,13 @@ public class GlobalExceptionHandler {
                 log.warn("자원할당 해제에 실패하였습니다.");
             }
         }
+    }
+
+    private void logDatabaseExceptionAsErrorIf5xx(DatabaseException databaseException, ExceptionLog exceptionLog) {
+        if (databaseException.getStatus().is4xxClientError()) {
+            log.warn("", kv("event", exceptionLog));
+            return;
+        }
+        log.error("", kv("event", exceptionLog));
     }
 }

@@ -23,6 +23,7 @@ import com.daedan.festabook.announcement.infrastructure.AnnouncementJpaRepositor
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalFixture;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
+import com.daedan.festabook.global.lock.ConcurrencyTestHelper;
 import com.daedan.festabook.global.security.JwtTestHelper;
 import com.daedan.festabook.global.security.role.RoleType;
 import com.daedan.festabook.notification.infrastructure.FcmNotificationManager;
@@ -456,6 +457,86 @@ class AnnouncementControllerTest {
 
             then(fcmNotificationManager).should()
                     .sendToFestivalTopic(any(), any());
+        }
+    }
+
+    @Nested
+    class ConcurrentTest {
+
+        @Test
+        void 동시성_3개_이상의_동시_요청시_3개의_고정_공지만_생성된다() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            AnnouncementRequest request = AnnouncementRequestFixture.create(true);
+
+            int requestCount = 100;
+            Runnable httpRequest = () -> {
+                RestAssured
+                        .given()
+                        .header(authorizationHeader)
+                        .contentType(ContentType.JSON)
+                        .body(request)
+                        .when()
+                        .post("/announcements");
+            };
+
+            int expectedPinnedAnnouncementCount = 3;
+
+            // when
+            ConcurrencyTestHelper.test(requestCount, httpRequest);
+
+            // then
+            Long result = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festival.getId());
+            assertThat(result).isEqualTo(expectedPinnedAnnouncementCount);
+        }
+
+        @Test
+        void 동시성_수정과_생성이_동시에_요청더라도_3개의_고정_공지만_존재한다() {
+            // given
+            Festival festival = FestivalFixture.create();
+            festivalJpaRepository.save(festival);
+
+            Header authorizationHeader = jwtTestHelper.createCouncilAuthorizationHeader(festival);
+
+            Announcement initAnnouncement = AnnouncementFixture.create(false, festival);
+            announcementJpaRepository.save(initAnnouncement);
+
+            AnnouncementRequest createAnnouncement = AnnouncementRequestFixture.create(true);
+            AnnouncementPinUpdateRequest updateAnnouncement = AnnouncementPinUpdateRequestFixture.create(true);
+
+            int requestCount = 100;
+            Runnable createAnnouncementRequest = () -> {
+                RestAssured
+                        .given()
+                        .header(authorizationHeader)
+                        .contentType(ContentType.JSON)
+                        .body(createAnnouncement)
+                        .when()
+                        .post("/announcements");
+            };
+
+            Runnable updateAnnouncementRequest = () -> {
+                RestAssured
+                        .given()
+                        .header(authorizationHeader)
+                        .contentType(ContentType.JSON)
+                        .body(updateAnnouncement)
+                        .when()
+                        .post("announcement/{announcementId}/pin", initAnnouncement.getId());
+            };
+
+            int expectedPinnedAnnouncementCount = 3;
+
+            // when
+            ConcurrencyTestHelper.test(requestCount, createAnnouncementRequest, updateAnnouncementRequest);
+
+            // then
+            Long result = announcementJpaRepository.countByFestivalIdAndIsPinnedTrue(festival.getId());
+            assertThat(result).isEqualTo(expectedPinnedAnnouncementCount);
         }
     }
 }

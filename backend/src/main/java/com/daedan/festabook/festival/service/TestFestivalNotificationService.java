@@ -4,16 +4,15 @@ import com.daedan.festabook.device.domain.Device;
 import com.daedan.festabook.device.infrastructure.DeviceJpaRepository;
 import com.daedan.festabook.festival.domain.Festival;
 import com.daedan.festabook.festival.domain.FestivalNotification;
-import com.daedan.festabook.festival.domain.FestivalNotificationManager;
 import com.daedan.festabook.festival.dto.FestivalNotificationReadResponses;
 import com.daedan.festabook.festival.dto.FestivalNotificationRequest;
 import com.daedan.festabook.festival.dto.FestivalNotificationResponse;
 import com.daedan.festabook.festival.infrastructure.FestivalJpaRepository;
 import com.daedan.festabook.festival.infrastructure.FestivalNotificationJpaRepository;
 import com.daedan.festabook.global.exception.BusinessException;
-import com.daedan.festabook.global.exception.UniqueDuplicateDataException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Profile;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -21,12 +20,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
-public class FestivalNotificationService {
+@Profile({"dev", "local", "test"})
+public class TestFestivalNotificationService {
 
     private final FestivalNotificationJpaRepository festivalNotificationJpaRepository;
     private final DeviceJpaRepository deviceJpaRepository;
     private final FestivalJpaRepository festivalJpaRepository;
-    private final FestivalNotificationManager festivalNotificationManager;
 
     @Transactional
     public FestivalNotificationResponse subscribeFestivalNotification(
@@ -34,39 +33,7 @@ public class FestivalNotificationService {
             FestivalNotificationRequest request
     ) {
         FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
-        FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
-
-        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
-        festivalNotificationManager.subscribeFestivalTopic(festivalId, fcmToken);
-
-        return FestivalNotificationResponse.from(savedFestivalNotification);
-    }
-
-    @Transactional
-    public FestivalNotificationResponse subscribeAndroidFestivalNotification(
-            Long festivalId,
-            FestivalNotificationRequest request
-    ) {
-        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
-        FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
-
-        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
-        festivalNotificationManager.subscribeAndroidFestivalTopic(festivalId, fcmToken);
-
-        return FestivalNotificationResponse.from(savedFestivalNotification);
-    }
-
-    @Transactional
-    public FestivalNotificationResponse subscribeIosFestivalNotification(
-            Long festivalId,
-            FestivalNotificationRequest request
-    ) {
-        FestivalNotification festivalNotification = createFestivalNotification(festivalId, request);
-        FestivalNotification savedFestivalNotification = saveFestivalNotificationOrFailDuplicated(festivalNotification);
-
-        String fcmToken = savedFestivalNotification.getDevice().getFcmToken();
-        festivalNotificationManager.subscribeIosFestivalTopic(festivalId, fcmToken);
-
+        FestivalNotification savedFestivalNotification = saveFestivalNotification(festivalNotification);
         return FestivalNotificationResponse.from(savedFestivalNotification);
     }
 
@@ -85,6 +52,7 @@ public class FestivalNotificationService {
         FestivalNotification festivalNotification = festivalNotificationJpaRepository
                 .findById(festivalNotificationId)
                 .orElse(null);
+
         if (festivalNotification == null) {
             return;
         }
@@ -96,10 +64,8 @@ public class FestivalNotificationService {
         }
 
         festivalNotificationJpaRepository.deleteById(festivalNotificationId);
-        festivalNotificationManager.unsubscribeFestivalTopic(
-                festivalNotification.getFestival().getId(),
-                device.getFcmToken()
-        );
+
+        Long festivalId = festivalNotification.getFestival().getId();
     }
 
     private FestivalNotification createFestivalNotification(Long festivalId, FestivalNotificationRequest request) {
@@ -108,11 +74,11 @@ public class FestivalNotificationService {
         return new FestivalNotification(festival, device);
     }
 
-    private FestivalNotification saveFestivalNotificationOrFailDuplicated(FestivalNotification festivalNotification) {
+    private FestivalNotification saveFestivalNotification(FestivalNotification festivalNotification) {
         try {
             return festivalNotificationJpaRepository.save(festivalNotification);
         } catch (DataIntegrityViolationException e) {
-            throw new UniqueDuplicateDataException(FestivalNotification.class, e.getMessage());
+            throw new BusinessException("이미 알림을 구독한 축제입니다.", HttpStatus.BAD_REQUEST);
         }
     }
 
