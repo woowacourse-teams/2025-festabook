@@ -7,10 +7,12 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.component.EmptyStateScreen
 import com.daedan.festabook.presentation.common.component.LoadingStateScreen
+import com.daedan.festabook.presentation.common.component.PULL_OFFSET_LIMIT
+import com.daedan.festabook.presentation.common.component.PullToRefreshContainer
 import com.daedan.festabook.presentation.news.component.NewsItem
 import com.daedan.festabook.presentation.news.lost.LostUiState
 import com.daedan.festabook.presentation.news.lost.model.LostItemUiStatus
@@ -27,31 +31,58 @@ import timber.log.Timber
 private const val SPAN_COUNT: Int = 2
 private const val PADDING: Int = 8
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LostItemScreen(
     lostUiState: LostUiState,
     onLostGuideClick: () -> Unit,
     onLostItemClick: (LostUiModel.Item) -> Unit,
+    isRefreshing: Boolean,
+    onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    when (lostUiState) {
-        is LostUiState.Error -> {
-            LaunchedEffect(lostUiState) {
-                Timber.w(lostUiState.throwable.stackTraceToString())
+    PullToRefreshContainer(
+        isRefreshing = isRefreshing,
+        onRefresh = onRefresh,
+    ) { pullToRefreshState ->
+        when (lostUiState) {
+            LostUiState.InitialLoading -> LoadingStateScreen()
+
+            is LostUiState.Error -> {
+                LaunchedEffect(lostUiState) {
+                    Timber.w(lostUiState.throwable.stackTraceToString())
+                }
             }
-        }
 
-        LostUiState.InitialLoading -> LoadingStateScreen()
-        LostUiState.Refreshing -> {
-        }
+            is LostUiState.Refreshing -> {
+                LostItemContent(
+                    lostItems = lostUiState.oldLostItems,
+                    onLostGuideClick = onLostGuideClick,
+                    onLostItemClick = onLostItemClick,
+                    modifier =
+                        modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                translationY =
+                                    pullToRefreshState.distanceFraction * PULL_OFFSET_LIMIT
+                            },
+                )
+            }
 
-        is LostUiState.Success -> {
-            LostItemContent(
-                lostItems = lostUiState.lostItems,
-                onLostGuideClick = onLostGuideClick,
-                onLostItemClick = onLostItemClick,
-                modifier = modifier.fillMaxSize(),
-            )
+            is LostUiState.Success -> {
+                LostItemContent(
+                    lostItems = lostUiState.lostItems,
+                    onLostGuideClick = onLostGuideClick,
+                    onLostItemClick = onLostItemClick,
+                    modifier =
+                        modifier
+                            .fillMaxSize()
+                            .graphicsLayer {
+                                translationY =
+                                    pullToRefreshState.distanceFraction * PULL_OFFSET_LIMIT
+                            },
+                )
+            }
         }
     }
 }

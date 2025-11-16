@@ -40,6 +40,13 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
                     lostUiState = viewModel.lostUiState,
                     onLostGuideClick = { newsClickListener.onLostGuideItemClick() },
                     onLostItemClick = { newsClickListener.onLostItemClick(it) },
+                    isRefreshing = viewModel.isLostItemScreenRefreshing,
+                    onRefresh = {
+                        val currentUiState = viewModel.lostUiState
+                        val oldLostItems =
+                            if (currentUiState is LostUiState.Success) currentUiState.lostItems else emptyList()
+                        viewModel.loadAllLostItems(LostUiState.Refreshing(oldLostItems))
+                    },
                 )
             }
         }
@@ -53,33 +60,6 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
     }
 
     private fun setupObservers() {
-//        viewModel.lostUiState.observe(viewLifecycleOwner) { state ->
-//            when (state) {
-//                is LostUiState.InitialLoading -> {
-//                    binding.srlLostItemList.isRefreshing = false
-//                    showSkeleton()
-//                }
-//
-//                is LostUiState.Refreshing -> {
-//                    binding.srlLostItemList.isRefreshing = true
-//                    showSkeleton()
-//                }
-//
-//                is LostUiState.Success -> {
-//                    binding.srlLostItemList.isRefreshing = false
-//                    adapter.submitList(state.lostItems) {
-//                        showEmptyStateMessage(state.lostItems)
-//                    }
-//                    hideSkeleton()
-//                }
-//
-//                is LostUiState.Error -> {
-//                    binding.srlLostItemList.isRefreshing = false
-//                    hideSkeleton()
-//                }
-//            }
-//        }
-//
         viewModel.lostItemClickEvent.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { lostItem ->
                 showLostItemModalDialog(lostItem)

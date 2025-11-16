@@ -16,6 +16,8 @@ import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import timber.log.Timber
 
+private const val PADDING: Int = 6
+
 @Composable
 fun FAQScreen(
     uiState: FAQUiState,
@@ -47,8 +49,8 @@ fun FAQScreen(
                             onclick = { onFaqClick(faq) },
                             modifier =
                                 Modifier.padding(
-                                    top = if (index == 0) 12.dp else 6.dp,
-                                    bottom = if (index == uiState.faqs.lastIndex) 12.dp else 6.dp,
+                                    top = if (index == 0) (PADDING * 2).dp else PADDING.dp,
+                                    bottom = if (index == uiState.faqs.lastIndex) (PADDING * 2).dp else PADDING.dp,
                                 ),
                         )
                     }

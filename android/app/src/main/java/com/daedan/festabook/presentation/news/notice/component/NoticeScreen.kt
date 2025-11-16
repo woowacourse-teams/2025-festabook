@@ -25,6 +25,8 @@ import com.daedan.festabook.presentation.news.notice.NoticeUiState.Companion.DEF
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import timber.log.Timber
 
+private const val PADDING: Int = 6
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NoticeScreen(
@@ -114,8 +116,8 @@ private fun NoticeContent(
                     createdAt = notice.formattedCreatedAt,
                     modifier =
                         Modifier.padding(
-                            top = if (index == 0) 12.dp else 6.dp,
-                            bottom = if (index == notices.lastIndex) 12.dp else 6.dp,
+                            top = if (index == 0) (PADDING * 2).dp else PADDING.dp,
+                            bottom = if (index == notices.lastIndex) (PADDING * 2).dp else PADDING.dp,
                         ),
                 )
             }

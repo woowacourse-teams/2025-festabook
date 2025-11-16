@@ -51,6 +51,10 @@ class NewsViewModel(
     var lostUiState by mutableStateOf<LostUiState>(LostUiState.InitialLoading)
         private set
 
+    val isLostItemScreenRefreshing by derivedStateOf {
+        lostUiState is LostUiState.Refreshing
+    }
+
     private val _lostItemClickEvent: MutableLiveData<Event<LostUiModel.Item>> = MutableLiveData()
     val lostItemClickEvent: LiveData<Event<LostUiModel.Item>> get() = _lostItemClickEvent
 
@@ -59,7 +63,7 @@ class NewsViewModel(
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
-        loadAllLostItems()
+        loadAllLostItems(LostUiState.InitialLoading)
     }
 
     fun loadAllNotices(state: NoticeUiState) {
@@ -139,7 +143,7 @@ class NewsViewModel(
         }
     }
 
-    fun loadAllLostItems(state: LostUiState = LostUiState.InitialLoading) {
+    fun loadAllLostItems(state: LostUiState) {
         viewModelScope.launch {
             lostUiState = state
             val result = lostItemRepository.getLost()
