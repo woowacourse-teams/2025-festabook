@@ -48,8 +48,11 @@ class NewsViewModel(
     var faqUiState by mutableStateOf<FAQUiState>(FAQUiState.InitialLoading)
         private set
 
-    private val _lostUiState: MutableLiveData<LostUiState> = MutableLiveData()
-    val lostUiState: LiveData<LostUiState> get() = _lostUiState
+    var lostUiState by mutableStateOf<LostUiState>(LostUiState.InitialLoading)
+        private set
+
+//    private val _lostUiState: MutableLiveData<LostUiState> = MutableLiveData()
+//    val lostUiState: LiveData<LostUiState> get() = _lostUiState
 
     private val _lostItemClickEvent: MutableLiveData<Event<LostUiModel.Item>> = MutableLiveData()
     val lostItemClickEvent: LiveData<Event<LostUiModel.Item>> get() = _lostItemClickEvent
@@ -141,7 +144,7 @@ class NewsViewModel(
 
     fun loadAllLostItems(state: LostUiState = LostUiState.InitialLoading) {
         viewModelScope.launch {
-            _lostUiState.value = state
+            lostUiState = state
             val result = lostItemRepository.getLost()
 
             val lostUiModels =
@@ -152,7 +155,7 @@ class NewsViewModel(
                         null -> LostUiModel.Guide()
                     }
                 }
-            _lostUiState.value = LostUiState.Success(lostUiModels)
+            lostUiState = LostUiState.Success(lostUiModels)
         }
     }
 
@@ -193,8 +196,8 @@ class NewsViewModel(
     }
 
     private fun updateLostUiState(onUpdate: (List<LostUiModel>) -> List<LostUiModel>) {
-        val currentState = _lostUiState.value ?: return
-        _lostUiState.value =
+        val currentState = lostUiState
+        lostUiState =
             when (currentState) {
                 is LostUiState.Success -> currentState.copy(lostItems = onUpdate(currentState.lostItems))
                 else -> currentState
