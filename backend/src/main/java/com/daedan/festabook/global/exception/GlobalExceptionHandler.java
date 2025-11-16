@@ -39,7 +39,7 @@ public class GlobalExceptionHandler {
                     databaseException.getOriginalExceptionMessage()
             );
 
-            logDatabaseException(databaseException, exceptionLog);
+            logDatabaseExceptionAsErrorIf5xx(databaseException, exceptionLog);
         }
     }
 
@@ -169,7 +169,7 @@ public class GlobalExceptionHandler {
         }
     }
 
-    private void logDatabaseException(DatabaseException databaseException, ExceptionLog exceptionLog) {
+    private void logDatabaseExceptionAsErrorIf5xx(DatabaseException databaseException, ExceptionLog exceptionLog) {
         if (databaseException.getStatus().is4xxClientError()) {
             log.warn("", kv("event", exceptionLog));
             return;
