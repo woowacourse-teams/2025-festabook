@@ -29,7 +29,7 @@ fun LostItem(
                 .fillMaxSize()
                 .cardBackground(roundedCornerShape = ROUNDED_CORNER_SHAPE.dp)
                 .aspectRatio(1f)
-                .clickable { onLostItemClick() },
+                .clickable(indication = null, interactionSource = null) { onLostItemClick() },
     ) {
         CoilImage(
             url = url,
