@@ -6,13 +6,13 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.graphics.drawable.toDrawable
-import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
 import com.daedan.festabook.R
-import com.daedan.festabook.databinding.FragmentLostItemModalDialogBinding
 import com.daedan.festabook.presentation.common.getObject
-import com.daedan.festabook.presentation.common.loadImage
+import com.daedan.festabook.presentation.news.lost.component.LostItemModalDialog
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import timber.log.Timber
 
@@ -20,11 +20,6 @@ class LostItemModalDialogFragment : DialogFragment() {
     private val lostItem: LostUiModel.Item? by lazy {
         arguments?.getObject(KEY_LOST_ITEM)
     }
-
-    private lateinit var binding: FragmentLostItemModalDialogBinding
-
-    @Suppress("ktlint:standard:backing-property-naming")
-    private var _binding: FragmentLostItemModalDialogBinding? = null
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = Dialog(requireContext(), R.style.LostItemModalDialogTheme)
@@ -36,41 +31,19 @@ class LostItemModalDialogFragment : DialogFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?,
-    ): View {
-        _binding =
-            DataBindingUtil.inflate(
-                inflater,
-                R.layout.fragment_lost_item_modal_dialog,
-                container,
-                false,
-            )
-        binding = _binding!!
-
-        return binding.root
-    }
-
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        lostItem?.let {
-            binding.ivModalLostItemImage.loadImage(it.imageUrl)
-            binding.tvModalLostItemStorageLocation.text =
-                binding.tvModalLostItemStorageLocation.context.getString(
-                    R.string.modal_lost_item_location,
-                    it.storageLocation,
-                )
-            binding.tvMadalLostItemCreatedAt.text =
-                binding.tvMadalLostItemCreatedAt.context.getString(
-                    R.string.modal_lost_item_created_at,
-                    it.createdAt,
-                )
-        } ?: run {
-            Timber.e("${::LostItemModalDialogFragment.name}: 선택한 분실물이 존재하지 않습니다.")
-            dismissAllowingStateLoss()
+    ): View =
+        ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                lostItem
+                    ?.let {
+                        LostItemModalDialog(lostItem = it)
+                    } ?: run {
+                    Timber.e("${::LostItemModalDialogFragment.name}: 선택한 분실물이 존재하지 않습니다.")
+                    dismissAllowingStateLoss()
+                }
+            }
         }
-    }
 
     override fun onStart() {
         super.onStart()
@@ -78,11 +51,6 @@ class LostItemModalDialogFragment : DialogFragment() {
         val width = resources.getDimensionPixelSize(R.dimen.lost_item_modal_dialog_width)
         val height = resources.getDimensionPixelSize(R.dimen.lost_item_modal_dialog_height)
         dialog?.window?.setLayout(width, height)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 
     companion object {

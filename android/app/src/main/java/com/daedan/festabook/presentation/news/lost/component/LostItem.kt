@@ -19,14 +19,13 @@ private const val ROUNDED_CORNER_SHAPE = 16
 @Composable
 fun LostItem(
     url: String,
-    onLostItemClick: () -> Unit,
     modifier: Modifier = Modifier,
+    onLostItemClick: () -> Unit = {},
 ) {
     Card(
         shape = RoundedCornerShape(ROUNDED_CORNER_SHAPE.dp),
         modifier =
             modifier
-                .fillMaxSize()
                 .cardBackground(roundedCornerShape = ROUNDED_CORNER_SHAPE.dp)
                 .aspectRatio(1f)
                 .clickable(indication = null, interactionSource = null) { onLostItemClick() },
