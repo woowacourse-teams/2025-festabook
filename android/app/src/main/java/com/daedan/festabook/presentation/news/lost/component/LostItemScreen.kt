@@ -100,9 +100,9 @@ private fun LostItemContent(
     }
 
     LazyVerticalGrid(
+        modifier = modifier,
         columns = GridCells.Fixed(SPAN_COUNT),
         contentPadding = PaddingValues(top = PADDING.dp, bottom = PADDING.dp),
-        modifier = modifier,
         verticalArrangement = Arrangement.spacedBy(PADDING.dp),
         horizontalArrangement = Arrangement.spacedBy(PADDING.dp),
     ) {

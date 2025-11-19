@@ -1,8 +1,9 @@
 package com.daedan.festabook.presentation.news.faq.component
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
@@ -16,7 +17,7 @@ import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import timber.log.Timber
 
-private const val PADDING: Int = 6
+private const val PADDING: Int = 8
 
 @Composable
 fun FAQScreen(
@@ -37,21 +38,20 @@ fun FAQScreen(
             if (uiState.faqs.isEmpty()) {
                 EmptyStateScreen()
             } else {
-                LazyColumn(modifier = modifier) {
-                    itemsIndexed(
+                LazyColumn(
+                    modifier = modifier,
+                    contentPadding = PaddingValues(top = PADDING.dp, bottom = PADDING.dp),
+                    verticalArrangement = Arrangement.spacedBy(PADDING.dp),
+                ) {
+                    items(
                         items = uiState.faqs,
-                        key = { _, faq -> faq.questionId },
-                    ) { index, faq ->
+                        key = { faq -> faq.questionId },
+                    ) { faq ->
                         NewsItem(
                             title = stringResource(R.string.tab_faq_question, faq.question),
                             description = faq.answer,
                             isExpanded = faq.isExpanded,
                             onclick = { onFaqClick(faq) },
-                            modifier =
-                                Modifier.padding(
-                                    top = if (index == 0) (PADDING * 2).dp else PADDING.dp,
-                                    bottom = if (index == uiState.faqs.lastIndex) (PADDING * 2).dp else PADDING.dp,
-                                ),
                         )
                     }
                 }
