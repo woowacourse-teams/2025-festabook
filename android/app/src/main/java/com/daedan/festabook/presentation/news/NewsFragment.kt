@@ -61,10 +61,6 @@ class NewsFragment :
         newsViewModel.toggleFAQExpanded(faqItem)
     }
 
-    override fun onLostItemClick(lostItem: LostUiModel.Item) {
-        newsViewModel.lostItemClick(lostItem)
-    }
-
     override fun onLostGuideItemClick() {
         newsViewModel.toggleLostGuideExpanded()
     }

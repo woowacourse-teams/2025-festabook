@@ -182,8 +182,6 @@ class PlaceDetailActivity :
 
     override fun onFAQClick(faqItem: FAQItemUiModel) = Unit
 
-    override fun onLostItemClick(lostItem: LostUiModel.Item) = Unit
-
     override fun onLostGuideItemClick() = Unit
 
     companion object {

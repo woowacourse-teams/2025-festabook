@@ -11,6 +11,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.painterResource
@@ -36,11 +40,19 @@ private const val PADDING: Int = 8
 fun LostItemScreen(
     lostUiState: LostUiState,
     onLostGuideClick: () -> Unit,
-    onLostItemClick: (LostUiModel.Item) -> Unit,
     isRefreshing: Boolean,
     onRefresh: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    var clickedLostItem by remember { mutableStateOf<LostUiModel.Item?>(null) }
+
+    clickedLostItem?.let {
+        LostItemModalDialog(
+            lostItem = it,
+            onDismiss = { clickedLostItem = null },
+        )
+    }
+
     PullToRefreshContainer(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
@@ -59,7 +71,7 @@ fun LostItemScreen(
                 LostItemContent(
                     lostItems = lostUiState.oldLostItems,
                     onLostGuideClick = onLostGuideClick,
-                    onLostItemClick = onLostItemClick,
+                    onLostItemClick = { },
                     modifier =
                         modifier
                             .fillMaxSize()
@@ -74,7 +86,7 @@ fun LostItemScreen(
                 LostItemContent(
                     lostItems = lostUiState.lostItems,
                     onLostGuideClick = onLostGuideClick,
-                    onLostItemClick = onLostItemClick,
+                    onLostItemClick = { clickedLostItem = it },
                     modifier =
                         modifier
                             .fillMaxSize()

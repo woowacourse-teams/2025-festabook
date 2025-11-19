@@ -4,8 +4,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.daedan.festabook.di.viewmodel.ViewModelKey
@@ -13,7 +11,6 @@ import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
-import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
@@ -54,9 +51,6 @@ class NewsViewModel(
     val isLostItemScreenRefreshing by derivedStateOf {
         lostUiState is LostUiState.Refreshing
     }
-
-    private val _lostItemClickEvent: MutableLiveData<Event<LostUiModel.Item>> = MutableLiveData()
-    val lostItemClickEvent: LiveData<Event<LostUiModel.Item>> get() = _lostItemClickEvent
 
     private var noticeIdToExpand: Long? = null
 
@@ -125,10 +119,6 @@ class NewsViewModel(
                 }
             }
         }
-    }
-
-    fun lostItemClick(lostItem: LostUiModel.Item) {
-        _lostItemClickEvent.value = Event(lostItem)
     }
 
     fun toggleLostGuideExpanded() {

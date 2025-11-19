@@ -19,7 +19,6 @@ class LostItemViewHolder private constructor(
         binding.root.setOnClickListener {
             lostItem
                 ?.let {
-                    newsClickListener.onLostItemClick(it)
                 } ?: run {
                 Timber.w("${this::class.java.simpleName} LostItem이 null입니다.")
             }

@@ -9,7 +9,5 @@ interface NewsClickListener {
 
     fun onFAQClick(faqItem: FAQItemUiModel)
 
-    fun onLostItemClick(lostItem: LostUiModel.Item)
-
     fun onLostGuideItemClick()
 }

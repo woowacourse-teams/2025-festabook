@@ -13,9 +13,7 @@ import com.daedan.festabook.databinding.FragmentLostItemBinding
 import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.news.NewsViewModel
-import com.daedan.festabook.presentation.news.lost.LostItemModalDialogFragment.Companion.TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT
 import com.daedan.festabook.presentation.news.lost.component.LostItemScreen
-import com.daedan.festabook.presentation.news.lost.model.LostUiModel
 import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 
 class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
@@ -38,7 +36,6 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
                 LostItemScreen(
                     lostUiState = viewModel.lostUiState,
                     onLostGuideClick = { newsClickListener.onLostGuideItemClick() },
-                    onLostItemClick = { newsClickListener.onLostItemClick(it) },
                     isRefreshing = viewModel.isLostItemScreenRefreshing,
                     onRefresh = {
                         val currentUiState = viewModel.lostUiState
@@ -49,28 +46,6 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
                 )
             }
         }
-
-    override fun onViewCreated(
-        view: View,
-        savedInstanceState: Bundle?,
-    ) {
-        super.onViewCreated(view, savedInstanceState)
-        setupObservers()
-    }
-
-    private fun setupObservers() {
-        viewModel.lostItemClickEvent.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let { lostItem ->
-                showLostItemModalDialog(lostItem)
-            }
-        }
-    }
-
-    private fun showLostItemModalDialog(lostItem: LostUiModel.Item) {
-        LostItemModalDialogFragment
-            .newInstance(lostItem)
-            .show(childFragmentManager, TAG_MODAL_DIALOG_LOST_ITEM_FRAGMENT)
-    }
 
     companion object {
         fun newInstance() = LostItemFragment()
