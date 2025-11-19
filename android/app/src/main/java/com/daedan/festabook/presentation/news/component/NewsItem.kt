@@ -18,7 +18,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -28,6 +27,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.daedan.festabook.R
 import com.daedan.festabook.presentation.common.component.cardBackground
+import com.daedan.festabook.presentation.theme.FestabookColor
+import com.daedan.festabook.presentation.theme.FestabookTypography
 
 private const val ICON_ROTATION_EXPANDED: Float = 180F
 private const val ICON_ROTATION_COLLAPSED: Float = 0F
@@ -68,17 +69,15 @@ fun NewsItem(
             }
             Text(
                 text = title,
-                fontFamily = FontFamily(Font(R.font.pretendard_bold)),
-                fontSize = 14.sp,
+                style = FestabookTypography.titleSmall,
                 modifier = Modifier.weight(1f),
             )
             Spacer(modifier = Modifier.width(8.dp))
             if (createdAt != null) {
                 Text(
                     text = createdAt,
-                    fontFamily = FontFamily(Font(R.font.pretendard_regular)),
-                    fontSize = 10.sp,
-                    color = colorResource(R.color.gray500),
+                    style = FestabookTypography.labelSmall,
+                    color = FestabookColor.gray500,
                 )
             } else {
                 Icon(
