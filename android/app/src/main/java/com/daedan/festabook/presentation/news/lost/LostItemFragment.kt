@@ -32,7 +32,7 @@ class LostItemFragment : BaseFragment<FragmentLostItemBinding>() {
         savedInstanceState: Bundle?,
     ): View =
         ComposeView(requireContext()).apply {
-            (ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val newsClickListener = requireParentFragment() as NewsClickListener
                 LostItemScreen(
