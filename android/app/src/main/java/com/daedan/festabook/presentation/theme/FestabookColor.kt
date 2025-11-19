@@ -11,6 +11,7 @@ object FestabookColor {
     val gray400 = Color(0xFFAAAAAA)
     val gray300 = Color(0xFFC6C6C6)
     val gray200 = Color(0xFFE3E3E3)
+    val gray100 = Color(0xFFF7F7F7)
     val white = Color(0xFFFAFAFA)
 
     val accent_blue = Color(0xFF0094FF)
