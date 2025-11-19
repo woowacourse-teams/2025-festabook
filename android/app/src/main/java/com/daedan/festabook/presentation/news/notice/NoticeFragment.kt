@@ -31,8 +31,8 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>() {
         savedInstanceState: Bundle?,
     ): View =
         ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 NoticeScreen(
                     uiState = newsViewModel.noticeUiState,
                     onNoticeClick = { notice ->
