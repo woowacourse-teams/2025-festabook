@@ -44,6 +44,7 @@ fun LostItemScreen(
     PullToRefreshContainer(
         isRefreshing = isRefreshing,
         onRefresh = onRefresh,
+        modifier = modifier,
     ) { pullToRefreshState ->
         when (lostUiState) {
             LostUiState.InitialLoading -> LoadingStateScreen()
