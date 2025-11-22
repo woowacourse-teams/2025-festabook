@@ -4,8 +4,6 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.daedan.festabook.di.viewmodel.ViewModelKey
@@ -13,7 +11,6 @@ import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.repository.FAQRepository
 import com.daedan.festabook.domain.repository.LostItemRepository
 import com.daedan.festabook.domain.repository.NoticeRepository
-import com.daedan.festabook.presentation.common.Event
 import com.daedan.festabook.presentation.news.faq.FAQUiState
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.faq.model.toUiModel
@@ -48,18 +45,19 @@ class NewsViewModel(
     var faqUiState by mutableStateOf<FAQUiState>(FAQUiState.InitialLoading)
         private set
 
-    private val _lostUiState: MutableLiveData<LostUiState> = MutableLiveData()
-    val lostUiState: LiveData<LostUiState> get() = _lostUiState
+    var lostUiState by mutableStateOf<LostUiState>(LostUiState.InitialLoading)
+        private set
 
-    private val _lostItemClickEvent: MutableLiveData<Event<LostUiModel.Item>> = MutableLiveData()
-    val lostItemClickEvent: LiveData<Event<LostUiModel.Item>> get() = _lostItemClickEvent
+    val isLostItemScreenRefreshing by derivedStateOf {
+        lostUiState is LostUiState.Refreshing
+    }
 
     private var noticeIdToExpand: Long? = null
 
     init {
         loadAllNotices(NoticeUiState.InitialLoading)
         loadAllFAQs()
-        loadAllLostItems()
+        loadAllLostItems(LostUiState.InitialLoading)
     }
 
     fun loadAllNotices(state: NoticeUiState) {
@@ -123,10 +121,6 @@ class NewsViewModel(
         }
     }
 
-    fun lostItemClick(lostItem: LostUiModel.Item) {
-        _lostItemClickEvent.value = Event(lostItem)
-    }
-
     fun toggleLostGuideExpanded() {
         updateLostUiState { lostUiModels ->
             lostUiModels.map { lostUiModel ->
@@ -139,9 +133,9 @@ class NewsViewModel(
         }
     }
 
-    fun loadAllLostItems(state: LostUiState = LostUiState.InitialLoading) {
+    fun loadAllLostItems(state: LostUiState) {
         viewModelScope.launch {
-            _lostUiState.value = state
+            lostUiState = state
             val result = lostItemRepository.getLost()
 
             val lostUiModels =
@@ -152,7 +146,7 @@ class NewsViewModel(
                         null -> LostUiModel.Guide()
                     }
                 }
-            _lostUiState.value = LostUiState.Success(lostUiModels)
+            lostUiState = LostUiState.Success(lostUiModels)
         }
     }
 
@@ -193,8 +187,8 @@ class NewsViewModel(
     }
 
     private fun updateLostUiState(onUpdate: (List<LostUiModel>) -> List<LostUiModel>) {
-        val currentState = _lostUiState.value ?: return
-        _lostUiState.value =
+        val currentState = lostUiState
+        lostUiState =
             when (currentState) {
                 is LostUiState.Success -> currentState.copy(lostItems = onUpdate(currentState.lostItems))
                 else -> currentState

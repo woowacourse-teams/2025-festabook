@@ -20,8 +20,8 @@ import com.daedan.festabook.presentation.common.getObject
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
 import com.daedan.festabook.presentation.placeDetail.logging.PlaceDetailImageSwipe
@@ -34,7 +34,7 @@ import timber.log.Timber
 
 class PlaceDetailActivity :
     AppCompatActivity(),
-    OnNewsClickListener {
+    NewsClickListener {
     @Inject
     private lateinit var viewModelFactory: PlaceDetailViewModel.Factory
 
@@ -62,13 +62,15 @@ class PlaceDetailActivity :
             finish()
             return
         }
-        viewModel = ViewModelProvider(
-            this, PlaceDetailViewModel.factory(
-                viewModelFactory,
-                placeUiObject,
-                placeDetailObject
-            )
-        )[PlaceDetailViewModel::class.java]
+        viewModel =
+            ViewModelProvider(
+                this,
+                PlaceDetailViewModel.factory(
+                    viewModelFactory,
+                    placeUiObject,
+                    placeDetailObject,
+                ),
+            )[PlaceDetailViewModel::class.java]
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -180,9 +182,7 @@ class PlaceDetailActivity :
 
     override fun onFAQClick(faqItem: FAQItemUiModel) = Unit
 
-    override fun onLostItemClick(lostItem: LostUiModel.Item) = Unit
-
-    override fun onLostGuideItemClick(lostGuideItem: LostUiModel.Guide) = Unit
+    override fun onLostGuideItemClick() = Unit
 
     companion object {
         private const val DEFAULT_MAX_LINES = 1

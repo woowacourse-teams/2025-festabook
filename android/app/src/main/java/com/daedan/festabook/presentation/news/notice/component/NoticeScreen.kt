@@ -1,8 +1,9 @@
 package com.daedan.festabook.presentation.news.notice.component
 
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -24,6 +25,8 @@ import com.daedan.festabook.presentation.news.notice.NoticeUiState
 import com.daedan.festabook.presentation.news.notice.NoticeUiState.Companion.DEFAULT_POSITION
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import timber.log.Timber
+
+private const val PADDING: Int = 8
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -88,11 +91,16 @@ private fun NoticeContent(
     if (notices.isEmpty()) {
         EmptyStateScreen(modifier = modifier)
     } else {
-        LazyColumn(modifier = modifier, state = listState) {
-            itemsIndexed(
+        LazyColumn(
+            modifier = modifier,
+            state = listState,
+            contentPadding = PaddingValues(top = PADDING.dp, bottom = PADDING.dp),
+            verticalArrangement = Arrangement.spacedBy(PADDING.dp),
+        ) {
+            items(
                 items = notices,
-                key = { _, notice -> notice.id },
-            ) { index, notice ->
+                key = { notice -> notice.id },
+            ) { notice ->
                 NewsItem(
                     title = notice.title,
                     description = notice.content,
@@ -112,11 +120,6 @@ private fun NoticeContent(
                         }
                     },
                     createdAt = notice.formattedCreatedAt,
-                    modifier =
-                        Modifier.padding(
-                            top = if (index == 0) 12.dp else 6.dp,
-                            bottom = if (index == notices.lastIndex) 12.dp else 6.dp,
-                        ),
                 )
             }
         }

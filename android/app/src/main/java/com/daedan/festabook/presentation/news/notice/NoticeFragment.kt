@@ -14,7 +14,7 @@ import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.presentation.common.BaseFragment
 import com.daedan.festabook.presentation.main.MainViewModel
 import com.daedan.festabook.presentation.news.NewsViewModel
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 import com.daedan.festabook.presentation.news.notice.component.NoticeScreen
 
 class NoticeFragment : BaseFragment<FragmentNoticeBinding>() {
@@ -31,12 +31,12 @@ class NoticeFragment : BaseFragment<FragmentNoticeBinding>() {
         savedInstanceState: Bundle?,
     ): View =
         ComposeView(requireContext()).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
                 NoticeScreen(
                     uiState = newsViewModel.noticeUiState,
                     onNoticeClick = { notice ->
-                        (requireParentFragment() as OnNewsClickListener)
+                        (requireParentFragment() as NewsClickListener)
                             .onNoticeClick(notice)
                     },
                     isRefreshing = newsViewModel.isNoticeScreenRefreshing,
