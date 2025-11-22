@@ -5,19 +5,19 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 
 class LostItemAdapter(
-    private val onNewsClickListener: OnNewsClickListener,
+    private val newsClickListener: NewsClickListener,
 ) : ListAdapter<LostUiModel, RecyclerView.ViewHolder>(lostItemDiffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
     ): RecyclerView.ViewHolder =
         if (viewType == VIEW_TYPE_GUIDE) {
-            LostGuideItemViewHolder.from(parent, onNewsClickListener)
+            LostGuideItemViewHolder.from(parent, newsClickListener)
         } else {
-            LostItemViewHolder.from(parent, onNewsClickListener)
+            LostItemViewHolder.from(parent, newsClickListener)
         }
 
     override fun onBindViewHolder(
@@ -48,7 +48,7 @@ class LostItemAdapter(
                             oldItem.lostItemId == newItem.lostItemId
 
                         oldItem is LostUiModel.Guide && newItem is LostUiModel.Guide ->
-                            oldItem.guide == newItem.guide
+                            oldItem.description == newItem.description
 
                         else -> false
                     }

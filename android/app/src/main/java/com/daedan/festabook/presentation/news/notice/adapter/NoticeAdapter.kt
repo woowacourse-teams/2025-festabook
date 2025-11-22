@@ -6,7 +6,7 @@ import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 
 class NoticeAdapter(
-    private val noticeListener: OnNewsClickListener,
+    private val noticeListener: NewsClickListener,
 ) : ListAdapter<NoticeUiModel, NoticeViewHolder>(noticeDiffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,

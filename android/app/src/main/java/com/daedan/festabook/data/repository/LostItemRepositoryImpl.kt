@@ -42,7 +42,7 @@ class LostItemRepositoryImpl @Inject constructor(
 
             val total = mutableListOf<Lost?>()
 
-            total.add(guideResult.getOrNull())
+            total.add(0, guideResult.getOrNull())
             pendingItemsResult.getOrNull()?.let { total.addAll(it) }
 
             total

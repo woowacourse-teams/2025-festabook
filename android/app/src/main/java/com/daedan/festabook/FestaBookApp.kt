@@ -5,7 +5,6 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
 import com.daedan.festabook.data.datasource.local.FcmDataSource
 import com.daedan.festabook.di.FestaBookAppGraph
-import com.daedan.festabook.data.service.api.ApiClient
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
@@ -124,7 +123,7 @@ class FestaBookApp : Application() {
         Thread.setDefaultUncaughtExceptionHandler(
             FestabookGlobalExceptionHandler(
                 this,
-            )
+            ),
         )
     }
 }

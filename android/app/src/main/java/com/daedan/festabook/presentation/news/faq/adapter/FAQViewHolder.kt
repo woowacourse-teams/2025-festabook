@@ -9,19 +9,19 @@ import androidx.transition.TransitionManager
 import com.daedan.festabook.databinding.ItemFaqBinding
 import com.daedan.festabook.presentation.common.toPx
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 import timber.log.Timber
 
 class FAQViewHolder(
     private val binding: ItemFaqBinding,
-    private val onNewsClickListener: OnNewsClickListener,
+    private val newsClickListener: NewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     private var faqItem: FAQItemUiModel? = null
 
     init {
         binding.root.setOnClickListener {
             faqItem?.let {
-                onNewsClickListener.onFAQClick(it)
+                newsClickListener.onFAQClick(it)
             } ?: run {
                 Timber.w("${this::class.java.simpleName} : FAQ 아이템이 null입니다.")
             }
@@ -62,12 +62,12 @@ class FAQViewHolder(
 
         fun from(
             parent: ViewGroup,
-            onNewsClickListener: OnNewsClickListener,
+            newsClickListener: NewsClickListener,
         ): FAQViewHolder {
             val inflater = LayoutInflater.from(parent.context)
             val binding = ItemFaqBinding.inflate(inflater, parent, false)
 
-            return FAQViewHolder(binding, onNewsClickListener)
+            return FAQViewHolder(binding, newsClickListener)
         }
     }
 }
