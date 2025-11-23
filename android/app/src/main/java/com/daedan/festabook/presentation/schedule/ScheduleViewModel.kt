@@ -10,16 +10,24 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.daedan.festabook.FestaBookApp
 import com.daedan.festabook.domain.repository.ScheduleRepository
-import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiModel
 import com.daedan.festabook.presentation.schedule.model.ScheduleEventUiStatus
 import com.daedan.festabook.presentation.schedule.model.toUiModel
+import dev.zacsweers.metro.Assisted
+import dev.zacsweers.metro.AssistedFactory
+import dev.zacsweers.metro.AssistedInject
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 
-class ScheduleViewModel(
+class ScheduleViewModel @AssistedInject constructor(
     private val scheduleRepository: ScheduleRepository,
-    private val dateId: Long,
+    @Assisted private val dateId: Long,
 ) : ViewModel() {
+    @AssistedFactory
+    interface Factory {
+        fun create(dateId: Long): ScheduleViewModel
+    }
+
     private val _scheduleEventsUiState: MutableLiveData<ScheduleEventsUiState> =
         MutableLiveData<ScheduleEventsUiState>()
     val scheduleEventsUiState: LiveData<ScheduleEventsUiState> get() = _scheduleEventsUiState
@@ -35,6 +43,7 @@ class ScheduleViewModel(
 
     fun loadScheduleByDate() {
         if (dateId == INVALID_ID) return
+        if (_scheduleEventsUiState.value == ScheduleEventsUiState.Loading) return
         viewModelScope.launch {
             _scheduleEventsUiState.value = ScheduleEventsUiState.Loading
 
@@ -57,6 +66,7 @@ class ScheduleViewModel(
     }
 
     fun loadAllDates() {
+        if (_scheduleDatesUiState.value == ScheduleDatesUiState.Loading) return
         viewModelScope.launch {
             _scheduleDatesUiState.value = ScheduleDatesUiState.Loading
 
@@ -84,13 +94,13 @@ class ScheduleViewModel(
         private const val FIRST_INDEX: Int = 0
         private const val INVALID_INDEX: Int = -1
 
-        fun factory(dateId: Long = INVALID_ID): ViewModelProvider.Factory =
+        fun factory(
+            factory: Factory,
+            dateId: Long = INVALID_ID
+        ): ViewModelProvider.Factory =
             viewModelFactory {
                 initializer {
-                    val scheduleRepository =
-                        (this[APPLICATION_KEY] as FestaBookApp).appContainer.scheduleRepository
-
-                    ScheduleViewModel(scheduleRepository, dateId)
+                    factory.create(dateId)
                 }
             }
     }

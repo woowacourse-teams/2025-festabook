@@ -3,24 +3,24 @@ package com.daedan.festabook.presentation.main
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.repository.DeviceRepository
-import com.daedan.festabook.domain.repository.FestivalNotificationRepository
 import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.presentation.common.Event
 import com.google.firebase.messaging.FirebaseMessaging
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class MainViewModel(
+@ContributesIntoMap(AppScope::class)
+@ViewModelKey(MainViewModel::class)
+class MainViewModel @Inject constructor(
     private val deviceRepository: DeviceRepository,
     festivalRepository: FestivalRepository,
-    private val festivalNotificationRepository: FestivalNotificationRepository,
 ) : ViewModel() {
     private val _backPressEvent: MutableLiveData<Event<Boolean>> = MutableLiveData()
     val backPressEvent: LiveData<Event<Boolean>> get() = _backPressEvent
@@ -96,20 +96,5 @@ class MainViewModel(
 
     companion object {
         private const val BACK_PRESS_INTERVAL: Long = 2000L
-        val Factory: ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val app = this[APPLICATION_KEY] as FestaBookApp
-                    val deviceRepository = app.appContainer.deviceRepository
-                    val festivalNotificationRepository =
-                        app.appContainer.festivalNotificationRepository
-                    val festivalRepository = app.appContainer.festivalRepository
-                    MainViewModel(
-                        deviceRepository,
-                        festivalRepository,
-                        festivalNotificationRepository,
-                    )
-                }
-            }
     }
 }

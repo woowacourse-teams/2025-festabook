@@ -6,10 +6,14 @@ import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.Lost
 import com.daedan.festabook.domain.model.LostItemStatus
 import com.daedan.festabook.domain.repository.LostItemRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 
-class LostItemRepositoryImpl(
+@ContributesBinding(AppScope::class)
+class LostItemRepositoryImpl @Inject constructor(
     private val lostItemDataSource: LostItemDataSource,
 ) : LostItemRepository {
     override suspend fun getPendingLostItems(): Result<List<Lost>> =
@@ -38,7 +42,7 @@ class LostItemRepositoryImpl(
 
             val total = mutableListOf<Lost?>()
 
-            total.add(guideResult.getOrNull())
+            total.add(0, guideResult.getOrNull())
             pendingItemsResult.getOrNull()?.let { total.addAll(it) }
 
             total

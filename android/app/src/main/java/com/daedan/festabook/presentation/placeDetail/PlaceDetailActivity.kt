@@ -14,27 +14,30 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.viewpager2.widget.ViewPager2
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ActivityPlaceDetailBinding
+import com.daedan.festabook.di.appGraph
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.presentation.common.getObject
-import com.daedan.festabook.presentation.common.loadImage
 import com.daedan.festabook.presentation.common.showErrorSnackBar
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
 import com.daedan.festabook.presentation.news.lost.model.LostUiModel
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 import com.daedan.festabook.presentation.news.notice.adapter.NoticeAdapter
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
 import com.daedan.festabook.presentation.news.notice.model.NoticeUiModel
 import com.daedan.festabook.presentation.placeDetail.adapter.PlaceImageViewPagerAdapter
 import com.daedan.festabook.presentation.placeDetail.logging.PlaceDetailImageSwipe
 import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel
 import com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiState
-import com.daedan.festabook.presentation.placeList.model.PlaceUiModel
-import io.getstream.photoview.dialog.PhotoViewDialog
+import com.daedan.festabook.presentation.placeMap.model.PlaceUiModel
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
 class PlaceDetailActivity :
     AppCompatActivity(),
-    OnNewsClickListener {
+    NewsClickListener {
+    @Inject
+    private lateinit var viewModelFactory: PlaceDetailViewModel.Factory
+
     private val noticeAdapter by lazy {
         NoticeAdapter(this)
     }
@@ -44,31 +47,30 @@ class PlaceDetailActivity :
     }
 
     private lateinit var viewModel: PlaceDetailViewModel
+
     private val binding: ActivityPlaceDetailBinding by lazy {
         DataBindingUtil.setContentView(this, R.layout.activity_place_detail)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        appGraph.inject(this)
         super.onCreate(savedInstanceState)
 
         val placeUiObject = intent?.getObject<PlaceUiModel>(KEY_PLACE_UI_MODEL)
         val placeDetailObject = intent?.getObject<PlaceDetailUiModel>(KEY_PLACE_DETAIL_UI_MODEL)
-
+        if (placeUiObject == null && placeDetailObject == null) {
+            finish()
+            return
+        }
         viewModel =
-            if (placeDetailObject != null) {
-                ViewModelProvider(
-                    this,
-                    PlaceDetailViewModel.factory(placeDetailObject),
-                )[PlaceDetailViewModel::class.java]
-            } else if (placeUiObject != null) {
-                ViewModelProvider(
-                    this,
-                    PlaceDetailViewModel.factory(placeUiObject),
-                )[PlaceDetailViewModel::class.java]
-            } else {
-                finish()
-                return
-            }
+            ViewModelProvider(
+                this,
+                PlaceDetailViewModel.factory(
+                    viewModelFactory,
+                    placeUiObject,
+                    placeDetailObject,
+                ),
+            )[PlaceDetailViewModel::class.java]
 
         enableEdgeToEdge()
         ViewCompat.setOnApplyWindowInsetsListener(binding.root) { v, insets ->
@@ -88,7 +90,6 @@ class PlaceDetailActivity :
         binding.vpPlaceImages.adapter = placeImageAdapter
         binding.tvLocation.setExpandedWhenClicked()
         binding.tvHost.setExpandedWhenClicked()
-        binding.tvPlaceDescription.setExpandedWhenClicked(2)
         binding.ivBackToPrevious.setOnClickListener {
             finish()
         }
@@ -138,10 +139,10 @@ class PlaceDetailActivity :
                         PlaceDetailImageSwipe(
                             baseLogData = binding.logger.getBaseLogData(),
                             startIndex = position,
-                        )
+                        ),
                     )
                 }
-            }
+            },
         )
         // 임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다
 //        if (placeDetail.notices.isEmpty()) {
@@ -181,9 +182,7 @@ class PlaceDetailActivity :
 
     override fun onFAQClick(faqItem: FAQItemUiModel) = Unit
 
-    override fun onLostItemClick(lostItem: LostUiModel.Item) = Unit
-
-    override fun onLostGuideItemClick(lostGuideItem: LostUiModel.Guide) = Unit
+    override fun onLostGuideItemClick() = Unit
 
     companion object {
         private const val DEFAULT_MAX_LINES = 1

@@ -9,6 +9,7 @@ plugins {
     id("kotlin-parcelize")
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("dev.zacsweers.metro") version "0.6.10"
 }
 
 android {
@@ -156,6 +157,7 @@ dependencies {
     implementation(libs.androidx.constraintlayout)
     implementation(libs.retrofit)
     implementation(libs.coil)
+    implementation(libs.coil.compose)
     implementation(libs.coil.network.okhttp)
     implementation(libs.retrofit2.kotlinx.serialization.converter)
     implementation(libs.kotlinx.serialization.json)
@@ -167,6 +169,7 @@ dependencies {
     implementation(libs.shimmer)
     implementation(libs.timber)
     implementation(libs.lottie)
+    implementation(libs.lottie.compose)
     implementation(libs.circleindicator)
     implementation(libs.firebase.crashlytics.ndk)
     implementation(libs.androidx.core.splashscreen)

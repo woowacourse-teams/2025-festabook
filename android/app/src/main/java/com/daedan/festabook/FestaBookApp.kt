@@ -2,37 +2,48 @@ package com.daedan.festabook
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
-import com.daedan.festabook.data.service.api.ApiClient
-import com.daedan.festabook.logging.DefaultFirebaseLogger
-import com.daedan.festabook.logging.FirebaseAnalyticsTree
+import com.daedan.festabook.data.datasource.local.DeviceLocalDataSource
+import com.daedan.festabook.data.datasource.local.FcmDataSource
+import com.daedan.festabook.di.FestaBookAppGraph
 import com.daedan.festabook.logging.FirebaseCrashlyticsTree
 import com.daedan.festabook.service.NotificationHelper
 import com.daedan.festabook.util.FestabookGlobalExceptionHandler
 import com.google.firebase.Firebase
-import com.google.firebase.analytics.FirebaseAnalytics
-import com.google.firebase.crashlytics.FirebaseCrashlytics
 import com.google.firebase.crashlytics.crashlytics
+import com.google.firebase.messaging.FirebaseMessaging
 import com.naver.maps.map.NaverMapSdk
+import dev.zacsweers.metro.Inject
+import dev.zacsweers.metro.createGraphFactory
 import timber.log.Timber
+import java.util.UUID
 
 class FestaBookApp : Application() {
-    val appContainer: AppContainer by lazy {
-        AppContainer(this)
+    val festaBookGraph: FestaBookAppGraph by lazy {
+        createGraphFactory<FestaBookAppGraph.Factory>().create(this)
     }
 
-    private val fireBaseAnalytics: FirebaseAnalytics by lazy {
-        FirebaseAnalytics.getInstance(this)
-    }
+    @Inject
+    private lateinit var firebaseAnalyticsTree: Timber.Tree
+
+    @Inject
+    private lateinit var deviceLocalDataSource: DeviceLocalDataSource
+
+    @Inject
+    private lateinit var firebaseMessaging: FirebaseMessaging
+
+    @Inject
+    private lateinit var fcmDataSource: FcmDataSource
 
     override fun onCreate() {
         super.onCreate()
         setGlobalExceptionHandler()
-        initializeApiClient()
+        festaBookGraph.inject(this)
         setupTimber()
         setupNaverSdk()
         setupNotificationChannel()
         setLightTheme()
         sendUnsentReports()
+        setupDeviceIdentifiers()
     }
 
     override fun onLowMemory() {
@@ -55,11 +66,14 @@ class FestaBookApp : Application() {
     }
 
     private fun setupTimber() {
-        if (BuildConfig.DEBUG) {
-            plantDebugTimberTree()
-        } else {
-            plantInfoTimberTree()
-        }
+        plantDebugTimberTree()
+        plantInfoTimberTree()
+
+//        if (BuildConfig.DEBUG) {
+//            plantDebugTimberTree()
+//        } else {
+//            plantInfoTimberTree()
+//        }
         Timber.plant(FirebaseCrashlyticsTree())
     }
 
@@ -73,7 +87,7 @@ class FestaBookApp : Application() {
     }
 
     private fun plantInfoTimberTree() {
-        Timber.plant(FirebaseAnalyticsTree(fireBaseAnalytics))
+        Timber.plant(firebaseAnalyticsTree)
     }
 
     private fun setupNaverSdk() {
@@ -85,21 +99,31 @@ class FestaBookApp : Application() {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     }
 
+    private fun setupDeviceIdentifiers() {
+        if (deviceLocalDataSource
+                .getUuid()
+                .isNullOrEmpty()
+        ) {
+            val uuid = UUID.randomUUID().toString()
+            deviceLocalDataSource.saveUuid(uuid)
+            Timber.d("🆕 UUID 생성 및 저장: $uuid")
+        }
+
+        firebaseMessaging
+            .token
+            .addOnSuccessListener { token ->
+                fcmDataSource.saveFcmToken(token)
+                Timber.d("📡 FCM 토큰 저장: $token")
+            }.addOnFailureListener {
+                Timber.w(it, "❌ FCM 토큰 수신 실패")
+            }
+    }
+
     private fun setGlobalExceptionHandler() {
         Thread.setDefaultUncaughtExceptionHandler(
             FestabookGlobalExceptionHandler(
                 this,
-            )
+            ),
         )
-    }
-
-    private fun initializeApiClient() {
-        runCatching {
-            ApiClient.initialize(this)
-        }.onSuccess {
-            Timber.d("API 클라이언트 초기화 완료")
-        }.onFailure { e ->
-            Timber.e(e, "FestabookApp: API 클라이언트 초기화 실패 ${e.message}")
-        }
     }
 }

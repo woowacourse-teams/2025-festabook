@@ -14,14 +14,14 @@ import timber.log.Timber
 
 class NoticeViewHolder(
     private val binding: ItemNoticeBinding,
-    private val onNewsClickListener: OnNewsClickListener,
+    private val newsClickListener: NewsClickListener,
 ) : RecyclerView.ViewHolder(binding.root) {
     private var noticeItem: NoticeUiModel? = null
 
     init {
         binding.layoutNoticeItem.setOnClickListener {
             noticeItem?.let {
-                onNewsClickListener.onNoticeClick(it)
+                newsClickListener.onNoticeClick(it)
             } ?: run {
                 Timber.w("${this::class.java.simpleName} 공지 아이템이 null입니다.")
             }
@@ -59,7 +59,7 @@ class NoticeViewHolder(
 
         fun from(
             parent: ViewGroup,
-            listener: OnNewsClickListener,
+            listener: NewsClickListener,
         ): NoticeViewHolder {
             val binding =
                 ItemNoticeBinding.inflate(LayoutInflater.from(parent.context), parent, false)

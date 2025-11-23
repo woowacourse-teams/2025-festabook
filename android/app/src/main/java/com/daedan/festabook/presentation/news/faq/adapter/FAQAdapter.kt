@@ -4,15 +4,15 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import com.daedan.festabook.presentation.news.faq.model.FAQItemUiModel
-import com.daedan.festabook.presentation.news.notice.adapter.OnNewsClickListener
+import com.daedan.festabook.presentation.news.notice.adapter.NewsClickListener
 
 class FAQAdapter(
-    private val onNewsClickListener: OnNewsClickListener,
+    private val newsClickListener: NewsClickListener,
 ) : ListAdapter<FAQItemUiModel, FAQViewHolder>(faqItemDiffCallback) {
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
-    ): FAQViewHolder = FAQViewHolder.from(parent, onNewsClickListener)
+    ): FAQViewHolder = FAQViewHolder.from(parent, newsClickListener)
 
     override fun onBindViewHolder(
         holder: FAQViewHolder,

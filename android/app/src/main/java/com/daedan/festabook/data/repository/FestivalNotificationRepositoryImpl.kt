@@ -6,9 +6,13 @@ import com.daedan.festabook.data.datasource.local.FestivalNotificationLocalDataS
 import com.daedan.festabook.data.datasource.remote.festival.FestivalNotificationDataSource
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.repository.FestivalNotificationRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import timber.log.Timber
 
-class FestivalNotificationRepositoryImpl(
+@ContributesBinding(AppScope::class)
+class FestivalNotificationRepositoryImpl @Inject constructor(
     private val festivalNotificationDataSource: FestivalNotificationDataSource,
     private val deviceLocalDataSource: DeviceLocalDataSource,
     private val festivalNotificationLocalDataSource: FestivalNotificationLocalDataSource,
@@ -41,8 +45,12 @@ class FestivalNotificationRepositoryImpl(
     }
 
     override suspend fun deleteFestivalNotification(): Result<Unit> {
-        val festivalId = festivalLocalDataSource.getFestivalId() ?: return Result.failure(IllegalStateException())
-        val festivalNotificationId = festivalNotificationLocalDataSource.getFestivalNotificationId(festivalId)
+        val festivalId =
+            festivalLocalDataSource.getFestivalId() ?: return Result.failure(
+                IllegalStateException(),
+            )
+        val festivalNotificationId =
+            festivalNotificationLocalDataSource.getFestivalNotificationId(festivalId)
         val response =
             festivalNotificationDataSource.deleteFestivalNotification(festivalNotificationId)
         festivalNotificationLocalDataSource.deleteFestivalNotificationId(festivalId)

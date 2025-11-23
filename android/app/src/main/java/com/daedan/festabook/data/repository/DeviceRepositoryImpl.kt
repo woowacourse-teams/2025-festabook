@@ -5,8 +5,12 @@ import com.daedan.festabook.data.datasource.local.FcmDataSource
 import com.daedan.festabook.data.datasource.remote.device.DeviceDataSource
 import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.repository.DeviceRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class DeviceRepositoryImpl(
+@ContributesBinding(AppScope::class)
+class DeviceRepositoryImpl @Inject constructor(
     private val deviceDataSource: DeviceDataSource,
     private val deviceLocalDataSource: DeviceLocalDataSource,
     private val fcmDataSource: FcmDataSource,

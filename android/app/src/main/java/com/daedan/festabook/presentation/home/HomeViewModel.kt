@@ -3,17 +3,20 @@ package com.daedan.festabook.presentation.home
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
-import com.daedan.festabook.FestaBookApp
+import com.daedan.festabook.di.viewmodel.ViewModelKey
+import com.daedan.festabook.di.viewmodel.ViewModelScope
 import com.daedan.festabook.domain.repository.FestivalRepository
 import com.daedan.festabook.presentation.common.SingleLiveData
 import com.daedan.festabook.presentation.home.adapter.FestivalUiState
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesIntoMap
+import dev.zacsweers.metro.Inject
 import kotlinx.coroutines.launch
 
-class HomeViewModel(
+@ContributesIntoMap(AppScope::class)
+@ViewModelKey(HomeViewModel::class)
+class HomeViewModel @Inject constructor(
     private val festivalRepository: FestivalRepository,
 ) : ViewModel() {
     private val _festivalUiState = MutableLiveData<FestivalUiState>()
@@ -63,16 +66,5 @@ class HomeViewModel(
                     _lineupUiState.value = LineupUiState.Error(it)
                 }
         }
-    }
-
-    companion object {
-        val Factory: ViewModelProvider.Factory =
-            viewModelFactory {
-                initializer {
-                    val festivalRepository =
-                        (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as FestaBookApp).appContainer.festivalRepository
-                    HomeViewModel(festivalRepository)
-                }
-            }
     }
 }

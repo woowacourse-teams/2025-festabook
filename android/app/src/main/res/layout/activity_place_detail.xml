@@ -9,7 +9,7 @@
             name="placeDetail"
             type="com.daedan.festabook.presentation.placeDetail.model.PlaceDetailUiModel" />
 
-        <import type="com.daedan.festabook.presentation.placeList.model.PlaceUiModel" />
+        <import type="com.daedan.festabook.presentation.placeMap.model.PlaceUiModel" />
     </data>
 
     <androidx.core.widget.NestedScrollView
@@ -77,7 +77,7 @@
                     app:layout_constraintTop_toTopOf="@id/vp_place_images"
                     />
 
-                <com.daedan.festabook.presentation.placeList.CategoryView
+                <com.daedan.festabook.presentation.placeMap.placeList.CategoryView
                     android:id="@+id/cv_place_category"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -183,24 +183,24 @@
                     android:textAppearance="@style/PretendardRegular14"
                     android:autoLink="web"
                     android:textColorLink="@color/gray500"
-                    android:maxLines="2"
                     android:ellipsize="end"
                     app:layout_constraintEnd_toEndOf="@id/end_guideline"
                     app:layout_constraintStart_toStartOf="@id/iv_host"
                     app:layout_constraintTop_toBottomOf="@id/tv_host"
                     tools:text="시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전시원한 맥주와 맛있는 파전" />
-<!--                임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다-->
 
-<!--                <View-->
-<!--                    android:id="@+id/view_divider"-->
-<!--                    android:layout_width="0dp"-->
-<!--                    android:layout_height="1dp"-->
-<!--                    android:layout_marginTop="20dp"-->
-<!--                    android:background="@color/gray300"-->
-<!--                    app:layout_constraintEnd_toEndOf="@id/end_guideline"-->
-<!--                    app:layout_constraintStart_toStartOf="@id/start_guideline"-->
-<!--                    app:layout_constraintTop_toBottomOf="@id/tv_place_description" />-->
+                <View
+                    android:id="@+id/view_divider"
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="20dp"
+                    android:background="@color/gray300"
+                    android:visibility="gone"
+                    app:layout_constraintEnd_toEndOf="@id/end_guideline"
+                    app:layout_constraintStart_toStartOf="@id/start_guideline"
+                    app:layout_constraintTop_toBottomOf="@id/tv_place_description" />
 
+                <!--                임시로 곰지사항을 보이지 않게 하였습니다. 추후 복구 예정입니다-->
                 <TextView
                     android:id="@+id/tv_notice_title"
                     android:layout_width="0dp"

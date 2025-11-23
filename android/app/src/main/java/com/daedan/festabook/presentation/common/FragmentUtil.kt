@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import com.daedan.festabook.R
 import com.daedan.festabook.data.util.ApiResultException
-import com.daedan.festabook.presentation.placeList.behavior.PlaceListBottomSheetFollowBehavior
+import com.daedan.festabook.presentation.placeMap.placeList.behavior.PlaceListBottomSheetFollowBehavior
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import java.io.Serializable

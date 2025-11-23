@@ -9,8 +9,12 @@ import com.daedan.festabook.domain.model.Place
 import com.daedan.festabook.domain.model.PlaceGeography
 import com.daedan.festabook.domain.model.TimeTag
 import com.daedan.festabook.domain.repository.PlaceListRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 
-class PlaceListRepositoryImpl(
+@ContributesBinding(AppScope::class)
+class PlaceListRepositoryImpl @Inject constructor(
     private val placeDataSource: PlaceDataSource,
 ) : PlaceListRepository {
     override suspend fun getTimeTags(): Result<List<TimeTag>> {

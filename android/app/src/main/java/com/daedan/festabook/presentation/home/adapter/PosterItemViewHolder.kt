@@ -8,14 +8,12 @@ import coil3.request.CachePolicy
 import coil3.request.crossfade
 import coil3.request.transformations
 import coil3.transform.RoundedCornersTransformation
-import com.daedan.festabook.BuildConfig
 import com.daedan.festabook.R
 import com.daedan.festabook.databinding.ItemHomePosterBinding
 import com.daedan.festabook.logging.logger
 import com.daedan.festabook.logging.model.PosterTouchLogData
 import com.daedan.festabook.presentation.common.convertImageUrl
 import com.daedan.festabook.presentation.common.loadImage
-import com.daedan.festabook.presentation.placeDetail.model.ImageUiModel
 import io.getstream.photoview.dialog.PhotoViewDialog
 
 class PosterItemViewHolder(

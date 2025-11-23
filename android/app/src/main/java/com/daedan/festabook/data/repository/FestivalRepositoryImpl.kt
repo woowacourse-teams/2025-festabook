@@ -9,9 +9,13 @@ import com.daedan.festabook.data.util.toResult
 import com.daedan.festabook.domain.model.LineupItem
 import com.daedan.festabook.domain.model.Organization
 import com.daedan.festabook.domain.repository.FestivalRepository
+import dev.zacsweers.metro.AppScope
+import dev.zacsweers.metro.ContributesBinding
+import dev.zacsweers.metro.Inject
 import java.time.LocalDate
 
-class FestivalRepositoryImpl(
+@ContributesBinding(AppScope::class)
+class FestivalRepositoryImpl @Inject constructor(
     private val festivalDataSource: FestivalDataSource,
     private val festivalLocalDataSource: FestivalLocalDataSource,
     private val lineupDataSource: LineupDataSource,

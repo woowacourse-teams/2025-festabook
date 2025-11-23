@@ -8,7 +8,7 @@ coreSplashscreen = "1.0.1"
 coreTesting = "2.2.0"
 firebaseBom = "34.0.0"
 fragmentKtx = "1.8.8"
-kotlin = "2.2.0"
+kotlin = "2.2.20"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
@@ -16,7 +16,7 @@ espressoCore = "3.6.1"
 appcompat = "1.7.0"
 kotlinxCoroutinesTest = "1.10.2"
 loggingInterceptor = "5.1.0"
-lottie = "6.6.7"
+lottie = "6.6.6"
 mapSdk = "3.22.1"
 material = "1.12.0"
 activity = "1.10.1"
@@ -47,6 +47,7 @@ app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.re
 assertj-core = { module = "org.assertj:assertj-core", version.ref = "assertjCore" }
 circleindicator = { module = "me.relex:circleindicator", version.ref = "circleindicator" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
 coil-network-okhttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
 androidx-fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
 androidx-viewpager2 = { module = "androidx.viewpager2:viewpager2", version.ref = "viewpager2" }
@@ -60,6 +61,7 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "kotlinxCoroutinesTest" }
 logging-interceptor = { module = "com.squareup.okhttp3:logging-interceptor", version.ref = "loggingInterceptor" }
 lottie = { module = "com.airbnb.android:lottie", version.ref = "lottie" }
+lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "lottie" }
 map-sdk = { module = "com.naver.maps:map-sdk", version.ref = "mapSdk" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 androidx-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
