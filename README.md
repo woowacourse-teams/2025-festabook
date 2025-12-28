@@ -1,3 +1,7 @@
+> 📦 본 레포지토리는 더 이상 유지되지 않으며, 프로젝트는 [festabook 공식 레포지토리](https://github.com/festabook)로 이전되었습니다.
+
+<br>
+
 # 🎆 페스타북 festabook : 축제를 한 권에 담다 
 
 [![Google Play](https://img.shields.io/badge/Google_Play-414141?style=for-the-badge&logo=googleplay&logoColor=white)](https://play.google.com/store/apps/details?id=com.daedan.festabook)
